@@ -44,18 +44,16 @@ struct NoUpdateFunctor
 
 namespace Compare
 {
-  template< class Vertex, class TolType = Vertex >
+  template< class Vertex, class TolType >
   struct VertexTolerance : public std::binary_function< Vertex, Vertex, bool >
   {
     VertexTolerance( const TolType& t ) : _tol ( t ) { }
     bool operator () ( const Vertex& v1, const Vertex& v2 ) const
     {
 #if 1
-      //if ( v1 < v2 )
-        return ( v1 + _tol ) < v2;
-      //if( v2 < v1 )
-      //  return ( v2 + _tol ) < v1;
-      //return false;
+      Vertex v ( v1 - v2 );
+      return ( v.length2() < _tol );
+
 #else
       return ( v1 < v2 );
 #endif
@@ -235,8 +233,8 @@ AdjacencyMap ( const Compare& c ) : BaseClass(),
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class UpdateFunctor, class CancelFunctor >
-  void add ( const VertexSequence& vertices, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int numVertsPerPoly )
+  template < class UpdateFunctor >
+  void add ( const VertexSequence& vertices, UpdateFunctor& updater, unsigned int numVertsPerPoly )
   {
     // Handle trivial case.
     if ( vertices.empty() )
@@ -275,10 +273,6 @@ AdjacencyMap ( const Compare& c ) : BaseClass(),
     //Loop through all the vertices
     for( VertexIterator i = vertices.begin(); i != vertices.end(); i += numVertsPerPoly )
     {
-      //Do we need to stop?
-      if( cancel() )
-        return;
-
       //Add a new polygon
       PolygonPtr p ( new Polygon() );
       _polygons.push_back( p.get() );
@@ -329,8 +323,8 @@ AdjacencyMap ( const Compare& c ) : BaseClass(),
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  template < class Functor, class IndexSequence, class UpdateFunctor, class CancelFunctor >
-  void walkPolygons ( IndexSequence& answer, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int selectedPolygon )
+  template < class Functor, class IndexSequence, class UpdateFunctor >
+  void walkPolygons ( IndexSequence& answer, UpdateFunctor& updater, unsigned int selectedPolygon )
   {
     typedef typename IndexSequence::iterator IndexIterator;
     typedef std::vector< Functor > TodoStack;
@@ -359,10 +353,6 @@ AdjacencyMap ( const Compare& c ) : BaseClass(),
     //loop through the todo stack
     while( todoIterator != todoStack.end() )
     {
-      //Do we need to stop?
-      if( cancel() )
-        return;
-
       //Do the functor's thing
       (*todoIterator)();
 

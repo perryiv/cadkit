@@ -291,6 +291,9 @@
 					RelativePath=".\Sample.h">
 				</File>
 				<File
+					RelativePath=".\ScopedDisplayLists.h">
+				</File>
+				<File
 					RelativePath=".\ScopedOptions.h">
 				</File>
 				<File

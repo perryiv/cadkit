@@ -20,10 +20,9 @@ template
   class AdjacencyMap,
   class IndexSequence, 
   class Functor,
-  class UpdateFunctor,
-  class CancelFunctor
+  class UpdateFunctor
 >
-inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater, const CancelFunctor& cancel )
+inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater )
 {
   typedef typename AdjacencyMap::Polygons Polygons;
   typedef typename Polygons::value_type Polygon;
@@ -59,10 +58,6 @@ inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigne
   //loop through the todo stack
   while( todoIterator != todoStack.end() )
   {
-    //Do we need to stop?
-    if( cancel() )
-      return;
-
     //Do the functor's thing
     (*todoIterator)();
 

@@ -845,6 +845,16 @@
 					RelativePath=".\Policies\Update.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="State"
+				Filter="">
+				<File
+					RelativePath=".\State\Busy.cpp">
+				</File>
+				<File
+					RelativePath=".\State\Busy.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

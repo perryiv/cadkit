@@ -70,7 +70,7 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
   PolygonList p1 ( sv->polygons() );
 
   //Loop through the shared vertex's polygons
-  for( PolygonList::iterator poly = p1.begin(); poly != p1.end(); ++poly )
+  for( typename PolygonList::iterator poly = p1.begin(); poly != p1.end(); ++poly )
   {
     //If we haven't visited already...
     if( !(*poly)->visited() )
@@ -82,7 +82,7 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
       if( std::binary_search( uncapped.begin(), uncapped.end(), index ) )
       {
         //Add the index to the current loop
-        loop.push_back( Loop::value_type ( index, sv->value() ) );
+        loop.push_back( typename Loop::value_type ( index, sv->value() ) );
 
         //Remove it from candidates so we don't add it again
         uncapped.remove ( index );
@@ -132,7 +132,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
   Polygons polygons ( map.polygons() );
 
   //Walk through all the polygons
-  for( Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
+  for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
   { 
     //Return now if we need to cancel
     if( cancel() )
@@ -144,7 +144,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
     PolygonList adjacentPolygons;
 
     //Loop through all this polygon's neighbors
-    for( PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
+    for( typename PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
     {
       //Self check...
       if( (*iter)->index() != (*i)->index() )
@@ -171,7 +171,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
   
   while( !uncapped.empty() )
   {
-    IndexSequence::iterator i ( uncapped.begin() );
+    typename IndexSequence::iterator i ( uncapped.begin() );
 
     //Create a cluster
     Loop loop;

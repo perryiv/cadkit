@@ -52,7 +52,7 @@ struct BasisFunctions
   typedef IndependentSequence_                                      IndependentSequence;
   typedef typename IndependentSequence::value_type                  IndependentType;
   typedef typename GN::Traits::Argument<IndependentType>::Type      IndependentArgument;
-  typedef typename SizeType_                                        SizeType;
+  typedef SizeType_                                                 SizeType;
   typedef BlendingCoefficients_                                     BlendingCoefficients;
   typedef typename BlendingCoefficients::value_type                 BlendingCoefficient;
   typedef WorkSpace_                                                WorkSpace;
@@ -306,7 +306,7 @@ void basisFunctions ( const SplineType &spline,
                       typename SplineType::SizeType whichIndepVar,
                       typename SplineType::SizeType span,
                       typename SplineType::IndependentArgument u,
-                      typename BlendingCoefficients &N )
+                      BlendingCoefficients &N )
 {
   // Declare types.
   typedef typename SplineType::IndependentSequence IndependentSequence;
@@ -347,8 +347,15 @@ inline
 void basisFunctions ( const CurveType &curve,
                       typename CurveType::SizeType span,
                       typename CurveType::IndependentArgument u,
-                      typename BlendingCoefficients &N )
+                      BlendingCoefficients &N )
 {
+  // Declare types.
+  typedef typename CurveType::IndependentSequence IndependentSequence;
+  typedef typename CurveType::SizeType SizeType;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+  typedef typename CurveType::WorkSpace WorkSpace;
+  typedef Detail::BasisFunctions<IndependentSequence,SizeType,BlendingCoefficients,WorkSpace,ErrorCheckerType> BasisFunctions;
+
   // Has to be a curve.
   GN_IS_CURVE ( CurveType );
 

@@ -77,7 +77,7 @@ template
 <
   class Polygon,
   class VertexSequence,
-  class Compare = std::less< VertexSequence::value_type >
+  class Compare = std::less< typename VertexSequence::value_type >
 >
 class AdjacencyMap : public Usul::Base::Referenced
 {
@@ -93,7 +93,9 @@ public:
   typedef typename SharedVertex::RefPtr SharedVertexPtr;
   typedef typename Polygon::ValidRefPtr PolygonPtr;
   typedef std::vector < PolygonPtr > Polygons;
+  typedef typename Polygons::iterator PolygonsItr;
   typedef std::map < VertexType, SharedVertexPtr, Compare > Map;
+  typedef typename Map::iterator MapItr;
 
   // Smart pointers.
   USUL_DECLARE_REF_POINTERS ( AdjacencyMap );
@@ -119,7 +121,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  AdjacencyMap ( const Compare& c ) : BaseClass()
+AdjacencyMap ( const Compare& c ) : BaseClass(),
     _sharedVertsMap( c ),
     _polygons()
   { 
@@ -179,10 +181,10 @@ public:
 
   SharedVertex *sharedVertex ( const VertexType &v )
   {
-    Map::iterator i ( _sharedVertsMap.find ( v ) );
+    MapItr i ( _sharedVertsMap.find ( v ) );
     if ( _sharedVertsMap.end() == i )
     {
-      typedef std::pair < Map::iterator, bool > InsertResult;
+      typedef std::pair < MapItr, bool > InsertResult;
       InsertResult result (  _sharedVertsMap.insert ( Map::value_type ( v, new SharedVertex ( v ) ) ) );
       return result.first->second.get();
     }
@@ -288,7 +290,7 @@ public:
         VertexType key ( *(i + j ) );
 
         //Get the iterator if the key is in the map
-        Map::iterator iter ( _sharedVertsMap.find( key ) );
+        MapItr iter ( _sharedVertsMap.find( key ) );
         
         //Do we have a shared vertex already?
         if( iter == _sharedVertsMap.end() )
@@ -327,7 +329,7 @@ public:
   {
     typedef typename IndexSequence::iterator IndexIterator;
     typedef std::vector< Functor > TodoStack;
-    typedef TodoStack::iterator TodoStackItr;
+    typedef typename TodoStack::iterator TodoStackItr;
 
     //Is the selected polygon outside of _polygons' range?
     if ( selectedPolygon >= _polygons.size() )
@@ -378,10 +380,10 @@ public:
   ///////////////////////////////////////////////////////////////////////////////
   void setAllUnvisited()
   {
-    for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
+    for( PolygonsItr iter = _polygons.begin(); iter != _polygons.end(); ++iter )
       (*iter)->visited( false );
 
-    for( Map::iterator i = _sharedVertsMap.begin(); i != _sharedVertsMap.end(); ++i )
+    for( MapItr i = _sharedVertsMap.begin(); i != _sharedVertsMap.end(); ++i )
       i->second->visited( false );
   }
 
@@ -400,11 +402,11 @@ public:
 
   void flipNormals()
   {
-    for ( Polygons::iterator i = _polygons.begin(); i != _polygons.end(); ++i )
+    for ( PolygonsItr i = _polygons.begin(); i != _polygons.end(); ++i )
       (*i)->flipNormal();
   }
 
-private:
+protected:
 
   // No copying.
   AdjacencyMap ( const AdjacencyMap & );

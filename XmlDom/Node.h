@@ -226,7 +226,7 @@ public:
   {
     if ( i >= _attribute.size() )
       return String();
-    typename Attribute::iterator itr = _attribute.begin();
+    typename Attributes::iterator itr = _attributes.begin();
     std::advance ( itr, i );
     return *itr;
   }
@@ -241,7 +241,7 @@ public:
   String attribute ( const String &name ) const
   {
     typename Attributes::const_iterator i = _attributes.find ( name );
-    return ( _attributes.end() == i ) String() : return i->second;
+    return ( _attributes.end() == i ) ? String() : i->second;
   }
 
   

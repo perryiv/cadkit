@@ -25,6 +25,7 @@ namespace Polygons {
 //  Shared Vertex Class
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 template < class Polygon, class ValueType_ >
 class SharedVertex : public Usul::Base::Referenced
 {
@@ -33,8 +34,9 @@ public:
   // Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef typename std::list < Polygon * > PolygonList;
+  typedef typename PolygonList::const_iterator ConstIterator;
   typedef typename PolygonList::iterator Iterator;
-  typedef typename ValueType_ ValueType;
+  typedef ValueType_ ValueType;
 
   // Smart pointers.
   USUL_DECLARE_REF_POINTERS ( SharedVertex );
@@ -90,7 +92,7 @@ public:
   ValueType normal() const
   {
     ValueType n ( 0, 0, 0 );
-    for ( PolygonList::const_iterator i = _polygons.begin(); i != _polygons.end(); ++i )
+    for ( ConstIterator i = _polygons.begin(); i != _polygons.end(); ++i )
       n += (*i)->normal();
     return n;
   }

@@ -86,7 +86,7 @@ struct PolygonFunctor
     if ( _polygon )
     {
       //Loop through the shared vertices in the polygon
-      for( Polygon::Iterator sv = _polygon->begin(); sv != _polygon->end(); ++sv )
+      for( typename Polygon::Iterator sv = _polygon->begin(); sv != _polygon->end(); ++sv )
       {
         //If we haven't visited
         if( !(*sv)->visited() )
@@ -104,7 +104,7 @@ struct PolygonFunctor
     if( _sharedVertex )
     {
       //Loop through the polygons of this shared vertex
-      for(SharedVertex::Iterator i = _sharedVertex->begin(); i != _sharedVertex->end(); ++i)
+      for( typename SharedVertex::Iterator i = _sharedVertex->begin(); i != _sharedVertex->end(); ++i)
       {
         //If we haven't visited yet
         if( !(*i)->visited() )

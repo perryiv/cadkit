@@ -41,7 +41,6 @@ namespace Detail
     typedef GN::Math::Distance2<SplineType> Distance;
 
     static void fit ( const DataContainer &points,
-                      const UIntType &dimension,
                       const UIntType &order,
                       ParamType power,
                       ParamContainer &u )
@@ -64,30 +63,26 @@ namespace Detail
 
       // Find the denominator.
       ParamType denom ( 0 );
+      for ( UIntType k = 1; k <= n; ++k )
       {
-        for ( UIntType k = 1; k <= n; ++k )
-        {
-          // Find the distance between these 2 data points.
-          ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
+        // Find the distance between these 2 data points.
+        ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
 
-          // Calculate the denominator. The "power" has the square-root in it.
-          denom += Power::calculate ( dist, power );
-        }
+        // Calculate the denominator. The "power" has the square-root in it.
+        denom += Power::calculate ( dist, power );
       }
 
       // Find the numerator.
+      for ( UIntType k = 1; k <= n; ++k )
       {
-        for ( UIntType k = 1; k <= n; ++k )
-        {
-          // Find the distance between these 2 data points.
-          ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
+        // Find the distance between these 2 data points.
+        ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
 
-          // Calculate the numerator. The "power" has the square-root in it.
-          ParamType numer ( Power::calculate ( dist, power ) );
+        // Calculate the numerator. The "power" has the square-root in it.
+        ParamType numer ( Power::calculate ( dist, power ) );
 
-          // This is equation 9.5 (or 9.6, depending on the power) in "The NURBS Book", page 365.
-          u[k] = u[k-1] + numer / denom;
-        }
+        // This is equation 9.5 (or 9.6, depending on the power) in "The NURBS Book", page 365.
+        u[k] = u[k-1] + numer / denom;
       }
     }
   };
@@ -117,17 +112,16 @@ template < class SplineType > void parameterize
 (
   const SplineType &s,
   const typename SplineType::ControlPointContainer &points,
-  const typename SplineType::UIntType &dimension,
   const typename SplineType::UIntType &order,
   const typename SplineType::KnotType &power,
   typename SplineType::KnotContainer::value_type &u
 )
 {
-  Detail::Parameterize<SplineType>::fit ( points, dimension, order, power, u );
+  Detail::Parameterize<SplineType>::fit ( points, order, power, u );
 }
 
 }; // namespace Algorithms
 }; // namespace GN
 
 
-#endif // _GENERIC_NURBS_LIBRARY_ALGORITHMS_SORT_H_
+#endif // _GENERIC_NURBS_LIBRARY_ALGORITHMS_PARAMETERIZATION_H_

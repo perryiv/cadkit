@@ -78,9 +78,11 @@ using namespace CadKit;
 TrJt2Pf::TrJt2Pf() :
   _verbose ( false ),
   _jtTraverser ( NULL ),
-  _error ( "" )
+  _error ( "" ),
+  _groupMap ( new GroupMap )
 {
   SL_PRINT2 ( "In TrJt2Pf::TrJt2Pf(), this = %X,\n", this );
+  SL_ASSERT ( NULL != _groupMap.get() );
 }
 
 
@@ -294,7 +296,7 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
   case DbJtTraverser::INSTANCE:
 
     // Add the instance to the XML tree.
-    //return this->_addInstance ( entity );
+    return this->_addInstance ( entity );
 
   default:
 
@@ -553,6 +555,9 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   // Add the new assembly group to the Performer scene.
   _assemblies.back().getGroup()->addChild ( assembly.getGroup() );
 
+  // Put the group into our map.
+  (*_groupMap)[entity] = assembly.getGroup();
+
   // Make the new assembly the current one.
   _assemblies.push_back ( assembly );
 
@@ -585,8 +590,65 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   // Add the new part to the Performer scene.
   _assemblies.back().getGroup()->addChild ( part.getGroup() );
 
+  // Put the group into our map.
+  (*_groupMap)[entity] = part.getGroup();
+
   if ( _verbose )
     std::cout << std::setw ( 10 ) << "part: " << part.getGroup()->getName() << std::endl;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
+{
+  SL_PRINT3 ( "In TrJt2Pf::_addInstance(), this = %X, entity = %X\n", this, entity );
+
+  // Make a new group for the instance.
+  Group instance;
+  if ( false == this->_createGroup ( entity, instance ) )
+    return false;
+
+  // Get the original part or assembly that the instance points to.
+  DbJtTraverser::EntityHandle original = _jtTraverser->getOriginal ( entity );
+  if ( NULL == original )
+    return false;
+
+  // Find the Performer group that corresponds with this part or assembly.
+  SlRefPtr<pfGroup> group = this->_findGroup ( original );
+  if ( group.isNull() )
+  {
+    // TODO. Handle this case by keeping a pool of unresolved instances and 
+    // resolve them when traversal is done. You may get an instance before 
+    // the corresponding part or assembly.
+    SL_ASSERT ( 0 );
+    return false;
+  }
+
+  // Add all of the original group's children to the instance's group.
+  int numChildren = group->getNumChildren();
+  for ( int i = 0; i < numChildren; ++i )
+  {
+    // Get the i'th child.
+    pfNode *child = group->getChild ( i );
+    SL_ASSERT ( child );
+
+    // Add it to the instance.
+    SL_VERIFY ( instance.getGroup()->addChild ( child ) );
+  }
+
+  // Add the new instance to the Performer scene.
+  _assemblies.back().getGroup()->addChild ( instance.getGroup() );
+
+  if ( _verbose )
+    std::cout << std::setw ( 10 ) << "instance: " << instance.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;
@@ -858,32 +920,6 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add the instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-/*
-bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
-{
-  SL_PRINT3 ( "In TrJt2Pf::_addInstance(), this = %X, entity = %X\n", this, entity );
-
-  // Make a new group for the part.
-  pfGroup::Ptr instance = this->_createGroup ( "instance", entity );
-  if ( instance.isNull() )
-    return false;
-
-  // Add the new part to the tree.
-  _assemblies.back()->addChild ( instance );
-
-  if ( _verbose )
-    std::cout << std::setw ( 10 ) << "instance: " << assembly.getGroup()->getName() << std::endl;
-
-  // It worked.
-  return true;
-}
-*/
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Pop the Performer scene tree level.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -966,4 +1002,23 @@ pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<SlVec3f> &vec ) const
 
   // Return the new array.
   return array;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the group associated with the entity.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pfGroup *TrJt2Pf::_findGroup ( DbJtTraverser::EntityHandle entity ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_findGroup(), this = %X, entity = %X\n", this, entity );
+  SL_ASSERT ( NULL != _groupMap.get() );
+
+  // See if it's in our map.
+	GroupMap::iterator i = _groupMap->find ( entity );
+
+  // Return the result (which may be null).
+  return ( i != _groupMap->end() ) ? i->second : NULL;
 }

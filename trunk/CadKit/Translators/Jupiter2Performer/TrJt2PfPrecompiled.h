@@ -65,6 +65,8 @@
 # include <fstream> 
 # include <iostream>
 # include <iomanip>
+# include <memory>
+# include <map>
 #endif
 
 #endif // _CADKIT_JUPITER_TO_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

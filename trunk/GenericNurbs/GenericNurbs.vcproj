@@ -338,6 +338,13 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="Interfaces"
+			Filter="">
+			<File
+				RelativePath=".\Interfaces\IInterpolateGlobal.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

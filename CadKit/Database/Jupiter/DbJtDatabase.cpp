@@ -130,6 +130,8 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
 
   switch ( iid )
   {
+  case ILoadOptions::IID:
+    return static_cast<ILoadOptions *>(this);
   case IAssemblyQueryFloat::IID:
     return static_cast<IAssemblyQueryFloat *>(this);
   case IPartQueryFloat::IID:

@@ -17,6 +17,7 @@
 #define _CADKIT_NURBS_CORE_LIBRARY_SPLINE_CLASS_H_
 
 #include "NcFindSpan.h"
+#include "NcBasisFunctions.h"
 
 #include "Standard/SlPartitionedVector.h"
 #include "Standard/SlAssert.h"
@@ -40,8 +41,12 @@ public:
   NcSpline ( const NcSpline &spline );
   ~NcSpline(){}
 
+  /// Calculate the basis functions.
+  void                          basisFunctions ( const ParameterType &u, ParameterType *N ) const;
+
   /// Find the span in the knot vector given the parameter.
-  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u, IndexType low ) const;
+  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u ) const { this->findSpan ( whichDepVar, u, this->getDegree ( whichDepVar ) ); }
+  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u, const IndexType &low ) const;
 
   /// Get the control point.
   ControlPointType              getControlPoint ( const IndexType &whichDepVar, const IndexType &whichControlPoint ) const { return _ctrPts ( whichDepVar, whichControlPoint ); }
@@ -254,19 +259,33 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setRational ( const bool &state )
 template<NCSDTA> inline IndexType NcSpline<NCSDCA>::findSpan ( 
   const IndexType &whichDepVar, 
   const ParameterType &u, 
-  IndexType low ) const
+  const IndexType &low ) const
 {
   SL_ASSERT ( false == _knots.getData().empty() );
+  SL_ASSERT ( low > this->getDegree ( whichDepVar ) || low == this->getDegree ( whichDepVar ) );
 
   // Get the start of the knot vector.
   const ParameterType *knots = _knots.getDataPointer ( whichDepVar );
 
-  // Get the number of controls points and degree.
+  // Get the number of controls points.
   IndexType numCtrPtr ( this->getNumControlPoints ( whichDepVar ) );
-  IndexType degree ( this->getDegree ( whichDepVar ) );
 
   // Call the function to find the span.
-  return NcFindSpan<NCSDCA>::find ( knots, numCtrPtr, u, degree );
+  return NcFindSpan<NCSDCA>::find ( knots, numCtrPtr, u, low );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Calculate the basis functions.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcSpline<NCSDCA>::basisFunctions ( 
+  const ParameterType &u, 
+  ParameterType *N ) const
+{
+  // TODO
 }
 
 

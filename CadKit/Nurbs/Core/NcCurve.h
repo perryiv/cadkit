@@ -35,6 +35,9 @@ public:
   NcCurve ( const NcCurve<NCSDCA> &sd ) : NcSpline<NCSDCA> ( sd ){}
   ~NcCurve(){}
 
+  /// Calculate the basis functions.
+  void                          basisFunctions ( const ParameterType &u, ParameterType *N ) const { NcSpline<NCSDCA>::basisFunctions ( 0, u, N ); }
+
   /// Find the span in the knot vector given the parameter.
   IndexType                     findSpan ( const ParameterType &u ) const { return this->findSpan ( u, this->getDegree() ); }
   IndexType                     findSpan ( const ParameterType &u, const IndexType &low ) const { return NcSpline<NCSDCA>::findSpan ( 0, u, low ); }

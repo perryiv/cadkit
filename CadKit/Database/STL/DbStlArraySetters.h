@@ -29,9 +29,6 @@
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec4.h"
 
-#include "osg/Geometry"
-
-
 namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,8 +41,6 @@ class DbStlVertexSetter : public IQueryShapeVerticesVec3f::VertexSetter
 {
 public:
 
-  typedef std::vector< osg::ref_ptr<osg::Primitive> > Primitives;
-
   DbStlVertexSetter ( const VertexSetType &type ) : _type ( type ), _vertices ( new osg::Vec3Array ){}
 
   osg::Vec3Array *      getVertices()   { return _vertices.get(); }
@@ -54,17 +49,38 @@ public:
   virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
   virtual bool          setSize ( const unsigned int &size );
 
-  virtual bool          setNumPrimitives  ( const unsigned int &num );
-  virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length );
+  virtual bool          setNumPrimitives  ( const unsigned int &num ) { /* ignoring primitives */ }
+  virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { /* ignoring primitives */ }
 
 protected:
 
   VertexSetType _type;
-  osg::ref_ptr<osg::Vec3Array> _vertices;
-  Primitives _primitives;
+  SlRefPtr<SlVec3f> _vertices;
 
   osg::Primitive::Mode  _getPrimitiveMode() const;
 };
+
+/*namespace CadKit
+{
+template <const unsigned int id, class EntityHandle, class ArrayType> 
+class IQueryVertices : public IQueryArray<id,ArrayType>
+{
+public:
+
+  // Inherit from this and define the virtual functions.
+  class VertexSetter : public IQueryArray<id,ArrayType>::ArraySetter
+  {
+  public:
+    virtual bool setNumPrimitives  ( const unsigned int &num ) = 0;
+    virtual bool setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) = 0;
+  };
+
+  // Get the set type.
+  virtual bool            getVertexSetType ( EntityHandle entity, VertexSetType &type ) const = 0;
+
+  // Get the vertices.
+  virtual bool            getVertices ( EntityHandle entity, VertexSetter &setter ) const = 0;
+};*/
 
 
 ///////////////////////////////////////////////////////////////////////////////

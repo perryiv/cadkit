@@ -26,6 +26,7 @@ using namespace CadKit;
 
 bool DbStlVertexSetter::setData ( const unsigned int &index, const SlVec3f &vec )
 {
+/* 
   // If we're out of range then resize.
   if ( index >= _vertices->size() )
     if ( false == this->setSize ( index + 1 ) )
@@ -36,6 +37,8 @@ bool DbStlVertexSetter::setData ( const unsigned int &index, const SlVec3f &vec 
 
   // It worked.
   return true;
+*/
+//TODO call FacetManager setData function
 }
 
 
@@ -59,71 +62,6 @@ bool DbStlNormalSetter::setData ( const unsigned int &index, const SlVec3f &vec 
   return true;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlColorSetter::setData ( const unsigned int &index, const SlVec4f &vec )
-{
-  // If we're out of range then resize.
-  if ( index >= _colors->size() )
-    if ( false == this->setSize ( index + 1 ) )
-      return false;
-
-  // Set the vertex.
-  (*_colors)[index].set ( vec[0], vec[1], vec[2], vec[3] );
-
-  // It worked.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlTextureCoordSetter::setData ( const unsigned int &index, const SlVec2f &vec )
-{
-  // If we're out of range then resize.
-  if ( index >= _texCoords->size() )
-    if ( false == this->setSize ( index + 1 ) )
-      return false;
-
-  // Set the vertex.
-  (*_texCoords)[index].set ( vec[0], vec[1] );
-
-  // It worked.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the primitive length.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlVertexSetter::setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length )
-{
-  // If we're out of range then resize.
-  if ( index >= _primitives.size() )
-    if ( false == this->setNumPrimitives ( index + 1 ) )
-      return false;
-
-  // Map our type to osg's mode.
-  osg::Primitive::Mode mode = this->_getPrimitiveMode();
-
-  // Set the primitive.
-  _primitives[index] = new osg::DrawArrays ( mode, start, length );
-
-  // It worked.
-  return true;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -152,19 +90,6 @@ osg::Primitive::Mode DbStlVertexSetter::_getPrimitiveMode() const
   }
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of primitives.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlVertexSetter::setNumPrimitives ( const unsigned int &num )
-{
-  SL_ASSERT ( num > 0 );
-  _primitives.resize ( num );
-  return num == _primitives.size();
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

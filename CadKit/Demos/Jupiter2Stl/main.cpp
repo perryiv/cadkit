@@ -29,10 +29,14 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
+  // The modules we use.
+  SlRefPtr<CtTranslation> trans  ( new CtTranslation );
+  SlRefPtr<DbJtDatabase>  jt     ( new DbJtDatabase );
+  SlRefPtr<DbStlDatabase> stl    ( new DbStlDatabase );
+
   // Make the source only hands the target assemblies and parts instead of 
   // instances of assemblies and parts. Ideally, this should be handled as a 
   // command line argument. 
-  DbJtDatabase *jt = new DbJtDatabase;
   SlRefPtr<IUnknown> unknown ( jt->queryInterface ( IUnknown::IID ) );
   SlQueryPtr<ILoadOptions> options ( unknown );
   if ( options.isValid() )
@@ -41,6 +45,9 @@ int main ( int argc, char **argv )
     options->setPartLoadOption ( ILoadOptions::EXPLODE_PART );
   }
 
-  bool result = CadKit::translate ( new CtTranslation, jt, new DbStlDatabase, argc, argv );
+  // Translate.
+  bool result = CadKit::translate ( trans.getValue(), jt.getValue(), stl.getValue(), argc, argv );
+
+  // Return the result.
   return ( result ) ? 1 : 0;
 }

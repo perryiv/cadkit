@@ -29,6 +29,10 @@
 #include "Standard/SlAssert.h"
 #include "Standard/SlAutoPtr.h"
 
+#ifdef _WIN32
+# define NOMINMAX // Fox includes <windows.h>
+#endif
+
 #include "fox/fx.h"
 #include "fox/FXCURCursor.h"
 

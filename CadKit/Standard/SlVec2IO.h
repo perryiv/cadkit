@@ -78,7 +78,7 @@ typedef SlFloatManip<SlVec2f>  SlVec2fManip;
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template < typename T > std::ostream &operator << ( std::ostream &out, const CadKit::SlManip < CadKit::SlVec2<T> > &manip )
+template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlManip < CadKit::SlVec2<T> > &manip )
 {
   out << std::setw ( manip.width() ) << manip.value()[0];
   out << std::setw ( manip.width() ) << manip.value()[1];
@@ -96,7 +96,7 @@ template < typename T > std::ostream &operator << ( std::ostream &out, const Cad
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template < typename T > std::ostream &operator << ( std::ostream &out, const CadKit::SlFloatManip < CadKit::SlVec2<T> > &manip )
+template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlFloatManip < CadKit::SlVec2<T> > &manip )
 {
   CadKit::SlOstreamSetReset reset ( out, manip.numDecimals() );
   out << std::setw ( manip.width() ) << manip.value()[0];

@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"DbPfPrecompiled.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../" /I "$(PERFORMER_INCLUDE_PATH)" /D "_MBCS" /D "_USRDLL" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY" /YX"DbPfPrecompiled.h" /FD /Zm200 /c
+# ADD CPP /nologo /MD /W3 /WX /GR /GX /O2 /I "../../" /I "$(PFROOT)/Include" /I "$(PFROOT)/Include/Performer" /D "_MBCS" /D "_USRDLL" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY" /YX"DbPfPrecompiled.h" /FD /Zm200 /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"../../bin/CkDbPf.dll"
+# ADD LINK32 libpfdu-util.lib libpf.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"../../bin/CkDbPf.dll" /libpath:"$(PFROOT)/Lib"
 
 !ELSEIF  "$(CFG)" == "DatabasePf - Win32 Debug"
 
@@ -71,7 +71,8 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"DbPfPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../" /I "$(PERFORMER_INCLUDE_PATH)" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY" /YX"DbPfPrecompiled.h" /FD /GZ /Zm200 /c
+# ADD CPP /nologo /MDd /W3 /WX /Gm /GR /GX /Zi /Od /I "../../" /I "$(PFROOT)/Include" /I "$(PFROOT)/Include/Performer" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY" /YX"DbPfPrecompiled.h" /FD /GZ /Zm200 /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -81,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /out:"../../bin/CkDbPfd.dll" /pdbtype:sept
+# ADD LINK32 libpfdu-util.lib libpf.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /out:"../../bin/CkDbPfd.dll" /pdbtype:sept /libpath:"$(PFROOT)/Lib"
 
 !ENDIF 
 
@@ -131,6 +132,18 @@ SOURCE=.\DbPfFunctions.h
 # Begin Source File
 
 SOURCE=.\DbPfInline.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbPfPerformer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbPfUtility.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbPfUtility.h
 # End Source File
 # End Group
 # Begin Group "DLL"

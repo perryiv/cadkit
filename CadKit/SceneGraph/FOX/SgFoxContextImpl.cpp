@@ -15,6 +15,10 @@
 
 #include "SgFoxContextImpl.h"
 
+#ifdef _WIN32
+# define NOMINMAX // Fox includes <windows.h>
+#endif
+
 #include "fox/fx.h"
 #include "fox/fx3d.h"
 

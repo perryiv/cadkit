@@ -245,6 +245,16 @@ bool DbJtDatabase::readData ( const std::string &filename )
   }
 
   // Catch any exceptions.
+  catch ( const std::exception &e )
+  {
+    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e.what() ), 0 );
+    return false;
+  }
+  catch ( const char *e )
+  {
+    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e ), 0 );
+    return false;
+  }
   catch ( ... )
   {
     ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename.c_str() ), 0 );

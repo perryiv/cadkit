@@ -17,7 +17,8 @@
 #define _CADKIT_SCENEGRAPH_OPENGL_WIN32_RENDERING_CONTEXT_IMPLEMENTATION_H_
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "windows.h"
+# define NOMINMAX // Do not define min and max as macros.
+# include <windows.h>
 #endif
 
 

@@ -34,9 +34,9 @@ class pfMemory;
 class pfGeode;
 class pfGeoSet;
 class pfGeoState;
-class pfVec2;
-class pfVec3;
-class pfVec4;
+struct pfVec2;
+struct pfVec3;
+struct pfVec4;
 
 
 namespace CadKit

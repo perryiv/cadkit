@@ -16,6 +16,10 @@
 #ifndef _CADKIT_DATABASE_PERFORMER_LIBRARY_ARRAY_SETTERS_H_
 #define _CADKIT_DATABASE_PERFORMER_LIBRARY_ARRAY_SETTERS_H_
 
+#ifndef _CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY
+# error "This header file is intended for internal Database/Performer code only."
+#endif
+
 #include "DbPfFunctions.h"
 
 #include "Interfaces/IQueryVertices.h"
@@ -31,9 +35,9 @@
 # include <vector>
 #endif
 
-class pfVec4;
-class pfVec3;
-class pfVec2;
+struct pfVec4;
+struct pfVec3;
+struct pfVec2;
 
 
 namespace CadKit

@@ -13,16 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-#include "windows.h"
-#endif
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlPrint.h"
-#endif
-
+#include "Standard/SlPrint.h"
 
 #ifdef _WIN32
+
+#define NOMINMAX // Do not define min and max as macros.
+#include <windows.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////

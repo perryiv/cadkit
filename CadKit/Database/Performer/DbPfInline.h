@@ -16,18 +16,21 @@
 #ifndef _CADKIT_DATABASE_PERFORMER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 #define _CADKIT_DATABASE_PERFORMER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 
+#ifndef _CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY
+# error "This header file is intended for internal Database/Performer code only."
+#endif
+
+#include "DbPfPerformer.h"
+
 #include "Standard/SlMatrix44.h"
 #include "Standard/SlRefPtr.h"
 
 #include "Interfaces/IEntityQuery.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pf/pfDCS.h"
-#endif
+
+namespace CadKit {
 
 
-namespace CadKit
-{
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Create the group. VC++ has an internal compiler error if the GroupType

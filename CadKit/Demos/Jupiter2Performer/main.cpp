@@ -19,53 +19,9 @@
 #include "Database/Jupiter/DbJtDatabase.h"
 
 #include "Database/Performer/DbPfDatabase.h"
-
-#include "Performer/pf.h"
-#include "Performer/pr.h"
-
-#include <iostream>
+#include "Database/Performer/DbPfUtility.h"
 
 using namespace CadKit;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize Performer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool initPerformer()
-{
-  // Initialize Performer.
-  int result = ::pfInit();
-  if ( 1 != result )
-  {
-    std::cout << "Failed to initialize Performer, pfInit() returned " << result << std::endl;
-    return false;
-  }
-
-  // Tell Performer to print all warnings.
-  ::pfNotifyLevel ( PFNFY_ALWAYS );
-
-  // No multiprocessing.
-  result = ::pfMultiprocess ( 0 );
-  if ( 1 != result )
-  {
-    std::cout << "Failed to set the number of processes, pfMultiprocess(0) returned " << result << std::endl;
-    return false;
-  }
-
-  // Configure Performer, this finally gets Performer to a usable state.
-  result = ::pfConfig();
-  if ( 1 != result )
-  {
-    std::cout << "Failed to configure Performer, pfConfig(0) returned " << result << std::endl;
-    return false;
-  }
-
-  // It worked.
-  return true;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,14 +33,19 @@ bool initPerformer()
 int main ( int argc, char **argv )
 {
   // Initialize Performer.
-  if ( false == initPerformer() )
+  if ( false == CadKit::Performer::start() )
     return 0;
 
+  // The modules we use.
+  SlRefPtr<CtTranslation> trans ( new CtTranslation );
+  SlRefPtr<DbJtDatabase>  jt    ( new DbJtDatabase );
+  SlRefPtr<DbPfDatabase>  pf    ( new DbPfDatabase );
+
   // Translate.
-  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbPfDatabase, argc, argv );
+  bool result = CadKit::translate ( trans.getValue(), jt.getValue(), pf.getValue(), argc, argv );
 
   // Done with Performer.
-  ::pfExit();
+  CadKit::Performer::finish();
 
   // Return the result.
   return ( result ) ? 1 : 0;

@@ -15,11 +15,7 @@
 
 #include "DbPfPrecompiled.h"
 #include "DbPfArraySetters.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pr/pfLinMath.h"
-# include "Performer/pr/pfGeoSet.h"
-#endif
+#include "DbPfPerformer.h"
 
 using namespace CadKit;
 

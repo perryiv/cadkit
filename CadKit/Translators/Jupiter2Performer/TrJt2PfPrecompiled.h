@@ -27,18 +27,12 @@
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Database/Jupiter/DbJtClientHeaders.h"
-# include "Performer/pf/pfDCS.h"
-# include "Performer/pf/pfLOD.h"
-# include "Performer/pf/pfGeode.h"
-# include "Performer/pr/pfGeoSet.h"
-# include "Performer/pr/pfGeoState.h"
-# include "Performer/pr/pfLinMath.h"
-# include "Performer/pr/pfMaterial.h"
 # include <fstream> 
 # include <iostream>
 # include <iomanip>
 # include <memory>
 # include <map>
+# include "TrJt2PfPerformer.h"
 #endif
 
 #endif // _CADKIT_JUPITER_TO_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

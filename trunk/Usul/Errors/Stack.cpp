@@ -117,7 +117,7 @@ Element::~Element()
 
 Stack *Stack::instance()
 {
-  // Gurad the creation of the instance. TODO, use double-lock pattern.
+  // Guard the creation of the instance. TODO, use double-lock pattern.
   static Mutex *mutex = Mutex::create();
   Guard guard ( *mutex );
 

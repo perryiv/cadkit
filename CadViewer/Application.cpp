@@ -121,10 +121,10 @@ namespace CV
   const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
 #endif
   const unsigned long NAVIGATE_TOGGLE = BUTTON_YELLOW;
-  const unsigned long NAVIGATE_NO_NAV = BUTTON_RED;       // helps greatly in sim mode
+  const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
   const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
-  //const unsigned long NAVIGATE_WALK   = BUTTON_GREEN;
-  //const unsigned long NAVIGATE_POLE   = BUTTON_YELLOW;
+  const unsigned long TOOL_SCALE      = BUTTON_GREEN;
+  const unsigned long NAVIGATE_NO_NAV = 0x00000040;
 };
 
 
@@ -461,7 +461,7 @@ void Application::_init()
 
   // Turn on navigation.
   //this->_setNavigator(); // This breaks time-based navigation. TODO, fix.
-  this->_handleNavigationCycleEvent( NAVIGATE_NO_NAV );   // activate default navigation
+  this->_handleNavigationEvent( NAVIGATE_NO_NAV );   // activate default navigation
                                                           // TODO: read from _pref
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
@@ -998,7 +998,13 @@ void Application::_processButtons()
   if ( this->_handleIntersectionEvent() )
     return;
 
-  if ( this->_handleNavigationCycleEvent() )
+  if ( this->_handleNavigationEvent() )
+    return;
+
+  if ( this->_handleToolEvent() )
+    return;
+
+  if ( this->_handleCancelEvent() )
     return;
 }
 
@@ -1093,15 +1099,15 @@ bool Application::_handleIntersectionEvent()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process the button states and apply to the Navigation Cycle.
+//  Process the button states and apply to Navigation mode selection.
 //  Returns true if the event was handled.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest )
+bool Application::_handleNavigationEvent( const unsigned long eventRequest )
 {
-  MenuKit::Message cycle_message = MenuKit::MESSAGE_SELECTED; // simulate message/item from MenuKit
-  MenuKit::Item *cycle_item (0x0);                            // NULL b/c it never needed
+  MenuKit::Message nav_message = MenuKit::MESSAGE_SELECTED;   // simulate message/item from MenuKit
+  MenuKit::Item *nav_item (0x0);                              // NULL b/c it's never needed
   const unsigned long walkID = 1084438120u;                   // comes from AppCallback.cpp
   bool handled;
 
@@ -1123,15 +1129,15 @@ bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest 
         _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
         _navigatorV = 0x0;                                    // invalidate response to vertical joystick
         // Set navigation mode using 'simulated' call from menu
-        this->_poleNav ( cycle_message, cycle_item );         // activate navigation (POLE)
+        this->_poleNav ( nav_message, nav_item );             // activate navigation (POLE)
         handled = true;                                       // button event has been handled
       }
-      else                                                // if anything else, set navigation to WALK
+      else                                                    // if anything else, set navigation to WALK
       {
         std::cout << "WALK" << std::endl;
         _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
         _navigatorV = 0x0;                                    // invalidate response to vertical joystick
-        this->_hvTransGlobalXZ ( cycle_message, cycle_item ); // activate navigation (WALK)
+        this->_hvTransGlobalXZ ( nav_message, nav_item );     // activate navigation (WALK)
         handled = true;                                       // button event has been handled
       }
       break;
@@ -1142,27 +1148,11 @@ bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest 
       _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
       _navigatorV = 0x0;                                      // invalidate response to vertical joystick
       // set (or reset) navigation mode.  Simulated a call from the menu.
-      this->_hvTransWandXZ ( cycle_message, cycle_item );     // activate navigation (FLY)
+      this->_hvTransWandXZ ( nav_message, nav_item );         // activate navigation (FLY)
       handled = true;                                         // button event has been handled
       break;
 
-    //case NAVIGATE_WALK :                                      // BUTTON_GREEN (WALK on the GREEN grass)
-    //  std::cout << "WALK" << std::endl;
-    //  _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-    //  _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-    //  this->_hvTransGlobalXZ ( cycle_message, cycle_item );   // activate navigation (WALK)
-    //  handled = true;                                         // button event has been handled
-    //  break;
-
-    //case NAVIGATE_POLE :                                      // BUTTON_YELLOW
-    //  std::cout << "POLE" << std::endl;
-    //  _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-    //  _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-    //  this->_poleNav ( cycle_message, cycle_item );           // activate navigation (POLE)
-    //  handled = true;                                         // button event has been handled
-    //  break;
-
-    case NAVIGATE_NO_NAV :                                    // BUTTON_RED (RED means stop (NO_NAV) )
+    case NAVIGATE_NO_NAV :                                    // possibly called from _init()
       std::cout << "STOP NAVIGATION" << std::endl;
       _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
       _navigatorV = 0x0;                                      // invalidate response to vertical joystick
@@ -1174,6 +1164,56 @@ bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest 
   };
 
   return handled;  // if false, button event was not handled (doesn't effect navigation)
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to Tool selection.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleToolEvent()
+{
+  MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
+  MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
+  bool handled(false);
+
+  if ( _buttons->released() == TOOL_SCALE )                   // BUTTON_GREEN
+  {
+    std::cout << "SCALE" << std::endl;
+    //_sceneTool=0x0;                                         // invalidate scale tool to prevent toggling off
+    this->_vScaleWorld ( tool_message, tool_item );           // if previous line commented, toggle scale; if not, activate scale
+    handled = true;                                           // button event has been handled
+  }
+
+  return handled;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to cancelation or tools and navigation.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleCancelEvent()
+{
+  //MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
+  //MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
+  bool handled(false);
+
+  if ( _buttons->released() == STOP_NAV_TOOL )                // BUTTON_RED
+  {
+    std::cout << "STOP NAVIGATION/TOOLS" << std::endl;
+    _navigatorH = 0x0;                                        // invalidate response to horizontal joystick
+    _navigatorV = 0x0;                                        // invalidate response to vertical joystick
+    _sceneTool  = 0x0;                                        // invalidate scale tool to prevent toggling off
+    handled = true;                                           // button event has been handled
+  }
+
+  return handled;
 }
 
 

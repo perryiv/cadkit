@@ -58,6 +58,8 @@ class pfDCS;
 class pfGroup;
 class pfNode;
 class pfObject;
+class pfGeoSet;
+class pfGeoState;
 
 
 namespace CadKit
@@ -93,7 +95,7 @@ protected:
     pfGroup *getGroup() { return _group; }
     SlMaterialf &getMaterial() { return _material; }
     void setGroup ( pfGroup *group ) { _group = group; }
-    void setMaterial ( const SlMaterial &material ) { _material = material; }
+    void setMaterial ( const SlMaterialf &material ) { _material = material; }
   protected:
     pfGroup *_group;
     SlMaterialf _material;
@@ -104,16 +106,15 @@ protected:
   std::string _error;
   GroupStack _groupStack;
 
-  //bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
-  //bool                    _addColor      ( const unsigned int &valid, const unsigned int &which, const SlVec4f &color, const char *colorName, DbXmlGroup &material );
   //bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
-  //bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, DbXmlGroup &lods );
-  //bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part );
+  bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, Group &part );
+  bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, Group &part );
   bool                    _addName       ( DbJtTraverser::EntityHandle entity, pfNode &node );
-  //bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
-  //bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
-  //bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, const std::string &name, DbXmlGroup &shape );
-  //bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbXmlGroup &lod );
+  bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, Group &group );
+  bool                    _addMaterial   ( const Group &part, pfGeoState &state );
+  bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
+  bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, pfGeoSet &gset );
+  bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const Group &part, pfGroup &group );
   bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, pfDCS &group );
   bool                    _assemblyStart ( DbJtTraverser::EntityHandle entity );
 

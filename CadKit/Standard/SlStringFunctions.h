@@ -324,7 +324,7 @@ inline int vsnwprintf2 ( wchar_t *buffer, size_t count, const wchar_t *format, v
 
   // Copy to the given wchat_t buffer.
   size_t i;
-  for ( size_t i = 0; i < wsize; ++i )
+  for ( i = 0; i < wsize; ++i )
     buffer[i] = wbuffer[i];
   buffer[i] = L'\0';
 

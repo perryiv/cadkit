@@ -564,13 +564,13 @@ bool TrJt2Xml::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a LOD group (holding shapes) to the group of LODs.
+//  Add a LOD group (holding shapes) to the part.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity, 
                          const unsigned int &whichLOD, 
-                         DbXmlGroup &lods )
+                         DbXmlGroup &part )
 {
   SL_PRINT4 ( "In TrJt2Xml::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
 
@@ -598,7 +598,7 @@ bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity,
   if ( lod->getNumChildren() > 0 )
   {
     // Add the LOD to the group of LODs.
-    lods.addChild ( lod );
+    part.addChild ( lod );
     
     // It worked.
     return true;
@@ -653,7 +653,7 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
   default:
     SL_ASSERT ( 0 ); // Heads up.
     _jtTraverser->getName ( entity, name );
-    CadKit::format ( _error, "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
+    CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, name.c_str(), whichLOD, whichShape );
     return false;
   }
 

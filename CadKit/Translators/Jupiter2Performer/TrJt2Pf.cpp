@@ -55,6 +55,7 @@
 # include "Standard/SlPathname.h"
 # include "Standard/SlBitmask.h"
 # include "Performer/pf/pfDCS.h"
+# include "Performer/pf/pfLOD.h"
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 #endif
@@ -263,7 +264,7 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
   case DbJtTraverser::INSTANCE:
 
     // Add the instance to the XML tree.
-    return this->_addInstance ( entity );
+    //return this->_addInstance ( entity );
 
   default:
 
@@ -329,89 +330,35 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
   return true;
 }
 
-/*
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the material, if there is one.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, pfGroup &group )
+bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group )
 {
   SL_PRINT3 ( "In TrJt2Pf::_addMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
-  // Query the material, there may not be one.
-  SlVec4f ambient, diffuse, specular, emissive;
-  float shininess;
-  unsigned int valid ( 0 );
-  if ( false == _jtTraverser->getMaterial ( entity, ambient, diffuse, specular, emissive, shininess, valid ) )
-    return false;
-
-  // Make a group for the material.
-  pfGroup::Ptr material = (use pfMalloc) pfGroup ( "material" );
-  if ( material.isNull() )
-    return false;
-
-  // Add the colors.
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_AMBIENT,  ambient, "ambient",  *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_DIFFUSE,  ambient, "diffuse",  *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_SPECULAR, ambient, "specular", *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_EMISSIVE, ambient, "emissive", *material );
-
-  // Add the shininess.
-  if ( CadKit::hasBits ( valid, DbJtTraverser::MATERIAL_COLOR_SHININESS ) )
+  // Get the material, if there is one.
+  SlMaterialf material;
+  if ( _jtTraverser->getMaterial ( entity, material ) )
   {
-    // Add a leaf for the shininess.
-    SlAString tempString;
-    tempString.format ( "%f", shininess );
-    material->addChild ( new DbXmlLeaf ( "shininess", tempString.c_str() ) );
+    // Jupiter assemblies and parts can contain materials. 
+    // However, there is no corresponding association in Performer. 
+    // Only pfGeoSets, through their pfGeoStates, can have materials. 
+    // And pfGeoSets are collections of primitives (i.e., eaiShapes). 
+    // So, we save the material along side of the group that represents
+    // the assembly, part, or instance.
+    group.setMaterial ( material );
   }
 
-  // If we added any children...
-  if ( material->getNumChildren() > 0 )
-  {
-    // Add the material to the group.
-    group.addChild ( material );
-
-    // It worked.
-    return true;
-  }
-
-  // It didn't work.
-  return false;
+  // It worked.
+  return true;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the material color, if it is valid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TrJt2Pf::_addColor ( const unsigned int &valid, 
-                           const unsigned int &which, 
-                           const SlVec4f &color, 
-                           const char *colorName, 
-                           pfGroup &material )
-{
-  SL_PRINT5 ( "In TrJt2Pf::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
-  SL_ASSERT ( colorName );
-
-  // See if the color is valid.
-  if ( CadKit::hasBits ( valid, which ) )
-  {
-    // Add a leaf for the color.
-    SlAString tempString;
-    tempString.format ( "%f %f %f %f", color[0], color[1], color[2], color[3] );
-    material.addChild ( new DbXmlLeaf ( colorName, tempString.c_str() ) );
-    return true;
-  }
-
-  // No color added.
-  return false;
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -437,26 +384,10 @@ bool TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group 
   // Add some properties to the group.
   this->_addName      ( entity, *dcs );
   this->_addTransform ( entity, *dcs );
+  this->_addMaterial  ( entity, group );
 
-  // Get the material, if there is one.
-  SlMaterialf material;
-  if ( _jtTraverser->getMaterial ( entity, material ) )
-  {
-    // Jupiter assemblies can contain materials. However, there is no 
-    // corresponding association in Performer. Only pfGeoSets, through 
-    // their pfGeoStates, can have materials. And pfGeoSets are collections
-    // of primitives (i.e., eaiShapes). So, we save the material along 
-    // side of the group that represents the assembly.
-HERE
-Need to rethink the performer structure.
-  }
-
-
-
-  //this->_addMaterial  ( entity, *group );
-
-  // Return the new group.
-  return group;
+  // It worked.
+  return true;
 }
 
 
@@ -471,12 +402,12 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   SL_PRINT3 ( "In TrJt2Pf::_assemblyStart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new assembly.
-  SlRefPtr<pfGroup> assembly = this->_createGroup ( entity );
-  if ( assembly.isNull() )
+  Group assembly;
+  if ( false == this->_createGroup ( entity, assembly ) )
     return false;
 
-  // Add the new assembly to the tree.
-  _groupStack.back().getGroup()->addChild ( assembly );
+  // Add the new assembly group to the Performer scene.
+  _groupStack.back().getGroup()->addChild ( assembly.getGroup() );
 
   // Make the new assembly the current one.
   _groupStack.push_back ( assembly );
@@ -485,7 +416,7 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   return true;
 }
 
-/*
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the part.
@@ -497,15 +428,15 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   SL_PRINT3 ( "In TrJt2Pf::_addPart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new group for the part.
-  pfGroup::Ptr part = this->_createGroup ( "part", entity );
-  if ( part.isNull() )
+  Group part;
+  if ( false == this->_createGroup ( entity, part ) )
     return false;
 
   // Add the LOD groups.
-  this->_addLODs ( entity, *part );
+  this->_addLODs ( entity, part );
 
   // Add the new part to the tree.
-  _groupStack.back()->addChild ( part );
+  _groupStack.back().getGroup()->addChild ( part.getGroup() );
 
   // It worked.
   return true;
@@ -515,15 +446,15 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the LOD groups. A Level-of-Detail (LOD) is a group, and each part 
-//  has a group of LODs.
+//  has one or more LODs.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, pfGroup &part )
+bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &part )
 {
   SL_PRINT3 ( "In TrJt2Pf::_addLODs(), this = %X, entity = %X\n", this, entity );
 
-  // Get the number of shape LODs.
+  // Get the number of LODs.
   unsigned int numLODs ( 0 );
   if ( false == _jtTraverser->getNumLODs ( entity, numLODs ) )
     return false;
@@ -531,42 +462,27 @@ bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, pfGroup &part )
   // Should be true.
   SL_ASSERT ( numLODs > 0 );
 
-  // Make a new group for the LODs.
-  pfGroup::Ptr lods = new pfGroup ( "lods" );
-  if ( lods.isNull() )
-    return false;
-
   // Loop through the LODs.
   for ( unsigned int i = 0; i < numLODs; ++i )
   {
     // Add the LOD.
-    this->_addLOD ( entity, i, *lods );
+    this->_addLOD ( entity, i, part );
   }
 
-  // If we added any children...
-  if ( lods->getNumChildren() > 0 )
-  {
-    // Add the LODs group to the part group.
-    part.addChild ( lods );
-
-    // It worked.
-    return true;
-  }
-
-  // It didn't work.
-  return false;
+  // It worked.
+  return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a LOD group (holding shapes) to the group of LODs.
+//  Add the LOD group (holding shapes) to the part.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity, 
-                         const unsigned int &whichLOD, 
-                         pfGroup &lods )
+                        const unsigned int &whichLOD, 
+                        TrJt2Pf::Group &part )
 {
   SL_PRINT4 ( "In TrJt2Pf::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
 
@@ -578,8 +494,8 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   // Should be true.
   SL_ASSERT ( numShapes > 0 );
 
-  // Make a new group for the LOD.
-  pfGroup::Ptr lod = new pfGroup ( "lod" ); // Notice it's not "lods".
+  // Make a new pfLOD.
+  SlRefPtr<pfLOD> lod = new pfLOD;
   if ( lod.isNull() )
     return false;
 
@@ -587,14 +503,14 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   for ( unsigned int i = 0; i < numShapes; ++i )
   {
     // Add the shape.
-    this->_addShape ( entity, whichLOD, i, *lod );
+    this->_addShape ( entity, whichLOD, i, part, *lod );
   }
 
   // If we added any children...
   if ( lod->getNumChildren() > 0 )
   {
-    // Add the LOD to the group of LODs.
-    lods.addChild ( lod );
+    // Add the LOD to the part.
+    part.getGroup()->addChild ( lod );
     
     // It worked.
     return true;
@@ -612,9 +528,10 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity, 
-                           const unsigned int &whichLOD, 
-                           const unsigned int &whichShape, 
-                           pfGroup &lod )
+                          const unsigned int &whichLOD, 
+                          const unsigned int &whichShape, 
+                          const TrJt2Pf::Group &part,
+                          pfGroup &group )
 {
   SL_PRINT5 ( "In TrJt2Pf::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 
@@ -626,10 +543,23 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // Should be true.
   SL_ASSERT ( numSets > 0 );
 
-  // Make a new group for the shape.
-  pfGroup::Ptr shape = new pfGroup ( "shape" );
-  if ( shape.isNull() )
+  // Make a new GeoSet for the shape.
+  SlRefPtr<pfGeoSet> gset = new pfGeoSet;
+  if ( gset.isNull() )
     return false;
+
+  // Set the GeoSet's number of primitives.
+  gset->setNumPrims ( numSets );
+
+  // Make a GeoState to hold this GeoSet's state.
+  SlRefPtr<pfGeoState> state = new pfGeoState;
+
+  // Look for (and add) the material. It could either belong to the part
+  // or to one of its parent assemblies.
+  this->_addMaterial ( part, *state );
+
+  // TODO. Make this work.
+  //this->_addTexture ( part, state );
 
   // Determine the type of shape. Note: we don't want the given entity's type 
   // (it's most likely a part), we want the type of its shape.
@@ -637,19 +567,17 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   if ( false == _jtTraverser->getShapeType ( entity, whichLOD, whichShape, type ) )
     return false;
 
-  // Determine a proper name for the set.
-  std::string name;
+  // Set the GeoSet's primitive type.
   switch ( type )
   {
-  case DbJtTraverser::LINE_STRIP_SET: name = "line_strip"; break;
-  case DbJtTraverser::POINT_SET:      name = "point_set";  break;
-  case DbJtTraverser::POLYGON_SET:    name = "polygon";    break;
-  case DbJtTraverser::TRI_FAN_SET:    name = "tri_fan";    break;
-  case DbJtTraverser::TRI_STRIP_SET:  name = "tri_strip";  break;
+  case DbJtTraverser::LINE_STRIP_SET: gset->setPrimType ( PFGS_LINESTRIPS ); break;
+  case DbJtTraverser::POINT_SET:      gset->setPrimType ( PFGS_POINTS );     break;
+  case DbJtTraverser::POLYGON_SET:    gset->setPrimType ( PFGS_POLYS );      break;
+  case DbJtTraverser::TRI_FAN_SET:    gset->setPrimType ( PFGS_TRIFANS );    break;
+  case DbJtTraverser::TRI_STRIP_SET:  gset->setPrimType ( PFGS_TRISTRIPS );  break;
   default:
     SL_ASSERT ( 0 ); // Heads up.
-    _jtTraverser->getName ( entity, name );
-    CadKit::format ( _error, "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
+    CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, _jtTraverser->getName ( entity ).c_str(), whichLOD, whichShape );
     return false;
   }
 
@@ -657,20 +585,22 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   for ( unsigned int i = 0; i < numSets; ++i )
   {
     // Add the shape.
-    this->_addSet ( entity, whichLOD, whichShape, i, name, *shape );
+    this->_addSet ( entity, whichLOD, whichShape, i, *gset );
   }
 
-  // If we added any children...
-  if ( shape->getNumChildren() > 0 )
-  {
-    // Add the shape to the lod.
-    lod.addChild ( shape );
-    return true;
-  }
+  SL_ASSERT ( 0 ); // TODO, Need to call pfGeoSet::setPrimLengths().
 
-  // It didn't work.
-  return false;
+  // Add the GeoSet to the group.
+  group.addChild ( gset );
+
+  // It work ed.
+  return true;
 }
+
+
+TODO
+1. Call pfGeoSet::setPrimLengths() above.
+2. Have to make one big array to pass to pfGeoSet::setAttr(), not many small ones like you are now. Use the same vector over and over and just append to the end of it.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -680,14 +610,12 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity, 
-                         const unsigned int &whichLOD, 
-                         const unsigned int &whichShape, 
-                         const unsigned int &whichSet, 
-                         const std::string &name,
-                         pfGroup &shape )
+                        const unsigned int &whichLOD, 
+                        const unsigned int &whichShape, 
+                        const unsigned int &whichSet, 
+                        pfGeoSet &gset )
 {
   SL_PRINT5 ( "In TrJt2Pf::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
-  SL_ASSERT ( false == name.empty() );
 
   // Get the shape.
   std::vector<float> vertices, normals, colors, texture;
@@ -695,95 +623,25 @@ bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity,
   if ( false == _jtTraverser->getShape ( entity, whichLOD, whichShape, whichSet, vertices, normals, colors, texture, valid ) )
     return false;
 
-  // Make a group for the set.
-  pfGroup::Ptr set = new pfGroup ( name.c_str() );
-  if ( set.isNull() )
-    return false;
+  // Add the vertices.
+  if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
+    gset->setAttr ( PFGS_COORD3, PFGS_PER_VERTEX, this->_getVec3Array ( vertices ), NULL );
 
+  // Add the normals.
+  if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
+    gset->setAttr ( PFGS_NORMAL3, PFGS_PER_VERTEX, this->_getVec3Array ( normals ), NULL );
+
+  // TODO.
   // Add the colors.
-  this->_addArray ( valid, DbJtTraverser::SHAPE_ARRAY_VERTICES, vertices, "vertices", *set );
-  this->_addArray ( valid, DbJtTraverser::SHAPE_ARRAY_NORMALS,  normals,  "normals",  *set );
-  this->_addArray ( valid, DbJtTraverser::SHAPE_ARRAY_COLORS,   colors,   "colors",   *set );
-  this->_addArray ( valid, DbJtTraverser::SHAPE_ARRAY_TEXTURE,  texture,  "texture",  *set );
+  //if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_COLORS ) )
+  //  gset->setAttr ( PFGS_COLOR4, PFGS_PER_VERTEX, this->_getVec4Array ( colors ), NULL );
 
-  // If we added any children...
-  if ( set->getNumChildren() > 0 )
-  {
-    // Add the set to the shape.
-    shape.addChild ( set );
+  // Add the texture coordinates.
+  //if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
+  //  gset->setAttr ( PFGS_TEXCOORD2, PFGS_PER_VERTEX, this->_getVec2Array ( texture ), NULL );
 
-    // It worked.
-    return true;
-  }
-
-  // It didn't work.
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the array (if the flag says to).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TrJt2Pf::_addArray ( const unsigned int &valid, 
-                          const unsigned int &which, 
-                          const std::vector<float> &array, 
-                          const char *arrayName, 
-                          pfGroup &set )
-{
-  SL_PRINT6 ( "In TrJt2Pf::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
-  SL_ASSERT ( arrayName );
-
-  // See if the array is valid.
-  if ( CadKit::hasBits ( valid, which ) )
-  {
-    // Should be true.
-    SL_ASSERT ( false == array.empty() );
-
-    // Copy the array to the string.
-    SlAString tempString;
-    this->_setArrayString ( array, tempString );
-
-    // Add a leaf for the array.
-    set.addChild ( new DbXmlLeaf ( arrayName, tempString.c_str() ) );
-  }
-
-  // If we get to here then we did our job.
+  // It worked.
   return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the string to hold the given array.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TrJt2Pf::_setArrayString ( const std::vector<float> &array, SlAString &s )
-{
-  SL_PRINT3 ( "In TrJt2Pf::_setArrayString(), this = %X, array.size() = %d\n", this, array.size() );
-  SL_ASSERT ( false == array.empty() );
-
-  // Make sure it's empty.
-  s.clear();
-
-  // Loop through the array (except the last one) and append to the string.
-  SlAString temp;
-  unsigned int stop ( array.size() - 1 );
-  for ( unsigned int i = 0; i < stop; ++i )
-  {
-    // Format the temporary string.
-    temp.format ( "%f ", array[i] );
-
-    // Append it to the "array string".
-    s.append ( temp );
-  }
-
-  // Now append the last element (the format is slightly different).
-  temp.format ( "%f", array[i] );
-  s.append ( temp );
 }
 
 
@@ -792,7 +650,7 @@ void TrJt2Pf::_setArrayString ( const std::vector<float> &array, SlAString &s )
 //  Add the instance.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 {
   SL_PRINT3 ( "In TrJt2Pf::_addInstance(), this = %X, entity = %X\n", this, entity );

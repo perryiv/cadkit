@@ -1,24 +1,34 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/OSG/VisualThemeSkin.h"  // for skin
+#include "MenuKit/OSG/ThemeSkinTile.h"    // for tile
+#include "MenuKit/OSG/TileMason.h"        // for mason
 
 #include "MenuKit/StreamVisitor.h"
-#include <iostream>
-
-#include "MenuKit/TileMason.h"
 
 #include "osgProducer/Viewer"
 #include "osgUtil/Optimizer"
+#include "osgDB/FileUtils"
 
 // prototypes
 MenuKit::Menu* create_menu();
 
 int main(unsigned int argc, char* argv[])
 {
-  MenuKit::Menu::Ptr menu = create_menu();
+  // load font for skin
+  std::string fontfile("");
+  if( argc > 1 && osgDB::fileExists(argv[1]) )
+    fontfile = argv[1];
+  else
+    fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\dirtydoz.ttf";
 
-  MenuKit::StreamVisitor::Ptr streamer = new MenuKit::StreamVisitor(std::cout);
-  menu->accept( *streamer );
+  osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
+
+  // make a skin
+  MenuKit::OSG::VisualThemeSkin::Ptr skin = new MenuKit::OSG::VisualThemeSkin();
+  if( font.valid() )
+    skin->font( font.get() );
 
   // make some color schemes
   osg::Vec4 white(1.0,1.0,1.0,1.0);
@@ -29,42 +39,37 @@ int main(unsigned int argc, char* argv[])
   osg::Vec4 blue(0.0,0.0,1.0,1.0);
   osg::Vec4 lightblue(0.5,0.5,1.0,1.0);
 
-  // highlight theme
-  MenuKit::OSG::osgColorTheme hil;
-  hil.text(black);
-  hil.middle(lightblue);
-  hil.back(lightblue);
-  hil.border(blue);
-  hil.special_back(lightblue);
-  hil.special(blue);
+  MenuKit::OSG::osg_color_theme ct;
+  MenuKit::OSG::osg_color_map norm=ct.get_map();
+  MenuKit::OSG::osg_color_map hi=ct.get_map();
+  hi["background"] = lightblue;
+  MenuKit::OSG::osg_color_map dis=ct.get_map();
+  dis["text"] = darkgrey;
 
-  // normal theme
-  MenuKit::OSG::osgColorTheme nor;
-  nor.text(black);
-  nor.middle(darkgrey);
-  nor.back(lightgrey);
-  nor.border(lightgrey);
-  nor.special_back(lightblue);
-  nor.special(blue);
+  // give the themes to the tile
+  typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
+  DMTMAP dmtmap;
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
 
-  // disabled theme
-  MenuKit::OSG::osgColorTheme dis(darkgrey,darkgrey,lightgrey,lightgrey,blue,lightblue);
+  // make a tile
+  MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
+  tile->theme_map( dmtmap );
+  tile->skin( skin.get() );
 
-  // make a tile mason
-  MenuKit::OSG::osgTileMason::Ptr mason = new MenuKit::OSG::osgTileMason();
+  // produce the menu
+  MenuKit::Menu::Ptr menu = create_menu();
 
-  // give the schemes to the tile
-  mason->tile().disabled( dis );
-  mason->tile().normal( nor );
-  mason->tile().highlight( hil );
+  // output menu to stream
+  MenuKit::StreamVisitor::Ptr streamer = new MenuKit::StreamVisitor(std::cout);
+  menu->accept( *streamer );
 
-  // load a nice font
-  //osgText::Font* font = osgText::readFontFile("arial.ttf" );
+  // make a mason
+  MenuKit::OSG::osgMason::Ptr mason = new MenuKit::OSG::osgMason();
+  mason->tile( tile.get() );
 
-  // give the font to the skin
-  //mason->tile().skin().font( font );
-
-  // produce the menu scene
+  // create the scene representing the menu
   menu->accept( *mason );
   osg::ref_ptr<osg::Node> scene = mason->scene();
 
@@ -102,10 +107,10 @@ int main(unsigned int argc, char* argv[])
 MenuKit::Menu* create_menu()
 {
   // creation
-  MenuKit::Menu* main = new MenuKit::Menu;
-  main->layout( MenuKit::Menu::HORIZONTAL );
-  main->text( "" );
-  main->expanded( true );
+  MenuKit::Menu* top = new MenuKit::Menu;
+  top->layout( MenuKit::Menu::HORIZONTAL );
+  top->text( "" );
+  top->expanded( true );
 
   MenuKit::Menu::Ptr file = new MenuKit::Menu();
   file->layout( MenuKit::Menu::VERTICAL );
@@ -155,13 +160,14 @@ MenuKit::Menu* create_menu()
 
   MenuKit::Button::Ptr xyz = new MenuKit::Button();
   xyz->text( "XYZ" );
-  xyz->checked( true );
+  xyz->checked( false );
   xyz->marked( true );
   xyz->toggle( true );
 
   MenuKit::Button::Ptr rotate = new MenuKit::Button();
   rotate->text( "Rotate" );
   rotate->toggle( true );
+  rotate->checked( true );
 
   MenuKit::Button::Ptr free = new MenuKit::Button();
   free->text( "Free" );
@@ -172,10 +178,10 @@ MenuKit::Menu* create_menu()
   scale->toggle( true );
 
   // organize
-  main->append( file.get() );
-  main->append( edit.get() );
-  main->append( tools.get() );
-  main->append( help.get() );
+  top->append( file.get() );
+  top->append( edit.get() );
+  top->append( tools.get() );
+  top->append( help.get() );
 
   file->append( open.get() );
   file->append( exit.get() );
@@ -194,5 +200,5 @@ MenuKit::Menu* create_menu()
   move->append( free.get() );
   move->append( scale.get() );
 
-  return( main );
+  return( top );
 }

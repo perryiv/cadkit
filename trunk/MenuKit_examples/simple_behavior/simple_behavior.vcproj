@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)/OSG&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producerd.lib osgTextd.lib osgd.lib osgGAd.lib osgProducerd.lib MenuKitd.lib"
+				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib osgDB.lib MenuKit.lib"
 				OutputFile="$(OutDir)/simple_behavior.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)/OSG&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib MenuKit.lib"
+				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib osgDB.lib MenuKit.lib"
 				OutputFile="$(OutDir)/simple_behavior.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
@@ -120,9 +120,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
-			<File
-				RelativePath=".\create.h">
-			</File>
 			<File
 				RelativePath=".\GraphStreamVisitor.h">
 			</File>

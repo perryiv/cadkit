@@ -37,30 +37,80 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SgApi.h: Defines what SG_API means.
+//  DbJtTargets: Proxy class. This class serves as the implementation of
+//  all known "terget" interfaces and simply tries to delegate to all of 
+//  its clients.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
-#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#ifndef _CADKIT_DATABASE_JUPITER_LIBRARY_DATABASE_H_
+#define _CADKIT_DATABASE_JUPITER_LIBRARY_DATABASE_H_
+
+#include "DbJtApi.h"
+
+#include "Interfaces/IInterfaceGroup.h"
+
+#include "Standard/SlRefBase.h"
+#include "Standard/SlRefPtr.h"
+#include "Standard/SlBitmask.h"
+
+#include <vector>
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Here we define what SG_API means.
-//
-///////////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+class DB_JT_API DbJtTargets : public SlRefBase, 
+                              public IInterfaceGroup
+{
+public:
 
-#ifdef _WIN32
-# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY
-#   define SG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
-# else
-#   define SG_API __declspec(dllimport) // The classes will be imported into the client's code.
-# endif
-#else // _WIN32
-# define SG_API
-#endif
+  DbJtTargets();
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IUnknown interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+  // Get the reference count.
+  virtual unsigned long   getRefCount() const;
+
+  // See if the interface is supported.
+  virtual IUnknown *      queryInterface ( const unsigned long &iid );
+
+  // Reference/unreference this instance.
+  virtual void            ref();
+  virtual void            unref();
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IInterfaceGroup interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Add the interface.
+  virtual void            addInterface ( IUnknown *unknown );
+
+  // Get the number of unknowns.
+  virtual unsigned int    getNumInterfaces() const;
+
+  // Remove the interface. Returns the number of occurances removed.
+  virtual unsigned int    removeInterface ( IUnknown *unknown );
+
+  // Remove all interfaces.
+  virtual void            removeAllInterfaces();
+
+protected:
+
+  typedef std::vector<SlRefPtr<IUnknown> > Interfaces;
+  std::auto_ptr<Interfaces> _interfaces;
+
+  virtual ~DbJtTargets();
+
+  SL_DECLARE_REFCOUNT_TYPE ( DbJtTargets );
+  SL_DECLARE_DYNAMIC_CLASS ( DbJtTargets, 1032637889 );
+};
+
+}; // namespace CadKit
+
+#endif // _CADKIT_DATABASE_JUPITER_LIBRARY_DATABASE_H_

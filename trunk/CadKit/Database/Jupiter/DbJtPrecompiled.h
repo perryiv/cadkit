@@ -54,8 +54,12 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlClientHeaders.h"
+# include "DbJtVisApiHeaders.h"
 # include <iostream>
+# include <vector>
+# include <list>
+# include <algorithm> // For std::transform
+# include <math.h>
 #endif
 
 #endif // _CADKIT_DATABASE_JUPITER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

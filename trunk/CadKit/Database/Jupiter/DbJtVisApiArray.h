@@ -45,9 +45,10 @@
 #ifndef _CADKIT_DATABASE_JUPITER_LIBRARY_INTERNAL_VIS_API_ARRAY_CLASS_H_
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_INTERNAL_VIS_API_ARRAY_CLASS_H_
 
+#include "Standard/SlAssert.h"
+#include "Standard/SlPrint.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlAssert.h"
-# include "Standard/SlPrint.h"
 # ifdef _WIN32
 #  ifdef _DEBUG
 #   include <string>
@@ -106,7 +107,7 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
       if ( false == path.empty() )
       {
         // Make the full path.
-        path += "\\lib\\Windows\\DMDataTk40.dll";
+        path += "\\lib\\Windows\\DMDataTk40.dll"; // TODO, what about version 5.0 ?
 
         // Lose any double-slashes from the append above.
         //path.replace ( "\\\\", "\\" );

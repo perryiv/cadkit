@@ -122,7 +122,7 @@ template
   class IndexSequence
 > 
 void findAdjacent ( const AdjacentTest &adjacentTest, 
-                    const Updater &updater,
+                    Updater &updater,
                     const Sorter &sorter,
                     const VertexSequence &vertices, 
                     unsigned int selectedPolygon,
@@ -187,6 +187,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     }
   }
 
+  updater.statusMessage ( "Sorting..." );
   indices.sort ( sorter );
 
   // Put the first polygon in the list of keepers.
@@ -211,9 +212,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
 
     // Go to the next keeper.
     ++keeperItr;
-    double percent = (double) ( keepers.size() * numVertsPerPoly ) / vertices.size();
-    updater.update ( percent );
-    updater.setStatus( keepers.size() );
+    updater ( keepers );
   }
 }
 

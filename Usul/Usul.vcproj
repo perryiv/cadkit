@@ -781,6 +781,12 @@
 				<File
 					RelativePath=".\File\Stats.h">
 				</File>
+				<File
+					RelativePath=".\File\Temp.cpp">
+				</File>
+				<File
+					RelativePath=".\File\Temp.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Scope"

@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="TranslateJupiter2Xml" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="TranslateJt2Xml" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=TranslateJupiter2Xml - Win32 Debug
+CFG=TranslateJt2Xml - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "TranslateJupiter2Xml.mak".
+!MESSAGE NMAKE /f "TranslateJt2Xml.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "TranslateJupiter2Xml.mak" CFG="TranslateJupiter2Xml - Win32 Debug"
+!MESSAGE NMAKE /f "TranslateJt2Xml.mak" CFG="TranslateJt2Xml - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "TranslateJupiter2Xml - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "TranslateJupiter2Xml - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "TranslateJt2Xml - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "TranslateJt2Xml - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "TranslateJupiter2Xml - Win32 Release"
+!IF  "$(CFG)" == "TranslateJt2Xml - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -56,7 +56,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 # ADD LINK32 DMDataTk40.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"../../bin/CkTrJt2Xml.dll" /libpath:"$(DMDTK_DEV_PATH)/lib/Windows"
 
-!ELSEIF  "$(CFG)" == "TranslateJupiter2Xml - Win32 Debug"
+!ELSEIF  "$(CFG)" == "TranslateJt2Xml - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -87,8 +87,8 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "TranslateJupiter2Xml - Win32 Release"
-# Name "TranslateJupiter2Xml - Win32 Debug"
+# Name "TranslateJt2Xml - Win32 Release"
+# Name "TranslateJt2Xml - Win32 Debug"
 # Begin Group "Precompile"
 
 # PROP Default_Filter ""

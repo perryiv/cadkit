@@ -153,6 +153,22 @@ void Menu::accept ( Visitor &v )
 
 void Menu::traverse ( Visitor &v )
 {
-  for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
-    (*iter)->accept ( v );
+  switch( v.mode() )
+  {
+  case Visitor::NONE: {} break;
+  case Visitor::ALL:
+    {
+      for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
+        (*iter)->accept ( v );
+    } break;
+  case Visitor::EXPANDED:
+  default:
+    {
+      if( this->expanded() )
+      {
+        for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
+          (*iter)->accept ( v );
+      }
+    } break;
+  }
 }

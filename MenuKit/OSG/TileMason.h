@@ -56,10 +56,10 @@ namespace MenuKit
       // TODO: and the Menu and Button classes have been removed
       osg::Vec3 displacement(const Menu& item);
       osg::Vec3 displacement(const Button& item);
-      void determine_push(const Menu& parent,const Menu& item);
-      void determine_push(const Menu& parent,const Button& item);
-      void pop_children(const Menu& menu);
-      void determine_pop(const Menu& menu);
+      void determine_push(const Menu* parent,const Menu& menu,const Detail::Box& box);
+      void push(const Menu* parent, const Detail::Box& box);
+      void pop(const Menu& menu);
+      void determine_pop(const Menu* parent, const Menu& menu);
 
     private:
       TileType _tile;
@@ -78,49 +78,64 @@ using namespace MenuKit;
 using namespace OSG;
 
 template<class TileType>
-void TileMason<TileType>::determine_push(const Menu& parent, const Menu& item)
+void TileMason<TileType>::determine_push(const Menu* parent,
+                                         const Menu& menu,
+                                         const Detail::Box& box)
 {
-  osg::Vec3 del = displacement( item );
-  if( parent.layout() == Menu::HORIZONTAL )
-    _hori.push( del[0] );
+  if( !parent )
+    return;
 
-  else
-    _vert.push( del[1] );
-}
-
-template<class TileType>
-void TileMason<TileType>::determine_push(const Menu& parent, const Button& item)
-{
-  osg::Vec3 del = displacement( item );
-  if( parent.layout() == Menu::HORIZONTAL )
-    _hori.push( del[0] );
-
-  else
-    _vert.push( del[1] );
-}
-
-template<class TileType>
-void TileMason<TileType>::pop_children(const Menu& parent)
-{
-  Menu::Layout lo = parent.layout();
-  // clear the stack spots for children of the menu
-  for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
+  if( parent->layout() == Menu::HORIZONTAL )
   {
-    if(lo == Menu::HORIZONTAL)
-      _hori.pop();
+    if( menu.layout() == Menu::VERTICAL )
+      _vert.push( box.height() );
     else
-      _vert.pop();
+      _hori.push( box.width() );
+  }
+
+  else
+  {
+    _hori.push( box.width() );
   }
 }
 
 template<class TileType>
-void TileMason<TileType>::determine_pop(const Menu& menu)
+void TileMason<TileType>::determine_pop(const Menu* parent,const Menu& menu)
 {
-  if( menu.layout() == Menu::HORIZONTAL )
-    _hori.pop();
+  if( !parent )
+    return;
+
+  if( parent->layout() == Menu::HORIZONTAL )
+  {
+    if( menu.layout() == Menu::VERTICAL )
+      _vert.pop();
+    else
+      _hori.pop();
+  }
 
   else
-    _vert.pop();
+    _hori.pop();
+}
+
+template<class TileType>
+void TileMason<TileType>::push(const Menu* parent, const Detail::Box& box)
+{
+  if( parent->layout() == Menu::HORIZONTAL )
+    _hori.push(box.width());
+  else
+    _vert.push(box.height());
+}
+
+template<class TileType>
+void TileMason<TileType>::pop(const Menu& parent)
+{
+  if( parent.layout() == Menu::HORIZONTAL )
+    for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
+      _hori.pop();
+
+  else
+    for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
+      _vert.pop();
 }
 
 template<class TileType>
@@ -156,7 +171,7 @@ void OSG::TileMason<TileType>::apply(Menu& m)
     {                       // do not waste time with the remainder of this method
       traverse( m );        // just move onto traversal
       if( m.expanded() )    // this pop is not really necessary, just overly cautious
-        pop_children( m );
+        pop( m );
       return;
     }
 
@@ -211,20 +226,23 @@ void OSG::TileMason<TileType>::apply(Menu& m)
   mt->setMatrix( osg::Matrix::translate(sum) );
   _scene->addChild( mt.get() );
 
+  // save this menu's box state
+  Detail::Box menubox = _tile.box();
+
   // manage placement of items
   if( m.expanded() )
-    determine_push( m , m );
+    determine_push( parent, m , _tile.box() );
 
-  traverse( m );
+  traverse( m );  // the _tile's box state will change
 
   if( m.expanded() )
   {
-    pop_children( m );
-    determine_pop( m  );
+    pop( m );
+    determine_pop( parent , m );
   }
 
   if( parent )
-    determine_push( *parent , m );
+    push( parent , menubox );  // use original box size
 }
 
 template<class TileType>
@@ -287,7 +305,7 @@ void TileMason<TileType>::apply(Button& b)
   _scene->addChild( mt.get() );
 
   if( parent )
-    determine_push( *parent, b );
+    push( parent, _tile.box() );
 }
 
 #endif

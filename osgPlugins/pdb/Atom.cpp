@@ -209,7 +209,7 @@ Atom::~Atom()
 std::string Atom::toString() const
 {
 	std::ostringstream out;
-	out << _type <<" " << _id << " " << _name << " " << _point[0] << " " <<  _point[1] << " " <<  _point[2];
+	out << _type << ' ' << _id << ' ' << _name << ' ' << _point[0] << ' ' <<  _point[1] << ' ' <<  _point[2];
 	return out.str();
 }
 

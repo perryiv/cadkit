@@ -167,6 +167,10 @@ SOURCE=..\..\Performer\pf\pfDCS.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Performer\pf\pfGeode.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Performer\pf\pfGroup.h
 # End Source File
 # Begin Source File

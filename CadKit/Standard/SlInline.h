@@ -55,7 +55,7 @@ namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copy the given array to the sequence.
+//  Copy the given array to the vector.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -72,6 +72,35 @@ template <class T> inline void copy ( const unsigned int &num, const T *array, s
     vec[i] = array[i];
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the given array to the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void append ( const unsigned int &num, const T *array, std::vector<T> &vec )
+{
+  SL_ASSERT ( array );
+
+  // Get the current size.
+  unsigned int size = vec.size();
+
+  // Allocate space. Do not use std::vector::reserve() because we also have 
+  // to make std::vector::size() returns the correct number.
+  vec.resize ( size + num );
+
+  // Loop through the array and assign the elements to the vector.
+  // Note: we cannot use vec.insert ( vec.end(), array[i] ) because that will
+  // append to the end (i.e, starting at the (size+num)'th place). We have to 
+  // use the bracket operator and overwrite the element we just created with 
+  // the "resize()" above.
+  for ( unsigned int i = 0; i < num; ++i )
+    vec[size+i] = array[i];
+}
+
+
 }; // namespace CadKit.
+
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_MATH_FUNCTIONS_H_

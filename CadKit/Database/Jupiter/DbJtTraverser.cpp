@@ -845,10 +845,13 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Get the arrays for this set of the shape.
   shape->getInternal ( v.getReference(), vertexCount, n.getReference(), normalCount, c.getReference(), colorCount, t.getReference(), textureCount, whichSet );
 
+  // Note: we append the arrays to the given std::vectors. This way the 
+  // client can repeatedly call this function with the same vectors.
+
   // Vertices.
   if ( v.getReference() && vertexCount > 0 )
   {
-    CadKit::copy ( vertexCount * 3, v.getReference(), vertices );
+    CadKit::append ( vertexCount * 3, v.getReference(), vertices );
     valid |= SHAPE_ARRAY_VERTICES;
     success = true;
   }

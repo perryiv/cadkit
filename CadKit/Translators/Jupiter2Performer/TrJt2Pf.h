@@ -58,6 +58,7 @@ class pfDCS;
 class pfGroup;
 class pfNode;
 class pfObject;
+class pfGeode;
 class pfGeoSet;
 class pfGeoState;
 
@@ -106,21 +107,23 @@ protected:
   std::string _error;
   GroupStack _groupStack;
 
-  //bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
+  bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
   bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, Group &part );
   bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, Group &part );
   bool                    _addName       ( DbJtTraverser::EntityHandle entity, pfNode &node );
   bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, Group &group );
-  bool                    _addMaterial   ( const Group &part, pfGeoState &state );
+  bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const Group &part, pfGeoState &state );
   bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
   bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, pfGeoSet &gset );
-  bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const Group &part, pfGroup &group );
+  bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const Group &part, pfGeode &geode );
   bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, pfDCS &group );
   bool                    _assemblyStart ( DbJtTraverser::EntityHandle entity );
 
   bool                    _createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group );
 
   bool                    _endCurrentGroup();
+
+  pfVec3 *                _getVec3Array ( const std::vector<float> &vec ) const;
 
   bool                    _processEntity ( DbJtTraverser::EntityHandle entity );
 
@@ -131,9 +134,9 @@ protected:
 };
 
 
-// So class SlRefPtr works with class pfNodes. 
-void _incrementPointerReferenceCount ( pfObject *p );
-void _decrementPointerReferenceCount ( pfObject *p );
+// So class SlRefPtr works with class pfMemory. 
+void _incrementPointerReferenceCount ( pfMemory *p );
+void _decrementPointerReferenceCount ( pfMemory *p );
 
 
 }; // namespace CadKit

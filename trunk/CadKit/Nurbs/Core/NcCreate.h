@@ -23,9 +23,7 @@ namespace CadKit
 {
 template<NCSDTA> class NcCreate
 {
-public:
-
-  DECLATE_TYPEDEFS;
+  // Empty.
 };
 
 

@@ -172,7 +172,8 @@ template<SLPVTA> inline bool operator != ( const SlPartitionedVector<SLPVCA> &a,
 template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
   ( const SlPartitionedVector<SLPVCA>::IndexType &element ) const
 {
-  SL_ASSERT ( element >= 0 && element < _data.size() );
+  SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
+  SL_ASSERT ( element < _data.size() );
   return _data[element];
 }
 
@@ -186,7 +187,8 @@ template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartition
 template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
   ( const SlPartitionedVector<SLPVCA>::IndexType &element )
 {
-  SL_ASSERT ( element >= 0 && element < _data.size() );
+  SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
+  SL_ASSERT ( element < _data.size() );
   return _data[element];
 }
 
@@ -200,13 +202,15 @@ template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVect
 template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
   ( const SlPartitionedVector<SLPVCA>::IndexType &partition, const SlPartitionedVector<SLPVCA>::IndexType &element ) const
 {
-  SL_ASSERT ( partition >= 0 && partition < _indices.size() );
+  SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
+  SL_ASSERT ( partition < _indices.size() );
 
   // Get the index.
   IndexType index = _indices[partition] + element;
 
   // Should be true.
-  SL_ASSERT ( index >= 0 && index < _data.size() );
+  SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
+  SL_ASSERT ( index < _data.size() );
 
   return _data[index];
 }
@@ -221,13 +225,15 @@ template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartition
 template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
   ( const SlPartitionedVector<SLPVCA>::IndexType &partition, const SlPartitionedVector<SLPVCA>::IndexType &element )
 {
-  SL_ASSERT ( partition >= 0 && partition < _indices.size() );
+  SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
+  SL_ASSERT ( partition < _indices.size() );
 
   // Get the index.
   IndexType index = _indices[partition] + element;
 
   // Should be true.
-  SL_ASSERT ( index >= 0 && index < _data.size() );
+  SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
+  SL_ASSERT ( index < _data.size() );
 
   return _data[index];
 }

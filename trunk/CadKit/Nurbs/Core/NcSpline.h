@@ -189,7 +189,8 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA>
 
 template<NCSDTA> inline I NcSpline<NCSDCA>::getNumControlPoints ( const I &whichIndepVar ) const
 {
-  SL_ASSERT ( whichIndepVar >= 0 && whichIndepVar < _numIndepVars );
+  SL_ASSERT ( whichIndepVar == 0 || whichIndepVar > 0 ); // Make g++ happy.
+  SL_ASSERT ( whichIndepVar < _numIndepVars );
   return _numCtrPts[whichIndepVar];
 }
 
@@ -202,7 +203,8 @@ template<NCSDTA> inline I NcSpline<NCSDCA>::getNumControlPoints ( const I &which
 
 template<NCSDTA> inline I NcSpline<NCSDCA>::getOrder ( const I &whichIndepVar ) const
 {
-  SL_ASSERT ( whichIndepVar >= 0 && whichIndepVar < _numIndepVars );
+  SL_ASSERT ( whichIndepVar == 0 || whichIndepVar > 0 ); // Make g++ happy.
+  SL_ASSERT ( whichIndepVar < _numIndepVars );
   return _order[whichIndepVar];
 }
 

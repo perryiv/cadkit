@@ -44,7 +44,9 @@ unsigned int SlSystem::getNumMouseButtons()
 bool SlSystem::hasMouseWheel()
 {
 #ifdef _WIN32
+# if (WINVER >= 0x0500) || (_WIN32_WINNT >= 0x0400)
   return ( TRUE == ::GetSystemMetrics ( SM_MOUSEWHEELPRESENT ) );
+# endif
 #else
   TODO. Look briefly, if can't find it, just return false.
 #endif

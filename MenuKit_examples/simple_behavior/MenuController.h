@@ -13,7 +13,7 @@
 
 #include "osgProducer/OsgCameraGroup"
 #include "MenuKit/Behavior.h"
-#include "MenuKit/TileMason.h"
+#include "MenuKit/OSG/TileMason.h"
 #include <map>
 
 /** MenuController

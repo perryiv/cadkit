@@ -265,6 +265,12 @@
 					RelativePath="Errors\PrintingPolicy.h">
 				</File>
 				<File
+					RelativePath=".\Errors\Stack.cpp">
+				</File>
+				<File
+					RelativePath=".\Errors\Stack.h">
+				</File>
+				<File
 					RelativePath="Errors\ThrowingPolicy.h">
 				</File>
 			</Filter>

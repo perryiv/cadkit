@@ -35,6 +35,13 @@ FOX_TOOLS_EXPORT void addButton ( FX::FXToolBar *parent,
                                   unsigned int commandId,
                                   void *userData = 0x0 );
 
+// Add a button to the tool-bar.
+FOX_TOOLS_EXPORT void addButton ( FX::FXToolBar *parent, 
+                                  const std::string &text, 
+                                  FX::FXObject *target,
+                                  unsigned int commandId,
+                                  void *userData = 0x0 );
+
 
 // Add a toggle button to the tool-bar.
 FOX_TOOLS_EXPORT void addToggle ( FX::FXToolBar *parent, 

@@ -87,17 +87,24 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, WARNING  );
   POPULATE ( gif, GIF, CAMERA   );
   POPULATE ( gif, GIF, SEEK     );
-  POPULATE ( gif, GIF, TOOL_SELECTION   );
-  POPULATE ( gif, GIF, TRIANGLE         );
-  POPULATE ( gif, GIF, DELETE_CONNECTED );
-  POPULATE ( gif, GIF, KEEP_CONNECTED   );
-  POPULATE ( gif, GIF, ARROW    );
-  POPULATE ( gif, GIF, EYE      );
-  POPULATE ( gif, GIF, HAND     );
-  POPULATE ( gif, GIF, HOME     );
-  POPULATE ( gif, GIF, FILLED   );
-  POPULATE ( gif, GIF, LINES    );
-  POPULATE ( gif, GIF, POINTS   );
+  POPULATE ( gif, GIF, TOOL_SELECTION     );
+  POPULATE ( gif, GIF, TRIANGLE           );
+  POPULATE ( gif, GIF, DELETE_CONNECTED   );
+  POPULATE ( gif, GIF, KEEP_CONNECTED     );
+  POPULATE ( gif, GIF, ARROW              );
+  POPULATE ( gif, GIF, EYE                );
+  POPULATE ( gif, GIF, HAND               );
+  POPULATE ( gif, GIF, HOME               );
+  POPULATE ( gif, GIF, FILLED             );
+  POPULATE ( gif, GIF, LINES              );
+  POPULATE ( gif, GIF, POINTS             );
+  POPULATE ( gif, GIF, STOP               );
+  POPULATE ( gif, GIF, PLAY               );
+  POPULATE ( gif, GIF, PLAY_BACKWARDS     );
+  POPULATE ( gif, GIF, FORWARD_ARROW      );
+  POPULATE ( gif, GIF, FORWARD_ARROW_BAR  );
+  POPULATE ( gif, GIF, BACKWARD_ARROW     );
+  POPULATE ( gif, GIF, BACKWARD_ARROW_BAR );
   POPULATE ( bmp, BMP, SET_HOME );
 }
 

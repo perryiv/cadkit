@@ -36,7 +36,7 @@ using namespace FoxTools::Cursors;
 
 FX::FXCursor *Factory::create ( Type type, bool createIt, FX::FXApp *app )
 {
-  FOX_TOOLS_ERROR_CHECKER ( 0x0 == app );
+  FOX_TOOLS_ERROR_CHECKER ( 0x0 != app );
 
   // Initialize the array pointers.
   const unsigned char *source = 0x0;
@@ -56,7 +56,7 @@ FX::FXCursor *Factory::create ( Type type, bool createIt, FX::FXApp *app )
     {
       // Make the new cursor.
       std::auto_ptr<FX::FXCursor> cursor ( new FX::FXCursor ( app, FX::CURSOR_ARROW ) );
-      FOX_TOOLS_ERROR_CHECKER ( 0x0 == cursor.get() );
+      FOX_TOOLS_ERROR_CHECKER ( 0x0 != cursor.get() );
 
       // Create the cursor if we're supposed to.
       if ( createIt ) 

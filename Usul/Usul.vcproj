@@ -369,6 +369,9 @@
 					RelativePath=".\Interfaces\IFoxToolbar.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IGetHeight.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\ILoadFileDialog.h">
 				</File>
 				<File
@@ -406,6 +409,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISelectionBox.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISequence.h">

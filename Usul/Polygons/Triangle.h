@@ -27,7 +27,7 @@ namespace Polygons {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  template < class VertexType_ > class Triangle : public Usul::Base::Referenced
+template < class VertexType_ > class Triangle : public Usul::Base::Referenced
 {
 public:
 
@@ -175,7 +175,7 @@ struct TriangleFunctor
   typedef TriangleFunctor< IndexSequence, Vertex > ThisType;
   typedef std::vector< TriangleFunctor > TodoStack;
   typedef typename Triangle<Vertex>::SharedVertex SharedVertex;
-  typedef typename SharedVertex::Ptr SharedVertexPtr;
+  typedef typename SharedVertex::RefPtr SharedVertexPtr;
 
   //Construct with a triangle
   TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, Triangle<Vertex> *t ) :

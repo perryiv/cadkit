@@ -10,6 +10,7 @@
 #include "OsgTools/Box.h"
 #include "OsgTools/Torus.h"
 #include "OsgTools/Sphere.h"
+#include "OsgTools/Axes.h"
 
 osg::Group* create_scene();
 
@@ -36,11 +37,12 @@ int main(int argc, char* argv[])
 
 osg::Group* create_scene()
 {
-  unsigned int types(5);
+  unsigned int types(6);
 
-  osg::Vec4 BLUE(0.0,0.0,1.0,1.0);
-  osg::Vec4 GREEN(0.0,1.0,0.0,1.0);
-  osg::Vec4 RED(1.0,0.0,0.0,1.0);
+  osg::Vec4 BLUE  ( 0.0, 0.0, 1.0, 1.0 );
+  osg::Vec4 GREEN ( 0.0, 1.0, 0.0, 1.0 );
+  osg::Vec4 RED   ( 1.0, 0.0, 0.0, 1.0 );
+  osg::Vec4 YELLOW( 1.0, 1.0, 0.0, 1.0 );
 
   // blue box
   osg::ref_ptr<osg::MatrixTransform> mtcbox = new osg::MatrixTransform();
@@ -64,6 +66,36 @@ osg::Group* create_scene()
                           50 );                           // sweep cuts
   ctorus.setColor( GREEN );
   mttor->addChild( ctorus() );
+
+  // origin
+  osg::ref_ptr<osg::MatrixTransform> mtorigin = new osg::MatrixTransform();
+  OsgTools::Axes origin;
+  origin.state( OsgTools::Axes::POSITIVE_X |
+                OsgTools::Axes::POSITIVE_Y |
+                OsgTools::Axes::POSITIVE_Z |
+                OsgTools::Axes::ORIGIN_CUBE );
+  origin.colorX   ( YELLOW );
+  origin.colorY   ( YELLOW );
+  origin.colorZ   ( YELLOW );
+  origin.colorBox ( YELLOW );
+  mtorigin->addChild( origin() );
+
+  // pole cursor
+  osg::ref_ptr<osg::MatrixTransform> mtpole = new osg::MatrixTransform();
+  OsgTools::Axes pole;
+  pole.state( OsgTools::Axes::POSITIVE_Y |
+              OsgTools::Axes::NEGATIVE_Y |
+              OsgTools::Axes::ROTATE_Y     );
+  mtpole->addChild( pole() );
+
+  // fly/walk cursor
+  osg::ref_ptr<osg::MatrixTransform> mtwalk = new osg::MatrixTransform();
+  OsgTools::Axes walk;
+  walk.state( OsgTools::Axes::POSITIVE_X |
+              OsgTools::Axes::NEGATIVE_X |
+              OsgTools::Axes::POSITIVE_Z |
+              OsgTools::Axes::NEGATIVE_Z   );
+  mtwalk->addChild( walk() );
 
   // mystery box
   osg::ref_ptr<osg::MatrixTransform> mtmbox = new osg::MatrixTransform();
@@ -96,27 +128,42 @@ osg::Group* create_scene()
                                             (*cpoint)[0][1],
                                             (*cpoint)[0][2]) );
 
-  mtmbox->setMatrix( osg::Matrix::translate((*cpoint)[1][0],
+  //mtmbox->setMatrix( osg::Matrix::translate((*cpoint)[1][0],
+  //                                          (*cpoint)[1][1],
+  //                                          (*cpoint)[1][2]) );
+
+  mtcsph->setMatrix( osg::Matrix::translate((*cpoint)[1][0],
                                             (*cpoint)[1][1],
                                             (*cpoint)[1][2]) );
 
-  mtcsph->setMatrix( osg::Matrix::translate((*cpoint)[2][0],
+  //mtmsph->setMatrix( osg::Matrix::translate((*cpoint)[3][0],
+  //                                          (*cpoint)[3][1],
+  //                                          (*cpoint)[3][2]) );
+
+  mttor->setMatrix ( osg::Matrix::translate((*cpoint)[2][0],
                                             (*cpoint)[2][1],
                                             (*cpoint)[2][2]) );
 
-  mtmsph->setMatrix( osg::Matrix::translate((*cpoint)[3][0],
-                                            (*cpoint)[3][1],
-                                            (*cpoint)[3][2]) );
+  mtorigin->setMatrix ( osg::Matrix::translate((*cpoint)[3][0],
+                                               (*cpoint)[3][1],
+                                               (*cpoint)[3][2]) );
 
-  mttor->setMatrix ( osg::Matrix::translate((*cpoint)[4][0],
-                                            (*cpoint)[4][1],
-                                            (*cpoint)[4][2]) );
+  mtpole->setMatrix ( osg::Matrix::translate((*cpoint)[4][0],
+                                             (*cpoint)[4][1],
+                                             (*cpoint)[4][2]) );
+
+  mtwalk->setMatrix ( osg::Matrix::translate((*cpoint)[5][0],
+                                             (*cpoint)[5][1],
+                                             (*cpoint)[5][2]) );
 
   osg::ref_ptr<osg::Group> group = new osg::Group;
   group->addChild( mtcbox.get() );
-  group->addChild( mtmbox.get() );
+  //group->addChild( mtmbox.get() );
   group->addChild( mtcsph.get() );
-  group->addChild( mtmsph.get() );
-  group->addChild( mttor.get() );
+  //->addChild( mtmsph.get() );
+  group->addChild( mttor.get()  );
+  group->addChild( mtorigin.get() );
+  group->addChild( mtpole.get() );
+  group->addChild( mtwalk.get() );
   return group.release();
 }

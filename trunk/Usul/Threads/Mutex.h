@@ -94,6 +94,22 @@ private:
 USUL_EXPORT Mutex *newMutex();
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper struct. Make a global instance of this if setting in main() is 
+//  too late in the program execution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct SetMutexFactory
+{
+  template < class FactoryFunction > SetMutexFactory ( FactoryFunction f )
+  {
+    Usul::Threads::Mutex::createFunction ( f );
+  }
+};
+
+
 }; // namespace Threads
 }; // namespace Usul
 

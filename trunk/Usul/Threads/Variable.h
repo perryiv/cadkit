@@ -42,13 +42,13 @@ template < class ValueType > struct Variable
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Variable() : _value(), _mutex ( MutexType::create() )
+  Variable() : _value(), _mutex ( 0x0 )
   {
   }
-  Variable ( const ValueType &v ) : _value ( v ), _mutex ( MutexType::create() )
+  Variable ( const ValueType &v ) : _value ( v ), _mutex ( 0x0 )
   {
   }
-  Variable ( const Variable &v ) : _value ( v._value ), _mutex ( MutexType::create() )
+  Variable ( const Variable &v ) : _value ( v._value ), _mutex ( 0x0 )
   {
   }
 
@@ -109,12 +109,14 @@ template < class ValueType > struct Variable
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Access to the mutex.
+  //  Access to the mutex. Delayed creation.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   MutexType &mutex() const
   {
+    if ( 0x0 == _mutex )
+      _mutex = MutexType::create();
     return *_mutex;
   }
 

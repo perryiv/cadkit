@@ -25,11 +25,11 @@ namespace Math {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Calculate the distance between two n-dimensional vectors.
+//  Calculate the distance between two 1 x n vectors.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType > struct Distance
+template < class CurveType > struct Distance1
 {
   typedef typename CurveType::Vector Vector;
   typedef typename CurveType::Vec2 Vec2;
@@ -174,6 +174,45 @@ public:
   static RealType get ( const Vec2 &a, const Vec2 &b )
   {
     return Helper<V>::get ( a, b );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the distance between two points, each in 2D vectors where the 
+//  first index is the dimension.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class CurveType > struct Distance2
+{
+  typedef typename CurveType::ControlPointContainer Vector;
+  typedef typename Vector::size_type SizeType;
+  typedef typename CurveType::UIntType UIntType;
+  typedef typename CurveType::SquareRoot SquareRoot;
+  typedef typename CurveType::ControlPointType RealType;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+
+public:
+
+  static RealType squared ( const Vector &va, SizeType i, const Vector &vb, SizeType j )
+  {
+    GN_ERROR_CHECK ( va.size() == vb.size() );
+    const UIntType dimension ( va.size() );
+    RealType dist ( 0 );
+    for ( UIntType d = 0; d < dimension; ++d )
+    {
+      GN_ERROR_CHECK ( va[d].size() == vb[d].size() );
+      RealType diff ( va[d][i] - vb[d][j] );
+      dist += diff * diff;
+    }
+    return dist;
+  }
+
+  static RealType get ( const Vector &va, const Vector &vb )
+  {
+    return SquareRoot::calculate ( squared ( va, vb ) );
   }
 };
 

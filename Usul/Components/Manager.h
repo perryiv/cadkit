@@ -50,6 +50,7 @@ public:
 
   //Get a set of IUnknowns
   UnknownSet                  getInterfaces( unsigned long iid );
+  UnknownSet                  getInterfaces( unsigned long iid1, unsigned long iid2 );
 
 private:
   typedef UnknownSet::iterator UnknownItr;

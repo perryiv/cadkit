@@ -122,3 +122,24 @@ Manager::UnknownSet Manager::getInterfaces( unsigned long iid )
   return set;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all IUnknowns with given iids
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long iid2 )
+{
+  UnknownSet set;
+
+  for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
+  {
+    if ( (*i)->queryInterface ( iid1 ) && (*i)->queryInterface ( iid2 )  )
+      set.insert (  *i );
+  }
+
+  return set;
+}
+
+

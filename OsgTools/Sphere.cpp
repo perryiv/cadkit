@@ -15,27 +15,45 @@
 
 #include "osg/Geode"
 //#include <osg/PolygonMode>
-#include <osg/Material>
+//#include <osg/Material>
 #include <osg/ShapeDrawable>
 #include <osg/Shape>
 
 using namespace OsgTools;
 
-Sphere::Sphere(float r, const osg::Vec4& c): _radius(r), _color(c)
-{
-}
+//Sphere::Sphere():
+  //ColorPolicyFunctor(),
+//  _radius(1.0)
+//{
+//}
 
-Sphere::Sphere(const osg::BoundingSphere& bs,
-               const osg::Vec4& c): _radius(bs.radius()), _color(c)
-{
-}
+//Sphere::Sphere(float r)//:
+  //ColorPolicyFunctor(), _radius(r)
+//{
+//}
 
-Sphere::~Sphere()
-{
-}
+//Sphere::Sphere(const osg::BoundingSphere& bs)//:
+  //ColorPolicyFunctor(), _radius(bs.radius())
+//{
+//}
 
-osg::Geode* Sphere::operator()()
-{
+//Sphere::Sphere(const Sphere& s)//:
+  //ColorPolicyFunctor(s), _radius(s._radius)
+//{
+//}
+
+//Sphere& Sphere::operator = (const Sphere& s)
+//{
+//  ColorPolicyFunctor::operator = (s);
+//  _radius = s._radius;
+//}
+//
+//Sphere::~Sphere()
+//{
+//}
+
+//osg::Node* Sphere<class ClassPolicy>::operator()()
+//{
   //osg::ref_ptr<osg::TessellationHints> _hints;
   //osg::ref_ptr<osg::PolygonMode> _polygonmode;
   //_hints->setDetailRatio(0.5f);
@@ -54,11 +72,11 @@ osg::Geode* Sphere::operator()()
 
   //_shapedrawable->setTessellationHints(_hints.get());
 
-  osg::ref_ptr<osg::Sphere> _sphere = new osg::Sphere();
-  osg::ref_ptr<osg::ShapeDrawable> _shapedrawable = new osg::ShapeDrawable(_sphere.get());
+  //osg::ref_ptr<osg::Sphere> _sphere = new osg::Sphere();
+  //osg::ref_ptr<osg::ShapeDrawable> _shapedrawable = new osg::ShapeDrawable(_sphere.get());
   //_shapedrawable->setStateSet(_stateset.get());
 
-  osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-  geode->addDrawable(_shapedrawable.get());
-  return geode.release();
-}
+//  osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+//  geode->addDrawable(_shapedrawable.get());
+//  return geode.release();
+//}

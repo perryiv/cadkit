@@ -73,9 +73,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define NCSDTA  class P, class C, class I, class B
-#define NCSDCA P, C, I, B
-#define NCSDTCD NCSDTA // class P = double, class C = double, class I = unsigned int, class B = unsigned int
+#define NCSDTA  class ParameterType, class ControlPointType, class IndexType, class BitMaskType
+#define NCSDCA ParameterType, ControlPointType, IndexType, BitMaskType
+#define NCSDTCD NCSDTA // class ParameterType = double, class ControlPointType = double, class IndexType = unsigned int, class BitMaskType = unsigned int
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,14 +84,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define DECLATE_TYPEDEFS \
-  typedef I IndexType; \
-  typedef B BitMaskType; \
-  typedef P ParameterType; \
-  typedef C ControlPointType; \
+#define DECLARE_TYPEDEFS \
+  typedef IndexType Index; \
+  typedef BitMaskType BitMask; \
+  typedef ParameterType Parameter; \
+  typedef ControlPointType ControlPoint; \
   typedef std::vector<IndexType> IndexArray; \
-  typedef SlPartitionedVector<I,C> ControlPointArray; \
-  typedef SlPartitionedVector<I,P> ParameterArray
+  typedef SlPartitionedVector<IndexType,ControlPointType> ControlPointArray; \
+  typedef SlPartitionedVector<IndexType,ParameterType> ParameterArray
 
 
 

@@ -28,8 +28,8 @@
 # include <vector>
 #endif
 
-#define SLPVTA class I, class D
-#define SLPVCA I, D
+#define SLPVTA class IndexType, class DataType
+#define SLPVCA IndexType, DataType
 
 
 namespace CadKit
@@ -38,8 +38,6 @@ template <SLPVTA> class SlPartitionedVector
 {
 public:
 
-  typedef D DataType;
-  typedef I IndexType;
   typedef std::vector<IndexType> IndexArray;
   typedef std::vector<DataType> DataArray;
 
@@ -58,6 +56,9 @@ public:
   // Get the data vector.
   const DataArray &       getData() const { return _data; }
   DataArray &             getData()       { return _data; }
+
+  // Get a pointer to the start of the data.
+  const DataType *        getDataPointer ( const IndexType &partition ) const;
 
   // Equality test.
   bool                    isEqual    ( const SlPartitionedVector &pv ) const;
@@ -169,8 +170,7 @@ template<SLPVTA> inline bool operator != ( const SlPartitionedVector<SLPVCA> &a,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
-  ( const SlPartitionedVector<SLPVCA>::IndexType &element ) const
+template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &element ) const
 {
   SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
   SL_ASSERT ( element < _data.size() );
@@ -184,8 +184,7 @@ template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartition
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
-  ( const SlPartitionedVector<SLPVCA>::IndexType &element )
+template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &element )
 {
   SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
   SL_ASSERT ( element < _data.size() );
@@ -199,8 +198,7 @@ template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVect
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
-  ( const SlPartitionedVector<SLPVCA>::IndexType &partition, const SlPartitionedVector<SLPVCA>::IndexType &element ) const
+template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &partition, const IndexType &element ) const
 {
   SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
   SL_ASSERT ( partition < _indices.size() );
@@ -222,8 +220,7 @@ template<SLPVTA> inline const SlPartitionedVector<SLPVCA>::DataType &SlPartition
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVector<SLPVCA>::operator() 
-  ( const SlPartitionedVector<SLPVCA>::IndexType &partition, const SlPartitionedVector<SLPVCA>::IndexType &element )
+template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &partition, const IndexType &element )
 {
   SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
   SL_ASSERT ( partition < _indices.size() );
@@ -236,6 +233,28 @@ template<SLPVTA> inline SlPartitionedVector<SLPVCA>::DataType &SlPartitionedVect
   SL_ASSERT ( index < _data.size() );
 
   return _data[index];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a pointer to the start of the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::getDataPointer ( const IndexType &partition ) const
+{
+  SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
+  SL_ASSERT ( partition < _indices.size() );
+
+  // Get the index.
+  IndexType index = _indices[partition];
+
+  // Should be true.
+  SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
+  SL_ASSERT ( index < _data.size() );
+
+  return &(_data[index]);
 }
 
 

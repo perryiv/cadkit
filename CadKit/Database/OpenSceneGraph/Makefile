@@ -13,7 +13,12 @@ CPP_FILES = \
 LOCAL_INCLUDE = -I$(OSGHOME)/include
 
 # The libraries to link to.
-LOCAL_LIBS = -lCkSl_s -lCkDbBase_s -L$(OSGHOME)/lib -losg -losgDB
+LOCAL_LIBS = \
+	-lCkSl_s \
+	-lCkDbBase_s \
+	-L$(OSGHOME)/lib \
+	-losgDB \
+	-losg 
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = -woff 3303

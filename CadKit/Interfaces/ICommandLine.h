@@ -18,8 +18,8 @@
 
 #include "IUnknown.h"
 
-#include <string>
 #include <list>
+#include <string>
 
 
 namespace CadKit
@@ -30,9 +30,6 @@ public:
 
   // Id for this interface.
   enum { IID = 1032754743 };
-
-  // Convenient typedef.
-  typedef std::list<std::string> Args;
 
   // Parse the command-line arguments and execute.
   virtual bool            execute ( int argc, char **argv, IUnknown *source, IUnknown *target ) = 0;

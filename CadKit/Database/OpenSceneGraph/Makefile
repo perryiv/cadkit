@@ -12,11 +12,18 @@ CPP_FILES = \
 # The include path.
 LOCAL_INCLUDE = -I$(OSGHOME)/include
 
+# OSG gets "installed" in a different directory, depending on the platform
+ifeq ($(OS), IRIX)
+	LOCAL_OSG_LIB_DIR = $(OSGHOME)/lib32
+else
+	LOCAL_OSG_LIB_DIR = $(OSGHOME)/lib
+endif
+
 # The libraries to link to.
 LOCAL_LIBS = \
 	-lCkSl_s \
 	-lCkDbBase_s \
-	-L$(OSGHOME)/lib \
+	-L$(LOCAL_OSG_LIB_DIR) \
 	-losgDB \
 	-losg 
 

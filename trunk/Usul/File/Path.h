@@ -16,7 +16,10 @@
 #ifndef _USUL_FILE_PATH_H_
 #define _USUL_FILE_PATH_H_
 
+#include "Usul/Predicates/UnaryPair.h"
+
 #include <string>
+#include <algorithm>
 
 
 namespace Usul {

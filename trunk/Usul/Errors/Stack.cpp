@@ -115,7 +115,7 @@ Element::~Element()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Stack *Stack::instance()
+Stack &Stack::instance()
 {
   // Guard the creation of the instance. TODO, use double-lock pattern.
   static Mutex *mutex = Mutex::create();
@@ -129,7 +129,7 @@ Stack *Stack::instance()
   }
 
   // Return the instance.
-  return _instance;
+  return *_instance;
 }
 
 

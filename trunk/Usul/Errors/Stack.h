@@ -92,7 +92,7 @@ public:
   std::string         format() const;
 
   // It's a singleton.
-  static Stack *      instance();
+  static Stack &      instance();
 
   // Push an error.
   void                push ( unsigned int id, const std::string &message );
@@ -142,11 +142,11 @@ private:
 catch ( const std::exception &e )\
 {\
   std::string message ( e.what() ? e.what() : "Standard exception caught" );\
-  Usul::Errors::Stack::instance()->push ( error_id, message.c_str() );\
+  Usul::Errors::Stack::instance().push ( error_id, message.c_str() );\
 }\
 catch ( ... )\
 {\
-  Usul::Errors::Stack::instance()->push ( error_id, "Unknown exception caught" );\
+  Usul::Errors::Stack::instance().push ( error_id, "Unknown exception caught" );\
 }
 
 

@@ -237,10 +237,10 @@ namespace Helper
         // Make sure there is one in the chamber.
         if ( in.fail() || in.eof() )
           {
-            Usul::Exceptions::Thrower<std::runtime_error>
-              ( "Error 1083884154, corrupt vector in file.",
-                "\n\tExpected Size: ", Vec::SIZE,
-                "\n\tVector Read:   ", s );
+// TODO: fix
+//            Usul::Exceptions::Thrower<std::runtime_error>("Error 1083884154, corrupt vector in file.",
+//                                                          "\n\tExpected Size: ", Vec::SIZE,
+//                                                          "\n\tVector Read:   ", s );
           }
 
         // Read the value.

@@ -75,8 +75,8 @@ public:
   void                  viewAllScaleZ ( float zScale ) { _zScale = zScale; }
 
   // Get/set the lighting properties.
-  const Vec4f &         lightPosition() const { return _lightPos; }
-  void                  lightPosition( const Vec4f& p ) { _lightPos; }
+  const Vec4f &         lightPosition() const         { return _lightPos; }
+  void                  lightPosition(const Vec4f& p) { _lightPos = p; }
   const Color &         ambientLightColor() const { return _ambientLight; }
   void                  ambientLightColor ( const Vec4f &c ) { _ambientLight = c; }
   const Color &         diffuseLightColor() const { return _diffuseLight; }

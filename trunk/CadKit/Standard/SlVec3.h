@@ -69,7 +69,7 @@ public:
   Real                    normalize();
 
   // Typecast operators.
-  operator T *()             { return _v; }
+  operator       T *()       { return _v; }
   operator const T *() const { return _v; }
 
   // Bracket operators.

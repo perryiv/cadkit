@@ -309,6 +309,10 @@ SOURCE=.\SlMatrix44IO.h
 
 SOURCE=.\SlMatrixNN.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SlMatrixNNIO.h
+# End Source File
 # End Group
 # Begin Group "Geometry"
 

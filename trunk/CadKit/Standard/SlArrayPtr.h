@@ -24,8 +24,14 @@ template<class T> class SlArrayPtr
 public:
 
   SlArrayPtr ( T *p = 0x0 ) : _p ( p ){}
-  SlArrayPtr ( SlArrayPtr &p ) : _p ( p.release() ){}
-  ~SlArrayPtr() { this->reset ( 0x0 ); }
+  SlArrayPtr ( SlArrayPtr &p ) : _p ( p.detach() ){}
+  ~SlArrayPtr() { this->attach ( 0x0 ); }
+
+  /// Attach to the given pointer.
+  void              attach ( T *p );
+
+  /// Detach from the internal pointer.
+  T *               detach();
 
   /// Get the internal pointer.
   T *               get() const { return _p; }
@@ -54,11 +60,8 @@ public:
   const T &         operator [] ( int i ) const          { return _p[i]; }
   T &               operator [] ( int i )                { return _p[i]; }
 
-  /// Release ownership of internal pointer.
-  T *               release();
-
-  /// Reset the internal pointer.
-  void              reset ( T *p = 0x0 );
+  // Reset the internal pointer.
+  void              reset() { this->attach ( 0x0 ); }
 
 private:
 
@@ -88,7 +91,7 @@ template <class T> bool operator != ( const T *p1, const SlArrayPtr<T> &p2 ) { r
 
 template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( SlArrayPtr<T> &p )
 {
-  this->reset ( p._p );
+  this->attach ( p._p );
   return *this;
 }
 
@@ -101,22 +104,22 @@ template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( SlArrayPtr<T
 
 template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( T *p )
 {
-  this->reset ( p );
+  this->attach ( p );
   return *this;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Release the pointer.
+//  Detach from the pointer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline T *SlArrayPtr<T>::release()
+template<class T> inline T *SlArrayPtr<T>::detach()
 {
   T *temp = _p;
   _p = 0x0;
-  return tmp;
+  return temp;
 }
 
 
@@ -126,7 +129,7 @@ template<class T> inline T *SlArrayPtr<T>::release()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlArrayPtr<T>::reset ( T *p )
+template<class T> inline void SlArrayPtr<T>::attach ( T *p )
 {
   if ( p != _p )
   {

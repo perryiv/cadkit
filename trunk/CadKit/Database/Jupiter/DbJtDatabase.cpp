@@ -703,7 +703,7 @@ bool DbJtDatabase::_startAssembly ( eaiAssembly *assembly )
     return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
@@ -730,7 +730,7 @@ bool DbJtDatabase::_endAssembly ( eaiAssembly *assembly )
     return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   return ERROR ( FORMAT ( "Failed to end assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
@@ -766,7 +766,7 @@ bool DbJtDatabase::_startPart ( eaiPart *part )
   }
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   if ( false == ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE ) )
     return false;
 
@@ -797,7 +797,7 @@ bool DbJtDatabase::_endPart ( eaiPart *part )
     return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) part, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   return ERROR ( FORMAT ( "Failed to end part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
@@ -827,7 +827,7 @@ bool DbJtDatabase::_startInstance ( eaiInstance *instance )
     return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) instance, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   return ERROR ( FORMAT ( "Failed to start instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
@@ -854,7 +854,7 @@ bool DbJtDatabase::_endInstance ( eaiInstance *instance )
     return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) instance, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
-  // We let the target decide whether or not to continue.
+  // We let the controller decide whether or not to continue.
   return ERROR ( FORMAT ( "Failed to end instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 

@@ -1,15 +1,14 @@
 SOURCE = \
-	Base/Referenced.cpp \
-	Base/Typed.cpp \
-	Components/Object.cpp \
-	Components/Registry.cpp \
-	DLL/Library.cpp \
-	DLL/Loader.cpp \
-	ID/GUID.cpp \
-	System/LastError.cpp \
-	System/Host.cpp \
-	Types/Types.cpp \
-	Threads/Mutex.cpp
+	Cylinder.cpp \
+	CylinderFactory.cpp \
+	Atom.cpp \
+	Bond.cpp \
+	SphereFactory.cpp \
+	Element.cpp \
+	PeriodicTable.cpp \
+	MaterialChooser.cpp \
+	Molecule.cpp \
+	ReaderWriter.cpp 
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
@@ -23,7 +22,7 @@ OS_COMP_FLAGS = -LANG:std
 OS_LINK_FLAGS = -LANG:std -v
 endif
 
-COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
+COMMON_FLAGS   = -g
 COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
@@ -31,14 +30,24 @@ COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
 LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
-	-I../ 
+	-I../../ \
+	-I${OSG_INC_DIR} \
+	-I${USUL_INC_DIR}
 
-LIBS = 
+OSG_LIBS = \
+	-L${OSG_LIB_DIR} \
+	-losgDB -losg
 
-TARGET      = Usul
+USUL_LIBS = \
+	-L${USUL_LIB_DIR} \
+	-lUsul_s
+
+LIBS = $(USUL_LIBS) $(OSG_LIBS)
+
+TARGET      = osgdb_pdb
 ARCHIVE_LIB = lib$(TARGET)_a.a
-SHARED_LIB  = lib$(TARGET)_s.so
-BIN_DIR     = ../bin
+SHARED_LIB  = $(TARGET).so
+BIN_DIR     = 
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
@@ -59,21 +68,7 @@ $(TARGET) : $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -rf ii_files/
-	cd Base ; $(CLEAN)
-	cd Components ; $(CLEAN)
-	cd DLL ; $(CLEAN)
-	cd ID ; $(CLEAN)
-	cd System ; $(CLEAN)
-	cd Types ; $(CLEAN)
-	cd Threads ; $(CLEAN)
 
 clobber:
 	rm -f $(OBJECTS) $(ARCHIVE_LIB) $(SHARED_LIB)
 	rm -rf ii_files/
-	cd Base ; $(CLEAN)
-	cd Components ; $(CLEAN)
-	cd DLL ; $(CLEAN)
-	cd ID ; $(CLEAN)
-	cd System ; $(CLEAN)
-	cd Types ; $(CLEAN)
-	cd Threads ; $(CLEAN)

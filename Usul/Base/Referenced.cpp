@@ -225,3 +225,4 @@ unsigned long Referenced::refCount() const
   Guard guard ( *_rcMutex );
   return _refCount;
 }
+

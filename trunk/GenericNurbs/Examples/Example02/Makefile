@@ -25,8 +25,8 @@ LINK_COMMAND		= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
 INCLUDES = -I../../ -I${VJ_BASE_DIR}/include
 LIBS =
 
-BIN_DIR = ../bin
-TARGET  = example02
+BIN_DIR = ../../../bin
+TARGET  = gn_example_02
 OBJECTS = $(SOURCE:.cpp=.o)
 
 default : $(TARGET)

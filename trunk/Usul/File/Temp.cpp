@@ -78,21 +78,23 @@ Temp::Temp ( Format f ) :
 
 Temp::~Temp()
 {
-  USUL_EXCEPTION_SAFE_START;
-
-  // Make sure the stream is closed.
-  this->_close();
-
-  // Remove the temporary file if we should.
-  if ( _remove )
+  try
   {
-    if ( 0 != ::remove ( _name.c_str() ) )
+    // Make sure the stream is closed.
+    this->_close();
+
+    // Remove the temporary file if we should.
+    if ( _remove )
     {
-      Usul::Errors::Stack::instance().push ( 3313814027u, "Failed to remove temporary file: " + _name );
+      if ( 0 != ::remove ( _name.c_str() ) )
+      {
+        Usul::Errors::Stack::instance().push ( "Failed to remove temporary file: " + _name );
+      }
     }
   }
 
-  USUL_EXCEPTION_SAFE_END ( 2355835989 );
+  USUL_CATCH_STD_EXCEPTIONS ( 2355835989u )
+  USUL_CATCH_ALL_EXCEPTIONS ( 2036890444u )
 }
 
 

@@ -47,16 +47,16 @@ public:
 
   void close();
 
-  bool is_open() const { return _out.is_open(); }
+  bool is_open() const;
 
   virtual void writeFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 ) = 0;
   virtual void writeFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, SlVec3f &normal ) = 0;
-  
+
 protected:
   
   SlUint32 _numFacets; // need this to be 32bit integer
   bool _readyToClose;
-  int _fileState;
+  unsigned int _fileState;
   std::ofstream _out;
 
   DbStlOutputFile ( const std::string &name, int nMode );
@@ -67,7 +67,7 @@ protected:
   virtual void _writeHeader( ) { }
   virtual void _endFile( ) { }
 
-  const int _getStlFileState( ) { return _fileState; }
+  const unsigned int &_getStlFileState( ) { return _fileState; }
 
   // inline shorhand functions for testing and setting file state bits in a readable manner
   bool _testHeaderDone( ) { return (_fileState & DbStlOutputFile::HEADER_DONE) ? true : false; }

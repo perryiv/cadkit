@@ -33,11 +33,13 @@ DbStlBinaryOutputFile::DbStlBinaryOutputFile ( const std::string &name, bool ove
   _header ( "" ),
   _stdHeader( BINARY_HEADER )
 {
+/*
   int failtest = _out.fail();
   int nMode = std::ios::out | std::ios::binary | std::ios::trunc;
   int nMout = std::ios::out;
   int nMbinary = std::ios::binary;
   int nMtrunc = std::ios::trunc;
+*/
   SL_ASSERT( true == this->is_open() );
   this->_writeHeader();
 }

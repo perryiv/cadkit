@@ -20,7 +20,7 @@
 
 #include "Database/Base/DbBaseTarget.h"
 
-#include "Interfaces/IAssemblyNotify.h"
+#include "Interfaces/IEntityNotify.h"
 
 #include "Standard/SlStack.h"
 
@@ -34,7 +34,9 @@ namespace osg { class Group; };
 namespace CadKit
 {
 class DB_OSG_API DbOsgDatabase : public DbBaseTarget,
-                                 public IAssemblyNotify
+                                 public IAssemblyNotify,
+                                 public IPartNotify,
+                                 public IInstanceNotify
 {
 public:
 
@@ -62,10 +64,34 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // End the assembly.
-  virtual bool            endAssembly ( AssemblyHandle assembly, IUnknown *caller );
+  virtual bool            endNotify ( AssemblyHandle assembly, IUnknown *caller );
 
   // Start the assembly.
-  virtual bool            startAssembly ( AssemblyHandle assembly, IUnknown *caller );
+  virtual bool            startNotify ( AssemblyHandle assembly, IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IPartNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the part.
+  virtual bool            endNotify ( PartHandle assembly, IUnknown *caller );
+
+  // Start the part.
+  virtual bool            startNotify ( PartHandle assembly, IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IInstanceNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the instance.
+  virtual bool            endNotify ( InstanceHandle assembly, IUnknown *caller );
+
+  // Start the instance.
+  virtual bool            startNotify ( InstanceHandle assembly, IUnknown *caller );
 
 protected:
 

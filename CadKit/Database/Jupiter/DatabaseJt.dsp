@@ -120,6 +120,10 @@ SOURCE=.\DbJtDatabase.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DbJtFunctors.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbJtInline.h
 # End Source File
 # Begin Source File
@@ -377,6 +381,10 @@ SOURCE=..\..\..\..\programs\UGS\DMDTk\dev\include\DMDataTk\eaiXYZCurve.h
 # Begin Source File
 
 SOURCE=..\..\Notes\Database.txt
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Notes\jupiter_database.txt
 # End Source File
 # End Group
 # End Target

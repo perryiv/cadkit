@@ -20,6 +20,7 @@
 #include "DbJtVisApiArray.h"
 
 #include "Standard/SlRefPtr.h"
+#include "Standard/SlAssert.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -113,6 +114,26 @@ template <class HandleType> inline bool getTransform ( HandleType ptr, float mat
 
   // Fill in the given matrix.
   std::copy ( m, m + 16, (float *) matrix );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle an entity.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class FunctorType, class HandleType> inline bool handleEntityStart 
+  ( const char *name, NotifyType &notify, HandleType entity, IUnknown *caller )
+{
+  SL_ASSERT ( NULL != caller );
+
+  // Let the target know we have a new entity.
+  if ( false == functor ( entity, caller ) )
+    return ERROR ( FORMAT ( "Failed to start %s '%s' at level %d\n\tCall to IAssemblyNotify::endAssembly() returned false", name, entity->name(), level ), 0 );
 
   // It worked.
   return true;

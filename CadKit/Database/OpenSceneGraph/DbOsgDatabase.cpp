@@ -95,6 +95,10 @@ IUnknown *DbOsgDatabase::queryInterface ( const unsigned long &iid )
   {
   case IAssemblyNotify::IID:
     return static_cast<IAssemblyNotify *>(this);
+  case IPartNotify::IID:
+    return static_cast<IPartNotify *>(this);
+  case IInstanceNotify::IID:
+    return static_cast<IInstanceNotify *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -136,9 +140,9 @@ bool DbOsgDatabase::storeData ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::startAssembly ( AssemblyHandle assembly, IUnknown *caller )
+bool DbOsgDatabase::startNotify ( AssemblyHandle assembly, IUnknown *caller )
 {
-  SL_PRINT3 ( "In DbOsgDatabase::startAssembly(), this = %X, caller = %X\n", this, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 
@@ -180,9 +184,9 @@ bool DbOsgDatabase::startAssembly ( AssemblyHandle assembly, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::endAssembly ( AssemblyHandle assembly, IUnknown *caller )
+bool DbOsgDatabase::endNotify ( AssemblyHandle assembly, IUnknown *caller )
 {
-  SL_PRINT3 ( "In DbOsgDatabase::endAssembly(), this = %X, caller = %X\n", this, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groups->empty() );
 
@@ -190,6 +194,74 @@ bool DbOsgDatabase::endAssembly ( AssemblyHandle assembly, IUnknown *caller )
   this->_popGroup();
 
   // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::startNotify ( PartHandle part, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( _root );
+
+  // TODO.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End the part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::endNotify ( PartHandle part, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( _root );
+
+  // TODO.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::startNotify ( InstanceHandle instance, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( _root );
+
+  // TODO.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End the part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::endNotify ( InstanceHandle instance, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( _root );
+
+  // TODO.
   return true;
 }
 

@@ -205,6 +205,105 @@ template <class T> inline void append4D ( const unsigned int &num, const T *arra
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the "from" vector to the end of the "to" vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void append2D ( const std::vector<SlVec2<T> > &from, 
+                                          std::vector<T> &to )
+{
+  // Get the current sizes.
+  unsigned int sizeFrom = from.size();
+  unsigned int sizeTo = to.size();
+
+  // Allocate space. Do not use std::vector::reserve() because we also have 
+  // to make std::vector::size() returns the correct number.
+  to.resize ( sizeTo + sizeFrom * 2 );
+
+  // We start here in the "to" vector.
+  unsigned int index = sizeTo;
+
+  // Loop through and assign.
+  for ( unsigned int i = 0; i < sizeFrom; ++i )
+  {
+    to[index] = from[i][0]; ++index;
+    to[index] = from[i][1]; ++index;
+  }
+
+  // Should be true.
+  SL_ASSERT ( index == to.size() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the "from" vector to the end of the "to" vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void append3D ( const std::vector<SlVec3<T> > &from, 
+                                          std::vector<T> &to )
+{
+  // Get the current sizes.
+  unsigned int sizeFrom = from.size();
+  unsigned int sizeTo = to.size();
+
+  // Allocate space. Do not use std::vector::reserve() because we also have 
+  // to make std::vector::size() returns the correct number.
+  to.resize ( sizeTo + sizeFrom * 3 );
+
+  // We start here in the "to" vector.
+  unsigned int index = sizeTo;
+
+  // Loop through and assign.
+  for ( unsigned int i = 0; i < sizeFrom; ++i )
+  {
+    to[index] = from[i][0]; ++index;
+    to[index] = from[i][1]; ++index;
+    to[index] = from[i][2]; ++index;
+  }
+
+  // Should be true.
+  SL_ASSERT ( index == to.size() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the "from" vector to the end of the "to" vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void append4D ( const std::vector<SlVec4<T> > &from, 
+                                          std::vector<T> &to )
+{
+  // Get the current sizes.
+  unsigned int sizeFrom = from.size();
+  unsigned int sizeTo = to.size();
+
+  // Allocate space. Do not use std::vector::reserve() because we also have 
+  // to make std::vector::size() returns the correct number.
+  to.resize ( sizeTo + sizeFrom * 4 );
+
+  // We start here in the "to" vector.
+  unsigned int index = sizeTo;
+
+  // Loop through and assign.
+  for ( unsigned int i = 0; i < sizeFrom; ++i )
+  {
+    to[index] = from[i][0]; ++index;
+    to[index] = from[i][1]; ++index;
+    to[index] = from[i][2]; ++index;
+    to[index] = from[i][3]; ++index;
+  }
+
+  // Should be true.
+  SL_ASSERT ( index == to.size() );
+}
+
+
 }; // namespace CadKit.
 
 

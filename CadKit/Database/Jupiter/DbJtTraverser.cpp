@@ -226,7 +226,8 @@ bool DbJtTraverser::_traverse ( const char *filename )
   }
 
   // We want all the levels of detail.
-  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
+  //  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
+  importer->setShapeLoadOption ( eaiCADImporter::eaiHIGH_LOD );
 
   // We only want tessellations for now (default is eaiBREP_ONLY).
   importer->setBrepLoadOption ( eaiCADImporter::eaiTESS_ONLY );
@@ -801,6 +802,43 @@ bool DbJtTraverser::getNumShapeSets ( EntityHandle entity,
 
   // It didn't work.
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the arrays for the given LOD, shapen and set id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtTraverser::getShapeSet ( EntityHandle entity, 
+                                  const unsigned int &whichLOD, 
+                                  const unsigned int &whichShape, 
+                                  const unsigned int &whichSet, 
+                                  std::vector<float> &vertices, 
+                                  std::vector<float> &normals, 
+                                  std::vector<float> &colors, 
+                                  std::vector<float> &texture, 
+                                  unsigned int &valid ) const
+{
+  SL_PRINT5 ( "In DbJtTraverser::getShapeSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_ASSERT ( entity );
+
+  // Call the other one.
+  std::vector<SlVec3f> v, n;
+  std::vector<SlVec4f> c;
+  std::vector<SlVec2f> t;
+  if ( false == this->getShapeSet ( entity, whichLOD, whichShape, whichSet, v, n, c, t, valid ) )
+    return false;
+
+  // Append to the given vectors. We can ignore the "valid" flag for this.
+  CadKit::append3D ( v, vertices );
+  CadKit::append3D ( n, normals );
+  CadKit::append4D ( c, colors );
+  CadKit::append2D ( t, texture );
+
+  // It worked.
+  return true;
 }
 
 

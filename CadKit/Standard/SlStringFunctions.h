@@ -621,7 +621,7 @@ template<class F, class S, class B> inline bool setStringFromErrorId
     if ( buffer )
     {
       // Set this string.
-      theString == buffer;
+      theString = buffer;
 
       // Free the string.
       ::LocalFree ( buffer );

@@ -122,7 +122,7 @@ bool DbJtTraverser::init()
   if ( eai_ERROR == eaiEntityFactory::init() )
   {
     CadKit::format ( _error, "Failed to initialize the DirectModel Data Toolkit." ); 
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -139,7 +139,7 @@ bool DbJtTraverser::init()
   if ( eai_ERROR == eaiEntityFactory::registerCustomer ( customerNumber ) )
   {
     CadKit::format ( _error, "Failed to register customer number: %d.", customerNumber ); 
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -231,7 +231,7 @@ bool DbJtTraverser::traverse ( const char *filename )
   catch ( ... )
   {
     CadKit::format ( _error, "Exception generated when attempting to traverse." );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 }
@@ -262,7 +262,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( importer.isNull() )
   {
     CadKit::format ( _error, "Failed to create CAD importer. Is your license set up correctly?" );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -285,7 +285,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( traverser.isNull() )
   {
     CadKit::format ( _error, "Failed to create database traverser." );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -298,7 +298,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( IMPORT_START ) )
   {
     CadKit::format ( _error, "Failed to start importing database: %s", filename );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -309,7 +309,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( root.isNull() )
   {
     CadKit::format ( _error, "Failed to import database: %s", filename );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -319,7 +319,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( IMPORT_FINISH ) )
   {
     CadKit::format ( _error, "Failed to finish importing database: %s", filename );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -331,7 +331,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( TRAVERSAL_START ) )
   {
     CadKit::format ( _error, "Failed to start traversal." );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -341,7 +341,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( eai_OK != traverser->traverseGraph ( root ) )
   {
     CadKit::format ( _error, "Failed to traverse database." );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -351,7 +351,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( TRAVERSAL_FINISH ) )
   {
     CadKit::format ( _error, "Failed to finish traversal." );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return false;
   }
 
@@ -426,7 +426,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       if ( false == this->_sendMessage ( LEVEL_PUSH ) )
       {
         CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
-        NOTIFY << _error;
+        NOTIFY << _error.c_str();
         return eai_ERROR;
       }
     }
@@ -444,7 +444,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       if ( false == this->_sendMessage ( LEVEL_POP ) )
       {
         CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
-        NOTIFY << _error;
+        NOTIFY << _error.c_str();
         return eai_ERROR;
       }
     }
@@ -457,7 +457,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
   if ( false == this->_sendMessage ( ENTITY ) )
   {
     CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
-    NOTIFY << _error;
+    NOTIFY << _error.c_str();
     return eai_ERROR;
   }
 

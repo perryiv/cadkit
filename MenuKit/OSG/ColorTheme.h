@@ -8,7 +8,6 @@
 
 #include "osg/Vec4"
 
-// TODO: rename this file to Theme.h
 namespace MenuKit
 {
 
@@ -44,7 +43,7 @@ namespace MenuKit
       }
 
       void back(const ColorType& c) { _back = c; }
-      const ColorType& backg() const { return _back; }
+      const ColorType& back() const { return _back; }
 
       void front(const ColorType& c) { _front = c; }
       const ColorType& front() const { return _front; }

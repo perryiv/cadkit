@@ -2,7 +2,7 @@
 #define _menukit_osg_colorthemeskin_h_
 
 #include "ThemeSkin.h"   // base class
-#include "BasicTheme.h"  // for tyepdef
+#include "ColorTheme.h"  // for tyepdef
 
 #include "../Menu.h"
 #include "../Button.h"
@@ -23,8 +23,8 @@ namespace MenuKit
   {
 
     /** ColorThemeSkin
-      * An implementation of thye ThemeSkin base class.
-      * Assumes the them has 2 fields, back and front color
+      * A simple implementation of the ThemeSkin base class.
+      * Assumes theme has 2 fields, back and front color
       */
     template<class ThemeType>
     class ColorThemeSkin : public ThemeSkin<ThemeType>
@@ -32,7 +32,8 @@ namespace MenuKit
     public:
       typedef ThemeSkin<ThemeType> BaseClass;
 
-      ColorThemeSkin(): BaseClass(), _picture(0.0,1.0), _margin(0.2), _text(0.8)
+      ColorThemeSkin(): BaseClass(),
+        _picture(0.0,1.0), _margin(0.2), _text(0.8)
       {}
 
       ColorThemeSkin(const ColorThemeSkin& s): BaseClass(s),
@@ -189,22 +190,20 @@ private:
   float _depth;
 };
 
-};  // end namespace Detail
-
-using namespace Detail;
 // ------------------------ //
 //  HELPER IMPLEMENTATION
 // ------------------------ //
+// TODO: make these classes templated for ThemeType
 osg::Drawable* Word::operator() ()
 {
-  osg::ref_ptr<osgText::Text> text = new osgText::Text;
+  osgText::Text* text = new osgText::Text();
   text->setDrawMode(osgText::Text::TEXT);
   text->setAlignment( osgText::Text::LEFT_BASE_LINE );
   text->setText( _text );
   text->setFont( _font.get() );
   text->setColor( color() );
   text->setCharacterSize( height(),_ar );  // height, AR
-  return( text.release() );
+  return( text );
 }
 
 osg::Drawable* BackgroundBox::operator() ()
@@ -224,7 +223,7 @@ osg::Drawable* BackgroundBox::operator() ()
   osg::Vec4Array* colors = new osg::Vec4Array;
   colors->push_back( color() );
 
-  osg::ref_ptr<osg::Geometry> patch = new osg::Geometry;
+  osg::Geometry* patch = new osg::Geometry;
   patch->setVertexArray( vertices );
   patch->setNormalArray( normals );
   patch->setNormalBinding( osg::Geometry::BIND_OVERALL );
@@ -233,7 +232,7 @@ osg::Drawable* BackgroundBox::operator() ()
   patch->addPrimitiveSet( new osg::DrawArrays(_drawmode,
                                               0,vertices->size()) );
 
-  return( patch.release() );
+  return( patch );
 }
 
 osg::Drawable* Arrow::operator () ()
@@ -250,7 +249,7 @@ osg::Drawable* Arrow::operator () ()
   osg::Vec4Array* colors = new osg::Vec4Array();
   colors->push_back( color() );
 
-  osg::ref_ptr<osg::Geometry> patch = new osg::Geometry();
+  osg::Geometry* patch = new osg::Geometry();
   patch->setVertexArray( vertices );
   patch->setNormalArray( normals );
   patch->setNormalBinding( osg::Geometry::BIND_OVERALL );
@@ -258,7 +257,7 @@ osg::Drawable* Arrow::operator () ()
   patch->setColorBinding( osg::Geometry::BIND_OVERALL );
   patch->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,vertices->size()) );
 
-  return( patch.release() );
+  return( patch );
 }
 
 osg::Drawable* Disk::operator() ()
@@ -318,7 +317,7 @@ osg::Drawable* Disk::operator() ()
   osg::Vec3Array* normals = new osg::Vec3Array();
   normals->push_back( osg::Vec3(0.0,0.0,1.0) );
 
-  osg::ref_ptr<osg::Geometry> disk = new osg::Geometry();
+  osg::Geometry* disk = new osg::Geometry();
   disk->setVertexArray( vertices );
   disk->setNormalArray( normals );
   disk->setColorArray( colors );
@@ -326,8 +325,10 @@ osg::Drawable* Disk::operator() ()
   disk->setColorBinding( osg::Geometry::BIND_OVERALL );
   disk->addPrimitiveSet( new osg::DrawArrays(drawmode,0,vertices->size()) );
 
-  return( disk.release() );
+  return( disk );
 }
+
+};  // end namespace Detail
 
 // ------------------------ //
 //   SKIN IMPLEMENTATION
@@ -345,23 +346,27 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Menu& m)
   word.color( scheme.front() );
 
   Detail::BackgroundBox backbox(box().height(), box().width(), -0.02);
-  backbox.color( scheme.front() );
+  backbox.color( scheme.back() );
 
-  //osg::ref_ptr<osg::Geode> wordgeode = new osg::Geode();
-  //wordgeode->addDrawable( word() );
+  osg::ref_ptr<osg::Geode> wordgeode = new osg::Geode();
+  wordgeode->addDrawable( word() );
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
-  //wordmt->addChild( wordgeode.get() );
+  wordmt->addChild( wordgeode.get() );
+  // TODO: move the word
 
-  //osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
-  //backgeode->addDrawable( backbox() );
+  osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
+  backgeode->addDrawable( backbox() );
   osg::ref_ptr<osg::MatrixTransform> backmt = new osg::MatrixTransform();
-  //backmt->addChild( backgeode.get() );
+  backmt->addChild( backgeode.get() );
+  // TODO: move the background??? probably not.
 
-  osg::ref_ptr<osg::Group> group = new osg::Group();
+  // TODO: make other graphic boxes
+
+  osg::Group* group = new osg::Group();
   group->addChild( backmt.get() );
   group->addChild( wordmt.get() );
 
-  return( group.get() );
+  return( group );
 }
 
 template<class ThemeType>
@@ -379,17 +384,21 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Button& b)
   wordgeode->addDrawable( word() );
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->addChild( wordgeode.get() );
+  // TODO: move the word
 
   osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
   backgeode->addDrawable( backbox() );
   osg::ref_ptr<osg::MatrixTransform> backmt = new osg::MatrixTransform();
   backmt->addChild( backgeode.get() );
+  // TODO: move the backbox??? probably not
 
-  osg::ref_ptr<osg::Group> group = new osg::Group();
+  // TODO: make other graphic boxes
+
+  osg::Group* group = new osg::Group();
   group->addChild( backmt.get() );
   group->addChild( wordmt.get() );
 
-  return( group.get() );
+  return( group );
 }
 
 template<class ThemeType>
@@ -399,9 +408,10 @@ float ColorThemeSkin<ThemeType>::width(const Menu& m)
   // 2 graphic boxes, 2 x _box's width
   // 1 text box,      1 x  boundingbox's width
   // 2 margins,       2 x _margin
-  Word word;
+  Detail::Word word;
   word.text( m.text() );
   word.font( font() );
+  word.color( this->theme().front() );
   word.height( _text*box().height() );
   osg::ref_ptr<osg::Drawable> d = word();
   osg::BoundingBox bb = d->getBound();
@@ -418,9 +428,10 @@ float ColorThemeSkin<ThemeType>::width(const Button& b)
   // 2 graphic boxes, 2 x _box's width
   // 1 text box,      1 x  boundingbox's width
   // 2 margins,       2 x _margin
-  Word word;
+  Detail::Word word;
   word.text( b.text() );
   word.font( font() );
+  word.color( this->theme().front() );
   word.height( _text*box().height() );
   osg::ref_ptr<osg::Drawable> d = word();
   osg::BoundingBox bb = d->getBound();

@@ -135,13 +135,13 @@ void TileLayer<TileType>::pop_children(const Menu& m)
 template<class TileType>
 osg::Vec3 TileLayer<TileType>::displacement(const Menu& m)
 {
-  Menu::Layout ml = m.layout();
   osg::Vec3 dv;
 
   if( m.parent() )
   {
     const Menu* parent = m.parent();
     Menu::Layout pl = parent->layout();
+    Menu::Layout ml = m.layout();
 
     if( pl==Menu::VERTICAL && ml==Menu::VERTICAL )
     {

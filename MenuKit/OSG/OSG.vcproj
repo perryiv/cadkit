@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(VJ_BASE_DIR)/include"
+				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -34,11 +34,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgTextd.lib"
+				AdditionalDependencies="MenuKitd.lib osgd.lib osgTextd.lib"
 				OutputFile="../../bin/MenuKitOsgd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/MenuKitOsgd.pdb"
 				SubSystem="2"
@@ -73,7 +73,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(VJ_BASE_DIR)/include"
+				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="TRUE"
@@ -86,11 +86,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgText.lib"
+				AdditionalDependencies="MenuKit.lib osg.lib osgText.lib"
 				OutputFile="../../bin/MenuKitOsg.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/MenuKitOsg.pdb"
 				SubSystem="2"
@@ -134,6 +134,18 @@
 				RelativePath=".\BaseMenu.h">
 			</File>
 			<File
+				RelativePath=".\BaseTileFunctor.h">
+			</File>
+			<File
+				RelativePath=".\ColorTheme.h">
+			</File>
+			<File
+				RelativePath=".\ColorThemeTile.cpp">
+			</File>
+			<File
+				RelativePath=".\ColorThemeTile.h">
+			</File>
+			<File
 				RelativePath=".\Export.h">
 			</File>
 			<File
@@ -159,6 +171,9 @@
 			</File>
 			<File
 				RelativePath=".\Skin.h">
+			</File>
+			<File
+				RelativePath=".\TileLayer.h">
 			</File>
 		</Filter>
 	</Files>

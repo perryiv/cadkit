@@ -118,6 +118,10 @@ SOURCE=.\CtTranslation.cpp
 
 SOURCE=.\CtTranslation.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\CtUsage.h
+# End Source File
 # End Group
 # Begin Group "DLL"
 

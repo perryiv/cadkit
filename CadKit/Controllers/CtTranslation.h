@@ -66,7 +66,7 @@ public:
   virtual bool            checkArguments ( const int &argc, const char **argv ) const;
 
   // Get the usage string.
-  virtual std::string     getUsageString ( const std::string &program, const std::string &ext ) const;
+  virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const;
 
   // Parse the arguments.
   virtual bool            parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args );

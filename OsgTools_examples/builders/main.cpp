@@ -78,7 +78,7 @@ osg::Group* create_scene()
   msphere.color_policy().specular( osg::Vec4(0.5,0.5,0.5,1.0) ); // some specular
   mtmsph->addChild( msphere() );
 
-  OsgTools::Circle circle(float(types),types);
+  OsgTools::Circle circle((float)types,types);
   osg::Vec3Array* cpoint = circle();
 
   mtcbox->setMatrix( osg::Matrix::translate((*cpoint)[0][0],

@@ -32,6 +32,7 @@
 # include <stack>
 # include <algorithm>
 # include <stdexcept>
+# include <limits>
 #endif
 
 #endif // _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

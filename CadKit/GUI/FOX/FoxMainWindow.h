@@ -54,8 +54,8 @@ public:
 
 protected:
 
-  SlAutoPtr<FXMenubar> _menuBar;
-  SlAutoPtr<FXStatusbar> _statusBar;
+  SlAutoPtr<FXMenuBar> _menuBar;
+  SlAutoPtr<FXStatusBar> _statusBar;
   SlAutoPtr<FXMenuPane> _fileMenu;
   SlAutoPtr<FXMenuPane> _windowMenu;
   SlAutoPtr<FXMenuPane> _helpMenu;

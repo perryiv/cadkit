@@ -18,8 +18,11 @@
 
 #include "FoxApi.h"
 
-class FXCursor;
-class FXApp;
+namespace FX
+{
+  class FXCursor;
+  class FXApp;
+};
 
 
 namespace CadKit
@@ -45,12 +48,12 @@ public:
   };
 
   // Create a standard cursor.
-  static FXCursor *           create ( const Type &type, 
+  static FX::FXCursor *       create ( const Type &type, 
                                        const bool &createIt,
-                                       FXApp *app );
+                                       FX::FXApp *app );
 
   // Create a cursor from the given source and mask arrays.
-  static FXCursor *           create ( const unsigned char *source, 
+  static FX::FXCursor *       create ( const unsigned char *source, 
                                        const unsigned char *mask, 
                                        const int &width, 
                                        const int &height, 
@@ -58,7 +61,7 @@ public:
                                        const int &hotSpotY, 
                                        const Format &arrayFormat,
                                        const bool &createIt,
-                                       FXApp *app );
+                                       FX::FXApp *app );
 };
 };
 

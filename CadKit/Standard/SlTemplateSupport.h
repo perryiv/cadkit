@@ -16,80 +16,111 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_INLINE_SUPPORT_TEMPLATES_FUNCTIONS_H_
 #define _CADKIT_STANDARD_LIBRARY_INLINE_SUPPORT_TEMPLATES_FUNCTIONS_H_
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <math.h>
-#endif
+#include <cmath>
+
+
+namespace CadKit {
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macros to help define the "long double" math functions.
+//  Macro to help create unary functors and a helper function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if _WIN32 || __sgi
-# define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1(function,num) function##l ( num )
-# define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_2(function,num1,num2) function##l ( num1, num2 )
-#elif __GNUC__
-# define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1(function,num) \
-  static_cast < long double > ( function ( static_cast < double > ( num ) ) )
-# define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_2(function,num1,num2) \
-  static_cast < long double > ( function ( static_cast < double > ( num1 ), static_cast < double > ( num2 ) ) )
-#else
-TODO
-#endif
+#define CADKIT_DECLARE_UNARY_SPECIALIZATIONS(class_name,internal_function_name,external_function_name) \
+template < class Type > struct class_name; \
+template <> struct class_name < double > \
+{ \
+  double operator () ( double value ) \
+  { \
+  return internal_function_name ( value ); \
+  } \
+}; \
+template <> struct class_name < float > \
+{ \
+  float operator () ( float value ) \
+  { \
+    return static_cast < float > ( internal_function_name ( static_cast < double > ( value ) ) ); \
+  } \
+}; \
+template <> struct class_name < long double > \
+{ \
+  long double operator () ( long double value ) \
+  { \
+    return static_cast < long double > ( internal_function_name ( static_cast < double > ( value ) ) ); \
+  } \
+}; \
+template < typename Type > Type external_function_name ( Type value ) \
+{ \
+  return class_name < Type > () ( value ); \
+}
 
-
-namespace CadKit
-{
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Overload these functions so we can use them in templates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline long double getSquareRoot ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::sqrt, num ); }
-inline double      getSquareRoot ( double num )      { return ::sqrt  ( num ); }
-inline float       getSquareRoot ( float num )       { return ::sqrtf ( num ); }
-inline int         getSquareRoot ( int num )         { return static_cast<int>   ( ::sqrt ( static_cast<double> ( num ) ) ); }
-inline long        getSquareRoot ( long num )        { return static_cast<long>  ( ::sqrt ( static_cast<double> ( num ) ) ); }
-inline short       getSquareRoot ( short num )       { return static_cast<short> ( ::sqrt ( static_cast<double> ( num ) ) ); }
-
-inline long double getSine ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::sin, num ); }
-inline double      getSine ( double num )      { return ::sin  ( num ); }
-inline float       getSine ( float num )       { return ::sinf ( num ); }
-
-inline long double getCosine ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::cos, num ); }
-inline double      getCosine ( double num )      { return ::cos  ( num ); }
-inline float       getCosine ( float num )       { return ::cosf ( num ); }
-
-inline long double getTangent ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::tan, num ); }
-inline double      getTangent ( double num )      { return ::tan  ( num ); }
-inline float       getTangent ( float num )       { return ::tanf ( num ); }
-
-inline long double getArcSine ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::asin, num ); }
-inline double      getArcSine ( double num )      { return ::asin  ( num ); }
-inline float       getArcSine ( float num )       { return ::asinf ( num ); }
-
-inline long double getArcCosine ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::acos, num ); }
-inline double      getArcCosine ( double num )      { return ::acos  ( num ); }
-inline float       getArcCosine ( float num )       { return ::acosf ( num ); }
-
-inline long double getArcTangent ( long double num ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1 ( ::atan, num ); }
-inline double      getArcTangent ( double num )      { return ::atan  ( num ); }
-inline float       getArcTangent ( float num )       { return ::atanf ( num ); }
-
-inline long double getArcTangent2 ( long double y, long double x ) { return _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_2 ( ::atan2, y, x ); }
-inline double      getArcTangent2 ( double y,      double x )      { return ::atan2  ( y, x ); }
-inline float       getArcTangent2 ( float y,       float x )       { return ::atan2f ( y, x ); }
-
-
-}; // namespace CadKit
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// For convenience.
+//  Macro to help create binary functors and a helper function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define CADKIT_DECLARE_BINARY_SPECIALIZATIONS(class_name,internal_function_name,external_function_name) \
+template < class Type > struct class_name; \
+template <> struct class_name < double > \
+{ \
+  double operator () ( double a, double b ) \
+  { \
+    return internal_function_name ( a, b ); \
+  } \
+}; \
+template <> struct class_name < float > \
+{ \
+  float operator () ( float a, float b ) \
+  { \
+    return static_cast < float > ( internal_function_name ( static_cast < double > ( a ), static_cast < double > ( b ) ) ); \
+  } \
+}; \
+template <> struct class_name < long double > \
+{ \
+  long double operator () ( long double a, long double b ) \
+  { \
+    return static_cast < long double > ( internal_function_name ( static_cast < double > ( a ), static_cast < double > ( b ) ) ); \
+  } \
+}; \
+template < typename Type > Type external_function_name ( Type a, Type b ) \
+{ \
+  return class_name < Type > () ( a, b ); \
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Declare math functors that take a single argument.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( Sine,       ::sin,  getSine );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( Cosine,     ::cos,  getCosine );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( Tangent,    ::tan,  getTangent );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( ArcSine,    ::asin, getArcSine );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( ArcCosine,  ::acos, getArcCosine );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( ArcTangent, ::atan, getArcTangent );
+CADKIT_DECLARE_UNARY_SPECIALIZATIONS ( SquareRoot, ::sqrt, getSquareRoot );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Declare math functors that take a two arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CADKIT_DECLARE_BINARY_SPECIALIZATIONS ( ArcTangent2, ::atan2, getArcTangent2 );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// For backward compatibility.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +132,14 @@ inline float       getArcTangent2 ( float y,       float x )       { return ::at
 #define SL_ARC_COSINE     CadKit::getArcCosine
 #define SL_ARC_TANGENT    CadKit::getArcTangent
 #define SL_ARC_TANGENT_2  CadKit::getArcTangent2
+
+
+// Clean up.
+#undef CADKIT_DECLARE_UNARY_SPECIALIZATIONS
+#undef CADKIT_DECLARE_BINARY_SPECIALIZATIONS
+
+
+}; // namespace CadKit
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_SUPPORT_TEMPLATES_FUNCTIONS_H_

@@ -16,7 +16,10 @@
 #ifndef _CADKIT_SCENEGRAPH_OPENGL_FOX_RENDERING_CONTEXT_IMPLEMENTATION_H_
 #define _CADKIT_SCENEGRAPH_OPENGL_FOX_RENDERING_CONTEXT_IMPLEMENTATION_H_
 
-class FXGLCanvas;
+namespace FX
+{
+  class FXGLCanvas;
+};
 
 
 namespace CadKit
@@ -39,10 +42,9 @@ public:
 
 protected:
 
-  FXGLCanvas *_canvas;
+  FX::FXGLCanvas *_canvas;
 };
 
 }; // namespace CadKit
 
 #endif // _CADKIT_SCENEGRAPH_OPENGL_FOX_RENDERING_CONTEXT_IMPLEMENTATION_H_
-

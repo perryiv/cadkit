@@ -123,7 +123,7 @@ bool FoxMdiMainWindow::init()
   GUI_FOX_CHECK_EXPRESSION ( _mdiMenu.isValid() );
 
   // MDI buttons in menu.
-  GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMDIWindowButton   ( _menuBar, _clientArea, FXMDIClient::ID_MDI_MENUWINDOW,   LAYOUT_LEFT ) );
+  GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMDIWindowButton   ( _menuBar, _mdiMenu, _clientArea, FXMDIClient::ID_MDI_MENUWINDOW,   LAYOUT_LEFT ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMDIDeleteButton   ( _menuBar, _clientArea, FXMDIClient::ID_MDI_MENUCLOSE,    FRAME_RAISED | LAYOUT_RIGHT ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMDIRestoreButton  ( _menuBar, _clientArea, FXMDIClient::ID_MDI_MENURESTORE,  FRAME_RAISED | LAYOUT_RIGHT ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMDIMinimizeButton ( _menuBar, _clientArea, FXMDIClient::ID_MDI_MENUMINIMIZE, FRAME_RAISED | LAYOUT_RIGHT ) );
@@ -137,7 +137,9 @@ bool FoxMdiMainWindow::init()
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _windowMenu, "Tile &Vertically",  NULL, _clientArea, FXMDIClient::ID_MDI_TILEVERTICAL ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _windowMenu, "C&ascade",          NULL, _clientArea, FXMDIClient::ID_MDI_CASCADE ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _windowMenu, "&Close",            NULL, _clientArea, FXMDIClient::ID_MDI_CLOSE ) );
-  GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _windowMenu, "Close &All",        NULL, _clientArea, FXMDIClient::ID_CLOSE_ALL_DOCUMENTS ) );
+  
+  // This seems to have been depreciated.
+  //GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _windowMenu, "Close &All",        NULL, _clientArea, FXMDIClient::ID_CLOSE_ALL_DOCUMENTS ) );
 
   FXMenuSeparator *separator = new FXMenuSeparator ( _windowMenu );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != separator );

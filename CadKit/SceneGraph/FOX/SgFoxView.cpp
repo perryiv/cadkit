@@ -359,7 +359,7 @@ bool SgFoxView::spin()
   SL_ASSERT ( _timer == 0x0 );
 
   // Set a new timeout event.
-  _timer = this->getApp()->addTimeout ( _viewer->getSpinTimerInterval(), this, 0 );
+  _timer = this->getApp()->addTimeout ( this, 0, _viewer->getSpinTimerInterval() );
 
   // We should have a good timer now.
   return ( NULL != _timer );
@@ -402,7 +402,7 @@ long SgFoxView::onTimeout ( FXObject *object, FXSelector selector, void *callDat
   SL_ASSERT ( _viewer.isValid() );
 
   // Set a new timeout event.
-  _timer = this->getApp()->addTimeout ( _viewer->getSpinTimerInterval(), this, 0 );
+  _timer = this->getApp()->addTimeout ( this, 0, _viewer->getSpinTimerInterval() );
 
   // Tell the viewer to spin the camera a little.
   _viewer->spinNotify();

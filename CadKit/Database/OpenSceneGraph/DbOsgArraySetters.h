@@ -46,7 +46,7 @@ class DbOsgVertexSetter : public IQueryShapeVerticesVec3f::VertexSetter
 {
 public:
 
-  typedef std::vector< osg::ref_ptr<osg::Primitive> > Primitives;
+  typedef std::vector< osg::ref_ptr<osg::PrimitiveSet> > Primitives;
 
   DbOsgVertexSetter ( const VertexSetType &type ) : _type ( type ), _vertices ( new osg::Vec3Array ){}
 
@@ -65,7 +65,7 @@ protected:
   osg::ref_ptr<osg::Vec3Array> _vertices;
   Primitives _primitives;
 
-  osg::Primitive::Mode  _getPrimitiveMode() const;
+  osg::PrimitiveSet::Mode  _getPrimitiveMode() const;
 };
 
 

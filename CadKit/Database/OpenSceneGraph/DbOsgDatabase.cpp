@@ -37,8 +37,7 @@
 #include "osg/Geometry"        // "Standard/SlTemplateSupport.h"
 #include "osgDB/WriteFile"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-#endif
+#include <limits>
 
 // To help shorten up the lines.
 #undef  ERROR
@@ -47,8 +46,8 @@
 #define WARNING  this->_notifyWarning
 #define FORMAT   CadKit::getString
 
-#define LAST_LOD_RANGE            1e7
-#define MAX_LOD_DISTANCE_FACTOR   30
+#define LAST_LOD_RANGE            std::numeric_limits<float>::max()
+#define MAX_LOD_DISTANCE_FACTOR   30 // TODO, make this a command line argument.
 
 using namespace CadKit;
 
@@ -420,28 +419,23 @@ void DbOsgDatabase::_setLodParameters ( osg::LOD *lod ) const
   // Set the center of this lod to be the center of the bounding sphere.
   lod->setCenter ( center );
 
-  // Set the first range.
-  lod->setRange ( 0, 0.0f );
+  // The minimum of the range we set.
+  float rangeMin ( 0.0f );
 
-  // Loop through all of the children, starting at the second one.
+  // Loop through all of the children except the last one.
+  // Note: Unlike previous versions of OSG, there is one LOD "range" for 
+  // each LOD "child". Each "range" has a min and max value.
   unsigned int numChildren = lod->getNumChildren();
-  for ( unsigned int i = 1; i < numChildren; ++i )
+  for ( unsigned int i = 0; i < numChildren - 1; ++i )
   {
-    // Get the i'th child node.
-    child = lod->getChild ( i );
-    SL_ASSERT ( child );
-
-    // As of now, this should be true. However, it isn't important to the 
-    // algorithm. Take this out if/when this is no longer true.
-    SL_ASSERT ( NULL != dynamic_cast<osg::Geode *> ( child ) );
-
     // Set the range.
-    float dist = ( ( (float) i ) * maxDist ) / ( (float) ( numChildren - 1 ) );
-    lod->setRange ( i, dist );
+    float rangeMax = ( ( (float) i + 1 ) * maxDist ) / ( (float) ( numChildren - 1 ) );
+    lod->setRange ( i, rangeMin, rangeMax );
+    rangeMin = rangeMax;
   }
 
-  // There should be one more range value than the number of children.
-  lod->setRange ( numChildren, LAST_LOD_RANGE );
+  // Set the range for the last child.
+  lod->setRange ( numChildren - 1, rangeMin, LAST_LOD_RANGE );
 }
 
 
@@ -700,7 +694,7 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
   {
     // Set the vertices and the primitives.
     geometry->setVertexArray ( setter.getVertices() );
-    geometry->setPrimitiveList ( setter.getPrimitives() );
+    geometry->setPrimitiveSetList ( setter.getPrimitives() );
 
     // It worked.
     return true;

@@ -16,13 +16,15 @@
 #ifndef _XML_READER_CLASS_H_
 #define _XML_READER_CLASS_H_
 
+#include "XmlDom/DoNothing.h"
+
 #include <algorithm>
 
 
 namespace XML {
 
 
-template < class PolicyType > class Reader
+template < class PolicyType, class CallbackType > class Reader
 {
 public:
 
@@ -33,7 +35,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   typedef PolicyType                    Policy;
-  typedef typename Policy::NodeCallback NodeCallback;
+  typedef CallbackType                  NodeCallback;
   typedef typename Policy::TrimPolicy   TrimPolicy;
   typedef typename Policy::String       String;
   typedef typename Policy::ErrorPolicy  ErrorPolicy;
@@ -117,6 +119,9 @@ public:
   template < class Bi > void read ( Bi start, const Bi &stop )
   {
     _errorPolicy ( 2285651998u, start != stop );
+
+    // Tell the callback to clear its state.
+    _callback.clear();
 
     // Skip the header.
     start = this->_skipHeader ( start, stop );

@@ -13,23 +13,32 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _XML_CALLBACK_TREE_H_
-#define _XML_CALLBACK_TREE_H_
+#ifndef _XML_CALLBACK_BUILD_TREE_H_
+#define _XML_CALLBACK_BUILD_TREE_H_
+
+#include "XmlDom/Pointer.h"
+
+#include <list>
 
 
 namespace XML {
 namespace Callback {
 
 
-template < class StringType > struct Tree
+template < class NodeType > class BuildTree
 {
+public:
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Typedefs.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef StringType String;
+  typedef NodeType Node;
+  typedef typename Node::String String;
+  typedef XML::Pointer < Node > Pointer;
+  typedef std::list < Pointer > Parents;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -38,7 +47,9 @@ template < class StringType > struct Tree
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  explicit Notify() : _start ( 0x0 ), _end ( 0x0 ), _data ( 0x0 ){}
+  explicit BuildTree() : _parents(), _root ( 0x0 )
+  {
+  }
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +58,9 @@ template < class StringType > struct Tree
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Notify ( const Notify &cb ) : _start ( cb._start ), _end ( cb._end ){}
+  BuildTree ( const BuildTree &cb ) : _parents ( cb._parents ), _root ( cb._root )
+  {
+  }
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -56,47 +69,11 @@ template < class StringType > struct Tree
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Notify &operator = ( const Notify &cb )
+  BuildTree &operator = ( const BuildTree &cb )
   {
-    _start = cb._start;
-    _end = cb._end;
+    _parents = cb._parents;
+    _root    = cb._root;
     return *this;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the start callback.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( StartCallbackType *cb )
-  {
-    _start = cb;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the end callback.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( EndCallbackType *cb )
-  {
-    _end = cb;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the user data.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( UserDataType data )
-  {
-    _data = data;
   }
 
 
@@ -106,12 +83,21 @@ template < class StringType > struct Tree
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void startNode ( const String &name, const String &value )
+  void start ( const String &name, const String &value )
   {
-    if ( _start )
-    {
-      _start ( name, value, _data );
-    }
+    // Make a new node.
+    Pointer node ( new Node ( name, value ) );
+
+    // Assign the root if this is the first time.
+    if ( !_root.valid() )
+      _root = node;
+
+    // If there is a parent then append this node to it.
+    if ( !_parents.empty() )
+      _parents.back()->append ( node.get() );
+
+    // Push the new node onto the parent stack.
+    _parents.push_back ( node );
   }
 
 
@@ -121,19 +107,46 @@ template < class StringType > struct Tree
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void endNode ( const String &name )
+  void end ( const String &name )
   {
-    if ( _end )
-    {
-      _end ( name, _data );
-    }
+    // Pop the current child.
+    if ( !_parents.empty() )
+      _parents.pop_back();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Clear any accumulated state.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void clear()
+  {
+    while ( !_parents.empty() )
+      _parents.pop_back();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the root.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const Node *root() const
+  {
+    return _root.get();
+  }
+  Node *root()
+  {
+    return _root.get();
   }
 
 protected:
 
-  StartCallbackType *_start;
-  EndCallbackType *_end;
-  UserDataType _data;
+  Parents _parents;
+  Pointer _root;
 };
 
 
@@ -141,4 +154,4 @@ protected:
 }; // namespace XML
 
 
-#endif // _XML_CALLBACK_TREE_H_
+#endif // _XML_CALLBACK_BUILD_TREE_H_

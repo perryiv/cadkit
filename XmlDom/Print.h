@@ -21,109 +21,16 @@ namespace XML {
 namespace Callback {
 
 
-template < class StringType > struct DoNothing
-{
-  typedef StringType String;
-  typedef UserDataType UserData;
-  explicit DoNothing(){}
-  void start ( const String &name, const String &value ){}
-  void end   ( const String &name ){}
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A node-callback class.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class StringType, class UserDataType > struct Notify
+struct Print
 {
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Useful typedef.
+  //  Constructor.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef StringType String;
-  typedef UserDataType UserData;
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  The callback type.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  typedef void StartCallbackType ( const String &name, const String &value, UserData data );
-  typedef void EndCallbackType   ( const String &name, UserData data );
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Default constructor.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  explicit Notify() : _start ( 0x0 ), _end ( 0x0 ), _data ( 0x0 ){}
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Copy constructor.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Notify ( const Notify &cb ) : _start ( cb._start ), _end ( cb._end ){}
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Assignment.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Notify &operator = ( const Notify &cb )
+  Print() : _indent()
   {
-    _start = cb._start;
-    _end = cb._end;
-    return *this;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the start callback.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( StartCallbackType *cb )
-  {
-    _start = cb;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the end callback.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( EndCallbackType *cb )
-  {
-    _end = cb;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Set the user data.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void set ( UserDataType data )
-  {
-    _data = data;
   }
 
 
@@ -133,12 +40,12 @@ template < class StringType, class UserDataType > struct Notify
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void startNode ( const String &name, const String &value )
+  template < class StringType > void start ( const StringType &name, const StringType &value )
   {
-    if ( _start )
-    {
-      _start ( name, value, _data );
-    }
+    std::cout << _indent << '<' << name << ">\n";
+    _indent += "  ";
+    if ( !value.empty() )
+      std::cout << _indent << value << '\n';
   }
 
 
@@ -148,19 +55,27 @@ template < class StringType, class UserDataType > struct Notify
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void endNode ( const String &name )
+  template < class StringType > end ( const StringType &name )
   {
-    if ( _end )
-    {
-      _end ( name, _data );
-    }
+    if ( _indent.size() >= 2 )
+      _indent.erase ( _indent.size() - 2 );
+    std::cout << _indent << "</" << name << ">\n";
   }
 
-protected:
 
-  StartCallbackType *_start;
-  EndCallbackType *_end;
-  UserDataType _data;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Clear any accumulated state.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void clear()
+  {
+  }
+
+private:
+
+  std::string _indent;
 };
 
 

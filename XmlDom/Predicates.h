@@ -17,10 +17,10 @@
 #define _XML_DOM_PREDICATE_CLASSES_H_
 
 #include <functional>
-#include <string>
 
 
 namespace XML {
+namespace Predicates {
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,12 +29,12 @@ namespace XML {
 //
 /////////////////////////////////////////////////////////////////////////////
 
-struct EqualName : public std::binary_function < const std::string &, const std::string &, bool >
+template < class StringType > struct EqualName : public std::binary_function < const StringType &, const StringType &, bool >
 {
-  EqualName ( const std::string &name ) : _name ( name ){}
+  EqualName ( const StringType &name ) : _name ( name ){}
   template < class PointerType_ > bool operator() ( const PointerType_ &p ) { return ( _name == p->name() ); }
 private:
-  std::string _name;
+  StringType _name;
 };
 
 
@@ -44,9 +44,9 @@ private:
 //
 /////////////////////////////////////////////////////////////////////////////
 
-struct IthEqualName : public std::binary_function < const std::string &, const std::string &, bool >
+template < class StringType > struct IthEqualName : public std::binary_function < const StringType &, const StringType &, bool >
 {
-  IthEqualName ( const std::string &name, unsigned int i ) : _name ( name ), _i ( i ), _count ( 0 ){}
+  IthEqualName ( const StringType &name, unsigned int i ) : _name ( name ), _i ( i ), _count ( 0 ){}
   template < class PointerType_ > bool operator() ( const PointerType_ &p )
   {
     if ( p->name() == _name )
@@ -59,12 +59,13 @@ struct IthEqualName : public std::binary_function < const std::string &, const s
     return false;
   }
 private:
-  std::string _name;
+  StringType _name;
   unsigned int _i;
   unsigned int _count;
 };
 
 
+}; // namespace Predicates
 }; // namespace XML
 
 

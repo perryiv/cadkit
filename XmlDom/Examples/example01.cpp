@@ -17,11 +17,11 @@
 # pragma warning(disable:4786) // Truncated debug names.
 #endif
 
-#include "XmlDom/Error.h"
-#include "XmlDom/Config.h"
-#include "XmlDom/Callback.h"
-#include "XmlDom/Node.h"
+#include "XmlDom/Policy.h"
 #include "XmlDom/Reader.h"
+#include "XmlDom/File.h"
+#include "XmlDom/BuildTree.h"
+#include "XmlDom/Node.h"
 
 #include <iterator>
 #include <string>
@@ -30,13 +30,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include <sys/stat.h>
-
-#ifdef _WIN32
-#define STAT _stat
-#else
-#define STAT stat
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,16 +38,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Node > struct Print
+template < class NodeType > struct Print
 {
-  typedef typename Node::Pointer Pointer;
+  typedef NodeType Node;
+  typedef typename Node::String String;
 
-  void operator() ( const Pointer &node )
+  void operator() ( const Node *node )
   {
-    static std::string indent;
+    static String indent;
 
-    std::string name = node->name();
-    std::string value = node->value();
+    String name  ( node->name()  );
+    String value ( node->value() );
 
     std::cout << indent << '<' << name << '>';
 
@@ -85,31 +79,25 @@ template < class Node > struct Print
 
 template < class I > void read ( const I &start, const I &stop )
 {
-  // For convenience.
-  const bool checkForErrors ( true );
-  const bool createMissingChildren ( true );
-  typedef typename XML::Error::Assert < checkForErrors > AssertPolicy;
-  typedef typename XML::Error::Thrower < checkForErrors > ThrowPolicy;
-  typedef typename XML::Error::Pair < AssertPolicy, ThrowPolicy > ErrorPolicy;
-  typedef typename XML::Node < ErrorPolicy, createMissingChildren > Node;
-  typedef typename XML::Callback::Notify < std::string, void * > NodeCallback;
-  typedef typename XML::Config::Trim TrimPolicy;
-  typedef typename XML::Reader < Node, ErrorPolicy, NodeCallback, TrimPolicy > Reader;
-  typedef typename Reader::Node Node;
-  typedef typename Node::Pointer Pointer;
+  // Typedefs.
+  typedef XML::Config::Policy<>                 Policy;
+  typedef XML::Node < Policy >                  Node;
+  typedef XML::Callback::BuildTree < Node >     BuildCB;
+  typedef XML::Reader < Policy, BuildCB >       Reader;
 
-  // Construct the node tree.
-  Reader reader ( start, stop );
+  // Read the file-string.
+  Reader reader;
+  reader.read ( start, stop );
 
   // Print the node tree.
   Print<Node> print;
-  print ( reader.root() );
+  print ( reader.callback().root() );
 
   // Try to find a specific node.
   try
   {
-    Pointer root = reader.root();
-    Pointer node = root->child ( 0, "b0" );
+    Node *root = reader.callback().root();
+    Node *node = root->child ( 0, "b0" );
     node = node->child ( 0, "c2" );
     node = node->child ( 0, "e" );
     node = node->child ( 0, "s" );
@@ -122,10 +110,6 @@ template < class I > void read ( const I &start, const I &stop )
   {
     std::cout << "Error: " << e.what() << std::endl;
   }
-  catch ( const XML::Error::Exception & )
-  {
-    std::cout << "Error when reading XML file" << std::endl;
-  }
 }
 
 
@@ -137,20 +121,10 @@ template < class I > void read ( const I &start, const I &stop )
 
 void getString ( const std::string &filename, std::string &contents )
 {
-  struct STAT buf;
-  int result = _stat ( filename.c_str(), &buf );
-  assert ( 0 == result );
-
-  // Size the string that will hold the entire file.
-  contents.resize ( buf.st_size );
-
-  // Open the file.
-  std::ifstream in ( filename.c_str() );
-  assert ( in.is_open() );
-
-  // Read the file into the string.
-  for ( std::string::size_type i = 0; i < contents.size(); ++i )
-    contents[i] = in.get();
+  // Load the file into a string.
+  typedef XML::Config::Policy<> Policy;
+  XML::File < Policy > file ( filename );
+  contents.assign ( file.begin(), file.end() );
 }
 
 

@@ -13,11 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _XML_READER_VISITOR_CLASS_H_
-#define _XML_READER_VISITOR_CLASS_H_
+#ifndef _XML_DOM_VISITOR_CLASS_H_
+#define _XML_DOM_VISITOR_CLASS_H_
 
 #include <map>
-#include <string>
 
 
 namespace XML {
@@ -25,9 +24,9 @@ namespace XML {
 
 template
 <
-  class CallbackType_,
-  class CallbackPolicy_,
-  class ErrorPolicy_
+  class PolicyType, 
+  class NodeType, 
+  class CallbackType
 >
 class Visitor
 {
@@ -39,51 +38,81 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef CallbackType_ CallbackType;
-  typedef CallbackPolicy_ CallbackPolicy;
-  typedef ErrorPolicy_ ErrorPolicy;
-  typedef std::map<std::string,CallbackType> Callbacks;
+  typedef PolicyType                    Policy;
+  typedef NodeType                      Node;
+  typedef CallbackType                  NodeCB;
+  typedef typename Policy::String       String;
+  typedef typename Policy::ErrorPolicy  ErrorPolicy;
+  typedef typename Policy::FilterPolicy FilterPolicy;
+  typedef std::map < String, NodeCB >   Callbacks;
+  typedef typename Node::Children       Children;
+  typedef typename Node::ChildItr       ChildItr;
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Possible flags.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  enum
-  {
-    USE_HIERARCHY = 0x00000001
-  };
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Constructors.
+  //  Constructor.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   Visitor() : 
-    _startCBs(), 
-    _finishCBs(), 
-    _error(),
-    _hierarchy(),
-    _name(),
-    _value(),
-    _attributes ( 0x0 ),
-    _flags ( Visitor::USE_HIERARCHY )
+    _startCBs   (),
+    _endCBs     (),
+    _hierarchy  (),
+    _errorPolicy()
   {
   }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Copy constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
   Visitor ( const Visitor &r ) : 
-    _startCBs   ( r._startCBs ),
-    _finishCBs  ( r._finishCBs ),
-    _error      ( r._error ),
-    _hierarchy  ( r._hierarchy ),
-    _name       ( r._name ),
-    _value      ( r._value ),
-    _attributes ( r._attributes ),
-    _flags      ( r._flags )
+    _startCBs    ( r._startCBs ),
+    _endCBs      ( r._endCBs ),
+    _hierarchy   ( r._hierarchy ),
+    _errorPolicy ( r._errorPolicy )
   {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Visit the node.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void operator () ( Node &node )
+  {
+    // Get the name of this node.
+    String name ( node.name() );
+    _errorPolicy ( 1379014409u, false == name.empty() );
+
+    // Add the name of this node to current hierarchy.
+    String ch ( _hierarchy );
+    if ( !_hierarchy.empty() )
+      _hierarchy += '/';
+    _hierarchy += name;
+
+    // Call any start-callbacks if we are supposed to.
+    this->_notify ( _startCBs, node );
+
+    // Call this function for all the children.
+    for ( ChildItr i = node.begin(); i != node.end(); ++i )
+    {
+      Node *node = *i;
+      _errorPolicy ( 3944967299u, 0x0 != node );
+      (*this) ( *node );
+    }
+
+    // Call any finish-callbacks if we are supposed to.
+    this->_notify ( _endCBs, node );
+
+    // Restore the hierarchy.
+    _hierarchy = ch;
   }
 
 
@@ -92,32 +121,18 @@ public:
   //  Read the xml file and call any appropriate callbacks.
   //
   /////////////////////////////////////////////////////////////////////////////
-
-  void read ( const std::string &filename )
-  {
-    std::ifstream in ( filename.c_str() );      // find file of name "filename"
-    ErrorPolicy ( 1071099975, !!in );
-    this->read ( in );                          // send this file to overloaded read function below
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Read the xml file and call any appropriate callbacks.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
+#if 0
   void read ( std::istream &in )
   {
     // Check input.
-    ErrorPolicy ( 1071099976, !!in );
+    _errorPolicy ( 1071099976, !!in );
 
     // Initialize the data members.
     this->_init();
 
     // Declare a new document.
     cppdom::ContextPtr context ( new cppdom::Context );
-    ErrorPolicy ( 1071099977, 0x0 != context.get() );
+    _errorPolicy ( 1071099977, 0x0 != context.get() );
     cppdom::Document document ( context );
 
     // Read the file.
@@ -128,7 +143,7 @@ public:
     {
       _error.error ( e );
       _error.context ( context );
-      ErrorPolicy ( 1071100499, false );
+      _errorPolicy ( 1071100499, false );
       return;
     }
 
@@ -137,17 +152,17 @@ public:
     // the document node should only have one child, and it should be the 
     // root from the file.
     cppdom::NodeList &children = document.getChildren();
-    ErrorPolicy ( 1071116734, 1 == children.size() );
+    _errorPolicy ( 1071116734, 1 == children.size() );
 
     // Traverse the tree.
-    std::string hierarchy;
+    String hierarchy;
     this->_traverse ( hierarchy, *(children.front()) );
 
     // Initialize the data members again because they point to the document 
     // which is about to go out of scope.
     this->_init();
   }
-
+#endif
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -158,7 +173,7 @@ public:
   enum WhichCallback
   {
     NODE_START,
-    NODE_FINISH
+    NODE_END
   };
 
 
@@ -168,44 +183,20 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void add ( WhichCallback which, const std::string &hierarchy, const CallbackType &callback )
+  void add ( WhichCallback which, const String &hierarchy, const NodeCB &callback )
   {
     switch ( which )
     {
     case NODE_START:
       _startCBs[hierarchy] = callback;
       break;
-    case NODE_FINISH:
-      _finishCBs[hierarchy] = callback;
+    case NODE_END:
+      _endCBs[hierarchy] = callback;
       break;
     default:
-      ErrorPolicy ( 1071199269, false );
+      _errorPolicy ( 2080602521u, false );
       break;
     }
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get the flags.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  unsigned int flags() const
-  {
-    return _flags;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get the flags.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void flags ( unsigned int f )
-  {
-    _flags = f;
   }
 
 
@@ -218,23 +209,16 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void _notify ( const std::string &hierarchy, const std::string &name, 
-                 Callbacks &callbacks, Node &node )
+  void _notify ( Callbacks &callbacks, Node &node )
   {
     // See if there is a callback.
-    typename Callbacks::iterator i = callbacks.find ( hierarchy );
+    typename Callbacks::iterator i = callbacks.find ( _hierarchy );
     if ( callbacks.end() == i )
       return;
 
-    // Set the data members.
-    _hierarchy  = hierarchy;
-    _name       = name;
-    _value      = node.value();
-    _attributes = node.attributes();
-
-    // Call the callback.
-    CallbackType &cb = i->second;
-    CallbackPolicy::call ( *this, cb );
+    // Call the callback. See Filter.h before you change the order.
+    NodeCB &cb = i->second;
+    FilterPolicy::call ( cb, node.name(), node.value(), *this, node, _hierarchy );
   }
 
 
@@ -243,15 +227,15 @@ protected:
   //  Traverse the tree.
   //
   /////////////////////////////////////////////////////////////////////////////
-
-  void _traverse ( const std::string &hierarchy, Node &node )
+#if 0
+  void _traverse ( const String &hierarchy, Node &node )
   {
     // Get the name of this node.
-    std::string name ( node.getName() );
-    ErrorPolicy ( 1071116174, false == name.empty() );
+    String name ( node.getName() );
+    _errorPolicy ( 1071116174, false == name.empty() );
 
     // String containing the current hierarchy.
-    std::string ch;
+    String ch;
 
     // If the flag says, add the name of this node to current hierarchy.
     if ( ( this->flags() & USE_HIERARCHY ) == USE_HIERARCHY )
@@ -276,15 +260,15 @@ protected:
     for ( cppdom::NodeList::iterator i = kids.begin(); i != kids.end(); ++i )
     {
       cppdom::NodePtr &node = *i;
-      ErrorPolicy ( 1071119099, 0x0 != node.get() );
+      _errorPolicy ( 1071119099, 0x0 != node.get() );
       if ( cppdom::xml_nt_cdata != node->getType() )
         this->_traverse ( ch, *node );
     }
 
     // Call any finish-callbacks if we are supposed to.
-    this->_notify ( ch, name, _finishCBs, node );
+    this->_notify ( ch, name, _endCBs, node );
   }
-
+#endif
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -292,28 +276,22 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void _init()
+  void clear()
   {
-    _hierarchy  = "";
-    _name       = "";
-    _value      = "";
-    _attributes = 0x0;
+    _hierarchy.clear();
   }
 
 
 private:
 
   Callbacks _startCBs;
-  Callbacks _finishCBs;
-  std::string _hierarchy;
-  std::string _name;
-  std::string _value;
-  std::string _attributes;
-  unsigned int _flags;
+  Callbacks _endCBs;
+  String _hierarchy;
+  ErrorPolicy _errorPolicy;
 };
 
 
 }; // namespace XML
 
 
-#endif // _XML_READER_VISITOR_CLASS_H_
+#endif // _XML_DOM_VISITOR_CLASS_H_

@@ -20,9 +20,13 @@ int main(int argc,char* argv[])
   // make the scene tree
   osg::ref_ptr<osg::Group> root = new osg::Group();
   root->setName("root");
+
   osg::ref_ptr<osg::MatrixTransform> menunode( new osg::MatrixTransform() );
   menunode->setName("menunode");
-  menunode->setMatrix( osg::Matrix::rotate(-osg::PI_2,osg::Vec3(1.0,0.0,0.0)) );
+  osg::Matrix xspin( osg::Matrix::rotate(osg::PI_2,osg::Vec3(1.0,0.0,0.0)) );
+  osg::Matrix yspin( osg::Matrix::rotate(osg::PI,osg::Vec3(0.0,1.0,0.0)) );
+  osg::Matrix total = yspin * xspin;
+  menunode->setMatrix( total );
   root->addChild( menunode.get() );
 
   // make a viewer
@@ -34,11 +38,6 @@ int main(int argc,char* argv[])
   osg::ref_ptr<MenuController> menuhandler = new MenuController( menunode.get() );
   create_menu cm;
   menuhandler->behavior()->root( cm() );
-
-  // TODO: take this out
-  MenuKit::OSG::osgVisualMason::Ptr mason(new MenuKit::OSG::osgVisualMason() );
-  MenuKit::Menu* item = menuhandler->behavior()->root();
-  item->accept( *mason );
 
   // give the eventhandler to the viewer
   viewer->getEventHandlerList().push_front( menuhandler.get() );

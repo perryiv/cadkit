@@ -91,7 +91,7 @@
 				AdditionalOptions="/vmg"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(USUL_INC_DIR)&quot;"
-				PreprocessorDefinitions="_WINDOWS;_USRDLL;WIN32;_DEBUG"
+				PreprocessorDefinitions="_WINDOWS;_USRDLL;WIN32;_DEBUG;_COMPILING_OSGPDB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
@@ -189,6 +189,9 @@
 			</File>
 			<File
 				RelativePath=".\Enum.h">
+			</File>
+			<File
+				RelativePath=".\Export.h">
 			</File>
 			<File
 				RelativePath=".\MaterialChooser.cpp">

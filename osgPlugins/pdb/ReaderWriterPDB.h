@@ -22,10 +22,12 @@
 #include "Molecule.h"
 #include "PeriodicTable.h"
 
+#include "Export.h"
+
 namespace osg { class Group; class LOD; class Geode; };
 
 
-class ReaderWriterPDB : public osgDB::ReaderWriter
+class OSGPDB_EXPORT ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
 

@@ -12,6 +12,8 @@
 #define __OSG_PDB_PLUGIN_ATOM_H__
 
 #include "osg/Vec3"
+#include "osg/MatrixTransform"
+#include "osg/ref_ptr"
 #include "Element.h"
 #include <string>
 
@@ -41,12 +43,15 @@ public:
   const float getRadius() const;
   Atom& operator=(const Atom&);
   const Element* getElement() const { return _element; }
+  osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
+  void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
 private:
   Atom();
   const Element * _element;
   ID _id;
   osg::Vec3 _point;
   std::string _type, _name;
+  mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
 };
 
 #endif

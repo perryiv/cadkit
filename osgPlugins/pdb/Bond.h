@@ -20,6 +20,8 @@
 #include <string>
 
 #include "osg/Vec3"
+#include "osg/MatrixTransform"
+#include "osg/ref_ptr"
 
 class Atom;
 
@@ -33,10 +35,13 @@ public:
   const osg::Vec3& getPoint1() const { return _point1; }
   const osg::Vec3& getPoint2() const { return _point2; }
   const std::string toString() const;
+  osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
+  void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
 private:
   Bond();
   int _id;
   osg::Vec3 _point1, _point2;
+  mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
 };
 
 #endif

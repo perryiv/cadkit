@@ -9,24 +9,26 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Icon class.
+//  Icon factory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_BINDING_ICONS_H_
-#define _FOX_TOOLS_BINDING_ICONS_H_
+#ifndef _FOX_TOOLS_ICON_FACTORY_H_
+#define _FOX_TOOLS_ICON_FACTORY_H_
 
-#include "FoxTools/Icons/FoxIconsDll.h"
+#include "FoxTools/Export/Export.h"
 
 #include <vector>
 #include <map>
+
+namespace FX { class FXMetaClass; class FXIcon; class FXApp; };
 
 
 namespace FoxTools {
 namespace Icons {
 
 
-class FOX_ICONS_EXPORT Icons
+class FOX_TOOLS_EXPORT Factory
 {
 public:
 
@@ -70,13 +72,13 @@ public:
     ICON_SET_HOME,
     ICON_TOOL_SELECTION,
     ICON_TRIANGLE,
-    ICON_DELETECONNECTED,
-    ICON_KEEPCONNECTED,
+    ICON_DELETE_CONNECTED,
+    ICON_KEEP_CONNECTED,
     LAST
   };
 
   // It's a singleton.
-  static Icons *      instance();
+  static Factory *    instance();
 
   // Get the icon data. Throws if value not found.
   const Data &        data ( unsigned int id ) const;
@@ -90,16 +92,16 @@ public:
 private:
 
   // Constructor/destructor.
-  Icons();
-  ~Icons();
+  Factory();
+  ~Factory();
 
   // Cannot copy.
-  Icons ( const Icons & );
-  Icons &operator = ( const Icons & );
+  Factory ( const Factory & );
+  Factory &operator = ( const Factory & );
 
   typedef std::map < unsigned int, Data > Map;
   Map _map;
-  static Icons *_instance;
+  static Factory *_instance;
 };
 
 
@@ -107,4 +109,4 @@ private:
 }; // namespace FoxTools
 
 
-#endif // _FOX_TOOLS_BINDING_ICONS_H_
+#endif // _FOX_TOOLS_ICON_FACTORY_H_

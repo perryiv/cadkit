@@ -40,7 +40,7 @@ public:
   virtual bool            checkArguments ( const int &argc, const char **argv ) const = 0;
 
   // Get the usage string.
-  virtual std::string     getUsageString ( const std::string &program, const std::string &ext ) const = 0;
+  virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const = 0;
 
   // Parse the arguments.
   virtual bool            parseArguments ( const int &argc, const char **argv, Args &args ) = 0;

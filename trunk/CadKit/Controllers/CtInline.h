@@ -71,7 +71,8 @@ inline bool translate ( CadKit::IUnknown *controller,
   // Check the arguments.
   if ( false == commandLine->checkArguments ( argc, (const char **) argv ) )
   {
-    std::cout << commandLine->getUsageString ( argv[0], "jt" ).c_str() << std::endl;
+    // TODO, this is a hack, should not be jt-specific.
+    std::cout << commandLine->getUsageString ( argv[0], "jt", false ).c_str() << std::endl;
     return false;
   }
 
@@ -83,7 +84,8 @@ inline bool translate ( CadKit::IUnknown *controller,
   // then the user did not supply any filenames.
   if ( false == result || args.empty() )
   {
-    std::cout << commandLine->getUsageString ( argv[0], "jt" ).c_str() << std::endl;
+    // TODO, this is a hack, should not be jt-specific.
+    std::cout << commandLine->getUsageString ( argv[0], "jt", false ).c_str() << std::endl;
     return false;
   }
 

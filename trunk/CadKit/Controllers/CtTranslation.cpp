@@ -19,6 +19,7 @@
 
 #include "CtPrecompiled.h"
 #include "CtTranslation.h"
+#include "CtUsage.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlPathname.h"
@@ -129,60 +130,22 @@ bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Options string, for the "usage" output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define _COMMAND_LINE_OPTIONS "\n\
-  -pp <priority>    Print to stdout any progress messages with a priority\n\
-                    level less than or equal to 'priority'.\n\
-  -pe               Print error messages to stdout.\n\
-  -pw               Print warning messages to stdout.\n\
-  -pi               Print general information messages to stdout.\n\
-  -v                Verbose output to stdout, same as '-pe -pw -pi -pp 1'.\n\
-  -al               Where applicable, translate all of the Levels-of-Detail (LODs)'.\n\
-  -hl               Where applicable, translate only the highest Level-of-Detail (LOD)'.\n\
-  -ll               Where applicable, translate only the lowest Level-of-Detail (LOD)'.\n\
-  -z <low> <high>   Any number in the range [low,high] is set to 0.\n\
-  --print-progress  Same as '-pp'.\n\
-  --print-errors    Same as '-pe'.\n\
-  --print-warnings  Same as '-pw'.\n\
-  --print-info      Same as '-pi'.\n\
-  --verbose         Same as '-v'.\n\
-  --all-lods        Same as '-al'.\n\
-  --high-lod        Same as '-hl'.\n\
-  --low-lod         Same as '-ll'.\n\
-  --zero            Same as '-z'."
-
-
-//  -ea <action>      What to do if an error is encountered. Possible actions:\n\
-//                      exit:     Exit the program.\n\
-//                      continue: Continue executing is possible.\n\
-//  -wa <action>      What to do if a warning is encountered. Possible actions:\n\
-//                      exit:     Exit the program.\n\
-//                      continue: Continue executing is possible.\n\
-//  --error-action    Same as '-ea'.\n\
-//  --warning-action  Same as '-wa'.\n\
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the usage string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string CtTranslation::getUsageString ( const std::string &program, const std::string &ext ) const
+std::string CtTranslation::getUsageString ( const std::string &program, const std::string &ext, bool extended ) const
 {
   SL_PRINT2 ( "In CtTranslation::getUsageString(), this = %X\n", this );
 
   // Format the usage string.
   std::string usage;
   CadKit::format ( usage, 
-                   "Usage: %s [options] <filename1.%s> [filename2.%s] ...",
+                   "\nUsage: %s [options] <filename1.%s> [filename2.%s] ...",
                    CadKit::justFilename ( program ).c_str(),
                    ext.c_str(),
                    ext.c_str() );
-  usage += _COMMAND_LINE_OPTIONS;
+  usage += ( ( extended ) ? CtUsage::getLong() : CtUsage::getShort() );
 
   // Return the usage string.
   return usage;
@@ -214,7 +177,18 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     // See if this argument is one of our flags.
     //
 
-    if ( arg == "-pp" || arg == "--print-progress" )
+    if ( arg == "-h" || arg == "--help" )
+    {
+      // Print the usage string now.
+      // TODO, this is a hack, should not be jt-specific.
+      std::cout << this->getUsageString ( argv[0], "jt", true ).c_str() << std::endl;
+      
+      // Hack! TODO, this is a temporary fix. Without it the shord help 
+      // message prints after this long one. Need a redesign of the controller.
+      ::exit ( 0 );
+    }
+
+    else if ( arg == "-pp" || arg == "--print-progress" )
     {
       // Get the next argument, if there is one.
       std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );

@@ -27,8 +27,6 @@
 
 using namespace MenuKit;
 
-
-#include <iostream>
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Default constructor.
@@ -225,7 +223,6 @@ void Behavior::moveFocused ( Direction d )
   }
 
   _focus->marked( false );  // remove the marking
-  std::cout << _focus->text() << " no longer marked." << std::endl;
 
   // -- change the focus item -- //
   // See if the focused item is a menu.

@@ -27,9 +27,10 @@ namespace Callback {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class StringType > struct DoNothing
+template < class StringType, class UserDataType > struct DoNothing
 {
   typedef StringType String;
+  typedef UserDataType UserData;
   explicit DoNothing(){}
   void startNode ( const String &name, const String &value ){}
   void endNode ( const String &name ){}
@@ -42,7 +43,7 @@ template < class StringType > struct DoNothing
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class StringType > struct Notify
+template < class StringType, class UserDataType > struct Notify
 {
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -51,6 +52,7 @@ template < class StringType > struct Notify
   /////////////////////////////////////////////////////////////////////////////
 
   typedef StringType String;
+  typedef UserDataType UserData;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -59,8 +61,8 @@ template < class StringType > struct Notify
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef void StartCallbackType ( const String &name, const String &value );
-  typedef void EndCallbackType ( const String &name );
+  typedef void StartCallbackType ( const String &name, const String &value, UserData data );
+  typedef void EndCallbackType ( const String &name, UserData data );
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -69,7 +71,7 @@ template < class StringType > struct Notify
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  explicit Notify() : _start ( 0x0 ), _end ( 0x0 ){}
+  explicit Notify() : _start ( 0x0 ), _end ( 0x0 ), _data ( 0x0 ){}
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -79,15 +81,6 @@ template < class StringType > struct Notify
   /////////////////////////////////////////////////////////////////////////////
 
   Notify ( const Notify &cb ) : _start ( cb._start ), _end ( cb._end ){}
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Constructor.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Notify ( StartCallbackType start, EndCallbackType end ) : _start ( start ), _end ( end ){}
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -106,6 +99,42 @@ template < class StringType > struct Notify
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Set the start callback.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void set ( StartCallbackType *cb )
+  {
+    _start = cb;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the end callback.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void set ( EndCallbackType *cb )
+  {
+    _end = cb;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the user data.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void set ( UserDataType data )
+  {
+    _data = data;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Called when the start of a node is found.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -114,7 +143,7 @@ template < class StringType > struct Notify
   {
     if ( _start )
     {
-      _start ( name, value );
+      _start ( name, value, _data );
     }
   }
 
@@ -129,7 +158,7 @@ template < class StringType > struct Notify
   {
     if ( _end )
     {
-      _end ( name );
+      _end ( name, _data );
     }
   }
 
@@ -137,6 +166,7 @@ protected:
 
   StartCallbackType *_start;
   EndCallbackType *_end;
+  UserDataType _data;
 };
 
 

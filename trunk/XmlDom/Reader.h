@@ -88,11 +88,11 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   Reader ( const Reader &r ) :
-    _root ( r._root ),
-    _parents ( r._parents ),
+    _root        ( r._root ),
+    _parents     ( r._parents ),
     _errorPolicy ( r._errorPolicy ),
-    _callback ( r._callback ),
-    _trimPolicy ( r._trimPolicy )
+    _callback    ( r._callback ),
+    _trimPolicy  ( r._trimPolicy )
   {
     // Empty.
   }
@@ -131,7 +131,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pointer getRoot() const
+  Pointer root() const
   {
     return _root;
   }
@@ -164,7 +164,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const ErrorPolicyType &getErrorPolicy() const
+  const ErrorPolicy &errorPolicy() const
   {
     return _errorPolicy;
   }
@@ -176,7 +176,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  ErrorPolicyType &getErrorPolicy()
+  ErrorPolicy &errorPolicy()
   {
     return _errorPolicy;
   }
@@ -188,7 +188,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const TrimPolicyType &getTrimPolicy() const
+  const TrimPolicy &trimPolicy() const
   {
     return _trimPolicy;
   }
@@ -200,9 +200,33 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  TrimPolicyType &getTrimPolicy()
+  TrimPolicy &trimPolicy()
   {
     return _trimPolicy;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access to the callback policy.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const NodeCallback &callback() const
+  {
+    return _callback;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access to the callback policy.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  NodeCallback &callback()
+  {
+    return _callback;
   }
 
 

@@ -276,8 +276,8 @@ public:
         return;
 
       //Add a new polygon
-      _polygons.push_back( Polygon() );
-      Polygon &p = _polygons.back();
+      PolygonPtr p ( new Polygon() );
+      _polygons.push_back( p.get() );
 
       //Add the vertices to the polygon
       for( unsigned int j = 0; j < numVertsPerPoly; ++j )
@@ -299,14 +299,14 @@ public:
         }
 
         //add the shared vertex to the polygon
-        p.append ( iter->second.get() );
+        p->append ( iter->second.get() );
 
         //add the polygon to the shared vertex
-        iter->second->append( &p );
+        iter->second->append( p.get() );
       }
 
       //Set the polygon's index
-      p.index( _polygons.size() - 1 );
+      p->index( _polygons.size() - 1 );
 
       //update the progress
       if( _sharedVertsMap.size() % 1000 == 0 )
@@ -342,8 +342,8 @@ public:
     todoStack.reserve( _polygons.size() + _sharedVertsMap.size() );
 
     //put the functor for the selected polygon on the stack
-    _polygons.at( selectedPolygon ).visited ( true );
-    todoStack.push_back( Functor ( answer, todoStack, &_polygons.at( selectedPolygon ) ) );
+    _polygons.at( selectedPolygon )->visited ( true );
+    todoStack.push_back( Functor ( answer, todoStack, _polygons.at( selectedPolygon ).get() ) );
 
     TodoStackItr todoIterator ( todoStack.begin() );
 
@@ -377,7 +377,7 @@ public:
   void setAllUnvisited()
   {
     for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
-      iter->visited( false );
+      (*iter)->visited( false );
 
     for( Map::iterator i = _sharedVertsMap.begin(); i != _sharedVertsMap.end(); ++i )
       i->second->visited( false );

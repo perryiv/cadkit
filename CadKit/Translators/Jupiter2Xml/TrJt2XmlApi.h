@@ -53,7 +53,7 @@
 
 #ifdef _WIN32
 # pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_DATABASE_JUPITER_LIBRARY
+# ifdef _CADKIT_COMPILING_TRANSLATOR_JUPITER_2_XML_LIBRARY
 #   define TR_JT_2_XML_API __declspec(dllexport) // We are compiling Sl so the classes are exported.
 # else
 #   define TR_JT_2_XML_API __declspec(dllimport) // The classes will be imported into the client's code.

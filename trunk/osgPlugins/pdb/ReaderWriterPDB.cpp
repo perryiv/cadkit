@@ -25,6 +25,9 @@
 #include "Atom.h"
 #include "Bond.h"
 
+//#define USE_EXCEPTIONS
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -85,7 +88,6 @@ bool ReaderWriterPDB::acceptsExtension ( const std::string &ext )
 
 ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
-#define USE_EXCEPTIONS
 #ifdef USE_EXCEPTIONS
 
   // Safely...

@@ -183,38 +183,19 @@ void Mesh::read ( const std::string &filename )
         "\n\tColumns: ", columns );
   }
 
-  // Read the normals.
-  Vectors normals;
+  // The points and normals.
+  Vectors points, normals;
+  points.resize  ( rows * columns );
   normals.resize ( rows * columns );
-  for ( Vectors::size_type j = 0; j < normals.size(); ++j )
-  {
-    // Make sure there are more.
-    if ( in.fail() || in.eof() )
-    {
-      Usul::Exceptions::Thrower<std::runtime_error>
-        ( "Error 3070575716, there should be ", normals.size(), " normals.",
-          "\n\tFile: ", filename );
-    }
-
-    // Discard for now...
-    unsigned int row, column;
-    in >> row >> column;
-
-    // Set this element.
-    in >> normals[j][0] >> normals[j][1] >> normals[j][2];
-  }
 
   // Read the points.
-  Vectors points;
-  points.resize ( rows * columns );
-
-  for ( Vectors::size_type i = 0; i < points.size(); ++i )
+  for ( Vectors::size_type j = 0; j < points.size(); ++j )
   {
     // Make sure there are more.
     if ( in.fail() || in.eof() )
     {
       Usul::Exceptions::Thrower<std::runtime_error>
-        ( "Error 3418646572, there should be ", points.size(), " data points.",
+        ( "Error 3070575716, there should be ", points.size(), " data points.",
           "\n\tFile: ", filename );
     }
 
@@ -223,7 +204,26 @@ void Mesh::read ( const std::string &filename )
     in >> row >> column;
 
     // Set this element.
-    in >> points[i][0] >> points[i][1] >> points[i][2];
+    in >> points[j][0] >> points[j][1] >> points[j][2];
+  }
+
+  // Read the normals.
+  for ( Vectors::size_type i = 0; i < normals.size(); ++i )
+  {
+    // Make sure there are more.
+    if ( in.fail() || in.eof() )
+    {
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 3418646572, there should be ", normals.size(), " normals.",
+          "\n\tFile: ", filename );
+    }
+
+    // Discard for now...
+    unsigned int row, column;
+    in >> row >> column;
+
+    // Set this element.
+    in >> normals[i][0] >> normals[i][1] >> normals[i][2];
   }
 
   // Assign the members.
@@ -232,7 +232,7 @@ void Mesh::read ( const std::string &filename )
   _points  = points;
   _normals = normals;
 
-  // Normalizs the normals.
+  // Normalize the normals.
   this->normalize();
 }
 

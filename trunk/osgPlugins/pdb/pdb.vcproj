@@ -152,47 +152,16 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
 				RelativePath=".\Atom.cpp">
 			</File>
 			<File
-				RelativePath=".\Bond.cpp">
-			</File>
-			<File
-				RelativePath=".\Cylinder.cpp">
-			</File>
-			<File
-				RelativePath=".\CylinderFactory.cpp">
-			</File>
-			<File
-				RelativePath=".\Element.cpp">
-			</File>
-			<File
-				RelativePath=".\MaterialChooser.cpp">
-			</File>
-			<File
-				RelativePath=".\Molecule.cpp">
-			</File>
-			<File
-				RelativePath=".\PeriodicTable.cpp">
-			</File>
-			<File
-				RelativePath=".\Radii.cpp">
-			</File>
-			<File
-				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.cpp">
-			</File>
-			<File
-				RelativePath=".\SphereFactory.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
-			<File
 				RelativePath=".\Atom.h">
+			</File>
+			<File
+				RelativePath=".\Bond.cpp">
 			</File>
 			<File
 				RelativePath=".\Bond.h">
@@ -201,36 +170,59 @@
 				RelativePath=".\BondFinder.h">
 			</File>
 			<File
+				RelativePath=".\Cylinder.cpp">
+			</File>
+			<File
 				RelativePath=".\Cylinder.h">
+			</File>
+			<File
+				RelativePath=".\CylinderFactory.cpp">
 			</File>
 			<File
 				RelativePath=".\CylinderFactory.h">
 			</File>
 			<File
+				RelativePath=".\Element.cpp">
+			</File>
+			<File
 				RelativePath=".\Element.h">
+			</File>
+			<File
+				RelativePath=".\MaterialChooser.cpp">
 			</File>
 			<File
 				RelativePath=".\MaterialChooser.h">
 			</File>
 			<File
+				RelativePath=".\Molecule.cpp">
+			</File>
+			<File
 				RelativePath=".\Molecule.h">
+			</File>
+			<File
+				RelativePath=".\PeriodicTable.cpp">
 			</File>
 			<File
 				RelativePath=".\PeriodicTable.h">
 			</File>
 			<File
+				RelativePath=".\Radii.cpp">
+			</File>
+			<File
 				RelativePath=".\Radii.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.h">
 			</File>
 			<File
+				RelativePath=".\SphereFactory.cpp">
+			</File>
+			<File
 				RelativePath=".\SphereFactory.h">
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		</Filter>
 	</Files>
 	<Globals>

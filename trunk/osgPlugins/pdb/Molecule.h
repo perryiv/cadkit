@@ -44,7 +44,8 @@ protected:
   osg::Node *             _makeBond ( const Bond &bond) const;
   osg::Node *             _makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const;
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
-  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, unsigned int numSubDivisions ) const;
+  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, unsigned int divisions ) const;
+  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const;
   osg::Node *             _makeCube   ( const osg::Vec3 &center, float size ) const;
   void                    _setCentersAndRanges ( osg::LOD *lod ) const;
 private:
@@ -61,6 +62,10 @@ private:
   MaterialChooser *_materialChooser;
   mutable SphereFactory::Ptr _sphereFactory;
   mutable CylinderFactory::Ptr _cylinderFactory;
+  unsigned int _minNumSegsLat;
+  unsigned int _maxNumSegsLat;
+  unsigned int _minNumSegsLong;
+  unsigned int _maxNumSegsLong;
 };
 
 

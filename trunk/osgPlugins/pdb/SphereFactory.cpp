@@ -26,7 +26,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 SphereFactory::SphereFactory() :
-  _spheres()
+  _subdivided(),
+  _latLongMap()
 {
 }
 
@@ -44,27 +45,23 @@ SphereFactory::~SphereFactory()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create a sphere.
+//  Create a sub-divided sphere.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Geometry *SphereFactory::create ( unsigned int numDivisions )
 {
   // Make sure we have room.
-  if ( numDivisions >= _spheres.size() )
-    _spheres.resize ( numDivisions + 1 );
+  if ( numDivisions >= _subdivided.size() )
+    _subdivided.resize ( numDivisions + 1 );
 
   // If we have this one already...
-  if ( _spheres.at(numDivisions).valid() )
-    return _spheres.at(numDivisions).get();
+  if ( _subdivided.at(numDivisions).valid() )
+    return _subdivided.at(numDivisions).get();
 
   // Generate the points (which are both vertices and normals).
   std::vector<osg::Vec3> points;
   Usul::Algorithms::sphere<float> ( numDivisions, points );
-
-#ifdef _DEBUG
-  //points.resize ( 24 );
-#endif
 
   // Make new vertices and normals.
   unsigned int num ( points.size() );
@@ -84,10 +81,79 @@ osg::Geometry *SphereFactory::create ( unsigned int numDivisions )
 
   // Tri-strip it.
   osgUtil::TriStripVisitor visitor;
-  //visitor.stripify ( *geometry );
+  visitor.stripify ( *geometry );
 
   // Save this geometry in our collection and return it.
-  _spheres.at(numDivisions) = geometry;
+  _subdivided.at(numDivisions) = geometry;
+  return geometry.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a sphere meshed in the latitude-longitude way.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry *SphereFactory::create ( float radius, unsigned int numLatitude, unsigned int numLongitude )
+{
+  // See if we have this one already...
+  Key key ( radius, MeshSize ( numLatitude, numLongitude ) );
+  LatLongMap::iterator iter = _latLongMap.find ( key );
+  if ( _latLongMap.end() != iter )
+    return iter->second.get();
+
+  // Otherwise, make the new sphere...
+  // Define the generator.
+  typedef osg::Vec3Array Points;
+  typedef osg::Vec3Array Normals;
+  typedef std::pair<unsigned int, unsigned int> Strip;
+  typedef std::vector<Strip> Strips;
+  typedef Usul::Algorithms::LatLongSphere<float,Points,Normals,Strips> Sphere;
+
+  // The points, normals, and indices.
+  osg::ref_ptr<Points>  points  ( new Points  );
+  osg::ref_ptr<Normals> normals ( new Normals );
+  Strips strips;
+
+  // Declare the generator and set some properties.
+  Sphere sphere;
+  sphere.radius         ( radius );
+  sphere.normalLength   ( 1.0f );
+  sphere.latitudeStart  ( Usul::Math::DEG_TO_RAD *  89.9 );
+  sphere.latitudeEnd    ( Usul::Math::DEG_TO_RAD * -89.9 );
+  sphere.longitudeStart ( Usul::Math::DEG_TO_RAD *   0.0 );
+  sphere.longitudeEnd   ( Usul::Math::DEG_TO_RAD * 360.0 );
+  sphere.numLatitude    ( numLatitude );
+  sphere.numLongitude   ( numLongitude );
+
+  // Generate the data.
+  sphere ( *points, *normals, strips );
+
+  // Make a new geometry.
+  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  geometry->setVertexArray ( points.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+  // The primitives.
+  typedef osg::Geometry::PrimitiveSetList Prims;
+  unsigned int numStrips ( strips.size() );
+  Prims prims ( numStrips );
+
+  // Loop through and set all the primitives.
+  for ( unsigned int i = 0; i < numStrips; ++i )
+  {
+    unsigned int start ( strips.at(i).first );
+    unsigned int count ( strips.at(i).second );
+    prims.at(i) = new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, start, count );
+  }
+
+  // Set the geometry's primitive list.
+  geometry->setPrimitiveSetList ( prims );
+
+  // Save this geometry in our collection and return it.
+  _latLongMap[key] = geometry;
   return geometry.get();
 }
 
@@ -129,7 +195,7 @@ subdivided spheres.
 
   {
     // Shortcut.
-    Vertices &verts = *(_spheres[numDivisions]);
+    Vertices &verts = *(_subdivided[numDivisions]);
 
     // Make new vertices and normals.
     unsigned int numVertices ( verts.size() );

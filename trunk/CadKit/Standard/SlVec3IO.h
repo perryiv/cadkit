@@ -37,14 +37,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SlStringIO: Input/output functions for SlString.
+//  SlVec3IO: Input/output functions for SlVec3.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_STRING_IO_FUNCTIONS_H_
-#define _CADKIT_STANDARD_LIBRARY_STRING_IO_FUNCTIONS_H_
+#ifndef _CADKIT_STANDARD_LIBRARY_VECTOR_3_IO_FUNCTIONS_H_
+#define _CADKIT_STANDARD_LIBRARY_VECTOR_3_IO_FUNCTIONS_H_
 
-#include "SlString.h"
+#include "SlVec3.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <iostream>
@@ -57,22 +57,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::ostream &operator << ( std::ostream &out, const CadKit::SlString<char> &str )
+template<class T> inline std::ostream &operator << ( std::ostream &out, const SlVec3<T> &vec )
 {
-  out << str.c_str();
-  return out;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output operator. Keep in global namespace.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline std::wostream &operator << ( std::wostream &out, const CadKit::SlString<wchar_t> &str )
-{
-  out << str.c_str();
+  out << vec[0] << " " << vec[1] << " " << vec[2];
   return out;
 }
 
@@ -83,24 +70,11 @@ inline std::wostream &operator << ( std::wostream &out, const CadKit::SlString<w
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::istream &operator >> ( std::istream &in, CadKit::SlString<char> &str )
+template<class T> inline std::istream &operator >> ( std::istream &in, SlVec3<T> &vec )
 {
-  in >> str.getString();
+  in >> vec[0] >> vec[1] >> vec[2];
   return in;
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input operator. Keep in global namespace.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline std::wistream &operator >> ( std::wistream &in, CadKit::SlString<wchar_t> &str )
-{
-  in >> str.getString();
-  return in;
-}
-
-
-#endif // _CADKIT_STANDARD_LIBRARY_STRING_IO_FUNCTIONS_H_
+#endif // _CADKIT_STANDARD_LIBRARY_VECTOR_3_IO_FUNCTIONS_H_

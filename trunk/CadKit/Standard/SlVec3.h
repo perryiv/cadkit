@@ -48,22 +48,6 @@
 #include "SlAssert.h"
 #include "SlTemplateSupport.h"
 
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
-#include <iostream>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
-#include <iostream>
-#endif
-
 // For convenience.
 #define SL_VEC3_ZERO ( static_cast<T>(0) )
 #define SL_VEC3_HALF ( static_cast<T>(0.5) )
@@ -126,40 +110,6 @@ public:
   SlVec3 &                operator -= ( const SlVec3 &vec );
   SlVec3                  operator - () const;
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template<class P> friend SlVec3<P> operator *  ( const SlVec3<P> &vec,  const P &value );
-  template<class P> friend SlVec3<P> operator *  ( const P &value,        const SlVec3<P> &vec );
-  template<class P> friend SlVec3<P> operator /  ( const SlVec3<P> &vec,  const P &value );
-  template<class P> friend SlVec3<P> operator +  ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
-  template<class P> friend SlVec3<P> operator -  ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
-  template<class P> friend bool      operator == ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
-  template<class P> friend bool      operator != ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
-#else
-  friend SlVec3           operator *  ( const SlVec3 &vec,  const T &value );
-  friend SlVec3           operator *  ( const T &value,     const SlVec3 &vec );
-  friend SlVec3           operator /  ( const SlVec3 &vec,  const T &value );
-  friend SlVec3           operator +  ( const SlVec3 &vecA, const SlVec3 &vecB );
-  friend SlVec3           operator -  ( const SlVec3 &vecA, const SlVec3 &vecB );
-  friend bool             operator == ( const SlVec3 &vecA, const SlVec3 &vecB );
-  friend bool             operator != ( const SlVec3 &vecA, const SlVec3 &vecB );
-#endif
-
-  // I/O.
-  #ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
-  friend ::ostream &      operator << ( ::ostream &out, const SlVec3 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
-  friend std::ostream &   operator << ( std::ostream &out, const SlVec3 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
-  friend ::istream &      operator >> ( ::istream &in, SlVec3 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
-  friend std::istream &   operator >> ( std::istream &in, SlVec3 &vec );
-  #endif
-
   void                    orthogonal ( const SlVec3 &vec );
 
   void                    xyz2rtz(); // x-y-z to r-theta-z
@@ -173,6 +123,23 @@ protected:
 
   T _v[3];
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> SlVec3<T> operator *  ( const SlVec3<T> &vec,  const T &value );
+template<class T> SlVec3<T> operator *  ( const T &value,        const SlVec3<T> &vec );
+template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vec,  const T &value );
+template<class T> SlVec3<T> operator +  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
+template<class T> SlVec3<T> operator -  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
+template<class T> bool      operator == ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
+template<class T> bool      operator != ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,9 +367,9 @@ template<class T> inline SlVec3<T> SlVec3<T>::operator - () const
 template<class T> inline SlVec3<T> operator * ( const SlVec3<T> &vec, const T &value )
 {
   return SlVec3<T> ( 
-    vec._v[0] * value, 
-    vec._v[1] * value, 
-    vec._v[2] * value );
+    vec[0] * value, 
+    vec[1] * value, 
+    vec[2] * value );
 }
 
 
@@ -415,9 +382,9 @@ template<class T> inline SlVec3<T> operator * ( const SlVec3<T> &vec, const T &v
 template<class T> inline SlVec3<T> operator * ( const T &value, const SlVec3<T> &vec )
 {
   return SlVec3<T> ( 
-    vec._v[0] * value, 
-    vec._v[1] * value, 
-    vec._v[2] * value );
+    vec[0] * value, 
+    vec[1] * value, 
+    vec[2] * value );
 }
 
 
@@ -431,9 +398,9 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vec, const T &v
 {
   // Do not multiply by inverse because that fauls up integer vectors.
   return SlVec3<T> ( 
-    vec._v[0] / value, 
-    vec._v[1] / value, 
-    vec._v[2] / value );
+    vec[0] / value, 
+    vec[1] / value, 
+    vec[2] / value );
 }
 
 
@@ -446,9 +413,9 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vec, const T &v
 template<class T> inline SlVec3<T> operator + ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
   return SlVec3<T> ( 
-    vecA._v[0] + vecB._v[0], 
-    vecA._v[1] + vecB._v[1], 
-    vecA._v[2] + vecB._v[2] );
+    vecA[0] + vecB[0], 
+    vecA[1] + vecB[1], 
+    vecA[2] + vecB[2] );
 }
 
 
@@ -461,9 +428,9 @@ template<class T> inline SlVec3<T> operator + ( const SlVec3<T> &vecA, const SlV
 template<class T> inline SlVec3<T> operator - ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
   return SlVec3<T> ( 
-    vecA._v[0] - vecB._v[0], 
-    vecA._v[1] - vecB._v[1], 
-    vecA._v[2] - vecB._v[2] );
+    vecA[0] - vecB[0], 
+    vecA[1] - vecB[1], 
+    vecA[2] - vecB[2] );
 }
 
 
@@ -515,82 +482,6 @@ template<class T> inline const T &SlVec3<T>::operator [] ( int i ) const
   SL_ASSERT ( this && i >= 0 && i <= 2 );
   return _v[i];
 }
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::ostream &operator << ( ::ostream &out, const SlVec3<T> &vec )
-{
-  out << vec[0] << " " << vec[1] << " " << vec[2];
-  return out;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::ostream &operator << ( std::ostream &out, const SlVec3<T> &vec )
-{
-  out << vec[0] << " " << vec[1] << " " << vec[2];
-  return out;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::istream &operator >> ( ::istream &in, SlVec3<T> &vec )
-{
-  in >> vec[0] >> vec[1] >> vec[2];
-  return in;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::istream &operator >> ( std::istream &in, SlVec3<T> &vec )
-{
-  in >> vec[0] >> vec[1] >> vec[2];
-  return in;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -369,6 +369,9 @@
 					RelativePath=".\Interfaces\IFoxToolbar.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFrameDump.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IGetAnimationTime.h">
 				</File>
 				<File

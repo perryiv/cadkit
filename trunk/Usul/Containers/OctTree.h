@@ -29,7 +29,7 @@ namespace Detail
 {
   struct TriangleInside
   {
-    template < class OctTreeType, class Triangle > void operator () ( const OctTreeType &tree, Triangle &t )
+    template < class OctTreeType, class Triangle > void operator () ( const OctTreeType &tree, Triangle &t ) const
     {
       typedef typename OctTreeType::Vec3 Vec3;
       const Vec3 mn ( tree.minimum() );
@@ -72,7 +72,7 @@ namespace Detail
 {
   struct AdjacentChildren
   {
-    template < class OctTreeType > void operator () ( OctTreeType &tree )
+    template < class OctTreeType > void operator () ( OctTreeType &tree ) const
     {
       typedef typename OctTreeType::Real Real;
       typedef typename OctTreeType::Children Children;
@@ -104,6 +104,41 @@ namespace Detail
 };
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Policy class to add an object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct AddIfInside
+  {
+    template < class OctTreeType, class ObjectType > void operator () ( OctTreeType &tree, ObjectType &object ) const
+    {
+      typedef typename OctTreeType::Children Children;
+      typedef typename Children::iterator ChildItr;
+
+      // Is the object in this cube?
+      if ( !tree.inside ( object ) )
+        tree.objects().push_back ( object );
+
+      // Test the children.
+      Children &children = tree.children();
+      for ( ChildItr i = children.begin(); i != children.end(); ++i )
+      {
+        // Try to add it to this child.
+        if ( i->add ( object ) )
+          return true;
+      }
+
+      // If we get to here then we could not add the object.
+      return false;
+    }
+  };
+};
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Oct-tree class.
@@ -113,10 +148,11 @@ namespace Detail
 template
 <
   class ObjectContainer_, 
-  class ChildMaker_ = Usul::Containers::Detail::AdjacentChildren,
-  class Tester_ = Usul::Containers::Detail::TriangleInside,
-  class Real_ = double,
-  class Vec3_ = Usul::Math::Vector3<RealType_>
+  class ChildMaker_   = Usul::Containers::Detail::AdjacentChildren,
+  class Tester_       = Usul::Containers::Detail::TriangleInside,
+  class Adder_        = Usul::Containers::Detail::AddIfInside
+  class Real_         = double,
+  class Vec3_         = Usul::Math::Vector3<RealType_>
 >
 class OctTree
 {
@@ -125,6 +161,7 @@ public:
   typedef ObjectContainer_ Objects;
   typedef typename Objects::value_type Object;
   typedef Tester_ Tester;
+  typedef Adder_ Adder;
   typedef ChildMaker_ ChildMaker;
   typedef std::vector<OctTree> Children;
   typedef typename Children::iterator ChildItr;
@@ -139,13 +176,13 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  explicit OctTree() : _size ( 0 ), _children(), _min(), _objects(), _tester(), _childMaker()
+  explicit OctTree() : _size ( 0 ), _children(), _min(), _objects(), _tester(), _childMaker(), _adder()
   {
   }
-  OctTree ( const OctTree &t ) : _size ( t._size ), _children ( t._children ), _min ( t._min ), _objects ( t._objects ), _tester ( t._tester ), _childMaker ( t._childMaker )
+  OctTree ( const OctTree &t ) : _size ( t._size ), _children ( t._children ), _min ( t._min ), _objects ( t._objects ), _tester ( t._tester ), _childMaker ( t._childMaker ), _adder ( t._adder )
   {
   }
-  OctTree ( Real size, Real minX, Real minY, Real minZ ) : _size ( size ), _min ( minX, minY, minZ ), _objects(), _tester(), _childMaker()
+  OctTree ( Real size, Real minX, Real minY, Real minZ ) : _size ( size ), _min ( minX, minY, minZ ), _objects(), _tester(), _childMaker(), _adder()
   {
   }
 
@@ -191,7 +228,7 @@ public:
 
   bool inside ( const Object &object ) const
   {
-    _tester ( this->minimum(), this->maximum(), object );
+    return _tester ( this->minimum(), this->maximum(), object );
   }
 
 
@@ -203,20 +240,7 @@ public:
 
   bool add ( const Object &object )
   {
-    // Is the object in this cube?
-    if ( !this->inside ( object ) )
-      _objects.push_back ( object );
-
-    // Test the children.
-    for ( ChildItr i = _children.begin(); i != _children.end(); ++i )
-    {
-      // Try to add it to this child.
-      if ( i->add ( object ) )
-        return true;
-    }
-
-    // If we get to here then we could not add the object.
-    return false;
+    return _adder ( *this, object );
   }
 
 
@@ -320,6 +344,22 @@ public:
     return _childMaker;
   }
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the adder.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const Adder &adder() const
+  {
+    return _adder;
+  }
+  Adder &adder()
+  {
+    return _adder;
+  }
+
 private:
 
   /////////////////////////////////////////////////////////////////////////////
@@ -334,6 +374,7 @@ private:
   Objects _objects;
   Tester _tester;
   ChildMaker _childMaker;
+  Adder _adder;
 };
 
 

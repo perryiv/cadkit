@@ -34,7 +34,7 @@ struct INotifyClose : public Usul::Interfaces::IUnknown
   enum { IID = 1800673408u };
 
   // Notify the component.
-  virtual void          notifyClose ( Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual bool          notifyClose ( Usul::Interfaces::IUnknown *caller ) = 0;
 };
 
 

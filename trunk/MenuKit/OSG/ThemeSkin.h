@@ -36,16 +36,17 @@ namespace MenuKit
     {
     public:
       ThemeSkin():
-          _box(1.0,0.0), _font(), _theme()
+          _box(1.0,0.0), _separator(1.0,1.0), _font(), _theme()
       {}
 
       ThemeSkin(const ThemeSkin& ts):
-        _box(ts._box), _font(ts._font), _theme(ts._theme)
+        _box(ts._box), _separator(ts._separator), _font(ts._font), _theme(ts._theme)
       {}
 
       ThemeSkin& operator =(const ThemeSkin& ts)
       {
         _box = ts._box;
+        _separator = ts._separator;
         _font = ts._font;
         _theme = ts._theme;
         return( *this );
@@ -57,6 +58,9 @@ namespace MenuKit
       virtual osg::Node* operator ()(const Menu& menu)=0;
       virtual osg::Node* operator ()(const Button& butn)=0;
       // TODO: virtual osg::Node* operator ()(const Item& item)=0;
+
+      virtual float height(const Menu& menu)=0;
+      virtual float height(const Button& butn)=0;
 
       virtual float width(const Menu& menu)=0;
       virtual float width(const Button& butn)=0;
@@ -71,12 +75,16 @@ namespace MenuKit
       const Detail::Box& box() const { return _box; }
       Detail::Box& box() { return _box; }
 
+      void separator(const Detail::Box& b) { _separator = b; }
+      const Detail::Box& separator() const { return _separator; }
+      Detail::Box& separator() { return _separator; }
+
       void theme(const ThemeType& t) { _theme = t; }
       const ThemeType& theme() const { return _theme; }
       ThemeType& theme() { return _theme; }
 
     private:
-      Detail::Box _box;
+      Detail::Box _box, _separator;
       osg::ref_ptr<osgText::Font> _font;
       ThemeType _theme;
     };

@@ -55,6 +55,9 @@ namespace MenuKit
       virtual osg::Node* operator ()(const Button& b);
       // TODO: virtual osg::Node* operator =(const Item& b);
 
+      virtual float height(const Menu& m);
+      virtual float height(const Button& b);
+
       virtual float width(const Menu& m);
       virtual float width(const Button& b);
       virtual float width(const Item* i);
@@ -423,10 +426,17 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
 
   // make the background box(es)
   Detail::FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
-  borderbox.color( scheme.border() );
-
   Detail::FlatBox midbox(borderbox.height()-_border,borderbox.width()-_border,-0.002);
-  midbox.color( scheme.back() );
+  if( !parent || parent->layout()==Menu::HORIZONTAL )
+  {
+    borderbox.color( scheme.middle() );
+    midbox.color( scheme.middle() );
+  }
+  else
+  {
+    borderbox.color( scheme.border() );
+    midbox.color( scheme.back() );
+  }
 
   osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
   backgeode->addDrawable( borderbox() );
@@ -490,11 +500,9 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
     return top; // TODO: take this out
   }
 
-  return top; // TODO: do not escape here!
-
   // TODO: make other graphic boxes
-  float val = midbox.height() - 2.0*_margin;
-  Detail::FlatBox sidebox(val,val,-0.001);
+  Detail::FlatBox sidebox(borderbox.height(),borderbox.height(),-0.001);
+  sidebox.depth(-0.001);
 
   // right side
   //sidebox.color( scheme.back() );  // TODO: put this back
@@ -596,9 +604,9 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
 }
 
 template<class ThemeType>
-osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()
+osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()  // TODO: pass args for vert separator
 {
-  Detail::FlatBox bgbox(this->box().height(),
+  Detail::FlatBox bgbox(this->separator().height(),
                         this->box().width(),
                         -0.002);
   bgbox.color( this->theme().back() );
@@ -616,6 +624,24 @@ osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()
   group->addChild( bggeo.get() );
 
   return group;
+}
+
+template<class ThemeType>
+float ColorThemeSkin<ThemeType>::height(const Menu& m)
+{
+  if( m.separator() )
+    return( this->separator().height() );
+  else
+    return( box().height() ); // TODO: is this the best thing to do?
+}
+
+template<class ThemeType>
+float ColorThemeSkin<ThemeType>::height(const Button& b)
+{
+  if( b.separator() )
+    return( this->separator().height() );
+  else
+    return( box().height() ); // TODO: is this the best thing to do?
 }
 
 template<class ThemeType>

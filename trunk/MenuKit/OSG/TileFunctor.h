@@ -50,6 +50,9 @@ namespace MenuKit
         return( *this );
       }
 
+      virtual float height(const Menu&)=0;
+      virtual float height(const Button&)=0;
+
       virtual float width(const Menu&)=0;
       virtual float width(const Button&)=0;
       virtual float width(const Item*)=0;

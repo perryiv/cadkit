@@ -141,17 +141,17 @@ void TileMason<TileType>::pop(const Menu& parent)
 template<class TileType>
 osg::Vec3 TileMason<TileType>::displacement(const Menu& m)
 {
-  // TODO: check if item is a SEPARATOR
-  osg::Vec3 dv( _tile.width(m), _tile.box().height(), 0.0 );  // TODO: y=_tile.height(m)
-  return dv;
+  float height = _tile.height(b);  // the tile checks for a separator case
+  float width  = _tile.width(b);   // the tile computes the required width
+  return( osg::Vec3(width, height,0.0) );
 }
 
 template<class TileType>
 osg::Vec3 TileMason<TileType>::displacement(const Button& b)
 {
-  // TODO: check if item is a SEPARATOR
-  osg::Vec3 dv( _tile.width(b), _tile.box().height(), 0.0 );  // TODO: y=_tile.height(m)
-  return dv;
+  float height = _tile.height(b);  // the tile checks for a separator case
+  float width  = _tile.width(b);   // the tile computes the required width
+  return( osg::Vec3(width, height,0.0) );
 }
 
 template<class TileType>
@@ -205,12 +205,10 @@ void OSG::TileMason<TileType>::apply(Menu& m)
   // TODO: change this default command:
   if( m.expanded() )
     _tile.mode( TileType::HIGHLIGHT );
-
   else
     _tile.mode( TileType::NORMAL );
-
-  //if( m.disabled() )   // TODO: shouldn't there be a disabled flag in the Item class??
-  //  _tile.mode( TileType::DISABLED );
+  if( !m.enabled() )
+    _tile.mode( TileType::DISABLED );
 
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( m );
@@ -289,6 +287,8 @@ void TileMason<TileType>::apply(Button& b)
   // TODO: by telling the tile what mode to be in.
   // TODO: change this default command:
   _tile.mode( TileType::NORMAL );
+  if( !b.enabled() )
+    _tile.mode( TileType::DISABLED );
 
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( b );

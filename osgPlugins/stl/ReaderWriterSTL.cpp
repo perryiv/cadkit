@@ -34,7 +34,7 @@
 #include "PrintVisitor.h"
 
 #ifdef _DEBUG
-#define USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+#define USE_FAST_PATH 1// Need per-vertex normals for osg::Geometry's "fast path".
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

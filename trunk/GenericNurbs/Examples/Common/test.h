@@ -19,8 +19,11 @@
 #include "GN/Algorithms/FindSpan.h"
 #include "GN/Algorithms/InsertKnot.h"
 #include "GN/Algorithms/BasisFunctions.h"
+#include "GN/Algorithms/Parameterize.h"
+#include "GN/Algorithms/Copy.h"
 #include "GN/Evaluate/Point.h"
 #include "GN/Tessellate/Bisect.h"
+#include "GN/Interpolate/Global.h"
 
 #include <iostream>
 #include <iomanip>
@@ -252,13 +255,27 @@ template < class SplineType > void inline testCurvePoint ( const SplineType &s )
 template < class SplineType > void inline testTessellation ( const SplineType &s )
 {
   typedef typename SplineType::KnotType Parameter;
+  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
+  typedef typename SplineType::ControlPointArgument ToleranceType;
+
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testTessellation>\n";
 
+  ToleranceType tolerance ( 0.0001f );
+
   ::confirm ( s );
-  std::list<Parameter> u;
-  GN::Tessellate::bisect ( s, 0.001f, u );
+  std::list<Parameter> u1;
+  GN::Tessellate::bisect ( s, tolerance, u1 );
+
+  ::confirm ( s );
+  std::vector<Parameter> u2;
+  GN::Tessellate::bisect ( s, tolerance, u2 );
+
+  GN_ERROR_CHECK ( !u1.empty() );
+  GN_ERROR_CHECK ( !u2.empty() );
+  GN_ERROR_CHECK ( u1.size() == u2.size() );
+  GN_ERROR_CHECK ( std::equal ( u1.begin(), u1.end(), u2.begin() ) );
 
   OUTPUT << "</testTessellation>\n";
 }
@@ -285,15 +302,40 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 {
   typedef typename SplineType::UIntType UIntType;
   typedef typename SplineType::KnotType Parameter;
-  typedef typename SplineType::Vector Point;
+  typedef typename SplineType::ControlPointType DataPointType;
+  typedef typename SplineType::ControlPointContainer DataContainer;
+  typedef typename SplineType::KnotContainer::value_type ParamContainer;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testInterpolation>\n";
 
-  UIntType numIndepVars ( 1 );
-  UIntType dimension ( 3 );
-  bool rational ( false );
-  // TODO
+  // Scalar data.
+  const UIntType numDataPts ( 6 );
+  const UIntType dimension ( 3 );
+  const UIntType order ( 4 );
+  const Parameter power ( GN::Algorithms::Constants::CENTRIPETAL_FIT );
+
+  // Data points.
+  const DataPointType data[ dimension * numDataPts ] =
+  {
+    0, 1, 2, 3, 4, 5, // x
+    1, 2, 1, 2, 1, 2, // y
+    0, 0, 0, 0, 0, 0  // z
+  };
+
+  // Copy to a container.
+  DataContainer points;
+  GN::Algorithms::copy ( data, dimension, numDataPts, points );
+
+  // Make the parameters.
+  ParamContainer params;
+  GN::Algorithms::parameterize ( s, points, dimension, order, power, params );
+
+  // Interpolate.
+  GN::Interpolate::global ( s, points, params, dimension, order );
+
+  // Check.
+  ::confirm ( s );
 
   OUTPUT << "</testInterpolation>\n";
 }

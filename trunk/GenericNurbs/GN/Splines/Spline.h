@@ -68,6 +68,7 @@ public:
   typedef typename ConfigType::Scale                              Scale;
   typedef typename ConfigType::Multiply                           Multiply;
   typedef typename ConfigType::SquareRoot                         SquareRoot;
+  typedef typename ConfigType::Power                              Power;
   typedef typename ConfigType::Vector                             Vector;
   typedef typename GN::Traits::Argument<ControlPointType>::Type   ControlPointArgument;
   typedef typename GN::Traits::Argument<KnotType>::Type           KnotArgument;

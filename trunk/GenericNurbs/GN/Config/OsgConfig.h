@@ -84,6 +84,21 @@ template < class T > struct SquareRoot
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class for calculating the power.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > struct Power
+{
+  static T calculate ( const T &value, const T &power )
+  {
+    return ::pow ( value, power );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Adaptor class for making a 4x4 translation matrix.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -227,6 +242,7 @@ public:
   typedef Detail::Scale<Matrix44,Vec3>            Scale;
   typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
   typedef Detail::SquareRoot<ControlPointType>    SquareRoot;
+  typedef Detail::Power<ControlPointType>         Power;
 };
 
 

@@ -193,19 +193,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Create"
-				Filter="">
-				<File
-					RelativePath=".\Gn\Create\Circle.h">
-				</File>
-				<File
-					RelativePath=".\Gn\Create\Line.h">
-				</File>
-				<File
-					RelativePath=".\Gn\Create\Sphere.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="Transform"
 				Filter="">
 				<File
@@ -256,6 +243,9 @@
 					RelativePath=".\Gn\Algorithms\BasisFunctions.h">
 				</File>
 				<File
+					RelativePath=".\Gn\Algorithms\Copy.h">
+				</File>
+				<File
 					RelativePath=".\Gn\Algorithms\Equal.h">
 				</File>
 				<File
@@ -263,6 +253,9 @@
 				</File>
 				<File
 					RelativePath=".\Gn\Algorithms\InsertKnot.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Algorithms\Parameterize.h">
 				</File>
 				<File
 					RelativePath=".\Gn\Algorithms\Sort.h">
@@ -314,6 +307,19 @@
 				</File>
 				<File
 					RelativePath=".\Gn\Math\LinearBlend.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Create"
+				Filter="">
+				<File
+					RelativePath=".\Gn\Create\Circle.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Create\Line.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Create\Sphere.h">
 				</File>
 			</Filter>
 		</Filter>

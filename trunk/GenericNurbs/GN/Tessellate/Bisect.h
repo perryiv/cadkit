@@ -54,7 +54,7 @@ template < class CurveType, class ParamContainerType > struct Bisector
   typedef typename CurveType::ControlPointType ControlPointType;
   typedef typename CurveType::ControlPointArgument ControlPointArgument;
   typedef typename ParamContainerType::value_type ParameterType;
-  typedef typename GN::Math::Distance<CurveType> Distance;
+  typedef typename GN::Math::Distance1<CurveType> Distance;
   typedef typename GN::Math::LinearBlend<PointType> LinearBlend;
   typedef typename GN::Predicates::Finite<CurveType> Finite;
   typedef typename ParamContainerType::const_iterator ParamIterator;

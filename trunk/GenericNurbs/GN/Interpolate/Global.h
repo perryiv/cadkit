@@ -17,6 +17,7 @@
 #define _GENERIC_NURBS_LIBRARY_GLOBAL_INTERPOLATION_H_
 
 #include "GN/Macros/ErrorCheck.h"
+#include "GN/MPL/TypeCheck.h"
 
 
 namespace GN {
@@ -39,6 +40,24 @@ namespace Detail {
 ///////////////////////////////////////////////////////////////////////////////
 
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Global interpolation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class CurveType, class DataContainer, class ParamContainer >
+void global ( const CurveType &curve,
+              const DataContainer &points,
+              const ParamContainer &params,
+              const typename CurveType::UIntType &dimension,
+              const typename CurveType::UIntType &order )
+{
+  GN_CAN_BE_CURVE ( CurveType );
+  // TODO
+}
 
 
 }; // namespace Interpolate

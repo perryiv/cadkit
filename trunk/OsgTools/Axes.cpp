@@ -55,7 +55,8 @@ Axes::Axes() :
 
 osg::Node* Axes::operator()() const
 {
-  osg::ref_ptr<osg::Group> group = new osg::Group;  // place it all under a group
+  osg::Group* group = new osg::Group();  // place it all under a group
+  group->setName("OsgTools_Axes_group");
 
   if( Usul::Bits::has(_state,POSITIVE_X) )
   {
@@ -135,9 +136,9 @@ osg::Node* Axes::operator()() const
   group->setDataVariance(osg::Object::STATIC);
 
   osgUtil::Optimizer mizer;
-  mizer.optimize( group.get(), osgUtil::Optimizer::ALL_OPTIMIZATIONS );
+  mizer.optimize( group, osgUtil::Optimizer::ALL_OPTIMIZATIONS );
 
-  return( group.release() );
+  return( group );
 }
 
 // returns a Geode that looks like an arrow
@@ -148,7 +149,9 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
   ErrorChecker ( 1068242098, _width > 0 );
 
   osg::ref_ptr<osg::Geode> base ( new osg::Geode );
+  base->setName("OsgTools_Axes_cartesian_graphic_base");
   osg::ref_ptr<osg::Geode> top ( new osg::Geode );
+  top->setName("OsgTools_Axes_cartesian_graphic_top");
 
   osg::Vec3 center(0.0,0.0,0.5*_length);  // useful vector
 
@@ -176,10 +179,12 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
   osg::Vec3 distance(center[0],center[1],center[2]+0.525*_length);
   top_trans.makeTranslate( distance );
   osg::ref_ptr<osg::MatrixTransform> top_xform = new osg::MatrixTransform;
+  top_xform->setName("OsgTools_Axes_cartesian_graphic_top_xform");
   top_xform->setMatrix( top_trans );
   top_xform->addChild( top.get() );
 
-  osg::ref_ptr<osg::Group> group = new osg::Group;
+  osg::Group* group = new osg::Group();
+  group->setName("OsgTools_Axes_cartesian_graphic_group");
 
   // rotate geomtery if necessary
   if( !quat.zeroRotation() )
@@ -188,6 +193,7 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
       rotate.makeRotate( quat );
 
       osg::ref_ptr<osg::MatrixTransform> base_xform = new osg::MatrixTransform;
+      base_xform->setName("OsgTools_Axes_cartesian_graphic_base_xfrom");
       base_xform->setMatrix( rotate );
       base_xform->addChild( base.get() );
       base_xform->addChild( top_xform.get() );
@@ -201,8 +207,8 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
       group->addChild( base.get() );
     }
 
-  // group->setDataVariance(osg::Object::STATIC);
-  return( group.release() );
+  /// TODO: group->setDataVariance(osg::Object::STATIC);
+  return( group );
 }
 
 osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) const
@@ -218,7 +224,9 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   cone->set(osg::Vec3(0.0f,0.0f,0.0f), _width*1.4, _length*0.1);
   osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(cone.get());
   sd->setColor( color );
+
   osg::ref_ptr<osg::Geode> cone_geode = new osg::Geode;
+  cone_geode->setName("OsgTools_Axes_torus_graphic_cone_geode");
   cone_geode->addDrawable( sd.get() );
 
   // position the cone
@@ -226,12 +234,14 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   osg::Vec3 move_it(0.0,-(radi+_width),0.0);
   osg::Matrix move;   move.makeTranslate( move_it );
   osg::ref_ptr<osg::MatrixTransform> coneXform = new osg::MatrixTransform;
+  coneXform->setName("OsgTools_Axes_torus_graphic_coneXform");
   coneXform->addChild( cone_geode.get() );
   coneXform->setMatrix( osg::Matrix(turn_it) );
   coneXform->preMult( move );
 
   // group the graphics together
-  osg::ref_ptr<osg::MatrixTransform> group = new osg::MatrixTransform;
+  osg::MatrixTransform* group = new osg::MatrixTransform();
+  group->setName("OsgTools_Axes_torus_graphic_group");
   group->addChild( torus_gfx.get() );
   group->addChild( coneXform.get() );
 
@@ -244,19 +254,18 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   if( quat.zeroRotation() )
     {
       //group->preMult( translate );
-      return( group.release() );
+      return( group );
     }
 
   else
     {
-      //std::cout << "rotating torus" << std::endl;
       osg::Matrix rotate;
       rotate.makeRotate( quat );
       //group->preMult( translate*rotate );
       group->preMult( rotate );
     }
 
-  return( group.release() );
+  return( group );
 }
 
 osg::Node* Axes::box_graphic(const osg::Vec4& color) const
@@ -264,7 +273,7 @@ osg::Node* Axes::box_graphic(const osg::Vec4& color) const
   float size = _width*2.3;
   ColorBox box(size,size,size);
 
-  osg::ref_ptr<osg::Node> node = box();
+  osg::ref_ptr<osg::Node> node( box() );
 
   return( node.release() );
 }

@@ -198,7 +198,7 @@ IUnknown *DbPfDatabase::queryInterface ( const unsigned long &iid )
 std::string DbPfDatabase::getFileExtension() const
 {
   SL_PRINT2 ( "In DbPfDatabase::getFileExtension(), this = %X\n", this );
-  return "Performer";
+  return "pfb";
 }
 
 
@@ -369,6 +369,7 @@ void DbPfDatabase::_setLodParameters ( pfLOD *lod ) const
   // Get the bounding sphere for the first child.
   pfSphere boundingSphere;
   SL_VERIFY ( TRUE == child->getBound ( &boundingSphere ) );
+  SL_VERIFY ( boundingSphere.radius > 0.0f );
 
   // The maximum distance for the lod ranges.
   float maxDist = MAX_LOD_DISTANCE_FACTOR * boundingSphere.radius;
@@ -586,8 +587,9 @@ bool DbPfDatabase::_addAttributes ( IUnknown *caller, ShapeHandle shape, pfGeoSt
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // If there are no color attributes then look for a material. We do this 
-  // because Performer will use the material first.
+  // If there are no color attributes then look for a material.
+  // We have to do this for OSG because it uses materials first (even if 
+  // there are colors). However, do we have to do this for Performer?
   if ( false == this->_hasColorAttribute ( caller, shape ) )
   {
     // Get the material from the shape, part, or assembly.
@@ -663,9 +665,10 @@ bool DbPfDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, pfGeoSet 
       return ERROR ( "Failed to determine lengths of vertex-set primitives.", FAILED );
 
     // Set the vertices, the primitive lengths, and the primitive type.
-    gset->setAttr ( PFGS_COORD3, PFGS_PER_VERTEX, setter.getVertices(), NULL );
-    gset->setPrimLengths ( lengths );
     gset->setPrimType ( setter.getPrimitiveType() );
+    gset->setNumPrims ( setter.getNumPrimitives() );
+    gset->setPrimLengths ( lengths );
+    gset->setAttr ( PFGS_COORD3, PFGS_PER_VERTEX, setter.getVertices(), NULL );
 
     // It worked.
     return true;

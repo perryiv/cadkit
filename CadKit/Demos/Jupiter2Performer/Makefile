@@ -9,6 +9,7 @@ LOCAL_INCLUDE =
 
 # The libraries to link to.
 LOCAL_LIBS = \
+	-lCkCt_s \
 	-lCkDbPf_s \
 	-lCkDbJt_s \
 	-lCkSl_s \

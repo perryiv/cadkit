@@ -366,6 +366,7 @@ void DbOsgDatabase::_setLodParameters ( osg::LOD *lod ) const
 
   // Get the bounding sphere for the first child.
   const osg::BoundingSphere &boundingSphere = child->getBound();
+  SL_VERIFY ( boundingSphere.radius() > 0.0f );
 
   // The maximum distance for the lod ranges.
   float maxDist = MAX_LOD_DISTANCE_FACTOR * boundingSphere.radius();

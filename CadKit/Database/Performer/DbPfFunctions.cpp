@@ -22,6 +22,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfMaterial.h"
+# include "Performer/pr/pfGeoSet.h"
 #endif
 
 
@@ -62,6 +63,10 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
   {
     const SlVec4f &v = material.getDiffuse();
     mat->setColor ( PFMTL_DIFFUSE, v[0], v[1], v[2] );
+
+    // If the diffuse color's alpha is less than 1 then we have a transparency.
+    if ( v[3] < 1.0f )
+      state->setMode ( PFSTATE_TRANSPARENCY, PFTR_ON );
   }
 
   // Specular.
@@ -89,6 +94,10 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
 
   // Set the state's material.
   state->setAttr ( PFSTATE_FRONTMTL, mat );
+  //state->setAttr ( PFSTATE_BACKMTL, mat ); // TODO, needed?
+
+  // Turn on lighting. 
+  state->setMode ( PFSTATE_ENLIGHTING, PF_ON );
 }
 
 

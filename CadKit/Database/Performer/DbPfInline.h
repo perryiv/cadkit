@@ -22,7 +22,7 @@
 #include "Interfaces/IEntityQuery.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pr/pfDCS.h"
+# include "Performer/pf/pfDCS.h"
 #endif
 
 

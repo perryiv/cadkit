@@ -814,10 +814,10 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
                                   const unsigned int &whichLOD, 
                                   const unsigned int &whichShape, 
                                   const unsigned int &whichSet, 
-                                  std::vector<float> &vertices, 
-                                  std::vector<float> &normals, 
-                                  std::vector<float> &colors, 
-                                  std::vector<float> &texture, 
+                                  std::vector<SlVec3f> &vertices, 
+                                  std::vector<SlVec3f> &normals, 
+                                  std::vector<SlVec4f> &colors, 
+                                  std::vector<SlVec2f> &texture, 
                                   unsigned int &valid ) const
 {
   SL_PRINT5 ( "In DbJtTraverser::getShapeSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
@@ -851,7 +851,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Vertices.
   if ( v.getReference() && vertexCount > 0 )
   {
-    CadKit::append ( vertexCount * 3, v.getReference(), vertices );
+    CadKit::append3D ( vertexCount, v.getReference(), vertices );
     valid |= SHAPE_ARRAY_VERTICES;
     success = true;
   }
@@ -859,7 +859,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Normals.
   if ( n.getReference() && normalCount > 0 )
   {
-    CadKit::copy ( normalCount * 3, n.getReference(), normals );
+    CadKit::append3D ( normalCount, n.getReference(), normals );
     valid |= SHAPE_ARRAY_NORMALS;
     success = true;
   }
@@ -867,7 +867,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Colors.
   if ( c.getReference() && colorCount > 0 )
   {
-    CadKit::copy ( colorCount * 3, c.getReference(), colors );
+    CadKit::append4D ( colorCount, c.getReference(), colors );
     valid |= SHAPE_ARRAY_COLORS;
     success = true;
   }
@@ -875,7 +875,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Texture.
   if ( t.getReference() && textureCount > 0 )
   {
-    CadKit::copy ( textureCount, t.getReference(), texture ); // Note: no "* 3" here.
+    CadKit::append2D ( textureCount, t.getReference(), texture );
     valid |= SHAPE_ARRAY_TEXTURE;
     success = true;
   }

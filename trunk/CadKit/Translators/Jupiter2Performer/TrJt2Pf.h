@@ -129,7 +129,7 @@ protected:
 
   bool                    _endCurrentGroup();
 
-  pfVec3 *                _makeVec3Array ( const std::vector<float> &vec ) const;
+  pfVec3 *                _makeVec3Array ( const std::vector<SlVec3f> &vec ) const;
   int *                   _makeIntArray ( const std::vector<unsigned int> &vec ) const;
 
   bool                    _processEntity ( DbJtTraverser::EntityHandle entity );

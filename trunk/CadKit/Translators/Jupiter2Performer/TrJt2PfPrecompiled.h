@@ -63,6 +63,8 @@
 # include "Performer/pr/pfLinMath.h"
 # include "Performer/pr/pfMaterial.h"
 # include <fstream> 
+# include <iostream>
+# include <iomanip>
 #endif
 
 #endif // _CADKIT_JUPITER_TO_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

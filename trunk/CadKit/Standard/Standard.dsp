@@ -155,6 +155,10 @@ SOURCE=.\SlFunctionDefines.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlInline.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlInlineMath.h
 # End Source File
 # Begin Source File

@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib"
 				OutputFile="$(OSG_BIN_DIR)/osgdb_pdb.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -90,7 +90,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/vmg"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;_USRDLL;WIN32;_DEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -108,7 +108,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib"
 				OutputFile="$(OSG_BIN_DIR)/osgdb_pdbd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

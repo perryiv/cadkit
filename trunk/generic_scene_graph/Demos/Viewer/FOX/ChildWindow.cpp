@@ -49,7 +49,7 @@ ChildWindow::ChildWindow() : BaseClass()
 ///////////////////////////////////////////////////////////////////////////////
 
 ChildWindow::ChildWindow ( const FXString &name, MainWindow *parent ) : 
-  BaseClass ( parent->clientArea(), name, NULL, parent->mdiMenu(), 0, 20, 20, 400, 300 )
+  BaseClass ( parent->clientArea(), name, NULL, parent->mdiMenu(), 0 )
 {
 }
 

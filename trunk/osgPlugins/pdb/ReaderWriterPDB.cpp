@@ -412,7 +412,7 @@ void ReaderWriterPDB::_configure ( const Options *options )
   typedef XML::Error::Thrower < checkForErrors > ThrowPolicy;
   typedef XML::Error::Pair < AssertPolicy, ThrowPolicy > ErrorPolicy;
   typedef XML::Node < std::string, ErrorPolicy, createMissingChildren > Node;
-  typedef XML::Callback::Notify < std::string > NodeCallback;
+  typedef XML::Callback::Notify < std::string, ReaderWriterPDB * > NodeCallback;
   typedef XML::Config::Trim TrimPolicy;
   typedef XML::Reader < Node, ErrorPolicy, NodeCallback, TrimPolicy > Reader;
   typedef Reader::Node Node;
@@ -421,7 +421,7 @@ void ReaderWriterPDB::_configure ( const Options *options )
 
   // Construct the node tree and get the root.
   Reader reader ( chunk.begin(), chunk.end() );
-  Pointer root ( reader.getRoot() );
+  Pointer root ( reader.root() );
 
   // Needed to convert.
   XML::Convert<bool> toBool;

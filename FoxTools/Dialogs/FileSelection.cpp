@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FoxTools/Dialogs/FileDialog.h"
+#include "FoxTools/Dialogs/FileSelection.h"
 #include "FoxTools/Headers/FileDialog.h"
 #include "FoxTools/Headers/App.h"
 
@@ -44,7 +44,7 @@ using namespace Dialogs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileDialog::FileDialog() :
+FileSelection::FileSelection() :
   _title       ( "Default Title" ),
   _defaultFile ( "filename" ),
   _placement   ( FX::PLACEMENT_OWNER ),
@@ -52,7 +52,7 @@ FileDialog::FileDialog() :
   _flags       ( 0 ),
   _filters     (),
   _filenames   (),
-  _type        ( FileDialog::OPEN )
+  _type        ( FileSelection::OPEN )
 {
 }
 
@@ -63,15 +63,15 @@ FileDialog::FileDialog() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileDialog::FileDialog ( const Type &type, 
-                         const std::string &title, 
-                         const Filters &filters, 
-                         unsigned int initialFilter ) :
+FileSelection::FileSelection ( const Type &type, 
+                               const std::string &title, 
+                               const Filters &filters, 
+                               unsigned int initialFilter ) :
   _title       ( title ),
   _defaultFile ( "filename" ),
   _placement   ( FX::PLACEMENT_OWNER ),
   _filterIndex ( ( initialFilter < filters.size() ) ? initialFilter : 0 ),
-  _flags       ( ( FileDialog::OPEN == type ) ? ( CONFIRM_FILE_EXISTS | ALLOW_MULTIPLE_FILES ) : 0 ),
+  _flags       ( ( FileSelection::OPEN == type ) ? ( CONFIRM_FILE_EXISTS | ALLOW_MULTIPLE_FILES ) : 0 ),
   _filters     ( filters ),
   _filenames   (),
   _type        ( type )
@@ -85,7 +85,7 @@ FileDialog::FileDialog ( const Type &type,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileDialog::~FileDialog()
+FileSelection::~FileSelection()
 {
 }
 
@@ -96,7 +96,7 @@ FileDialog::~FileDialog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FileDialog::runModal ( FX::FXWindow *owner )
+bool FileSelection::runModal ( FX::FXWindow *owner )
 {
   // Initialize.
   _filenames.clear();
@@ -142,14 +142,14 @@ bool FileDialog::runModal ( FX::FXWindow *owner )
   #endif
 
   // Append to the flags.
-  dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::CONFIRM_FILE_EXISTS  ) ) ? ( OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST ) : 0;
-  dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::HIDE_READ_ONLY       ) ) ?   OFN_READONLY                            : 0;
-  dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::ALLOW_MULTIPLE_FILES ) ) ?   OFN_ALLOWMULTISELECT                    : 0;
-  dialog.Flags |= ( FileDialog::SAVE == _type )                                    ?   OFN_OVERWRITEPROMPT                     : 0;
+  dialog.Flags |= ( Usul::Bits::has ( _flags, FileSelection::CONFIRM_FILE_EXISTS  ) ) ? ( OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST ) : 0;
+  dialog.Flags |= ( Usul::Bits::has ( _flags, FileSelection::HIDE_READ_ONLY       ) ) ?   OFN_READONLY                            : 0;
+  dialog.Flags |= ( Usul::Bits::has ( _flags, FileSelection::ALLOW_MULTIPLE_FILES ) ) ?   OFN_ALLOWMULTISELECT                    : 0;
+  dialog.Flags |= ( FileSelection::SAVE == _type )                                    ?   OFN_OVERWRITEPROMPT                     : 0;
 
   // Set the function to call.
   typedef BOOL APIENTRY Function ( LPOPENFILENAME lpofn );
-  Function *function = ( FileDialog::OPEN == _type ) ? &::GetOpenFileName : &::GetSaveFileName;
+  Function *function = ( FileSelection::OPEN == _type ) ? &::GetOpenFileName : &::GetSaveFileName;
 
   // Open the file selection dialog. This will return false if the user canceled.
   if ( FALSE == function ( &dialog ) )
@@ -247,10 +247,10 @@ bool FileDialog::runModal ( FX::FXWindow *owner )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileDialog::multipleFiles ( bool state )
+void FileSelection::multipleFiles ( bool state )
 {
-  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileDialog::ALLOW_MULTIPLE_FILES )
-                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileDialog::ALLOW_MULTIPLE_FILES );
+  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileSelection::ALLOW_MULTIPLE_FILES )
+                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileSelection::ALLOW_MULTIPLE_FILES );
 }
 
 
@@ -260,9 +260,9 @@ void FileDialog::multipleFiles ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FileDialog::multipleFiles() const
+bool FileSelection::multipleFiles() const
 {
-  return Usul::Bits::has<unsigned int, int> ( _flags, FileDialog::ALLOW_MULTIPLE_FILES );
+  return Usul::Bits::has<unsigned int, int> ( _flags, FileSelection::ALLOW_MULTIPLE_FILES );
 }
 
 
@@ -272,10 +272,10 @@ bool FileDialog::multipleFiles() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileDialog::hideReadOnly ( bool state )
+void FileSelection::hideReadOnly ( bool state )
 {
-  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileDialog::HIDE_READ_ONLY )
-                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileDialog::HIDE_READ_ONLY );
+  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileSelection::HIDE_READ_ONLY )
+                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileSelection::HIDE_READ_ONLY );
 }
 
 
@@ -285,9 +285,9 @@ void FileDialog::hideReadOnly ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FileDialog::hideReadOnly() const
+bool FileSelection::hideReadOnly() const
 {
-  return Usul::Bits::has<unsigned int, int> ( _flags, FileDialog::HIDE_READ_ONLY );
+  return Usul::Bits::has<unsigned int, int> ( _flags, FileSelection::HIDE_READ_ONLY );
 }
 
 
@@ -297,10 +297,10 @@ bool FileDialog::hideReadOnly() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileDialog::confirmFileExists ( bool state )
+void FileSelection::confirmFileExists ( bool state )
 {
-  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileDialog::CONFIRM_FILE_EXISTS )
-                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileDialog::CONFIRM_FILE_EXISTS );
+  _flags = ( state ) ? Usul::Bits::add<unsigned int, int>    ( _flags, FileSelection::CONFIRM_FILE_EXISTS )
+                     : Usul::Bits::remove<unsigned int, int> ( _flags, FileSelection::CONFIRM_FILE_EXISTS );
 }
 
 
@@ -310,9 +310,9 @@ void FileDialog::confirmFileExists ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FileDialog::confirmFileExists() const
+bool FileSelection::confirmFileExists() const
 {
-  return Usul::Bits::has<unsigned int, int> ( _flags, FileDialog::CONFIRM_FILE_EXISTS );
+  return Usul::Bits::has<unsigned int, int> ( _flags, FileSelection::CONFIRM_FILE_EXISTS );
 }
 
 
@@ -322,7 +322,7 @@ bool FileDialog::confirmFileExists() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileDialog::_makePatterns ( std::string &patterns ) const
+void FileSelection::_makePatterns ( std::string &patterns ) const
 {
   // Initialize.
   patterns.clear();
@@ -373,7 +373,7 @@ void FileDialog::_makePatterns ( std::string &patterns ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileDialog::filterIndex ( unsigned int index )
+void FileSelection::filterIndex ( unsigned int index )
 {
   _filterIndex = std::min ( _filters.size() - 1, index );
 }
@@ -385,10 +385,10 @@ void FileDialog::filterIndex ( unsigned int index )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileDialog::FilesResult FileDialog::askForFileNames ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
+FileSelection::FilesResult FileSelection::askForFileNames ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
 {
   // Declare and configure a file dialog.
-  FileDialog dialog ( type, title, filters );
+  FileSelection dialog ( type, title, filters );
 
   // Make the registry section.
   std::ostringstream section;
@@ -420,8 +420,8 @@ FileDialog::FilesResult FileDialog::askForFileNames ( FX::FXWindow *owner, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileDialog::FileResult FileDialog::askForFileName ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
+FileSelection::FileResult FileSelection::askForFileName ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
 {
-  FilesResult result ( FileDialog::askForFileNames ( owner, type, title, filters ) );
+  FilesResult result ( FileSelection::askForFileNames ( owner, type, title, filters ) );
   return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }

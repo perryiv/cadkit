@@ -28,7 +28,7 @@ namespace FoxTools {
 namespace Dialogs {
 
 
-class FOX_TOOLS_EXPORT FileDialog
+class FOX_TOOLS_EXPORT FileSelection
 {
 public:
 
@@ -44,12 +44,12 @@ public:
   enum Type { OPEN, SAVE };
 
   // Constructor/destructor.
-  FileDialog();
-  FileDialog ( const Type &type, 
-               const std::string &title, 
-               const Filters &filters = Filters(), 
-               unsigned int initialFilter = 0 );
-  virtual ~FileDialog();
+  FileSelection();
+  FileSelection ( const Type &type, 
+                  const std::string &title, 
+                  const Filters &filters = Filters(), 
+                  unsigned int initialFilter = 0 );
+  virtual ~FileSelection();
 
   // Ask the user for file names.
   static FilesResult            askForFileNames ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters = Filters() );

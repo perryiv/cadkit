@@ -20,7 +20,7 @@
 
 #include <string>
 
-namespace OsgFox { namespace Documents { class Document; } }
+//namespace OsgFox { namespace Documents { class Document; } }
 
 
 namespace Usul {
@@ -38,7 +38,7 @@ struct IRead : public Usul::Interfaces::IUnknown
   enum { IID = 2584851569u };
 
   /// Read the data from the named source.
-  virtual OsgFox::Documents::Document* read ( const std::string &source, Unknown *data, Unknown *caller ) = 0;
+  virtual Unknown *     read ( const std::string &source, Unknown *data, Unknown *caller ) = 0;
 };
 
 

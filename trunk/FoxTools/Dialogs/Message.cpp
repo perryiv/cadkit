@@ -33,6 +33,7 @@
 #include "Usul/Cast/Cast.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 using namespace FoxTools;
 using namespace Dialogs;
@@ -477,6 +478,36 @@ void Message::buttons ( const std::string &b1, const std::string &b2, const std:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Separate buttons with a '|' character. For example, "OK|Cancel".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Message::buttons ( const std::string &b )
+{
+  // Clear existing buttons.
+  this->buttons().clear();
+
+  // Initialize.
+  std::string::const_iterator first = b.begin();
+  std::string::const_iterator last  = first;
+
+  // While we are not at the end...
+  while ( b.end() != first )
+  {
+    // Search the string for '|' characters.
+    last = std::find ( first, b.end(), '|' );
+
+    // Append a button.
+    this->buttons().push_back ( std::string ( first, last ) );
+
+    // Set for next iteration.
+    first = last;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Cache the result if we are supposed to.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -509,6 +540,10 @@ void Message::_save ( const std::string &result, FX::FXRegistry &reg ) const
 
 std::string Message::_find ( FX::FXRegistry &reg ) const
 {
+  // Handle empty string.
+  if ( this->id().empty() )
+    return std::string();
+
   // Check the map.
   Detail::Results::const_iterator i = Detail::_results.find ( this->id() );
   if ( Detail::_results.end() != i )
@@ -521,6 +556,26 @@ std::string Message::_find ( FX::FXRegistry &reg ) const
 
   // We didn't find anything.
   return std::string();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to display an error dialog. Separate buttons 
+//  with a '|' character. For example, "OK|Cancel".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Message::error ( FX::FXObject *owner, 
+                             const std::string &b, 
+                             const std::string &title, 
+                             const std::string &text )
+{
+  Message m;
+  m.text ( title, text );
+  m.icon ( FoxTools::Icons::Factory::ICON_ERROR, owner );
+  m.buttons ( b );
+  return m.run ( owner, FX::PLACEMENT_OWNER );
 }
 
 
@@ -603,8 +658,17 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
       // Loop through the columns of this row.
       for ( Row::const_iterator j = row.begin(); j != row.end(); ++j )
       {
+        // Shortcut to the cell.
         const Cell &cell = *j;
+
+        // Get the text.
         std::string text ( ( cell.first.empty() ) ? "--" : cell.first ); 
+
+        // FOX labels do not handle tab characters well, treats them as hot-key 
+        // delimiters for buttons. Replace all tabs with spaces.
+        std::replace ( text.begin(), text.end(), '\t', ' ' );
+
+        // Make the label.
         new FX::FXLabel ( matrix, text.c_str(), 0x0, FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_ROW | FX::LAYOUT_FILL_COLUMN );
       }
     }

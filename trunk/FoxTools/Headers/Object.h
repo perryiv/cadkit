@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __FOX_TOOLS_TAB_ITEM_HEADERS_H__
-#define __FOX_TOOLS_TAB_ITEM_HEADERS_H__
+#ifndef __FOX_TOOLS_OBJECT_HEADERS_H__
+#define __FOX_TOOLS_OBJECT_HEADERS_H__
 
 
 #include "FoxTools/Headers/Definitions.h"
@@ -18,4 +18,4 @@
 #include "FXObject.h"
 
 
-#endif // __FOX_TOOLS_TAB_ITEM_HEADERS_H__
+#endif // __FOX_TOOLS_OBJECT_HEADERS_H__

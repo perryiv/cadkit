@@ -452,7 +452,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
         memset(num,0, 6*sizeof(char));
         strncpy(num, buf + columnStart, columnLength);
         connect = atoi (num);
-        if ( _atoms.at(id).getId() != -1 && _atoms.at(connect).getId() != -1 )
+        if(_atoms.at(id).valid() && _atoms.at(connect).valid())
           _bonds.push_back( Bond (_atoms.at(id), _atoms.at(connect), _bonds.size() + 1));
         columnStart += columnLength;
       }

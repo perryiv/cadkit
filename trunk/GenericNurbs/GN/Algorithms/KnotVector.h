@@ -116,7 +116,7 @@ struct KnotVector
       for ( SizeType j = 1; j <= (n-p); ++j )
       {
         // This is equation 9.69 from "The NURBS Book", page 412.
-        SizeType i ( SizeType ( IndependentType ( j ) * d ) );
+        SizeType i ( static_cast<SizeType> ( static_cast<IndependentType> ( j ) * d ) );
         IndependentType alpha ( j * d - IndependentType ( i ) );
         knots[order+j-1] = ( 1 - alpha ) * u[i-1] + alpha * u[i];
       }

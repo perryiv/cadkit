@@ -25,34 +25,53 @@ namespace Math {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Start of namespace Detail.
+//  Calculate the distance between two 1 x n vectors.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Generic definition.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class V > struct DistanceHelper;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For n-dimensional vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <> struct DistanceHelper < Vector >
+template < class CurveType > struct Distance1
 {
-  typedef typename Vector::const_iterator Iterator;
+  typedef typename CurveType::Vector Vector;
+  typedef typename CurveType::Vec2 Vec2;
+  typedef typename CurveType::Vec3 Vec3;
+  typedef typename CurveType::Vec4 Vec4;
+  typedef typename CurveType::SquareRoot SquareRoot;
+  typedef typename CurveType::DependentType RealType;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+  typedef Distance1 < CurveType > ThisType;
 
+public:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the distance squared.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  static RealType squared ( const Vec2 &a, const Vec2 &b )
+  {
+    return 
+      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+      ( a[1] - b[1] ) * ( a[1] - b[1] );
+  }
+  static RealType squared ( const Vec3 &a, const Vec3 &b )
+  {
+    return 
+      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+      ( a[1] - b[1] ) * ( a[1] - b[1] ) +
+      ( a[2] - b[2] ) * ( a[2] - b[2] );
+  }
+  static RealType squared ( const Vec4 &a, const Vec4 &b )
+  {
+    return 
+      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+      ( a[1] - b[1] ) * ( a[1] - b[1] ) +
+      ( a[2] - b[2] ) * ( a[2] - b[2] ) +
+      ( a[3] - b[3] ) * ( a[3] - b[3] );
+  }
   static RealType squared ( const Vector &a, const Vector &b )
   {
+    typedef typename Vector::const_iterator Iterator;
     GN_ERROR_CHECK ( a.size() == b.size() );
     RealType dist ( 0 ), diff;
     Iterator i = a.begin();
@@ -67,120 +86,6 @@ template <> struct DistanceHelper < Vector >
     return dist;
   }
 
-  static RealType get ( const Vector &a, const Vector &b )
-  {
-    return SquareRoot::calculate ( squared ( a, b ) );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For 4-dimensional vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <> struct DistanceHelper < Vec4 >
-{
-  static RealType squared ( const Vec4 &a, const Vec4 &b )
-  {
-    return 
-      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
-      ( a[1] - b[1] ) * ( a[1] - b[1] ) +
-      ( a[2] - b[2] ) * ( a[2] - b[2] ) +
-      ( a[3] - b[3] ) * ( a[3] - b[3] );
-  }
-
-  static RealType get ( const Vec4 &a, const Vec4 &b )
-  {
-    return SquareRoot::calculate ( squared ( a, b ) );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For 3-dimensional vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <> struct DistanceHelper < Vec3 >
-{
-  static RealType squared ( const Vec3 &a, const Vec3 &b )
-  {
-    return 
-      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
-      ( a[1] - b[1] ) * ( a[1] - b[1] ) +
-      ( a[2] - b[2] ) * ( a[2] - b[2] );
-  }
-
-  static RealType get ( const Vec3 &a, const Vec3 &b )
-  {
-    return SquareRoot::calculate ( squared ( a, b ) );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For 3-dimensional vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <> struct DistanceHelper < Vec2 >
-{
-  static RealType squared ( const Vec2 &a, const Vec2 &b )
-  {
-    return 
-      ( a[0] - b[0] ) * ( a[0] - b[0] ) +
-      ( a[1] - b[1] ) * ( a[1] - b[1] );
-  }
-
-  static RealType get ( const Vec2 &a, const Vec2 &b )
-  {
-    return SquareRoot::calculate ( squared ( a, b ) );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End of namespace Detail.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate the distance between two 1 x n vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class CurveType > struct Distance1
-{
-  typedef typename CurveType::Vector Vector;
-  typedef typename CurveType::Vec2 Vec2;
-  typedef typename CurveType::Vec3 Vec3;
-  typedef typename CurveType::Vec4 Vec4;
-  typedef typename CurveType::SquareRoot SquareRoot;
-  typedef typename CurveType::DependentType RealType;
-  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
-
-public:
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get the distance squared.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  template < class V > static RealType squared ( const V &a, const V &b )
-  {
-    return GN::Math::Detail::DistanceHelper<V>::squared ( a, b );
-  }
-
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -190,7 +95,19 @@ public:
 
   static RealType get ( const Vec2 &a, const Vec2 &b )
   {
-    return GN::Math::Detail::DistanceHelper<Vec2>::get ( a, b );
+    return SquareRoot::calculate ( ThisType::squared ( a, b ) );
+  }
+  static RealType get ( const Vec3 &a, const Vec3 &b )
+  {
+    return SquareRoot::calculate ( ThisType::squared ( a, b ) );
+  }
+  static RealType get ( const Vec4 &a, const Vec4 &b )
+  {
+    return SquareRoot::calculate ( ThisType::squared ( a, b ) );
+  }
+  static RealType get ( const Vector &a, const Vector &b )
+  {
+    return SquareRoot::calculate ( squared ( a, b ) );
   }
 };
 
@@ -244,13 +161,12 @@ template
 >
 struct Distance2d
 {
-  typedef typename ContainerType::size_type SizeType;
   typedef typename ContainerType::value_type::value_type ValueType;
   typedef GN::Math::DistanceSquared2d < ContainerType, ErrorCheckerType > DistanceSquared;
 
   static ValueType calculate ( const ContainerType &a, const ContainerType &b )
   {
-    return SquareRoot::calculate ( DistanceSquared::calculate ( a, b ) );
+    return SquareRootType::calculate ( DistanceSquared::calculate ( a, b ) );
   }
 };
 

@@ -27,7 +27,7 @@
 namespace osg { class Group; class LOD; class Geode; };
 
 
-class OSGPDB_EXPORT ReaderWriterPDB : public osgDB::ReaderWriter
+class OSG_PDB_EXPORT ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
 

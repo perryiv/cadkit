@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Defines what OSGPDB_EXPORT means.
+//  Defines what OSG_PDB_EXPORT means.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,13 +19,13 @@
 #ifdef _WIN32
 # pragma warning ( disable : 4275 ) // Irrelevant VC6 warning.
 # pragma warning ( disable : 4251 ) // Irrelevant VC6 warning.
-# ifdef _COMPILING_OSGPDB
-#   define OSGPDB_EXPORT __declspec ( dllexport ) // We are compiling this library so the classes are exported.
+# ifdef _COMPILING_OSG_PDB
+#   define OSG_PDB_EXPORT __declspec ( dllexport ) // We are compiling this library so the classes are exported.
 # else
-#   define OSGPDB_EXPORT __declspec ( dllimport ) // The classes will be imported into the client's code.
+#   define OSG_PDB_EXPORT __declspec ( dllimport ) // The classes will be imported into the client's code.
 # endif
 #else // _WIN32
-# define OSGPDB_EXPORT
+# define OSG_PDB_EXPORT
 #endif
 
 #endif // _OSG_PDB_EXPORT_H_

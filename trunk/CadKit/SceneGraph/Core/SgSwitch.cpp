@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgSwitch.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgSwitch,SgGroup);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgSwitch,SgGroup);
 
 SgSwitch::SgSwitch() : SgGroup(), whichChild ( 0 ), traversal ( NONE )
 {
-  SL_PRINT ( "SgSwitch::SgSwitch(), this = %X\n", this );
+  SL_PRINT2 ( "SgSwitch::SgSwitch(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgSwitch::SgSwitch() : SgGroup(), whichChild ( 0 ), traversal ( NONE )
 
 SgSwitch::~SgSwitch()
 {
-  SL_PRINT ( "SgSwitch::~SgSwitch(), this = %X\n", this );
+  SL_PRINT2 ( "SgSwitch::~SgSwitch(), this = %X\n", this );
 }

@@ -57,7 +57,7 @@
 #   define SL_ASSERT _ASSERT	  // Default assertion behavior is ok.
 # else // Unix.
 #   include <stdio.h>
-#   define SL_ASSERT(exp) if ( !(exp) ) { printf ( "Assertion failed at line: %s, file: %s\n", __LINE__, __FILE__ ); fflush ( stdio ); }
+#   define SL_ASSERT(exp) if ( !(exp) ) { ::printf ( "Assertion failed at line: %s, file: %s\n", __LINE__, __FILE__ ); ::fflush ( stdout ); }
 # endif
 # define SL_VERIFY SL_ASSERT    // Make verify do the same thing as assert.
 #else // Release.

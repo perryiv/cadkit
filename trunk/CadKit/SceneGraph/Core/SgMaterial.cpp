@@ -45,6 +45,10 @@
 #include "SgMaterial.h"
 #include "SgDefine.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgMaterial,SgAttribute);
@@ -64,7 +68,7 @@ SgMaterial::SgMaterial() : SgAttribute(),
   emissive  ( SG_DEFAULT_MATERIAL_EMISSIVE ), 
   shininess ( SG_DEFAULT_MATERIAL_SHININESS )
 {
-  SL_PRINT ( "SgMaterial::SgMaterial(), this = %X\n", this );
+  SL_PRINT2 ( "SgMaterial::SgMaterial(), this = %X\n", this );
 }
 
 
@@ -82,7 +86,7 @@ SgMaterial::SgMaterial ( const SgMaterial &copyMe ) : SgAttribute(),
   emissive ( copyMe.emissive ), 
   shininess ( copyMe.shininess )
 {
-  SL_PRINT ( "SgMaterial::SgMaterial(), this = %X\n", this );
+  SL_PRINT2 ( "SgMaterial::SgMaterial(), this = %X\n", this );
 }
 
 
@@ -94,7 +98,7 @@ SgMaterial::SgMaterial ( const SgMaterial &copyMe ) : SgAttribute(),
 
 SgMaterial::~SgMaterial()
 {
-  SL_PRINT ( "SgMaterial::~SgMaterial(), this = %X\n", this );
+  SL_PRINT2 ( "SgMaterial::~SgMaterial(), this = %X\n", this );
 }
 
 

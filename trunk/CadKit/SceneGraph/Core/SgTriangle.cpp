@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgTriangle.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgTriangle,SgPrimitive);
@@ -59,7 +63,7 @@ SgTriangle::SgTriangle() : SgPrimitive(),
   center ( 0.0f, 0.0f, 0.0f ),
   size ( 1.0f )
 {
-  SL_PRINT ( "SgTriangle::SgTriangle(), this = %X\n", this );
+  SL_PRINT2 ( "SgTriangle::SgTriangle(), this = %X\n", this );
 }
 
 
@@ -73,7 +77,7 @@ SgTriangle::SgTriangle ( const SlVec3f &c, const SlFloat32 &s ) : SgPrimitive(),
   center ( c ),
   size ( s )
 {
-  SL_PRINT ( "SgTriangle::SgTriangle(), this = %X\n", this );
+  SL_PRINT2 ( "SgTriangle::SgTriangle(), this = %X\n", this );
 }
 
 
@@ -85,7 +89,7 @@ SgTriangle::SgTriangle ( const SlVec3f &c, const SlFloat32 &s ) : SgPrimitive(),
 
 SgTriangle::~SgTriangle()
 {
-  SL_PRINT ( "SgTriangle::SgTriangle(), this = %X\n", this );
+  SL_PRINT2 ( "SgTriangle::SgTriangle(), this = %X\n", this );
 }
 
 

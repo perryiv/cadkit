@@ -56,6 +56,7 @@
 # include "Standard/SlMatrix4.h"
 # include "Standard/SlLine3.h"
 # include "Standard/SlCallback.h"
+# include <string>
 #endif
 
 namespace CadKit

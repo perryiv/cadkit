@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgSphere.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgSphere,SgPrimitive);
@@ -62,7 +66,7 @@ SgSphere::SgSphere() : SgPrimitive(),
   _member0 ( 2 ), 
   _member1 ( 1 )
 {
-  SL_PRINT ( "SgSphere::SgSphere(), this = %X\n", this );
+  SL_PRINT2 ( "SgSphere::SgSphere(), this = %X\n", this );
 }
 
 
@@ -79,7 +83,7 @@ SgSphere::SgSphere ( const SgSphere &copyMe ) : SgPrimitive(),
   _member0 ( copyMe._member0 ), 
   _member1 ( copyMe._member1 )
 {
-  SL_PRINT ( "SgSphere::SgSphere(), this = %X\n", this );
+  SL_PRINT2 ( "SgSphere::SgSphere(), this = %X\n", this );
 }
 
 
@@ -91,7 +95,7 @@ SgSphere::SgSphere ( const SgSphere &copyMe ) : SgPrimitive(),
 
 SgSphere::~SgSphere()
 {
-  SL_PRINT ( "SgSphere::SgSphere(), this = %X\n", this );
+  SL_PRINT2 ( "SgSphere::SgSphere(), this = %X\n", this );
 }
 
 

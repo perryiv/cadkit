@@ -1617,7 +1617,7 @@ template<class T> inline SlVec4<T> operator * ( const SlMatrix4<T> &M, const SlV
 
 template<class T> inline SlVec4<T> operator / ( const SlVec4<T> &v, const SlMatrix4<T> &M )
 {
-  SlMatrix4 invM;
+  SlMatrix4<T> invM;
   SL_VERIFY ( M.getInverse ( invM ) );
   return invM * v;
 }
@@ -1631,7 +1631,7 @@ template<class T> inline SlVec4<T> operator / ( const SlVec4<T> &v, const SlMatr
 
 template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &v, const SlMatrix4<T> &M )
 {
-  SlMatrix4 invM;
+  SlMatrix4<T> invM;
   SL_VERIFY ( M.getInverse ( invM ) );
   return invM * v;
 }

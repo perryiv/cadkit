@@ -46,6 +46,10 @@
 
 #include "SgLight.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlVec3.h"
+#endif
+
 namespace CadKit
 {
 class SG_API SgDirectionalLight : public SgLight

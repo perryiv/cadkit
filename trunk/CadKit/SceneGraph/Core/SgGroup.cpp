@@ -44,6 +44,11 @@
 #include "SgPrecompiled.h"
 #include "SgGroup.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgGroup,SgNode);
@@ -57,7 +62,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgGroup,SgNode);
 
 SgGroup::SgGroup() : SgNode()
 {
-  SL_PRINT ( "SgGroup::SgGroup(), this = %X\n", this );
+  SL_PRINT2 ( "SgGroup::SgGroup(), this = %X\n", this );
 }
 
 
@@ -69,7 +74,7 @@ SgGroup::SgGroup() : SgNode()
 
 SgGroup::~SgGroup()
 {
-  SL_PRINT ( "SgGroup::~SgGroup(), this = %X\n", this );
+  SL_PRINT2 ( "SgGroup::~SgGroup(), this = %X\n", this );
 
   // When the vector of node "smart pointers" dies, it will automatically 
   // release the nodes.

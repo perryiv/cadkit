@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgLight.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgLight,SgNode);
@@ -60,7 +64,7 @@ SgLight::SgLight() : SgNode(),
   diffuse  ( 1.0f, 1.0f, 1.0f, 1.0f ),
   specular ( 1.0f, 1.0f, 1.0f, 1.0f )
 {
-  SL_PRINT ( "SgLight::SgLight(), this = %X\n", this );
+  SL_PRINT2 ( "SgLight::SgLight(), this = %X\n", this );
 }
 
 
@@ -72,7 +76,7 @@ SgLight::SgLight() : SgNode(),
 
 SgLight::~SgLight()
 {
-  SL_PRINT ( "SgLight::~SgLight(), this = %X\n", this );
+  SL_PRINT2 ( "SgLight::~SgLight(), this = %X\n", this );
 }
 
 

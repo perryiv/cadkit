@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgPrimitive.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgPrimitive,SgShape);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgPrimitive,SgShape);
 
 SgPrimitive::SgPrimitive() : SgShape()
 {
-  SL_PRINT ( "SgPrimitive::SgPrimitive(), this = %X\n", this );
+  SL_PRINT2 ( "SgPrimitive::SgPrimitive(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgPrimitive::SgPrimitive() : SgShape()
 
 SgPrimitive::~SgPrimitive()
 {
-  SL_PRINT ( "SgPrimitive::SgPrimitive(), this = %X\n", this );
+  SL_PRINT2 ( "SgPrimitive::SgPrimitive(), this = %X\n", this );
 }

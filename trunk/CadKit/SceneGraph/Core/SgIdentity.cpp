@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgIdentity.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgIdentity,SgTransformation);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgIdentity,SgTransformation);
 
 SgIdentity::SgIdentity() : SgTransformation()
 {
-  SL_PRINT ( "SgIdentity::SgIdentity(), this = %X\n", this );
+  SL_PRINT2 ( "SgIdentity::SgIdentity(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgIdentity::SgIdentity() : SgTransformation()
 
 SgIdentity::~SgIdentity()
 {
-  SL_PRINT ( "SgIdentity::~SgIdentity(), this = %X\n", this );
+  SL_PRINT2 ( "SgIdentity::~SgIdentity(), this = %X\n", this );
 }

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgOffScreenRenderer.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_VISITOR(SgOffScreenRenderer,SgRenderer);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_VISITOR(SgOffScreenRenderer,SgRenderer);
 
 SgOffScreenRenderer::SgOffScreenRenderer() : SgRenderer()
 {
-  SL_PRINT ( "SgOffScreenRenderer::SgOffScreenRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgOffScreenRenderer::SgOffScreenRenderer(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgOffScreenRenderer::SgOffScreenRenderer() : SgRenderer()
 
 SgOffScreenRenderer::~SgOffScreenRenderer()
 {
-  SL_PRINT ( "SgOffScreenRenderer::~SgOffScreenRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgOffScreenRenderer::~SgOffScreenRenderer(), this = %X\n", this );
 }

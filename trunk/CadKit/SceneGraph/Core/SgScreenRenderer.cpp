@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgScreenRenderer.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_VISITOR(SgScreenRenderer,SgRenderer);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_VISITOR(SgScreenRenderer,SgRenderer);
 
 SgScreenRenderer::SgScreenRenderer() : SgRenderer()
 {
-  SL_PRINT ( "SgScreenRenderer::SgScreenRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgScreenRenderer::SgScreenRenderer(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgScreenRenderer::SgScreenRenderer() : SgRenderer()
 
 SgScreenRenderer::~SgScreenRenderer()
 {
-  SL_PRINT ( "SgScreenRenderer::~SgScreenRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgScreenRenderer::~SgScreenRenderer(), this = %X\n", this );
 }

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgUnScale.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgUnScale,SgTransformation);
@@ -58,7 +62,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgUnScale,SgTransformation);
 SgUnScale::SgUnScale() : SgTransformation(),
   _unScaleFlags ( ASSUME_UNIFORM_SCALE )
 {
-  SL_PRINT ( "SgUnScale::SgUnScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgUnScale::SgUnScale(), this = %X\n", this );
 }
 
 
@@ -70,5 +74,5 @@ SgUnScale::SgUnScale() : SgTransformation(),
 
 SgUnScale::~SgUnScale()
 {
-  SL_PRINT ( "SgUnScale::~SgUnScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgUnScale::~SgUnScale(), this = %X\n", this );
 }

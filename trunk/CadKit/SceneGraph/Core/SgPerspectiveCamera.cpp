@@ -47,7 +47,9 @@
 #include "SgDefine.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlLine2f.h"
+# include "Standard/SlLine2.h"
+# include "Standard/SlPrint.h"
+# include "Standard/SlConstants.h"
 #endif
 
 using namespace CadKit;
@@ -65,7 +67,7 @@ SgPerspectiveCamera::SgPerspectiveCamera() : SgCamera(),
   fieldOfViewOrientation ( FOV_IN_X ),
   _fieldOfView ( SG_DEFAULT_PERSPECTIVE_CAMERA_HEIGHT )
 {
-  SL_PRINT ( "SgPerspectiveCamera::SgPerspectiveCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgPerspectiveCamera::SgPerspectiveCamera(), this = %X\n", this );
 }
 
 
@@ -80,7 +82,7 @@ SgPerspectiveCamera::SgPerspectiveCamera ( const SgPerspectiveCamera &camera ) :
   fieldOfViewOrientation ( camera.fieldOfViewOrientation ),
   _fieldOfView ( camera._fieldOfView )
 {
-  SL_PRINT ( "SgPerspectiveCamera::SgPerspectiveCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgPerspectiveCamera::SgPerspectiveCamera(), this = %X\n", this );
 }
 
 
@@ -92,7 +94,7 @@ SgPerspectiveCamera::SgPerspectiveCamera ( const SgPerspectiveCamera &camera ) :
 
 SgPerspectiveCamera::~SgPerspectiveCamera()
 {
-  SL_PRINT ( "SgPerspectiveCamera::~SgPerspectiveCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgPerspectiveCamera::~SgPerspectiveCamera(), this = %X\n", this );
 }
 
 

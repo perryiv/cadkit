@@ -41,8 +41,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SgPreCompiled.h"
+#include "SgPrecompiled.h"
 #include "SgPath.h"
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
 
 using namespace CadKit;
 
@@ -59,7 +64,7 @@ SL_IMPLEMENT_DYNAMIC_CLASS ( SgPath, SlRefBase );
 
 SgPath::SgPath() : SlRefBase ( INITIAL_REF_COUNT )
 {
-  SL_PRINT ( "SgPath::SgPath(), this = %X\n", this );
+  SL_PRINT2 ( "SgPath::SgPath(), this = %X\n", this );
 }
 
 
@@ -72,7 +77,7 @@ SgPath::SgPath() : SlRefBase ( INITIAL_REF_COUNT )
 SgPath::SgPath ( const SgPath &path ) : SlRefBase ( INITIAL_REF_COUNT ),
   _nodes ( path._nodes )
 {
-  SL_PRINT ( "SgPath::SgPath(), this = %X\n", this );
+  SL_PRINT2 ( "SgPath::SgPath(), this = %X\n", this );
 }
 
 
@@ -84,7 +89,7 @@ SgPath::SgPath ( const SgPath &path ) : SlRefBase ( INITIAL_REF_COUNT ),
 
 SgPath::~SgPath()
 {
-  SL_PRINT ( "SgPath::~SgPath(), this = %X\n", this );
+  SL_PRINT2 ( "SgPath::~SgPath(), this = %X\n", this );
 
   // We don't have to do anything here because the vector's elements are 
   // "reference pointers". Their destructors will release the nodes.

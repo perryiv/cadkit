@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgDirectionalLight.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgDirectionalLight,SgLight);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgDirectionalLight,SgLight);
 
 SgDirectionalLight::SgDirectionalLight() : SgLight(), direction ( 0.0f, 0.0f, -1.0f )
 {
-  SL_PRINT ( "SgDirectionalLight::SgDirectionalLight(), this = %X\n", this );
+  SL_PRINT2 ( "SgDirectionalLight::SgDirectionalLight(), this = %X\n", this );
 }
 
 
@@ -69,7 +73,7 @@ SgDirectionalLight::SgDirectionalLight() : SgLight(), direction ( 0.0f, 0.0f, -1
 
 SgDirectionalLight::~SgDirectionalLight()
 {
-  SL_PRINT ( "SgDirectionalLight::~SgDirectionalLight(), this = %X\n", this );
+  SL_PRINT2 ( "SgDirectionalLight::~SgDirectionalLight(), this = %X\n", this );
 }
 
 

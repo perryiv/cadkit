@@ -211,7 +211,7 @@ template<class T> inline SlVec3<T> SlLine3<T>::getClosestPoint ( const Vec3 &pt 
 
 template<class T> inline T SlLine3<T>::getDistanceSquared ( const Vec3 &pt ) const
 {
-  SlVec3 temp ( pt - _pt );
+  Vec3 temp ( pt - _pt );
   temp = temp.cross ( _vec );
   return temp.dot ( temp );
 }

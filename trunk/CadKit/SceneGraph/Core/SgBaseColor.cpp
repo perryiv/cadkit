@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgBaseColor.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgBaseColor,SgAttribute);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgBaseColor,SgAttribute);
 
 SgBaseColor::SgBaseColor() : SgAttribute(), rgba ( 1.0f, 1.0f, 1.0f, 1.0f )
 {
-  SL_PRINT ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
+  SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
 }
 
 
@@ -71,7 +75,7 @@ SgBaseColor::SgBaseColor ( const float &red, const float &green, const float &bl
   SgAttribute(), 
   rgba ( red, green, blue, alpha )
 {
-  SL_PRINT ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
+  SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
 }
 
 
@@ -84,7 +88,7 @@ SgBaseColor::SgBaseColor ( const float &red, const float &green, const float &bl
 SgBaseColor::SgBaseColor ( const SgBaseColor &baseColor ) : SgAttribute(),
   rgba ( baseColor.rgba )
 {
-  SL_PRINT ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
+  SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
 }
 
 
@@ -96,7 +100,7 @@ SgBaseColor::SgBaseColor ( const SgBaseColor &baseColor ) : SgAttribute(),
 
 SgBaseColor::~SgBaseColor()
 {
-  SL_PRINT ( "SgBaseColor::~SgBaseColor(), this = %X\n", this );
+  SL_PRINT2 ( "SgBaseColor::~SgBaseColor(), this = %X\n", this );
 }
 
 

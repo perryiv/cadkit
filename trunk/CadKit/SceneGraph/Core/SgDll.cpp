@@ -43,6 +43,10 @@
 
 #include "SgPrecompiled.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

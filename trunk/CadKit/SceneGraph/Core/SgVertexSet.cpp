@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgVertexSet.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgVertexSet,SgShape);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgVertexSet,SgShape);
 
 SgVertexSet::SgVertexSet() : SgShape()
 {
-  SL_PRINT ( "SgVertexSet::SgVertexSet(), this = %X\n", this );
+  SL_PRINT2 ( "SgVertexSet::SgVertexSet(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgVertexSet::SgVertexSet() : SgShape()
 
 SgVertexSet::~SgVertexSet()
 {
-  SL_PRINT ( "SgVertexSet::~SgVertexSet(), this = %X\n", this );
+  SL_PRINT2 ( "SgVertexSet::~SgVertexSet(), this = %X\n", this );
 }

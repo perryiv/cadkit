@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgPointSet.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgPointSet,SgVertexSet);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgPointSet,SgVertexSet);
 
 SgPointSet::SgPointSet() : SgVertexSet()
 {
-  SL_PRINT ( "SgPointSet::SgPointSet(), this = %X\n", this );
+  SL_PRINT2 ( "SgPointSet::SgPointSet(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgPointSet::SgPointSet() : SgVertexSet()
 
 SgPointSet::~SgPointSet()
 {
-  SL_PRINT ( "SgPointSet::~SgPointSet(), this = %X\n", this );
+  SL_PRINT2 ( "SgPointSet::~SgPointSet(), this = %X\n", this );
 }

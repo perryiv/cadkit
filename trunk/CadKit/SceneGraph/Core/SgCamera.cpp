@@ -45,6 +45,11 @@
 #include "SgCamera.h"
 #include "SgDefine.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlConstants.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgCamera,SgNode);
@@ -69,7 +74,7 @@ SgCamera::SgCamera() : SgNode(),
   _M ( SL_MATRIX4_IDENTITY_F ),
   _viewAllFactor ( SG_DEFAULT_CAMERA_VIEW_ALL_FACTOR )
 {
-  SL_PRINT ( "SgCamera::SgCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgCamera::SgCamera(), this = %X\n", this );
 
   // Note: the default _distance is not zero for a reason. If we make it 
   // zero then when the client calls viewAll(), with the camera's _distance 
@@ -99,7 +104,7 @@ SgCamera::SgCamera ( const SgCamera &camera ) : SgNode ( camera ),
   _M ( camera._M ),
   _viewAllFactor ( camera._viewAllFactor )
 {
-  SL_PRINT ( "SgCamera::SgCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgCamera::SgCamera(), this = %X\n", this );
 }
 
 
@@ -111,7 +116,7 @@ SgCamera::SgCamera ( const SgCamera &camera ) : SgNode ( camera ),
 
 SgCamera::~SgCamera()
 {
-  SL_PRINT ( "SgCamera::~SgCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgCamera::~SgCamera(), this = %X\n", this );
 }
 
 

@@ -49,8 +49,8 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlVec3.h"
+# define CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
 # include "Standard/SlLine3.h"
-# include "Standard/SlMatrix4.h"
 #endif
 
 

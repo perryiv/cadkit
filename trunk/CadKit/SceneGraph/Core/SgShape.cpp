@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgShape.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgShape,SgNode);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgShape,SgNode);
 
 SgShape::SgShape() : SgNode()
 {
-  SL_PRINT ( "SgShape::SgShape(), this = %X\n", this );
+  SL_PRINT2 ( "SgShape::SgShape(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgShape::SgShape() : SgNode()
 
 SgShape::~SgShape()
 {
-  SL_PRINT ( "SgShape::~SgShape(), this = %X\n", this );
+  SL_PRINT2 ( "SgShape::~SgShape(), this = %X\n", this );
 }

@@ -45,6 +45,11 @@
 #include "SgVisitor.h"
 #include "SgNode.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_VISITOR(SgVisitor,SlRefBase);
@@ -58,7 +63,7 @@ SG_IMPLEMENT_VISITOR(SgVisitor,SlRefBase);
 
 SgVisitor::SgVisitor() : SlRefBase ( 0 )
 {
-  SL_PRINT ( "SgVisitor::SgVisitor(), this = %X\n", this );
+  SL_PRINT2 ( "SgVisitor::SgVisitor(), this = %X\n", this );
 }
 
 
@@ -70,7 +75,7 @@ SgVisitor::SgVisitor() : SlRefBase ( 0 )
 
 SgVisitor::~SgVisitor()
 {
-  SL_PRINT ( "SgVisitor::~SgVisitor(), this = %X\n", this );
+  SL_PRINT2 ( "SgVisitor::~SgVisitor(), this = %X\n", this );
 }
 
 

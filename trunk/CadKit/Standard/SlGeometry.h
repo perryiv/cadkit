@@ -52,6 +52,7 @@ namespace CadKit
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Intersect the line with the plane. Return false if parallel.
+//  Adopted from "computePlaneEq()" found in planeSets.c in Gems III.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -98,12 +99,17 @@ template<class Vec3> bool intersectLineAndPlane (
   const Vec3 &planeNormal, // The (normalized) normal vector of the plane.
   Vec3 &answer )           // The intersection point.
 {
-  // Calculate the distance from the plane to the origin 
-  // (which could be negative).
-  Vec3::Real planeDist = - planePoint.dot ( planeNormal );
-
   // Call the other function.
-  return CadKit::intersectLineAndPlane ( linePoint, lineVec, planeNormal, planeDist, answer );
+  return CadKit::intersectLineAndPlane (
+    linePoint, 
+    lineVec, 
+    planeNormal,
+    // Calculate the distance from the plane to the origin (which could be
+    // negative). Cannot catch in local variable because all compilers do 
+    // not agree on how to do this (g++ doesn't like Vec::Real).
+    - planePoint.dot ( planeNormal ),
+    answer
+    );
 }
 
 
@@ -124,16 +130,16 @@ template<class Vec3, class Real> bool intersectLineAndSphere (
 	Vec3 EO = O - E;
 
   // ?
-	Vec3::Real v = EO.dot ( V );
-  Vec3::Real dp = EO.dot ( EO );
-	Vec3::Real disc = r * r - dp - v * v;
+	Real v = EO.dot ( V );
+  Real dp = EO.dot ( EO );
+	Real disc = r * r - dp - v * v;
 
   // If the disc is less than zero then there is no intersection.
 	if ( disc < 0 ) 
     return false;
 
   // ?
-  Vec3::Real d = CadKit::getSquareRoot ( disc );
+  Real d = CadKit::getSquareRoot ( disc );
 	answer = E + ( v - d ) * V;
 
   // It worked.

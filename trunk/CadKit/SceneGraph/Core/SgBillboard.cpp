@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgBillboard.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgBillboard,SgTransformation);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgBillboard,SgTransformation);
 
 SgBillboard::SgBillboard() : SgTransformation()
 {
-  SL_PRINT ( "SgBillboard::SgBillboard(), this = %X\n", this );
+  SL_PRINT2 ( "SgBillboard::SgBillboard(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgBillboard::SgBillboard() : SgTransformation()
 
 SgBillboard::~SgBillboard()
 {
-  SL_PRINT ( "SgBillboard::~SgBillboard(), this = %X\n", this );
+  SL_PRINT2 ( "SgBillboard::~SgBillboard(), this = %X\n", this );
 }

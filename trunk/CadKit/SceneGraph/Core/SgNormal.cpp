@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgNormal.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgNormal,SgNode);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgNormal,SgNode);
 
 SgNormal::SgNormal() : SgNode()
 {
-  SL_PRINT ( "SgNormal::SgNormal(), this = %X\n", this );
+  SL_PRINT2 ( "SgNormal::SgNormal(), this = %X\n", this );
 }
 
 
@@ -69,6 +73,6 @@ SgNormal::SgNormal() : SgNode()
 
 SgNormal::~SgNormal()
 {
-  SL_PRINT ( "SgNormal::~SgNormal(), this = %X\n", this );
+  SL_PRINT2 ( "SgNormal::~SgNormal(), this = %X\n", this );
   _normals.clear();
 }

@@ -45,8 +45,8 @@
 #include "SgEllipse.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlString.h"
-# include "Standard/SlFunctions.h"
+# include "Standard/SlPrint.h"
+# include "Standard/SlConstants.h"
 #endif
 
 using namespace CadKit;
@@ -68,7 +68,7 @@ SgEllipse::SgEllipse() : SgPrimitive(),
   _needToMakeNewVertices ( true ),
   _vertex ( 0x0 )
 {
-  SL_PRINT ( "SgEllipse::SgEllipse(), this = %X\n", this );
+  SL_PRINT2 ( "SgEllipse::SgEllipse(), this = %X\n", this );
 }
 
 
@@ -89,7 +89,7 @@ SgEllipse::SgEllipse (  const SlVec3f &center,
   _needToMakeNewVertices ( true ),
   _vertex ( 0x0 )
 {
-  SL_PRINT ( "SgEllipse::SgEllipse(), this = %X\n", this );
+  SL_PRINT2 ( "SgEllipse::SgEllipse(), this = %X\n", this );
   SL_ASSERT ( numVerts > 1 );
 }
 
@@ -102,7 +102,7 @@ SgEllipse::SgEllipse (  const SlVec3f &center,
 
 SgEllipse::~SgEllipse()
 {
-  SL_PRINT ( "SgEllipse::~SgEllipse(), this = %X\n", this );
+  SL_PRINT2 ( "SgEllipse::~SgEllipse(), this = %X\n", this );
   if ( _vertex ) delete [] _vertex;
 }
 

@@ -45,6 +45,10 @@
 #include "SgOrthographicCamera.h"
 #include "SgDefine.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgOrthographicCamera,SgCamera);
@@ -59,7 +63,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgOrthographicCamera,SgCamera);
 SgOrthographicCamera::SgOrthographicCamera() : SgCamera(), 
   _height ( SG_DEFAULT_ORTHOGRAPHIC_CAMERA_HEIGHT )
 {
-  SL_PRINT ( "SgOrthographicCamera::SgOrthographicCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgOrthographicCamera::SgOrthographicCamera(), this = %X\n", this );
 }
 
 
@@ -73,7 +77,7 @@ SgOrthographicCamera::SgOrthographicCamera ( const SgOrthographicCamera &camera 
   SgCamera ( camera ), 
   _height ( camera._height )
 {
-  SL_PRINT ( "SgOrthographicCamera::SgOrthographicCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgOrthographicCamera::SgOrthographicCamera(), this = %X\n", this );
 }
 
 
@@ -85,7 +89,7 @@ SgOrthographicCamera::SgOrthographicCamera ( const SgOrthographicCamera &camera 
 
 SgOrthographicCamera::~SgOrthographicCamera()
 {
-  SL_PRINT ( "SgOrthographicCamera::~SgOrthographicCamera(), this = %X\n", this );
+  SL_PRINT2 ( "SgOrthographicCamera::~SgOrthographicCamera(), this = %X\n", this );
 }
 
 

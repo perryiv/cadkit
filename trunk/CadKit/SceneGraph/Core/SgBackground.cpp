@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgBackground.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgBackground,SgAttribute);
@@ -62,7 +66,7 @@ SgBackground::SgBackground() : SgAttribute(),
   _bottomRightCorner ( 0.06f, 0.06f, 0.30f, 1.0f ),
   _farDistance       ( 59000.0f ) // Why this number?
 {
-  SL_PRINT ( "SgBackground::SgBackground(), this = %X\n", this );
+  SL_PRINT2 ( "SgBackground::SgBackground(), this = %X\n", this );
 }
 
 
@@ -74,7 +78,7 @@ SgBackground::SgBackground() : SgAttribute(),
 
 SgBackground::SgBackground ( const SgBackground &background ) : SgAttribute ( background )
 {
-  SL_PRINT ( "SgBackground::SgBackground(), this = %X\n", this );
+  SL_PRINT2 ( "SgBackground::SgBackground(), this = %X\n", this );
   this->setValue ( background );
 }
 
@@ -87,7 +91,7 @@ SgBackground::SgBackground ( const SgBackground &background ) : SgAttribute ( ba
 
 SgBackground::~SgBackground()
 {
-  SL_PRINT ( "SgBackground::~SgBackground(), this = %X\n", this );
+  SL_PRINT2 ( "SgBackground::~SgBackground(), this = %X\n", this );
 }
 
 

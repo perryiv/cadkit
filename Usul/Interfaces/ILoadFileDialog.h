@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting a file name to save to
+//  Interface for getting a file name to load from
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
-#define _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
+#ifndef _USUL_INTERFACE_LOAD_FILE_DIALOG_H_
+#define _USUL_INTERFACE_LOAD_FILE_DIALOG_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -25,16 +25,16 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct ISaveFileDialog : public Usul::Interfaces::IUnknown
+struct ILoadFileDialog : public Usul::Interfaces::IUnknown
 {
   // Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ISaveFileDialog );
+  USUL_DECLARE_QUERY_POINTERS ( ILoadFileDialog );
 
   // Id for this interface.
-  enum { IID = 1102623452u };
+  enum { IID = 1103131693u };
 
-  // Get the name of the file to save to
-  virtual std::string   getSaveFileName() = 0;
+  // Get the name of the file to load from
+  virtual std::string   getLoadFileName() = 0;
 
 };
 
@@ -43,4 +43,5 @@ struct ISaveFileDialog : public Usul::Interfaces::IUnknown
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
+#endif // _USUL_INTERFACE_LOAD_FILE_DIALOG_H_
+

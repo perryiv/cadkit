@@ -136,7 +136,7 @@
   virtual bool          visit ( SgCoordinate & ); \
   virtual bool          visit ( SgLight & ); \
   virtual bool          visit ( SgVertexSet & ); \
-  virtual bool          visit ( SgPrimitive & ); \
+  virtual bool          visit ( SgPrimitive & )
 
 
 ///////////////////////////////////////////////////////////////////////////////

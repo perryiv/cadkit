@@ -93,11 +93,11 @@ const GLenum _glStateIndex[] = {
 };
 const int LAST_GRAPHICS_STATE = sizeof ( _glStateIndex ) / sizeof ( GLenum );
 
-
+/*
 const bool _glState[] = {
   true, // GL_AUTO_NORMAL is on by default.
 };
-
+*/
 };
 
 
@@ -365,7 +365,7 @@ void SgGlRenderer::_setContext ( SgGlContext *context )
   SL_ASSERT ( _state.isValid() );
 
   // If this is a new context then clear the state.
-  if ( _context != context )
+  if ( _context.getValue() != context )
     _state->clear();
 
   // Set the new context.
@@ -1278,8 +1278,6 @@ void _subdivideSphere (
   const float &x3, const float &y3, const float &z3, 
   const float &r,  unsigned int depth )
 {
-  SL_ASSERT ( depth >= 0 );
-
   if ( depth == 0 )
   {
     // The vertices are all a unit length from the center, so they are also the normal.
@@ -1400,7 +1398,7 @@ void _renderTriangles ( const float *pts, const int &numPts, const float &cx, co
 bool SgGlRenderer::visit ( SgSphere &sphere )
 {
   SL_ASSERT ( this && _quadric );
-  SL_ASSERT ( ( sphere.getTessellationType() == SgSphere::POLES && ( sphere.getNumSlices() > 1 && sphere.getNumStacks() > 1 ) ) || ( sphere.getTessellationType() == SgSphere::NO_POLES && sphere.getNumSubdivisions() >= 0 ) );
+  SL_ASSERT ( ( sphere.getTessellationType() == SgSphere::POLES && ( sphere.getNumSlices() > 1 && sphere.getNumStacks() > 1 ) ) || ( sphere.getTessellationType() == SgSphere::NO_POLES ) );
 
   PUSH_NAME;
 
@@ -1413,7 +1411,6 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
   if ( SgSphere::NO_POLES == sphere.getTessellationType() )
   {
     const unsigned int &n = sphere.getNumSubdivisions();
-    SL_ASSERT ( n >= 0 );
     const float X = 0.525731112119133606f;
     const float Z = 0.8506508083528655993f;
 

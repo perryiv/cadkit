@@ -55,6 +55,7 @@
 # include "Standard/SlPrint.h"
 # include "Standard/SlTrace.h"
 # include "Standard/SlTrackball.h"
+# include "Standard/SlBitmask.h"
 # ifdef __GNUC__
 #  include <vector>
 # else
@@ -229,7 +230,7 @@ bool SgViewer::mouseMoved ( const long &x, const long &y, const unsigned long &b
   if ( _internalFlags & FIRST_TIME_IN_MOUSEMOVED )
   {
     _windowMouse.setValue ( x, y );
-    _internalFlags = CadKit::removeBits ( _internalFlags, FIRST_TIME_IN_MOUSEMOVED );
+    _internalFlags = CadKit::removeBits ( _internalFlags, (unsigned long) FIRST_TIME_IN_MOUSEMOVED );
   }
 
   // Save the new mouse point.
@@ -241,7 +242,7 @@ bool SgViewer::mouseMoved ( const long &x, const long &y, const unsigned long &b
     return true;
 
   // The mouse is really moving if we get to here.
-  _internalFlags = CadKit::addBits ( _internalFlags, MOUSE_IS_MOVING );
+  _internalFlags = CadKit::addBits ( _internalFlags, (unsigned long) MOUSE_IS_MOVING );
 
   // Initialize.
   bool results = true;
@@ -265,7 +266,7 @@ bool SgViewer::mouseMoved ( const long &x, const long &y, const unsigned long &b
   }
 
   // The mouse is no longer moving.
-  _internalFlags = CadKit::removeBits ( _internalFlags, MOUSE_IS_MOVING );
+  _internalFlags = CadKit::removeBits ( _internalFlags, (unsigned long) MOUSE_IS_MOVING );
 
   // Return the results.
   return results;
@@ -290,7 +291,7 @@ bool SgViewer::mouseButtonDown ( const long &x, const long &y, const unsigned lo
       return false;
 
     // Set the flag.
-    _internalFlags = CadKit::removeBits ( _internalFlags, SPINNING );
+    _internalFlags = CadKit::removeBits ( _internalFlags, (unsigned long) SPINNING );
   }
 
   // If we are seeking and the proper mouse buttons are down, and we 
@@ -338,7 +339,7 @@ bool SgViewer::mouseButtonUp ( const long &x, const long &y, const unsigned long
     if ( diff[0] > _spinTolerance || diff[1] > _spinTolerance )
     {
       // Set the flag.
-      _internalFlags = CadKit::addBits ( _internalFlags, SPINNING );
+      _internalFlags = CadKit::addBits ( _internalFlags, (unsigned long) SPINNING );
 
       // Send a message to start a spin.
       if ( false == this->sendMessage ( SG_VIEWER_SPIN_START ) )
@@ -461,7 +462,7 @@ bool SgViewer::isViewing() const
 bool SgViewer::isSpinning() const
 {
   SL_ASSERT ( this );
-  return CadKit::hasBits ( _internalFlags, SPINNING );
+  return CadKit::hasBits ( _internalFlags, (unsigned long) SPINNING );
 }
 
 
@@ -474,7 +475,7 @@ bool SgViewer::isSpinning() const
 bool SgViewer::isSeeking() const
 {
   SL_ASSERT ( this );
-  return CadKit::hasBits ( _internalFlags, SEEKING_MODE );
+  return CadKit::hasBits ( _internalFlags, (unsigned long) SEEKING_MODE );
 }
 
 
@@ -502,7 +503,7 @@ void SgViewer::setPicking ( const bool &state )
 void SgViewer::setViewing ( const bool &state )
 {
   SL_ASSERT ( this );
-  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, VIEWING_MODE ) : CadKit::removeBits ( _internalFlags, VIEWING_MODE );
+  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, (unsigned long) VIEWING_MODE ) : CadKit::removeBits ( _internalFlags, (unsigned long) VIEWING_MODE );
 }
 
 
@@ -515,7 +516,7 @@ void SgViewer::setViewing ( const bool &state )
 void SgViewer::setSeeking ( const bool &state )
 {
   SL_ASSERT ( this );
-  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, SEEKING_MODE ) : CadKit::removeBits ( _internalFlags, SEEKING_MODE );
+  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, (unsigned long) SEEKING_MODE ) : CadKit::removeBits ( _internalFlags, (unsigned long) SEEKING_MODE );
 }
 
 

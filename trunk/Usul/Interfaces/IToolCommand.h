@@ -24,9 +24,8 @@ namespace Usul
 {
   namespace Interfaces
   {
-    class IToolCommand : public Usul::Interfaces::IUnknown
+    struct IToolCommand : public Usul::Interfaces::IUnknown
     {
-    public:
       typedef Usul::Interfaces::IUnknown Unknown;
 
       // Smart-pointer definitions.

@@ -186,9 +186,9 @@ MenuKit::Menu* create_menu()
   file->append( open.get() );
   file->append( exit.get() );
 
+  edit->append( move.get() );
   edit->append( cut.get() );
   edit->append( paste.get() );
-  edit->append( move.get() );
 
   tools->append( search.get() );
 

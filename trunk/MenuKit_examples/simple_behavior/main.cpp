@@ -121,7 +121,7 @@ MenuKit::Menu* create_menu()
   file->append( newstuff.get() );
   file->append( open.get() );
   file->append( close.get() );
-  file->append( spacer.get() );
+  //file->append( spacer.get() );
   file->append( exit.get() );
 
   MenuKit::Menu::Ptr edit = new MenuKit::Menu("Edit","",MenuKit::Menu::VERTICAL);

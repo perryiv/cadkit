@@ -345,6 +345,9 @@
 					RelativePath=".\Interfaces\IFoxRadioButton.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxTabItem.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxToggleButton.h">
 				</File>
 				<File
@@ -358,6 +361,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IOpenSceneGraph.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IPreferencesManager.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IProgressBar.h">

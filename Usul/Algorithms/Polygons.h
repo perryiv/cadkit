@@ -23,10 +23,35 @@
 #include <vector>
 #include <list>
 
+#include "Usul/Containers/OctTree.h"
+#include "Usul/Math/Vector4.h"
 
 namespace Usul {
 namespace Algorithms {
 namespace Polygons {
+
+  template < class VertexSequence >
+  struct Triangle
+  {
+    typedef void * CubeType;
+    typedef unsigned int IndexType;
+    Triangle() : v0(0), v1(0), v2(0), cube(0){}
+    Triangle ( unsigned int startPosition ) : 
+      v0( startPosition ), 
+      v1( startPosition + 1 ), 
+      v2( startPosition + 2 ), 
+      cube(0) 
+      {}
+    IndexType v0;
+    IndexType v1;
+    IndexType v2;
+    CubeType cube;
+
+    bool operator==( const Triangle& tri )
+    {
+      return (this->v0 == tri.v0 && this->v1 == tri.v1 && this->v2 == tri.v2 );
+    }
+  };
 
   template < class VertexSequence >
   struct TriangleTest
@@ -61,7 +86,7 @@ namespace Polygons {
     }
   };
 
- template < class VertexSequence >
+  template < class VertexSequence >
   struct TriangleSorter
   {
     typedef typename VertexSequence::value_type Vertex;
@@ -187,7 +212,6 @@ inline Iter searchPolygonList ( Iter& keeperItr,
 //
 //     adjacentTest:  Predicate that determines if two polygons are adjacent.
 //          updater:  Functor that updates something with a new percentage.
-//           sorter:  Predicate that determeines the order of the polygon indices.
 //         vertices:  Sequence of vertices that define polygons.
 //  selectedPolygon:  Initial polygon to start checking against.
 //  numVertsPerPoly:  Number of vertices in a polygon. Triangle = 3.
@@ -202,15 +226,17 @@ inline Iter searchPolygonList ( Iter& keeperItr,
 
 template
 <
+  class Polygon,
   class AdjacentTest,
   class Updater,
-  class Sorter,
+  class Vertex,
   class VertexSequence,
   class IndexSequence
 > 
 inline void findAdjacent ( const AdjacentTest &adjacentTest, 
                     Updater &updater,
-                    const Sorter &sorter,
+                    const Vertex &center,
+                    float radius,
                     const VertexSequence &vertices, 
                     unsigned int selectedPolygon,
                     unsigned int numVertsPerPoly,
@@ -262,15 +288,16 @@ inline void findAdjacent ( const AdjacentTest &adjacentTest,
   }
 
   // Fill the sequence of indices.
-  IndexSequence indices;
-  indices.resize ( numPolygons ); // numPolygons - 1 ?
+  /*IndexSequence indices;
+  indices.resize ( numPolygons - 1 );
   {
     SizeType count ( 0 );
     for ( IndexIterator i = indices.begin(); i != indices.end(); ++i )
     {
-      if( count != selectedPolygon )
-        *i = count;
+      *i = count;
       ++count;
+      if( count == selectedPolygon )
+        ++count;
     }
   }
 
@@ -300,7 +327,122 @@ inline void findAdjacent ( const AdjacentTest &adjacentTest,
     // Go to the next keeper.
     ++keeperItr;
     updater ( keepers );
-  }
+    }*/
+
+    typedef float Real;
+    typedef Usul::Math::Vector4<Real> Vec4;
+    typedef Usul::Math::Vector3<Real> Vec3;
+    typedef std::vector<Polygon> Polygons;
+    typedef VertexSequence Vertices;
+    typedef Usul::Containers::Detail::AdjacentChildren Adjacent;
+    typedef Usul::Containers::Detail::TriangleInside<Vertices> Inside;
+    typedef Usul::Containers::Detail::AddIfInside Add;
+    typedef Usul::Containers::OctTree<Polygons,Adjacent,Inside,Add,Real,Vec3> OctTree;
+
+    const Vertex mn ( center[0] - radius, center[1] - radius, center[2] - radius );
+
+    // Declare the oct-tree and set its members.
+    OctTree root ( 2 * radius, mn[0], mn[1], mn[2] );
+
+    root.tester().vertices ( &vertices );
+
+    // The number of polygons.
+    const unsigned int numVertices ( vertices.size() );
+
+    // Add the triangles to the oct-tree.
+    Polygons polygons;
+    polygons.reserve ( numPolygons );
+    unsigned int count ( 0 );
+    while ( count < numVertices )
+    {
+      Polygon polygon ( count );
+      count += numVertsPerPoly;
+
+      // Try to add it to the oct-tree.
+      if ( !root.add ( polygon ) )
+      {
+        std::ostringstream message;
+        message << "Failed to add polygon " << count / numVertsPerPoly << " of " << numPolygons <<  std::endl;
+        throw std::runtime_error ( message.str() );
+      }
+
+      // Save this triangle.
+      polygons.push_back ( polygon );
+    }
+
+
+    // Initialize the keepers.
+    //keepers.reserve ( numTriangles ); // Reserve room for every triangle.
+    keepers.push_back ( selectedPolygon );
+
+    // Vector of adjacent counts.
+    typedef std::vector<unsigned int> AdjacentCount;
+    AdjacentCount adjacentCounts ( numPolygons, 0 );
+
+    //vector of bool to indicate if triangle is in the keeper list
+    std::vector<bool> keepersFound ( numPolygons, false );
+    keepersFound[ selectedPolygon ] = true;
+
+    // Initialize the current keeper.
+    IndexIterator k = keepers.begin();
+
+    // While there are still keepers to test...
+    while ( keepers.end() != k )
+    {
+      // Get the index of this keeper.
+      const unsigned int keeperIndex ( *k );
+
+      // Get the Polygon.
+      Polygon &keep = polygons.at ( keeperIndex );
+
+      // Get the cube it resides in.
+      OctTree *cube = reinterpret_cast < OctTree * > ( keep.cube );
+
+      // See if we already have all the adjacent triangles for this one...
+      while ( adjacentCounts.at ( keeperIndex ) < numVertsPerPoly )
+      {
+        // Get this cube's triangles.
+        Polygons &cubesPolygons = cube->objects();
+
+        // Loop through the contained triangles.
+        for ( Polygons::iterator t = cubesPolygons.begin(); t != cubesPolygons.end(); ++t )
+        {
+          // If we found all possible adjacent triangles then stop.
+          if ( numVertsPerPoly <= adjacentCounts.at ( keeperIndex ) )
+            break;
+
+          // Get the contained triangle.
+          Polygon &contained = *t;
+          const unsigned int polygonIndex ( contained.v0 / numVertsPerPoly );
+
+          USUL_ASSERT ( contained.v0 < vertices.size() );
+          USUL_ASSERT ( polygonIndex < polygonss.size() );
+
+          // See if this contained triangle is adjacent to the keeper.
+          // Make sure we don't test the same triangle with itself.
+          if ( ( contained.v0 != keep.v0 ) && !keepersFound[ polygonIndex ] && ( true == adjacentTest ( vertices, contained.v0, keep.v0 ) ) )
+          {
+            // Add this to the keepers.
+            keepers.push_back ( polygonIndex );
+
+            keepersFound[ polygonIndex ] = true;
+
+            // Increment the adjacent-count.
+            adjacentCounts.at(keeperIndex) += 1;
+            adjacentCounts.at(polygonIndex) += 1;
+          }
+        }
+
+        cube = cube->parent();
+        if( 0x0 == cube )
+          break;
+      }
+
+      // Go to the next keeper.
+      ++k;
+      updater ( keepers );
+    }
+
 }
 
 

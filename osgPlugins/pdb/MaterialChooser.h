@@ -11,7 +11,7 @@
 #define __OSG_PDB_PLUGIN_COLORCHOOSER_H__
 
 #include "osg/ref_ptr"
-#include "osg/material"
+#include "osg/Material"
 
 #include <string>
 #include <map>

@@ -148,6 +148,14 @@ SOURCE=.\DbJtTraverser.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DbJtVisApi.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtVisApi.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbJtVisApiArray.h
 # End Source File
 # Begin Source File

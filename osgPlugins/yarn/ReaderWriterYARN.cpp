@@ -119,18 +119,18 @@ osg::Group *ReaderWriterYARN::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  //Material Factory
+  // Material factory.
   OsgTools::MaterialFactory::Ptr materialFactory ( new OsgTools::MaterialFactory );
 
   // Loop through the meshes.
   for ( Meshes::const_iterator i = _meshes.begin(); i != _meshes.end(); ++i )
   {
     // Generate the node.
-    osg::ref_ptr< osg::Node > node ( (*i)() );
+    osg::ref_ptr<osg::Node> node ( (*i)() );
 
     // Set the material.
-    osg::ref_ptr< osg::StateSet > ss ( node->getOrCreateStateSet() );
-    ss->setAttribute( materialFactory->create() );
+    osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+    ss->setAttribute ( materialFactory->create() );
 
     // Add new mesh to the root.
     root->addChild ( node.get() );

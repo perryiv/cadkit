@@ -23,6 +23,12 @@
 namespace XML {
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The node class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template
 <
   class StringType, 
@@ -529,36 +535,14 @@ protected:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Small functor to create a new node.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  template < bool create > struct MissingChildrenPolicy;
-  template <> struct MissingChildrenPolicy < true >
-  {
-    Pointer operator ()()
-    {
-      return Pointer ( new Node );
-    }
-  };
-  template <> struct MissingChildrenPolicy < false >
-  {
-    Pointer operator ()()
-    {
-      return Pointer ( 0x0 );
-    }
-  };
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
   //  Get the missing child. Either creates a new node or returns null.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   Pointer _getMissingChild() const
   {
-    return MissingChildrenPolicy<CREATE_MISSING_CHILDREN>()();
+    const bool create ( CREATE_MISSING_CHILDREN );
+    return ( create ) ? Pointer ( new Node ) : Pointer ( 0x0 );
   }
 };
 

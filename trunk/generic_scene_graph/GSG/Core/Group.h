@@ -30,7 +30,7 @@ public:
 
   GSG_DECLARE_CLONE ( Group );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Group, Node );
-  typedef GSG_SEQUENCE_CONTAINER_TYPE < Node::ValidPtr > Nodes;
+  typedef GSG_BIDIRECTIONAL_CONTAINER < Node::ValidPtr > Nodes;
   typedef Nodes::size_type size_type;
   typedef Nodes::iterator iterator;
   typedef Nodes::const_iterator const_iterator;

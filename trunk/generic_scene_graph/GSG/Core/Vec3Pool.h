@@ -16,18 +16,18 @@
 #ifndef _GENERIC_SCENE_GRAPH_CORE_VEC_3_POOL_H_
 #define _GENERIC_SCENE_GRAPH_CORE_VEC_3_POOL_H_
 
-#include "GSG/Core/Referenced.h"
+#include "GSG/Core/VecPool.h"
 
 
 namespace GSG {
 
 
-class GSG_CORE_EXPORT Vec3Pool : public Referenced
+class GSG_CORE_EXPORT Vec3Pool : public VecPool
 {
 public:
 
   GSG_DECLARE_CLONE ( Vec3Pool );
-  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec3Pool, Referenced );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec3Pool, VecPool );
   typedef SeqVec3::size_type size_type;
   typedef SeqVec3::iterator iterator;
   typedef SeqVec3::const_iterator const_iterator;
@@ -38,35 +38,25 @@ public:
   explicit Vec3Pool();
   Vec3Pool ( const Vec3Pool &pool );
 
-  // Iterators to the vertices.
-  const_iterator      begin() const;
-  iterator            begin();
-  const_iterator      end() const;
-  iterator            end();
+  // Access to the values.
+  const value_type &  value ( size_type i ) const;
+  void                value ( size_type i, const value_type &v );
 
-  bool                empty() const { return 0 == this->size(); }
+  // Get the values.
+  const SeqVec3 &     values() const { return _values; }
+  SeqVec3 &           values()       { return _values; }
 
-  void                resize ( size_type s );
-
-  const value_type &  operator [] ( size_type i ) const;
-  value_type &        operator [] ( size_type i );
-
-  size_type           operator [] ( const value_type &v );
-
-  size_type           size() const;
+  // Get a pointer to the internal data.
+  const value_type *  ptr() const { return ( _values.empty() ) ? 0x0 : &(_values[0]); }
 
 protected:
 
   virtual ~Vec3Pool();
 
-  SeqVec3 _s;
-  MapVec3 _m;
+private:
+
+  SeqVec3 _values;
 };
-
-
-// Convenient typedefs.
-typedef Vec3Pool VertexPool;
-typedef Vec3Pool NormalPool;
 
 
 }; // namespace GSG

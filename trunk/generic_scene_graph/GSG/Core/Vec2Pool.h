@@ -16,18 +16,18 @@
 #ifndef _GENERIC_SCENE_GRAPH_CORE_VEC_2_POOL_H_
 #define _GENERIC_SCENE_GRAPH_CORE_VEC_2_POOL_H_
 
-#include "GSG/Core/Referenced.h"
+#include "GSG/Core/VecPool.h"
 
 
 namespace GSG {
 
 
-class GSG_CORE_EXPORT Vec2Pool : public Referenced
+class GSG_CORE_EXPORT Vec2Pool : public VecPool
 {
 public:
 
   GSG_DECLARE_CLONE ( Vec2Pool );
-  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec2Pool, Referenced );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec2Pool, VecPool );
   typedef SeqVec2::size_type size_type;
   typedef SeqVec2::iterator iterator;
   typedef SeqVec2::const_iterator const_iterator;
@@ -38,33 +38,22 @@ public:
   explicit Vec2Pool();
   Vec2Pool ( const Vec2Pool &pool );
 
-  // Iterators to the vertices.
-  const_iterator      begin() const;
-  iterator            begin();
-  const_iterator      end() const;
-  iterator            end();
+  // Access to the values.
+  const value_type &  value ( size_type i ) const;
+  void                value ( size_type i, const value_type &v );
 
-  bool                empty() const { return 0 == this->size(); }
-
-  void                resize ( size_type s );
-
-  const value_type &  operator [] ( size_type i ) const;
-  value_type &        operator [] ( size_type i );
-
-  size_type           operator [] ( const value_type &v );
-
-  size_type           size() const;
+  // Get the values.
+  const SeqVec2 &     values() const { return _values; }
+  SeqVec2 &           values()       { return _values; }
 
 protected:
 
   virtual ~Vec2Pool();
 
-  SeqVec2 _s;
+private:
+
+  SeqVec2 _values;
 };
-
-
-// Convenient typedefs.
-typedef Vec2Pool TexCoordPool;
 
 
 }; // namespace GSG

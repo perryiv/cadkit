@@ -49,7 +49,8 @@ namespace GSG {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define GSG_SEQUENCE_CONTAINER_TYPE std::vector
+#define GSG_BIDIRECTIONAL_CONTAINER std::list
+#define GSG_RANDOM_ACCESS_CONTAINER std::vector
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,10 +70,10 @@ typedef Detail::AssertBoundsChecker BoundsChecker;
 typedef Detail::Vector2 < Real, Index, BoundsChecker > Vec2;
 typedef Detail::Vector3 < Real, Index, BoundsChecker > Vec3;
 typedef Detail::Vector4 < Real, Index, BoundsChecker > Vec4;
-typedef GSG_SEQUENCE_CONTAINER_TYPE < Index > Indices;
-typedef GSG_SEQUENCE_CONTAINER_TYPE < Vec4 > SeqVec4;
-typedef GSG_SEQUENCE_CONTAINER_TYPE < Vec3 > SeqVec3;
-typedef GSG_SEQUENCE_CONTAINER_TYPE < Vec2 > SeqVec2;
+typedef GSG_RANDOM_ACCESS_CONTAINER < Index > Indices;
+typedef GSG_RANDOM_ACCESS_CONTAINER < Vec4 > SeqVec4;
+typedef GSG_RANDOM_ACCESS_CONTAINER < Vec3 > SeqVec3;
+typedef GSG_RANDOM_ACCESS_CONTAINER < Vec2 > SeqVec2;
 typedef std::map < Vec4, Indices::size_type, Detail::LessVec4 > MapVec4;
 typedef std::map < Vec3, Indices::size_type, Detail::LessVec3 > MapVec3;
 typedef std::map < Vec2, Indices::size_type, Detail::LessVec2 > MapVec2;

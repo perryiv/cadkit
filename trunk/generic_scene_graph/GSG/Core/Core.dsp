@@ -171,6 +171,14 @@ SOURCE=.\Primitive.cpp
 
 SOURCE=.\Primitive.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\PrimitiveSet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PrimitiveSet.h
+# End Source File
 # End Group
 # Begin Group "Visitors"
 
@@ -286,6 +294,14 @@ SOURCE=.\Vec4Pool.cpp
 # Begin Source File
 
 SOURCE=.\Vec4Pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\VecPool.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\VecPool.h
 # End Source File
 # End Group
 # Begin Group "Misc"

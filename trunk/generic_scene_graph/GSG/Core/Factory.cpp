@@ -16,9 +16,6 @@
 #include "GSG/Core/Precompiled.h"
 #include "GSG/Core/Factory.h"
 #include "GSG/Core/Shape.h"
-#include "GSG/Core/Primitive.h"
-#include "GSG/Core/Vec3Pool.h"
-#include "GSG/Core/Vec4Pool.h"
 #include "GSG/Core/Container.h"
 
 #include "boost/mpl/assert_is_same.hpp"
@@ -34,10 +31,7 @@ GSG_IMPLEMENT_CLONE ( Factory );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory() : Referenced(),
-  _vp ( 0x0 ),
-  _np ( 0x0 ),
-  _cp ( 0x0 )
+Factory::Factory() : Referenced()
 {
 
 }
@@ -49,10 +43,7 @@ Factory::Factory() : Referenced(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory ( const Factory &node ) : Referenced ( node ),
-  _vp ( 0x0 ),
-  _np ( 0x0 ),
-  _cp ( 0x0 )
+Factory::Factory ( const Factory &f ) : Referenced ( f )
 {
 
 }
@@ -117,180 +108,120 @@ Shape *Factory::box ( const Vec3 &c, const Vec3 &s )
   Lock lock ( this );
 
   // Make a vertex and normal pool.
-  VertexPool::ValidPtr pvp ( this->_getVertexPool() );
-  NormalPool::ValidPtr pnp ( this->_getNormalPool() );
-  VertexPool &vp = *pvp;
-  NormalPool &np = *pnp;
+  VertexPool::ValidPtr vp ( new VertexPool );
+  NormalPool::ValidPtr np ( new NormalPool );
+
+  // Set the starting spots.
+  SizeType sv ( vp->values().size() );
+  SizeType sn ( np->values().size() );
+
+  // Now make room.
+  vp->values().resize ( sv + 8 );
+  np->values().resize ( sn + 6 );
 
   // For convenience.
   const Real half ( static_cast < Real > ( 0.5 ) );
-  Vec3 hs ( s[0] * half, s[1] * half, s[2] * half );
+  const Vec3 hs ( s[0] * half, s[1] * half, s[2] * half );
 
   // Set the vertices.
-  SizeType v0 ( vp [ Vec3 ( c[0] - hs[0], c[1] - hs[1], c[2] - hs[2] ) ] );
-  SizeType v1 ( vp [ Vec3 ( c[0] + hs[0], c[1] - hs[1], c[2] - hs[2] ) ] );
-  SizeType v2 ( vp [ Vec3 ( c[0] - hs[0], c[1] + hs[1], c[2] - hs[2] ) ] );
-  SizeType v3 ( vp [ Vec3 ( c[0] + hs[0], c[1] + hs[1], c[2] - hs[2] ) ] );
-  SizeType v4 ( vp [ Vec3 ( c[0] - hs[0], c[1] - hs[1], c[2] + hs[2] ) ] );
-  SizeType v5 ( vp [ Vec3 ( c[0] + hs[0], c[1] - hs[1], c[2] + hs[2] ) ] );
-  SizeType v6 ( vp [ Vec3 ( c[0] - hs[0], c[1] + hs[1], c[2] + hs[2] ) ] );
-  SizeType v7 ( vp [ Vec3 ( c[0] + hs[0], c[1] + hs[1], c[2] + hs[2] ) ] );
+  const SizeType V0 ( sv++ );
+  const SizeType V1 ( sv++ );
+  const SizeType V2 ( sv++ );
+  const SizeType V3 ( sv++ );
+  const SizeType V4 ( sv++ );
+  const SizeType V5 ( sv++ );
+  const SizeType V6 ( sv++ );
+  const SizeType V7 ( sv++ );
+  vp->value ( V0, Vec3 ( c[0] - hs[0], c[1] - hs[1], c[2] - hs[2] ) );
+  vp->value ( V1, Vec3 ( c[0] + hs[0], c[1] - hs[1], c[2] - hs[2] ) );
+  vp->value ( V2, Vec3 ( c[0] - hs[0], c[1] + hs[1], c[2] - hs[2] ) );
+  vp->value ( V3, Vec3 ( c[0] + hs[0], c[1] + hs[1], c[2] - hs[2] ) );
+  vp->value ( V4, Vec3 ( c[0] - hs[0], c[1] - hs[1], c[2] + hs[2] ) );
+  vp->value ( V5, Vec3 ( c[0] + hs[0], c[1] - hs[1], c[2] + hs[2] ) );
+  vp->value ( V6, Vec3 ( c[0] - hs[0], c[1] + hs[1], c[2] + hs[2] ) );
+  vp->value ( V7, Vec3 ( c[0] + hs[0], c[1] + hs[1], c[2] + hs[2] ) );
 
   // Set the normals.
-  SizeType FRONT  ( np [ Vec3 (  0,  0,  1 ) ] );
-  SizeType RIGHT  ( np [ Vec3 (  1,  0,  0 ) ] );
-  SizeType BACK   ( np [ Vec3 (  0,  0, -1 ) ] );
-  SizeType LEFT   ( np [ Vec3 ( -1,  0,  0 ) ] );
-  SizeType TOP    ( np [ Vec3 (  0,  1,  0 ) ] );
-  SizeType BOTTOM ( np [ Vec3 (  0, -1,  0 ) ] );
+  const SizeType FRONT  ( sn++ );
+  const SizeType RIGHT  ( sn++ );
+  const SizeType BACK   ( sn++ );
+  const SizeType LEFT   ( sn++ );
+  const SizeType TOP    ( sn++ );
+  const SizeType BOTTOM ( sn++ );
+  np->value ( FRONT,  Vec3 (  0,  0,  1 ) );
+  np->value ( RIGHT,  Vec3 (  1,  0,  0 ) );
+  np->value ( BACK,   Vec3 (  0,  0, -1 ) );
+  np->value ( LEFT,   Vec3 ( -1,  0,  0 ) );
+  np->value ( TOP,    Vec3 (  0,  1,  0 ) );
+  np->value ( BOTTOM, Vec3 (  0, -1,  0 ) );
 
-  // Make the two primitives. They will be tri-strips.
-  Primitive::ValidPtr ltr ( new Primitive ); // Left-Top-Right
-  Primitive::ValidPtr fbb ( new Primitive ); // Front-Bottom-Back
+  // Get the starting spots for the indices.
+  sv = vp->indices().size();
+  sn = np->indices().size();
 
-  // They are tri-strips.
-  ltr->type ( Primitive::TRI_STRIP );
-  fbb->type ( Primitive::TRI_STRIP );
+  // Make room for the indices.
+  vp->indices().resize ( sv + 16 );
+  np->indices().resize ( sn + 6 );
 
-  // Allocate the indices.
-  Indices vi, ni;
-  vi.resize ( 8 );
-  ni.resize ( 3 );
+  // Set the vertex indices for the Left-Top-Right tri-strip.
+  vp->index ( sv++, V0 );
+  vp->index ( sv++, V4 );
+  vp->index ( sv++, V2 );
+  vp->index ( sv++, V6 );
+  vp->index ( sv++, V3 );
+  vp->index ( sv++, V7 );
+  vp->index ( sv++, V1 );
+  vp->index ( sv++, V5 );
 
-  // Set the vertex and normal indices for the Left-Top-Right tri-strip.
-  GSG::reference ( vi, 0 ) = v0;
-  GSG::reference ( vi, 1 ) = v4;
-  GSG::reference ( vi, 2 ) = v2;
-  GSG::reference ( vi, 3 ) = v6; GSG::reference ( ni, 0 ) = LEFT;
-  GSG::reference ( vi, 4 ) = v3;
-  GSG::reference ( vi, 5 ) = v7; GSG::reference ( ni, 1 ) = TOP;
-  GSG::reference ( vi, 6 ) = v1;
-  GSG::reference ( vi, 7 ) = v5; GSG::reference ( ni, 2 ) = RIGHT;
+  // Now the normal indices.
+  np->index ( sn++, LEFT );
+  np->index ( sn++, TOP );
+  np->index ( sn++, RIGHT );
+
+  // Now set the vertices for the Front-Bottom-Back tri-strip.
+  vp->index ( sv++, V2 );
+  vp->index ( sv++, V3 );
+  vp->index ( sv++, V0 );
+  vp->index ( sv++, V1 );
+  vp->index ( sv++, V4 );
+  vp->index ( sv++, V5 ); 
+  vp->index ( sv++, V6 );
+  vp->index ( sv++, V7 );
+
+  // And the normals.
+  np->index ( sn++, FRONT );
+  np->index ( sn++, BOTTOM );
+  np->index ( sn++, BACK );
+
+  // Make the primitive set.
+  PrimitiveSet::ValidPtr set ( new PrimitiveSet );
+
+  // It is a set of tri-strips.
+  set->type ( PrimitiveSet::TYPE_TRIANGLE_STRIP );
+
+  // The indices are random.
+  vp->format ( VertexPool::INDICES_RANDOM );
+  np->format ( NormalPool::INDICES_RANDOM );
 
   // Set the primitive's data. The indices are copied.
-  ltr->vertexIndices ( vi );
-  ltr->normalIndices ( ni );
-  ltr->vertexPool ( pvp );
-  ltr->normalPool ( pnp );
+  set->vertices ( vp );
+  set->normals  ( np );
 
-  // Now set the Front-Bottom-Back tri-strip.
-  GSG::reference ( vi, 0 ) = v2;
-  GSG::reference ( vi, 1 ) = v3;
-  GSG::reference ( vi, 2 ) = v0;
-  GSG::reference ( vi, 3 ) = v1; GSG::reference ( ni, 0 ) = FRONT;
-  GSG::reference ( vi, 4 ) = v4;
-  GSG::reference ( vi, 5 ) = v5; GSG::reference ( ni, 1 ) = BOTTOM;
-  GSG::reference ( vi, 6 ) = v6;
-  GSG::reference ( vi, 7 ) = v7; GSG::reference ( ni, 2 ) = BACK;
-
-  // Now set the other primitive's data. The indices are copied.
-  fbb->vertexIndices ( vi );
-  fbb->normalIndices ( ni );
-  fbb->vertexPool ( pvp );
-  fbb->normalPool ( pnp );
-
-  // Add these two primitives to a new shape.
+  // Add the primitive set to a new shape.
   Shape::ValidPtr shape ( new Shape );
-  shape->append ( ltr );
-  shape->append ( fbb );
+  shape->append ( set );
 
   // Return the shape.
   return shape.release();
 }
 
+/*
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get a vertex pool. Make a new one if you have to.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-VertexPool *Factory::_getVertexPool()
-{
-  Lock lock ( this );
-
-  if ( _vp.valid() )
-    return _vp.get();
-
-  this->setVertexPool ( new VertexPool );
-  return _vp.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get a normal pool. Make a new one if you have to.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-NormalPool *Factory::_getNormalPool()
-{
-  Lock lock ( this );
-
-  if ( _np.valid() )
-    return _np.get();
-
-  this->setNormalPool ( new NormalPool );
-  return _np.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get a color pool. Make a new one if you have to.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ColorPool *Factory::_getColorPool()
-{
-  Lock lock ( this );
-
-  if ( _cp.valid() )
-    return _cp.get();
-
-  this->setColorPool ( new ColorPool );
-  return _cp.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the vertex pool.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Factory::setVertexPool ( VertexPool *vp )
-{
-  Lock lock ( this );
-  _vp = vp;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the normal pool.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Factory::setNormalPool ( NormalPool *np )
-{
-  Lock lock ( this );
-  _np = np;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color pool.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Factory::setColorPool ( ColorPool *cp )
-{
-  Lock lock ( this );
-  _cp = cp;
-}
-
+I eliminated the map in Vec3Pool and moved the indices from the Primitive to VecPool.
+Primitive is now PrimitiveSet, which holds multiple primitives, all of the same type.
+This was all done to take advantage of OpenGL vertex arrays.
+The below code relies on that map which is no longer in Vec3Pool.
+It should be easy enough to make a local map and do the same thing.
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -443,3 +374,5 @@ Shape *Factory::sphere ( const Vec3 &c, Real r, UnsignedInteger n )
   // Return the shape.
   return shape.release();
 }
+
+*/

@@ -26,6 +26,7 @@
 #define GSG_DECLARE_LOCAL_TYPEDEFS(class_name,base_class_name) \
   typedef Pointer < class_name, NullOkPolicy >    Ptr; \
   typedef Pointer < class_name, NullCheckPolicy > ValidPtr; \
+  typedef Pointer < const class_name, NullCheckPolicy, Detail::NoReferenceCounting > ConstValidNoRefPtr; \
   typedef base_class_name BaseClass
 
 

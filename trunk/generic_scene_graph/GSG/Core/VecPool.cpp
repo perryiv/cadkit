@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 3003, Perry L. Miller IV
+//  Copyright (c) 4004, Perry L. Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,16 +9,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A pool of 3D vectors.
+//  A pool of 4D vectors.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "GSG/Core/Precompiled.h"
-#include "GSG/Core/Vec3Pool.h"
+#include "GSG/Core/VecPool.h"
 
 using namespace GSG;
-
-GSG_IMPLEMENT_CLONE ( Vec3Pool );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -27,8 +25,9 @@ GSG_IMPLEMENT_CLONE ( Vec3Pool );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec3Pool::Vec3Pool() : VecPool(), 
-  _values()
+VecPool::VecPool() : Referenced(), 
+  _indices(),
+  _format ( INDICES_UNKNOWN )
 {
   // Empty.
 }
@@ -40,8 +39,9 @@ Vec3Pool::Vec3Pool() : VecPool(),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec3Pool::Vec3Pool ( const Vec3Pool &p ) : VecPool ( p ), 
-  _values ( p._values )
+VecPool::VecPool ( const VecPool &p ) : Referenced ( p ), 
+  _indices ( p._indices ),
+  _format  ( p._format )
 {
   // Empty.
 }
@@ -53,7 +53,7 @@ Vec3Pool::Vec3Pool ( const Vec3Pool &p ) : VecPool ( p ),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec3Pool::~Vec3Pool()
+VecPool::~VecPool()
 {
   // Empty.
 }
@@ -61,25 +61,25 @@ Vec3Pool::~Vec3Pool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Access to the values.
+//  Access to the indices.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Vec3Pool::value_type &Vec3Pool::value ( Vec3Pool::size_type i ) const
+VecPool::value_type VecPool::index ( VecPool::size_type i ) const
 {
-  BoundsChecker ( _values.size(), i );
-  return _values[i];
+  BoundsChecker ( _indices.size(), i );
+  return _indices[i];
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Access to the values.
+//  Access to the indices.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vec3Pool::value ( Vec3Pool::size_type i, const Vec3Pool::value_type &v )
+void VecPool::index ( VecPool::size_type i, const VecPool::value_type &v )
 {
-  BoundsChecker ( _values.size(), i );
-  _values[i] = v;
+  BoundsChecker ( _indices.size(), i );
+  _indices[i] = v;
 }

@@ -28,7 +28,7 @@ public:
 
   GSG_DECLARE_CLONE ( RenderBin );
   GSG_DECLARE_LOCAL_TYPEDEFS ( RenderBin, Referenced );
-  typedef GSG_SEQUENCE_CONTAINER_TYPE < RenderElement::ValidPtr > Elements;
+  typedef GSG_BIDIRECTIONAL_CONTAINER < RenderElement::ValidPtr > Elements;
   typedef Elements::size_type size_type;
   typedef Elements::iterator iterator;
   typedef Elements::const_iterator const_iterator;
@@ -38,7 +38,7 @@ public:
   explicit RenderBin();
   RenderBin ( const RenderBin &group );
 
-  // Iterators to the shapes.
+  // Iterators to the elements.
   const_iterator                begin() const;
   iterator                      begin();
   const_iterator                end() const;

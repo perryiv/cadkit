@@ -17,7 +17,7 @@
 #define _GENERIC_SCENE_GRAPH_CORE_SHAPE_H_
 
 #include "GSG/Core/Node.h"
-#include "GSG/Core/Primitive.h"
+#include "GSG/Core/PrimitiveSet.h"
 #include "GSG/Core/Attributes.h"
 
 
@@ -30,50 +30,32 @@ public:
 
   GSG_DECLARE_CLONE ( Shape );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Shape, Node );
-  typedef GSG_SEQUENCE_CONTAINER_TYPE < Primitive::ValidPtr > Primitives;
-  typedef Primitives::size_type size_type;
-  typedef Primitives::iterator iterator;
-  typedef Primitives::const_iterator const_iterator;
-  typedef Primitives::reference reference;
-  typedef Primitives::const_reference const_reference;
-
-  enum Binding
-  {
-    UNKNOWN,
-    PER_VERTEX,
-    PER_PRIMITIVE,
-    PER_SHAPE
-  };
+  typedef GSG_BIDIRECTIONAL_CONTAINER < PrimitiveSet::ValidPtr > Sets;
+  typedef Sets::size_type size_type;
+  typedef Sets::iterator iterator;
+  typedef Sets::const_iterator const_iterator;
+  typedef Sets::reference reference;
+  typedef Sets::const_reference const_reference;
 
   explicit Shape();
   Shape ( const Shape &g );
 
-  // Iterators to the primitives.
+  // Iterators to the primitive sets.
   const_iterator          begin() const;
   iterator                begin();
   const_iterator          end() const;
   iterator                end();
 
-  // Access to the first and last primitive.
+  // Access to the first and last primitive set.
   reference               front();
   const_reference         front() const;
   reference               back();
   const_reference         back() const;
 
-  // Add a primitive.
-  void                    append ( Primitive *prim );
-  void                    prepend ( Primitive *prim );
-  void                    insert ( iterator beforeMe, Primitive *prim );
-
-  // Get the bindings.
-  Binding                 vertexBinding() const;
-  Binding                 normalBinding() const;
-  Binding                 colorBinding()  const;
-
-  // Set the bindings.
-  void                    vertexBinding ( Binding vb );
-  void                    normalBinding ( Binding nb );
-  void                    colorBinding  ( Binding cb );
+  // Add a primitive set.
+  void                    append ( PrimitiveSet *ps );
+  void                    prepend ( PrimitiveSet *ps );
+  void                    insert ( iterator beforeMe, PrimitiveSet *ps );
 
   // Get/set the attributes.
   const Attributes *      attributes() const;
@@ -97,10 +79,7 @@ protected:
 
 private:
 
-  Primitives _primitives;
-  Binding _vb;
-  Binding _nb;
-  Binding _cb;
+  Sets _sets;
   Attributes::Ptr _attributes;
 };
 

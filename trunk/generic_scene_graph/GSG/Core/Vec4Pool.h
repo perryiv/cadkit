@@ -16,18 +16,18 @@
 #ifndef _GENERIC_SCENE_GRAPH_CORE_VEC_4_POOL_H_
 #define _GENERIC_SCENE_GRAPH_CORE_VEC_4_POOL_H_
 
-#include "GSG/Core/Referenced.h"
+#include "GSG/Core/VecPool.h"
 
 
 namespace GSG {
 
 
-class GSG_CORE_EXPORT Vec4Pool : public Referenced
+class GSG_CORE_EXPORT Vec4Pool : public VecPool
 {
 public:
 
   GSG_DECLARE_CLONE ( Vec4Pool );
-  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec4Pool, Referenced );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec4Pool, VecPool );
   typedef SeqVec4::size_type size_type;
   typedef SeqVec4::iterator iterator;
   typedef SeqVec4::const_iterator const_iterator;
@@ -38,33 +38,22 @@ public:
   explicit Vec4Pool();
   Vec4Pool ( const Vec4Pool &pool );
 
-  // Iterators to the vertices.
-  const_iterator      begin() const;
-  iterator            begin();
-  const_iterator      end() const;
-  iterator            end();
+  // Access to the values.
+  const value_type &  value ( size_type i ) const;
+  void                value ( size_type i, const value_type &v );
 
-  bool                empty() const { return 0 == this->size(); }
-
-  void                resize ( size_type s );
-
-  const value_type &  operator [] ( size_type i ) const;
-  value_type &        operator [] ( size_type i );
-
-  size_type           operator [] ( const value_type &v );
-
-  size_type           size() const;
+  // Get the values.
+  const SeqVec4 &     values() const { return _values; }
+  SeqVec4 &           values()       { return _values; }
 
 protected:
 
   virtual ~Vec4Pool();
 
-  SeqVec4 _s;
+private:
+
+  SeqVec4 _values;
 };
-
-
-// Convenient typedefs.
-typedef Vec4Pool ColorPool;
 
 
 }; // namespace GSG

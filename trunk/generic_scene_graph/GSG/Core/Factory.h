@@ -47,11 +47,6 @@ public:
   Shape *               cube();
   Shape *               cube ( const Vec3 &center, Real size );
 
-  // If unset then new ones are allocated when needed.
-  void                  setVertexPool ( VertexPool *vp );
-  void                  setNormalPool ( NormalPool *np );
-  void                  setColorPool  ( ColorPool *cp );
-
   // Make a sphere. The first one makes a unit sphere at the origin.
   Shape *               sphere ( UnsignedInteger numSubDivisions = 4 );
   Shape *               sphere ( const Vec3 &center, Real radius, UnsignedInteger numSubDivisions = 4 );
@@ -59,16 +54,6 @@ public:
 protected:
 
   virtual ~Factory();
-
-  VertexPool *          _getVertexPool();
-  NormalPool *          _getNormalPool();
-  ColorPool *           _getColorPool();
-
-private:
-
-  Pointer < VertexPool, NullOkPolicy > _vp;
-  Pointer < NormalPool, NullOkPolicy > _np;
-  Pointer < ColorPool,  NullOkPolicy > _cp;
 };
 
 

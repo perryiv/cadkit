@@ -37,6 +37,49 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Policy class for reference counting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ReferenceCounting
+  {
+    template < class T > static void ref ( T *t )
+    {
+      intrusive_ptr_add_ref ( t );
+    }
+    template < class T > static void unref ( T *t )
+    {
+      intrusive_ptr_release ( t );
+    }
+    template < class T > static void unrefNoDelete ( T *t )
+    {
+      ptr_release_no_delete ( t );
+    }
+  };
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Policy class with no reference counting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct NoReferenceCounting
+  {
+    template < class T > static void ref           ( const T *t ){}
+    template < class T > static void unref         ( const T *t ){}
+    template < class T > static void unrefNoDelete ( const T *t ){}
+  };
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  The smart-pointer class.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,7 +87,8 @@ namespace Detail
 template
 <
   class T,
-  class NullPolicy_ = Detail::NoNullChecker
+  class NullPolicy_ = Detail::NoNullChecker,
+  class ReferenceCountingPolicy_ = Detail::ReferenceCounting
 >
 struct Pointer
 {
@@ -55,6 +99,7 @@ struct Pointer
   /////////////////////////////////////////////////////////////////////////////
 
   typedef NullPolicy_ NullPolicy;
+  typedef ReferenceCountingPolicy_ ReferenceCountingPolicy;
   typedef T element_type;
   typedef Pointer < T, NullPolicy > ThisType;
 
@@ -81,7 +126,7 @@ struct Pointer
   {
     NullPolicy::check ( _p );
     if ( _p )
-      Detail::intrusive_ptr_add_ref ( _p );
+      ReferenceCountingPolicy::ref ( _p );
   }
 
 
@@ -95,7 +140,7 @@ struct Pointer
   {
     NullPolicy::check ( _p );
     if ( _p )
-      Detail::intrusive_ptr_add_ref ( _p );
+      ReferenceCountingPolicy::ref ( _p );
   }
 
 
@@ -108,7 +153,7 @@ struct Pointer
   ~Pointer()
   {
     if ( _p )
-      Detail::intrusive_ptr_release ( _p );
+      ReferenceCountingPolicy::unref ( _p );
   }
 
 
@@ -241,10 +286,6 @@ struct Pointer
   {
     return _p == p;
   }
-  bool operator == ( T *p ) const
-  {
-    return _p == p;
-  }
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -258,10 +299,6 @@ struct Pointer
     return _p != p._p;
   }
   bool operator != ( const T *p ) const
-  {
-    return _p != p;
-  }
-  bool operator != ( T *p ) const
   {
     return _p != p;
   }
@@ -282,7 +319,7 @@ struct Pointer
     if ( _p )
     {
       // Unreference it but make sure it is not deleted.
-      Detail::ptr_release_no_delete ( _p );
+      ReferenceCountingPolicy::unrefNoDelete ( _p );
 
       // Make our internal pointer null;
       _p = 0x0;
@@ -318,14 +355,14 @@ protected:
 
     // If the given pointer is not null then reference it.
     if ( _p )
-      Detail::intrusive_ptr_add_ref ( _p );
+      ReferenceCountingPolicy::ref ( _p );
 
     // If the old one is not null then release it. Make sure we do this last 
     // because the given pointer "p" could be a child (indirect or direct) of 
     // "old". If we release "old" before we reference "p" then "p" may get 
     // deleted when it should not have.
     if ( old )
-      Detail::intrusive_ptr_release ( old );
+      ReferenceCountingPolicy::unref ( old );
   }
 
 

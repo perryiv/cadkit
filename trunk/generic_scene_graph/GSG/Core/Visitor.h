@@ -41,7 +41,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #define GSG_DECLARE_VISIT_ELEMENT_FUNCTIONS \
-  virtual void    _visit ( PrimitiveElement & ); \
+  virtual void    _visit ( PrimitiveSetElement & ); \
   virtual void    _visit ( MatrixLoadElement & ); \
   virtual void    _visit ( MatrixModeElement & ); \
   virtual void    _visit ( MaterialElement & ); \
@@ -62,7 +62,7 @@ namespace GSG
   class Transform;
   class Lod;
   class Shape;
-  class PrimitiveElement;
+  class PrimitiveSetElement;
   class MatrixLoadElement;
   class MatrixModeElement;
   class MaterialElement;
@@ -144,7 +144,7 @@ protected:
   friend class Transform;
   friend class Lod;
   friend class Shape;
-  friend class PrimitiveElement;
+  friend class PrimitiveSetElement;
   friend class MatrixLoadElement;
   friend class MatrixModeElement;
   friend class MaterialElement;
@@ -195,7 +195,7 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 
 #define GSG_DEFINE_EMPTY_VISIT_ELEMENT_FUNCTIONS(class_name) \
-  GSG_DEFINE_EMPTY_VISIT_FUNCTION ( class_name, PrimitiveElement ); \
+  GSG_DEFINE_EMPTY_VISIT_FUNCTION ( class_name, PrimitiveSetElement ); \
   GSG_DEFINE_EMPTY_VISIT_FUNCTION ( class_name, MatrixLoadElement ); \
   GSG_DEFINE_EMPTY_VISIT_FUNCTION ( class_name, MatrixModeElement ); \
   GSG_DEFINE_EMPTY_VISIT_FUNCTION ( class_name, MaterialElement ); \
@@ -234,7 +234,7 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 
 #define GSG_DEFINE_DELEGATING_VISIT_ELEMENT_FUNCTIONS(class_name,function_name) \
-  GSG_DEFINE_DELEGATING_VISIT_FUNCTION ( class_name, function_name, PrimitiveElement ); \
+  GSG_DEFINE_DELEGATING_VISIT_FUNCTION ( class_name, function_name, PrimitiveSetElement ); \
   GSG_DEFINE_DELEGATING_VISIT_FUNCTION ( class_name, function_name, MatrixLoadElement ); \
   GSG_DEFINE_DELEGATING_VISIT_FUNCTION ( class_name, function_name, MatrixModeElement ); \
   GSG_DEFINE_DELEGATING_VISIT_FUNCTION ( class_name, function_name, MaterialElement ); \

@@ -129,32 +129,36 @@ bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define OPTIONS "\n\
+#define _COMMAND_LINE_OPTIONS "\n\
   -pp <priority>    Print to stdout any progress messages with a priority\n\
                     level less than or equal to 'priority'.\n\
   -pe               Print error messages to stdout.\n\
   -pw               Print warning messages to stdout.\n\
   -pi               Print general information messages to stdout.\n\
   -v                Verbose output to stdout, same as '-pe -pw -pi -pp 1'.\n\
-  -ea <action>      What to do if an error is encountered. Possible actions:\n\
-                      exit:     Exit the program.\n\
-                      continue: Continue executing is possible.\n\
-  -wa <action>      What to do if a warning is encountered. Possible actions:\n\
-                      exit:     Exit the program.\n\
-                      continue: Continue executing is possible.\n\
   -al               Where applicable, translate all of the Levels-of-Detail (LODs)'.\n\
   -hl               Where applicable, translate only the highest Level-of-Detail (LOD)'.\n\
   -ll               Where applicable, translate only the lowest Level-of-Detail (LOD)'.\n\
+  -z <zero>         Any number in the range [-<zero>,<zero>'] is set to 0.\n\
   --print-progress  Same as '-pp'.\n\
   --print-errors    Same as '-pe'.\n\
   --print-warnings  Same as '-pw'.\n\
   --print-info      Same as '-pi'.\n\
   --verbose         Same as '-v'.\n\
-  --error-action    Same as '-ea'.\n\
-  --warning-action  Same as '-wa'.\n\
   --all-lods        Same as '-al'.\n\
   --high-lod        Same as '-hl'.\n\
-  --low-lod         Same as '-ll'."
+  --low-lod         Same as '-ll'.\n\
+  --zero            Same as '-z'."
+
+
+//  -ea <action>      What to do if an error is encountered. Possible actions:\n\
+//                      exit:     Exit the program.\n\
+//                      continue: Continue executing is possible.\n\
+//  -wa <action>      What to do if a warning is encountered. Possible actions:\n\
+//                      exit:     Exit the program.\n\
+//                      continue: Continue executing is possible.\n\
+//  --error-action    Same as '-ea'.\n\
+//  --warning-action  Same as '-wa'.\n\
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,7 +178,7 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
                    CadKit::justFilename ( program ).c_str(),
                    ext.c_str(),
                    ext.c_str() );
-  usage += OPTIONS;
+  usage += _COMMAND_LINE_OPTIONS;
 
   // Return the usage string.
   return usage;
@@ -266,6 +270,26 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     else if ( arg == "-ll" || arg == "--low-lod" )
     {
       _lodOption = CadKit::PROCESS_LOW_LOD;
+    }
+
+    else if ( arg == "-z" || arg == "--zero" )
+    {
+//      // Get the next argument, if there is one.
+//      std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );
+//
+//      // See if the option string is a number.
+//      if ( true == CadKit::isUnsignedInteger ( option ) )
+//      {
+//        this->setOutputStream ( &(std::cout) );
+//        this->_setProgressPrintLevel ( CadKit::toUnsignedInteger ( option ) );
+//
+//        // Increment the loop index.
+//        ++i;
+//      }
+//
+//      // Otherwise return false.
+//      else
+//        return false;
     }
 
     // Otherwise just save the argument.

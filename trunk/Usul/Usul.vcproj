@@ -520,6 +520,21 @@
 					RelativePath=".\Containers\Vector.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Animate">
+				<File
+					RelativePath=".\Animate\Frame.h">
+				</File>
+				<File
+					RelativePath=".\Animate\LinearPlayer.h">
+				</File>
+				<File
+					RelativePath=".\Animate\Movie.h">
+				</File>
+				<File
+					RelativePath=".\Animate\Player.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

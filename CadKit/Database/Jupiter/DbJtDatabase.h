@@ -25,6 +25,8 @@
 #include "Standard/SlBitmask.h"
 #include "Standard/SlVec2.h"
 #include "Standard/SlVec3.h"
+#include "Standard/SlMatrixStack.h"
+#include "Standard/SlMatrix44.h"
 
 #include "Interfaces/ILoadOptions.h"
 #include "Interfaces/IEntityQuery.h"
@@ -102,7 +104,7 @@ public:
   virtual bool            setPartLoadOption ( const PartLoadOption &option );
 
   // Set the shape load option. Returns false if not supported.
-//  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option );
+  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -272,13 +274,14 @@ protected:
   AssemblyLoadOption _assemblyLoadOption;
   PartLoadOption _partLoadOption;
   BrepLoadOption _brepLoadOption;
-//  ShapeLoadOption _shapeLoadOption;
+  ShapeLoadOption _shapeLoadOption;
   std::auto_ptr<Assemblies> _assemblies;
   std::auto_ptr<DbJtTraversalState> _current;
   std::auto_ptr<ShapeData> _shapeData;
   unsigned int _progressPriorityLevel;
   bool _result;
   LodProcessOption _lodOption;
+  SlMatrixStack<SlMatrix44f> _matrixStack;
 
   virtual ~DbJtDatabase();
 
@@ -301,10 +304,13 @@ protected:
   bool                    _processLods  ( eaiPart *part );
   bool                    _processLod   ( eaiPart *part,   const int &whichLod );
   bool                    _processShape ( eaiPart *part,   const int &whichLod, const int &whichShape );
-  bool                    _processSet   ( eaiShape *shape, const int &whichSet );
+  bool                    _processSet   ( eaiShape *shape, const int &whichShape, const int &whichSet );
 
   void                    _pushAssembly ( eaiAssembly *assembly );
   void                    _popAssembly();
+
+  void                    _pushMatrix ( eaiHierarchy *hierarchy );
+  void                    _popMatrix();
 
   void                    _replaceProperties ( eaiInstance *instance, eaiPart *part );
   void                    _resetStateIndices();

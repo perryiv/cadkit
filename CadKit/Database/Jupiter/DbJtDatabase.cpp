@@ -106,6 +106,10 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
   {
   case IAssemblyQueryFloat::IID:
     return static_cast<IAssemblyQueryFloat *>(this);
+  case IPartQueryFloat::IID:
+    return static_cast<IPartQueryFloat *>(this);
+  case IInstanceQueryFloat::IID:
+    return static_cast<IInstanceQueryFloat *>(this);
   case IDataSource::IID:
     return static_cast<IDataSource *>(this);
   case IControlled::IID:

@@ -22,6 +22,8 @@
 #include "Interfaces/IControlled.h"
 #include "Interfaces/ILoadOptions.h"
 #include "Interfaces/IAssemblyQuery.h"
+#include "Interfaces/IPartQuery.h"
+#include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlRefBase.h"
 #include "Standard/SlRefPtr.h"
@@ -42,7 +44,9 @@ class DB_JT_API DbJtDatabase : public SlRefBase,
                                public IDataSource,
                                public IControlled,
                                public ILoadOptions,
-                               public IAssemblyQueryFloat
+                               public IAssemblyQueryFloat,
+                               public IPartQueryFloat,
+                               public IInstanceQueryFloat
 {
 public:
 
@@ -102,6 +106,32 @@ public:
   virtual bool            getTransform ( AssemblyHandle assembly, float matrix[16] ) const;
 
   /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IPartQuery interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the name.
+  virtual std::string     getName ( PartHandle part ) const;
+
+  // Get the transformation matrix.
+  virtual bool            getTransform ( PartHandle part, float matrix[16] ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IInstanceQuery: Interface for querying an instance.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the corresponding part.
+  virtual PartHandle      getCorrespondingPart ( InstanceHandle instance ) const;
+
+  // Get the name.
+  virtual std::string     getName ( InstanceHandle Instance ) const;
+
+  // Get the transformation matrix.
+  virtual bool            getTransform ( InstanceHandle Instance, float matrix[16] ) const;
+
 protected:
 
   typedef SlStack<eaiAssembly *> Assemblies;

@@ -19,6 +19,9 @@
 #include <list>
 #include <iosfwd>
 
+#include "Atom.h"
+#include "MaterialChooser.h"
+
 namespace osg { class Group; class LOD; };
 
 
@@ -26,7 +29,7 @@ class ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
 
-  typedef std::pair<std::string,osg::Vec4> Atom;
+  //typedef std::pair<std::string,osg::Vec4> Atom;
   typedef std::list<Atom> Atoms;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
@@ -50,6 +53,7 @@ private:
 
   Atoms _atoms;
   osg::BoundingBox _bbox;
+  MaterialChooser materialChooser;
 };
 
 

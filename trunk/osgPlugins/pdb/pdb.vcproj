@@ -155,12 +155,24 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\Atom.cpp">
+			</File>
+			<File
+				RelativePath=".\MaterialChooser.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath=".\Atom.h">
+			</File>
+			<File
+				RelativePath=".\MaterialChooser.h">
+			</File>
 			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.h">
 			</File>

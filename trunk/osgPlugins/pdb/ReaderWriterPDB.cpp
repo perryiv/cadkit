@@ -208,20 +208,25 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::LOD *ReaderWriterPDB::_makeAtom ( const Atom &atom ) const
+osg::LOD *ReaderWriterPDB::_makeAtom (const Atom &atom ) const
 {
   // The lod holding the various representations.
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
   // Get the data.
-  const std::string &line = atom.first;
-  const osg::Vec4 &data = atom.second;
-  const osg::Vec3 center ( data[Index::X], data[Index::Y], data[Index::Z] );
-  const float radius ( data[Index::R] );
+  const std::string line = atom.toString();
+  const osg::Vec3 center (atom.getX(), atom.getY(), atom.getZ());
+  const float radius = atom.getR();
+
+  osg::StateSet *ss = new osg::StateSet();
+  const std::string s = atom.getName();
+  osg::ref_ptr< osg::Material > m = materialChooser.getMaterial(s);
+  ss->setAttribute(m.get());
 
   // Make a sphere at this point.
   osg::ref_ptr<osg::Sphere> sphere ( new osg::Sphere ( center, radius ) ); // TODO, remove hard-coded sphere.
   osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( sphere.get() ) ); // TODO, use osg::Geometry for vertex arrays.
+  drawable->setStateSet(ss);
 
   // Not so many triangles.
   osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
@@ -257,6 +262,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
   char buf[size];
+  int numAtoms = 0;
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
@@ -283,23 +289,34 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
     // See if it is an atom.
     if ( "ATOM" == type )
     {
-      // The radius. TODO, set radius based on atom type...
-      float r ( 0.5 );
-
-      // Discard next five words.
-      std::string word;
-      in >> word >> word >> word >> word >> word;
-
-      // Read the point.
-      osg::Vec4 pt;
-      in >> pt[Index::X] >> pt[Index::Y] >> pt[Index::Z];
-
-      // Set the radius.
-      pt[Index::R] = 0.5f; // TODO, remove hard-coded value.
-
-      // Append it to our list.
-      _atoms.push_back ( Atom ( in.str(), pt ) );
+		numAtoms++;
+		Atom atom(buf, type);
+		//std::cout << numAtoms << " = " << atom.getId() << std::endl;
+		//if(atom.getId() != numAtoms) {
+		//	std::cerr << "Atoms are not sequential\n";
+		//}
+		_atoms.push_back( atom );
     }
+	else if( type == "HETATM") {
+		/*numAtoms++;
+		Atom atom(in, type);
+		//std::cout << numAtoms << " = " << atom.getId() << std::endl;
+		//if(atom.getId() != numAtoms) {
+		//	std::cerr << "Atoms are not sequential\n";
+		//}
+		_atoms.push_back( atom );
+		*/
+	}
+	else if( type == "CONECT"){
+		/*int id;
+		in >> id;
+		
+		Atoms::const_iterator i = _atoms.begin();
+		i = i + id;
+		Atom &atom = *i;
+	*/
+		//TODO find atoms in _atoms and connect with bonds
+	}
   }
 }
 

@@ -16,6 +16,7 @@
 #ifndef _XML_READER_FILE_CONTENTS_CLASS_H_
 #define _XML_READER_FILE_CONTENTS_CLASS_H_
 
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <fstream>
 
@@ -119,13 +120,15 @@ public:
 
     // Structure for holding file info.
     #ifdef _WIN32
-    struct ::_stat buf;
+    #define STAT _stat
     #else
-    struct ::stat buf;
+    #define STAT stat
     #endif
 
+    struct STAT buf;
+
     // Get the size of the file.
-    int result = _stat ( filename.c_str(), &buf );
+    int result = STAT ( filename.c_str(), &buf );
     _errorPolicy ( 3245643221u, 0 == result );
 
     // Open the file. Note: ifstream is deliberately not included above, 

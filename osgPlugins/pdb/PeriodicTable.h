@@ -17,18 +17,18 @@
 
 #include "osg/ref_ptr"
 
-class Element;
+#include "Element.h"
 
 
 class PeriodicTable 
 {
 public:
-  typedef std::pair< std::string, osg::ref_ptr< Element > > Element_pair;
-  typedef std::vector< osg::ref_ptr<Element> > VectorElements;
-  typedef std::map< std::string, osg::ref_ptr<Element> > MapElements;
+  typedef std::pair< std::string, Element::Ptr > Element_pair;
+  typedef std::vector< Element::Ptr > VectorElements;
+  typedef std::map< std::string, Element::Ptr > MapElements;
   PeriodicTable();
-  const Element * getPointer(const std::string&) const;
-  const Element * getPointer(int) const;
+  Element::Ptr getPointer(const std::string&) const;
+  Element::Ptr getPointer(int) const;
 private:
   VectorElements _vectorElements;
   MapElements _mapElements;

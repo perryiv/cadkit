@@ -273,14 +273,12 @@ void ReaderWriterPDB::_parse ( std::ifstream &in /*, std::ifstream &psf*/ )
     else if ( "ATOM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
       molecule = this->_getCurrentMolecule();
-		  Atom atom(buf, type, _periodicTable);
-      molecule->addAtom(atom);
+      molecule->addAtom( new Atom( buf, type, _periodicTable ) );
     }
 	  else if ( "HETATM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
       molecule = this->_getCurrentMolecule();
-		  Atom atom(buf, type, _periodicTable);
-      molecule->addAtom(atom);
+      molecule->addAtom( new Atom( buf, type, _periodicTable ) );
 	  }
     /* Turn off CONECT for now
 	  else if( type == "CONECT")
@@ -332,7 +330,7 @@ void ReaderWriterPDB::_parsePsf( std::ifstream &in )
 
   while(!in.eof())
   {
-     // Read the line.
+    // Read the line.
     in.getline ( buf, size - 1 );
 
     // For convenience, read it into a string-stream.
@@ -384,8 +382,8 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 
 std::string ReaderWriterPDB::_getPsfPath( const std::string &file)
 {
-  std::string psf = osgDB::getStrippedName(file);
-  std::string path = osgDB::getFilePath(file);
+  std::string psf  ( osgDB::getStrippedName(file) );
+  std::string path ( osgDB::getFilePath(file) );
   psf += ".psf";
   if(!path.empty())
   {

@@ -13,15 +13,18 @@
 
 #include <string>
 #include "osg/Referenced"
+#include "osg/ref_ptr"
 
 class Element : public osg::Referenced
 {
 public:
+  typedef osg::ref_ptr< Element > Ptr;
+
   Element(int, std::string, float);
   Element(const Element&);
   const float getRadius() const { return _radius; }
-  const std::string getElementSymbol() const { return _elementSymbol; }
-  const std::string getElementName() const { return _elementName; }
+  const std::string& getElementSymbol() const { return _elementSymbol; }
+  const std::string& getElementName() const { return _elementName; }
   const int getAtomicNumber() const { return _atomicNumber; }
   Element& operator=(const Element&);
 protected:

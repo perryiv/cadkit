@@ -58,8 +58,12 @@ public:
   void                    removeFlags ( unsigned int flags );
 
   void                    parse ( std::ifstream &in ) { _parse ( in ); }
+  void                    parsePsf ( std::ifstream &in ) { _parsePsf ( in ); }
 
+  std::string             getPsfPath( const std::string &file ) { return _getPsfPath( file ); }
   osg::Group*             build() const { return _build(); }
+
+  Molecules               getMolecules() { return _molecules; }
 
 protected:
 

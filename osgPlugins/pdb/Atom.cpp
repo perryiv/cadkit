@@ -15,6 +15,49 @@
 #include "Atom.h"
 #include "PeriodicTable.h"
 
+/*
+PDB Atom information
+Source: http://www.rcsb.org/pdb/docs/format/pdbguide2.2/part_62.html
+Record Format
+
+COLUMNS        DATA TYPE       FIELD         DEFINITION
+---------------------------------------------------------------------------------
+ 1 -  6        Record name     "ATOM  "
+
+ 7 - 11        Integer         serial        Atom serial number.
+
+13 - 16        Atom            name          Atom name.
+
+17             Character       altLoc        Alternate location indicator.
+
+18 - 20        Residue name    resName       Residue name.
+
+22             Character       chainID       Chain identifier.
+
+23 - 26        Integer         resSeq        Residue sequence number.
+
+27             AChar           iCode         Code for insertion of residues.
+
+31 - 38        Real(8.3)       x             Orthogonal coordinates for X in
+                                             Angstroms.
+
+39 - 46        Real(8.3)       y             Orthogonal coordinates for Y in
+                                             Angstroms.
+
+47 - 54        Real(8.3)       z             Orthogonal coordinates for Z in
+                                             Angstroms.
+
+55 - 60        Real(6.2)       occupancy     Occupancy.
+
+61 - 66        Real(6.2)       tempFactor    Temperature factor.
+
+73 - 76        LString(4)      segID         Segment identifier, left-justified.
+
+77 - 78        LString(2)      element       Element symbol, right-justified.
+
+79 - 80        LString(2)      charge        Charge on the atom.
+
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -22,7 +65,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable ) :
+Atom::Atom ( const char *atomString, const std::string& type, const PeriodicTable &periodicTable ) :
 BaseClass(),
 _type( type ),
 _matrix ( new osg::MatrixTransform )
@@ -42,7 +85,11 @@ _matrix ( new osg::MatrixTransform )
   _getData(num, atomString, 17, 3);
   _residueName = num;
 
-  //get residue ID
+  //get Chain ID
+  _getData(num, atomString, 21, 1);
+  _chainId = atoi(num);
+
+  //get Residue ID
   _getData(num, atomString, 22, 4);
   _residueId = atoi(num);
 
@@ -113,10 +160,10 @@ _matrix ( new osg::MatrixTransform )
 
 Atom::Atom(const Atom& atom) :
   _id(atom.getId()),
-  _point(atom.getVec3()),
+  _point(atom.getCenter()),
   _name(atom.getName()),
   _type(atom.getType()),
-  _element(atom.getElement()),
+  _element(atom._element),
   _matrix(atom.getMatrix())
 {
 }
@@ -143,7 +190,7 @@ std::string Atom::toString() const
 {
 	std::ostringstream out;
 	out << _type <<" " << _id << " " << _name << " " << _point[0] << " " <<  _point[1] << " " <<  _point[2];
-	return std::string(out.str());
+	return out.str();
 }
 
 
@@ -157,9 +204,9 @@ Atom& Atom::operator =(const Atom& atom)
 {
   this->_id = atom.getId();
   this->_name = atom.getName();
-  this->_point = atom.getVec3();
+  this->_point = atom.getCenter();
   this->_type = atom.getType();
-  this->_element = atom.getElement();
+  this->_element = atom._element;
   this->_matrix = atom.getMatrix();
   return *this;
 }
@@ -186,6 +233,7 @@ void Atom::_setMatrix()
 
   // Make a matrix-transform.
   _matrix->setMatrix ( R * T );
+  //_matrix->setUserData( this );
 }
 
 void Atom::_getData(char * temp, const char* string, unsigned int offset, unsigned int length)

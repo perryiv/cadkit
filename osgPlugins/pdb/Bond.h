@@ -17,23 +17,26 @@
 #include "osg/MatrixTransform"
 #include "osg/ref_ptr"
 
-class Atom;
+#include "Atom.h"
 
 class Bond : public osg::Referenced
 {
 public:
   typedef osg::Referenced BaseClass;
+  typedef osg::ref_ptr< Bond > Ptr;
 
-  Bond(const Atom&, const Atom&, int);
-  ~Bond();
+  Bond(Atom::Ptr, Atom::Ptr, int);
+  
   const int getId() const { return _id; }
   const osg::Vec3& getPoint1() const { return _point1; }
   const osg::Vec3& getPoint2() const { return _point2; }
   const std::string toString() const;
   osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
   void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
-private:
+protected:
   Bond();
+  virtual ~Bond();
+private:
   int _id;
   osg::Vec3 _point1, _point2;
   mutable osg::ref_ptr< osg::MatrixTransform > _matrix;

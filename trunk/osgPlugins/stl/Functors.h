@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -9,32 +10,36 @@
 #ifndef __OSG_STL_PLUGIN_FUNCTORS_H__
 #define __OSG_STL_PLUGIN_FUNCTORS_H__
 
-namespace osg { class Geode; class Vec3f; typedef Vec3f Vec3; }
+namespace osg { class Vec3f; typedef Vec3f Vec3; }
+
+#include <iosfwd>
 
 
-#include <iostream>
-
-struct FacetCounter
-{
-  FacetCounter() : _numFacets(0) { }
-  void countFacets( osg::Geode * );
-  unsigned int getNumFacets() { return _numFacets; }
-private:
-  unsigned int _numFacets;
-};
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor to write ascii.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 struct AsciiWriter
 {
-  AsciiWriter( std::ostream& out ) : _out ( out ) { }
-  void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
+  AsciiWriter ( std::ostream& out ) : _out ( out ) { }
+  void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3& );
 private:
   std::ostream &_out;
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor to write binary.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 struct BinaryWriter
 {
-  BinaryWriter( std::ostream& out ) : _out ( out ) { }
-  void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
+  BinaryWriter ( std::ostream& out ) : _out ( out ) { }
+  void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3& );
 private:
   std::ostream &_out;
 };

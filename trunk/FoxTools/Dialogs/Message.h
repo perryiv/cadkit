@@ -103,17 +103,17 @@ public:
 
   /// Convenience function to display an error dialog. Separate buttons 
   /// with a '|' character. For example, "OK|Cancel".
-  static std::string      error ( FX::FXObject *owner, 
-                                  const std::string &buttons, 
+  static std::string      error ( const std::string &buttons, 
                                   const std::string &title, 
-                                  const std::string &text );
+                                  const std::string &text,
+                                  FX::FXObject *owner = 0x0 );
 
   /// Set/get the icon. Pass true for "destroy" if this instance should 
   /// delete the icon in the destructor. The last function creates the icon.
   /// The object is used to get a pointer to the application.
   const Icon &            icon() const;
   void                    icon ( FX::FXIcon *, bool destroy );
-  void                    icon ( unsigned int id, FX::FXObject * );
+  void                    icon ( unsigned int id );
 
   /// Set/get the string used to save the result.
   const std::string &     id() const;
@@ -121,10 +121,17 @@ public:
 
   /// Convenience function to display an information dialog. Separate buttons 
   /// with a '|' character. For example, "OK|Cancel".
-  static std::string      info ( FX::FXObject *owner, 
-                                 const std::string &buttons, 
+  static std::string      info ( const std::string &buttons, 
                                  const std::string &title, 
-                                 const std::string &text );
+                                 const std::string &text,
+                                 FX::FXObject *owner = 0x0  );
+
+  /// Convenience function to display a question dialog. Separate buttons 
+  /// with a '|' character. For example, "Yes|No|Cancel".
+  static std::string      question ( const std::string &buttons, 
+                                     const std::string &title, 
+                                     const std::string &text,
+                                     FX::FXObject *owner = 0x0  );
 
   /// Set resizing flag.
   void                    resizable ( bool r );

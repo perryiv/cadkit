@@ -16,7 +16,7 @@
 #include "FoxTools/Cursors/Factory.h"
 #include "FoxTools/Cursors/Arrays.h"
 #include "FoxTools/Errors/ErrorChecker.h"
-
+#include "FoxTools/Functions/App.h"
 #include "FoxTools/Headers/CURCursor.h"
 
 #include <memory>
@@ -31,10 +31,8 @@ using namespace FoxTools::Cursors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXCursor *Factory::create ( Type type, bool createIt, FX::FXApp *app )
+FX::FXCursor *Factory::create ( Type type, bool createIt )
 {
-  FOX_TOOLS_ERROR_CHECKER ( 0x0 != app );
-
   // Initialize the array pointers.
   const unsigned char *source = 0x0;
   const unsigned char *mask = 0x0;
@@ -52,7 +50,7 @@ FX::FXCursor *Factory::create ( Type type, bool createIt, FX::FXApp *app )
     case Factory::CURSOR_ARROW:
     {
       // Make the new cursor.
-      std::auto_ptr<FX::FXCursor> cursor ( new FX::FXCursor ( app, FX::CURSOR_ARROW ) );
+      std::auto_ptr<FX::FXCursor> cursor ( new FX::FXCursor ( FoxTools::Functions::application(), FX::CURSOR_ARROW ) );
       FOX_TOOLS_ERROR_CHECKER ( 0x0 != cursor.get() );
 
       // Create the cursor if we're supposed to.
@@ -151,7 +149,7 @@ FX::FXCursor *Factory::create ( Type type, bool createIt, FX::FXApp *app )
   FOX_TOOLS_ERROR_CHECKER ( 0x0 != mask );
 
   // Call the other one.
-  return Factory::create ( source, mask, width, height, hotSpotX, hotSpotY, format, createIt, app );
+  return Factory::create ( source, mask, width, height, hotSpotX, hotSpotY, format, createIt );
 }
 
 
@@ -169,10 +167,8 @@ FX::FXCursor *Factory::create (
   int hotSpotX, 
   int hotSpotY, 
   Format format,
-  bool createIt,
-  FX::FXApp *app )
+  bool createIt )
 {
-  FOX_TOOLS_ERROR_CHECKER ( 0x0 != app );
   FOX_TOOLS_ERROR_CHECKER ( 0x0 != source );
   FOX_TOOLS_ERROR_CHECKER ( 0x0 != mask );
   FOX_TOOLS_ERROR_CHECKER ( width > 0 && width <= 32 );
@@ -188,12 +184,12 @@ FX::FXCursor *Factory::create (
   {
   case Factory::CURSOR_XBM:
 
-    cursor = std::auto_ptr<FX::FXCursor> ( new FX::FXCursor ( app, source, mask, width, height, hotSpotX, hotSpotY ) );
+    cursor = std::auto_ptr<FX::FXCursor> ( new FX::FXCursor ( FoxTools::Functions::application(), source, mask, width, height, hotSpotX, hotSpotY ) );
     break;
 
   case Factory::CURSOR_CUR:
 
-    cursor = std::auto_ptr<FX::FXCursor> ( new FX::FXCURCursor ( app, source ) );
+    cursor = std::auto_ptr<FX::FXCursor> ( new FX::FXCURCursor ( FoxTools::Functions::application(), source ) );
     break;
 
   default:

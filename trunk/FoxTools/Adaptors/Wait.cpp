@@ -13,9 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Wait.h"
-
+#include "FoxTools/Adaptors/Wait.h"
 #include "FoxTools/Headers/App.h"
+#include "FoxTools/Functions/App.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Adaptors;
@@ -27,10 +27,9 @@ using namespace FoxTools::Adaptors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Wait::Wait ( FX::FXApp *app ) : _app ( app )
+Wait::Wait()
 {
-  if ( _app )
-    _app->beginWaitCursor();
+  FoxTools::Functions::application()->beginWaitCursor();
 }
 
 
@@ -42,6 +41,5 @@ Wait::Wait ( FX::FXApp *app ) : _app ( app )
 
 Wait::~Wait()
 {
-  if ( _app )
-    _app->endWaitCursor();
+  FoxTools::Functions::application()->endWaitCursor();
 }

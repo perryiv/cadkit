@@ -37,7 +37,7 @@ void FoxTools::Menu::addButton ( FX::FXToolBar *parent,
                                  void *userData )
 {
   // Make the icon.
-  std::auto_ptr<FX::FXIcon> icon ( FoxTools::Icons::Factory::instance()->icon ( iconId, parent->getApp() ) );
+  std::auto_ptr<FX::FXIcon> icon ( FoxTools::Icons::Factory::instance()->icon ( iconId ) );
 
   // Make the button.
   unsigned int layout ( FX::BUTTON_NORMAL | FX::BUTTON_TOOLBAR );
@@ -98,8 +98,8 @@ void FoxTools::Menu::addToggle ( FX::FXToolBar *parent,
                                  void *userData )
 {
   // Make the icon.
-  std::auto_ptr<FX::FXIcon> checkIcon   ( FoxTools::Icons::Factory::instance()->icon ( checkedIconId,   parent->getApp() ) );
-  std::auto_ptr<FX::FXIcon> uncheckIcon ( FoxTools::Icons::Factory::instance()->icon ( uncheckedIconId, parent->getApp() ) );
+  std::auto_ptr<FX::FXIcon> checkIcon   ( FoxTools::Icons::Factory::instance()->icon ( checkedIconId   ) );
+  std::auto_ptr<FX::FXIcon> uncheckIcon ( FoxTools::Icons::Factory::instance()->icon ( uncheckedIconId ) );
 
   // Make the button.
   unsigned int layout ( FX::TOGGLEBUTTON_NORMAL | FX::TOGGLEBUTTON_TOOLBAR | FX::TOGGLEBUTTON_KEEPSTATE );

@@ -11,6 +11,7 @@
 #define __USUL_POLYGONS_TRIANGLES_H__
 
 #include "Usul/Polygons/Polygons.h"
+#include "Usul/Errors/Assert.h"
 
 #if 0
 #include <sstream>
@@ -27,11 +28,12 @@ namespace Polygons {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class Triangle
+template < class VertexType_ > class Triangle
 {
 public:
-  typedef SharedVertex< Triangle > SharedVertex;
-  
+
+  typedef VertexType_ VertexType;
+  typedef SharedVertex < Triangle, VertexType > SharedVertex;
 
   Triangle() : 
   _index( 0 ), 
@@ -41,14 +43,14 @@ public:
   _visited( false ) 
   {  }
 
-  void setVertices( SharedVertex* v1, SharedVertex* v2, SharedVertex* v3 )
+  void setVertices ( SharedVertex* v1, SharedVertex* v2, SharedVertex* v3 )
   {
     _v1 = v1;
     _v2 = v2;
     _v3 = v3;
   }
 
-  void append( SharedVertex *v )
+  void append ( SharedVertex *v )
   {
     if( _v1 == 0x0 )
       _v1 = v;
@@ -58,13 +60,13 @@ public:
       _v3 = v;
   }
 
-  SharedVertex * vertexOne()    { return _v1; }
-  SharedVertex * vertexTwo()    { return _v2; }
-  SharedVertex * vertexThree()  { return _v3; }
+  SharedVertex * vertex1() { return _v1; }
+  SharedVertex * vertex2() { return _v2; }
+  SharedVertex * vertex3() { return _v3; }
 
-  const SharedVertex * vertexOne()   const  { return _v1; }
-  const SharedVertex * vertexTwo()   const  { return _v2; }
-  const SharedVertex * vertexThree() const  { return _v3; }
+  const SharedVertex * vertex1() const { return _v1; }
+  const SharedVertex * vertex2() const { return _v2; }
+  const SharedVertex * vertex3() const { return _v3; }
   
   //Has this triangle been visited?
   bool visited () const   { return _visited; }
@@ -80,9 +82,9 @@ public:
     typedef std::list< Triangle* > Triangles;
     Triangles triangles;
 
-    triangles.splice( triangles.begin(), _v1->getPolygons() );
-    triangles.splice( triangles.end(),   _v2->getPolygons() );
-    triangles.splice( triangles.end(),   _v3->getPolygons() );
+    triangles.splice( triangles.begin(), _v1->polygons() );
+    triangles.splice( triangles.end(),   _v2->polygons() );
+    triangles.splice( triangles.end(),   _v3->polygons() );
 
     triangles.sort ( PolyLess< Triangle >() );
 
@@ -100,28 +102,26 @@ public:
     return triangles;
   }
 
+  VertexType normal() const
+  {
+    USUL_ASSERT ( _v1 && _v2 && _v3 );
+
+    const VertexType &v1 ( _v1->value() );
+    const VertexType &v2 ( _v2->value() );
+    const VertexType &v3 ( _v3->value() );
+
+    const VertexType v12 ( v2 - v1 );
+    const VertexType v13 ( v3 - v1 );
+
+    return ( v12 ^ v13 );
+  }
+
 private:
   unsigned int _index;
   SharedVertex * _v1;
   SharedVertex * _v2;
   SharedVertex * _v3;
   bool _visited;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Policy class to create triangles
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct TriangleCreator
-{
-  template < class VertexSequence >
-  void operator() ( VertexSequence& vertices, unsigned int number )
-  {
-  }
-
 };
 
 
@@ -158,9 +158,9 @@ struct TriangleFunctor
     //If we have a triangle...
     if ( _triangle )
     {
-      SharedVertex* v1 ( _triangle->vertexOne() );
-      SharedVertex* v2 ( _triangle->vertexTwo() );
-      SharedVertex* v3 ( _triangle->vertexThree() );
+      SharedVertex* v1 ( _triangle->vertex1() );
+      SharedVertex* v2 ( _triangle->vertex2() );
+      SharedVertex* v3 ( _triangle->vertex3() );
 
       //Have we visited v1 yet?
       if( !v1->visited() )
@@ -206,9 +206,9 @@ struct TriangleFunctor
 
   bool operator= ( const TriangleFunctor& that )
   {
-    this->_answer = that._answer;
-    this->_todoStack = that._todoStack;
-    this->_triangle = that._triangle;
+    this->_answer       = that._answer;
+    this->_todoStack    = that._todoStack;
+    this->_triangle     = that._triangle;
     this->_sharedVertex = that._sharedVertex;
     return true;
   }
@@ -228,49 +228,18 @@ private:
 
 struct TriangleTest
 {
-#if 0
-  bool operator() ( const VertexSequence &vertices, unsigned int p1, unsigned int p2 ) const
-  {
-    typedef typename VertexSequence::value_type Vertex;
-
-    unsigned int count ( 0 );
-
-    const Vertex &polyOneP1 = vertices.at( p1 );
-    const Vertex &polyOneP2 = vertices.at( p1 + 1 );
-    const Vertex &polyOneP3 = vertices.at( p1 + 2 );
-
-    const Vertex &polyTwoP1 = vertices.at( p2 );
-    const Vertex &polyTwoP2 = vertices.at( p2 + 1 );
-    const Vertex &polyTwoP3 = vertices.at( p2 + 2 );
-
-    if( polyOneP1 != polyTwoP1 && polyOneP1 != polyTwoP2 && polyOneP1 != polyTwoP3 )
-      ++count;
-    if( polyOneP2 != polyTwoP1 && polyOneP2 != polyTwoP2 && polyOneP2 != polyTwoP3 )
-      ++count;
-    if( count == 2 )
-      return false;
-    if( count == 0 )
-      return true;
-    if( polyOneP3 != polyTwoP1 && polyOneP3 != polyTwoP2 && polyOneP3 != polyTwoP3 )
-      ++count;
-    if( count >= 2 )
-      return false;
-    return true;
-  }
-#endif
-
-  bool operator () ( const Triangle* t1, const Triangle *t2 ) const
+  template < class TriangleType > bool operator () ( const TriangleType &t1, const TriangleType &t2 ) const
   {
     typedef Triangle::SharedVertex SharedVertex;
     unsigned int count ( 0 );
 
-    const SharedVertex* t1v1 ( t1->vertexOne() );
-    const SharedVertex* t1v2 ( t1->vertexTwo() );
-    const SharedVertex* t1v3 ( t1->vertexThree() );
+    const SharedVertex* t1v1 ( t1.vertex1() );
+    const SharedVertex* t1v2 ( t1.vertex2() );
+    const SharedVertex* t1v3 ( t1.vertex3() );
 
-    const SharedVertex* t2v1 ( t2->vertexOne() );
-    const SharedVertex* t2v2 ( t2->vertexTwo() );
-    const SharedVertex* t2v3 ( t2->vertexThree() );
+    const SharedVertex* t2v1 ( t2.vertex1() );
+    const SharedVertex* t2v2 ( t2.vertex2() );
+    const SharedVertex* t2v3 ( t2.vertex3() );
 
     if( t1v1 != t2v1 && t1v1 != t2v2 && t1v1 != t2v3 )
       ++count;
@@ -288,9 +257,9 @@ struct TriangleTest
   }
 };
 
-} //namespace Polygons
 
-} //namespace Usul
+} // namespace Polygons
+} // namespace Usul
 
 
 #endif // __USUL_POLYGONS_TRIANGLES_H__

@@ -18,7 +18,7 @@
 
 #include "FoxTools/Export/Export.h"
 
-namespace FX { class FXCursor; class FXApp; };
+namespace FX { class FXCursor; };
 
 namespace FoxTools {
 namespace Cursors {
@@ -47,9 +47,7 @@ public:
   };
 
   // Create a standard cursor.
-  static FX::FXCursor *       create ( Type type, 
-                                       bool createIt,
-                                       FX::FXApp *app );
+  static FX::FXCursor *       create ( Type type, bool createIt );
 
   // Create a cursor from the given source and mask arrays.
   static FX::FXCursor *       create ( const unsigned char *source, 
@@ -59,8 +57,7 @@ public:
                                        int hotSpotX, 
                                        int hotSpotY, 
                                        Format arrayFormat,
-                                       bool createIt,
-                                       FX::FXApp *app );
+                                       bool createIt );
 };
 
 

@@ -17,10 +17,11 @@
 #define _USUL_ERROR_STACK_H_
 
 #include "Usul/Export/Export.h"
+#include "Usul/Exceptions/Canceled.h"
 
 #include <stack>
 #include <string>
-#include <sstream>
+#include <exception>
 
 namespace Usul { namespace Threads { class Mutex; }; };
 
@@ -138,6 +139,9 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 #define USUL_EXCEPTION_SAFE_END(error_id)\
+}\
+catch ( const Usul::Exceptions::Canceled & )\
+{\
 }\
 catch ( const std::exception &e )\
 {\

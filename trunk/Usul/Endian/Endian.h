@@ -38,19 +38,6 @@ namespace Endian {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enumerations defining the two types of endian order implemented.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-enum Order
-{
-  LITTLE, // PC
-  BIG     // Sun, SGI, HP, etc.
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Compile-time detection of byte order. See boost/detail/limits.hpp and 
 //  http://www.unixpapa.com/incnote/byteorder.html
 //
@@ -81,7 +68,7 @@ enum Order
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the machine is big endian.
+//  Run-time checking for big endian.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -94,7 +81,7 @@ inline bool isBig()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the machine is little endian.
+//  Run-time checking for little endian.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -239,44 +226,6 @@ template < class Type > inline void reverseBytes ( Type &n )
 {
   typedef Usul::Endian::Detail::ReverseBytes < sizeof ( Type ) > ReverseBytes;
   ReverseBytes () ( n );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reverse all the bits in a 32 bit unsigned integer. This is normally 
-//  not used in the big-endian-little-endian swap. That usually just 
-//  deals with whole bytes. 
-//  Snagged from: http://www.sjbaker.org/steve/software/cute_code.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void reverseBits ( Usul::Types::Uint32 &n )
-{
-  n = ((n >>  1) & 0x55555555) | ((n <<  1) & 0xaaaaaaaa);
-  n = ((n >>  2) & 0x33333333) | ((n <<  2) & 0xcccccccc);
-  n = ((n >>  4) & 0x0f0f0f0f) | ((n <<  4) & 0xf0f0f0f0);
-  n = ((n >>  8) & 0x00ff00ff) | ((n <<  8) & 0xff00ff00);
-  n = ((n >> 16) & 0x0000ffff) | ((n << 16) & 0xffff0000);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reverse all the bits in a 32 bit signed integer. This is normally 
-//  not used in the big-endian-little-endian swap. That usually just 
-//  deals with whole bytes.
-//  Snagged from: http://www.sjbaker.org/steve/software/cute_code.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void reverseBits ( Usul::Types::Int32 &n )
-{
-  n = ((n >>  1) & 0x55555555) | ((n <<  1) & 0xaaaaaaaa);
-  n = ((n >>  2) & 0x33333333) | ((n <<  2) & 0xcccccccc);
-  n = ((n >>  4) & 0x0f0f0f0f) | ((n <<  4) & 0xf0f0f0f0);
-  n = ((n >>  8) & 0x00ff00ff) | ((n <<  8) & 0xff00ff00);
-  n = ((n >> 16) & 0x0000ffff) | ((n << 16) & 0xffff0000);
 }
 
 

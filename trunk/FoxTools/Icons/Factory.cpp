@@ -15,6 +15,7 @@
 
 #include "FoxTools/Icons/Factory.h"
 #include "FoxTools/Icons/Images.h"
+#include "FoxTools/Functions/App.h"
 #include "FoxTools/Headers/BMPIcon.h"
 #include "FoxTools/Headers/GIFIcon.h"
 #include "FoxTools/Headers/PNGIcon.h"
@@ -184,7 +185,7 @@ void Factory::data ( unsigned int id, const Data &d )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXIcon *Factory::icon ( unsigned int id, FX::FXApp *app ) const
+FX::FXIcon *Factory::icon ( unsigned int id ) const
 {
   // Get the icon data.
   const Factory::Data &data = this->data ( id );
@@ -192,6 +193,7 @@ FX::FXIcon *Factory::icon ( unsigned int id, FX::FXApp *app ) const
   const Factory::Array &array = data.second;
 
   // Make the icon.
+  FX::FXApp *app ( FoxTools::Functions::application() );
   FX::FXIcon *icon = 0x0;
   if ( FXMETACLASS ( FX::FXGIFIcon ) == type )
     return new FX::FXGIFIcon ( app, &array[0] );

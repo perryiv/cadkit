@@ -19,10 +19,13 @@
 #include "osg/Geometry"
 
 #include "OsgTools/Visitor.h"
+#include "OsgTools/Statistics.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
+#include "Usul/File/Contents.h"
+#include "Usul/IO/Writer.h"
 
 #include <sstream>
 #include <iostream>
@@ -33,9 +36,8 @@
 #include "Functors.h"
 #include "PrintVisitor.h"
 
-#ifdef _DEBUG
-#define USE_FAST_PATH 1// Need per-vertex normals for osg::Geometry's "fast path".
-#endif
+#define USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -217,47 +219,21 @@ void ReaderWriterSTL::_init()
 
 bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 {
+  // Get the size of the file.
+  unsigned int size ( Usul::File::size ( filename ) );
+
   // Open the file in binary.
-  std::ifstream in ( filename.c_str(), std::ios::binary );
-  if ( !in.is_open() )
-    throw std::runtime_error ( "Error 3535270798: Failed to open file: " + filename );
+  std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
 
-  // Skip the header.
-  in.seekg ( 80 );
+  // Move the cursor so that it's almost to the end.
+  in.seekg ( ( size > 100 ) ? size - 100 : size * 0.9 );
 
-  // Default locale.
-  std::locale loc;
+  // Get the remainder of the file as a string.
+  std::string file;
+  Usul::File::contents ( in, file );
 
-  // Keep count.
-  unsigned long count ( 0 );
-
-  // Loop through the file.
-  while ( EOF != in.peek() )
-  {
-    // See if the character is not ascii.
-    const char c ( in.get() );
-    if ( false == std::isalnum<char> ( c, loc ) &&
-         false == std::isdigit<char> ( c, loc ) &&
-         false == std::isspace<char> ( c, loc ) &&
-         '.' != c &&
-         '-' != c &&
-         '+' != c &&
-         ':' != c &&
-         '\\' != c &&
-         '/' != c &&
-         'E' != c &&
-         'e' != c )
-    {
-      // Binary character found.
-      return false;
-    }
-
-    // Count the characters processed (for debugging).
-    ++count;
-  }
-
-  // If we get this far then we did not find any binary characters.
-  return true;
+  // Can we find the word "endsolid"?
+  return ( std::string::npos != file.find ( "endsolid" ) );
 }
 
 
@@ -267,7 +243,7 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseBinaryFile ( std::ifstream &in, const Update &progress )
+void ReaderWriterSTL::_parseBinaryFile ( std::istream &in, const Update &progress )
 {
   // Skip header.
   in.seekg ( 80 );
@@ -330,7 +306,7 @@ void ReaderWriterSTL::_parseBinaryFile ( std::ifstream &in, const Update &progre
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseAsciiFile ( std::ifstream &in, unsigned int filesize, const Update &progress )
+void ReaderWriterSTL::_parseAsciiFile ( std::istream &in, unsigned int filesize, const Update &progress )
 {
   unsigned int bytesReadSoFar ( 0 );
   const unsigned int size ( 512 );
@@ -469,7 +445,7 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode ( const osg::Node& node,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write an ascii file
+//  Write an ascii file. See: http://www.ennex.com/~fabbers/StL.asp
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -478,7 +454,7 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& no
   // Make a temporary file name.
   Usul::File::Temp file ( Usul::File::Temp::ASCII );
 
-  file.stream() << "solid " << name << std::endl;
+  file.stream() << "solid " << node.getName() << std::endl;
 
   // Functor to write out facets.
   AsciiWriter writer ( file.stream() );
@@ -501,7 +477,7 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& no
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write an binary file
+//  Write an binary file. See: http://www.ennex.com/~fabbers/StL.asp
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -510,31 +486,24 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& no
   // Make a temporary file name.
   Usul::File::Temp file ( Usul::File::Temp::BINARY );
 
-  // For the header and the number of facets.
-  char buffer[512];
-  const unsigned int bufSize ( 84 );
-  ::memset ( buffer, 0, bufSize );
-  
-  // Create a header
-  std::string header = "solid " + name;
-  ::memcpy( buffer, header.c_str(), header.length() );
+  // Count number of facets.
+  OsgTools::Statistics sceneStats;
+  sceneStats.greedy ( true );
+  sceneStats.accumulate ( &node );
+  unsigned int numFacets ( sceneStats.count ( OsgTools::Statistics::TRIANGLES ) );
 
-  // Visitor to count number of facets
-  FacetCounter facetCounter;
-  osg::ref_ptr<osg::NodeVisitor> facetVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( &facetCounter, &FacetCounter::countFacets ) ) );
-  osg::Node &n = const_cast< osg::Node& > ( node );
-  n.accept ( *facetVisitor );
-
-  // Add number of facets to header
-  unsigned int numFacets = facetCounter.getNumFacets();
-  ::memcpy ( buffer + 80, &numFacets, 4 );
-  file.stream().write( buffer, bufSize );
+  // Create a header.
+  std::string header ( "solid " + node.getName() );
+  header.resize ( 80, ' ' );
+  file.stream().write ( header.c_str(), header.length() );
+  Usul::IO::WriteLittleEndian::write ( file.stream(), numFacets );
 
   // Functor to write out facets
   BinaryWriter writer ( file.stream() );
 
   // Visitor to write out file
   osg::ref_ptr<osg::NodeVisitor> printVisitor ( new PrintVisitor<BinaryWriter> ( writer ) );
+  osg::Node &n = const_cast < osg::Node& > ( node );
   n.accept ( *printVisitor );
 
   // If we get this far then rename the temporary file.

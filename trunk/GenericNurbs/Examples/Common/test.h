@@ -342,7 +342,7 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
   KnotVectorBuilder::build ( params, order, knots );
 
   // Interpolate.
-  GN::Interpolate::global ( s, order, params, knots, points );
+  GN::Interpolate::global ( order, params, knots, points, s );
 
   // Check.
   ::confirm ( s );

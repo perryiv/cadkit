@@ -341,33 +341,6 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   ///
-  /// Resize the surface.
-  ///
-  /////////////////////////////////////////////////////////////////////////////
-
-  void resize ( SizeType dimension, 
-                SizeType orderU, 
-                SizeType orderV, 
-                SizeType numCtrPtsU, 
-                SizeType numCtrPtsV, 
-                bool rational )
-  {
-    UIntContainer o;
-    o.resize ( 2 );
-    o[0] = orderU;
-    o[1] = orderV;
-
-    UIntContainer n;
-    n.resize ( 2 );
-    n[0] = numCtrPtsU;
-    n[1] = numCtrPtsV;
-
-    BaseClass::resize ( dimension, o, n, rational );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  ///
   /// Set this surface. This is here for type safety.
   ///
   /////////////////////////////////////////////////////////////////////////////
@@ -414,6 +387,22 @@ public:
   template < class Predicate_ > bool equal ( const ThisType &s, const Predicate_ &pred ) const
   {
     return BaseClass::equal ( c, pred );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Return a reference to this surface as a spline.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  SplineClass &spline()
+  {
+    return *this;
+  }
+  const SplineClass &spline() const
+  {
+    return *this;
   }
 };
 

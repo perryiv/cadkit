@@ -1,30 +1,29 @@
 PfScene (Database)
-	pfDCS (Assembly)
-	pfDCS (Assembly)
-		pfDCS (Part)
-		pfDCS (Assembly)
-		pfDCS (Part)
-		pfDCS (Instance)
-		pfDCS (Instance)
-		pfDCS (Part)
-			pfLOD
-			pfLOD
-				pfGeoSet
-					pfGeoState
-						pfMaterial
-						pfTexture
-					TriStrip
-						Vertices
-						Normals
-						Colors (optional)
-						Texture Coordinates (optional)
-					TriStrip
-					TriStrip
-				pfGeoSet
-				pfGeoSet
-			pfLOD
-			pfLOD
-			pfLOD
-		pfDCS (Part)
-	pfDCS (Part)
-	pfDCS (Assembly)
+  pfDCS (Assembly)
+  pfDCS (Assembly)
+    pfDCS (Part)
+    pfDCS (Assembly)
+    pfDCS (Part)
+    pfDCS (Instance)
+    pfDCS (Instance)
+    pfDCS (Part)
+      pfLOD
+      pfLOD
+        pfGeode (just one)
+          pfGeoSet (just one)
+            pfGeoState
+              pfMaterial
+              pfTexture
+            TriStrip (one for each set of each Shape).
+              Vertices
+              Normals
+              Colors (optional)
+              Texture Coordinates (optional)
+            TriStrip
+            TriStrip
+      pfLOD
+      pfLOD
+      pfLOD
+    pfDCS (Part)
+  pfDCS (Part)
+  pfDCS (Assembly)

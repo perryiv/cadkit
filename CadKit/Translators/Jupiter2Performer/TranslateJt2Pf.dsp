@@ -131,5 +131,69 @@ SOURCE=.\TrJt2PfApi.h
 SOURCE=.\TrJt2PfDll.cpp
 # End Source File
 # End Group
+# Begin Group "Performer"
+
+# PROP Default_Filter ""
+# Begin Group "pr"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Performer\pr\pfGeoSet.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pr\pfGeoState.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pr\pfLinMath.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pr\pfMemory.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pr\pfObject.h
+# End Source File
+# End Group
+# Begin Group "pf"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Performer\pf\pfDCS.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pf\pfGroup.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pf\pfLOD.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pf\pfNode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pf\pfSCS.h
+# End Source File
+# End Group
+# End Group
+# Begin Group "Notes"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\jupiter_database.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\performer_scene.txt
+# End Source File
+# End Group
 # End Target
 # End Project

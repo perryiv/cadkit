@@ -423,6 +423,24 @@ bool DbJtTraverser::getType ( EntityHandle entity, DbJtTraverser::EntityType &ty
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+std::string DbJtTraverser::getName ( EntityHandle entity ) const
+{
+  SL_PRINT3 ( "In DbJtTraverser::getName(), this = %X, entity = %X\n", this, entity );
+  SL_ASSERT ( entity );
+
+  // Call the other one.
+  std::string name;
+  SL_VERIFY ( this->getName ( entity, name ) );
+  return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the given entity's name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool DbJtTraverser::getName ( EntityHandle entity, std::string &name ) const
 {
   SL_PRINT3 ( "In DbJtTraverser::getName(), this = %X, entity = %X\n", this, entity );

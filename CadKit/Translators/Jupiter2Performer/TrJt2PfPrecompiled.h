@@ -55,8 +55,12 @@
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Database/Jupiter/DbJtClientHeaders.h"
-# include "Database/Xml/DbXmlClientHeaders.h"
-# include <fstream>
+# include "Performer/pf/pfDCS.h"
+# include "Performer/pf/pfLOD.h"
+# include "Performer/pr/pfGeoSet.h"
+# include "Performer/pr/pfGeoState.h"
+# include "Performer/pr/pfLinMath.h"
+# include <fstream> 
 #endif
 
 #endif // _CADKIT_JUPITER_TO_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

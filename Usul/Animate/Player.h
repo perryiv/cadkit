@@ -16,9 +16,10 @@ namespace Usul
     template < class Sequence, class Callback > class Player
     {
     public:
-      typedef typename Sequence::value_type Frame;
-      typedef typename Sequence::iterator iterator;
       typedef Sequence Frames;
+      typedef typename Frames::value_type Frame;
+      typedef typename Frames::size_type size_type;
+      typedef typename Frames::iterator iterator;
 
       Player ( Callback *cb ) : _callback (cb), _stop(false), _started(false) {}
 

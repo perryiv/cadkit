@@ -388,6 +388,9 @@
 					RelativePath="Math\Matrix44.h">
 				</File>
 				<File
+					RelativePath=".\Math\Transpose.h">
+				</File>
+				<File
 					RelativePath="Math\Vector2.h">
 				</File>
 				<File

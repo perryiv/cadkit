@@ -25,7 +25,7 @@ namespace Errors {
 
 struct AssertPolicy
 {
-  AssertPolicy ( const char *, unsigned int, bool state )
+  AssertPolicy ( const char *filename, unsigned int line, bool state )
   {
     USUL_ASSERT ( state );
   }
@@ -37,7 +37,7 @@ struct AssertPolicy
   {
     USUL_ASSERT ( state );
   }
-  template < class Arg_ > AssertPolicy ( const char *, unsigned int, bool state, const Arg_ & )
+  template < class Arg_ > AssertPolicy ( const char *filename, unsigned int line, bool state, const Arg_ & )
   {
     USUL_ASSERT ( state );
   }

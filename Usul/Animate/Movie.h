@@ -17,10 +17,21 @@ namespace Usul
     template < class Player > class Movie
     {
     public:
-      typedef typename Player::Frames Sequence;
+      typedef typename Player::Frames Frames;
+      typedef typename Frames::size_type size_type;
+      typedef typename Frames::iterator iterator;
+      typedef typename Frames::const_iterator const_iterator;
       typedef typename Player::Frame Frame;
 
       Movie () : _frames() { }
+
+      bool empty() const { return _frames.empty(); }
+
+      iterator        begin()       { return _frames.begin(); }
+      const_iterator  begin() const { return _frames.begin(); }
+
+      iterator        end()       { return _frames.end(); }
+      const_iterator  end() const { return _frames.end(); }
 
       void setPlayer ( Player *player ) { _player = player; }
 
@@ -36,7 +47,7 @@ namespace Usul
 
       void clear () { _frames.clear(); }
 
-      unsigned int size() { return _frames.size(); }
+      size_type size() const { return _frames.size(); }
 
       Frame remove ( unsigned int index )
       {
@@ -44,14 +55,14 @@ namespace Usul
         {
           //TODO throw an exception
         }
-        for( Sequence::iterator i = _frames.begin(), unsigned int j = 0; j != index; ++i, ++j);
+        for( Frames::iterator i = _frames.begin(), unsigned int j = 0; j != index; ++i, ++j);
         Frame frame = *i;
         _frames.erase(i);
         return frame;
       }
 
     private:
-      Sequence _frames;
+      Frames _frames;
       Player *_player;
     }; // Movie
 

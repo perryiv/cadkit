@@ -16,8 +16,16 @@
 #include "osgDB/FileNameUtils"
 #include "osgDB/FileUtils"
 
+#include "osg/ref_ptr"
+#include "osg/Geode"
+#include "osg/Geometry"
 
-ReaderWriterSTL::ReaderWriterSTL()
+#include <sstream>
+
+
+ReaderWriterSTL::ReaderWriterSTL() :
+_facets(),
+_currentFacet(NULL)
 {
 }
 
@@ -64,15 +72,80 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 
 osg::Group * ReaderWriterSTL::_build() const
 {
-  return NULL;
+  // The scene root.
+  osg::ref_ptr<osg::Group> root ( new osg::Group );
+
+  for(unsigned int i = 0; i < _facets.size(); ++i)
+  {
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    osg::ref_ptr< osg::Geometry > geometry ( _facets[i]->getGeometry() );
+    geode->addDrawable ( geometry.get() );
+    root->addChild ( geode.get() );
+  }
+
+  return root.release();
 }
 
 void  ReaderWriterSTL::_init()
 {
+  for(unsigned int i = 0; i < _facets.size(); ++i)
+    delete _facets[i];
+  _facets.clear();
+  _currentFacet = NULL;
 }
 
+//TODO detect if stl is binary or ascii format
 void ReaderWriterSTL::_parse ( std::ifstream &in )
 {
+  const unsigned int size ( 512 );
+  char buf[size];
+
+  while( !in.eof() )
+  {
+    in.getline(buf, size - 1);
+
+    std::istringstream in ( buf );
+
+    std::string type;
+    in >> type;
+
+    if(type == "solid")
+    {
+    }
+    else if (type == "facet")
+    {
+      _currentFacet = new Facet();
+      std::string normal;
+      in >> normal;
+      float n1, n2, n3;
+      in >> n1;
+      in >> n2;
+      in >> n3;
+      _currentFacet->setNormal( osg::Vec3(n1, n2, n3) ); 
+    }
+    else if (type == "outer")
+    {
+    }
+    else if (type == "vertex")
+    {
+      float n1, n2, n3;
+      in >> n1;
+      in >> n2;
+      in >> n3;
+      _currentFacet->setVector( osg::Vec3(n1, n2, n3) );
+    }
+    else if (type == "endloop")
+    {
+    }
+    else if (type == "endfacet")
+    {
+      _facets.push_back(_currentFacet);
+      _currentFacet = NULL;
+    }
+    else if (type == "endsolid")
+    {
+    }
+  }
 }
 
 ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &file, const Options *options )

@@ -3,19 +3,19 @@ Jupiter Database
   Assembly
     Material (optional)
     Transform (optional)
-    Texture (optional)
+    Texture Image (optional)
     Part
   Assembly
     Part
     Instance
       Material (optional)
-      Transformation (optional)
-      Texture (optional)
+      Transform (optional)
+      Texture Image (optional)
       Pointer to a Part or Assembly (just one)
     Instance
     Part
       Material (optional)
-      Transformation (optional)
+      Transform (optional)
       Texture (optional)
       LOD
       LOD

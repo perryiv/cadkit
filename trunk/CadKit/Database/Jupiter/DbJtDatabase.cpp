@@ -26,8 +26,7 @@
 #include "Interfaces/IErrorNotify.h"
 #include "Interfaces/IWarningNotify.h"
 #include "Interfaces/IProgressNotify.h"
-#include "Interfaces/IAssemblyNotify.h"
-#include "Interfaces/IGroupNotify.h"
+#include "Interfaces/IEntityNotify.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -479,36 +478,22 @@ bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *enti
   if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", level, entity->name() ) ) )
     return false;
 
-  // Needed below.
-  SlRefPtr<CadKit::IUnknown> thisUnknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
+  // Get the controller's error handeling interface.
+  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
 
-  // See if the target has the assembly interface.
+  // Try this interface.
   SlQueryPtr<IAssemblyNotify> assembly ( IAssemblyNotify::IID, _target );
   if ( assembly.isValid() )
-  {
-    // Let the target know we have a new assembly.
-    if ( false == assembly->startAssembly ( (AssemblyHandle) entity, thisUnknown ) )
-      return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d\n\tCall to IAssemblyNotify::startAssembly() returned false", entity->name(), level ), 0 );
+    return CadKit::handleEntity ( assembly, (AssemblyHandle) entity, controller );
 
-    // It worked.
-    return true;
-  }
-
-  // Try a group interface next.
+  // Try this interface.
   SlQueryPtr<IGroupNotify> group ( IGroupNotify::IID, _target );
   if ( group.isValid() )
-  {
-    // Let the target know we have a new group.
-    if ( false == group->startGroup ( thisUnknown ) )
-      return ERROR ( FORMAT ( "Failed to start group '%s' at level %d\n\tCall to IGroupNotify::startGroup() returned false", entity->name(), level ), 0 );
-
-    // It worked.
-    return true;
-  }
+    return CadKit::handleEntity ( group, (GroupHandle) entity, controller );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), CadKit::NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), NO_INTERFACE );
 }
 
 

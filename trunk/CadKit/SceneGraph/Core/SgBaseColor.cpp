@@ -1,37 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  BSD License
-//  http://www.opensource.org/licenses/bsd-license.html
-//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//
-//  Redistribution and use in source and binary forms, with or without 
-//  modification, are permitted provided that the following conditions are met:
-//
-//  - Redistributions of source code must retain the above copyright notice, 
-//    this list of conditions and the following disclaimer. 
-//
-//  - Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
-//
-//  - Neither the name of the CAD Toolkit nor the names of its contributors may
-//    be used to endorse or promote products derived from this software without
-//    specific prior written permission. 
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//  POSSIBILITY OF SUCH DAMAGE.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,13 +16,11 @@
 #include "SgPrecompiled.h"
 #include "SgBaseColor.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlPrint.h"
-#endif
+#include "Standard/SlPrint.h"
 
 using namespace CadKit;
 
-SG_IMPLEMENT_DYNAMIC_NODE(SgBaseColor,SgAttribute);
+SG_IMPLEMENT_DYNAMIC_NODE ( SgBaseColor, SgAttribute );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,7 +29,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgBaseColor,SgAttribute);
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgBaseColor::SgBaseColor() : SgAttribute(), rgba ( 1.0f, 1.0f, 1.0f, 1.0f )
+SgBaseColor::SgBaseColor() : SgAttribute(), _color ( 1.0f, 1.0f, 1.0f, 1.0f )
 {
   SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
 }
@@ -67,26 +37,12 @@ SgBaseColor::SgBaseColor() : SgAttribute(), rgba ( 1.0f, 1.0f, 1.0f, 1.0f )
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-SgBaseColor::SgBaseColor ( const float &red, const float &green, const float &blue, const float &alpha ) : 
-  SgAttribute(), 
-  rgba ( red, green, blue, alpha )
-{
-  SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
+//  Copy constructor.
 //
 /////////////////////////////////////////////////////////////////////////////
 
 SgBaseColor::SgBaseColor ( const SgBaseColor &baseColor ) : SgAttribute(),
-  rgba ( baseColor.rgba )
+  _color ( baseColor._color )
 {
   SL_PRINT2 ( "SgBaseColor::SgBaseColor(), this = %X\n", this );
 }
@@ -101,18 +57,6 @@ SgBaseColor::SgBaseColor ( const SgBaseColor &baseColor ) : SgAttribute(),
 SgBaseColor::~SgBaseColor()
 {
   SL_PRINT2 ( "SgBaseColor::~SgBaseColor(), this = %X\n", this );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the baseColor value.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgBaseColor::setValue ( const SgBaseColor &baseColor )
-{
-  rgba.setValue ( baseColor.rgba );
 }
 
 
@@ -134,5 +78,5 @@ bool SgBaseColor::isEqualVisibleProperties ( const SgNode &node ) const
   SgBaseColor &c = (SgBaseColor &) node;
 
   // Are they the same?
-  return ( rgba == c.rgba && SgBaseColor::isEqualVisibleProperties ( node ) );
+  return ( _color == c._color && SgBaseColor::isEqualVisibleProperties ( node ) );
 }

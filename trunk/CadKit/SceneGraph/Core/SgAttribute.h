@@ -18,6 +18,7 @@
 
 #include "SgNode.h"
 
+
 namespace CadKit
 {
 class SG_API SgAttribute : public SgNode
@@ -28,8 +29,9 @@ protected:
   SgAttribute ( const SgAttribute &attribute );
   virtual ~SgAttribute();
 
-  SG_DECLARE_NODE(SgAttribute,0x00001000);
+  SG_DECLARE_NODE ( SgAttribute, 1033858465 );
 };
+
 };
 
 #endif

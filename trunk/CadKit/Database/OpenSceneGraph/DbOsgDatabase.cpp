@@ -47,6 +47,9 @@
 #define WARNING  this->_notifyWarning
 #define FORMAT   CadKit::getString
 
+#define LAST_LOD_RANGE            1e7
+#define MAX_LOD_DISTANCE_FACTOR   20
+
 using namespace CadKit;
 
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbOsgDatabase, DbBaseTarget );
@@ -171,19 +174,19 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Create a group.
-  SlRefPtr<osg::Group> group = CadKit::createGroup ( assembly, query.getValue() );
-  if ( group.isNull() )
-    return ERROR ( "Failed to create osg::Group for assembly.", NO_INTERFACE );
+  // Create a group (really a MatrixTransform).
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue() );
+  if ( mt.isNull() )
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", NO_INTERFACE );
 
   // Add this group to the scene.
-  _groupStack->top()->addChild ( group );
+  _groupStack->top()->addChild ( mt );
 
   // Put the group into our map.
-  (*_groupMap)[assembly] = group;
+  (*_groupMap)[assembly] = mt;
 
   // Make it the new current group.
-  this->_pushGroup ( group );
+  this->_pushGroup ( mt );
 
   // It worked.
   return true;
@@ -237,19 +240,27 @@ bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
   if ( clientData.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Create a group.
-  SlRefPtr<osg::Group> group = CadKit::createGroup ( part, query.getValue() );
-  if ( group.isNull() )
-    return ERROR ( "Failed to create osg::Group for part.", NO_INTERFACE );
+  // Create a group (really a MatrixTransform).
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( part, query.getValue() );
+  if ( mt.isNull() )
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", NO_INTERFACE );
 
-  // Add this group to the scene.
-  _groupStack->top()->addChild ( group );
+  // Create a LOD group.
+  SlRefPtr<osg::LOD> lod = new osg::LOD;
+  if ( lod.isNull() )
+    return ERROR ( "Failed to create osg::LOD for given lod handle.", FAILED );
 
-  // Put the group into our map.
-  (*_groupMap)[part] = group;
+  // Add this MatrixTransform to the scene.
+  _groupStack->top()->addChild ( mt );
+
+  // Add this LOD to the MatrixTransform.
+  mt->addChild ( lod );
+
+  // Put the MatrixTransform into our map.
+  (*_groupMap)[part] = mt;
 
   // Set the client data for this part.
-  clientData->setClientData ( part, group.getValue() );
+  clientData->setClientData ( part, lod.getValue() );
 
   // It worked.
   return true;
@@ -268,7 +279,53 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
 
-  // TODO, set the LOD's ranges.
+  // Get the interface we need from the caller.
+  SlQueryPtr<IPartClientData> partClientData ( caller );
+  if ( partClientData.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+
+  // Get the osg::LOD associated with the lod's parent part.
+  SlRefPtr<osg::Object> object = (osg::Object *) ( partClientData->getClientData ( part ) );
+  SlRefPtr<osg::LOD> lod = dynamic_cast<osg::LOD *> ( object.getValue() );
+  if ( lod.isNull() )
+    return ERROR ( "Failed to find lod group to set ranges for.", FAILED );
+
+  // If there are no children then just return.
+  if ( 0 == lod->getNumChildren() )
+  {
+    SL_ASSERT ( 0 ); // Should this have happened?
+    return true;
+  }
+
+  // Get the bounding sphere for the first child.
+  const osg::BoundingSphere &boundingSphere = lod->getChild ( 0 )->getBound();
+
+  // The maximum distance for the lod ranges.
+  float maxDist = MAX_LOD_DISTANCE_FACTOR * boundingSphere.radius();
+
+  // Set the first range.
+  lod->setRange ( 0, 0.0f );
+
+  // Loop through all of the children, starting at the second one.
+  unsigned int numChildren = lod->getNumChildren();
+  for ( unsigned int i = 1; i < numChildren; ++i )
+  {
+    // Get the i'th child node.
+    osg::Node *child = lod->getChild ( i );
+    SL_ASSERT ( child );
+
+    // Set the center of this lod to be the center of the bounding sphere.
+    lod->setCenter ( child->getBound().center() );
+
+    // Set the range.
+    float dist = ( ( (float) i ) * maxDist ) / ( (float) ( numChildren - 1 ) );
+    lod->setRange ( i, dist );
+  }
+
+  // There should be one more range value than the number of children.
+  lod->setRange ( numChildren, LAST_LOD_RANGE );
+
+  // It worked.
   return true;
 }
 
@@ -290,28 +347,56 @@ bool DbOsgDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Create a group.
-  SlRefPtr<osg::Group> group = CadKit::createGroup ( instance, query.getValue() );
-  if ( group.isNull() )
-    return ERROR ( "Failed to create osg::Group for instance.", FAILED );
+  // Create a group (really a MatrixTransform).
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( instance, query.getValue() );
+  if ( mt.isNull() )
+    return ERROR ( "Failed to create osg::MatrixTransform for instance.", NO_INTERFACE );
 
   // Get the corresponding part or assembly.
   HierarchyHandle hierarchy = query->getCorresponding ( instance );
   if ( NULL == hierarchy )
     return ERROR ( "Failed to get corresponding part or assembly from the instance.", FAILED );
 
+  // Call this function to handle the LODs.
+//  if ( false == CadKit::createInstanceLods() )
+//    return ERROR ( "Failed to process (and create) LOD(s) for instance.", NO_INTERFACE );
+
+/*
+  HERE
+
+  If the hierarchy is a part, then the corresponding group should hold only 
+  one child (an osg::LOD). You need to make another osg::LOD and attach all
+  the children from the part's osg::LOD, and add the same ranges. However,
+  you also have to calculate the bounding sphere's and set the new osg::LOD's
+  center's (they will be different than the corresponding part because of the
+  different transformation.
+
+  If the hierarchy is an assembly then you have to traverse that assembly's
+  osg::MatrixTransform and find all of the osg::LODs. For each one of these
+  osg::LODs you have to do something similar to what is described above for
+  a part. Probably, you'll want to make a copy of the assembly's scene down
+  to the osg::LODs. Copy the osg::LODs but set different centers. Then just
+  add the same children of the original osg::LOD to the new osg::LOD. You
+  will probably need a recursive function for this.
+*/
   // Find the group that corresponds with this part or assembly.
-  SlRefPtr<osg::Group> original = this->_findGroup ( hierarchy );
+  SlRefPtr<osg::Group> original = dynamic_cast<osg::Group *> ( this->_findGroup ( hierarchy ) );
   if ( original.isNull() )
     return ERROR ( "Failed to find group associated with instance's corresponding part or assembly.", FAILED );
+
+  // Should be true (as of when I type this).
+  SL_ASSERT ( 1 == original->getNumChildren() );
+  SL_ASSERT ( NULL != dynamic_cast<osg::LOD *> ( original->getChild ( 0 ) ) );
+
+  // Make a new lod.
 
   // Add all of the original group's children to the instance's group.
   unsigned int numChildren = original->getNumChildren();
   for ( unsigned int i = 0; i < numChildren; ++i )
-    group->addChild ( original->getChild ( i ) );
+    mt->addChild ( original->getChild ( i ) );
 
   // Add this group to the scene.
-  _groupStack->top()->addChild ( group );
+  _groupStack->top()->addChild ( mt );
 
   // It worked.
   return true;
@@ -362,28 +447,19 @@ bool DbOsgDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   if ( lodClientData.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Create a LOD group.
-//  SlRefPtr<osg::LOD> osgLod = new osg::LOD; // TODO, make LODs work.
-  SlRefPtr<osg::Group> osgLod = new osg::Group;
-  if ( osgLod.isNull() )
-    return ERROR ( "Failed to create osg::LOD for given lod handle.", FAILED );
-
   // Create a Geode.
   SlRefPtr<osg::Geode> geode = new osg::Geode;
   if ( geode.isNull() )
     return ERROR ( "Failed to create osg::Geode for given lod handle.", FAILED );
 
-  // Get the osg::Group associated with the lod's parent part.
+  // Get the osg::LOD associated with the lod's parent part.
   SlRefPtr<osg::Object> object = (osg::Object *) ( partClientData->getClientData ( query->getParent ( lod ) ) );
-  SlRefPtr<osg::Group> group = dynamic_cast<osg::Group *> ( object.getValue() );
-  if ( group.isNull() )
-    return ERROR ( "Failed to find group to add lod to.", FAILED );
+  SlRefPtr<osg::LOD> osgLod = dynamic_cast<osg::LOD *> ( object.getValue() );
+  if ( osgLod.isNull() )
+    return ERROR ( "Failed to find lod group to add geode to.", FAILED );
 
   // Add this Geode to the LOD.
   osgLod->addChild ( geode );
-
-  // Add this LOD to the Group.
-  group->addChild ( osgLod );
 
   // Set the client data for this lod.
   lodClientData->setClientData ( lod, geode.getValue() );

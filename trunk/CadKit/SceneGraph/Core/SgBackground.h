@@ -17,9 +17,9 @@
 #define _CADKIT_SCENEGRAPH_CORE_LIBRARY_BACKGROUND_H_
 
 #include "SgAttribute.h"
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlColor.h"
-#endif
+
+#include "Standard/SlColor.h"
+
 
 namespace CadKit
 {
@@ -54,7 +54,7 @@ protected:
   SlColorf _bottomRightCorner;
   SlFloat32 _farDistance; // A positive value.
 
-  SG_DECLARE_DYNAMIC_NODE(SgBackground,0x00001001);
+  SG_DECLARE_DYNAMIC_NODE ( SgBackground, 1033858464 );
 };
 };
 

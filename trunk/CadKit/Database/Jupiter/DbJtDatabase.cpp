@@ -72,7 +72,7 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _brepLoadOption ( TESS_ONLY ),
-  _shapeLoadOption ( HIGH_LOD ), // TODO, want all lods by default.
+  _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
   _shapeData ( new ShapeData ( NULL ) )

@@ -13,6 +13,7 @@
 #include "Atom.h"
 #include "Bond.h"
 #include "MaterialChooser.h"
+#include "SphereFactory.h"
 
 #include "osg/Referenced"
 
@@ -22,6 +23,7 @@ namespace osg { class Group; class LOD; class Geode; }
 #include <map>
 #include <list>
 
+
 class Molecule : public osg::Referenced
 {
 public:
@@ -29,7 +31,7 @@ public:
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
 
-  Molecule(MaterialChooser* mc);
+  Molecule ( MaterialChooser *mc, SphereFactory *sf );
   osg::Group* build() const { return _build(); }
   void addAtom(const Atom&);
   void addBond(Atom::ID, Atom::ID);
@@ -40,6 +42,7 @@ protected:
   osg::LOD *              _makeAtom ( const Atom &atom ) const;
   osg::LOD *              _makeBond ( const Bond &bond) const;
   osg::Geode *            _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
+  osg::Geode *            _makeSphere ( const osg::Vec3 &center, float radius, unsigned int numSubDivisions ) const;
   osg::Geode *            _makeCube   ( const osg::Vec3 &center, float size ) const;
   void                    _setCentersAndRanges ( osg::LOD *lod ) const;
 private:
@@ -53,6 +56,7 @@ private:
   unsigned int _numLodChildren;
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
+  mutable SphereFactory::Ptr _sphereFactory;
 };
 
 

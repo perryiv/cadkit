@@ -35,6 +35,7 @@ ReaderWriterPDB::ReaderWriterPDB() :
   _molecules(),
   _materialChooser(),
   _currentMolecule(NULL),
+  _sphereFactory ( new SphereFactory ),
   _periodicTable()
 {
 }
@@ -83,7 +84,7 @@ bool ReaderWriterPDB::acceptsExtension ( const std::string &ext )
 
 ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
-#define USE_EXCEPTIONS
+//#define USE_EXCEPTIONS
 #ifdef USE_EXCEPTIONS
 
   // Safely...
@@ -282,7 +283,7 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule(&_materialChooser);
+    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get() );
     osg::ref_ptr< Molecule > r = _currentMolecule;
     _molecules.push_back(r);
   }

@@ -10,17 +10,13 @@
 #include "Molecule.h"
 #include "Cylinder.h"
 
-#include "osg/MatrixTransform"
 #include "osg/Geometry"
-#include "osg/LineWidth"
-
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/LOD"
 #include "osg/Shape"
 #include "osg/ShapeDrawable"
-
-#include "osg/material"
+#include "osg/Material"
 
 #include <limits>
 
@@ -31,15 +27,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule(MaterialChooser* mc) : 
+Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf ) : 
   _atoms(),
   _bonds(),
-  _maxDistanceFactor ( 75 ),
+  _maxDistanceFactor ( 5 ),
   _lastRangeMax ( std::numeric_limits<float>::max() ),
   _numLodChildren ( 5 ),
-  _lodDistancePower ( 2 )
+  _lodDistancePower ( 2 ),
+  _materialChooser ( mc ),
+  _sphereFactory ( sf )
 {
-  _materialChooser = mc;
 }
 
 
@@ -86,21 +83,24 @@ osg::Group *Molecule::_build() const
   {
     // Get the atom.
     const Atom &atom = i->second;
- 
-     // make the geometry for this point.
+
+    // Make the geometry for this point.
     osg::ref_ptr<osg::LOD> lod ( this->_makeAtom ( atom ) );
+
     // Add the lod to the root.
     root->addChild ( lod.get() );
- 
   }
 
-  //loop through the bonds
-  for (Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i)
+  // Loop through the bonds.
+  for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
   {
+    // Get the bond.
     const Bond &bond = *i;
-    //make the geometry
-    osg::ref_ptr<osg::LOD> lod (this->_makeBond( bond ) );
-    //add the lod to the root
+
+    // Make the geometry.
+    osg::ref_ptr<osg::LOD> lod ( this->_makeBond ( bond ) );
+
+    // Add the lod to the root.
     root->addChild ( lod.get() );
   }
 
@@ -168,6 +168,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
   {
     float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 2 ), _lodDistancePower ) );
     lod->addChild ( this->_makeSphere ( center, radius, detail ) );
+    //lod->addChild ( this->_makeSphere ( center, radius, _numLodChildren - i - 1 ) );
   }
 
   // Last child is a cube.
@@ -183,8 +184,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make a sphere. TODO, use osg::Geometry for vertex arrays. 
-//  Perhaps make soccer ball.
+//  Make a sphere.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -205,6 +205,26 @@ osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float
   // Add the sphere to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( drawable.get() );
+
+  // Return the geode.
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a subdivided sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &c, float r, unsigned int div ) const
+{
+  // Make a sphere.
+  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div, c, r ) );
+
+  // Add the geometry to a geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
 
   // Return the geode.
   return geode.release();

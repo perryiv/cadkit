@@ -274,6 +274,13 @@ void subdivideSphere (
   // so they are also the normal.
   if ( 0 == depth )
   {
+#if 0
+    const char *format = "%15.12f %15.12f %15.12f\n";
+    ::printf ( format, x1, y1, z1 );
+    ::printf ( format, x2, y2, z2 );
+    ::printf ( format, x3, y3, z3 );
+#endif
+
     // Make room in the pool.
     ValuePool::size_type index ( pool->numRows() );
     pool->numRows ( index + 3 );

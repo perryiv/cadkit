@@ -330,6 +330,9 @@
 					RelativePath=".\Interfaces\IFoxEvent.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxMenuPane.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxMessageHandler.h">
 				</File>
 				<File
@@ -355,6 +358,9 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IRead.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IRedraw.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h">

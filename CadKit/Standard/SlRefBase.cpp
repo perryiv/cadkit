@@ -80,7 +80,7 @@ SlRefBase::SlRefBase ( const unsigned long &refCount ) : SlBase(), _refCount ( r
 
 SlRefBase::~SlRefBase()
 {
-  SL_PRINT3 ( "SlRefBase::~SlRefBase(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::~SlRefBase(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
 }
 
 
@@ -92,7 +92,7 @@ SlRefBase::~SlRefBase()
 
 void SlRefBase::_incrementReferenceCount()
 {
-  SL_PRINT3 ( "SlRefBase::_incrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::_incrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
   SL_ASSERT ( this );
 
   // Increment the reference count.
@@ -108,7 +108,7 @@ void SlRefBase::_incrementReferenceCount()
 
 void SlRefBase::_decrementReferenceCount()
 {
-  SL_PRINT3 ( "SlRefBase::_decrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::_decrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
   SL_ASSERT ( this );
 
   // Decrement the reference count.

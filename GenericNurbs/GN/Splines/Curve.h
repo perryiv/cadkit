@@ -326,29 +326,6 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   ///
-  /// Resize the curve.
-  ///
-  /////////////////////////////////////////////////////////////////////////////
-
-  void resize ( SizeType dimension, 
-                SizeType order, 
-                SizeType numCtrPts, 
-                bool rational )
-  {
-    SizeContainer o;
-    o.resize ( 1 );
-    o[0] = order;
-
-    SizeContainer n;
-    n.resize ( 1 );
-    n[0] = numCtrPts;
-
-    BaseClass::resize ( dimension, o, n, rational );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  ///
   /// Set this curve. This is here for type safety.
   ///
   /////////////////////////////////////////////////////////////////////////////
@@ -395,6 +372,22 @@ public:
   template < class Predicate_ > bool equal ( const ThisType &s, const Predicate_ &pred ) const
   {
     return BaseClass::equal ( c, pred );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Return a reference to this curve as a spline.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  SplineClass &spline()
+  {
+    return *this;
+  }
+  const SplineClass &spline() const
+  {
+    return *this;
   }
 };
 

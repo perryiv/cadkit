@@ -29,7 +29,18 @@ namespace Polygons {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Fills sequence "indices" with .
+//  Input:
+//
+//     adjacentTest:  Predicate that determines if two polygons are adjacent.
+//         vertices:  Sequence of vertices that define polygons.
+//  selectedPolygon:  Initial polygon to start checking against.
+//  numVertsPerPoly:  Number of vertices in a polygon. Triangle = 3.
+//
+//  Output:
+//
+//          indices:  List of indices into "vertices". These vertices make 
+//                    up polygons that are adjacent, either directly or 
+//                    recursively, to the initial polygon "selectedPolygon".
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -54,8 +65,16 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   indices.erase ( indices.begin(), indices.end() );
 
   // Handle trivial case.
-  if ( vertices.empty() || vertices.size() < numVertsPerPoly )
+  if ( vertices.empty() )
     return;
+
+  // Make sure polygon has enough vertices.
+  if ( vertices.size() < numVertsPerPoly )
+  {
+    std::ostringstream message;
+    message << "Error 2591175031, " << vertices.size() << " vertices given when the polygons are supposed to have " << numVertsPerPoly << " vertices";
+    throw std::runtime_error ( message.str() );
+  }
 
   // Make sure the vertex data is valid.
   if ( vertices.size() % numVertsPerPoly || 0 == numVertsPerPoly )
@@ -73,8 +92,16 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     throw std::runtime_error ( message.str() );
   }
 
-  // Fill the sequence of indices.
+  // Make sure selected polygon is in range.
   SizeType numPolyons ( vertices.size() / numVertsPerPoly );
+  if ( selectedPolygon >= numPolyons )
+  {
+    std::ostringstream message;
+    message << "Error 3575595664, selected polygon is " << selectedPolygon << " but there are only " << numPolyons << " polygons";
+    throw std::runtime_error ( message.str() );
+  }
+
+  // Fill the sequence of indices.
   indices.resize ( numPolyons );
   {
     SizeType count ( 0 );
@@ -86,29 +113,24 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   IndexSequence keepers;
   keepers.insert ( keepers.end(), selectedPolygon );
 
-  // Initialize the current keeper to test.
-  IndexIterator current = keepers.begin();
-
-  // Define some polygons.
-  VertexSequence currentPolygon, testThisPolygon;
-  currentPolygon.resize  ( numVertsPerPoly );
-  testThisPolygon.resize ( numVertsPerPoly );
+  // Initialize the current keeper.
+  IndexIterator currentItr = keepers.begin();
 
   // While there are still keepers to test...
-  while ( keepers.end() != current )
+  while ( keepers.end() != currentItr )
   {
-    // Set polygon for the current keeper.
-    {
-      wrong!
-      IndexIterator last ( current );
-      std::advance ( last, numVertsPerPoly );
-      std::copy ( current, last, currentPolygon.begin() );
-    }
+    // Define current polygon.
+    VertexSequence currentPolygon;
+    Detail::makePolygon ( currentItr, numVertsPerPoly, vertices, currentPolygon );
 
     // Loop through all vertices.
     VertexIterator vi = vertices.begin();
-    while (  vertices.end() != vi )
+    while ( vertices.end() != vi )
     {
+      // Define polygon to test against current.
+      VertexSequence testMe;
+      Detail::makePolygon ( currentItr, numVertsPerPoly, vertices, testMe );
+
       // Collect vertices for this polygon.
       {
         VertexIterator last ( vi );
@@ -123,6 +145,9 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
         keepers.insert ( keepers.end(), 
       }
     }
+
+    // Go to the next keeper.
+    ++currentItr;
   }
 }
 

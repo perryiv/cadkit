@@ -596,6 +596,56 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   ///
+  /// Resize as a curve.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  void resize ( SizeType dimension, 
+                SizeType order, 
+                SizeType numCtrPts, 
+                bool rational )
+  {
+    SizeContainer o;
+    o.resize ( 1 );
+    o[0] = order;
+
+    SizeContainer n;
+    n.resize ( 1 );
+    n[0] = numCtrPts;
+
+    this->resize ( dimension, o, n, rational );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Resize as a surface.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  void resize ( SizeType dimension, 
+                SizeType orderU, 
+                SizeType orderV, 
+                SizeType numCtrPtsU, 
+                SizeType numCtrPtsV, 
+                bool rational )
+  {
+    UIntContainer o;
+    o.resize ( 2 );
+    o[0] = orderU;
+    o[1] = orderV;
+
+    UIntContainer n;
+    n.resize ( 2 );
+    n[0] = numCtrPtsU;
+    n[1] = numCtrPtsV;
+
+    this->resize ( dimension, o, n, rational );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
   /// Set the values of this spline to be the same as the given one.
   ///
   /////////////////////////////////////////////////////////////////////////////
@@ -851,6 +901,22 @@ public:
   {
     SizeType num ( ( this->rational() ) ? d + 1 : d );
     this->numDepVars ( num );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Return a reference to this spline.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  SplineClass &spline()
+  {
+    return *this;
+  }
+  const SplineClass &spline() const
+  {
+    return *this;
   }
 
 

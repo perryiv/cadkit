@@ -320,6 +320,9 @@
 				<File
 					RelativePath=".\Gn\Math\LinearBlend.h">
 				</File>
+				<File
+					RelativePath=".\Gn\Math\Matrix.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Create"

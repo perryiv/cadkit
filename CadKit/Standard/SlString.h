@@ -82,12 +82,12 @@ public:
   // Access.
 
 
-  // Clear the string, redundancy is for compability with template functions.
+  // Clear the string, redundancy is for compatibility with template functions.
   void                          clear() { _s.erase ( _s.begin(), _s.end() ); }
 
   // Erase the elements.
   iterator                      erase ( iterator first, iterator last ) { return _s.erase ( first, last ); }
-  iterator                      erase ( iterator it ) { return _s.erase ( it ); }
+  iterator                      erase ( iterator it ) { return _s.erase ( it, ++it ); } // Keep for STLport.
   StringType &                  erase ( unsigned int p0 = 0, unsigned int n = StringType::npos ) { return _s.erase ( p0, n ); }
 
   // Iterators.
@@ -100,7 +100,7 @@ public:
   const CharType &              getChar ( const unsigned int &index ) const;
   CharType &                    getChar ( const unsigned int &index );
 
-  // For compability with basic_string.
+  // For compatibility with basic_string.
   const CharType &              at ( const unsigned int &index ) const { return this->getChar ( index ); }
   CharType &                    at ( const unsigned int &index )       { return this->getChar ( index ); }
 
@@ -113,7 +113,7 @@ public:
   CharType                      getFirst() const { return ( _s.empty() ) ? ((CharType)0) : _s.at ( 0 ); }
   CharType                      getLast()  const { return ( _s.empty() ) ? ((CharType)0) : _s.at ( _s.size() - 1 ); }
 
-  // Get the length, redundancy is for compability with template functions.
+  // Get the length, redundancy is for compatibility with template functions.
   unsigned int                  getLength() const { return _s.size(); }
   unsigned int                  length() const { return _s.size(); }
   unsigned int                  size() const { return _s.size(); }

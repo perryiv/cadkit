@@ -12,6 +12,11 @@
 
 #include "Usul/Errors/Assert.h"
 
+namespace Usul
+{
+namespace Adaptors
+{
+
 template < class Real > struct Random
 {
   Random ( Real minimum, Real maximum ) : 
@@ -30,6 +35,9 @@ private:
   Real _min;
   Real _normalize;
 };
+
+};//namespace Adaptors
+}; //namespace Usul
 
 #endif //__USUL_ADAPTORS_RANDOM_H__
 

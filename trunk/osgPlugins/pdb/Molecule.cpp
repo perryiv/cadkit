@@ -272,11 +272,11 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
     osg::ref_ptr<osg::MatrixTransform> mt ( atom.getMatrix() );
     mt->addChild ( this->_makeSphere ( center, radius, osg::Vec2 ( detail, detail ) ) );
     //lod->addChild ( this->_makeSphere ( center, radius, osg::Vec2 ( detail, detail ) ) );
-    lod->addChild ( mt.release() );
+    lod->addChild ( mt.get() );
   }
 
   // Last child.
-  lod->addChild ( this->_makeCube  ( center, radius * 1.5 ) );
+  lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
 
   // Set the centers and ranges.
   this->_setCentersAndRanges ( lod.get() );

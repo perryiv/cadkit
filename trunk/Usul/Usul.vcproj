@@ -330,6 +330,15 @@
 					RelativePath=".\Interfaces\IFoxEvent.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxMessageHandler.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFoxRadioButton.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFoxToggleButton.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IMenuEntry.h">
 				</File>
 				<File

@@ -24,21 +24,23 @@ class DbJtVisApi
 public:
 
   DbJtVisApi();
+  DbJtVisApi ( const DbJtVisApi &visApi );
   ~DbJtVisApi();
 
   // Get the customer id.
-  static unsigned int     getCustomerId();
+  unsigned int            getCustomerId();
 
   // Initialize. Call this after you construct.
   bool                    init();
 
   // Set the customer id. If you don't assign a customer id then it will 
   // look for the environment variable "DMDTK_CUSTOMER_ID".
-  static void             setCustomerId ( const unsigned int &customerId ) { _customerId = customerId; }
+  void                    setCustomerId ( const unsigned int &customerId ) { _customerId = customerId; }
 
 protected:
 
-  static unsigned int _customerId;
+  unsigned int _customerId;
+  bool _isInitialized;
 };
 
 }; // namespace CadKit

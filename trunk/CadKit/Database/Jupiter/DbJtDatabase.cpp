@@ -55,6 +55,10 @@ namespace CadKit { DbJtDatabase *_traverser = NULL; }
   if ( priority <= _progressPriorityLevel )\
     this->_notifyProgress
 
+// We need one of these to exist for the duration of this library's execution.
+// This will initialize and uninitialize the DMDTk.
+namespace CadKit { DbJtVisApi _globalVisApi; };
+
 using namespace CadKit;
 
 // These live in DbJtTraverser for now.
@@ -91,7 +95,7 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   SL_ASSERT ( NULL != _shapeData.get() );
 
   // Set the VisApi's customer id.
-  DbJtVisApi::setCustomerId ( customerId );
+  _globalVisApi.setCustomerId ( customerId );
 }
 
 
@@ -167,20 +171,16 @@ bool DbJtDatabase::loadData ( const std::string &filename )
   SL_PRINT3 ( "In DbJtDatabase::loadData(), this = %X, name = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
-  // Declare an instance of the VisApi. This will initialize and 
-  // uninitialize the DMDTk.
-  DbJtVisApi visApi;
-
   // Try to traverse.
   try
   {
-    if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", DbJtVisApi::getCustomerId() ) ) )
+    if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", _globalVisApi.getCustomerId() ) ) )
       return false;
 
     // Initialize (register customer).
-    if ( false == visApi.init() )
+    if ( false == _globalVisApi.init() )
     {
-      ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", DbJtVisApi::getCustomerId() ), 0 );
+      ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", _globalVisApi.getCustomerId() ), 0 );
       return false;
     }
 
@@ -221,7 +221,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   // Assigning it to the SlRefPtr will increment it to one. When the SlRefPtr 
   // goes out of scope the internal pointer will be deferenced (back to zero),
   // and the importer will get deleted.
-  SlRefPtr<eaiCADImporter> importer = eaiEntityFactory::createCADImporter();
+  SlRefPtr<eaiCADImporter> importer ( eaiEntityFactory::createCADImporter() );
   if ( importer.isNull() )
   {
     ERROR ( FORMAT ( "Failed to create CAD importer. Is your license set up correctly?" ), 0 );
@@ -240,7 +240,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
     return false;
 
   // Declare the traverser. Note: returned pointer has ref-count of one.
-  SlRefPtr<eaiTraverser> traverser = eaiEntityFactory::createTraverser();
+  SlRefPtr<eaiTraverser> traverser ( eaiEntityFactory::createTraverser() );
   if ( traverser.isNull() )
   {
     ERROR ( "Failed to create database traverser.", 0 );
@@ -268,7 +268,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
     return false;
 
   // Import the database. Note: returned pointer has ref-count of one.
-  SlRefPtr<eaiHierarchy> root = importer->import ( filename.c_str() );
+  SlRefPtr<eaiHierarchy> root ( importer->import ( filename.c_str() ) );
   if ( root.isNull() )
   {
     ERROR ( FORMAT ( "Failed to import database: %s", filename.c_str() ), 0 );

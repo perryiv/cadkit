@@ -51,7 +51,7 @@
 				OutputFile="../bin/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/OsgToolsd.pdb"
 				ImportLibrary="../bin/OsgToolsd.lib"/>
@@ -120,7 +120,7 @@
 				OutputFile="../bin/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
 				ImportLibrary="../bin/OsgTools.lib"/>
 			<Tool

@@ -25,7 +25,7 @@ namespace OsgTools {
 struct OSG_TOOLS_EXPORT Lod
 {
   // Set the lod center and ranges.
-  static void setCentersAndRanges ( float maxDistanceFactor, float lastRangeMax, osg::LOD *lod );
+  static void setCenterAndRanges ( float maxDistanceFactor, float lastRangeMax, osg::LOD *lod );
 };
 
 

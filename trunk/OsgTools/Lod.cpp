@@ -27,7 +27,7 @@ using namespace OsgTools;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Lod::setCentersAndRanges ( float maxDistanceFactor, float lastRangeMax, osg::LOD *lod )
+void Lod::setCenterAndRanges ( float maxDistanceFactor, float lastRangeMax, osg::LOD *lod )
 {
   // If there are no children then just return.
   if ( 0 == lod->getNumChildren() )

@@ -220,19 +220,19 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     else if ( arg == "-pe" || arg == "--print-errors" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, _PRINT_ERRORS );
+      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
     }
 
     else if ( arg == "-pw" || arg == "--print-warnings" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, _PRINT_WARNINGS );
+      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
     }
 
     else if ( arg == "-pi" || arg == "--print-info" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, _PRINT_INFO );
+      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
     }
 
     else if ( arg == "-v" || arg == "--verbose" )
@@ -337,19 +337,19 @@ bool CtTranslation::messageNotify ( const std::string &message, const unsigned l
   {
   case CadKit::MESSAGE_ERROR:
 
-    if ( CadKit::hasBits ( _printFlags, _PRINT_ERRORS ) )
+    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_ERRORS ) )
       return this->_messageNotify ( "Error",   message, id );
     break;
 
   case CadKit::MESSAGE_WARNING:
 
-    if ( CadKit::hasBits ( _printFlags, _PRINT_WARNINGS ) )
+    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_WARNINGS ) )
       return this->_messageNotify ( "Warning",   message, id );
     break;
   
   case CadKit::MESSAGE_INFO:
 
-    if ( CadKit::hasBits ( _printFlags, _PRINT_INFO ) )
+    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_INFO ) )
       PRINT << message.c_str() << std::endl;
     break;
 

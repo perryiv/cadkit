@@ -20,6 +20,7 @@
 
 #include <stack>
 #include <string>
+#include <sstream>
 
 namespace Usul { namespace Threads { class Mutex; }; };
 
@@ -52,6 +53,16 @@ struct USUL_EXPORT Element : protected std::pair < unsigned int, std::string >
   const std::string &   message() const;
 };
 
+class USUL_EXPORT StackAdapter : public std::stack < Usul::Errors::Element >
+{
+ public:
+  typedef std::stack < Usul::Errors::Element > BaseClass;
+  
+  StackAdapter() : BaseClass() { }
+  container_type::const_iterator begin() const { return c.begin(); }
+  container_type::const_iterator end() const { return c.end(); }
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -64,7 +75,8 @@ class USUL_EXPORT Stack
 public:
 
   // Useful typedefs.
-  typedef std::stack < Usul::Errors::Element > Elements;
+  //typedef std::stack < Usul::Errors::Element > Elements;
+  typedef StackAdapter Elements;
   typedef Elements::size_type size_type;
   typedef Elements::value_type value_type;
   typedef Usul::Threads::Mutex Mutex;

@@ -34,7 +34,8 @@ unsigned int Screen::width()
 #ifdef _WIN32
   return ::GetSystemMetrics ( SM_CXSCREEN );
 #else
-  TODO
+  //TODO
+  return 800;
 #endif
 }
 
@@ -50,6 +51,7 @@ unsigned int Screen::height()
 #ifdef _WIN32
   return ::GetSystemMetrics ( SM_CYSCREEN );
 #else
-  TODO
+  //TODO
+  return 600;
 #endif
 }

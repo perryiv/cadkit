@@ -5,9 +5,11 @@ SOURCE = \
 	Components/Registry.cpp \
 	DLL/Library.cpp \
 	DLL/Loader.cpp \
+	Errors/Stack.cpp \
 	ID/GUID.cpp \
 	System/LastError.cpp \
 	System/Host.cpp \
+	System/Screen.cpp \
 	Types/Types.cpp \
 	Threads/Mutex.cpp
 
@@ -19,12 +21,12 @@ COMPILER = c++
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = CC
-OS_COMP_FLAGS = -LANG:std
-OS_LINK_FLAGS = -LANG:std -v
+OS_COMP_FLAGS = -n32 -LANG:std
+OS_LINK_FLAGS = -n32 -LANG:std -v
 endif
 
 COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)

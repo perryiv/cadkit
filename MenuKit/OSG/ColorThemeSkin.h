@@ -26,7 +26,6 @@ namespace MenuKit
 
     /** ColorThemeSkin
       * A simple implementation of the ThemeSkin base class.
-      * Assumes theme has 2 fields, back and front color
       */
     template<class ThemeType>
     class ColorThemeSkin : public ThemeSkin<ThemeType>
@@ -66,8 +65,8 @@ namespace MenuKit
       void picture_box(const Detail::Box& b) { _picture=b; }
       const Detail::Box& picture_box() const { return _picture; }
 
-      void text(float t) { _text=t; }
-      float text() const { return _text; }
+      void text_ratio(float t) { _text=t; }
+      float text_ratio() const { return _text; }
 
     protected:
       float width(const std::string& word);
@@ -90,10 +89,10 @@ namespace MenuKit
       unsigned int bits() const { return _bits; }
 
     private:
-      Detail::Box _picture;  // for side graphics
+      Detail::Box _picture;  // graphic object size
       float _margin;         // distances
       float _text;           // percentages
-      unsigned int _bits;            // add on graphic characteristics
+      unsigned int _bits;    // add-on graphic characteristics
     };
 
     typedef ColorThemeSkin<osgColor> osgSkin;
@@ -425,7 +424,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   word.height( _text*(this->box().height()) );
   word.text( txt );
   word.font( font() );
-  word.color( scheme.front() );
+  word.color( scheme.text() );
   word.draw_mode( osgText::Text::TEXT );
 
   // use the functor to make the graphics
@@ -482,12 +481,12 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   group->addChild( rgmt.get() );
   group->addChild( lgmt.get() );
 
-  // TODO: add graphics for supported bits!!!
+  // TODO: add graphics for each supported bit!!!
   typedef MenuKit::Bits<unsigned int> checker;
   if( checker::has(this->bits(), TOGGLE) )
   {
     Detail::FlatBox markbox(_text*_picture.height(),_text*_picture.width(),0.0);
-    markbox.color( this->theme().front() );
+    markbox.color( this->theme().text() );
     osg::ref_ptr<osg::Drawable> mbdraw = markbox();
 
     Detail::FlatBox markopen(_text*markbox.height(),_text*markbox.width(),0.001);
@@ -501,7 +500,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     if( checker::has(this->bits(), CHECKED) )
     {
       Detail::FlatBox markclosed(_text*markopen.height(),_text*markopen.width(),0.002);
-      markclosed.color( this->theme().front() );
+      markclosed.color( this->theme().text() );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       mbgeo->addDrawable( mcdraw.get() );
     }
@@ -512,7 +511,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   if( checker::has(this->bits(), RADIO) )
   {
     Detail::Disk markdisc(_text*this->box().height(),0.0);
-    markdisc.color( this->theme().front() );
+    markdisc.color( this->theme().text() );
     osg::ref_ptr<osg::Drawable> mddraw = markdisc();
 
     Detail::Disk markopen(_text*markdisc.height(),0.001);
@@ -526,7 +525,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     if( checker::has(this->bits(), CHECKED) )
     {
       Detail::Disk markclosed(_text*markopen.height(),0.002);
-      markclosed.color( this->theme().front() );
+      markclosed.color( this->theme().text() );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       mdgeo->addDrawable( mcdraw.get() );
     }
@@ -537,7 +536,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   if( checker::has(this->bits(), MENU) )
   {
     Detail::Arrow mark(_text*this->box().height(),0.0);
-    mark.color( this->theme().front() );
+    mark.color( this->theme().text() );
     osg::ref_ptr<osg::Drawable> md = mark();
     osg::ref_ptr<osg::Geode> mgeo = new osg::Geode();
     mgeo->addDrawable( md.get() );
@@ -571,7 +570,7 @@ osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()
   Detail::FlatBox stripe(_text*(this->box().height()),
                           this->box().width()-_picture.width()-_margin,
                           -0.001);
-  stripe.color( this->theme().front() );
+  stripe.color( this->theme().text() );
   osg::ref_ptr<osg::Drawable> fgdraw = stripe();
 
   // add the parts

@@ -24,10 +24,12 @@ namespace MenuKit
     class TileFunctor
     {
     public:
-      TileFunctor(): _box(1.0,0.0)
+      enum DisplayMode { DISABLED, HIGHLIGHT, NORMAL };
+
+      TileFunctor(): _box(1.0,0.0), _mode(NORMAL)
       {}
 
-      TileFunctor(const TileFunctor& b): _box(b._box)
+      TileFunctor(const TileFunctor& b): _box(b._box), _mode(b._mode)
       {}
 
       virtual ~TileFunctor()
@@ -36,6 +38,7 @@ namespace MenuKit
       TileFunctor& operator = (const TileFunctor& btf)
       {
         _box = btf._box;
+        _mode = btf._mode;
         return( *this );
       }
 
@@ -51,8 +54,12 @@ namespace MenuKit
       const Detail::Box& box() const { return _box; }
       Detail::Box& box() { return _box; }
 
+      void mode(DisplayMode d) { _mode = d; }
+      DisplayMode mode() const { return _mode; }
+
     private:
       Detail::Box _box;
+      DisplayMode _mode;
     };
 
   };

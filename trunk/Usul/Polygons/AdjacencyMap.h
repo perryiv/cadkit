@@ -313,8 +313,13 @@ AdjacencyMap ( const Compare& c ) : BaseClass(),
       p->index( _polygons.size() - 1 );
 
       //update the progress
-      if( _sharedVertsMap.size() % 1000 == 0 )
-        updater ( _sharedVertsMap.size() );
+      if( _polygons.size() % 1000 == 0 )
+      {
+        std::ostringstream message;
+        message << "Found " << _sharedVertsMap.size() << " shared vertices. ";
+
+        updater ( _polygons.size(), numPolygons, message.str() );
+      }
     }
   }
 

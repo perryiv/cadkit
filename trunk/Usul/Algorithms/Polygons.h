@@ -372,7 +372,6 @@ inline void findAdjacent ( const AdjacentTest &adjacentTest,
 
 
     // Initialize the keepers.
-    //keepers.reserve ( numTriangles ); // Reserve room for every triangle.
     keepers.push_back ( selectedPolygon );
 
     // Vector of adjacent counts.
@@ -416,7 +415,7 @@ inline void findAdjacent ( const AdjacentTest &adjacentTest,
           const unsigned int polygonIndex ( contained.v0 / numVertsPerPoly );
 
           USUL_ASSERT ( contained.v0 < vertices.size() );
-          USUL_ASSERT ( polygonIndex < polygonss.size() );
+          USUL_ASSERT ( polygonIndex < polygons.size() );
 
           // See if this contained triangle is adjacent to the keeper.
           // Make sure we don't test the same triangle with itself.
@@ -443,6 +442,235 @@ inline void findAdjacent ( const AdjacentTest &adjacentTest,
       updater ( keepers );
     }
 
+}
+
+namespace Detail
+{
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Shared Vertex Class
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct Triangle;
+
+struct SharedVertex
+{
+  typedef std::list< Triangle * >::iterator Iterator;
+  SharedVertex( const osg::Vec3& vec) : _triangles(), _vertex( vec ), _visited( false ) { }
+  void append( Triangle *t ) { _triangles.push_back( t ); }
+
+  std::list< Triangle * > _triangles;
+  osg::Vec3 _vertex;
+  bool _visited;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Triangle Class
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct Triangle
+{
+  Triangle() : _v1( 0x0 ), _v2 ( 0x0 ), _v3 ( 0x0 ), _visited( false ) { }
+  SharedVertex *_v1, *_v2, *_v3;
+  bool _visited;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Base Functor
+//
+///////////////////////////////////////////////////////////////////////////////
+struct Functor
+{
+  virtual void operator() () = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  VisitVertex Functor
+//
+///////////////////////////////////////////////////////////////////////////////
+template < class VisitTriangle >
+struct VisitVertex : public Functor
+{
+  VisitVertex ( SharedVertex *sv, std::list< Functor * > &todoStack ) : _sharedVertex ( sv ), _todoStack( todoStack ) {}
+  virtual void operator() ()
+  {
+    //_sharedVertex->_visited = true;
+    for(SharedVertex::Iterator i = _sharedVertex->_triangles.begin(); i != _sharedVertex->_triangles.end(); ++i)
+    {
+      if( !(*i)->_visited )
+      {
+        _todoStack.push_back( new VisitTriangle ( *i, _todoStack ) );
+        (*i)->_visited = true;
+      }
+    }
+  }
+private:
+  SharedVertex *_sharedVertex;
+  std::list< Functor *> &_todoStack;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  VisitTriangle Functor
+//
+///////////////////////////////////////////////////////////////////////////////
+struct VisitTriangle : public Functor
+{
+  VisitTriangle ( Triangle *t, std::list< Functor* > &todoStack ) : _triangle ( t ), _todoStack( todoStack ) { }
+  virtual void operator()()
+  {
+    //_triangle->_visited = true;
+    if( !_triangle->_v1->_visited )
+    {
+      _todoStack.push_back( new VisitVertex< VisitTriangle > ( _triangle->_v1, _todoStack ) );
+      _triangle->_v1->_visited = true;
+    }
+    if( !_triangle->_v2->_visited )
+    {
+      _todoStack.push_back( new VisitVertex< VisitTriangle > ( _triangle->_v2, _todoStack ) );
+      _triangle->_v2->_visited = true;
+    }
+    if( !_triangle->_v3->_visited )
+    {
+      _todoStack.push_back( new VisitVertex< VisitTriangle > ( _triangle->_v3, _todoStack ) );
+      _triangle->_v3->_visited = true;
+    }
+  }
+private:
+  Triangle *_triangle;
+  std::list< Functor *> &_todoStack;
+};
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function for getting a iter to the given key.
+//
+///////////////////////////////////////////////////////////////////////////////
+template < class Iter, class Map >
+Iter getMapIter( Map& map, const osg::Vec3& key )
+{
+  Map::iterator iter = map.find( key );
+  if( iter == map.end() )
+  {
+    //Add a new shared vertex
+    map.insert( Map::value_type( key, new Detail::SharedVertex( key ) ) );
+    iter = map.find( key );
+  }
+  return iter;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  new findAdjacent algoritm
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void newFindAdjacent( const osg::Vec3Array& vertices, std::vector< unsigned int > &answer, unsigned int selectedPolygon )
+{
+  //typedef typename VertexSequence::value_type Vertex;
+  //typedef typename VertexSequence::size_type SizeType;
+  //typedef typename VertexSequence::const_iterator VertexIterator;
+  typedef osg::Vec3Array::const_iterator VertexIterator;
+  typedef unsigned int SizeType;
+  
+  unsigned int numVertsPerPoly = 3;
+
+  // Handle trivial case.
+  if ( vertices.empty() )
+    return;
+
+  // Make sure polygon has enough vertices.
+  if ( vertices.size() < numVertsPerPoly )
+  {
+    std::ostringstream message;
+    message << "Error 2591175031, " << vertices.size() << " vertices given when the polygons are supposed to have " << numVertsPerPoly << " vertices";
+    throw std::runtime_error ( message.str() );
+  }
+
+  // Make sure the vertex data is valid.
+  if ( vertices.size() % numVertsPerPoly || 0 == numVertsPerPoly )
+  {
+    std::ostringstream message;
+    message << "Error 1684390442, number of vertices is not divisible by " << numVertsPerPoly;
+    throw std::runtime_error ( message.str() );
+  }
+
+  // Make sure polygon has enough vertices.
+  if ( numVertsPerPoly < 3 )
+  {
+    std::ostringstream message;
+    message << "Error 3953474238, number of vertices per polygon = " << numVertsPerPoly;
+    throw std::runtime_error ( message.str() );
+  }
+
+  // Make sure selected polygon is in range.
+  SizeType numPolygons ( vertices.size() / numVertsPerPoly );
+  if ( selectedPolygon >= numPolygons )
+  {
+    std::ostringstream message;
+    message << "Error 3575595664, selected polygon is " << selectedPolygon << " but there are only " << numPolygons << " polygons";
+    throw std::runtime_error ( message.str() );
+  }
+  
+  typedef std::vector< Detail::Triangle* > Triangles;
+
+  Triangles triangles( numPolygons, 0x0 );
+
+  typedef std::map< osg::Vec3, Detail::SharedVertex * > Map;
+  Map sharedVertsMap;
+
+  Triangles::iterator currentTriangle = triangles.begin();
+  for( VertexIterator i = vertices.begin(); i != vertices.end(); i+=3 )
+  {
+    *currentTriangle = new Detail::Triangle();
+
+    Map::iterator v1 = getMapIter< Map::iterator, Map > ( sharedVertsMap, *i );
+    Map::iterator v2 = getMapIter< Map::iterator, Map > ( sharedVertsMap, *(i + 1 ));
+    Map::iterator v3 = getMapIter< Map::iterator, Map > ( sharedVertsMap, *(i + 2 ));
+
+    (*currentTriangle)->_v1 = v1->second;
+    (*currentTriangle)->_v2 = v2->second;
+    (*currentTriangle)->_v3 = v3->second;
+
+    v1->second->append( *currentTriangle );
+    v2->second->append( *currentTriangle );
+    v3->second->append( *currentTriangle );
+
+    ++currentTriangle;
+  }
+
+  std::list< Detail::Functor* > todoStack;
+
+  Detail::Functor *first = new Detail::VisitTriangle( triangles.at( selectedPolygon ), todoStack );
+  triangles.at( selectedPolygon )->_visited = true;
+
+  todoStack.push_back( first );
+
+  std::list< Detail::Functor *>::iterator todoIterator = todoStack.begin();
+
+  while( todoIterator != todoStack.end() )
+  {
+    (*(*todoIterator))();
+    Detail::Functor *functor = *todoIterator;
+    todoStack.pop_front();
+    delete functor;
+    todoIterator = todoStack.begin();
+  }
+
+  for(unsigned int i = 0; i < triangles.size(); ++i )
+  {
+    if( triangles.at(i)->_visited )
+      answer.push_back( i );
+    delete triangles.at(i);
+  }
 }
 
 

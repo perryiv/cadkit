@@ -173,6 +173,9 @@
 					RelativePath="Box.h">
 				</File>
 				<File
+					RelativePath=".\Circle.cpp">
+				</File>
+				<File
 					RelativePath=".\Circle.h">
 				</File>
 				<File
@@ -218,9 +221,6 @@
 			<Filter
 				Name="Utilities"
 				Filter="">
-				<File
-					RelativePath=".\Circle.cpp">
-				</File>
 				<File
 					RelativePath=".\ColorSetter.cpp">
 				</File>

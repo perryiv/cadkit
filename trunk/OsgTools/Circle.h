@@ -34,7 +34,7 @@ namespace OsgTools
     void points(unsigned int p) { _points = p; }
     unsigned int points() const { return _points; }
 
-    osg::Vec2Array* operator()() const;
+    osg::Vec3Array* operator()() const;
 
   private:
     float _radius;

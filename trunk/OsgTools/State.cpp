@@ -28,6 +28,45 @@
 
 using namespace OsgTools;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the lighting state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool State::getLighting( osg::Node *node )
+{
+  // Handle bad input
+  if( !node )
+    return false;
+
+  // Get the state set.
+  osg::ref_ptr<osg::StateSet> ss = node->getOrCreateStateSet();
+  if ( !ss )
+    return false;
+
+  // Query the mode.
+  return ( osg::StateAttribute::ON == ss->getMode ( GL_LIGHTING ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the lighting state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void State::setLighting( osg::Node *node, bool on )
+{
+  // handle bad input
+  if( !node )
+    return;
+
+  // get the stateset
+  USUL_VALID_REF_POINTER(osg::StateSet) ss( node->getOrCreateStateSet() );
+
+  // apply the mode settings
+  ss->setMode( GL_LIGHTING,((on) ? osg::StateAttribute::ON : osg::StateAttribute::OFF) );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -107,9 +107,9 @@ void DbStlFacetManager::init( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::addFacet( SlVec3f vertices[3], const SlVec3f &normal )
+void DbStlFacetManager::addFacet( SlVec3f vertices[3], const SlVec3f &normal, TransformStack *tsp /* = NULL */ )
 {
-  DbStlFacetManager::facet f( vertices, normal );
+  facet f( vertices, normal, tsp );
   _facets.push_back( f );
 }
 
@@ -123,14 +123,14 @@ void DbStlFacetManager::addFacet( SlVec3f vertices[3], const SlVec3f &normal )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3  )
+void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, TransformStack *tsp /* = NULL */ )
 {
   SlVec3f v1( vertex2 - vertex1 );
   SlVec3f v2( vertex3 - vertex1 );
   SlVec3f normal( v1.cross(v2) );
   normal.normalize();
 
-  DbStlFacetManager::facet f( vertex1, vertex2, vertex3, normal );
+  facet f( vertex1, vertex2, vertex3, normal, tsp );
   _facets.push_back( f );
 }
 
@@ -141,9 +141,9 @@ void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
+void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal, TransformStack *tsp /* = NULL */ )
 {
-  DbStlFacetManager::facet f( vertex1, vertex2, vertex3, normal );
+  facet f( vertex1, vertex2, vertex3, normal, tsp );
   _facets.push_back( f );
 }
 
@@ -156,7 +156,8 @@ void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2
 
 bool DbStlFacetManager::storeData ( const std::string &filename, const StlFileMode &mode )
 {
-  Facets::iterator i;
+//  Facets::iterator i;
+  FmgrIndex i;
   SlVec3f vertices[3], normal;
 
   if ( mode == STL_ASCII_FILE_MODE )
@@ -215,30 +216,11 @@ bool DbStlFacetManager::storeData ( const std::string &filename, const StlFileMo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *controller, ShapeHandle shape )
+bool DbStlFacetManager::fetchVerticesPerShape( SlQueryPtr<IQueryShapeVerticesVec3f> query, ShapeHandle shape )
 {
 //  SL_PRINT5 ( "In DbStlFacetManager::fetchVerticesPerShape{}, this = %X, caller = %X, shape = %d\n", this, caller, shape );
-  SL_ASSERT ( caller );
-  // Get the interface we need from the caller.
-  SlQueryPtr<IQueryShapeVerticesVec3f> query ( caller );
-  if ( query.isNull() )
-    return this->_notifyError ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE, controller );
+  SL_ASSERT ( query.isValid() );
 
-  // Get the primitive type.
-  VertexSetType type;
-  if ( false == query->getVertexSetType ( shape, type ) )
-    return this->_notifyError ( "Failed to obtain primitive type.", CadKit::FAILED, controller );
-
-  // Should be true.
-  SL_ASSERT ( CadKit::UNKNOWN != type );
-
-  // Get the vertices if they are of type CadKit::TRI_STRIP_SET
-  // TODO add support for other set types
-  switch ( type )
-  {
-  case CadKit::TRI_STRIP_SET:
-    {
-    /*DEBUG*/stl_out << "CadKit::TRI_STRIP_SET\n" << std::endl;
       _vbuf.clear(); // clear out previous set if it exists
       if ( query->getVertices ( shape, this->_vSetter ) )
       {
@@ -248,7 +230,9 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *contr
 /*DEBUG*/_tns+=numSets;
         if ( !_transforms.empty() ) // if there are transforms on the stack
         {
-          SlVec3f vIn, vOut; // need nonmutable copy of vector for transform op
+
+//TODO - hook transforms to first facet in group
+        /*          SlVec3f vIn, vOut; // need nonmutable copy of vector for transform op
 
           // Transform all vertices w/ current transformations
           for (int i=0; i<numVertices; i++)
@@ -257,8 +241,12 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *contr
 
             _transforms.applyTransforms( vIn, vOut );
             _vbuf.getData()[i].setValue( vOut );
-          }
+          }*/
         }
+
+        std::list<facet>::iterator mark( _facets.end() );
+        if ( !_facets.empty() ) // grab the end of the list
+          mark--;
 
         for (int s=0; s<numSets; s++) // for each set
         {
@@ -285,30 +273,87 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *contr
             }
           }
         } // for (int s=0....
+        
+        TransformStack *ts = new TransformStack( _transforms ); // make a copy of the current stack
+        SlMatrix44f matrix( ts->top() ); // cache current transforms
+        ts->pop(); // pop the top and collapse the rest down to one matrix
+        ts->collapse();
+        ts->push( matrix ); // push the current back
+
+        if ( _facets.empty() )
+          return false;
+        else if (mark == _facets.end()) // this is first time through
+          mark = _facets.begin();
+        else // we are somewhere in the middle of the list
+          mark++;
+ 
+        mark->setTransformStack( ts ); // point start facet to new transform stack
+        
         // It worked.
         return true;
-      } // if ( query->...
-    } // case CadKit::TRI_STRIP_SET
-    
-  case CadKit::LINE_STRIP_SET:
-    /*DEBUG*/stl_out << "CadKit::LINE_STRIP_SET\n" << std::endl;
-    break;
-
-  case CadKit::POINT_SET:
-    /*DEBUG*/stl_out << "CadKit::POINT_SET\n" << std::endl;
-    break;
-
-  case CadKit::POLYGON_SET:
-    /*DEBUG*/stl_out << "CadKit::POLYGON_SET\n" << std::endl;
-    break;
-
-  default:
-    /*DEBUG*/stl_out << "Unknown set type\n" << std::endl;
-    break;
-  }
-
+      }
   // It didn't work.
-  return false; // TODO - get this working... this->_notifyError ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
+  return false; // TODO - get this working... ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  To handle instance, we are going to create a copy of the _facets list
+//  between the indicies "start" and "end", replace the top of "start"'s 
+//  transform with the instance's transform, and append the whole works onto
+//  the end of the _facets list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlFacetManager::processInstance( const FmgrIndex &start, const FmgrIndex &end, const SlMatrix44f &matrix )
+{
+  SL_ASSERT( !_facets.empty() );
+  SL_ASSERT( start != _facets.end() );
+  SL_ASSERT( start <= end );
+
+  // TODO - check to make sure that we get a valid transform stack back
+  _facets.insert( _facets.end(), start, end );
+  TransformStack *ts = new TransformStack( *(start->getTransformStack()) );
+  ts->pop(); // get rid of original part/assembly transforms
+  ts->collapse(); // collapse the rest down to one matrix
+  ts->push( matrix ); // push the instance transforms on top
+  start->setTransformStack( ts ); // point start facet to new transform stack
+
+  return true;
+}
+
+void DbStlFacetManager::applyTransforms( )
+{
+  FmgrIndex i( _facets.begin() ); // grab the head of the list
+  TransformStack *ts = i->getTransformStack();
+
+  SL_ASSERT( ts != NULL ); // first facet MUST have a transform or we are hosed
+
+  if ( ts != NULL )
+  {
+    SlMatrix44f matrix(true); 
+    SlVec3f v1in, v2in, v3in, v1out, v2out, v3out, n, vIn, vOut; // need nonmutable copy of vector for transform op
+
+
+    std::list<facet>::iterator i( _facets.begin() );
+
+    // Transform all vertices w/ current transformations
+    while ( i != _facets.end() )
+    {
+      if ( ( ts = i->getTransformStack() )!= NULL )
+        ts = i->getTransformStack();
+
+      i->getVertices( v1in, v2in, v3in );
+//      i->getNormal( n );
+
+      ts->applyTransforms( v1in, v1out );
+      ts->applyTransforms( v2in, v2out );
+      ts->applyTransforms( v3in, v3out );
+      i->setVertices( v1out, v2out, v3out );
+      i++;
+    }
+  }
 }
 
 
@@ -325,20 +370,16 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *contr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TransformStack::TransformStack()
+TransformStack::TransformStack() : _product(true) // init _product w/ identity
 {
-  // Empty.
+  this->init();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Override the default push function so that the new matrix is multiplied
-//  by the matrix on top of the stack. This version pushes a copy of the
-//  existing top matrix M back onto the stack,and then multiplies this new top 
-//  matrix by itself.  Net effect is new matrix M^2 on top of stack.  This 
-//  function is only useful if there are two identicle transformation matrices
-//  applied in a row.
+//  Push the existing top matrix and recalculate stack product.  No effect if
+//  stack is empty.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -349,51 +390,62 @@ void TransformStack::push()
   {
     SlMatrix44f tm( _stack.top() );
     _stack.push( tm );
-    _stack.top().multLeft( tm );
+    _recalcProduct();
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Override the default push function so that the new matrix is multiplied
-//  by the matrix on top of the stack. This version creates a new matrix nM
-//  which is equal to M * T (T being the current top matrix on stack), and 
-//  pushes nM onto the top of the stack.  This allows for a cumulative
-//  transformation matrix.  This version will be the most commonly used in
-//  this application.
+//  Push the matrix and recalculate stack product.  
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void TransformStack::push( const SlMatrix44f &M )
 {
-  if ( !_stack.empty() )
-  {
-    SlMatrix44f tm( _stack.top() );
     _stack.push( M );
-    _stack.top().multLeft( tm );
-  }
-  else
-    _stack.push( M );
+    _recalcProduct();
 }
 
 
-bool TransformStack::applyTransforms( const SlVec3f &input, SlVec3f &output )
+///////////////////////////////////////////////////////////////////////////////
+//
+// recalculate product and store in _product  
+// this gets a little ugly because we have to access the internal deque of the
+// stack... probably would be cleaner to implement stack as a list or vector,
+// but we will save that for another day.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TransformStack::_recalcProduct()
 {
-  SlMatrix44f m;
-  
+  std::deque<SlMatrix44f>::iterator i;
+
   if ( !_stack.empty() )
   {
-    m = _stack.top();
-
-    output[0]  = m[0]  * input[0]  + m[4]  * input[1]  + m[8]  * input[2]  + m[12];
-    output[1]  = m[1]  * input[0]  + m[5]  * input[1]  + m[9]  * input[2]  + m[13];
-    output[2]  = m[2]  * input[0]  + m[6]  * input[1]  + m[10] * input[2]  + m[14];
-
-    return true;
+    _product.identity();
+    for ( i=_stack.deque().begin(); i<_stack.deque().end(); i++ ) // iterate through the stack
+      _product.multRight( *i );
   }
-  else
-    return false;
+}
+
+  
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+// apply transforms to points.. uses _product which is identity if stack is 
+// empty, so still ok... just no effect 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TransformStack::applyTransforms( const SlVec3f &input, SlVec3f &output )
+{
+  output[0]  = _product[0]  * input[0]  + _product[4]  * input[1]  + _product[8]  * input[2]  + _product[12];
+  output[1]  = _product[1]  * input[0]  + _product[5]  * input[1]  + _product[9]  * input[2]  + _product[13];
+  output[2]  = _product[2]  * input[0]  + _product[6]  * input[1]  + _product[10] * input[2]  + _product[14];
+
+  // TODO - doublecheck this return
+  return true;
 }
 
 
@@ -405,12 +457,12 @@ bool TransformStack::applyTransforms( const SlVec3f &input, SlVec3f &output )
    
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::facet
+//  facet::facet
 //
 //  constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
-DbStlFacetManager::facet::facet( )
+facet::facet( ) : _tsp( NULL )
 //????: _vertices[0]( SL_VEC3_ZERO ), _vertices[1]( SL_VEC3_ZERO ), _vertices[2]( SL_VEC3_ZERO ), _normal( SL_VEC3_ZERO )
 {
 
@@ -419,12 +471,46 @@ DbStlFacetManager::facet::facet( )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::facet
+//  facet::facet
 //
 //  constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
-DbStlFacetManager::facet::facet( const SlVec3f vertices[3], const SlVec3f &normal )
+facet::facet( const SlVec3f vertices[3], const SlVec3f &normal, TransformStack *tsp /* = NULL */ )
+{
+  _vertices[0].setValue( vertices[0] );
+  _vertices[1].setValue( vertices[1] );
+  _vertices[2].setValue( vertices[2] );
+  _normal.setValue( normal );
+  _tsp = tsp; // may be NULL
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  facet::facet
+//
+//  constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+facet::facet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal, TransformStack *tsp /* = NULL */ )
+{
+  _vertices[0].setValue( vertex1 );
+  _vertices[1].setValue( vertex2 );
+  _vertices[2].setValue( vertex3 );
+  _normal.setValue( normal );
+  _tsp = tsp; // may be NULL
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  facet::setValue
+//
+//  Set the value
+//
+///////////////////////////////////////////////////////////////////////////////
+void facet::setValue( const SlVec3f vertices[3], const SlVec3f &normal )
 {
   _vertices[0].setValue( vertices[0] );
   _vertices[1].setValue( vertices[1] );
@@ -432,46 +518,14 @@ DbStlFacetManager::facet::facet( const SlVec3f vertices[3], const SlVec3f &norma
   _normal.setValue( normal );
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::facet
-//
-//  constructor
-//
-///////////////////////////////////////////////////////////////////////////////
-DbStlFacetManager::facet::facet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
-{
-  _vertices[0].setValue( vertex1 );
-  _vertices[1].setValue( vertex2 );
-  _vertices[2].setValue( vertex3 );
-  _normal.setValue( normal );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  DbStlFacetManager::facet::setValue
+//  facet::setVertices
 //
 //  Set the value
 //
 ///////////////////////////////////////////////////////////////////////////////
-void DbStlFacetManager::facet::setValue( const SlVec3f vertices[3], const SlVec3f &normal )
-{
-  _vertices[0].setValue( vertices[0] );
-  _vertices[1].setValue( vertices[1] );
-  _vertices[2].setValue( vertices[2] );
-  _normal.setValue( normal );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  DbStlFacetManager::facet::setVertices
-//
-//  Set the value
-//
-///////////////////////////////////////////////////////////////////////////////
-void DbStlFacetManager::facet::setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 )
+void facet::setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 )
 {
   _vertices[0].setValue( vertex1 );
   _vertices[1].setValue( vertex2 );
@@ -481,13 +535,13 @@ void DbStlFacetManager::facet::setVertices( const SlVec3f &vertex1, const SlVec3
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::setValue
+//  facet::setValue
 //
 //  Set the value of the normal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::facet::setNormal( const SlVec3f &normal )
+void facet::setNormal( const SlVec3f &normal )
 {
   _normal.setValue( normal );
 }
@@ -495,12 +549,12 @@ void DbStlFacetManager::facet::setNormal( const SlVec3f &normal )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::setValue
+//  facet::setValue
 //
 //  Set the value of the vertices
 //
 ///////////////////////////////////////////////////////////////////////////////
-void DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
+void facet::setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
 {
   _vertices[0].setValue( vertex1 );
   _vertices[1].setValue( vertex2 );
@@ -511,13 +565,13 @@ void DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const SlVec3f &
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::setVertices
+//  facet::setVertices
 //
 //  Set the value of the vertices
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::facet::setVertices( const SlVec3f vertices[3] )
+void facet::setVertices( const SlVec3f vertices[3] )
 {
   _vertices[0].setValue( vertices[0] );
   _vertices[1].setValue( vertices[1] );
@@ -527,13 +581,13 @@ void DbStlFacetManager::facet::setVertices( const SlVec3f vertices[3] )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::getNormal
+//  facet::getNormal
 //
 //  Gets the normal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::facet::getNormal( SlVec3f &normal )
+void facet::getNormal( SlVec3f &normal )
 {
   normal.setValue( _normal );
 }
@@ -547,7 +601,7 @@ void DbStlFacetManager::facet::getNormal( SlVec3f &normal )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::facet::getVertices( SlVec3f vertices[3] )
+void facet::getVertices( SlVec3f vertices[3] )
 {
   vertices[0].setValue( _vertices[0] );
   vertices[1].setValue( _vertices[1] );
@@ -557,12 +611,12 @@ void DbStlFacetManager::facet::getVertices( SlVec3f vertices[3] )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlFacetManager::facet::getVertices
+//  facet::getVertices
 //
 //  Gets the vertices
 //
 ///////////////////////////////////////////////////////////////////////////////
-void DbStlFacetManager::facet::getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 )
+void  facet::getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 )
 {
   vertex1.setValue( _vertices[0] );
   vertex2.setValue( _vertices[1] );

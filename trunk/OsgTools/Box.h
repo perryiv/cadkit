@@ -17,6 +17,7 @@
 
 #include "ColorPolicyFunctor.h"
 #include "ColorSetter.h"
+#include "MaterialSetter.h"
 
 #include "osg/Vec4"
 #include "osg/Geode"
@@ -127,6 +128,7 @@ namespace OsgTools
   };
 
   typedef Box<ColorSetter> ColorBox;
+  typedef Box<MaterialSetter> MaterialBox;
 }; // namespace OsgTools
 
 #endif // _OSG_TOOLS_BOX_H_

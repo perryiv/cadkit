@@ -17,6 +17,7 @@
 
 #include "ColorPolicyFunctor.h"
 #include "ColorSetter.h"
+#include "MaterialSetter.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
@@ -59,6 +60,7 @@ namespace OsgTools
   };
 
   typedef Sphere<ColorSetter> ColorSphere;
+  typedef Sphere<MaterialSetter> MaterialSphere;
 };
 
 #endif

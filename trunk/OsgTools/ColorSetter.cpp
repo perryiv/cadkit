@@ -19,6 +19,12 @@
 
 using namespace OsgTools;
 
+ColorSetter& ColorSetter::operator =(const ColorSetter& cs)
+{
+  _color = cs._color;
+  return *this;
+}
+
 void ColorSetter::operator ()(osg::ShapeDrawable* sd)
 {
   sd->setColor( _color );

@@ -118,7 +118,7 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group * ReaderWriterSTL::_build() const
+osg::Group *ReaderWriterSTL::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
@@ -164,7 +164,7 @@ osg::Group * ReaderWriterSTL::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void  ReaderWriterSTL::_init()
+void ReaderWriterSTL::_init()
 {
   _polygons.clear();
 }
@@ -385,6 +385,7 @@ ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, co
 //  Write the file
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, const std::string& fileName, const Options* options) \
 { 
   std::string ext = osgDB::getFileExtension(fileName);
@@ -402,11 +403,13 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, c
   return WriteResult::ERROR_IN_WRITING_FILE;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write an ascii file
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& node, const std::string& filename )
 {
   std::ofstream fout ( filename.c_str() );
@@ -428,11 +431,13 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& no
   return WriteResult::FILE_SAVED;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write an binary file
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& node, const std::string& filename )
 {
   std::ofstream fout ( filename.c_str(), std::ofstream::out | std::ofstream::binary );

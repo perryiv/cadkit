@@ -18,7 +18,8 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
-#include "Usul/Endian/Endian.h"
+#include "Usul/IO/Reader.h"
+#include "Usul/Math/Vector3.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -31,7 +32,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterR3D::ReaderWriterR3D() : BaseClass()
+ReaderWriterR3D::ReaderWriterR3D() : BaseClass(),
+  _vertices(),
+  _normals()
 {
 }
 
@@ -101,7 +104,6 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::readNode ( const std::string &file,
   {
     return ReaderWriterR3D::ReadResult ( "Unknown exception caught" );
   }
-
 }
 
 
@@ -111,10 +113,42 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::readNode ( const std::string &file,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group * ReaderWriterR3D::_build() const
+osg::Group *ReaderWriterR3D::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
+
+  // A single geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  root->addChild ( geode.get() );
+
+  // Shortcuts to the vertices and normals.
+  const Vectors &v = _vertices;
+  const Vectors &n = _normals;
+
+  // Check the numbers.
+  if ( n.size() * 3 != v.size() )
+  {
+    std::ostringstream out;
+    out << "Error 2993317852: number of normals times 3 = " << n.size() << " but number of vertices is " << v.size();
+    throw std::runtime_error ( out.str() );
+  }
+
+  // Make vertices and normals for the geometry.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( v.begin(), v.end() ) );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( n.begin(), n.end() ) );
+
+  // Make geometry and add to geode.
+  osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
+  geode->addDrawable ( geom.get() );  
+
+  // Set vertices and normals.
+  geom->setVertexArray ( vertices.get() );
+  geom->setNormalArray ( normals.get() );
+  geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+  // Interpret every three osg::Vec3 as a triangle.
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
 
   // Return the root.
   return root.release();
@@ -129,6 +163,8 @@ osg::Group * ReaderWriterR3D::_build() const
 
 void  ReaderWriterR3D::_init()
 {
+  _vertices.clear();
+  _normals.clear();
 }
 
 
@@ -158,12 +194,14 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::_read ( const std::string &filename
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( this->_build() );
 
-  // Initialized again to free accumulated data.
+  // Initialize again to free accumulated data.
   this->_init();
 
   // Return the scene
   return root.release();
 }
+
+//Crashes if you keep-all-connected and pick "yes" when it asks to save when exiting.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -216,7 +254,17 @@ void ReaderWriterR3D::_skipLine ( std::istream &in ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse the file.
+//  Parse the file. 
+//
+//  Note: even though the VTK file holds tri-strip information, there are so 
+//  many of them that, at least with OSG, it will probably be faster to draw 
+//  individual triangles. This is because glDrawArrays() is used internally. 
+//  Don't think OSG supports packing the tri-strips end-to-end in a single 
+//  osg::Geometry and passing this to OpenGL in an efficient way.
+//
+//  Note: Existing algorithms for delete-all-connected assume a single 
+//  osg::Geometry of triangles, which is another reason to build the scene 
+//  in this way.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -235,26 +283,94 @@ void ReaderWriterR3D::_parse ( std::istream &in )
   this->_check ( in, "points" );
 
   // Read the number of points.
-  unsigned int num ( 0 );
-  in >> num;
+  unsigned int numPoints ( 0 );
+  in >> numPoints;
 
   // Should be floating point data.
   this->_check ( in, "float" );
   this->_skipLine ( in );
 
-  // Start reading the points.
-  for ( unsigned int i = 0; i < num; ++i )
+  // Make a vertex pool.
+  Vectors pool ( numPoints );
+
+  // Needed in the loop.
+  Usul::Types::Float32 x, y, z;
+
+  // Start reading the vertices.
+  for ( unsigned int i = 0; i < numPoints; ++i )
   {
-    Usul::Types::Float32 x, y, z;
-    in.read ( USUL_UNSAFE_CAST ( char *, &x ), sizeof ( Usul::Types::Float32 ) );
-    in.read ( USUL_UNSAFE_CAST ( char *, &y ), sizeof ( Usul::Types::Float32 ) );
-    in.read ( USUL_UNSAFE_CAST ( char *, &z ), sizeof ( Usul::Types::Float32 ) );
-    Usul::Endian::reverseBytes ( x );
-    Usul::Endian::reverseBytes ( y );
-    Usul::Endian::reverseBytes ( z );
-    double dummy = x;
-    dummy = y;
-    dummy = z;
+    Usul::IO::ReadBigEndian::read ( in, x, y, z );
+    pool.at(i).set ( x, y, z );
+  }
+
+  // Make sure it is a collection of tri-strips.
+  this->_check ( in, "triangle_strips" );
+  Usul::Types::Uint32 numStrips, dummy;
+  in >> numStrips >> dummy;
+  this->_skipLine ( in );
+
+  // Needed in the loop.
+  typedef std::vector < unsigned int > Indices;
+  typedef std::vector < Indices > Strips;
+  Strips strips ( numStrips );
+  unsigned int numTriangles ( 0 );
+
+  // Start reading the strips.
+  for ( unsigned int j = 0; j < numStrips; ++j )
+  {
+    // Read how many indices are in this strip.
+    Usul::Types::Uint32 numIndices ( 0 );
+    Usul::IO::ReadBigEndian::read ( in, numIndices );
+    strips.at(j).resize ( numIndices );
+    numTriangles += ( numIndices - 2 );
+
+    // Loop through all the indices.
+    for ( unsigned int k = 0; k < numIndices; ++k )
+    {
+      // Read the index.
+      Usul::Types::Uint32 index ( 0 );
+      Usul::IO::ReadBigEndian::read ( in, index );
+      strips.at(j).at(k) = index;
+    }
+  }
+
+  // Size the vertices.
+  const unsigned int numVertices ( numTriangles * 3 );
+  _vertices.resize ( numVertices );
+  _normals.resize ( numTriangles );
+
+  // Set all the vertices and normals.
+  unsigned int vc ( 0 ), tc ( 0 );
+  for ( unsigned int s = 0; s < numStrips; ++s )
+  {
+    // Loop through each strip.
+    const Indices &indices = strips.at(s);
+    const unsigned int numIndices ( indices.size() );
+    const unsigned int stop ( numIndices - 2 );
+    for ( unsigned int k = 0; k < stop; ++k )
+    {
+      // Get the three indices.
+      const unsigned int &i0 = indices.at(k);
+      const unsigned int &i1 = indices.at(k+1);
+      const unsigned int &i2 = indices.at(k+2);
+
+      // Get the three vertices.
+      const osg::Vec3 &v0 = pool.at(i0);
+      const osg::Vec3 &v1 = pool.at(i1);
+      const osg::Vec3 &v2 = pool.at(i2);
+
+      // Set the vertices in the big list.
+      _vertices.at(vc++).set ( v0 );
+      _vertices.at(vc++).set ( v1 );
+      _vertices.at(vc++).set ( v2 );
+
+      // Calculate the normal. Every other one we flip.
+      const osg::Vec3 v01 ( v1 - v0 );
+      const osg::Vec3 v02 ( v2 - v0 );
+      osg::Vec3 n ( ( k % 2 ) ? v02 ^ v01 : v01 ^ v02 );
+      n.normalize();
+      _normals.at(tc++).set ( n );
+    }
   }
 }
 

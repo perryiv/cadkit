@@ -7,6 +7,7 @@ CPP_FILES = \
 	DbPfDatabase.cpp \
 	DbPfDll.cpp \
 	DbPfFunctions.cpp \
+	DbPfUtility.cpp \
 	DbPfPrecompiled.cpp
 
 # The include path.

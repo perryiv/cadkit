@@ -10,6 +10,7 @@ CPP_FILES = \
 	DbJtTargets.cpp \
 	DbJtTraversalState.cpp \
 	DbJtTraverser.cpp \
+	DbJtVisApiVersion.cpp \
 	DbJtVisApi.cpp
 
 # The include path.

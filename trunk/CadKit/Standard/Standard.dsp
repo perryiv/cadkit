@@ -123,6 +123,10 @@ SOURCE=.\SlAssert.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlBinaryRecordParser.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlBitmask.h
 # End Source File
 # Begin Source File
@@ -320,6 +324,26 @@ SOURCE=.\SlList.h
 # Begin Source File
 
 SOURCE=.\SlStack.h
+# End Source File
+# End Group
+# Begin Group "XML"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlXmlGroup.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlXmlLeaf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlXmlNode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlXmlWrite.h
 # End Source File
 # End Group
 # End Target

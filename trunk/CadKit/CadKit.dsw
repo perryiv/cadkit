@@ -39,6 +39,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DatabaseXml"=.\Database\XML\DatabaseXml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Matrix4"=.\Examples\Matrix4\Matrix4.dsp - Package Owner=<4>
 
 Package=<5>
@@ -139,6 +151,18 @@ Package=<4>
 ###############################################################################
 
 Project: "Vector"=.\Examples\Vector\Vector.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "flt2xml"=.\Translators\flt2xml\flt2xml.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

@@ -37,7 +37,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Sg.cpp : Defines the initialization routines for the DLL.
+//  SgDll.cpp : Defines the initialization routines for the DLL.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +68,7 @@ BOOL APIENTRY DllMain ( HINSTANCE hModule, DWORD ul_reason_for_call, LPVOID lpRe
 
 void _init()
 {
-  SL_PRINT ( "In Sg::_init()\n" );
+  SL_PRINT ( "In SgDll::_init()\n" );
 }
 
 
@@ -80,7 +80,7 @@ void _init()
 
 void _fini()
 {
-  SL_PRINT ( "In Sg::_fini()\n" );
+  SL_PRINT ( "In SgDll::_fini()\n" );
 }
 
 

@@ -77,6 +77,7 @@ public:
   virtual bool            visit ( DbXmlLeaf & );
 
   // Write the output file.
+  bool                    write ( const DbXmlNode &node, const char *filename );
   bool                    write ( const DbXmlNode &node, std::ostream &out );
 
 protected:

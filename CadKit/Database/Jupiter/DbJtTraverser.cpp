@@ -211,7 +211,7 @@ bool DbJtTraverser::traverse ( const char *filename )
 
   catch ( ... )
   {
-    _error.format ( "Exception generated when attempting to traverse." );
+    CadKit::format ( _error, "Exception generated when attempting to traverse." );
     return false;
   }
 }
@@ -239,7 +239,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   SlRefPtr<eaiCADImporter> importer = eaiEntityFactory::createCADImporter();
   if ( importer.isNull() )
   {
-    _error.format ( "Failed to create CAD importer." );
+    CadKit::format ( _error, "Failed to create CAD importer." );
     return false;
   }
 
@@ -256,7 +256,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   SlRefPtr<eaiTraverser> traverser = eaiEntityFactory::createTraverser();
   if ( traverser.isNull() )
   {
-    _error.format ( "Failed to create database traverser." );
+    CadKit::format ( _error, "Failed to create database traverser." );
     return false;
   }
 
@@ -266,7 +266,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   // Notify the client.
   if ( false == this->_sendMessage ( IMPORT_START ) )
   {
-    _error.format ( "Failed to start importing database: %s", filename );
+    CadKit::format ( _error, "Failed to start importing database: %s", filename );
     return false;
   }
 
@@ -274,14 +274,14 @@ bool DbJtTraverser::_traverse ( const char *filename )
   SlRefPtr<eaiHierarchy> root = importer->import ( filename );
   if ( root.isNull() )
   {
-    _error.format ( "Failed to import database: %s", filename );
+    CadKit::format ( _error, "Failed to import database: %s", filename );
     return false;
   }
 
   // Notify the client.
   if ( false == this->_sendMessage ( IMPORT_FINISH ) )
   {
-    _error.format ( "Failed to finish importing database: %s", filename );
+    CadKit::format ( _error, "Failed to finish importing database: %s", filename );
     return false;
   }
 
@@ -292,21 +292,21 @@ bool DbJtTraverser::_traverse ( const char *filename )
   // Notify the client.
   if ( false == this->_sendMessage ( TRAVERSAL_START ) )
   {
-    _error.format ( "Failed to start traversal." );
+    CadKit::format ( _error, "Failed to start traversal." );
     return false;
   }
 
   // Traverse the database.
   if ( eai_OK != traverser->traverseGraph ( root ) )
   {
-    _error.format ( "Failed to traverse database." );
+    CadKit::format ( _error, "Failed to traverse database." );
     return false;
   }
 
   // Notify the client.
   if ( false == this->_sendMessage ( TRAVERSAL_FINISH ) )
   {
-    _error.format ( "Failed to finish traversal." );
+    CadKit::format ( _error, "Failed to finish traversal." );
     return false;
   }
 
@@ -380,7 +380,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       // Notify the client.
       if ( false == this->_sendMessage ( LEVEL_PUSH ) )
       {
-        _error.format ( "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+        CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
         return eai_ERROR;
       }
     }
@@ -397,7 +397,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       // Notify the client.
       if ( false == this->_sendMessage ( LEVEL_POP ) )
       {
-        _error.format ( "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+        CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
         return eai_ERROR;
       }
     }
@@ -409,7 +409,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
   // Notify the client.
   if ( false == this->_sendMessage ( ENTITY ) )
   {
-    _error.format ( "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+    CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
     return eai_ERROR;
   }
 

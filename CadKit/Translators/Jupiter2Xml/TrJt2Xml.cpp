@@ -53,7 +53,6 @@
 # include "Database/XML/DbXmlLeaf.h"
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
-# include "Standard/SlPathname.h"
 # include "Standard/SlBitmask.h"
 # include <fstream>
 #endif
@@ -69,11 +68,9 @@ using namespace CadKit;
 
 TrJt2Xml::TrJt2Xml() :
   _jtTraverser ( NULL ),
-  _xmlWrite ( NULL ),
-  _xmlRoot ( NULL ),
   _error ( "" )
 {
-  SL_PRINT ( "In TrJt2Xml::TrJt2Xml(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Xml::TrJt2Xml(), this = %X,\n", this );
 }
 
 
@@ -85,7 +82,7 @@ TrJt2Xml::TrJt2Xml() :
 
 TrJt2Xml::~TrJt2Xml()
 {
-  SL_PRINT ( "In TrJt2Xml::~TrJt2Xml(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Xml::~TrJt2Xml(), this = %X,\n", this );
 }
 
 
@@ -97,15 +94,13 @@ TrJt2Xml::~TrJt2Xml()
 
 bool TrJt2Xml::init()
 {
-  SL_PRINT ( "In TrJt2Xml::init(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Xml::init(), this = %X,\n", this );
 
   // Allocate.
   _jtTraverser = new DbJtTraverser;
-  _xmlWrite = new DbXmlWrite;
-  _xmlRoot = new DbXmlGroup;
-  if ( _jtTraverser.isNull() || _xmlWrite.isNull() || _xmlRoot.isNull() )
+  if ( _jtTraverser.isNull() )
   {
-    _error.format ( "Failed to allocate memory." );
+    _error = "Failed to allocate memory.";
     return false;
   }
 
@@ -114,9 +109,6 @@ bool TrJt2Xml::init()
 
   // Set the callback function.
   _jtTraverser->setCallback ( &TrJt2Xml::_traverseCallback, this );
-
-  // Name the root node.
-  _xmlRoot->setName ( "jt2xml" );
 
   // It worked.
   return true;
@@ -129,17 +121,14 @@ bool TrJt2Xml::init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Xml::translate ( const char *filename )
+bool TrJt2Xml::translate ( const char *filename, DbXmlGroup &root )
 {
-  SL_PRINT ( "In TrJt2Xml::translate(), this = %X, filename = %s\n", this, filename );
-  SL_ASSERT ( _jtTraverser.isValid() && _xmlWrite.isValid() && _xmlRoot.isValid() );
-
-  // Make sure the XML tree is empty.
-  _xmlRoot->removeAllChildren();
+  SL_PRINT3 ( "In TrJt2Xml::translate(), this = %X, filename = %s\n", this, filename );
+  SL_ASSERT ( _jtTraverser.isValid() );
 
   // Make sure we have just one group on the stack.
   _groupStack.clear();
-  _groupStack.push_back ( _xmlRoot );
+  _groupStack.push_back ( &root );
 
   // Tell the traverser to traverse the database.
   if ( false == _jtTraverser->traverse ( filename ) )
@@ -151,11 +140,10 @@ bool TrJt2Xml::translate ( const char *filename )
   // The database traversal stops when the last child is parsed, which may be 
   // deep in the heiarchy.
   SL_ASSERT ( _groupStack.size() >= 1 );
-  SL_ASSERT ( _xmlRoot == _groupStack.front() );
+  SL_ASSERT ( &root == _groupStack.front() );
 
-  // Write the file.
-  SlAPathname out ( filename );
-  return this->_write ( out.getDrive() + out.getDirectory() + out.getFilename() + ".xml" );
+  // It worked.
+  return true;
 }
 
 
@@ -167,7 +155,7 @@ bool TrJt2Xml::translate ( const char *filename )
 
 bool TrJt2Xml::_traverseCallback ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData )
 {
-  SL_PRINT ( "In TrJt2Xml::_traverseCallback(), message = %d, clientData = %X\n", message, clientData );
+  SL_PRINT3 ( "In TrJt2Xml::_traverseCallback(), message = %d, clientData = %X\n", message, clientData );
   SL_ASSERT ( clientData );
 
   // Call the other one.
@@ -183,7 +171,7 @@ bool TrJt2Xml::_traverseCallback ( const DbJtTraverser::Message &message, const 
 
 bool TrJt2Xml::_traverseNotify ( const DbJtTraverser::Message &message )
 {
-  SL_PRINT ( "In TrJt2Xml::_traverseNotify(), message = %d, this = %X\n", message, this );
+  SL_PRINT3 ( "In TrJt2Xml::_traverseNotify(), message = %d, this = %X\n", message, this );
   SL_ASSERT ( this );
 
   // See what kind of message it is.
@@ -227,7 +215,7 @@ bool TrJt2Xml::_traverseNotify ( const DbJtTraverser::Message &message )
 
 bool TrJt2Xml::_processEntity ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Xml::_processEntity(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_processEntity(), this = %X, entity = %X\n", this, entity );
 
   // Get the current entity type.
   DbJtTraverser::EntityType type;
@@ -270,7 +258,7 @@ bool TrJt2Xml::_processEntity ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Xml::_addName ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
 {
-  SL_PRINT ( "In TrJt2Xml::_addName(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addName(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query name of the group, there may not be one.
@@ -294,7 +282,7 @@ bool TrJt2Xml::_addName ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group 
 
 bool TrJt2Xml::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
 {
-  SL_PRINT ( "In TrJt2Xml::_addTransform(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addTransform(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query the transformation, there may not be one.
@@ -304,8 +292,8 @@ bool TrJt2Xml::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &g
 
   // Write it on a single line, one row after the other.
   SlAString tempString;
-  tempString.format ( 
-    "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+  CadKit::format ( 
+    tempString, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
     transform[0],  transform[1],  transform[2],  transform[3], 
     transform[4],  transform[5],  transform[6],  transform[7], 
     transform[8],  transform[9],  transform[10], transform[11], 
@@ -328,7 +316,7 @@ bool TrJt2Xml::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &g
 
 bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
 {
-  SL_PRINT ( "In TrJt2Xml::_addMaterial(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query the material, there may not be one.
@@ -354,7 +342,7 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
   {
     // Add a leaf for the shininess.
     SlAString tempString;
-    tempString.format ( "%f", shininess );
+    CadKit::format ( tempString, "%f", shininess );
     material->addChild ( new DbXmlLeaf ( "shininess", tempString.c_str() ) );
   }
 
@@ -385,7 +373,7 @@ bool TrJt2Xml::_addColor ( const unsigned int &valid,
                            const char *colorName, 
                            DbXmlGroup &material )
 {
-  SL_PRINT ( "In TrJt2Xml::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
+  SL_PRINT5 ( "In TrJt2Xml::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
   SL_ASSERT ( colorName );
 
   // See if the color is valid.
@@ -393,7 +381,7 @@ bool TrJt2Xml::_addColor ( const unsigned int &valid,
   {
     // Add a leaf for the color.
     SlAString tempString;
-    tempString.format ( "%f %f %f %f", color[0], color[1], color[2], color[3] );
+    CadKit::format ( tempString, "%f %f %f %f", color[0], color[1], color[2], color[3] );
     material.addChild ( new DbXmlLeaf ( colorName, tempString.c_str() ) );
     return true;
   }
@@ -411,7 +399,7 @@ bool TrJt2Xml::_addColor ( const unsigned int &valid,
 
 DbXmlGroup::Ptr TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Xml::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
+  SL_PRINT4 ( "In TrJt2Xml::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
   SL_ASSERT ( groupName );
 
   // Make a new group.
@@ -437,7 +425,7 @@ DbXmlGroup::Ptr TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::E
 
 bool TrJt2Xml::_assemblyStart ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Xml::_assemblyStart(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_assemblyStart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new assembly.
   DbXmlGroup::Ptr assembly = this->_createGroup ( "assembly", entity );
@@ -463,7 +451,7 @@ bool TrJt2Xml::_assemblyStart ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Xml::_addPart ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Xml::_addPart(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addPart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new group for the part.
   DbXmlGroup::Ptr part = this->_createGroup ( "part", entity );
@@ -490,7 +478,7 @@ bool TrJt2Xml::_addPart ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Xml::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
 {
-  SL_PRINT ( "In TrJt2Xml::_addLODs(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addLODs(), this = %X, entity = %X\n", this, entity );
 
   // Get the number of shape LODs.
   unsigned int numLODs ( 0 );
@@ -537,7 +525,7 @@ bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity,
                          const unsigned int &whichLOD, 
                          DbXmlGroup &lods )
 {
-  SL_PRINT ( "In TrJt2Xml::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
+  SL_PRINT4 ( "In TrJt2Xml::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
 
   // Get the number of shapes for this LOD.
   unsigned int numShapes ( 0 );
@@ -585,7 +573,7 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
                            const unsigned int &whichShape, 
                            DbXmlGroup &lod )
 {
-  SL_PRINT ( "In TrJt2Xml::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In TrJt2Xml::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 
   // Get the number of sets for this shape.
   unsigned int numSets ( 0 );
@@ -618,7 +606,7 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
   default:
     SL_ASSERT ( 0 ); // Heads up.
     _jtTraverser->getName ( entity, name );
-    _error.format ( "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
+    CadKit::format ( _error, "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
     return false;
   }
 
@@ -655,7 +643,7 @@ bool TrJt2Xml::_addSet ( DbJtTraverser::EntityHandle entity,
                          const std::string &name,
                          DbXmlGroup &shape )
 {
-  SL_PRINT ( "In TrJt2Xml::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In TrJt2Xml::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( false == name.empty() );
 
   // Get the shape.
@@ -702,7 +690,7 @@ bool TrJt2Xml::_addArray ( const unsigned int &valid,
                            const char *arrayName, 
                            DbXmlGroup &set )
 {
-  SL_PRINT ( "In TrJt2Xml::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
+  SL_PRINT5 ( "In TrJt2Xml::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
   SL_ASSERT ( arrayName );
 
   // See if the array is valid.
@@ -732,7 +720,7 @@ bool TrJt2Xml::_addArray ( const unsigned int &valid,
 
 void TrJt2Xml::_setArrayString ( const std::vector<float> &array, SlAString &s )
 {
-  SL_PRINT ( "In TrJt2Xml::_setArrayString(), this = %X, array.size() = %d\n", this, array.size() );
+  SL_PRINT3 ( "In TrJt2Xml::_setArrayString(), this = %X, array.size() = %d\n", this, array.size() );
   SL_ASSERT ( false == array.empty() );
 
   // Make sure it's empty.
@@ -744,14 +732,14 @@ void TrJt2Xml::_setArrayString ( const std::vector<float> &array, SlAString &s )
   for ( unsigned int i = 0; i < stop; ++i )
   {
     // Format the temporary string.
-    temp.format ( "%f ", array[i] );
+    CadKit::format ( temp, "%f ", array[i] );
 
     // Append it to the "array string".
     s.append ( temp );
   }
 
   // Now append the last element (the format is slightly different).
-  temp.format ( "%f", array[i] );
+  CadKit::format ( temp, "%f", array[i] );
   s.append ( temp );
 }
 
@@ -764,7 +752,7 @@ void TrJt2Xml::_setArrayString ( const std::vector<float> &array, SlAString &s )
 
 bool TrJt2Xml::_addInstance ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Xml::_addInstance(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Xml::_addInstance(), this = %X, entity = %X\n", this, entity );
 
   // Make a new group for the part.
   DbXmlGroup::Ptr instance = this->_createGroup ( "instance", entity );
@@ -787,7 +775,7 @@ bool TrJt2Xml::_addInstance ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Xml::_endCurrentGroup()
 {
-  SL_PRINT ( "In TrJt2Xml::_endCurrentGroup(), this = %X\n", this );
+  SL_PRINT2 ( "In TrJt2Xml::_endCurrentGroup(), this = %X\n", this );
   SL_ASSERT ( _groupStack.size() >= 2 );
 
   // Pop the group.
@@ -795,34 +783,6 @@ bool TrJt2Xml::_endCurrentGroup()
 
   // It worked.
   return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the XML tree to file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TrJt2Xml::_write ( std::string &filename )
-{
-  SL_PRINT ( "In TrJt2Xml::_write(), this = %X, filename = %s\n", this, filename.c_str() );
-
-  // Open the file.
-  std::ofstream out ( filename.c_str() );
-  if ( false == out.is_open() )
-  {
-    _error.format ( "Failed to open file '%s' for writing.", filename.c_str() );
-    return false;
-  }
-
-//#ifdef _DEBUG
-//  // Write only the names (no values) to the file.
-//  _xmlWrite->setMode ( DbXmlWrite::WRITE_NAME_ONLY );
-//#endif
-
-  // Write the file.
-  return _xmlWrite->write ( *_xmlRoot, out );
 }
 
 /*

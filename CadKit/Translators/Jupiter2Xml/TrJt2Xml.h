@@ -47,7 +47,6 @@
 #include "TrJt2XmlApi.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Database/XML/DbXmlWrite.h"
 # include "Database/XML/DbXmlGroup.h"
 # include "Database/Jupiter/DbJtTraverser.h"
 # include <list>
@@ -77,8 +76,6 @@ protected:
 
   typedef std::list<DbXmlGroup *> XmlGroupStack;
   DbJtTraverser::Ptr _jtTraverser;
-  DbXmlWrite::Ptr _xmlWrite;
-  DbXmlGroup::Ptr _xmlRoot;
   SlAString _error;
   XmlGroupStack _groupStack;
 
@@ -105,8 +102,6 @@ protected:
 
   static bool             _traverseCallback ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData );
   bool                    _traverseNotify   ( const DbJtTraverser::Message &message );
-
-  bool                    _write ( std::string &filename );
 };
 
 }; // namespace CadKit

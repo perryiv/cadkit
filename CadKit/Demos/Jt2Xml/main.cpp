@@ -46,10 +46,66 @@
 # pragma warning(disable:4786) // Truncated debug names.
 #endif
 
-#include "Translators/Jupiter2Xml/TrJt2XmlClientHeaders.h"
+#include "Translators/Jupiter2Xml/TrJt2Xml.h"
+#include "Database/XML/DbXmlWrite.h"
+#include "Standard/SlPathname.h"
+#include <string>
 #include <iostream>
 
 using namespace CadKit;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Translate the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool _translate ( const char *filename, TrJt2Xml &jt2xml )
+{
+  SL_ASSERT ( filename );
+  std::cout << "Translating: " << filename << std::endl;
+
+  // Declare an XML group.
+  DbXmlGroup::Ptr root = new DbXmlGroup ( "jt2xml" );
+
+  // Translate.
+  if ( false == jt2xml.translate ( filename, *root ) )
+  {
+    std::cout << jt2xml.getLastError() << std::endl;
+    std::cout << "Failed to translate: " << filename << std::endl;
+    return false;
+  }
+
+  // The output filename should have the same path as the input filename, 
+  // except with a different extension.
+  std::string name ( filename );
+  SL_ASSERT ( name.size() - 3 == name.find ( ".jt" ) );
+  name.resize ( name.size() - 2 );
+  name += "xml";
+
+  std::cout << "Writing:     " << name << std::endl;
+
+  // Declare an XML writer.
+  DbXmlWrite::Ptr out = new DbXmlWrite;
+
+//#ifdef _DEBUG
+//  // Write only the names (no values) to the file.
+//  out->setMode ( DbXmlWrite::WRITE_NAME_ONLY );
+//#endif
+
+  // Write the XML tree to file.
+  if ( false == out->write ( *root, name.c_str() ) )
+  {
+    std::cout << "Failed to write: " << name << std::endl;
+    return false;
+  }
+
+  std::cout << "Done with:   " << filename << std::endl;
+
+  // It worked.
+  return true;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,7 +119,8 @@ int main ( int argc, char **argv )
   // There should be at least one argument.
   if ( argc < 2 )
   {
-    std::cout << "Usage: " << SlAPathname ( argv[0] ).getFilename().c_str() << "<filename1.jt> [filename2.jt] ..." << std::endl;
+    std::cout << "Usage: " << CadKit::justFilename ( std::string ( argv[0] ) );
+    std::cout << "<filename1.jt> [filename2.jt] ..." << std::endl;
     return 0;
   }
 
@@ -80,17 +137,8 @@ int main ( int argc, char **argv )
   // Loop through all the input files.
   for ( int i = 1; i < argc; ++i )
   {
-    std::cout << "Translating: " << argv[i] << std::endl;
-
-    // Read the jupiter file.
-    if ( false == jt2xml.translate ( argv[i] ) )
-    {
-      std::cout << jt2xml.getLastError() << std::endl;
-      std::cout << "Failed to translate: " << argv[i] << std::endl;
-      return 0;
-    }
-
-    std::cout << "Done with:   " << argv[i] << std::endl;
+    // Translate the jupiter database.
+    ::_translate ( argv[i], jt2xml );
   }
 
   // It worked.

@@ -442,6 +442,9 @@
 						RelativePath=".\Interfaces\ISceneIntersect.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ITextMatrix.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ITrackball.h">
 					</File>
 				</Filter>

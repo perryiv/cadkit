@@ -366,6 +366,9 @@
 					RelativePath=".\Interfaces\IFoxToggleButton.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxToolbar.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\ILoadFileDialog.h">
 				</File>
 				<File
@@ -409,6 +412,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISequenceManager.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISetCursor.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IStatusBar.h">

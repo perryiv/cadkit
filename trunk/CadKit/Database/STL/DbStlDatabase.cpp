@@ -15,23 +15,16 @@
 
 #include "DbStlPrecompiled.h"
 #include "DbStlDatabase.h"
+#include "DbStlBinaryWriter.h"
+#include "DbStlAsciiWriter.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlQueryPtr.h"
-#include "Standard/SlMessageIds.h"
-#include "Standard/SlStringFunctions.h"
-#include "Standard/SlVec3IO.h"
 
 #include <fstream>
+#include <string>
 #include <time.h>
-
-// To help shorten up the lines.
-#undef  ERROR
-#define ERROR    this->_notifyError
-#define PROGRESS this->_notifyProgress
-#define WARNING  this->_notifyWarning
-#define FORMAT   CadKit::getString
 
 using namespace CadKit;
 
@@ -45,7 +38,9 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbStlDatabase::DbStlDatabase() : DbBaseTarget()
+DbStlDatabase::DbStlDatabase() : DbBaseTarget(),
+  _facets(),
+  _ascii ( false )
 {
   SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
 }
@@ -60,14 +55,12 @@ DbStlDatabase::DbStlDatabase() : DbBaseTarget()
 DbStlDatabase::~DbStlDatabase()
 {
   SL_PRINT2 ( "In DbStlDatabase::~DbStlDatabase(), this = %X\n", this );
-
-//TODO make sure we clean up
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Tell the target it is about to receive data.
+//  Called when this target it is about to receive data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +78,7 @@ bool DbStlDatabase::dataTransferStart ( IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Tell the target it is done receiving data.
+//  Called when this target it is done receiving data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -142,30 +135,102 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   SL_PRINT3 ( "In DbStlDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
+  // Store as either ascii or binary.
+  if ( _ascii )
+    return _writeAscii ( filename );
+  else
+    return _writeBinary ( filename );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the header.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DbStlDatabase::_getHeader() const
+{
+  SL_PRINT2 ( "In DbStlDatabase::_getHeader(), this = %X\n", this );
+
+  time_t now ( time ( 0x0 ) );
+  std::string header ( std::string ( "solid created: " ) + ::asctime ( ::localtime ( &now ) ) );
+
+  // Note: asctime() appends a '\n'
+  header.erase ( header.end() );
+
+  // Binary STL requires an 80 byte header. Since we append null characters
+  // the ascii output won't write them (which is good).
+  header.resize ( 80, '\0' );
+
+  return header;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write as ascii data.
+//  See http://www.sdsc.edu/tmf/Stl-specs/stl.html or
+//  http://astronomy.swin.edu.au/~pbourke/geomformats/stl/
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlDatabase::_writeAscii ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbStlDatabase::_writeAscii(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
+
   // Open a file.
   std::ofstream out ( filename.c_str() );
   if ( false == out.is_open() )
     return false;
 
   // Write the header.
-  time_t now ( time ( 0x0 ) );
-  out << "solid created: " << ::asctime ( ::localtime ( &now ) ) << "\n";
+  out << "solid created: " << this->_getHeader().c_str() << '\n';
 
-  // Loop through the facets.
-  for ( Facets::const_iterator i = _facets.begin(); i != _facets.end(); ++i )
-  {
-    const DbStlTriangle &facet = *i;
-    out << "facet normal " << facet.getNormal() << "\n";
-    out << "outer loop\n";
-    out << "vertex " << facet.getVertex ( 0 ) << "\n";
-    out << "vertex " << facet.getVertex ( 1 ) << "\n";
-    out << "vertex " << facet.getVertex ( 2 ) << "\n";
-    out << "endloop\n";
-    out << "endfacet\n";
-  }
+  // Loop through the facets and write them.
+  std::for_each ( _facets.begin(), _facets.end(), DbStlAsciiWriter ( out ) );
 
   // Write the footer.
   out << "endsolid\n";
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write as binary data.
+//  See http://astronomy.swin.edu.au/~pbourke/geomformats/stl/
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlDatabase::_writeBinary ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbStlDatabase::_writeBinary(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
+
+  // Open a file.
+  std::ofstream out ( filename.c_str(), std::ios::binary );
+  if ( false == out.is_open() )
+    return false;
+
+  // Write the header.
+  std::string header ( this->_getHeader() );
+  out.write ( header.c_str(), header.size() );
+
+  // Helper class.
+  DbStlBinaryWriter writer ( out );
+
+  // Write the number of facets.
+  writer.write ( _facets.size() );
+
+  // Loop through the facets and write them.
+  std::for_each ( _facets.begin(), _facets.end(), writer );
 
   // It worked.
   return true;

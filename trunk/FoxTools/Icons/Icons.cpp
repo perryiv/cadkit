@@ -94,6 +94,10 @@ FoxTools::Icons::Icons::Icons() : _map()
   _map.insert ( Value ( ICON_POINTS,    Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_POINTS   ) ) ) ) );
   _map.insert ( Value ( ICON_SEEK,      Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_SEEK     ) ) ) ) );
   _map.insert ( Value ( ICON_SET_HOME,  Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_SET_HOME ) ) ) ) );
+  _map.insert ( Value ( ICON_TOOL_SELECTION,    Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_TOOL_SELECTION   ) ) ) ) );
+  _map.insert ( Value ( ICON_TRIANGLE,          Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_TRIANGLE         ) ) ) ) );
+  _map.insert ( Value ( ICON_DELETECONNECTED,   Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_DELETECONNECTED  ) ) ) ) );
+  _map.insert ( Value ( ICON_KEEPCONNECTED,     Data ( bmp, Array ( ITERATORS ( BMP::IMAGE_KEEPCONNECTED    ) ) ) ) );
 }
 
 

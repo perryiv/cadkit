@@ -27,10 +27,8 @@ public:
   ~ReaderWriterSTL();
 
   virtual bool            acceptsExtension ( const std::string &extension );
-
   virtual const char*     className();
-
-  virtual Result          readNode ( const std::string &filename, const Options * );
+  virtual Result          readNode ( const std::string &filename, const Options *options );
 
 
 protected:
@@ -40,7 +38,6 @@ protected:
   void                    _parse ( std::ifstream &in );
   Result                  _read ( const std::string &, const Options * );
 
-private:
 };
 
 

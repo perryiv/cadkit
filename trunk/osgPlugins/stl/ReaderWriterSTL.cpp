@@ -35,7 +35,7 @@ const char* ReaderWriterSTL::className()
   return "STL Reader";
 }
 
-Result ReaderWriterSTL::readNode ( const std::string &file, const Options * )
+ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, const Options *options )
 {
   try
   {
@@ -43,7 +43,7 @@ Result ReaderWriterSTL::readNode ( const std::string &file, const Options * )
   }
 
   // Catch known exceptions.
-  catch ( const ReaderWriterPDB::Result &r )
+  catch ( const ReaderWriterSTL::Result &r )
   {
     return r;
   }
@@ -51,13 +51,13 @@ Result ReaderWriterSTL::readNode ( const std::string &file, const Options * )
   // Catch standard exceptions.
   catch ( const std::exception &e )
   {
-    return ReaderWriterPDB::Result ( e.what() );
+    return ReaderWriterSTL::Result ( e.what() );
   }
 
   // Catch all other exceptions.
   catch ( ... )
   {
-    return ReaderWriterPDB::Result ( "Unknown exception caught" );
+    return ReaderWriterSTL::Result ( "Unknown exception caught" );
   }
 
 }
@@ -75,13 +75,10 @@ void ReaderWriterSTL::_parse ( std::ifstream &in )
 {
 }
 
-Result ReaderWriter::_read ( const std::string &, const Options * )
+ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &file, const Options *options )
 {
   // Make sure the internal data members are initialized.
   this->_init();
-
-  // Configure this instance based on the options.
-  this->_configure ( options );
 
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )

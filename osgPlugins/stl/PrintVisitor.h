@@ -40,6 +40,7 @@ protected:
 //  Write out a geode's geometry to the file
 //  TODO, convert polygon to triangles.
 //  TODO, handle different normal bindings
+//  TODO, handle parent matrix transforms
 //
 ///////////////////////////////////////////////////////////////////////////////
 template < class Writer >

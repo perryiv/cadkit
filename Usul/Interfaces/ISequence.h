@@ -26,6 +26,7 @@ namespace Usul
 
       virtual void appendUnknown ( Usul::Interfaces::IUnknown * ) = 0;
       virtual void removeUnknown ( Usul::Interfaces::IUnknown * ) = 0;
+      virtual bool containsUnknown ( Usul::Interfaces::IUnknown * ) = 0;
       virtual void clearAllUnknowns ( ) = 0;
       virtual IUnknown * getUnknownAt ( unsigned int index ) = 0;
 

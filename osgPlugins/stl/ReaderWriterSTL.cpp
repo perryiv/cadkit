@@ -142,7 +142,7 @@ osg::Group * ReaderWriterSTL::_build() const
 
     // Make geometry and add to geode.
     osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
-    geode->addDrawable ( geom.get() );
+    geode->addDrawable ( geom.get() );  
 
     // Set vertices and normals.
     geom->setVertexArray ( vertices.get() );

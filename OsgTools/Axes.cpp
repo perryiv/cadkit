@@ -137,7 +137,7 @@ osg::Node* Axes::operator()() const
   // Create a box at the origin
   if( Usul::Bits::has(_state,ORIGIN_CUBE) )
   {
-    osg::ref_ptr<osg::Geode> box = box_graphic(_colorBox);
+    osg::ref_ptr<osg::Node> box = box_graphic(_colorBox);
     group->addChild(box.get());
   }
 
@@ -268,13 +268,12 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   return( group.release() );
 }
 
-osg::Geode* Axes::box_graphic(const osg::Vec4& color) const
+osg::Node* Axes::box_graphic(const osg::Vec4& color) const
 {
   float size = _width*2.3;
-  Box box(size,size,size);
-  box.setColor( color );
+  ColorBox box(size,size,size);
 
-  osg::ref_ptr<osg::Geode> geode = box();
+  osg::ref_ptr<osg::Node> node = box();
 
-  return( geode.release() );
+  return( node.release() );
 }

@@ -57,6 +57,8 @@
 # include "Database/Jupiter/DbJtClientHeaders.h"
 # include "Database/Xml/DbXmlClientHeaders.h"
 # include <fstream>
+# include <iostream>
+# include <iomanip>
 #endif
 
 #endif // _CADKIT_JUPITER_TO_XML_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

@@ -56,6 +56,8 @@
 # include "Standard/SlPrint.h"
 # include "Standard/SlBitmask.h"
 # include "Standard/SlStringFunctions.h"
+# include <iostream>
+# include <iomanip>
 #endif
 
 using namespace CadKit;
@@ -68,6 +70,7 @@ using namespace CadKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 TrJt2Xml::TrJt2Xml() :
+  _verbose ( false ),
   _jtTraverser ( NULL ),
   _error ( "" )
 {
@@ -182,15 +185,38 @@ bool TrJt2Xml::_traverseNotify ( const DbJtTraverser::Message &message )
   switch ( message )
   {
   case DbJtTraverser::IMPORT_START:
+
+    if ( _verbose )
+      std::cout << "Importing... " << std::flush;
+    break;
+
   case DbJtTraverser::IMPORT_FINISH:
+
+    if ( _verbose )
+      std::cout << "done" << std::endl;
+    break;
+
   case DbJtTraverser::TRAVERSAL_START:
+
+    if ( _verbose )
+      std::cout << "Starting the traversal" << std::endl;
+    break;
+
   case DbJtTraverser::TRAVERSAL_FINISH:
+
+    if ( _verbose )
+      std::cout << "Done traversing" << std::endl;
+    break;
+
   case DbJtTraverser::LEVEL_PUSH:
 
     // Do nothing.
     break;
 
   case DbJtTraverser::LEVEL_POP:
+
+    if ( _verbose )
+      std::cout << "Done with assembly" << std::endl;
 
     // Pop the XML tree level.
     return this->_endCurrentGroup();
@@ -324,10 +350,8 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
   SL_ASSERT ( entity );
 
   // Query the material, there may not be one.
-  SlVec4f ambient, diffuse, specular, emissive;
-  float shininess;
-  unsigned int valid ( 0 );
-  if ( false == _jtTraverser->getMaterial ( entity, ambient, diffuse, specular, emissive, shininess, valid ) )
+  SlMaterialf m;
+  if ( false == _jtTraverser->getMaterial ( entity, m ) )
     return false;
 
   // Make a group for the material.
@@ -336,17 +360,17 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
     return false;
 
   // Add the colors.
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_AMBIENT,  ambient, "ambient",  *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_DIFFUSE,  ambient, "diffuse",  *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_SPECULAR, ambient, "specular", *material );
-  this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_EMISSIVE, ambient, "emissive", *material );
+  this->_addColor ( m.getValid(), SlMaterialf::AMBIENT,  m.getAmbient(),  "ambient",  *material );
+  this->_addColor ( m.getValid(), SlMaterialf::DIFFUSE,  m.getDiffuse(),  "diffuse",  *material );
+  this->_addColor ( m.getValid(), SlMaterialf::SPECULAR, m.getSpecular(), "specular", *material );
+  this->_addColor ( m.getValid(), SlMaterialf::EMISSIVE, m.getEmissive(), "emissive", *material );
 
   // Add the shininess.
-  if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::MATERIAL_COLOR_SHININESS ) )
+  if ( m.isValid ( SlMaterialf::SHININESS ) )
   {
     // Add a leaf for the shininess.
     SlAString tempString;
-    CadKit::format ( tempString, "%f", shininess );
+    CadKit::format ( tempString, "%f", m.getShininess() );
     material->addChild ( new DbXmlLeaf ( "shininess", tempString.c_str() ) );
   }
 
@@ -401,6 +425,37 @@ bool TrJt2Xml::_addColor ( const unsigned int &valid,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void TrJt2Xml::_printGroup ( DbXmlGroup &group )
+{
+  SL_PRINT2 ( "In TrJt2Xml::_printGroup(), this = %X\n", this );
+
+  // Return if we aren't supposed to print anything.
+  if ( false == _verbose )
+    return;
+
+  // Get the name of the group, if there is one. This is not the XML name 
+  // from the name-value pair, this is the first child of <name>.
+  std::string name;
+  if ( group.getNumChildren() > 0 )
+  {
+    const DbXmlNode *node = group.getChild ( 0 );
+    if ( node && node->isOfType ( DbXmlLeaf::getClassType() ) )
+    {
+      name = ((const DbXmlLeaf *) node)->getValue();
+    }
+  }
+
+  // Print the info, even if "name" is blank.
+  std::cout << std::setw ( 8 ) << group.getName() << ": " << name << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an XML group node and fill in the common properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 DbXmlGroup *TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity )
 {
   SL_PRINT4 ( "In TrJt2Xml::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
@@ -415,6 +470,9 @@ DbXmlGroup *TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::Entit
   this->_addName      ( entity, *group );
   this->_addTransform ( entity, *group );
   this->_addMaterial  ( entity, *group );
+
+  // Let the user know.
+  this->_printGroup ( *group );
 
   // Return the new group.
   return group;

@@ -91,6 +91,8 @@ public:
   T &                     getShininess() { return _shininess; }
   unsigned int &          getValid()     { return _valid; }
 
+  bool                    isValid ( const unsigned int &flags ) { return ( ( _valid & flags ) == flags ); }
+
   SlMaterial<T> &         operator = ( const SlMaterial<T> &m ) { this->setValue ( m ); return *this; }
 
   void                    setAmbient   ( const SlVec4<T> &ambient )   { _ambient   = ambient;   _valid |= AMBIENT; }
@@ -102,8 +104,8 @@ public:
   void                    setValue     ( const SlMaterial<T> &m );
   void                    setValue     ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shinniness );
 
-  bool                    isEqual      ( const SlMaterial &material, bool checkValidFlag = false ) const;
-  bool                    isNotEqual   ( const SlMaterial &material, bool checkValidFlag = false ) const { return ( false == this->isEqual ( material, checkValidFlag ); }
+  bool                    isEqual      ( const SlMaterial<T> &material, bool checkValidFlag = false ) const;
+  bool                    isNotEqual   ( const SlMaterial<T> &material, bool checkValidFlag = false ) const { return ( false == this->isEqual ( material, checkValidFlag ) ); }
 
 protected:
 
@@ -245,7 +247,7 @@ template<class T> inline bool SlMaterial<T>::isEqual ( const SlMaterial<T> &righ
     _shininess == right._shininess );
 
   // Return the result, checking "_valid" if we should.
-  return ( checkValidFlag ) ? ( result ( && _valid == right._valid ) ) : result;
+  return ( checkValidFlag ) ? ( result && ( _valid == right._valid ) ) : result;
 }
 
 

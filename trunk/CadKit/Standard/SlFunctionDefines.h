@@ -44,6 +44,10 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_FUNCTION_POUND_DEFINES_H_
 #define _CADKIT_STANDARD_LIBRARY_FUNCTION_POUND_DEFINES_H_
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <wchar.h>
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -93,13 +97,10 @@
 
 #ifdef _WIN32
 # define SL_VSNWPRINTF ::_vsnwprintf
-#elif __GNUC__
-# ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-#  include <wchar.h>
-# endif
+#elif __linux__
 # define SL_VSNWPRINTF ::vswprintf
-#elif _SGI_NATIVE_COMPILER
-# define SL_VSNWPRINTF(a,b,c,d) SL_ASSERT ( 0 )
+#elif defined ( _SGI_NATIVE_COMPILER ) || defined ( __CYGWIN__ )
+# define SL_VSNWPRINTF CadKit::vsnwprintf2
 #else // ?
 TODO
 #endif // Platforms

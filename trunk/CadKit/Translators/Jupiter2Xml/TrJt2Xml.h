@@ -72,14 +72,19 @@ public:
   // Initialize. Call this before doing anything else.
   bool                    init();
 
+  // Set the verbose flag. If true it will print progress notifications 
+  // to stdout. Default is false.
+  void                    setVerbose ( bool verbose ) { _verbose = verbose; }
+
   // Translate the Jupiter database to XML.
   bool                    translate ( const char *filename, DbXmlGroup &root );
 
 protected:
 
-  typedef std::list<DbXmlGroup *> XmlGroupStack;
+  bool _verbose;
   DbJtTraverser::Ptr _jtTraverser;
   std::string _error;
+  typedef std::list<DbXmlGroup *> XmlGroupStack;
   XmlGroupStack _groupStack;
 
   bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
@@ -99,6 +104,7 @@ protected:
 
   bool                    _endCurrentGroup();
 
+  void                    _printGroup ( DbXmlGroup &group );
   bool                    _processEntity ( DbJtTraverser::EntityHandle entity );
 
   void                    _setArrayString ( const std::vector<float> &array, SlAString &s );

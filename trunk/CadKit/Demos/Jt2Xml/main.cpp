@@ -52,6 +52,7 @@
 #include "Standard/SlPathname.h"
 #include <string>
 #include <iostream>
+#include <list>
 
 using namespace CadKit;
 
@@ -118,7 +119,8 @@ int main ( int argc, char **argv )
   if ( argc < 2 )
   {
     std::cout << "Usage: " << CadKit::justFilename ( std::string ( argv[0] ) );
-    std::cout << " <filename1.jt> [filename2.jt] ..." << std::endl;
+    std::cout << " [-v] <filename1.jt> [filename2.jt] ..." << std::endl;
+    std::cout << "\t-v  Verbose output to stdout." << std::endl;
     return 0;
   }
 
@@ -132,12 +134,25 @@ int main ( int argc, char **argv )
     return 0;
   }
 
-  // Loop through all the input files.
+  // Get the arguments.
+  typedef std::list<std::string> Args;
+  Args args;
   for ( int i = 1; i < argc; ++i )
+    args.push_back ( argv[i] );
+
+  // See if the first argument is "-v".
+  if ( args.front() == "-v" )
+  {
+    // Set the verbose flag and lose that argument.
+    jt2xml.setVerbose ( true );
+    args.pop_front();
+  }
+
+  // Loop through all the input files.
+  for ( Args::iterator f = args.begin(); f != args.end(); ++f )
   {
     // Translate the jupiter database.
-    std::string filename ( argv[i] );
-    ::_translate ( filename, jt2xml );
+    ::_translate ( *f, jt2xml );
   }
 
   // It worked.

@@ -43,6 +43,27 @@ private:
   T3 _final;
 };
 
+#if 0 //TODO
+template < class Function, typename T1, typename T2 = T1 >
+struct FunctionReset
+{
+  FunctionReset( Function *fun, const T1& v1, const T2& v2 )
+    _fun   ( fun ),
+    _orig  ( v1 ),
+    _final ( v2 )
+  {
+    (*fun) ( v1 );
+  }
+  ~FunctionReset()
+  {
+    (*fun) ( v2 );
+  }
+private:
+  Function *_fun;
+  T1 _orig;
+  T2 _final;
+};
+#endif
 
 }; // namespace Scope
 }; // namespace Usul

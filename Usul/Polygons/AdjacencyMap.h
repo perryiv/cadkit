@@ -39,6 +39,22 @@ struct NoUpdateFunctor
 
 namespace Compare
 {
+  template< class Vertex, class TolType = Vertex >
+  struct VertexTolerance : public std::binary_function< Vertex, Vertex, bool >
+  {
+    VertexTolerance( const TolType& t ) : _tol ( t ) { }
+    bool operator () ( const Vertex& v1, const Vertex& v2 ) const
+    {
+      if ( v1 < v2 )
+        return ( v1 + _tol ) < v2;
+      if( v2 < v1 )
+        return ( v2 + _tol ) < v1;
+      return false;
+    }
+  private:
+    VertexTolerance();
+    TolType _tol;
+  };
 } //namespace Compare
 
 //////////////////////////////////////////////////////////////////////////////
@@ -72,6 +88,13 @@ public:
   _sharedVerts(),
   _polygons()
   {
+  }
+
+  AdjacencyMap( const Compare& c ) :
+  _sharedVertsMap( c ),
+  _sharedVerts(),
+  _polygons()
+  { 
   }
 
   void add ( const VertexSequence& vertices, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int numVertsPerPoly )
@@ -207,6 +230,34 @@ public:
 
     //Send a progress upate, make sure it updates
     updater ( answer, true );
+  }
+
+  template < class IndexSequence, class AdjacencyTest >
+  void capPolygons( IndexSequence& uncapped, const AdjacencyTest& adjacent, unsigned int vertsPerPoly )
+  {
+    typedef typename SharedVertex::PolygonList PolygonList;
+
+    //Walk through all the polygons
+    for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
+    {
+      PolygonList neighbors ( iter->getNeighbors() );
+
+      PolygonList adjacent;
+
+      //Loop through all this polygon's neighbors
+      for( PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
+      {
+        //If these two polygons are adjacent...
+        if( adjacent ( &*iter, *i ) )
+          adjacent.push_back( *i );
+      }
+
+      //If we don't have the right number of adjacent polygons...
+      if( adjacent.size() < vertsPerPoly )
+      {
+        uncapped.push_back( iter->index() );
+      }
+    }
   }
 
 

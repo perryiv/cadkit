@@ -25,7 +25,8 @@ template < class Polygon >
 class SharedVertex
 {
 public:
-  typedef typename std::list< Polygon* >::iterator Iterator;
+  typedef typename std::list< Polygon *> PolygonList;
+  typedef typename PolygonList::iterator Iterator;
 
   SharedVertex( ) : _polygons(), _visited( false ) { }
 
@@ -38,10 +39,14 @@ public:
   bool visited() const  { return _visited; }
   void visited( bool v ) { _visited = v; }
 
+  PolygonList getPolygons() const { return _polygons; }
+
 private:
-  std::list< Polygon* > _polygons;
+  PolygonList _polygons;
   bool _visited;
   //TODO Should probably have it's actual Vertex value here too
+  //Possibly have the normal so the geometry can be built right from the 
+  //Adjacency Map
 
 }; //class SharedVertex
 

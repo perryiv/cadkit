@@ -47,7 +47,7 @@ public:
 
   T                       dot ( const SlVec4 &vec ) const;
 
-  static short            getDimension() { return 4; }
+  static unsigned short   getDimension() { return 4; }
   Real                    getDistance ( const SlVec4 &vec ) const;
   Real                    getDistanceSquared ( const SlVec4 &vec ) const;
   Real                    getLength() const;
@@ -57,10 +57,10 @@ public:
   void                    getValue ( T &v0, T &v1, T &v2, T &v3 ) const;
 
   void                    interpolate ( const SlVec4 &pt0, const SlVec4 &pt1, const Real &u );
-  bool                    isEqualTo ( const SlVec4 &vec ) const;
-  bool                    isEqualTo ( const SlVec4 &vec, const T &tolerance ) const;
-  bool                    isNotEqualTo ( const SlVec4 &vec ) const;
-  bool                    isNotEqualTo ( const SlVec4 &vec, const T &tolerance ) const;
+  bool                    isEqual ( const SlVec4 &vec ) const;
+  bool                    isEqual ( const SlVec4 &vec, const T &tolerance ) const;
+  bool                    isNotEqual ( const SlVec4 &vec ) const;
+  bool                    isNotEqual ( const SlVec4 &vec, const T &tolerance ) const;
 
   Real                    normalize();
 
@@ -187,7 +187,7 @@ template<class T> inline void SlVec4<T>::getValue ( T &v0, T &v1, T &v2, T &v3 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec4<T>::isEqualTo ( const SlVec4<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec4<T>::isEqual ( const SlVec4<T> &vec, const T &tolerance ) const
 {
   return 
     ( ( SL_ABS ( _v[0] - vec._v[0] ) ) <= tolerance &&
@@ -203,9 +203,9 @@ template<class T> inline bool SlVec4<T>::isEqualTo ( const SlVec4<T> &vec, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec4<T>::isNotEqualTo ( const SlVec4<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec4<T>::isNotEqual ( const SlVec4<T> &vec, const T &tolerance ) const
 {
-  return ( false == this->isEqualTo ( vec, tolerance ) );
+  return ( false == this->isEqual ( vec, tolerance ) );
 }
 
 
@@ -215,7 +215,7 @@ template<class T> inline bool SlVec4<T>::isNotEqualTo ( const SlVec4<T> &vec, co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec4<T>::isEqualTo ( const SlVec4<T> &vec ) const
+template<class T> inline bool SlVec4<T>::isEqual ( const SlVec4<T> &vec ) const
 {
   return 
     ( _v[0] == vec._v[0] && 
@@ -231,9 +231,9 @@ template<class T> inline bool SlVec4<T>::isEqualTo ( const SlVec4<T> &vec ) cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec4<T>::isNotEqualTo ( const SlVec4<T> &vec ) const
+template<class T> inline bool SlVec4<T>::isNotEqual ( const SlVec4<T> &vec ) const
 {
-  return ( false == this->isEqualTo ( vec ) );
+  return ( false == this->isEqual ( vec ) );
 }
 
 
@@ -425,7 +425,7 @@ template<class T> inline SlVec4<T> operator - ( const SlVec4<T> &vecA, const SlV
 
 template<class T> inline bool operator == ( const SlVec4<T> &vecA, const SlVec4<T> &vecB )
 {
-  return vecA.isEqualTo ( vecB );
+  return vecA.isEqual ( vecB );
 }
 
 
@@ -437,7 +437,7 @@ template<class T> inline bool operator == ( const SlVec4<T> &vecA, const SlVec4<
 
 template<class T> inline bool operator != ( const SlVec4<T> &vecA, const SlVec4<T> &vecB )
 {
-  return vecA.isNotEqualTo ( vecB );
+  return vecA.isNotEqual ( vecB );
 }
 
 

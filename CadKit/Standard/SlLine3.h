@@ -51,10 +51,10 @@ public:
   void            getPoint ( Vec3 &pt ) { pt = _pt; }
   void            getValue ( Vec3 &pt, Vec3 &vec ) const { pt = _pt; vec = _vec; }
 
-  bool            isEqualTo ( const Line3 &line ) const;
-  bool            isEqualTo ( const Line3 &line, const T &tolerance ) const;
-  bool            isNotEqualTo ( const Line3 &line ) const;
-  bool            isNotEqualTo ( const Line3 &line, const T &tolerance ) const;
+  bool            isEqual ( const Line3 &line ) const;
+  bool            isEqual ( const Line3 &line, const T &tolerance ) const;
+  bool            isNotEqual ( const Line3 &line ) const;
+  bool            isNotEqual ( const Line3 &line, const T &tolerance ) const;
   bool            isOnLine ( const Vec3 &pt ) const;
   bool            isParallelTo ( const Line3 &line ) const;
   bool            isPerpendicularTo ( const Line3 &line ) const;
@@ -216,11 +216,11 @@ template<class T> inline T SlLine3<T>::getDistance ( const Vec3 &pt ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line, const T &tolerance ) const
 {
   return 
-    _pt.isEqualTo ( line._pt, tolerance ) && 
-    _vec.isEqualTo ( line._vec, tolerance );
+    _pt.isEqual ( line._pt, tolerance ) && 
+    _vec.isEqual ( line._vec, tolerance );
 }
 
 
@@ -230,9 +230,9 @@ template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line, co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line, const T &tolerance ) const
 {
-  return ( false == this->isEqualTo ( vec, tolerance ) );
+  return ( false == this->isEqual ( vec, tolerance ) );
 }
 
 
@@ -242,11 +242,11 @@ template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line ) const
+template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line ) const
 {
   return 
-    _pt.isEqualTo ( line._pt ) && 
-    _vec.isEqualTo ( line._vec );
+    _pt.isEqual ( line._pt ) && 
+    _vec.isEqual ( line._vec );
 }
 
 
@@ -256,9 +256,9 @@ template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line ) c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line ) const
+template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line ) const
 {
-  return ( false == this->isEqualTo ( vec ) );
+  return ( false == this->isEqual ( vec ) );
 }
 
 
@@ -270,7 +270,7 @@ template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line 
 
 template<class T> inline bool operator == ( const SlLine3<T> &line1, const SlLine3<T> &line2 )
 {
-  return line1.isEqualTo ( line2 );
+  return line1.isEqual ( line2 );
 }
 
 
@@ -282,7 +282,7 @@ template<class T> inline bool operator == ( const SlLine3<T> &line1, const SlLin
 
 template<class T> inline bool operator != ( const SlLine3<T> &line1, const SlLine3<T> &line2 )
 {
-  return line1.isNotEqualTo ( line2 );
+  return line1.isNotEqual ( line2 );
 }
 
 

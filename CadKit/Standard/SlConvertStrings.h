@@ -32,7 +32,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline SlAString unicodeToAnsi ( const SlAString &ws )
+inline SlAString unicodeToAnsi ( const SlWString &ws )
 {
   SlAString cs;
   HRESULT hr = unicodeToAnsi ( ws, cs );
@@ -46,7 +46,7 @@ inline SlAString unicodeToAnsi ( const SlAString &ws )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline SlWString ansiToUnicode ( const SlWString &cs )
+inline SlWString ansiToUnicode ( const SlAString &cs )
 {
   SlWString ws;
   HRESULT hr = ansiToUnicode ( cs, ws );

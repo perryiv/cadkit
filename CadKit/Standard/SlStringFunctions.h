@@ -526,7 +526,7 @@ template<class Char, class String, class Sequence> inline bool split
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class Char, class String> inline void assemble
-  ( const Char &delimiter, const std::list<String> &parts, String &str )
+  ( const std::list<String> &parts, const Char &delimiter, String &str )
 {
   // Note: do not clear the string. Let the client handle that because he/she
   // may want to call this function more than once with the same string.
@@ -576,7 +576,7 @@ template<class Char, class String> inline bool splitAtFirst
   parts.pop_front();
 
   // Assemble the rest of the list into the right portion.
-  CadKit::assemble ( delimiter, parts, right );
+  CadKit::assemble ( parts, delimiter, right );
 
   // It worked.
   return true;
@@ -591,7 +591,6 @@ template<class Char, class String> inline bool splitAtFirst
 
 template<class Char, class String> inline bool splitAtLast 
   ( const String &str, const Char &delimiter, String &left, String &right )
-
 {
   // Initialize.
   left.erase();
@@ -609,7 +608,7 @@ template<class Char, class String> inline bool splitAtLast
   parts.pop_back();
 
   // Assemble the rest of the list into the left portion.
-  CadKit::assemble ( delimiter, parts, left );
+  CadKit::assemble ( parts, delimiter, left );
 
   // It worked.
   return true;

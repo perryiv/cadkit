@@ -1,3 +1,18 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Example program demonstrating how to use the vector classes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "Standard/SlVec4.h"
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec2.h"
@@ -5,7 +20,6 @@
 #include "Standard/SlVec3IO.h"
 #include "Standard/SlVec2IO.h"
 #include <iostream>
-#include <assert.h>
 
 using namespace CadKit;
 
@@ -70,20 +84,20 @@ template<class Vec> void testVector ( Vec &v1, Vec &v2 )
   std::cout << "A19: v9.interpolate ( v1, v2, " << u << " ), v9 = " << v9 << std::endl;
 
   // Equality test.
-  std::cout << "A20: v1.isEqualTo ( v2 ) = " << v1.isEqualTo ( v2 ) << std::endl;
+  std::cout << "A20: v1.isEqual ( v2 ) = " << v1.isEqual ( v2 ) << std::endl;
   Vec::Type tol = static_cast<Vec::Type>(0.0001);
-  std::cout << "A21: v1.isEqualTo ( v2, " << tol << " ) = " << v1.isEqualTo ( v2, tol ) << std::endl;
+  std::cout << "A21: v1.isEqual ( v2, " << tol << " ) = " << v1.isEqual ( v2, tol ) << std::endl;
 
   // Inequality test.
-  std::cout << "A22: v1.isNotEqualTo ( v2 ) = " << v1.isNotEqualTo ( v2 ) << std::endl;
-  std::cout << "A23: v1.isNotEqualTo ( v2, " << tol << " ) = " << v1.isNotEqualTo ( v2, tol ) << std::endl;
+  std::cout << "A22: v1.isNotEqual ( v2 ) = " << v1.isNotEqual ( v2 ) << std::endl;
+  std::cout << "A23: v1.isNotEqual ( v2, " << tol << " ) = " << v1.isNotEqual ( v2, tol ) << std::endl;
 
   // Normalize, catch the old length.
   Vec v10 = v1;
   Vec::Type oldLength1 = v10.getLength();
   std::cout << "A24: before normalizing, v10 = " << v10 << ", length = " << oldLength1 << std::endl;
   Vec::Type oldLength2 = v10.normalize();
-  assert ( oldLength1 == oldLength2 );
+  SL_ASSERT ( oldLength1 == oldLength2 );
   Vec::Type newLength = v10.getLength();
   std::cout << "A25: after normalizing, v10 = " << v10 << ", length = " << newLength << std::endl;
   std::cout << "A26: 1 - length = " << static_cast<Vec::Type>(1) - newLength << std::endl;
@@ -206,7 +220,7 @@ int main ( int argc, char **argv )
   std::cout << "Z01: rtz = " << pt << std::endl;
   pt.rtz2xyz();
   std::cout << "Z02: xyz = " << pt << std::endl;
-  SL_ASSERT ( pt.isEqualTo ( save, 1e-10 ) );
+  SL_ASSERT ( pt.isEqual ( save, 1e-10 ) );
 
   // Wait for user to press the 'any' key.
   std::cin.get();

@@ -169,10 +169,11 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
   //std::string psfPath = _getPsfPath( file );
   //std::ifstream psf( psfPath.c_str());
 
-  std::auto_ptr< Progress::NoUpdate > progress ( new Progress::NoUpdate );
+  //Use null pointer to disable updatinig
+  Update progress ( 0x0 );
 
   // Parse all the file and build internal data.
-  this->_parse ( in, Usul::File::size ( file ), progress.get() );
+  this->_parse ( in, Usul::File::size ( file ), progress );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -215,7 +216,7 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress )
+void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, const Update& progress )
 {
   clock_t start, finish; // used by clock()
 	double total_second;
@@ -295,7 +296,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, Progres
 
     float total ( ( float ) bytesReadSoFar / filesize );
     
-    (*progress) ( total * 100 );
+    progress ( total * 100 );
   }
 
 //  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )

@@ -12,7 +12,7 @@
 
 #include "Export.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Adaptors/ProgressBarUpdate.h"
 
 #include "osgDB/ReaderWriter"
 
@@ -34,7 +34,7 @@ public:
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
-  typedef Usul::Interfaces::IProgressBar Progress;
+  typedef Usul::Adaptors::ProgressBarUpdate Update;
 
   ReaderWriterSTL();
 
@@ -45,7 +45,7 @@ public:
   virtual WriteResult     writeNode(const osg::Node& node, const std::string& fileName, const Options* options);
 
   void                    init() { this->_init(); }
-  void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_read( filename, progress ); }
+  void                    parse ( const std::string& filename, const Update& progress  ) { this->_read( filename, progress ); }
   osg::Group*             build () const { return this->_build(); }
 
   bool                    isAscii ( const std::string &filename ) const { return this->_isAscii ( filename ); }
@@ -57,7 +57,7 @@ protected:
   osg::Group *            _build() const;
   void                    _init();
 
-  void                    _read ( const std::string &, Progress::NoUpdate *progress );
+  void                    _read ( const std::string &, const Update& progress );
 
   WriteResult             _writeAscii  ( const osg::Node& node, const std::string& filename );
   WriteResult             _writeBinary ( const osg::Node& node, const std::string& filename );
@@ -65,8 +65,8 @@ protected:
 private:
 
   bool                    _isAscii ( const std::string &filename ) const;
-  void                    _parseBinaryFile( std::ifstream &in, Progress::NoUpdate *progress );
-  void                    _parseAsciiFile ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress );
+  void                    _parseBinaryFile( std::ifstream &in, const Update& progress );
+  void                    _parseAsciiFile ( std::ifstream &in, unsigned int filesize, const Update& progress );
 
   typedef std::list < osg::Vec3 > Vertices;
   typedef std::list < osg::Vec3 > Normals;

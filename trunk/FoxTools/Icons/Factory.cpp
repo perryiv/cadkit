@@ -112,6 +112,7 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, XYZ );
   POPULATE ( gif, GIF, SMALL_DOT );
   POPULATE ( gif, GIF, WRITE );
+  POPULATE ( gif, GIF, LOGO );
   POPULATE ( bmp, BMP, SET_HOME );
 }
 

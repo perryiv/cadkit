@@ -224,10 +224,10 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::_read ( const std::string &filename
   this->_init();
 
   //No update functor
-  std::auto_ptr < Progress::NoUpdate > progress ( new Progress::NoUpdate );
+  Usul::Adaptors::ProgressBarUpdate progress ( 0x0 );
 
   // Parse the file.
-  this->_parse ( filename, progress.get() );
+  this->_parse ( filename, progress );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( this->_build() );
@@ -304,7 +304,7 @@ void ReaderWriterR3D::_skipLine ( std::istream &in ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate *progress  )
+void ReaderWriterR3D::_parse (  const std::string& filename, const Usul::Adaptors::ProgressBarUpdate& progress  )
 {
   // Open the binary file.
   std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
@@ -349,7 +349,7 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
     if ( ( ::clock() - lastTime ) > 500 )
     {
       // Update the progress.
-      (*progress) ( ( (float) i / numPoints ) * 50 );
+      progress ( ( (float) i / numPoints ) * 50 );
       lastTime = ::clock();
     }
   }
@@ -387,7 +387,7 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
     if ( ( ::clock() - lastTime ) > 500 )
     {
       // Update the progress.
-      (*progress) ( 50 + ( (float) j / numStrips * 50 ) );
+      progress ( 50 + ( (float) j / numStrips * 50 ) );
       lastTime = ::clock();
     }
   }

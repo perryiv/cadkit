@@ -31,34 +31,6 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   // Id for this interface.
   enum { IID = 1100747838u };
 
-  struct NoUpdate
-  {
-    virtual ~NoUpdate () { }
-    virtual void operator () ( unsigned int ) { }
-  };
-
-  //Functor for updating progress bar
-  struct Update : public NoUpdate
-  {
-    Update( Usul::Interfaces::IProgressBar* progress, unsigned int init, unsigned int total ) :
-    _progress ( progress )
-    {
-      _progress->showProgressBar();
-      _progress->setTotalProgressBar( total );
-      _progress->updateProgressBar ( init );
-    }
-    virtual ~Update ()
-    {
-      _progress->hideProgressBar();
-    }
-
-    virtual void operator() ( unsigned int value )
-    {
-      _progress->updateProgressBar( value );
-    }
-  private:
-    Usul::Interfaces::IProgressBar* _progress;
-  };
 
   //show the progress bar
   virtual void showProgressBar () = 0;
@@ -70,23 +42,6 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   virtual void hideProgressBar () = 0;
 }; // struct IProgressBar
 
-//TODO where is a good place for this?
-namespace Helper {
-//Helper function to get an update functor depending on if the caller implements IProgressBar
-inline IProgressBar::NoUpdate* getUpdateFunctor ( Usul::Interfaces::IUnknown* caller )
-{
-  //The progress bar
-  IProgressBar::QueryPtr progress ( caller );
-  
-  //if progressBar is valid set update functor
-  if( progress.valid() )
-    return new IProgressBar::Update ( progress.get(), 0, 100 );
-  
-  //Create a no update functor
-  return new IProgressBar::NoUpdate;
-}
-
-} //namespace Helper
 
 }; // namespace Interfaces
 }; // namespace Usul

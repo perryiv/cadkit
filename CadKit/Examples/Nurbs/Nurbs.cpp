@@ -17,6 +17,10 @@
 # pragma warning(disable:4786) // Truncated debug names.
 #endif
 
+#define _CADKIT_NURBS_CORE_CHECK_FUNCTION_ARGUMENTS
+#define _CADKIT_NURBS_CORE_CHECK_MEMORY_ALLOCATION
+#define _CADKIT_NURBS_CORE_CHECK_FUNCTION_RESULTS
+
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec3IO.h"
 #include "Standard/SlArrayPtr.h"
@@ -26,6 +30,9 @@
 #include "Nurbs/Core/NcSplineIO.h"
 #include "Nurbs/Core/NcLine.h"
 #include "Nurbs/Core/NcCircle.h"
+#include "Nurbs/Core/NcFindSpan.h"
+#include "Nurbs/Core/NcBasisFunctions.h"
+#include "Nurbs/Core/NcEvaluate.h"
 
 #include <iostream>
 
@@ -43,8 +50,10 @@ template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 	// For loop speed.
   NcCurve<NCSDCA>::Index numParams ( 25 );
   NcCurve<NCSDCA>::Index order ( curve.getOrder() );
+  NcCurve<NCSDCA>::Index dimension ( curve.getDimension() ), j, span;
 	NcCurve<NCSDCA>::Parameter diffU ( lastU - firstU ), u, sum;
-  SlArrayPtr<NcCurve<NCSDCA>::Parameter> N ( new NcCurve<NCSDCA>::Parameter[order] );
+  SlArrayPtr<NcCurve<NCSDCA>::Parameter,NcCurve<NCSDCA>::Index> N ( new NcCurve<NCSDCA>::Parameter[order] );
+  SlArrayPtr<NcCurve<NCSDCA>::ControlPoint,NcCurve<NCSDCA>::Index> pt ( new NcCurve<NCSDCA>::ControlPoint[dimension] );
 
   // Loop through the parameters.
   for ( NcCurve<NCSDCA>::Index i = 0; i < numParams; ++i )
@@ -54,22 +63,27 @@ template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 		u = firstU + u * diffU;
 
     // Print the span.
-    NcCurve<NCSDCA>::Index span = curve.findSpan ( u );
+    span = NcFindSpan<NCSDCA>::find ( curve, u );
     std::cout << "C03: i = " << i << ", u = " << u << ", span = " << span << std::endl;
 
     // Print the basis functions.
-    curve.basisFunctions ( u, N );
+    NcBasisFunctions<NCSDCA>::basis ( curve, u, span, N );
     sum = 0;
     std::cout << "C04: N[" << i << "] = ( ";
-    for ( NcCurve<NCSDCA>::Index j = 0; j < order; ++j )
+    for ( j = 0; j < order; ++j )
     {
-      std::cout << N.get()[j] << ( ( order - 1 == j ) ? " )" : ", " );
-      sum += N.get()[j];
+      std::cout << N[j] << ( ( order - 1 == j ) ? " )" : ", " );
+      sum += N[j];
     }
     std::cout << ", sum = " << sum << ", sum - 1 = " << sum - 1 << std::endl;
 
     // Print the point.
-    curve.evaluate
+    NcEvaluate<NCSDCA>::evaluate ( curve, u, pt );
+    std::cout << "C05: pt[" << i << "] = ( ";
+    for ( j = 0; j < dimension; ++j )
+    {
+      std::cout << pt[j] << ( ( dimension - 1 == j ) ? " )\n" : ", " );
+    }
   }
 }
 
@@ -105,28 +119,30 @@ template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1,
 
 
 template<NCSDTA, class Vec> void testCurve2 ( const Vec &center, 
+                                              const Vec &normal, 
                                               const ControlPointType &radius, 
                                               NcCurve<NCSDCA> &c1, 
                                               NcCurve<NCSDCA> &c2 )
 {
   // Print to stdout.
   std::cout << "B01: center = " << center << std::endl;
-  std::cout << "B02: radius = " << radius << std::endl;
-  std::cout << "B03: c1 = \n" << c1 << std::endl;
-  std::cout << "B04: c2 = \n" << c2 << std::endl;
-  std::cout << "B05: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "B02: normal = " << normal << std::endl;
+  std::cout << "B03: radius = " << radius << std::endl;
+  std::cout << "B04: c1 = \n" << c1 << std::endl;
+  std::cout << "B05: c2 = \n" << c2 << std::endl;
+  std::cout << "B06: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
 
   // Construct the curves.
-  NcCircle<NCSDCA>::create ( center, radius, c1 );
-  NcCircle<NCSDCA>::create ( center, radius, c2 );
-  std::cout << "B06: c1 = \n" << c1 << std::endl;
-  std::cout << "B07: c2 = \n" << c2 << std::endl;
-  std::cout << "B08: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  NcCircle<NCSDCA>::create ( center, normal, radius, c1 );
+  NcCircle<NCSDCA>::create ( center, normal, radius, c2 );
+  std::cout << "B07: c1 = \n" << c1 << std::endl;
+  std::cout << "B08: c2 = \n" << c2 << std::endl;
+  std::cout << "B09: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
 
   // Make one non-rational.
   c1.setRational ( false );
-  std::cout << "B09: c1 = \n" << c1 << std::endl;
-  std::cout << "B10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "B10: c1 = \n" << c1 << std::endl;
+  std::cout << "B11: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
 
   // Test the evaluation algorithms.
   testEvaluation ( c1 );
@@ -145,10 +161,10 @@ int main ( int argc, char **argv )
   NcCurve<double,double, unsigned long, long>           c06;
   NcCurve<float, float,  unsigned int,  unsigned int>   c07;
   NcCurve<float, float,  unsigned int,  unsigned int>   c08;
-  NcCurve<double,SlVec3d,unsigned long, unsigned short> c09;
-  NcCurve<double,SlVec3d,unsigned long, unsigned short> c10;
-  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c11;
-  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c12;
+//  NcCurve<double,SlVec3d,unsigned long, unsigned short> c09;
+//  NcCurve<double,SlVec3d,unsigned long, unsigned short> c10;
+//  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c11;
+//  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c12;
 
   // Points used for curve construction.
   SlVec3d p1d ( 1.1,  2.2,  3.3 );
@@ -156,19 +172,24 @@ int main ( int argc, char **argv )
   SlVec3f p1f ( 1.1f, 2.2f, 3.3f );
   SlVec3f p2f ( 4.4f, 5.5f, 6.6f );
 
+  // The normals.
+  SlVec3d n1d ( p1d ); n1d.normalize();
+  SlVec3d n2d ( p2d ); n2d.normalize();
+  SlVec3f n1f ( p1f ); n1f.normalize();
+
   // Test the curves.
   std::cout << "Testing curves c01 and c02" << std::endl; testCurve1 ( p1d, p2d, c01, c02 );
   std::cout << "Testing curves c03 and c04" << std::endl; testCurve1 ( p1d, p2d, c03, c04 );
   std::cout << "Testing curves c05 and c06" << std::endl; testCurve1 ( p1d, p2d, c05, c06 );
   std::cout << "Testing curves c07 and c08" << std::endl; testCurve1 ( p1f, p2f, c07, c08 );
-  std::cout << "Testing curves c09 and c10" << std::endl; testCurve1 ( p1d, p2d, c09, c10 );
-  std::cout << "Testing curves c11 and c12" << std::endl; testCurve1 ( p1f, p2f, c11, c12 );
+//  std::cout << "Testing curves c09 and c10" << std::endl; testCurve1 ( p1d, p2d, c09, c10 );
+//  std::cout << "Testing curves c11 and c12" << std::endl; testCurve1 ( p1f, p2f, c11, c12 );
 
-  // More test for the curves with scalar control point types.
-  std::cout << "Testing curves c01 and c02" << std::endl; testCurve2 ( p1d, 2.0,  c01, c02 );
-  std::cout << "Testing curves c03 and c04" << std::endl; testCurve2 ( p2d, 3.0,  c03, c04 );
-  std::cout << "Testing curves c05 and c06" << std::endl; testCurve2 ( p1d, 4.0,  c05, c06 );
-  std::cout << "Testing curves c07 and c08" << std::endl; testCurve2 ( p2f, 5.0f, c07, c08 );
+  // More tests for the curves with scalar control point types.
+  std::cout << "Testing curves c01 and c02" << std::endl; testCurve2 ( p1d, n1d, 2.0,  c01, c02 );
+  std::cout << "Testing curves c03 and c04" << std::endl; testCurve2 ( p2d, n2d, 3.0,  c03, c04 );
+  std::cout << "Testing curves c05 and c06" << std::endl; testCurve2 ( p1d, n1d, 4.0,  c05, c06 );
+  std::cout << "Testing curves c07 and c08" << std::endl; testCurve2 ( p1f, n1f, 5.0f, c07, c08 );
 
   // Wait for user to press the 'any' key.
   //std::cin.get();

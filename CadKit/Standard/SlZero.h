@@ -25,8 +25,14 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline bool isZero ( const double &num ) { return ( 0.0  == num ); }
-inline bool isZero ( const float  &num ) { return ( 0.0f == num ); }
+inline bool isZero ( const          double &num ) { return ( 0.0  == num ); }
+inline bool isZero ( const          float  &num ) { return ( 0.0f == num ); }
+inline bool isZero ( const unsigned int &num )    { return ( 0    == num ); }
+inline bool isZero ( const          int &num )    { return ( 0    == num ); }
+inline bool isZero ( const unsigned short &num )  { return ( 0    == num ); }
+inline bool isZero ( const          short &num )  { return ( 0    == num ); }
+inline bool isZero ( const unsigned long &num )   { return ( 0    == num ); }
+inline bool isZero ( const          long &num )   { return ( 0    == num ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,8 +41,14 @@ inline bool isZero ( const float  &num ) { return ( 0.0f == num ); }
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline void getZero ( double &zero ) { zero = 0.0; }
-inline void getZero ( float  &zero ) { zero = 0.0f; }
+inline void getZero ( double &zero )         { zero = 0.0; }
+inline void getZero ( float  &zero )         { zero = 0.0f; }
+inline void getZero ( unsigned int   &zero ) { zero = 0; }
+inline void getZero (          int   &zero ) { zero = 0; }
+inline void getZero ( unsigned short &zero ) { zero = 0; }
+inline void getZero (          short &zero ) { zero = 0; }
+inline void getZero ( unsigned long  &zero ) { zero = 0; }
+inline void getZero (          long  &zero ) { zero = 0; }
 
 
 }; // namespace CadKit.

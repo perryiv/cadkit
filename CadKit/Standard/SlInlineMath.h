@@ -23,11 +23,7 @@
 #endif
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# ifdef __CYGWIN__
-#  include <numeric>
-# else
-#  include <limits>
-# endif
+# include <limits>
 #endif
 
 
@@ -204,7 +200,7 @@ template<class T, class I> inline const T &minimum ( const I &num, const T *arra
   SL_ASSERT ( array );
 
   // Initialize.
-  T theMin ( numeric_limits<T>::max() );
+  T theMin ( std::numeric_limits<T>::max() );
 
   // Loop through.
   for ( I i = 0; i < num; ++i )
@@ -441,7 +437,6 @@ template<class VectorType, class DimensionType> inline void scaleVector (
 #define SL_POW3   CadKit::power3
 #define SL_POW4   CadKit::power4
 #define SL_POW5   CadKit::power5
-#define SL_EQUAL  CadKit::isEqual
 #define SL_CLAMP  CadKit::clamp
 
 

@@ -18,7 +18,9 @@
 
 #include "NcInternalMacros.h"
 
-#include "Standard/SlInlineMath.h"
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <vector>
+#endif
 
 
 namespace CadKit
@@ -39,20 +41,20 @@ public:
   ParameterType *               getBasisFunctions      ( const IndexType &whichIndepVar );
 
   /// Assignment operator.
-  NcWork &                      operator = ( const NcWork &work ) { this->setValue ( work ); return *this; }
+  NcWork &                      operator = ( const NcWork &work ) { SL_VERIFY ( this->setValue ( work ) ); return *this; }
 
   /// Resize the work space.
   bool                          resize ( const IndexType &numIndepVars, const IndexType *order );
 
   /// Set the value.
-  void                          setValue ( const NcWork &work );
+  bool                          setValue ( const NcWork &work );
 
 protected:
 
   IndexType _maxOrder;
-  std::vector<ParameterType> _left;
-  std::vector<ParameterType> _right;
-  std::vector<ParameterType> _N;
+  std::vector<ParameterType> _left;  // Use when calculating blending functions.
+  std::vector<ParameterType> _right; // Use when calculating blending functions.
+  std::vector<ParameterType> _basis; // Blending functions.
 };
 
 
@@ -79,7 +81,7 @@ template<NCSDTA> inline NcWork<NCSDCA>::NcWork ( const NcWork<NCSDCA> &work ) :
   _maxOrder ( work._maxOrder ),
   _left     ( work._left ),
   _right    ( work._right ),
-  _N        ( work._N )
+  _basis    ( work._basis )
 {
   // Empty.
 }
@@ -91,12 +93,15 @@ template<NCSDTA> inline NcWork<NCSDCA>::NcWork ( const NcWork<NCSDCA> &work ) :
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline void NcWork<NCSDCA>::setValue ( const NcWork<NCSDCA> &work )
+template<NCSDTA> inline bool NcWork<NCSDCA>::setValue ( const NcWork<NCSDCA> &work )
 {
-  _maxOrder  = work._maxOrder;
-  _left      = work._left;
-  _right     = work._right;
-  _N         = work._N;
+  _maxOrder = work._maxOrder;
+  _left     = work._left;
+  _right    = work._right;
+  _basis    = work._basis;
+
+  // It worked.
+  return true;
 }
 
 
@@ -139,9 +144,9 @@ template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctionsRight ( 
 template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctions ( const IndexType &whichIndepVar )
 {
   SL_ASSERT ( 0 == whichIndepVar || 0 < whichIndepVar );
-  SL_ASSERT ( static_cast<std::vector<ParameterType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _N.size() );
+  SL_ASSERT ( static_cast<std::vector<ParameterType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _basis.size() );
 
-  return &(_N[whichIndepVar * _maxOrder]);
+  return &(_basis[whichIndepVar * _maxOrder]);
 }
 
 
@@ -166,12 +171,12 @@ template<NCSDTA> inline bool NcWork<NCSDCA>::resize ( const IndexType &numIndepV
   // Resize the left and right basis function storage arrays.
   _left.resize  ( newSize );
   _right.resize ( newSize );
-  _N.resize ( newSize );
+  _basis.resize ( newSize );
 
   // Check allocation.
   NC_CHECK_ALLOCATION ( newSize == _left.size() );
   NC_CHECK_ALLOCATION ( newSize == _right.size() );
-  NC_CHECK_ALLOCATION ( newSize == _N.size() );
+  NC_CHECK_ALLOCATION ( newSize == _basis.size() );
 
   // It worked.
   return true;

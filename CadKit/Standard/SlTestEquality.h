@@ -31,6 +31,46 @@ template<class T> inline bool isEqual ( const T &a, const T &b, const T &tol )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is a equal to (within tolerance of) b?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const T *a, const T *b, const I &size, const T &tol )
+{
+  for ( I i = 0; i < size; ++i )
+    if ( false == CadKit::isEqual ( a[i], b[i], tol ) )
+      return false;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is a equal to (within tolerance of) b?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const T *a, const T *b, const I &size )
+{
+  for ( I i = 0; i < size; ++i )
+    if ( a[i] != b[i] )
+      return false;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// For convenience and backward compatability.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SL_EQUAL  CadKit::isEqual
+
+
+
 }; // namespace CadKit.
 
 

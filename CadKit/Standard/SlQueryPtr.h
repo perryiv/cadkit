@@ -20,9 +20,10 @@
 
 // I do not like to putting this here, as I view Standard and Interfaces to 
 // be equally low-level. However, when I forget to include IUnknown.h before 
-// this header, I get a VC++ internal compiler error (which is doesn't print 
+// this header, I get a VC++ internal compiler error (which it doesn't print 
 // any kind of clue as to the source of the problem). Since IUnknown.h is 
 // entirely inline this should not create a dependency problem.
+// TODO, figure out a better solution.
 #include "Interfaces/IUnknown.h"
 
 

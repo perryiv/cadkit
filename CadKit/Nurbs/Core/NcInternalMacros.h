@@ -19,6 +19,10 @@
 #include "Standard/SlAssert.h"
 #include "Standard/SlPartitionedVector.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <memory> // For std::allocator
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -49,6 +53,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Macro intended for checking function return values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _CADKIT_NURBS_CORE_CHECK_FUNCTION_RESULTS
+# define NC_VERIFY_RESULTS NC_CHECK_EXPRESSION
+#else
+# define NC_VERIFY_RESULTS SL_VERIFY
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Macro intended for checking memory allocation.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,6 +74,19 @@
 # define NC_CHECK_ALLOCATION NC_CHECK_EXPRESSION
 #else
 # define NC_CHECK_ALLOCATION SL_ASSERT
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro intended for checking memory allocation inside of a function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _CADKIT_NURBS_CORE_CHECK_MEMORY_ALLOCATION
+# define NC_VERIFY_ALLOCATION NC_CHECK_EXPRESSION
+#else
+# define NC_VERIFY_ALLOCATION SL_VERIFY
 #endif
 
 
@@ -75,13 +105,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define NCSDTA \
-  class ParameterType, \
-  class ControlPointType, \
-  class IndexType, \
-  class BitMaskType, \
-  class IndexAllocatorType, \
-  class ParameterAllocatorType, \
-  class ControlPointAllocatorType
+  typename ParameterType, \
+  typename ControlPointType, \
+  typename IndexType, \
+  typename BitMaskType, \
+  typename IndexAllocatorType, \
+  typename ParameterAllocatorType, \
+  typename ParameterPointerAllocatorType, \
+  typename ControlPointAllocatorType, \
+  typename ControlPointPointerAllocatorType
 
 #define NCSDCA \
   ParameterType, \
@@ -90,16 +122,20 @@
   BitMaskType, \
   IndexAllocatorType, \
   ParameterAllocatorType, \
-  ControlPointAllocatorType
+  ParameterPointerAllocatorType, \
+  ControlPointAllocatorType, \
+  ControlPointPointerAllocatorType
 
 #define NCSDTCD \
-  class ParameterType = double, \
-  class ControlPointType = double, \
-  class IndexType = unsigned int, \
-  class BitMaskType = unsigned int, \
-  class IndexAllocatorType = std::allocator<IndexType>, \
-  class ParameterAllocatorType = std::allocator<ParameterType>, \
-  class ControlPointAllocatorType = std::allocator<ControlPointType>
+  typename ParameterType = double, \
+  typename ControlPointType = double, \
+  typename IndexType = unsigned int, \
+  typename BitMaskType = unsigned int, \
+  typename IndexAllocatorType = std::allocator<IndexType>, \
+  typename ParameterAllocatorType = std::allocator<ParameterType>, \
+  typename ParameterPointerAllocatorType = std::allocator<ParameterType *>, \
+  typename ControlPointAllocatorType = std::allocator<ControlPointType>, \
+  typename ControlPointPointerAllocatorType = std::allocator<ControlPointType *>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,7 +151,9 @@
   typedef ControlPointType ControlPoint; \
   typedef IndexAllocatorType IndexAllocator; \
   typedef ParameterAllocatorType ParameterAllocator; \
-  typedef ControlPointAllocatorType ControlPointAllocator
+  typedef ParameterPointerAllocatorType ParameterPointerAllocator; \
+  typedef ControlPointAllocatorType ControlPointAllocator; \
+  typedef ControlPointPointerAllocatorType ControlPointPointerAllocator
 
 
 

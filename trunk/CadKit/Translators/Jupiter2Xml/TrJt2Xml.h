@@ -94,6 +94,7 @@ protected:
   bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part );
   bool                    _addName       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
   bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
+  bool                    _addMaterial   ( const SlMaterialf &material, DbXmlGroup &group );
   bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
   bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, const std::string &name, DbXmlGroup &shape );
   bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbXmlGroup &lod );

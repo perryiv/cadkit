@@ -59,6 +59,11 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 #include "DMDataTk/eaiCADImporter.h"
 #include "DMDataTk/eaiTraverser.h"
 #include "DMDataTk/eaiAttrib.h"
+#include "DMDataTk/eaiLineStripSet.h"
+#include "DMDataTk/eaiPointSet.h"
+#include "DMDataTk/eaiPolygonSet.h"
+#include "DMDataTk/eaiTriFanSet.h"
+#include "DMDataTk/eaiTriStripSet.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlAssert.h"
@@ -507,6 +512,98 @@ bool DbJtTraverser::getTransform ( EntityHandle entity, SlMatrix4f &matrix ) con
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the material from the given entity, if there is one.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiMaterial *DbJtTraverser::_getMaterial ( EntityHandle theHandle ) const
+{
+  SL_PRINT3 ( "In DbJtTraverser::_getMaterial(), this = %X, entity = %X\n", this, theHandle );
+  SL_ASSERT ( theHandle );
+
+  // Initialize.
+  eaiMaterial *material = NULL;
+
+  // Get the base pointer.
+  eaiEntity *entity = (eaiEntity *) theHandle;
+
+  // Have to explicitly test every concrete type because the API does not 
+  // offer a mechanism for checking abstract types, and the base classes do 
+  // not have a virtual "getMaterial()".
+  switch ( entity->typeID() )
+  {
+  case eaiEntity::eaiASSEMBLY:
+  case eaiEntity::eaiPART:
+  case eaiEntity::eaiINSTANCE:
+    
+    ((eaiHierarchy *) entity)->getMaterial ( material );
+    break;
+
+  case eaiEntity::eaiLINESTRIPSET:
+
+    ((eaiLineStripSet *) entity)->getMaterial ( material );
+    break;
+
+  case eaiEntity::eaiPOINTSET:
+
+    ((eaiPointSet *) entity)->getMaterial ( material );
+    break;
+
+  case eaiEntity::eaiPOLYGONSET:
+
+    ((eaiPolygonSet *) entity)->getMaterial ( material );
+    break;
+
+  case eaiEntity::eaiTRIFANSET:
+
+    ((eaiTriFanSet *) entity)->getMaterial ( material );
+    break;
+
+  case eaiEntity::eaiTRISTRIPSET:
+
+    ((eaiTriStripSet *) entity)->getMaterial ( material );
+    break;
+  }
+
+  // Return the material, which may still be null.
+  return material;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the material from the given entity, if there is one.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtTraverser::getMaterial ( EntityHandle theHandle, 
+                                  const unsigned int &whichLOD, 
+                                  const unsigned int &whichShape, 
+                                  SlMaterialf &material ) const
+{
+  SL_PRINT3 ( "In DbJtTraverser::getMaterial(), this = %X, theHandle = %X\n", this, theHandle );
+  SL_ASSERT ( theHandle );
+
+  // The entity has to be a part.
+  eaiEntity *entity = (eaiEntity *) theHandle;
+  if ( eaiEntity::eaiPART != entity->typeID() )
+    return false;
+
+  // Get the part.
+  eaiPart *part = (eaiPart *) entity;
+
+  // Get the shape.
+  SlRefPtr<eaiShape> shape = this->_getShape ( part, whichLOD, whichShape );
+  if ( shape.isNull() )
+    return false;
+
+  // Now get the shape's material.
+  return this->getMaterial ( shape, material );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the current material.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -516,19 +613,13 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity, SlMaterialf &mat ) const
   SL_PRINT3 ( "In DbJtTraverser::getMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
-  // Get the pointer we need.
-  eaiHierarchy *node = (eaiHierarchy *) entity;
-
   // Initialize.
   bool success ( false );
   mat.setValid ( 0 );
 
-  // Ask for the material (there may not be one).
-  eaiMaterial *temp = NULL;
-  node->getMaterial ( temp );
-
-  // Auto-release. This assignment will increment it from 0 -> 1.
-  SlRefPtr<eaiMaterial> material ( temp );
+  // Ask for the material (there may not be one). 
+  // This assignment will increment it from 0 -> 1.
+  SlRefPtr<eaiMaterial> material = this->_getMaterial ( entity );
   if ( material.isNull() )
     return false;
 
@@ -645,17 +736,16 @@ bool DbJtTraverser::getNumShapes ( EntityHandle entity, const unsigned int &whic
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the shape. Not a member function on purpose. The returned pointer 
-//  will have a reference count of zero. The caller has to reference it 
-//  (and ultimately dereference it).
+//  Get the shape. The returned pointer will have a reference count of zero. 
+//  The caller has to reference it (and ultimately dereference it).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+eaiShape *DbJtTraverser::_getShape ( DbJtTraverser::EntityHandle entity, 
+                                     const unsigned int &whichLOD, 
+                                     const unsigned int &whichShape ) const
 {
-eaiShape *_getShape ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape )
-{
-  SL_PRINT4 ( "In DbJtTraverser::_getShape(), entity = %X, whichLOD = %d, whichShape = %d\n", entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In DbJtTraverser::_getShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -679,7 +769,6 @@ eaiShape *_getShape ( DbJtTraverser::EntityHandle entity, const unsigned int &wh
   // Return the shape (which may still be null).
   return shape;
 }
-}; // namespace CadKit.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -688,17 +777,17 @@ eaiShape *_getShape ( DbJtTraverser::EntityHandle entity, const unsigned int &wh
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtTraverser::getNumSets ( EntityHandle entity, 
-                                 const unsigned int &whichLOD, 
-                                 const unsigned int &whichShape, 
-                                 unsigned int &numSets ) const
+bool DbJtTraverser::getNumShapeSets ( EntityHandle entity, 
+                                      const unsigned int &whichLOD, 
+                                      const unsigned int &whichShape, 
+                                      unsigned int &numSets ) const
 {
   SL_PRINT4 ( "In DbJtTraverser::getNumShapeSets(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
   SL_ASSERT ( entity );
 
   // Ask for the shape (there may not be one). Catching with SlRefPtr will 
   // increment it from 0 -> 1.
-  SlRefPtr<eaiShape> shape = CadKit::_getShape ( entity, whichLOD, whichShape );
+  SlRefPtr<eaiShape> shape = this->_getShape ( entity, whichLOD, whichShape );
 
   // If we got a shape...
   if ( shape.isValid() )
@@ -717,21 +806,21 @@ bool DbJtTraverser::getNumSets ( EntityHandle entity,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the shape arrays for the given LOD and shape id.
+//  Get the arrays for the given LOD, shapen and set id.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtTraverser::getShape ( EntityHandle entity, 
-                               const unsigned int &whichLOD, 
-                               const unsigned int &whichShape, 
-                               const unsigned int &whichSet, 
-                               std::vector<float> &vertices, 
-                               std::vector<float> &normals, 
-                               std::vector<float> &colors, 
-                               std::vector<float> &texture, 
-                               unsigned int &valid ) const
+bool DbJtTraverser::getShapeSet ( EntityHandle entity, 
+                                  const unsigned int &whichLOD, 
+                                  const unsigned int &whichShape, 
+                                  const unsigned int &whichSet, 
+                                  std::vector<float> &vertices, 
+                                  std::vector<float> &normals, 
+                                  std::vector<float> &colors, 
+                                  std::vector<float> &texture, 
+                                  unsigned int &valid ) const
 {
-  SL_PRINT5 ( "In DbJtTraverser::getShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In DbJtTraverser::getShapeSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( entity );
 
   // Initialize.
@@ -740,7 +829,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
 
   // Ask for the shape (there may not be one). Catching with SlRefPtr will 
   // increment it from 0 -> 1.
-  SlRefPtr<eaiShape> shape = CadKit::_getShape ( entity, whichLOD, whichShape );
+  SlRefPtr<eaiShape> shape = this->_getShape ( entity, whichLOD, whichShape );
   if ( shape.isNull() )
     return false;
 
@@ -812,7 +901,7 @@ bool DbJtTraverser::getShapeType ( EntityHandle entity,
 
   // Ask for the shape (there may not be one). Catching with SlRefPtr will 
   // increment it from 0 -> 1.
-  SlRefPtr<eaiShape> shape = CadKit::_getShape ( entity, whichLOD, whichShape );
+  SlRefPtr<eaiShape> shape = this->_getShape ( entity, whichLOD, whichShape );
   if ( shape.isNull() )
     return false;
 

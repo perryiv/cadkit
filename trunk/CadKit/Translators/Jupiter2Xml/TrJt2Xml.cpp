@@ -350,9 +350,24 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
   SL_ASSERT ( entity );
 
   // Query the material, there may not be one.
-  SlMaterialf m;
-  if ( false == _jtTraverser->getMaterial ( entity, m ) )
+  SlMaterialf material;
+  if ( false == _jtTraverser->getMaterial ( entity, material ) )
     return false;
+
+  // Call the other one.
+  return this->_addMaterial ( material, group );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the material, if is is valid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TrJt2Xml::_addMaterial ( const SlMaterialf &m, DbXmlGroup &group )
+{
+  SL_PRINT3 ( "In TrJt2Xml::_addMaterial(), this = %X, m.getValid() = %d\n", this, m.getValid() );
 
   // Make a group for the material.
   DbXmlGroup::Ptr material = new DbXmlGroup ( "material" );
@@ -624,7 +639,7 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
 
   // Get the number of sets for this shape.
   unsigned int numSets ( 0 );
-  if ( false == _jtTraverser->getNumSets ( entity, whichLOD, whichShape, numSets ) )
+  if ( false == _jtTraverser->getNumShapeSets ( entity, whichLOD, whichShape, numSets ) )
     return false;
 
   // Should be true.
@@ -634,6 +649,11 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
   DbXmlGroup::Ptr shape = new DbXmlGroup ( "shape" );
   if ( shape.isNull() )
     return false;
+
+  // Add the shape's material, if there is one.
+  SlMaterialf material;
+  if ( _jtTraverser->getMaterial ( entity, whichLOD, whichShape, material ) )
+    this->_addMaterial ( material, *shape );
 
   // Determine the type of shape. Note: we don't want the given entity's type 
   // (it's most likely a part), we want the type of its shape.
@@ -696,7 +716,7 @@ bool TrJt2Xml::_addSet ( DbJtTraverser::EntityHandle entity,
   // Get the shape.
   std::vector<float> vertices, normals, colors, texture;
   unsigned int valid ( 0 );
-  if ( false == _jtTraverser->getShape ( entity, whichLOD, whichShape, whichSet, vertices, normals, colors, texture, valid ) )
+  if ( false == _jtTraverser->getShapeSet ( entity, whichLOD, whichShape, whichSet, vertices, normals, colors, texture, valid ) )
     return false;
 
   // Make a group for the set.

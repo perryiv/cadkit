@@ -55,6 +55,8 @@
 #endif
 
 class eaiHierarchy;
+class eaiMaterial;
+class eaiShape;
 
 
 namespace CadKit
@@ -105,16 +107,17 @@ public:
   EntityHandle            getCurrentEntity() const { return _currentNode; }
 
   // Get the current entity's property.
-  bool                    getMaterial  ( EntityHandle entity, SlMaterialf &material ) const;
-  bool                    getName      ( EntityHandle entity, std::string &name ) const;
-  std::string             getName      ( EntityHandle entity ) const;
-  bool                    getNumLODs   ( EntityHandle entity, unsigned int &numLODs ) const;
-  bool                    getNumShapes ( EntityHandle entity, const unsigned int &whichLOD, unsigned int &numShapes ) const;
-  bool                    getNumSets   ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, unsigned int &numSets ) const;
-  bool                    getShape     ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, std::vector<float> &vertices, std::vector<float> &normals, std::vector<float> &colors, std::vector<float> &texture, unsigned int &valid ) const;
-  bool                    getShapeType ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbJtTraverser::EntityType &type ) const;
-  bool                    getTransform ( EntityHandle entity, SlMatrix4f &transform ) const;
-  bool                    getType      ( EntityHandle entity, EntityType &type ) const;
+  bool                    getMaterial     ( EntityHandle entity, SlMaterialf &material ) const;
+  bool                    getMaterial     ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, SlMaterialf &material ) const;
+  bool                    getName         ( EntityHandle entity, std::string &name ) const;
+  std::string             getName         ( EntityHandle entity ) const;
+  bool                    getNumLODs      ( EntityHandle entity, unsigned int &numLODs ) const;
+  bool                    getNumShapes    ( EntityHandle entity, const unsigned int &whichLOD, unsigned int &numShapes ) const;
+  bool                    getNumShapeSets ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, unsigned int &numSets ) const;
+  bool                    getShapeSet     ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, std::vector<float> &vertices, std::vector<float> &normals, std::vector<float> &colors, std::vector<float> &texture, unsigned int &valid ) const;
+  bool                    getShapeType    ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbJtTraverser::EntityType &type ) const;
+  bool                    getTransform    ( EntityHandle entity, SlMatrix4f &transform ) const;
+  bool                    getType         ( EntityHandle entity, EntityType &type ) const;
 
   // Get the last error.
   const std::string &     getLastError() const { return _error; }
@@ -134,6 +137,8 @@ protected:
   virtual ~DbJtTraverser();
 
   static DbJtTraverser *  _getCurrent();
+  eaiMaterial *           _getMaterial ( EntityHandle entity ) const;
+  eaiShape *              _getShape ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape ) const;
 
   bool                    _sendMessage ( const Message &message );
   static void             _setCurrent ( DbJtTraverser *traverser );

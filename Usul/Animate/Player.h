@@ -20,7 +20,7 @@ namespace Usul
       typedef typename Sequence::iterator iterator;
       typedef Sequence Frames;
 
-      Player ( Callback cb ) : _callback (cb), _stop(false), _started(false) {}
+      Player ( Callback *cb ) : _callback (cb), _stop(false), _started(false) {}
 
       virtual void play() = 0;
       virtual void forward ( Sequence &frames ) = 0;
@@ -29,7 +29,7 @@ namespace Usul
       virtual void pause() = 0;
 
     protected:
-      Callback _callback;
+      Callback *_callback;
       bool _stop, _started;
       iterator _start;
     }; // Linear Player

@@ -16,6 +16,7 @@ namespace Usul
     template < class UserData, class Matrix > class Frame
     {
     public:
+      Frame() { }
       Frame ( UserData userData, Matrix matrix ) : _userData ( userData ), _matrix ( matrix ) { }
 
       const UserData& getUserData () const { return _userData; }

@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="Cube" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="DemoMfcCube" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=Cube - Win32 Debug
+CFG=DemoMfcCube - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "Cube.mak".
+!MESSAGE NMAKE /f "DemoMfcCube.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "Cube.mak" CFG="Cube - Win32 Debug"
+!MESSAGE NMAKE /f "DemoMfcCube.mak" CFG="DemoMfcCube - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "Cube - Win32 Release" (based on "Win32 (x86) Application")
-!MESSAGE "Cube - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "DemoMfcCube - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "DemoMfcCube - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "Cube - Win32 Release"
+!IF  "$(CFG)" == "DemoMfcCube - Win32 Release"
 
 # PROP BASE Use_MFC 6
 # PROP BASE Use_Debug_Libraries 0
@@ -53,9 +53,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../../../bin/Cube.exe"
+# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../../../bin/mfccube.exe"
 
-!ELSEIF  "$(CFG)" == "Cube - Win32 Debug"
+!ELSEIF  "$(CFG)" == "DemoMfcCube - Win32 Debug"
 
 # PROP BASE Use_MFC 6
 # PROP BASE Use_Debug_Libraries 1
@@ -79,14 +79,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../../../bin/Cubed.exe" /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../../../bin/mfccubed.exe" /pdbtype:sept
 
 !ENDIF 
 
 # Begin Target
 
-# Name "Cube - Win32 Release"
-# Name "Cube - Win32 Debug"
+# Name "DemoMfcCube - Win32 Release"
+# Name "DemoMfcCube - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"

@@ -84,7 +84,7 @@ bool DbJtVisApi::init()
     return true;
 
   // Get the customer number.
-  const unsigned int &customer = this->getCustomerId();
+  unsigned int customer ( this->getCustomerId() );
 
   // Register the customer.
   _isInitialized = ( eai_OK == eaiEntityFactory::registerCustomer ( customer ) );

@@ -16,16 +16,14 @@
 #include "DbJtPrecompiled.h"
 #include "DbJtTraverser.h"
 #include "DbJtVisApiArray.h"
+#include "DbJtVisApiHeaders.h"
 
 #include "Standard/SlAssert.h"
 #include "Standard/SlPrint.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlInline.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "DbJtVisApiHeaders.h"
-# include <iostream>
-#endif
+#include <iostream>
 
 // This is the only way to get a pointer to the traverser from inside the 
 // callback function.
@@ -374,17 +372,33 @@ bool DbJtTraverser::_sendMessage ( const Message &message )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Traverse callback.
+//  Traverse callback. For DMDTk >= 5.2.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtTraverser::_traverseCallback ( eaiHierarchy *node, int level, eaiClientData * )
+int DbJtTraverser::_traverseCallback ( eaiHierarchy *hierarchy, int level, eaiClientData *data )
 {
-  SL_PRINT3 ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", node, level );
+  SL_PRINT3 ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( DbJtTraverser::_getCurrent() );
 
   // Call the other one.
-  return DbJtTraverser::_getCurrent()->_traverseNotify ( node, level );
+  return DbJtTraverser::_getCurrent()->_traverseNotify ( hierarchy, level );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Traverse callback. For DMDTk < 5.2.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int DbJtTraverser::_traverseCallback ( eaiHierarchy *hierarchy, int level )
+{
+  SL_PRINT3 ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", hierarchy, level );
+  SL_ASSERT ( DbJtTraverser::_getCurrent() );
+
+  // Call the other one.
+  return DbJtTraverser::_getCurrent()->_traverseNotify ( hierarchy, level );
 }
 
 

@@ -29,9 +29,9 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
-  // Make the source only hand us assemblies and parts instead of instances 
-  // of assemblies and parts. Ideally, this should be handled as a command 
-  // line argument. 
+  // Make the source only hands the target assemblies and parts instead of 
+  // instances of assemblies and parts. Ideally, this should be handled as a 
+  // command line argument. 
   DbJtDatabase *jt = new DbJtDatabase;
   SlRefPtr<IUnknown> unknown ( jt->queryInterface ( IUnknown::IID ) );
   SlQueryPtr<ILoadOptions> options ( unknown );

@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  DbJtVisApiArray: Special array class to handle deleting of the arrays 
-//  that are allocated inside the VisApi DLL (on their own heap).
+//  that are allocated inside the VisApi DLL (on its own heap).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -65,43 +65,44 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
   if ( _p )
   {
     #ifdef _WIN32
-    
+
       #ifdef _DEBUG
 
-      // The purpose of this section is to somehow delete the pointer
-      // without crashing (it was allocated on DMDTk's heap because DMDTk 
-      // is statically linked to the c-runtime library).
+        // The purpose of this section is to somehow delete the pointer
+        // without crashing (it was allocated on DMDTk's heap because DMDTk 
+        // is statically linked to the c-runtime library).
 
-      // Get the path to the DLL.
-      std::string path ( ::getenv ( "DMDTK_DEV_PATH" ) );
+        // Get the path to the DLL.
+        std::string path ( ::getenv ( "DMDTK_DEV_PATH" ) );
 
-      // If we got a path...
-      if ( false == path.empty() )
-      {
-        // Make the full path.
-        path += "\\lib\\Windows\\DMDataTk40.dll"; // TODO, what about version 5.0 ?
-
-        // Lose any double-slashes from the append above.
-        //path.replace ( "\\\\", "\\" );
-
-        // Get the handle to the DRDTk DLL.
-        HMODULE module = ::GetModuleHandle ( path.c_str() );
-
-        // If we got a module...
-        if ( module )
+        // If we got a path...
+        if ( false == path.empty() )
         {
-          // Get the address of "free" function in the DRDTk DLL.
-          typedef void FreeFunc ( void * );
-          FreeFunc *func = (FreeFunc *) ::GetProcAddress ( module, "GlobalFree" );
+          // Make the full path.
+          path += "\\lib\\Windows\\DMDataTk50.dll";
 
-          // If we found the function...
-          if ( func )
+          // Lose any double-slashes from the append above.
+          //path.replace ( "\\\\", "\\" );
+
+          // Get the handle to the DRDTk DLL.
+          HMODULE module = ::GetModuleHandle ( path.c_str() );
+
+          // If we got a module...
+          if ( module )
           {
-            // Call the function.
-            func ( _p );
+            // Get the address of the "free" function in the DRDTk DLL.
+            typedef void FreeFunc ( void * );
+            //FreeFunc *func = (FreeFunc *) ::GetProcAddress ( module, "GlobalFree" );
+            FreeFunc *func = (FreeFunc *) ::GetProcAddress ( module, "free" );
+
+            // If we found the function...
+            if ( func )
+            {
+              // Call the function.
+              func ( _p );
+            }
           }
         }
-      }
 
       #else // release
 

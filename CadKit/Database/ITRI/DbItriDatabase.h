@@ -22,6 +22,9 @@
 #include "Database/Base/DbBaseTarget.h"
 
 #include "Interfaces/ITriangleAppend.h"
+#include "Interfaces/IFileExtension.h"
+#include "Interfaces/IDataWrite.h"
+#include "Interfaces/IOutputAttribute.h"
 
 #include "Standard/SlStack.h"
 
@@ -34,7 +37,10 @@
 namespace CadKit
 {
 class DB_ITRI_API DbItriDatabase : public DbBaseTarget,
-                                 public ITriangleAppendFloat
+                                   public ITriangleAppendFloat,
+                                   public IFileExtension,
+                                   public IDataWrite,
+                                   public IOutputAttribute
 {
 public:
 
@@ -55,11 +61,14 @@ public:
   // Tell the target it is done receiving data.
   virtual bool            dataTransferEnd ( IUnknown *caller );
 
-  // Get the file extension.
-  virtual std::string     getFileExtension() const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFormatAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  // Store the data.
-  virtual bool            storeData ( const std::string &filename );
+  // Does the format have the attribute?
+  virtual bool            isAttributeSupported ( const FormatAttribute &attribute ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -72,6 +81,33 @@ public:
                                            float t1v0, float t1v1, float t1v2,
                                            float t2v0, float t2v1, float t2v2,
                                            IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFileExtension interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the file extension.
+  virtual std::string     getFileExtension() const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IDataWrite interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Write the data.
+  virtual bool            writeData ( const std::string &filename );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the output attribute.
+  virtual bool            setOutputAttribute ( const FormatAttribute &attribute ) const;
 
 protected:
 

@@ -845,46 +845,9 @@ void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, assembly = %X\n", this, assembly );
-  SL_ASSERT ( assembly );
-
-  // Call the template function.
-  return CadKit::getName ( assembly );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string DbJtDatabase::getName ( PartHandle part ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, part = %X\n", this, part );
-  SL_ASSERT ( part );
-
-  // Call the template function.
-  return CadKit::getName ( part );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string DbJtDatabase::getName ( InstanceHandle instance ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, instance = %X\n", this, instance );
-  SL_ASSERT ( instance );
-
-  // Call the template function.
-  return CadKit::getName ( instance );
-}
+std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const { return CadKit::getName ( assembly ); }
+std::string DbJtDatabase::getName ( PartHandle part )         const { return CadKit::getName ( part ); }
+std::string DbJtDatabase::getName ( InstanceHandle instance ) const { return CadKit::getName ( instance ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -893,46 +856,20 @@ std::string DbJtDatabase::getName ( InstanceHandle instance ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( AssemblyHandle assembly, float matrix[16] ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, assembly = %X\n", this, assembly );
-  SL_ASSERT ( assembly );
-
-  // Call the template function.
-  return CadKit::getTransform ( assembly, matrix );
-}
+bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) assembly, matrix ); }
+bool DbJtDatabase::getTransform ( PartHandle part,         SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) part,     matrix ); }
+bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) instance, matrix ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the transformation matrix.
+//  Get the material.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( PartHandle part, float matrix[16] ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, part = %X\n", this, part );
-  SL_ASSERT ( part );
-
-  // Call the template function.
-  return CadKit::getTransform ( part, matrix );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the transformation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtDatabase::getTransform ( InstanceHandle instance, float matrix[16] ) const
-{
-  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, instance = %X\n", this, instance );
-  SL_ASSERT ( instance );
-
-  // Call the template function.
-  return CadKit::getTransform ( instance, matrix );
-}
+bool DbJtDatabase::getMaterial ( AssemblyHandle assembly, SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) assembly, material ); }
+bool DbJtDatabase::getMaterial ( PartHandle part,         SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) part,     material ); }
+bool DbJtDatabase::getMaterial ( InstanceHandle instance, SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) instance, material ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,8 +21,7 @@
 #include "Interfaces/IDataSource.h"
 #include "Interfaces/IControlled.h"
 #include "Interfaces/ILoadOptions.h"
-#include "Interfaces/IAssemblyQuery.h"
-#include "Interfaces/IPartQuery.h"
+#include "Interfaces/IEntityQuery.h"
 #include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlRefBase.h"
@@ -103,7 +102,10 @@ public:
   virtual std::string     getName ( AssemblyHandle assembly ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( AssemblyHandle assembly, float matrix[16] ) const;
+  virtual bool            getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix ) const;
+
+  // Get the transformation material.
+  virtual bool            getMaterial ( AssemblyHandle assembly, SlMaterialf &material ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -115,7 +117,10 @@ public:
   virtual std::string     getName ( PartHandle part ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( PartHandle part, float matrix[16] ) const;
+  virtual bool            getTransform ( PartHandle part, SlMatrix4f &matrix ) const;
+
+  // Get the transformation material.
+  virtual bool            getMaterial ( PartHandle assembly, SlMaterialf &material ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -130,7 +135,10 @@ public:
   virtual std::string     getName ( InstanceHandle Instance ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( InstanceHandle Instance, float matrix[16] ) const;
+  virtual bool            getTransform ( InstanceHandle Instance, SlMatrix4f &matrix ) const;
+
+  // Get the transformation material.
+  virtual bool            getMaterial ( InstanceHandle assembly, SlMaterialf &material ) const;
 
 protected:
 

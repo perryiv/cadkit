@@ -25,7 +25,6 @@ namespace Usul
 
       template < class Itr > _play ( Itr first, Itr second, Itr end)
       {
-
         while ( second != end )
         {
           _callback ( *first, *second );
@@ -45,7 +44,6 @@ namespace Usul
       {
         if (frames.size() < 2 )
           return;
-        
         _play ( frames.rbegin(), ++(frames.rbegin()), frames.rend() );
       }
 

@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CadKitSl.lib"
+# ADD LIB32 /nologo /out:"../bin/CkSl.lib"
 
 !ELSEIF  "$(CFG)" == "Standard - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CadKitSld.lib"
+# ADD LIB32 /nologo /out:"../bin/CkSld.lib"
 
 !ENDIF 
 

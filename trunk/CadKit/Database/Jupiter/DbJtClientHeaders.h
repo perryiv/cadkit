@@ -52,12 +52,8 @@
 // Needed headers.
 #include "Standard/SlClientHeaders.h"
 
-// Nodes.
-#include "DbJtGroup.h"
-#include "DbJtLeaf.h"
-
-// Visitors.
-#include "DbJtWrite.h"
+// Headers from this library.
+#include "DbJtTraverser.h"
 
 #ifdef _WIN32
 # pragma warning(disable:4786) // Truncated debug names.

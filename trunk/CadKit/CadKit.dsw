@@ -3,42 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "BoundingBox"=.\Examples\BoundingBox\BoundingBox.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "Cube"=.\Demos\Cube\MFC\Cube.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name SceneGraphMfc
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name SceneGraphOpenGL
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name SceneGraphCore
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name Standard
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
 
 Package=<5>
@@ -69,7 +33,46 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Matrix4"=.\Examples\Matrix4\Matrix4.dsp - Package Owner=<4>
+Project: "DemoJt2Xml"=.\Demos\Jt2Xml\DemoJt2Xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TranslateJupiter2Xml
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoMfcCube"=.\Demos\Cube\MFC\DemoMfcCube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphMfc
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ExampleBoundingBox"=.\Examples\BoundingBox\ExampleBoundingBox.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -81,7 +84,43 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Pathname"=.\Examples\Pathname\Pathname.dsp - Package Owner=<4>
+Project: "ExampleMatrix4"=.\Examples\Matrix4\ExampleMatrix4.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExamplePathname"=.\Examples\Pathname\ExamplePathname.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleString"=.\Examples\String\ExampleString.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleVector"=.\Examples\Vector\ExampleVector.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -156,7 +195,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "String"=.\Examples\String\String.dsp - Package Owner=<4>
+Project: "TranslateJupiter2Xml"=.\Translators\Jupiter2Xml\TranslateJupiter2Xml.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -164,68 +203,14 @@ Package=<5>
 
 Package=<4>
 {{{
-}}}
-
-###############################################################################
-
-Project: "Vector"=.\Examples\Vector\Vector.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "flt2xml"=.\Translators\flt2xml\flt2xml.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name DatabaseXml
-    End Project Dependency
     Begin Project Dependency
     Project_Dep_Name Standard
     End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "jt2flt"=.\Translators\jt2flt\jt2flt.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "jt2xml"=.\Translators\jt2xml\jt2xml.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
     Begin Project Dependency
     Project_Dep_Name DatabaseJt
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name DatabaseXml
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name Standard
     End Project Dependency
 }}}
 

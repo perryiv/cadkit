@@ -15,40 +15,103 @@
 #ifndef _OSG_TOOLS_BOX_H_
 #define _OSG_TOOLS_BOX_H_
 
-#include "Export.h"
-#include "Declarations.h"
+#include "ColorPolicyFunctor.h"
+#include "ColorSetter.h"
 
 #include "osg/Vec4"
+#include "osg/Geode"
+#include "osg/Geometry"
 
 namespace OsgTools
 {
 
-  class OSG_TOOLS_EXPORT Box
+  template<class ColorPolicy>
+  class Box : public ColorPolicyFunctor<ColorPolicy>
   {
   public:
-    Box():
-        _width(1.0), _height(1.0), _depth(1.0), _color(osg::Vec4(1.0,0.0,0.0,1.0)) {}
-    Box(float w,float h,float d,const osg::Vec4& c=osg::Vec4(1.0,0.0,0.0,1.0)):
-        _width(w), _height(h), _depth(d), _color(c) {}
-    Box(const Box& b):
-        _width(b._width), _height(b._height), _depth(b._depth), _color(b._color) {}
+    typedef ColorPolicyFunctor<ColorPolicy> CPF;
+    Box(): CPF(), _width(1.0), _height(1.0), _depth(1.0) {}
+    Box(float w,float h,float d): CPF(), _width(w), _height(h), _depth(d) {}
+    Box(const Box& b): CPF(b), _width(b._width), _height(b._height), _depth(b._depth) {}
 
     virtual ~Box() {}
 
     Box& operator = (const Box& b)
     {
+      CPF::operator =(b);
       _width=b._width;
       _height=b._height;
       _depth=b._depth;
-      _color=b._color;
       return *this;
     }
 
-    virtual osg::Geode* operator()() const;
-    void set(float w,float h,float d) { _width = w; _height = h; _depth = d; }
+    virtual osg::Node* operator()()
+    {
+      // half lengths
+      float width_2 = _width*0.5;
+      float height_2 = _height*0.5;
+      float depth_2 = _depth*0.5;
 
-    void setColor(const osg::Vec4& c) { _color = c; }
-    const osg::Vec4& getColor() const { return _color; }
+      osg::Vec3Array* vertices = new osg::Vec3Array;
+      osg::Vec3Array* normals = new osg::Vec3Array;
+
+      // front face
+      vertices->push_back( osg::Vec3(-width_2,-height_2,depth_2) );
+      vertices->push_back( osg::Vec3(width_2,-height_2,depth_2) );
+      vertices->push_back( osg::Vec3(width_2,height_2,depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,height_2,depth_2) );
+      normals->push_back( osg::Vec3(0.0,0.0,1.0) );
+
+      // back face
+      vertices->push_back( osg::Vec3(width_2,-height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,-height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(width_2,height_2,-depth_2) );
+      normals->push_back( osg::Vec3(0.0,0.0,-1.0) );
+
+      // top face
+      vertices->push_back( osg::Vec3(width_2,height_2,depth_2) );
+      vertices->push_back( osg::Vec3(width_2,height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,height_2,depth_2) );
+      normals->push_back( osg::Vec3(0.0,1.0,0.0) );
+
+      // bottom face
+      vertices->push_back( osg::Vec3(width_2,-height_2,depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,-height_2,depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,-height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(width_2,-height_2,-depth_2) );
+      normals->push_back( osg::Vec3(0.0,-1.0,0.0) );
+
+      // left face
+      vertices->push_back( osg::Vec3(-width_2,height_2,depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,-height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(-width_2,-height_2,depth_2) );
+      normals->push_back( osg::Vec3(-1.0,0.0,0.0) );
+
+      // right face
+      vertices->push_back( osg::Vec3(width_2,height_2,-depth_2) );
+      vertices->push_back( osg::Vec3(width_2,height_2,depth_2) );
+      vertices->push_back( osg::Vec3(width_2,-height_2,depth_2) );
+      vertices->push_back( osg::Vec3(width_2,-height_2,-depth_2) );
+      normals->push_back( osg::Vec3(1.0,0.0,0.0) );
+
+
+      osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
+      geometry->setVertexArray( vertices );
+      geometry->setNormalArray( normals );
+      geometry->setNormalBinding( osg::Geometry::BIND_PER_PRIMITIVE );
+      geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,
+						    0,vertices->size()) );
+
+      _cp( geometry.get() );
+      osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+      geode->addDrawable( geometry.get() );
+      return( geode.release() );
+    }
+
+    void set(float w,float h,float d) { _width = w; _height = h; _depth = d; }
 
     void setDepth(float d) { _depth = d; }
     float getDepth() const { return _depth; }
@@ -61,9 +124,9 @@ namespace OsgTools
 
   private:
     float _width,_height,_depth;
-    osg::Vec4 _color;
   };
 
+  typedef Box<ColorSetter> ColorBox;
 }; // namespace OsgTools
 
 #endif // _OSG_TOOLS_BOX_H_

@@ -15,8 +15,8 @@
 #ifndef _osg_tools_builder_sphere_
 #define _osg_tools_builder_sphere_
 
-#include "Export.h"
 #include "ColorPolicyFunctor.h"
+#include "ColorSetter.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
@@ -29,7 +29,7 @@ namespace OsgTools
   {
   public:
     typedef ColorPolicyFunctor<ColorPolicy> CPF;
-    Sphere(): CPF(), _radius(0.5){}
+    Sphere(): CPF(), _radius(0.5) {}
     Sphere(float r): CPF(), _radius(r) {}
     Sphere(const Sphere& s): CPF(s), _radius(s._radius) {}
     virtual ~Sphere() {}
@@ -58,6 +58,7 @@ namespace OsgTools
     float _radius;
   };
 
+  typedef Sphere<ColorSetter> ColorSphere;
 };
 
 #endif

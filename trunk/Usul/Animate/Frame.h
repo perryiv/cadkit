@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -13,9 +14,10 @@ namespace Usul
 {
   namespace Animate
   {
-    template < class UserData, class Matrix > class Frame
+    template < class UserData_, class Matrix > class Frame
     {
     public:
+      typedef UserData_ UserData;
       Frame() { }
       Frame ( UserData userData, Matrix matrix ) : _userData ( userData ), _matrix ( matrix ) { }
 

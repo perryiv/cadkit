@@ -18,7 +18,7 @@
 
 #include "Usul/Export/Export.h"
 
-#include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IClassFactory.h"
 
 #include <string>
 #include <list>
@@ -36,8 +36,9 @@ public:
 
   // Typedefs.
   typedef Usul::Interfaces::IUnknown Unknown;
+  typedef Usul::Interfaces::IClassFactory Factory;
   typedef Usul::DLL::Library Library;
-  typedef std::list<std::string> Path;
+  typedef std::list<std::string> StringList;
   typedef Usul::Interfaces::IUnknown::ValidRefPtr UnknownPtr;
   typedef std::list<UnknownPtr> UnknownList;
 
@@ -48,7 +49,7 @@ public:
                                  const std::string &dir, 
                                  const std::string &filename );
   static Unknown *      create ( unsigned long iid, 
-                                 const Path &path,
+                                 const StringList &path,
                                  const std::string &filename );
 
   // Create all components that support the given interface.
@@ -61,13 +62,18 @@ public:
                                  bool throwExpected, 
                                  bool throwUnexpected );
 
+  // Return the class factory.
+  static Factory *      factory ( const std::string &filename );
+
   // Release all libraries. Note: this is the hammer. It does not check 
   // to see if there are any existing components from the libraries.
   static void           releaseLibraries();
 
 protected:
 
-  static Unknown *      _create  ( unsigned long iid, Library *lib );
+  typedef std::pair < Factory::RefPtr, Unknown::RefPtr > CreateResult;
+  static CreateResult   _create  ( unsigned long iid, const std::string &name );
+  static CreateResult   _create  ( unsigned long iid, Library *lib );
   static Library *      _find    ( const std::string &filename );
   static Library *      _load    ( const std::string &filename );
   static void           _setPool ( const std::string &key, Library *lib );

@@ -82,10 +82,19 @@ bool ReaderWriterPDB::acceptsExtension ( const std::string &ext )
 
 ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
+#define USE_EXCEPTIONS
+#ifdef USE_EXCEPTIONS
+
   // Safely...
   try
   {
+
+#endif
+
     return this->_read ( file, options );
+
+#ifdef USE_EXCEPTIONS
+
   }
 
   // Catch known exceptions.
@@ -105,6 +114,8 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
   {
     return ReaderWriterPDB::Result ( "Unknown exception caught" );
   }
+
+#endif
 }
 
 
@@ -118,6 +129,7 @@ void ReaderWriterPDB::_init()
 {
   _molecules.clear();
   _materialChooser.clear();
+  _currentMolecule = NULL;
 }
 
 
@@ -180,8 +192,6 @@ osg::Group *ReaderWriterPDB::_build() const
   // Return the root.
   return root.release();
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,11 +270,13 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
   }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Returns point to current molecule.  If none exists, it creates a new one.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)

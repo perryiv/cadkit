@@ -476,10 +476,10 @@
 					Name="File"
 					Filter="">
 					<File
-						RelativePath=".\Interfaces\ICanRead.h">
+						RelativePath=".\Interfaces\ICanHandleFile.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICanWrite.h">
+						RelativePath=".\Interfaces\IDocumentCreate.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFileSelectionFilters.h">

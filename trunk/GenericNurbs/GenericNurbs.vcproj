@@ -279,6 +279,20 @@
 					RelativePath=".\Gn\Evaluate\Point.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Tessellate"
+				Filter="">
+				<File
+					RelativePath=".\Gn\Tessellate\Bisect.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Interpolate"
+				Filter="">
+				<File
+					RelativePath=".\Gn\Interpolate\Global.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -71,11 +71,11 @@ template < class SplineType > struct Calculate
 
     // Needed below.
     UIntType index;
-    UIntType order ( curve.order ( 0 ) );
-    UIntType degree ( order - 1 );
+    const UIntType order ( curve.order ( 0 ) );
+    const UIntType degree ( order - 1 );
 
     // Find the knot span.
-    UIntType span ( GN::Algorithms::findKnotSpan ( curve, 0, u ) );
+    const UIntType span ( GN::Algorithms::findKnotSpan ( curve, 0, u ) );
 
     // Calculate the blending coefficients.
     WorkSpace &N = curve.work().basis;
@@ -86,7 +86,7 @@ template < class SplineType > struct Calculate
     std::fill ( pt.begin(), pt.end(), static_cast<ControlPointType> ( 0 ) );
 
     // We calculate the minimum of the point size and the dimenion.
-    UIntType dimension ( std::min ( pt.size(), curve.dimension() ) );
+    const UIntType dimension ( std::min ( pt.size(), curve.dimension() ) );
 
 		// If it is rational...
 		if ( curve.rational() )
@@ -94,10 +94,10 @@ template < class SplineType > struct Calculate
 			 // Initialize.
 			 ControlPointType weight = 0;
 
-			 if ( order == 2 ) // 1st degree curve
+			 if ( 2 == order ) // 1st degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -106,7 +106,7 @@ template < class SplineType > struct Calculate
 						 pt[1]  += N[1] * curve.controlPoint(1, index + 1);
 						 weight += N[1] * curve.weight(index + 1);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -128,10 +128,10 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 3 ) // 2nd degree curve
+			 else if ( 3 == order ) // 2nd degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -143,7 +143,7 @@ template < class SplineType > struct Calculate
 						 pt[1]  += N[2] * curve.controlPoint(1, index + 2);
 						 weight += N[2] * curve.weight(index + 2);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -171,10 +171,10 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 4 ) // 3rd degree curve
+			 else if ( 4 == order ) // 3rd degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -189,7 +189,7 @@ template < class SplineType > struct Calculate
 						 pt[1]  += N[3] * curve.controlPoint(1, index + 3);
 						 weight += N[3] * curve.weight(index + 3);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -223,10 +223,10 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 5 ) // 4th degree curve
+			 else if ( 5 == order ) // 4th degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -244,7 +244,7 @@ template < class SplineType > struct Calculate
 						 pt[1]  += N[4] * curve.controlPoint(1, index + 4);
 						 weight += N[4] * curve.weight(index + 4);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0]  += N[0] * curve.controlPoint(0, index);
 						 pt[1]  += N[0] * curve.controlPoint(1, index);
@@ -311,17 +311,17 @@ template < class SplineType > struct Calculate
     // If it is non-rational...
     else
 		{
-			 if ( order == 2 ) // 1st degree curve
+			 if ( 2 == order ) // 1st degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
 						 pt[0] += N[1] * curve.controlPoint(0, index + 1);
 						 pt[1] += N[1] * curve.controlPoint(1, index + 1);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
@@ -339,10 +339,10 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 3 ) // 2nd degree curve
+			 else if ( 3 == order ) // 2nd degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
@@ -351,7 +351,7 @@ template < class SplineType > struct Calculate
 						 pt[0] += N[2] * curve.controlPoint(0, index + 2);
 						 pt[1] += N[2] * curve.controlPoint(1, index + 2);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
@@ -373,7 +373,7 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 4 ) // 3rd degree curve
+			 else if ( 4 == order ) // 3rd degree curve
 			 {
 					index = span - (order - 1);
 					if ( dimension == 2 ) // 2-D curve
@@ -387,7 +387,7 @@ template < class SplineType > struct Calculate
 						 pt[0] += N[3] * curve.controlPoint(0, index + 3);
 						 pt[1] += N[3] * curve.controlPoint(1, index + 3);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
@@ -413,10 +413,10 @@ template < class SplineType > struct Calculate
 						 }
 					}
 			 }
-			 else if ( order == 5 ) // 4th degree curve
+			 else if ( 5 == order ) // 4th degree curve
 			 {
 					index = span - (order - 1);
-					if ( dimension == 2 ) // 2-D curve
+					if ( 2 == dimension ) // 2-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);
@@ -429,7 +429,7 @@ template < class SplineType > struct Calculate
 						 pt[0] += N[4] * curve.controlPoint(0, index + 4);
 						 pt[1] += N[4] * curve.controlPoint(1, index + 4);
 					}
-					else if ( dimension == 3 ) // 3-D curve
+					else if ( 3 == dimension ) // 3-D curve
 					{
 						 pt[0] += N[0] * curve.controlPoint(0, index);
 						 pt[1] += N[0] * curve.controlPoint(1, index);

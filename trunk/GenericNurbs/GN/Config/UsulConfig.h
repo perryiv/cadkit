@@ -169,6 +169,35 @@ ErrorCheckerPrintAndThrow;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class for calculating the distance between two n-dimensional vectors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class V > struct Distance
+{
+  typedef typename V::value_type value_type;
+  typedef typename V::const_iterator const_iterator;
+  static value_type squared ( const value_type &v1, const value_type &v2 )
+  {
+    ErrorCheckerType ( __FILE__, __LINE__, v1.size() == v2.size() );
+    value_type dist ( 0 ), temp;
+    const_iterator i1 = v1.begin();
+    const_iterator i2 = v2.begin();
+    while ( i1 != v1.end() && i2 != v2.end() )
+    {
+      dist += ::Usul::Math::square ( temp * temp );
+    }
+    return dist;
+  }
+  static value_type get ( const value_type &v1, const value_type &v2 )
+  {
+    return ::Usul::Math::sqrt ( squared ( v1, v2 ) );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  End of namespace Detail.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,6 +254,7 @@ public:
   typedef Detail::Translation<Matrix44,Vec3>      Translation;
   typedef Detail::Scale<Matrix44,Vec3>            Scale;
   typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
+  typedef Detail::Distance<Vector>                Distance;
 };
 
 

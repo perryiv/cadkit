@@ -9,6 +9,9 @@
 
 #include "ReaderWriterPDB.h"
 
+#include "osg/Geometry"
+#include "osg/LineWidth"
+
 #include "osg/Geode"
 #include "osg/LOD"
 #include "osg/Shape"
@@ -22,22 +25,14 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
+#include <sys/stat.h>
+#include <cassert>
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  We're packing a-y-x and radius into a 4D vector.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Index
-{
-  const unsigned int X ( 0 );
-  const unsigned int Y ( 1 );
-  const unsigned int Z ( 2 );
-  const unsigned int R ( 3 );
-};
-
+#ifdef _WIN32
+#define STAT _stat
+#else
+#define STAT stat
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -47,8 +42,8 @@ namespace Index
 
 ReaderWriterPDB::ReaderWriterPDB() :
   _atoms(),
-  _bbox(),
-  materialChooser(),
+  _bonds(),
+  _materialChooser(),
   _maxDistanceFactor ( 30 ),
   _lastRangeMax ( std::numeric_limits<float>::max() )
 {
@@ -133,8 +128,8 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
 void ReaderWriterPDB::_init()
 {
   _atoms.clear();
-  osg::BoundingBox bbox;
-  _bbox = bbox;
+  _bonds.clear();
+  _materialChooser.clear();
 }
 
 
@@ -160,8 +155,13 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   if ( !in.is_open() )
     return ReadResult::ERROR_IN_READING_FILE;
 
+  struct STAT filebuf;
+
+  int result = _stat ( file.c_str(), &filebuf );
+  assert ( 0 == result );
+
   // Parse all the file and build internal data.
-  this->_parse ( in );
+  this->_parse ( in, filebuf.st_size );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -191,17 +191,99 @@ osg::Group *ReaderWriterPDB::_build() const
     // Get the atom.
     const Atom &atom = *i;
 
-    // Make the geometry for this point.
-    osg::ref_ptr<osg::LOD> lod ( this->_makeAtom ( atom ) );
+    if(i->getId() != -1) 
+    {
+      // make the geometry for this point.
+      osg::ref_ptr<osg::LOD> lod ( this->_makeAtom ( atom ) );
 
-    // Add the lod to the root.
-    root->addChild ( lod.get() );
+      // Add the lod to the root.
+      root->addChild ( lod.get() );
+    }
+  }
+
+  for (Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i)
+  {
+    const Bond &bond = *i;
+
+    osg::ref_ptr<osg::LOD> lod (this->_makeBond( bond ) );
+
+    //root->addChild ( lod.get() );
   }
 
   // Return the root.
   return root.release();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make an bond.
+//  TODO, make several branches in the lod. 
+//  Use bounding-box info to set lod-ranges.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::LOD *ReaderWriterPDB::_makeBond (const Bond &bond ) const
+{
+  osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
+
+  const osg::Vec3 center (bond.getX(), bond.getY(), bond.getZ());
+  const float height = bond.getH();
+  const float radius = bond.getR();
+  //std::cout << height << std::endl;
+  /*
+  //draw a cylinder
+  osg::ref_ptr<osg::Shape> cylinder ( new osg::Cylinder (center, radius, height));
+  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable(cylinder.get()));
+
+  
+  // Not so many triangles.
+  osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
+  hints->setDetailRatio ( 0.25f ); // TODO, remove hard-coded value.
+  drawable->setTessellationHints ( hints.get() );
+  */  
+  // Add the cylinder to a geode.
+  osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+  //geode->addDrawable ( drawable.get() );
+  
+  
+  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+  osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
+
+  p->resize ( 2 );
+  (*p)[0] = bond.getPoint1();
+  (*p)[1] = bond.getPoint2();
+
+  geom->setVertexArray ( p.get() );
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
+
+  osg::ref_ptr<osg::Vec4Array> c ( new osg::Vec4Array );
+  c->resize ( 1 );
+  (*c)[0] = osg::Vec4(1.0, 1.0, 1.0, 1.0);
+
+  geom->setColorArray ( c.get() );
+  geom->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE_SET );
+
+  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
+  lw->setWidth ( 5 );
+
+  osg::ref_ptr<osg::StateSet> state = geom->getOrCreateStateSet();
+  state->setAttribute ( lw.get() );
+  state->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
+
+  geode->addDrawable ( geom.get() );
+
+  // Name the geode with the line from the file.
+  geode->setName ( bond.toString() );
+
+  // Add the geode to the lod.
+  lod->addChild ( geode.get() );
+
+  // Set the range.
+  lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
+
+  return lod.release();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -214,10 +296,10 @@ osg::LOD *ReaderWriterPDB::_makeAtom (const Atom &atom ) const
   // The lod holding the various representations.
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
-  // Set the lod's material. This will effect all the children.
+   // Set the lod's material. This will effect all the children.
   osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
   const std::string type ( atom.getName() );
-  osg::ref_ptr<osg::Material> m ( materialChooser.getMaterial ( type ) );
+  osg::ref_ptr<osg::Material> m ( _materialChooser.getMaterial ( type ) );
   ss->setAttribute ( m.get() );
 
   // Get the atom's numbers.
@@ -294,12 +376,14 @@ osg::Geode *ReaderWriterPDB::_makeCube ( const osg::Vec3 &center, float size ) c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in )
+void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
 {
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
   char buf[size];
   int numAtoms = 0;
+
+  _atoms.resize (filesize / 80);
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
@@ -332,28 +416,38 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
 		//if(atom.getId() != numAtoms) {
 		//	std::cerr << "Atoms are not sequential\n";
 		//}
-		_atoms.push_back( atom );
+    _atoms.at( atom.getId() ) = atom;
     }
-	else if( type == "HETATM") {
-		/*numAtoms++;
-		Atom atom(in, type);
-		//std::cout << numAtoms << " = " << atom.getId() << std::endl;
-		//if(atom.getId() != numAtoms) {
-		//	std::cerr << "Atoms are not sequential\n";
-		//}
-		_atoms.push_back( atom );
-		*/
-	}
-	else if( type == "CONECT"){
-		/*int id;
-		in >> id;
-		
-		Atoms::const_iterator i = _atoms.begin();
-		i = i + id;
-		Atom &atom = *i;
-	*/
-		//TODO find atoms in _atoms and connect with bonds
-	}
+	  else if( type == "HETATM") 
+    {
+		  /*numAtoms++;
+		  Atom atom(in, type);
+		  //std::cout << numAtoms << " = " << atom.getId() << std::endl;
+		  //if(atom.getId() != numAtoms) {
+		  //	std::cerr << "Atoms are not sequential\n";
+		  //}
+		  _atoms.push_back( atom );
+		  */
+	  }
+	  else if( type == "CONECT")
+    {
+		  int id, connect, len, columnStart = 6;
+      const int columnLength = 5;
+      char num[6];
+      len = strlen(buf);
+      memset(num, 0, 6 * sizeof(char));
+      strncpy(num, buf + columnStart, columnLength);
+      id = atoi (num);
+      columnStart += columnLength;
+      while(columnStart < len - 5)
+      {
+        memset(num,0, 6*sizeof(char));
+        strncpy(num, buf + columnStart, columnLength);
+        connect = atoi (num);
+        _bonds.push_back( Bond (_atoms.at(id), _atoms.at(connect), _bonds.size() + 1));
+        columnStart += columnLength;
+      }
+	  }
   }
 }
 

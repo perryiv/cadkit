@@ -28,29 +28,26 @@ MaterialChooser::Material MaterialChooser::addMaterial(std::string atom) const
 	float g = (float) (green / 100);
 	float b = (float) (blue / 100);*/
 	const float factor = 1.0f / RAND_MAX;
-	const float r = (float) (rand() * factor);
-	const float g = (float) (rand() * factor);
-	const float b = (float) (rand() * factor);
+	float r = (float) (rand() * factor);
+	float g = (float) (rand() * factor);
+	float b = (float) (rand() * factor);
   assert ( r >= 0 && r <= 1 );
   assert ( g >= 0 && g <= 1 );
   assert ( b >= 0 && b <= 1 );
-	Material mat = new osg::Material();
+  
+  //disallow colors close to white or black
+  if(r < .2 && g < .2 && b < .2)
+    r = g = b = 0.2f;
+  if(r > .8 && g > .8 && b > .8)
+    r = g = b = 0.8f;
+	
+  Material mat = new osg::Material();
 	mat->setAmbient(osg::Material::FRONT_AND_BACK, osg::Vec4(r, g, b, 1.0));
 	mat->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(r, g, b, 1.0));
 	mat->setEmission(osg::Material::FRONT_AND_BACK, osg::Vec4(0.1, 0.1, 0.1, 1.0));
 	mat->setShininess(osg::Material::FRONT_AND_BACK, 100);
 	mat->setSpecular(osg::Material::FRONT_AND_BACK, osg::Vec4(0.8, 0.8, 0.8, 1.0));
-	//glmaterial
-	/*
-	int red = rand() % 101;
-	int green = rand() % 101;
-	int blue = rand() % 101;
-	Color c;
-	c.r = (float) (red / 100);
-	c.g = (float) (green / 100);
-	c.b = (float) (blue / 100);
-	c.alpha = 1.0f;
-	*/
+
 	_materialMap.insert( pair( atom, mat ) );
 	return mat;
 }

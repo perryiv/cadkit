@@ -90,7 +90,7 @@ MaterialChooser::Material MaterialChooser::addMaterial(std::string atom) const
     r = g = b = 0.8f;
 	
   //build a new material
-  Material mat = new osg::Material();
+  Material mat ( new osg::Material() );
 	mat->setAmbient(osg::Material::FRONT_AND_BACK, osg::Vec4(r, g, b, 1.0));
 	mat->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(r, g, b, 1.0));
 	mat->setEmission(osg::Material::FRONT_AND_BACK, osg::Vec4(0.1, 0.1, 0.1, 1.0));

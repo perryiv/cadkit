@@ -180,39 +180,60 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Calculate the squared-distance between two points, each in 2D vectors 
+//  where the first index is the dimension.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ContainerType, 
+  class ErrorCheckerType
+>
+struct DistanceSquared2d
+{
+  typedef typename ContainerType::size_type SizeType;
+  typedef typename ContainerType::value_type InnerContainer;
+  typedef typename InnerContainer::value_type ValueType;
+
+  static ValueType calculate ( const ContainerType &a, SizeType i, const ContainerType &b, SizeType j )
+  {
+    GN_ERROR_CHECK ( a.size() == b.size() );
+    const SizeType dimension ( a.size() );
+    ValueType dist ( 0 );
+    for ( SizeType d = 0; d < dimension; ++d )
+    {
+      GN_ERROR_CHECK ( a[d].size() == b[d].size() );
+      ValueType diff ( a[d][i] - b[d][j] );
+      dist += diff * diff;
+    }
+    return dist;
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Calculate the distance between two points, each in 2D vectors where the 
 //  first index is the dimension.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType > struct Distance2
+template
+<
+  class ContainerType, 
+  class ErrorCheckerType,
+  class SquareRootType
+>
+struct Distance2d
 {
-  typedef typename CurveType::ControlPointContainer Vector;
-  typedef typename Vector::size_type SizeType;
-  typedef typename CurveType::UIntType UIntType;
-  typedef typename CurveType::SquareRoot SquareRoot;
-  typedef typename CurveType::ControlPointType RealType;
-  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+  typedef typename ContainerType::size_type SizeType;
+  typedef typename ContainerType::value_type::value_type ValueType;
+  typedef GN::Math::DistanceSquared2d < ContainerType, ErrorCheckerType > DistanceSquared;
 
-public:
-
-  static RealType squared ( const Vector &va, SizeType i, const Vector &vb, SizeType j )
+  static ValueType calculate ( const ContainerType &a, const ContainerType &b )
   {
-    GN_ERROR_CHECK ( va.size() == vb.size() );
-    const UIntType dimension ( va.size() );
-    RealType dist ( 0 );
-    for ( UIntType d = 0; d < dimension; ++d )
-    {
-      GN_ERROR_CHECK ( va[d].size() == vb[d].size() );
-      RealType diff ( va[d][i] - vb[d][j] );
-      dist += diff * diff;
-    }
-    return dist;
-  }
-
-  static RealType get ( const Vector &va, const Vector &vb )
-  {
-    return SquareRoot::calculate ( squared ( va, vb ) );
+    return SquareRoot::calculate ( DistanceSquared::calculate ( a, b ) );
   }
 };
 

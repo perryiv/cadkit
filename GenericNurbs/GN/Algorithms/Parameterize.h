@@ -17,6 +17,7 @@
 #define _GENERIC_NURBS_LIBRARY_ALGORITHMS_PARAMETERIZATION_H_
 
 #include "GN/Math/Distance.h"
+#include "GN/MPL/SameType.h"
 
 
 namespace GN {
@@ -29,63 +30,67 @@ namespace Algorithms {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+template
+<
+  class IndependentContainer,
+  class DependentContainer,
+  class PowerFunctor,
+  class ErrorCheckerType
+>
+struct Parameterize
 {
-  template < class SplineType > struct Parameterize
+  typedef typename DependentContainer::size_type SizeType;
+  typedef typename IndependentContainer::value_type IndependentType;
+  typedef GN::Math::DistanceSquared2d < DependentContainer, ErrorCheckerType > DistanceSquared;
+
+  static void fit ( const DependentContainer &points,
+                    const SizeType &order,
+                    IndependentType power,
+                    IndependentContainer &u )
   {
-    typedef typename SplineType::UIntType UIntType;
-    typedef typename SplineType::KnotType ParamType;
-    typedef typename SplineType::KnotContainer::value_type ParamContainer;
-    typedef typename SplineType::ControlPointContainer DataContainer;
-    typedef typename SplineType::Power Power;
-    typedef GN::Math::Distance2<SplineType> Distance;
+    // Should be true.
+    GN_ASSERT_SAME_TYPE ( SizeType, typename IndependentContainer::size_type );
 
-    static void fit ( const DataContainer &points,
-                      const UIntType &order,
-                      ParamType power,
-                      ParamContainer &u )
+    // Handle trivial case.
+    if ( points.empty() || points[0].empty() )
+      return;
+
+    // The last index.
+    const SizeType numPts ( points[0].size() );
+    SizeType n ( numPts - 1 );
+
+    // Set first and last parameter.
+    u.resize ( numPts );
+    u[0] = 0;
+    u[n] = 1;
+
+    // Adjust the power to "hold" the square-root.
+    power *= 0.5f;
+
+    // Find the denominator.
+    IndependentType denom ( 0 );
+    for ( SizeType k = 1; k <= n; ++k )
     {
-      // Handle trivial case.
-      if ( points.empty() || points[0].empty() )
-        return;
+      // Find the squared-distance between these 2 data points.
+      IndependentType dist ( DistanceSquared::calculate ( points, k - 1, points, k ) );
 
-      // The last index.
-      const UIntType numPts ( points[0].size() );
-      UIntType n ( numPts - 1 );
-
-      // Set first and last parameter.
-      u.resize ( numPts );
-      u[0] = 0;
-      u[n] = 1;
-
-      // Adjust the power to "hold" the square-root.
-      power *= 0.5f;
-
-      // Find the denominator.
-      ParamType denom ( 0 );
-      for ( UIntType k = 1; k <= n; ++k )
-      {
-        // Find the distance between these 2 data points.
-        ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
-
-        // Calculate the denominator. The "power" has the square-root in it.
-        denom += Power::calculate ( dist, power );
-      }
-
-      // Find the numerator.
-      for ( UIntType k = 1; k <= n; ++k )
-      {
-        // Find the distance between these 2 data points.
-        ParamType dist ( Distance::squared ( points, k - 1, points, k ) );
-
-        // Calculate the numerator. The "power" has the square-root in it.
-        ParamType numer ( Power::calculate ( dist, power ) );
-
-        // This is equation 9.5 (or 9.6, depending on the power) in "The NURBS Book", page 365.
-        u[k] = u[k-1] + numer / denom;
-      }
+      // Calculate the denominator. The "power" has the square-root in it.
+      denom += PowerFunctor::calculate ( dist, power );
     }
-  };
+
+    // Find the numerator.
+    for ( SizeType k = 1; k <= n; ++k )
+    {
+      // Find the squared-distance between these 2 data points.
+      IndependentType dist ( DistanceSquared::calculate ( points, k - 1, points, k ) );
+
+      // Calculate the numerator. The "power" has the square-root in it.
+      IndependentType numer ( PowerFunctor::calculate ( dist, power ) );
+
+      // This is equation 9.5 (or 9.6, depending on the power) in "The NURBS Book", page 365.
+      u[k] = u[k-1] + numer / denom;
+    }
+  }
 };
 
 
@@ -101,24 +106,6 @@ namespace Constants
   const float CENTRIPETAL_FIT ( 0.5f );
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parameterize the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class SplineType > void parameterize
-(
-  const SplineType &s,
-  const typename SplineType::ControlPointContainer &points,
-  const typename SplineType::UIntType &order,
-  const typename SplineType::KnotType &power,
-  typename SplineType::KnotContainer::value_type &u
-)
-{
-  Detail::Parameterize<SplineType>::fit ( points, order, power, u );
-}
 
 }; // namespace Algorithms
 }; // namespace GN

@@ -219,7 +219,16 @@
 				Name="MPL"
 				Filter="">
 				<File
+					RelativePath=".\Gn\Mpl\SameType.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Mpl\StaticAssert.h">
+				</File>
+				<File
 					RelativePath=".\Gn\Mpl\TypeCheck.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Mpl\TypeWrap.h">
 				</File>
 			</Filter>
 			<Filter

@@ -30,10 +30,10 @@ namespace Algorithms {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ArrayType, class ContainerType > 
-void copy2D ( const ArrayType **source,
-              typename ContainerType::size_type rows,
-              typename ContainerType::size_type columns,
-              ContainerType &target )
+void copy2dTo2d ( const ArrayType source,
+                  typename ContainerType::size_type rows,
+                  typename ContainerType::size_type columns,
+                  ContainerType &target )
 {
   typedef typename ContainerType::size_type SizeType;
 
@@ -59,18 +59,20 @@ void copy2D ( const ArrayType **source,
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ArrayType, class ContainerType > 
-void copy ( const ArrayType *source,
-            typename ContainerType::size_type rows,
-            typename ContainerType::size_type columns,
-            ContainerType &target )
+void copy1dTo2d ( const ArrayType source,
+                  typename ContainerType::size_type rows,
+                  typename ContainerType::size_type columns,
+                  ContainerType &target )
 {
   typedef typename ContainerType::size_type SizeType;
 
   // Make sure target is big enough.
   target.resize ( rows );
 
-  // Initialize the starting point.
-  const ArrayType *start = source;
+  // Initialize the starting point. Note: using pointer syntax was difficult 
+  // with generic template parameter ArrayType. Need this to be generic to 
+  // accommodate somerthing like double array[5].
+  SizeType offset ( 0 );
 
   // Loop through rows.
   for ( SizeType i = 0; i < rows; ++i )
@@ -79,10 +81,10 @@ void copy ( const ArrayType *source,
     target.at(i).resize ( columns );
 
     // Copy the values.
-    std::copy ( start, start + columns, target.at(i).begin() );
+    std::copy ( &(source[offset]), &(source[offset + columns]), target.at(i).begin() );
 
     // Go to next row.
-    start += columns;
+    offset += columns;
   }
 }
 

@@ -14,7 +14,7 @@ clean:
 
 # Clobber the generated files (executable too).
 clobber:
-	rm -f $(OBJECTS) *~ core
+	rm -f $(OBJECTS) *~ core Makedepend
 	rm -f $(CADKIT_ROOT_DIR)/bin/$(TARGET)
 
 # Automatically generated dependencies.

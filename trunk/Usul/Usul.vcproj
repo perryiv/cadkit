@@ -339,6 +339,9 @@
 					RelativePath=".\Interfaces\IStartup.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IToolCommand.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IUndo.h">
 				</File>
 				<File

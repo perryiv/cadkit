@@ -9,34 +9,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for reading from a source.
+//  Interface for creating documents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_READ_H_
-#define _USUL_INTERFACE_READ_H_
+#ifndef _USUL_INTERFACE_DOCUMENT_CREATE_H_
+#define _USUL_INTERFACE_DOCUMENT_CREATE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-#include <string>
 
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IRead : public Usul::Interfaces::IUnknown
+struct IDocumentCreate : public Usul::Interfaces::IUnknown
 {
-  typedef Usul::Interfaces::IUnknown Unknown;
-
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IRead );
+  USUL_DECLARE_QUERY_POINTERS ( IDocumentCreate );
 
   /// Id for this interface.
-  enum { IID = 2584851569u };
+  enum { IID = 1432533693u };
 
-  /// Read the data from the named source.
-  virtual Unknown *     read ( const std::string &source, Unknown *caller ) = 0;
+  /// Create the document.
+  virtual Usul::Interfaces::IUnknown *    createDocument ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 };
 
 
@@ -44,4 +40,4 @@ struct IRead : public Usul::Interfaces::IUnknown
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_READ_H_
+#endif // _USUL_INTERFACE_DOCUMENT_CREATE_H_

@@ -841,7 +841,6 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
       return false;
 
     // Set the length of this most recent set of vertices.
-    // Note: We by 3 divide because 3 elements in the vector is one vertex.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
     {
       currentSize = vertices.size();
@@ -876,7 +875,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
   // We have to deduce the bindings of the normals and colors based on their 
   // number, because the VisApi does not have a way (that I can see) to 
-  // extract this (just a way specify it when creating the primitives).
+  // extract this (just a way to specify it when creating the primitives).
 
   // If there are no vertices then return.
   if ( 0 == vertices.size() )
@@ -888,13 +887,18 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // Make sure there are no zero-length vertex sets.
   // TODO: Handle this case, perhaps purge the bad set.
   for ( i = 0; i < numSets; ++i )
+  {
     if ( 0 == numVertices[i] )
+    {
+      SL_ASSERT ( 0 ); // Why did this happen?
       return false;
+    }
+  }
 
   // For now, just per-vertex normal bindings.
   if ( vertices.size() != normals.size() )
   {
-    //SL_ASSERT ( 0 ); 
+    //SL_ASSERT ( 0 );
     return false; // TODO, handle per-prim, etc.
   }
 

@@ -29,26 +29,18 @@ namespace CadKit {
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_DECLARE_UNARY_SPECIALIZATIONS(class_name,internal_function_name,external_function_name) \
-template < class Type > struct class_name; \
+template < class Type > struct class_name \
+{ \
+  Type operator () ( Type value ) \
+  { \
+    return static_cast < Type > ( internal_function_name ( static_cast < double > ( value ) ) ); \
+  } \
+}; \
 template <> struct class_name < double > \
 { \
   double operator () ( double value ) \
   { \
-  return internal_function_name ( value ); \
-  } \
-}; \
-template <> struct class_name < float > \
-{ \
-  float operator () ( float value ) \
-  { \
-    return static_cast < float > ( internal_function_name ( static_cast < double > ( value ) ) ); \
-  } \
-}; \
-template <> struct class_name < long double > \
-{ \
-  long double operator () ( long double value ) \
-  { \
-    return static_cast < long double > ( internal_function_name ( static_cast < double > ( value ) ) ); \
+    return internal_function_name ( value ); \
   } \
 }; \
 template < typename Type > Type external_function_name ( Type value ) \
@@ -65,26 +57,18 @@ template < typename Type > Type external_function_name ( Type value ) \
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_DECLARE_BINARY_SPECIALIZATIONS(class_name,internal_function_name,external_function_name) \
-template < class Type > struct class_name; \
+template < class Type > struct class_name \
+{ \
+  Type operator () ( Type a, Type b ) \
+  { \
+    return static_cast < Type > ( internal_function_name ( static_cast < double > ( a ), static_cast < double > ( b ) ) ); \
+  } \
+}; \
 template <> struct class_name < double > \
 { \
   double operator () ( double a, double b ) \
   { \
     return internal_function_name ( a, b ); \
-  } \
-}; \
-template <> struct class_name < float > \
-{ \
-  float operator () ( float a, float b ) \
-  { \
-    return static_cast < float > ( internal_function_name ( static_cast < double > ( a ), static_cast < double > ( b ) ) ); \
-  } \
-}; \
-template <> struct class_name < long double > \
-{ \
-  long double operator () ( long double a, long double b ) \
-  { \
-    return static_cast < long double > ( internal_function_name ( static_cast < double > ( a ), static_cast < double > ( b ) ) ); \
   } \
 }; \
 template < typename Type > Type external_function_name ( Type a, Type b ) \

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="osgPlugin pdb"
+	Name="plug: osgPlugin pdb"
 	ProjectGUID="{2835E2F2-C91A-4B61-AD3F-9F5E183CC2D0}"
 	SccProjectName=""
 	SccLocalPath="">

@@ -341,6 +341,9 @@
 						RelativePath=".\Interfaces\IFoxApp.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFoxDockBar.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFoxEvent.h">
 					</File>
 					<File
@@ -497,6 +500,12 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetHeight.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetPosition.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetWidth.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IModeStack.h">

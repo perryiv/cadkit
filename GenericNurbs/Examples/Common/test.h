@@ -20,9 +20,11 @@
 #include "GN/Algorithms/InsertKnot.h"
 #include "GN/Algorithms/BasisFunctions.h"
 #include "GN/Evaluate/Point.h"
+#include "GN/Tessellate/Bisect.h"
 
 #include <iostream>
 #include <iomanip>
+#include <list>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,6 +245,26 @@ template < class SplineType > void inline testCurvePoint ( SplineType &s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Test tessellating a curve.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class SplineType > void inline testTessellation ( SplineType &s )
+{
+  typedef typename SplineType::KnotType Parameter;
+  GN_CAN_BE_CURVE ( SplineType );
+
+  OUTPUT << "<testTessellation>\n";
+
+  //std::list<Parameter> u;
+  //GN::Tessellate::bisect ( s, 0.001f, u );
+
+  OUTPUT << "</testTessellation>\n";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Test evaluating surface points.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -269,6 +291,8 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 
   UIntType numIndepVars ( 1 );
   UIntType dimension ( 3 );
+  bool rational ( false );
+  // TODO
 
   OUTPUT << "</testInterpolation>\n";
 }
@@ -537,6 +561,7 @@ template < class CurveType > void inline testCurve ( CurveType &c )
   ::testLine ( c );
   ::testCircle ( c );
   ::testCurvePoint ( c );
+  ::testTessellation ( c );
   ::testInterpolation ( c );
   ::testSpline ( c );
 }

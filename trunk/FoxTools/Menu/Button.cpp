@@ -25,7 +25,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add the toolbar button.
+//  Add the toolbar button with an icon.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +53,33 @@ void FoxTools::Menu::addButton ( FX::FXToolBar *parent,
 
   // Release the icon, the button owns it.
   icon.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the toolbar button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxTools::Menu::addButton ( FX::FXToolBar *parent, 
+                                  const std::string &text, 
+                                  FX::FXObject *target,
+                                  unsigned int commandId,
+                                  void *userData )
+{
+  // Make the button.
+  unsigned int layout ( FX::BUTTON_NORMAL | FX::BUTTON_TOOLBAR );
+  FX::FXButton *button = new FX::FXButton ( parent, text.c_str(), 0x0, target, commandId, layout );
+
+  // Create the new button if the parent is already created.
+  if ( parent->id() )
+    button->create();
+
+  // Set the userdata if valid.
+  if ( userData )
+    button->setUserData ( userData );
+
 }
 
 

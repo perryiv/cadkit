@@ -58,12 +58,36 @@ void PrintVisitor<Writer>::apply(osg::Geode& geode)
       const osg::Array *constarray = geometry->getVertexArray();
       osg::Array *array = const_cast < osg::Array*> ( constarray );
       osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array*> (array);
-      const osg::Vec3Array *constvec3array = geometry->getNormalArray();
-      osg::ref_ptr< osg::Vec3Array > normals  = const_cast<osg::Vec3Array *> (constvec3array);
+      const osg::Vec3Array *normals = geometry->getNormalArray();
 
-      for(unsigned int j = 0; j < normals->size(); ++j)
+      unsigned int numPrimitiveSets ( geometry->getNumPrimitiveSets() );
+      for ( unsigned int j = 0; j < numPrimitiveSets; ++j )
       {
-        _writer(normals->at(j), vertices->at(j*3), vertices->at(j*3+1), vertices->at(j*3+2));
+        // Get the primitive-set.
+        const osg::PrimitiveSet *primitiveSet = geometry->getPrimitiveSet ( j );
+        unsigned int mode ( primitiveSet->getMode() );
+
+        if( const osg::DrawArrays *drawArrays = dynamic_cast < const osg::DrawArrays * > ( primitiveSet ) )
+        {
+          unsigned int first ( drawArrays->getFirst() );
+          unsigned int count ( drawArrays->getCount() );
+
+          switch ( mode )
+          {
+          case osg::PrimitiveSet::TRIANGLE_STRIP:
+            for(unsigned int k = first; k < count - 2; k ++)
+            {
+              _writer(normals->at(k), vertices->at(k), vertices->at(k+1), vertices->at(k+2));
+            }
+            break;
+          case osg::PrimitiveSet::TRIANGLES:
+            for(unsigned int k = first; k < count / 3; k ++)
+            {
+              _writer(normals->at(k), vertices->at(k*3), vertices->at(k*3+1), vertices->at(k*3+2));
+            }
+            break;
+          };
+        }
       }
     }
   }

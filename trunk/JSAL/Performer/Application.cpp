@@ -287,7 +287,7 @@ SAL::Interfaces::INode *Application::scene()
 {
   SAL::Interfaces::IPerformer::ValidQueryPtr iperf ( unknown );
   USUL_VALID_REF_POINTER(::pfMemory) mp ( iperf->getPfMemory() );
-  ValidPfNodePtr node ( ( mp->isOfType ( ::pfNode::getClassType() ) ) ? USUL_CAST ( ::pfNode *, mp.get() ) : 0x0 );
+  ValidPfNodePtr node ( ( mp->isOfType ( ::pfNode::getClassType() ) ) ? USUL_UNSAFE_CAST ( ::pfNode *, mp.get() ) : 0x0 );
   return node.get();
 }
 

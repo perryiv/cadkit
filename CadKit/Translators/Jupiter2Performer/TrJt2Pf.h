@@ -37,7 +37,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  TrJt2Pf: The Jupiter to XML translator.
+//  TrJt2Pf: The Jupiter to Performer translator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -47,8 +47,6 @@
 #include "TrJt2PfApi.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Database/XML/DbXmlWrite.h"
-# include "Database/XML/DbXmlGroup.h"
 # include "Database/Jupiter/DbJtTraverser.h"
 # include <list>
 # include <string>
@@ -70,8 +68,8 @@ public:
   // Initialize. Call this before doing anything else.
   bool                    init();
 
-  // Translate the Jupiter database to XML.
-  bool                    translate ( const char *filename, DbXmlGroup &root );
+  // Translate the Jupiter database to Performer.
+  bool                    translate ( const char *filename, pfNode &root );
 
 protected:
 

@@ -212,6 +212,10 @@ SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCoedge.h"
 # End Source File
 # Begin Source File
 
+SOURCE=$(DMDTK_DEV_PATH)\include\DMDataTk\eaiConfig.h
+# End Source File
+# Begin Source File
+
 SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCurve.h"
 # End Source File
 # Begin Source File
@@ -257,6 +261,10 @@ SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiHarness.h"
 # Begin Source File
 
 SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiHierarchy.h"
+# End Source File
+# Begin Source File
+
+SOURCE=$(DMDTK_DEV_PATH)\include\DMDataTk\eaiLight.h
 # End Source File
 # Begin Source File
 

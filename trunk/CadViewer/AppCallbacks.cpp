@@ -1250,7 +1250,7 @@ void Application::_resetClipping ( MenuKit::Message m, MenuKit::Item *item )
 
 void Application::_hvTransWandXZ ( MenuKit::Message m, MenuKit::Item *item )
 {
-  ErrorChecker (1084438123u, isAppThread(), CV::NOT_APP_THREAD );
+  ErrorChecker ( 1084438123u, isAppThread(), CV::NOT_APP_THREAD );
 
   // Local id.
   const unsigned int id ( 1084438124u );
@@ -1259,30 +1259,33 @@ void Application::_hvTransWandXZ ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
+
       // If the navigator matches the given id...
-      if ( _navigatorH.valid() && _navigatorV.valid() &&
-	   id == _navigatorH->id() && id == _navigatorV->id() )
-	{
-	  _navigatorH = 0x0;
-	  _navigatorV = 0x0;
-	}
+      if ( _navigatorH.valid() && _navigatorV.valid() && 
+           id == _navigatorH->id() && id == _navigatorV->id() )
+      {
+        _navigatorH = 0x0;
+        _navigatorV = 0x0;
+      }
 
       // Otherwise, set the navigator.
       else
-	{
-	  // Call the other functions.
-	  this->_hTransWandPosX ( m, item );
-	  this->_vTransWandPosZ ( m, item );
+      {
+        // Call the other functions.
+        this->_hTransWandPosX ( m, item );
+        this->_vTransWandPosZ ( m, item );
 
-	  // Reset the ids.
-	  _navigatorH->id ( id );
-	  _navigatorV->id ( id );
-	}
+        // Reset the ids.
+        _navigatorH->id ( id );
+        _navigatorV->id ( id );
+      }
+
       break;
 
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( _navigatorH.valid() && id == _navigatorH->id() &&
-		      _navigatorV.valid() && id == _navigatorV->id() );
+
+      item->checked ( _navigatorH.valid() && id == _navigatorH->id() && 
+                      _navigatorV.valid() && id == _navigatorV->id() );
       break;
   }
 }
@@ -1305,30 +1308,33 @@ void Application::_hvTransGlobalXZ ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
+
       // If the navigator matches the given id...
       if ( _navigatorH.valid() && _navigatorV.valid() &&
-	   id == _navigatorH->id() && id == _navigatorV->id() )
-	{
-	  _navigatorH = 0x0;
-	  _navigatorV = 0x0;
-	}
+           id == _navigatorH->id() && id == _navigatorV->id() )
+      {
+        _navigatorH = 0x0;
+        _navigatorV = 0x0;
+      }
 
       // Otherwise, set the navigator.
       else
-	{
-	  // Call the other functions.
-	  this->_hTransGlobalPosX ( m, item );
-	  this->_vTransGlobalPosZ ( m, item );
+      {
+        // Call the other functions.
+        this->_hTransGlobalPosX ( m, item );
+        this->_vTransGlobalPosZ ( m, item );
 
-	  // Reset the ids.
-	  _navigatorH->id ( id );
-	  _navigatorV->id ( id );
-	}
+        // Reset the ids.
+        _navigatorH->id ( id );
+        _navigatorV->id ( id );
+      }
+
       break;
 
     case MenuKit::MESSAGE_UPDATE:
+
       item->checked ( _navigatorH.valid() && id == _navigatorH->id() &&
-		      _navigatorV.valid() && id == _navigatorV->id() );
+                      _navigatorV.valid() && id == _navigatorV->id() );
       break;
   }
 }
@@ -1351,9 +1357,10 @@ void Application::_poleNav ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
+
       // If the navigator matches the given id...
       if ( _navigatorH.valid() && _navigatorV.valid() &&
-      id == _navigatorH->id() && id == _navigatorV->id() )
+           id == _navigatorH->id() && id == _navigatorV->id() )
       {
         _navigatorH = 0x0;
         _navigatorV = 0x0;
@@ -1373,6 +1380,7 @@ void Application::_poleNav ( MenuKit::Message m, MenuKit::Item *item )
       break;
 
     case MenuKit::MESSAGE_UPDATE:
+
       item->checked ( _navigatorH.valid() && id == _navigatorH->id() &&
                       _navigatorV.valid() && id == _navigatorV->id() );
       break;

@@ -41,7 +41,7 @@ namespace Usul
       {
         if (frames.size() < 2 )
           return;
-        _play ( _start, ++(_start), frames.end() );
+        _play ( frames.begin(), ++(frames.begin()), frames.end() );
       }
 
       virtual void reverse ( Sequence &frames )

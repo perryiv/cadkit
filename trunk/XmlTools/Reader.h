@@ -166,6 +166,7 @@ public:
     NODE_FINISH
   };
 
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Add a callback to be called when the given hierarchy is current.

@@ -17,7 +17,7 @@
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
 
 #include "DbStlApi.h"
-#include "DbStlFacet.h"
+#include "DbStlTriangle.h"
 
 #include "Database/Base/DbBaseTarget.h"
 
@@ -142,7 +142,7 @@ public:
 
 protected:
 
-  typedef std::list<DbStlFacet> Facets;
+  typedef std::list<DbStlTriangle> Facets;
   Facets _facets;
 
   virtual ~DbStlDatabase();

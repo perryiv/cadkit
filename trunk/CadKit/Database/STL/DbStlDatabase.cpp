@@ -167,7 +167,7 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   // Loop through the facets.
   for ( Facets::const_iterator i = _facets.begin(); i != _facets.end(); ++i )
   {
-    const DbStlFacet &facet = *i;
+    const DbStlTriangle &facet = *i;
     out << "facet normal " << facet.getNormal() << "\n";
     out << "outer loop\n";
     out << "vertex " << facet.getVertex ( 0 ) << "\n";
@@ -360,7 +360,7 @@ bool DbStlDatabase::appendTriangle ( float t0v0, float t0v1, float t0v2,
   SL_ASSERT ( caller );
 
   // Append the triangle.
-  _facets.push_back ( DbStlFacet ( 
+  _facets.push_back ( DbStlTriangle ( 
     t0v0, t0v1, t0v2,
     t1v0, t1v1, t1v2,
     t2v0, t2v1, t2v2 ) );

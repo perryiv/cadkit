@@ -60,7 +60,7 @@ inline bool translate ( CadKit::IUnknown *controller,
   SlRefPtr<IUnknown> dummy2 ( source );
   SlRefPtr<IUnknown> dummy3 ( target );
 
-  // Get the necessary interface.
+  // Get the command-line interface.
   SlQueryPtr<ICommandLine> commandLine ( controller );
   if ( commandLine.isNull() )
   {
@@ -87,7 +87,7 @@ inline bool translate ( CadKit::IUnknown *controller,
     return false;
   }
 
-  // Get the necessary interface.
+  // Get the translator interface.
   SlQueryPtr<ITranslator> translator ( controller );
   if ( translator.isNull() )
   {
@@ -117,7 +117,19 @@ inline bool translate ( CadKit::IUnknown *controller,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class C, class S, class T> inline bool translate ( C *controller, S *source, T *target, int argc, char **argv, bool keepGoing )
+template
+<
+  class ControllerType,
+  class SourceType, 
+  class TargetType
+>
+inline bool translate ( 
+  ControllerType *controller, 
+  SourceType *source, 
+  TargetType *target, 
+  int argc, 
+  char **argv, 
+  bool keepGoing )
 {
   // It's ok to have a null target.
   if ( NULL == controller || NULL == source )

@@ -49,6 +49,8 @@ public:
   void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_read( filename, progress ); }
   osg::Group*             build () const { return this->_build(); }
 
+  bool                    isAscii ( const std::string &filename ) const { return this->_isAscii ( filename ); }
+
 protected:
 
   osg::Group *            _build() const;

@@ -219,13 +219,9 @@ struct NoCancelFunctor
 template < class IndexSequence >
 struct NoUpdateFunctor
 {
-   void operator () ( const std::string& )
-    {
-    }
-
-    void operator() ( const IndexSequence& keepers, bool b = false )
-    {
-    }
+  void operator () ( int ) { }
+  void operator () ( const std::string& ) { }
+  void operator() ( const IndexSequence& keepers, bool b = false ) { }
 };
 
 };
@@ -287,9 +283,9 @@ inline void buildAdjacencyGraph (
     //update the progress
     if( sharedVerts.size() % 250 == 0 )
     {
-      std::ostringstream message;
-      message << "Found " << sharedVerts.size() << " shared vertices. ";
-      updater ( message.str() );
+      //std::ostringstream message;
+      //message << "Found " << sharedVerts.size() << " shared vertices. ";
+      updater ( sharedVerts.size() );
     }
   }
 }

@@ -45,6 +45,7 @@
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_TRAVERSER_H_
 
 #include "DbJtApi.h"
+#include "Interfaces/IError.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefBase.h"
@@ -55,7 +56,6 @@
 # include "Standard/SlVec3.h"
 # include "Standard/SlVec2.h"
 # include "Standard/SlBitmask.h"
-# include "Interfaces/IError.h"
 # include <vector>
 #endif
 

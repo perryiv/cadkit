@@ -1,0 +1,169 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SlMinMax: Inline functions for finding the minimum and maximum.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_
+#define _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_
+
+#include "SlAssert.h"
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <limits>
+#endif
+
+
+namespace CadKit
+{
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum of a and b.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &maximum ( const T &a, const T &b )
+{
+  return ( a > b ) ? a : b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum of a and b.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &minimum ( const T &a, const T &b )
+{
+  return ( a < b ) ? a : b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum of a, b, and c.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &maximum ( const T &a, const T &b, const T &c )
+{
+  return CadKit::maximum ( CadKit::maximum ( a, b ), c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum of a, b, and c.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &minimum ( const T &a, const T &b, const T &c )
+{
+  return CadKit::minimum ( CadKit::minimum ( a, b ), c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum of a, b, c, and d.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &maximum ( const T &a, const T &b, const T &c, const T &d )
+{
+  return CadKit::maximum ( CadKit::maximum ( a, b ), CadKit::maximum ( c, d ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum of a, b, c, and d.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &minimum ( const T &a, const T &b, const T &c, const T &d )
+{
+  return CadKit::minimum ( CadKit::minimum ( a, b ), CadKit::minimum ( c, d ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum element in the array.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline const T maximum ( const I &num, const T *array )
+{
+  SL_ASSERT ( num > 0 );
+  SL_ASSERT ( array );
+
+  // Initialize.
+  T theMax ( std::numeric_limits<T>::min() );
+
+  // Loop through.
+  for ( I i = 0; i < num; ++i )
+  {
+    if ( array[i] > theMax )
+    {
+      theMax = array[i];
+    }
+  }
+
+  // Return the max.
+  return theMax;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum element in the array.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline const T &minimum ( const I &num, const T *array )
+{
+  SL_ASSERT ( num > 0 );
+  SL_ASSERT ( array );
+
+  // Initialize.
+  T theMin ( std::numeric_limits<T>::max() );
+
+  // Loop through.
+  for ( I i = 0; i < num; ++i )
+  {
+    if ( array[i] < theMin )
+    {
+      theMin = array[i];
+    }
+  }
+
+  // Return the min.
+  return theMin;
+}
+
+
+}; // namespace CadKit.
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// For convenience and backward compatability.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SL_MIN CadKit::minimum
+#define SL_MAX CadKit::maximum
+
+
+#endif // _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_

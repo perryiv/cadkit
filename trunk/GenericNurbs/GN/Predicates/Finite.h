@@ -25,17 +25,17 @@ namespace Predicates {
 
 
 template < class SplineType > 
-struct Finite : public std::unary_function < typename SplineType::ControlPointType, bool >
+struct Finite : public std::unary_function < typename SplineType::DependentType, bool >
 {
   typedef Finite<SplineType> ThisType;
-  typedef typename SplineType::ControlPointType     ControlPointType;
-  typedef typename SplineType::ControlPointArgument ControlPointArgument;
-  typedef typename SplineType::ControlPointTester   ControlPointTester;
+  typedef typename SplineType::DependentType     DependentType;
+  typedef typename SplineType::DependentArgument DependentArgument;
+  typedef typename SplineType::DependentTester   DependentTester;
   typedef typename SplineType::Vector               Vector;
 
-  bool operator () ( ControlPointArgument t ) const
+  bool operator () ( DependentArgument t ) const
   {
-    return ControlPointTester::finite ( t );
+    return DependentTester::finite ( t );
   }
 
   static bool check ( const Vector &v )

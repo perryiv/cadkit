@@ -43,28 +43,28 @@ namespace Detail {
 template < class SplineType > struct Sphere
 {
   typedef typename SplineType::SplineClass SplineClass;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::UIntContainer UIntContainer;
-  typedef typename SplineType::ControlPointType ControlPointType;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::SizeContainer SizeContainer;
+  typedef typename SplineType::DependentType DependentType;
 
-  static void make ( SplineClass &s, UIntType dimension = 3 )
+  static void make ( SplineClass &s, SizeType dimension = 3 )
   {
     GN_CAN_BE_SURFACE ( SplineType );
 
     // The specs for a sphere.
-    const UIntType numIndepVars ( 2 );
-    UIntContainer numCtrPts;
+    const SizeType numIndepVars ( 2 );
+    SizeContainer numCtrPts;
     numCtrPts.resize ( numIndepVars );
     numCtrPts[0] = 9;
     numCtrPts[1] = 5;
-    UIntContainer order ;
+    SizeContainer order ;
     order.resize ( numIndepVars );
     order[0] = 3;
     order[1] = 3;
     const bool rational ( true );
 
     // Constant value used below.
-    const ControlPointType SQRT_2_OVER_2 ( 0.70710678118654752440084436210485f );
+    const DependentType SQRT_2_OVER_2 ( 0.70710678118654752440084436210485f );
 
     // Resize the spline.
     s.resize ( dimension, order, numCtrPts, rational );
@@ -237,10 +237,10 @@ template < class SplineType > struct Sphere
     // Fill in all other dimensions.
     if ( dimension > 3 )
     {
-      UIntType totalCtrPts ( s.totalNumControlPoints() );
-      for ( UIntType i = 3; i < dimension; ++i )
+      SizeType totalCtrPts ( s.totalNumControlPoints() );
+      for ( SizeType i = 3; i < dimension; ++i )
       {
-        for ( UIntType j = 0; j < totalCtrPts; ++j )
+        for ( SizeType j = 0; j < totalCtrPts; ++j )
         {
           s.controlPoint(i,j) =  0;
         }
@@ -314,7 +314,7 @@ template < class SplineType > struct Sphere
 
 template < class SplineType > inline void sphere ( 
   SplineType &s, 
-  typename SplineType::UIntType dimension = 3 )
+  typename SplineType::SizeType dimension = 3 )
 {
   GN_CAN_BE_SURFACE ( SplineType );
   GN::Create::Detail::Sphere<SplineType>::make ( s, dimension );
@@ -330,7 +330,7 @@ template < class SplineType > inline void sphere (
 template < class SplineType > inline void sphere ( 
   SplineType &s, 
   const typename SplineType::Vec3 &center,
-  typename SplineType::ControlPointType radius )
+  typename SplineType::DependentType radius )
 {
   GN_CAN_BE_SURFACE ( SplineType );
   typedef typename SplineType::Matrix44 Matrix44;

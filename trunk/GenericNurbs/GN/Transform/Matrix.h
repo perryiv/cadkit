@@ -32,7 +32,7 @@ template < class SplineType_ > inline void matrix (
   const typename SplineType_::Matrix44 &matrix )
 {
   typedef SplineType_ SplineType;
-  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::SizeType SizeType;
   typedef typename SplineType::Vec4 Vec4;
   typedef typename SplineType::Vec3 Vec3;
   typedef typename SplineType::Multiply Multiply;
@@ -42,7 +42,7 @@ template < class SplineType_ > inline void matrix (
   GN_ERROR_CHECK ( spline.dimension() >= 3 );
 
   // Needed below.
-  UIntType totalNumCtrPts ( spline.totalNumControlPoints() );
+  SizeType totalNumCtrPts ( spline.totalNumControlPoints() );
 
   // If it is rational...
   if ( spline.rational() )
@@ -50,7 +50,7 @@ template < class SplineType_ > inline void matrix (
     Vec4 v;
 
     // Loop through the control points.
-    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
+    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
     {
       // Populate the vector.
       v[0] = spline.controlPoint ( 0, i ); // wx
@@ -75,7 +75,7 @@ template < class SplineType_ > inline void matrix (
     Vec3 v;
 
     // Loop through the control points.
-    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
+    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
     {
       // Populate the vector.
       v[0] = spline.controlPoint ( 0, i ); // x

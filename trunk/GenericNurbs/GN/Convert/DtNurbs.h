@@ -34,10 +34,10 @@ namespace Detail
   {
     typedef typename SplineType::SplineClass SplineClass;
     typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-    typedef typename SplineType::UIntType UIntType;
-    typedef typename SplineType::UIntContainer UIntContainer;
-    typedef typename SplineType::KnotType KnotType;
-    typedef typename SplineType::ControlPointType ControlPointType;
+    typedef typename SplineType::SizeType SizeType;
+    typedef typename SplineType::SizeContainer SizeContainer;
+    typedef typename SplineType::IndependentType IndependentType;
+    typedef typename SplineType::DependentType DependentType;
     typedef typename SplineType::Limits Limits;
 
     static void set ( const double *Carray, SplineClass &s )
@@ -45,20 +45,20 @@ namespace Detail
       GN_ERROR_CHECK ( NULL != Carray );
 
       // Set the integer data.
-      const UIntType numIndepVars = UIntType ( Carray[0] );
+      const SizeType numIndepVars = SizeType ( Carray[0] );
       const bool rational = ( Carray[1] < 0 ) ? true : false;
-      const UIntType numDepVars = UIntType ( ( rational ) ? -Carray[1] : Carray[1] );
+      const SizeType numDepVars = SizeType ( ( rational ) ? -Carray[1] : Carray[1] );
 
       // Make sure...
       GN_ERROR_CHECK ( numIndepVars >= Limits::MIN_NUM_INDEP_VARS );
       GN_ERROR_CHECK ( numDepVars   >= Limits::minNumDepVars ( rational ) );
 
       // Set the dimension.
-      const UIntType dimension ( ( rational ) ? numDepVars - 1 : numDepVars );
+      const SizeType dimension ( ( rational ) ? numDepVars - 1 : numDepVars );
       GN_ERROR_CHECK ( dimension >= Limits::MIN_NUM_DIMENSIONS );
 
       // Declare the containers.
-      UIntContainer order, numCtrPts;
+      SizeContainer order, numCtrPts;
       order.resize     ( numIndepVars );
       numCtrPts.resize ( numIndepVars );
 
@@ -68,10 +68,10 @@ namespace Detail
 
       // Loop through the independent variables.
       {
-        for ( UIntType i = 0; i < numIndepVars; ++i )
+        for ( SizeType i = 0; i < numIndepVars; ++i )
         {
-          order[i]     = UIntType ( so[i] );
-          numCtrPts[i] = UIntType ( sn[i] );
+          order[i]     = SizeType ( so[i] );
+          numCtrPts[i] = SizeType ( sn[i] );
         }
       }
 
@@ -84,16 +84,16 @@ namespace Detail
       // Assign the knots.
       {
         // Loop through the independent variables.
-        for ( UIntType i = 0; i < numIndepVars; ++i )
+        for ( SizeType i = 0; i < numIndepVars; ++i )
         {
           // Get the number of knots.
-          UIntType numKnots ( s.numKnots ( i ) );
+          SizeType numKnots ( s.numKnots ( i ) );
 
           // Loop through all the knots.
-          for ( UIntType j = 0; j < numKnots; ++j )
+          for ( SizeType j = 0; j < numKnots; ++j )
           {
             // Assign the knots.
-            s.knot(i,j) = KnotType ( knots[j] );
+            s.knot(i,j) = IndependentType ( knots[j] );
           }
 
           // Move the shortcut.
@@ -105,18 +105,18 @@ namespace Detail
       const double *cp = knots;
 
       // Needed below.
-      UIntType totalCtrPts ( s.totalNumControlPoints() );
+      SizeType totalCtrPts ( s.totalNumControlPoints() );
 
       // Assign the control points.
       {
         // Loop through all the dependent variables.
-        for ( UIntType i = 0; i < numDepVars; ++i )
+        for ( SizeType i = 0; i < numDepVars; ++i )
         {
           // Loop through all the control points.
-          for ( UIntType j = 0; j < totalCtrPts; ++j )
+          for ( SizeType j = 0; j < totalCtrPts; ++j )
           {
             // Assign the control point value.
-            s.controlPoint(i,j) = ControlPointType ( cp[j] );
+            s.controlPoint(i,j) = DependentType ( cp[j] );
           }
 
           // Move the shortcut.

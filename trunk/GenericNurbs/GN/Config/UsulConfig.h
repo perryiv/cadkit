@@ -221,42 +221,42 @@ public:
   typedef Detail::ErrorCheckerType      ErrorCheckerType;
   typedef GN::Config::Base::StringData  BaseClassType;
 
-  typedef unsigned int UIntType;
-  typedef RealType_    KnotType;
-  typedef RealType_    ControlPointType;
+  typedef unsigned int SizeType;
+  typedef RealType_    IndependentType;
+  typedef RealType_    DependentType;
 
 private:
 
-  typedef std::vector<UIntType>         UIntContainerInner;
-  typedef std::vector<KnotType>         OneKnotVectorInner;
-  typedef std::vector<ControlPointType> OneCtrPtCoordInner;
+  typedef std::vector<SizeType>         SizeContainerInner;
+  typedef std::vector<IndependentType>  OneIndependentInner;
+  typedef std::vector<DependentType>    OneDependentInner;
 
-  typedef ::Usul::Containers::Vector<OneKnotVectorInner,ErrorCheckerType> OneKnotVectorOuter;
-  typedef ::Usul::Containers::Vector<OneCtrPtCoordInner,ErrorCheckerType> OneCtrPtCoordOuter;
+  typedef ::Usul::Containers::Vector<OneIndependentInner,ErrorCheckerType> OneIndependentOuter;
+  typedef ::Usul::Containers::Vector<OneDependentInner,  ErrorCheckerType> OneDependentOuter;
 
-  typedef std::vector<OneKnotVectorOuter> AllKnotVectorsInner;
-  typedef std::vector<OneCtrPtCoordOuter> AllCtrPtsCoordInner;
+  typedef std::vector<OneIndependentOuter> MultipleIndependentInner;
+  typedef std::vector<OneDependentOuter>   MultipleDependentInner;
 
 public:
 
-  typedef ::Usul::Containers::Vector<UIntContainerInner, ErrorCheckerType> UIntContainer;
-  typedef ::Usul::Containers::Vector<AllKnotVectorsInner,ErrorCheckerType> KnotContainer;
-  typedef ::Usul::Containers::Vector<AllCtrPtsCoordInner,ErrorCheckerType> ControlPointContainer;
+  typedef ::Usul::Containers::Vector<SizeContainerInner,      ErrorCheckerType> SizeContainer;
+  typedef ::Usul::Containers::Vector<MultipleIndependentInner,ErrorCheckerType> IndependentContainer;
+  typedef ::Usul::Containers::Vector<MultipleDependentInner,  ErrorCheckerType> DependentContainer;
 
-  typedef std::vector<ControlPointType> Vector;
+  typedef std::vector<DependentType> Vector;
 
-  typedef ::Usul::Math::Vector2<ControlPointType>  Vec2;
-  typedef ::Usul::Math::Vector3<ControlPointType>  Vec3;
-  typedef ::Usul::Math::Vector4<ControlPointType>  Vec4;
-  typedef ::Usul::Math::Matrix44<ControlPointType> Matrix44;
+  typedef ::Usul::Math::Vector2<DependentType>  Vec2;
+  typedef ::Usul::Math::Vector3<DependentType>  Vec3;
+  typedef ::Usul::Math::Vector4<DependentType>  Vec4;
+  typedef ::Usul::Math::Matrix44<DependentType> Matrix44;
 
-  typedef Detail::FloatTester<KnotType>           KnotTester;
-  typedef Detail::FloatTester<ControlPointType>   ControlPointTester;
-  typedef Detail::Translation<Matrix44,Vec3>      Translation;
-  typedef Detail::Scale<Matrix44,Vec3>            Scale;
-  typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
-  typedef Detail::SquareRoot<ControlPointType>    SquareRoot;
-  typedef Detail::Power<ControlPointType>         Power;
+  typedef Detail::FloatTester<IndependentType> IndependentTester;
+  typedef Detail::FloatTester<DependentType>   DependentTester;
+  typedef Detail::Translation<Matrix44,Vec3>   Translation;
+  typedef Detail::Scale<Matrix44,Vec3>         Scale;
+  typedef Detail::Multiply<Matrix44,Vec4,Vec3> Multiply;
+  typedef Detail::SquareRoot<DependentType>    SquareRoot;
+  typedef Detail::Power<DependentType>         Power;
 };
 
 

@@ -46,9 +46,9 @@ namespace Detail {
 template < class SplineType > struct Calculate
 {
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::KnotArgument KnotArgument;
-  typedef typename SplineType::ControlPointType ControlPointType;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::IndependentArgument IndependentArgument;
+  typedef typename SplineType::DependentType DependentType;
   typedef typename SplineType::Vector Vector;
   typedef typename SplineType::WorkSpace WorkSpace;
 
@@ -63,19 +63,19 @@ template < class SplineType > struct Calculate
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  static void curvePoint ( const SplineType &curve, KnotArgument u, Vector &pt )
+  static void curvePoint ( const SplineType &curve, IndependentArgument u, Vector &pt )
   {
     GN_ERROR_CHECK ( u >= curve.firstKnot ( 0 ) );
     GN_ERROR_CHECK ( u <= curve.lastKnot  ( 0 )  );
     GN_ERROR_CHECK ( 1 == curve.numIndepVars() );
 
     // Needed below.
-    UIntType index;
-    const UIntType order ( curve.order ( 0 ) );
-    const UIntType degree ( order - 1 );
+    SizeType index;
+    const SizeType order ( curve.order ( 0 ) );
+    const SizeType degree ( order - 1 );
 
     // Find the knot span.
-    const UIntType span ( GN::Algorithms::findKnotSpan ( curve, 0, u ) );
+    const SizeType span ( GN::Algorithms::findKnotSpan ( curve, 0, u ) );
 
     // Calculate the blending coefficients.
     WorkSpace &N = curve.work().basis;
@@ -83,16 +83,16 @@ template < class SplineType > struct Calculate
     GN::Algorithms::basisFunctions ( curve, 0, span, u, N );
 
     // Initialize the point.
-    std::fill ( pt.begin(), pt.end(), static_cast<ControlPointType> ( 0 ) );
+    std::fill ( pt.begin(), pt.end(), static_cast<DependentType> ( 0 ) );
 
     // We calculate the minimum of the point size and the dimenion.
-    const UIntType dimension ( std::min ( pt.size(), curve.dimension() ) );
+    const SizeType dimension ( std::min ( pt.size(), curve.dimension() ) );
 
 		// If it is rational...
 		if ( curve.rational() )
 		{
 			 // Initialize.
-			 ControlPointType weight = 0;
+			 DependentType weight = 0;
 
 			 if ( 2 == order ) // 1st degree curve
 			 {
@@ -119,7 +119,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j]  += N[0] * curve.controlPoint(j, index);
 								weight += N[0] * curve.weight(index);
@@ -160,7 +160,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j]  += N[0] * curve.controlPoint(j, index);
 								weight += N[0] * curve.weight(index);
@@ -210,7 +210,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j]  += N[0] * curve.controlPoint(j, index);
 								weight += N[0] * curve.weight(index);
@@ -269,7 +269,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j]  += N[0] * curve.controlPoint(j, index);
 								weight += N[0] * curve.weight(index);
@@ -286,13 +286,13 @@ template < class SplineType > struct Calculate
 			 }
 			 else // n-degree curve
 			 {
-					for ( UIntType i = 0; i < order; ++i )
+					for ( SizeType i = 0; i < order; ++i )
 					{
 						 // Do this here.
 						 index = span - degree + i;
 						 
 						 // Calculate the coordinate for each dimension.
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 								pt[j] += N[i] * curve.controlPoint ( j, index );
 						 
 						 // Calculate the coordinate for the weight.
@@ -304,7 +304,7 @@ template < class SplineType > struct Calculate
 			 weight = 1 / weight;
 
 			 // Divide out the weight for each dimension.
-			 for ( UIntType j = 0; j < dimension; ++j )
+			 for ( SizeType j = 0; j < dimension; ++j )
 					pt[j] *= weight;
 		}
 
@@ -332,7 +332,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j] += N[0] * curve.controlPoint(j, index);
 								pt[j] += N[1] * curve.controlPoint(j, index + 1);
@@ -365,7 +365,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j] += N[0] * curve.controlPoint(j, index);
 								pt[j] += N[1] * curve.controlPoint(j, index + 1);
@@ -404,7 +404,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j] += N[0] * curve.controlPoint(j, index);
 								pt[j] += N[1] * curve.controlPoint(j, index + 1);
@@ -449,7 +449,7 @@ template < class SplineType > struct Calculate
 					}
 					else // n-D curve
 					{
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 						 {
 								pt[j] += N[0] * curve.controlPoint(j, index);
 								pt[j] += N[1] * curve.controlPoint(j, index + 1);
@@ -461,13 +461,13 @@ template < class SplineType > struct Calculate
 			 }
 			 else // n-degree curve
 			 {
-					for ( UIntType i = 0; i < order; ++i )
+					for ( SizeType i = 0; i < order; ++i )
 					{
 						 // Do this here.
 						 index = span - degree + i;
 						 
 						 // Calculate the coordinate for each dimension.
-						 for ( UIntType j = 0; j < dimension; ++j )
+						 for ( SizeType j = 0; j < dimension; ++j )
 								pt[j] += N[i] * curve.controlPoint ( j, index );
 					}
 			 }
@@ -497,7 +497,7 @@ template < class SplineType > struct Calculate
 
 template < class SplineType >
 void point ( const SplineType &c,
-             typename SplineType::KnotArgument u,
+             typename SplineType::IndependentArgument u,
              typename SplineType::Vector &pt )
 {
   GN_CAN_BE_CURVE ( SplineType );

@@ -36,7 +36,7 @@ template < class CurveType > struct Distance1
   typedef typename CurveType::Vec3 Vec3;
   typedef typename CurveType::Vec4 Vec4;
   typedef typename CurveType::SquareRoot SquareRoot;
-  typedef typename CurveType::ControlPointType RealType;
+  typedef typename CurveType::DependentType RealType;
   typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
 
 private:

@@ -19,7 +19,7 @@
 
 namespace CadKit
 {
-template<class T> class SlArrayPtr
+template<class T, class I = unsigned int> class SlArrayPtr
 {
 public:
 
@@ -35,6 +35,9 @@ public:
 
   /// Get the internal pointer.
   T *               get() const { return _p; }
+
+  /// Get a reference to the internal pointer.
+  T *&              getReference() const { return _p; }
 
   /// Check internal status.
   bool              isNull()  const { return 0x0 == _p; }
@@ -54,11 +57,8 @@ public:
   const T **        operator  & () const { return &_p; }
   T **              operator  & ()       { return &_p; }
 
-  const T &         operator [] ( unsigned int i ) const { return _p[i]; }
-  T &               operator [] ( unsigned int i )       { return _p[i]; }
-
-  const T &         operator [] ( int i ) const          { return _p[i]; }
-  T &               operator [] ( int i )                { return _p[i]; }
+  const T &         operator [] ( I i ) const { return _p[i]; }
+  T &               operator [] ( I i )       { return _p[i]; }
 
   // Reset the internal pointer.
   void              reset() { this->attach ( 0x0 ); }
@@ -67,7 +67,7 @@ private:
 
   T *_p;
 
-  static void       _safeDelete ( T *p ) { if ( p ) delete [] p; }
+  static void       _safeDelete ( T *&p );
 };
 
 
@@ -79,8 +79,8 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class T> bool operator == ( const T *p1, const SlArrayPtr<T> &p2 ) { return p1 == p2._p; }
-template <class T> bool operator != ( const T *p1, const SlArrayPtr<T> &p2 ) { return p1 != p2._p; }
+template <class T, class I> bool operator == ( const T *p1, const SlArrayPtr<T,I> &p2 ) { return p1 == p2._p; }
+template <class T, class I> bool operator != ( const T *p1, const SlArrayPtr<T,I> &p2 ) { return p1 != p2._p; }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,9 +89,9 @@ template <class T> bool operator != ( const T *p1, const SlArrayPtr<T> &p2 ) { r
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( SlArrayPtr<T> &p )
+template<class T, class I> inline SlArrayPtr<T,I> &SlArrayPtr<T,I>::operator = ( SlArrayPtr<T,I> &p )
 {
-  this->attach ( p._p );
+  this->attach ( p.detach() );
   return *this;
 }
 
@@ -102,7 +102,7 @@ template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( SlArrayPtr<T
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( T *p )
+template<class T, class I> inline SlArrayPtr<T,I> &SlArrayPtr<T,I>::operator = ( T *p )
 {
   this->attach ( p );
   return *this;
@@ -115,7 +115,7 @@ template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( T *p )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline T *SlArrayPtr<T>::detach()
+template<class T, class I> inline T *SlArrayPtr<T,I>::detach()
 {
   T *temp = _p;
   _p = 0x0;
@@ -125,11 +125,27 @@ template<class T> inline T *SlArrayPtr<T>::detach()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Safely delete the pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline void SlArrayPtr<T,I>::_safeDelete ( T *&p )
+{
+  if ( p )
+  {
+    delete [] p;
+    p = 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Reset the pointer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlArrayPtr<T>::attach ( T *p )
+template<class T, class I> inline void SlArrayPtr<T,I>::attach ( T *p )
 {
   if ( p != _p )
   {

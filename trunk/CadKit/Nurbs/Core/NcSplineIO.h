@@ -46,18 +46,18 @@ template<NCSDTA> inline void write ( const CadKit::NcSpline<NCSDCA> &spline, std
   out << "Dimension ............................. " << spline.getDimension()                << std::endl;
   out << "Rational .............................. " << rational                             << std::endl;
   out << "Total number of knots ................. " << spline.getTotalNumKnots()            << std::endl;
-  out << "Total number of control points ........ " << spline.getTotalNumControlPoints()    << std::endl;
+  out << "Total number of control points ........ " << spline.getTotalNumCtrPts()           << std::endl;
 
   IndexType i ( 0 ), j ( 0 );
 
   for ( i = 0; i < spline.getNumIndepVars(); ++i )
   {
-    out << "For independent variable .............. " << i                                << std::endl;
-    out << "    Number of knots ................... " << spline.getNumKnots ( i )         << std::endl;
-    out << "    Number of control points .......... " << spline.getNumControlPoints ( i ) << std::endl;
-    out << "    Order ............................. " << spline.getOrder ( i )            << std::endl;
-    out << "    Degree ............................ " << spline.getDegree ( i )           << std::endl;
-    out << "    Knot vector:"                                                           << std::endl;
+    out << "For independent variable .............. " << i                         << std::endl;
+    out << "    Number of knots ................... " << spline.getNumKnots ( i )  << std::endl;
+    out << "    Number of control points .......... " << spline.getNumCtrPts ( i ) << std::endl;
+    out << "    Order ............................. " << spline.getOrder ( i )     << std::endl;
+    out << "    Degree ............................ " << spline.getDegree ( i )    << std::endl;
+    out << "    Knot vector:"                                                      << std::endl;
 
     for ( j = 0; j < spline.getNumKnots ( i ); ++j )
     {
@@ -71,9 +71,9 @@ template<NCSDTA> inline void write ( const CadKit::NcSpline<NCSDCA> &spline, std
   {
     out << "Dependent variable " << i << std::endl;
 
-    for ( j = 0; j < spline.getTotalNumControlPoints(); ++j ) 
+    for ( j = 0; j < spline.getTotalNumCtrPts(); ++j ) 
     {
-      out << "    " << j << ": " << spline.getControlPoint ( i, j ) << std::endl;
+      out << "    " << j << ": " << spline.getCtrPt ( i, j ) << std::endl;
     }
   }
 }

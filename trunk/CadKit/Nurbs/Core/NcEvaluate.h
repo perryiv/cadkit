@@ -16,7 +16,9 @@
 #ifndef _CADKIT_NURBS_CORE_LIBRARY_SPLINE_EVALUATION_CLASS_H_
 #define _CADKIT_NURBS_CORE_LIBRARY_SPLINE_EVALUATION_CLASS_H_
 
-#include "NcAlgorithm.h"
+#include "NcFindSpan.h"
+#include "NcBasisFunctions.h"
+#include "NcCurve.h"
 #include "NcDefine.h"
 
 #include "Standard/SlAssert.h"
@@ -29,11 +31,21 @@ template<NCSDTA> class NcEvaluate : public NcAlgorithm<NCSDCA>
 public:
 
   /// Evaluate a point on the curve.
-  static void                   evaluate ( const IndexType &order, 
-                                           const IndexType &span, 
-                                           const ParameterType &u, 
-                                           const ParameterType *N,
-                                           ControlPointType *pt );
+  static void                   evaluate ( 
+                                  const NcCurve<NCSDCA> &curve, 
+                                  const ParameterType &u, 
+                                  ControlPointType *point );
+
+  /// Evaluate a point on the curve.
+  static void                   evaluate ( 
+                                  const IndexType &degree, 
+                                  const IndexType &span, 
+                                  const IndexType &dimension,
+                                  const ParameterType &u, 
+                                  const ParameterType *N,
+                                  const ControlPointType **ctrPts,
+                                  const ControlPointType *weights,
+                                  ControlPointType *point );
 };
 
 
@@ -41,79 +53,129 @@ public:
 ///
 /// Evaluate a point on the curve.
 ///
-/// \param order      The order of the curve.
+/// \param degree     The degree of the curve.
 /// \param span       The span in the knot vector where u falls.
+/// \param dimension  The dimension of the curve.
 /// \param u          The parameter we are finding the point at.
-/// \param N          The basis functions (order of them).
-/// \param pt         The evaluated point.
+/// \param N          The basis functions (array size >= order).
+/// \param weights    The control points.
+/// \param weights    Weights if the curve is rational, NULL otherwise.
+/// \param point      The evaluated point (array size >= dimension).
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate ( 
-  const IndexType &order, 
-  const IndexType &order, 
+  const IndexType &degree, 
   const IndexType &span, 
+  const IndexType &dimension,
   const ParameterType &u, 
   const ParameterType *N,
-  ControlPointType *pt )
+  const ControlPointType **ctrPts,
+  const ControlPointType *weights,
+  ControlPointType *point )
 {
-  SL_ASSERT ( span == order - 1 || span > order - 1 ); // Bypass g++ warning.
-  SL_ASSERT ( CADKIT_NURBS_MIN_ORDER == order || CADKIT_NURBS_MIN_ORDER < order );
+  SL_ASSERT ( span == degree || span > degree ); // Bypass g++ warning.
+  SL_ASSERT ( CADKIT_NURBS_MINIMUM_DEGREE == degree || CADKIT_NURBS_MINIMUM_DEGREE < degree );
+  SL_ASSERT ( CADKIT_NURBS_MINIMUM_DIMENSION == dimension || CADKIT_NURBS_MINIMUM_DIMENSION < dimension );
+  SL_ASSERT ( 0x0 != N );
+  SL_ASSERT ( 0x0 != point );
+
+  // Needed below.
+  IndexType i, j, index, order ( degree + 1 );
 
   // Initialize the point.
-  for ( IndexType i = 0; i < _s.dimension; ++i ) 
-    point[i] = 0.0;
+  for ( i = 0; i < dimension; ++i ) 
+    point[i] = 0;
 
+  //
   // Nonrational.
-  if ( !_s.rational )
+  //
+
+  if ( 0x0 == weights )
   {
-    for ( IndexType i = 0; i < _s.order[0]; ++i )
+    for ( i = 0; i < order; ++i )
     {
       // Do this here.
-      index = span - _s.degree[0] + i;
+      index = span - degree + i;
 
       // Calculate the coordinate for each dimension.
-      for ( IndexType j = 0; j < _s.dimension; ++j )
+      for ( j = 0; j < dimension; ++j )
       {
-        point[j] += N[i] * _s.ctrPts[j][index];
+        point[j] += N[i] * ctrPts[j][index];
       }
     }
 
     return;
   }
 
+  //
   // Rational.
-  else
+  //
+
+  // Initialize.
+  ControlPointType weight ( 0 );
+
+  for ( i = 0; i < order; ++i )
   {
-    // Initialize.
-    SlFloat64 weight = 0.0;
+    // Do this here.
+    index = span - degree + i;
 
-    for ( IndexType i = 0; i < _s.order[0]; ++i )
+    // Calculate the coordinate for each dimension.
+    for ( j = 0; j < dimension; ++j )
     {
-      // Do this here.
-      index = span - _s.degree[0] + i;
-
-      // Calculate the coordinate for each dimension.
-      for ( IndexType j = 0; j < _s.dimension; ++j )
-      {
-        point[j] += N[i] * _s.ctrPts[j][index];
-      }
-
-      // Calculate the coordinate for the weight.
-      weight += N[i] * _s.weights[index];
+      point[j] += N[i] * ctrPts[j][index];
     }
 
-    // Invert the weight.
-    weight = 1.0 / weight;
-
-    // Divide out the weight for each dimension.
-    for ( IndexType j = 0; j < _s.dimension; ++j )
-    {
-      point[j] *= weight;
-    }
-
-    return;
+    // Calculate the coordinate for the weight.
+    weight += N[i] * weights[index];
   }
+
+  // Invert the weight.
+  weight = 1 / weight;
+
+  // Divide out the weight for each dimension.
+  for ( j = 0; j < dimension; ++j )
+  {
+    point[j] *= weight;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Evaluate the point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate ( 
+  const NcCurve<NCSDCA> &curve, 
+  const ParameterType &u, 
+  ControlPointType *point )
+{
+  SL_ASSERT ( NULL != point );
+  SL_ASSERT ( curve.isInRange ( u ) );
+
+  // Get the degree.
+  const IndexType degree ( curve.getDegree() );
+
+  // Get the span.
+  IndexType span = NcFindSpan<NCSDCA>::find ( curve, u );
+
+  // Get the dimension.
+  const IndexType dimension ( curve.getDimension() );
+
+  // Get the basis functions.
+  ParameterType *N = curve.getWork().getBasisFunctions ( 0 );
+  NcBasisFunctions<NCSDCA>::basis ( curve, u, span, N );
+
+  // Get the control points.
+  const ControlPointType **ctrPts = curve.getCtrPts();
+
+  // Get the weights.
+  const ControlPointType *weights = curve.getWeights();
+
+  // Call the function to evaluate a point.
+  NcEvaluate<NCSDCA>::evaluate ( degree, span, dimension, u, N, ctrPts, weights, point );
 }
 
 

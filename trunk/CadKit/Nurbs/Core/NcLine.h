@@ -33,29 +33,29 @@ public:
   DECLARE_TYPEDEFS;
 
   // Create the line.
-  static bool create ( const ControlPointType *pt1, 
-                       const ControlPointType *pt2, 
+  static bool create ( const ControlPointType *pt0, 
+                       const ControlPointType *pt1, 
                        const IndexType &dimension, 
                        NcCurve<NCSDCA> &curve );
 
   // Create the 1D line.
-  static bool create ( const ControlPointType &pt1, 
-                       const ControlPointType &pt2, 
+  static bool create ( const ControlPointType &pt0, 
+                       const ControlPointType &pt1, 
                        NcCurve<NCSDCA> &curve );
 
   // Create the 2D line.
-  static bool create ( const SlVec2<ControlPointType> &pt1, 
-                       const SlVec2<ControlPointType> &pt2, 
+  static bool create ( const SlVec2<ControlPointType> &pt0, 
+                       const SlVec2<ControlPointType> &pt1, 
                        NcCurve<NCSDCA> &curve );
 
   // Create the 3D line.
-  static bool create ( const SlVec3<ControlPointType> &pt1, 
-                       const SlVec3<ControlPointType> &pt2, 
+  static bool create ( const SlVec3<ControlPointType> &pt0, 
+                       const SlVec3<ControlPointType> &pt1, 
                        NcCurve<NCSDCA> &curve );
 
   // Create the 4D line.
-  static bool create ( const SlVec4<ControlPointType> &pt1, 
-                       const SlVec4<ControlPointType> &pt2, 
+  static bool create ( const SlVec4<ControlPointType> &pt0, 
+                       const SlVec4<ControlPointType> &pt1, 
                        NcCurve<NCSDCA> &curve );
 };
 
@@ -67,32 +67,29 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcLine<NCSDCA>::create ( 
+  const ControlPointType *pt0, 
   const ControlPointType *pt1, 
-  const ControlPointType *pt2, 
   const IndexType &dimension,
   NcCurve<NCSDCA> &curve )
 {
-  NC_CHECK_ARGUMENT ( NULL != pt1 );
-  NC_CHECK_ARGUMENT ( NULL != pt2 );
+  NC_CHECK_ARGUMENT ( 0x0 != pt0 );
+  NC_CHECK_ARGUMENT ( 0x0 != pt1 );
   NC_CHECK_ARGUMENT ( dimension > 0 );
 
   // Reset the array sizes.
-  if ( false == curve.resize ( 1, dimension, 2, 2, false ) )
-    return false;
+  NC_VERIFY_ALLOCATION ( curve.resize ( 1, dimension, 2, 2, false ) );
 
   // Build the knot vector.
-  ParameterArray &knots = curve.getKnotVector();
-  knots(0) = 0;
-  knots(1) = 0;
-  knots(2) = 1;
-  knots(3) = 1;
+  curve.setKnot ( 0, 0 );
+  curve.setKnot ( 1, 0 );
+  curve.setKnot ( 2, 1 );
+  curve.setKnot ( 3, 1 );
 
   // Fill in the control points.
-  ControlPointArray &ctrPts = curve.getControlPoints();
   for ( IndexType i = 0; i < dimension; ++i )
   {
-    ctrPts(i,0) = pt1[i];
-    ctrPts(i,1) = pt2[i];
+    curve.setCtrPt ( i, 0, pt0[i] );
+    curve.setCtrPt ( i, 1, pt1[i] );
   }
 
   // It worked.
@@ -107,11 +104,11 @@ template<NCSDTA> inline bool NcLine<NCSDCA>::create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcLine<NCSDCA>::create (
-  const ControlPointType &pt1, 
-  const ControlPointType &pt2,
+  const ControlPointType &pt0, 
+  const ControlPointType &pt1,
   NcCurve<NCSDCA> &curve )
 {
-  return NcLine<NCSDCA>::create ( &pt1, &pt2, 1, curve );
+  return NcLine<NCSDCA>::create ( &pt0, &pt1, 1, curve );
 }
 
 
@@ -122,11 +119,11 @@ template<NCSDTA> inline bool NcLine<NCSDCA>::create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcLine<NCSDCA>::create (
-  const SlVec2<ControlPointType> &pt1, 
-  const SlVec2<ControlPointType> &pt2,
+  const SlVec2<ControlPointType> &pt0, 
+  const SlVec2<ControlPointType> &pt1,
   NcCurve<NCSDCA> &curve )
 {
-  return NcLine<NCSDCA>::create ( pt1.getValue(), pt2.getValue(), 2, curve );
+  return NcLine<NCSDCA>::create ( pt0.getValue(), pt1.getValue(), 2, curve );
 }
 
 
@@ -137,11 +134,11 @@ template<NCSDTA> inline bool NcLine<NCSDCA>::create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcLine<NCSDCA>::create (
-  const SlVec3<ControlPointType> &pt1, 
-  const SlVec3<ControlPointType> &pt2,
+  const SlVec3<ControlPointType> &pt0, 
+  const SlVec3<ControlPointType> &pt1,
   NcCurve<NCSDCA> &curve )
 {
-  return NcLine<NCSDCA>::create ( pt1.getValue(), pt2.getValue(), 3, curve );
+  return NcLine<NCSDCA>::create ( pt0.getValue(), pt1.getValue(), 3, curve );
 }
 
 
@@ -152,11 +149,11 @@ template<NCSDTA> inline bool NcLine<NCSDCA>::create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcLine<NCSDCA>::create (
-  const SlVec4<ControlPointType> &pt1, 
-  const SlVec4<ControlPointType> &pt2,
+  const SlVec4<ControlPointType> &pt0, 
+  const SlVec4<ControlPointType> &pt1,
   NcCurve<NCSDCA> &curve )
 {
-  return NcLine<NCSDCA>::create ( pt1.getValue(), pt2.getValue(), 4, curve );
+  return NcLine<NCSDCA>::create ( pt0.getValue(), pt1.getValue(), 4, curve );
 }
 
 

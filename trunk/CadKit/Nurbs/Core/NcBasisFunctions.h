@@ -17,6 +17,8 @@
 #define _CADKIT_NURBS_CORE_LIBRARY_SPLINE_BASIS_FUNCTIONS_CLASS_H_
 
 #include "NcAlgorithm.h"
+#include "NcCurve.h"
+#include "NcSurface.h"
 
 #include "Standard/SlAssert.h"
 
@@ -28,13 +30,29 @@ template<NCSDTA> class NcBasisFunctions : public NcAlgorithm<NCSDCA>
 public:
 
   /// Calculate the basis functions.
-  static void                   basis ( const ParameterType *knots, 
-                                        const IndexType &order, 
-                                        const IndexType &span, 
-                                        const ParameterType &u, 
-                                        ParameterType *left,
-                                        ParameterType *right,
-                                        ParameterType *N );
+  static void                   basis ( 
+                                  const NcCurve<NCSDCA> &curve,
+                                  const ParameterType &u, 
+                                  const IndexType &span, 
+                                  ParameterType *N );
+
+  /// Calculate the basis functions.
+  static void                   basis ( 
+                                  const NcSpline<NCSDCA> &spline,
+                                  const IndexType &whichIndepVar, 
+                                  const ParameterType &u, 
+                                  const IndexType &span, 
+                                  ParameterType *N );
+
+  /// Calculate the basis functions.
+  static void                   basis ( 
+                                  const ParameterType *knots, 
+                                  const IndexType &order, 
+                                  const IndexType &span, 
+                                  const ParameterType &u, 
+                                  ParameterType *left,
+                                  ParameterType *right,
+                                  ParameterType *N );
 };
 
 
@@ -92,6 +110,55 @@ template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis (
 
     N[j] = saved;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Calculate the basis functions.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis ( 
+  const NcSpline<NCSDCA> &spline,
+  const IndexType &whichIndepVar, 
+  const ParameterType &u, 
+  const IndexType &span, 
+  ParameterType *N )
+{
+  SL_ASSERT ( true == spline.isInRange ( whichIndepVar, u ) );
+  SL_ASSERT ( span >= spline.getDegree ( whichIndepVar ) );
+  SL_ASSERT ( span <= spline.getNumCtrPts ( whichIndepVar ) );
+
+  // Get the start of the knot vector.
+  const ParameterType *knots = spline.getKnots ( whichIndepVar );
+
+  // Get the order.
+  const IndexType order ( spline.getOrder ( whichIndepVar ) );
+
+  // Space for the algorithm.
+  ParameterType *left  = spline.getWork().getBasisFunctionsLeft  ( whichIndepVar );
+  ParameterType *right = spline.getWork().getBasisFunctionsRight ( whichIndepVar );
+
+  // Call the algorithm.
+  NcBasisFunctions<NCSDCA>::basis ( knots, order, span, u, left, right, N );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Calculate the basis functions.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis ( 
+  const NcCurve<NCSDCA> &curve,
+  const ParameterType &u, 
+  const IndexType &span, 
+  ParameterType *N )
+{
+  // Call the other one.
+  NcBasisFunctions<NCSDCA>::basis ( curve, 0, u, span, N );
 }
 
 

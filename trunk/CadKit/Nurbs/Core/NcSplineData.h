@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  NcSplineData.h: Class containing the dpline definition. For internal use.
+//  NcSplineData.h: Class containing the spline definition. For internal use.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,8 +18,6 @@
 
 #include "NcInternalMacros.h"
 #include "NcDefine.h"
-
-#include "Standard/SlArrayPtr.h"
 
 
 namespace CadKit
@@ -30,85 +28,167 @@ public:
 
   DECLARE_TYPEDEFS;
 
-  /// Rational flag.
-  bool rational;
-
-  /// Integers.
-  IndexType numIndepVars;
-  IndexType numDepVars;
-  IndexType dimension;
-  IndexType totalNumCtrPts;
-  IndexType totalNumKnots;
-
-  /// Integer arrays.
-  SlArrayPtr<IndexType> numCtrPts;
-  SlArrayPtr<IndexType> order;
-  SlArrayPtr<IndexType> degree;
-  SlArrayPtr<IndexType> numKnots;
-
-  /// Data arrays.
-  SlArrayPtr<ParameterType> allKnots;
-  SlArrayPtr<ControlPointType> allCtrPts;
-
-  /// Data-pointer arrays.
-  SlArrayPtr<ParameterType *> knots;
-  SlArrayPtr<ControlPointType *> *ctrPts;
-
-  /// Shortcut to the weights.
-  ControlPointType *weights;
-
   /// Constructors/destructor.
   NcSplineData();
-  NcSplineData ( const NcSplineData &spline );
-  ~NcSplineData(){}
+  NcSplineData ( const NcSplineData &sd );
+  ~NcSplineData();
+
+  /// Rational flag.
+  const bool &                  isRational() const { return _rational; }
+  void                          setRational ( const bool &state ) { _rational = state; }
+
+  /// Get integer members.
+  const IndexType &             getNumIndepVars()   const { return _numIndepVars; }
+  const IndexType &             getNumDepVars()     const { return _numDepVars; }
+  const IndexType &             getDimension()      const { return _dimension; }
+  const IndexType &             getTotalNumCtrPts() const { return _totalNumCtrPts; }
+  const IndexType &             getTotalNumKnots()  const { return _totalNumKnots; }
+
+  /// Get integer values.
+  const IndexType &             getNumCtrPts ( const IndexType &whichIndepVar ) const { return _numCtrPts[whichIndepVar]; }
+  const IndexType &             getOrder     ( const IndexType &whichIndepVar ) const { return _order[whichIndepVar]; }
+  const IndexType &             getDegree    ( const IndexType &whichIndepVar ) const { return _degree[whichIndepVar]; }
+  const IndexType &             getNumKnots  ( const IndexType &whichIndepVar ) const { return _numKnots[whichIndepVar]; }
+
+  /// Get integer arrays as const.
+  const IndexType *             getNumCtrPts() const { return _numCtrPts; }
+  const IndexType *             getOrder()     const { return _order; }
+  const IndexType *             getDegree()    const { return _degree; }
+  const IndexType *             getNumKnots()  const { return _numKnots; }
+
+  /// Get data values.
+  const ParameterType &         getKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot )  const { return _knots[whichIndepVar][whichKnot]; }
+  const ControlPointType &      getCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt ) const { return _ctrPts[whichDepVar][whichCtrPt]; }
+  const ControlPointType &      getWeight ( const IndexType &whichWeight )                                const { return _weights[whichWeight]; }
+
+  /// Set data values.
+  void                          setKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot,   const ParameterType &knot )     { _knots[whichIndepVar][whichKnot] = knot; }
+  void                          setCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt,  const ControlPointType &ctrPt ) { _ctrPts[whichDepVar][whichCtrPt] = ctrPt; }
+  void                          setWeight ( const IndexType &whichWeight,   const ControlPointType &weight )                              { _weights[whichWeight] = weight; }
+
+  /// Get data arrays as const.
+  const ParameterType *         getAllKnots()  const { return _allKnots; }
+  const ControlPointType *      getAllCtrPts() const { return _allCtrPts; }
+
+  /// Get data arrays as const.
+  const ParameterType *         getKnots ( const IndexType &whichIndepVar ) const { return _knots[whichIndepVar]; }
+  const ControlPointType *      getCtrPts ( const IndexType &whichDepVar )  const { return _ctrPts[whichDepVar]; }
+
+  /// Get data-pointer arrays as const.
+  const ParameterType **        getKnots()  const { return const_cast<const ParameterType **> ( _knots ); }
+  const ControlPointType **     getCtrPts() const { return const_cast<const ControlPointType **> ( _ctrPts ); }
+
+  /// Get shortcut to the _weights.
+  const ControlPointType *      getWeights() const { return _weights; }
+
+  /// Get the number of bytes for the types.
+  static unsigned int           getNumBytesIndexType()        { return sizeof ( IndexType ); }
+  static unsigned int           getNumBytesParameterType()    { return sizeof ( ParameterType ); }
+  static unsigned int           getNumBytesControlPointType() { return sizeof ( ControlPointType ); }
+
+  /// Get the first and last knot.
+  const ParameterType &         getFirstKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, 0 ); }
+  const ParameterType &         getLastKnot  ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
 
   /// Assignment operator.
-  NcSplineData &                operator = ( const NcSplineData &sd ) { this->setValue ( sd ); return *this; }
+  NcSplineData &                operator = ( const NcSplineData &sd ) { SL_VERIFY ( this->setValue ( sd ) ); return *this; }
 
   /// Resize the spline data.
-  bool                          resize ( const IndexType &numIndepVars, 
-                                         const IndexType &numDepVars, 
-                                         const IndexType *order, 
-                                         const IndexType *numCtrPts, 
-                                         const bool &rational );
+  bool                          resize ( 
+                                  const IndexType &numIndepVars, 
+                                  const IndexType &numDepVars, 
+                                  const IndexType *order, 
+                                  const IndexType *numCtrPts, 
+                                  const bool &rational );
 
   /// Set the value.
-  void                          setValue ( const NcSplineData &sd, bool makeCopy );
+  bool                          setValue ( const NcSplineData &sd, const bool &makeCopy );
+
+  /// Validate.
+  bool                          isValid() const;
+  static bool                   isValid ( 
+                                  const IndexType &numIndepVars, 
+                                  const IndexType &numDepVars, 
+                                  const IndexType *order, 
+                                  const IndexType *numCtrPts );
+
+  /// Confirm parametric range.
+  bool                          isInRange ( const IndexType &whichIndepVar, const ParameterType &u ) const;
+
+  /// Equality test.
+  bool                          isEqual    ( const NcSplineData &spline ) const { return a.isEqual ( b, 0, 0 ); }
+  bool                          isEqual    ( const NcSplineData &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const;
+
+  /// Inequality test.
+  bool                          isNotEqual ( const NcSplineData &spline ) const { return false == this->isEqual ( spline ); }
+  bool                          isNotEqual ( const NcSplineData &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
 
 protected:
 
-  IndexType *                   _allocateIndexArray ( const IndexType &num ) const;
-  ParameterType *               _allocateParameterArray ( const IndexType &num ) const;
-  ControlPointType *            _allocateControlPointArray ( const IndexType &num ) const;
+  /// Rational flag.
+  bool _rational;
 
-  IndexType *                   _resize ( const IndexType &oldSize, const IndexType &newSize, IndexType *array );
-  ParameterType *               _resize ( const IndexType &oldSize, const IndexType &newSize, ParameterType *array );
-  ControlPointType *            _resize ( const IndexType &oldSize, const IndexType &newSize, ControlPointType *array );
+  /// Integers.
+  IndexType _numIndepVars;
+  IndexType _numDepVars;
+  IndexType _dimension;
+  IndexType _totalNumCtrPts;
+  IndexType _totalNumKnots;
+
+  /// Integer arrays.
+  IndexType *_numCtrPts;
+  IndexType *_order;
+  IndexType *_degree;
+  IndexType *_numKnots;
+
+  /// Data arrays.
+  ParameterType *_allKnots;
+  ControlPointType *_allCtrPts;
+
+  /// Data-pointer arrays.
+  ParameterType **_knots;
+  ControlPointType **_ctrPts;
+
+  /// Shortcut to the _weights.
+  ControlPointType *_weights;
+
+  /// Delete the internal arrays.
+  void                          _delete();
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Constructor.
+/// Constructor initializer list.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+#define _NC_CONSTRUCTOR_INITIALIZER_LIST \
+  _rational       ( false ), \
+  _numIndepVars   ( 0 ), \
+  _numDepVars     ( 0 ), \
+  _dimension      ( 0 ), \
+  _totalNumCtrPts ( 0 ), \
+  _totalNumKnots  ( 0 ), \
+  _numCtrPts      ( 0x0 ), \
+  _order          ( 0x0 ), \
+  _degree         ( 0x0 ), \
+  _numKnots       ( 0x0 ), \
+  _allKnots       ( 0x0 ), \
+  _allCtrPts      ( 0x0 ), \
+  _knots          ( 0x0 ), \
+  _ctrPts         ( 0x0 ), \
+  _weights        ( 0x0 )
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Constructor.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSplineData<NCSDCA>::NcSplineData() :
-  rational ( false ),
-  numIndepVars ( 0 ),
-  numDepVars ( 0 ),
-  dimension ( 0 ),
-  totalNumCtrPts ( 0 ),
-  totalNumKnots ( 0 ),
-  numCtrPts ( 0x0 ),
-  order ( 0x0 ),
-  degree ( 0x0 ),
-  numKnots ( 0x0 ),
-  allKnots ( 0x0 ),
-  allCtrPts ( 0x0 ),
-  knots ( 0x0 ),
-  ctrPts ( 0x0 ),
-  weights ( 0x0 )
+  _NC_CONSTRUCTOR_INITIALIZER_LIST
 {
   // Empty.
 }
@@ -116,26 +196,12 @@ template<NCSDTA> inline NcSplineData<NCSDCA>::NcSplineData() :
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Copy constructor.
+/// Copy constructor.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSplineData<NCSDCA>::NcSplineData ( const NcSplineData<NCSDCA> &sd ) :
-  rational ( false ),
-  numIndepVars ( 0 ),
-  numDepVars ( 0 ),
-  dimension ( 0 ),
-  totalNumCtrPts ( 0 ),
-  totalNumKnots ( 0 ),
-  numCtrPts ( 0x0 ),
-  order ( 0x0 ),
-  degree ( 0x0 ),
-  numKnots ( 0x0 ),
-  allKnots ( 0x0 ),
-  allCtrPts ( 0x0 ),
-  knots ( 0x0 ),
-  ctrPts ( 0x0 ),
-  weights ( 0x0 )
+  _NC_CONSTRUCTOR_INITIALIZER_LIST
 {
   SL_VERIFY ( this->setValue ( sd, true ) );
 }
@@ -143,97 +209,337 @@ template<NCSDTA> inline NcSplineData<NCSDCA>::NcSplineData ( const NcSplineData<
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Allocate the array.
+/// Destructor.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType *NcSplineData<NCSDCA>::_allocateIndexArray ( const IndexType &num ) const
+template<NCSDTA> inline NcSplineData<NCSDCA>::~NcSplineData()
 {
-  SL_ASSERT ( num > 0 );
-  IndexAllocator allocator;
-  IndexType *array = allocator.allocate ( num );
-  SL_ASSERT ( array );
-  return array;
+  this->_delete();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Allocate the array.
+/// Delete the internal arrays.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline ParameterType *NcSplineData<NCSDCA>::_allocateParameterArray ( const IndexType &num ) const
+template<NCSDTA> inline void NcSplineData<NCSDCA>::_delete()
 {
-  SL_ASSERT ( num > 0 );
-  ParameterAllocator allocator;
-  ParameterType *array = allocator.allocate ( num );
-  SL_ASSERT ( array );
-  return array;
+  IndexAllocator ia;
+  ia.deallocate ( _numCtrPts, _numIndepVars );
+  ia.deallocate ( _order,     _numIndepVars );
+  ia.deallocate ( _degree,    _numIndepVars );
+  ia.deallocate ( _numKnots,  _numIndepVars );
+
+  ParameterPointerAllocator ppa;
+  ppa.deallocate ( _knots, _numIndepVars );
+
+  ControlPointPointerAllocator cppa;
+  cppa.deallocate ( _ctrPts, _numDepVars );
+
+  ParameterAllocator pa;
+  pa.deallocate ( _allKnots, _totalNumKnots );
+
+  ControlPointAllocator ca;
+  ca.deallocate ( _allCtrPts, static_cast<IndexType>(_totalNumCtrPts * _numDepVars) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given spline configuration is valid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isValid ( 
+  const IndexType &numIndepVars, 
+  const IndexType &numDepVars, 
+  const IndexType *order, 
+  const IndexType *numCtrPts )
+{
+  if ( numIndepVars < CADKIT_NURBS_MINIMUM_NUMBER_OF_INDEPENDENT_VARIABLES )
+    return false;
+
+  if ( numDepVars < CADKIT_NURBS_MINIMUM_NUMBER_OF_DEPENDENT_VARIABLES )
+    return false;
+
+  if ( 0x0 == numCtrPts )
+    return false;
+
+  if ( 0x0 == order )
+    return false;
+
+  for ( IndexType i = 0; i < numIndepVars; ++i )
+  {
+    if ( numCtrPts[i] < CADKIT_NURBS_MINIMUM_NUMBER_OF_CONTROL_POINTS )
+      return false;
+
+    if ( order[i] < CADKIT_NURBS_MINIMUM_ORDER )
+      return false;
+  }
+
+  // It's ok.
+  return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Allocate the array.
+/// See if the current spline configuration is valid.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline ControlPoint *NcSplineData<NCSDCA>::_allocateControlPointArray ( const IndexType &num ) const
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isValid() const
 {
-  SL_ASSERT ( num > 0 );
-  ControlPointAllocator allocator;
-  ControlPoint *array = allocator.allocate ( num );
-  SL_ASSERT ( array );
-  return array;
+  // Call the other one.
+  if ( false == this->isValid ( _numIndepVars, _numDepVars, _order, _numCtrPts ) )
+    return false;
+
+  // TODO.
+  return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Resize the array if needed.
+/// Equality.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class SizeType, class ArrayType> inline IndexType *NcSplineData<NCSDCA>::_resize ( 
-  const IndexType &oldSize, 
-  const IndexType &newSize, 
-  IndexType *array )
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual 
+  ( const NcSplineData<NCSDCA> &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const
+{
+  return (
+    _rational       == spline._rational &&
+    _numIndepVars   == spline._numIndepVars &&
+    _numDepVars     == spline._numDepVars &&
+    _dimension      == spline._dimension &&
+    _totalNumCtrPts == spline._totalNumCtrPts &&
+    _totalNumKnots  == spline._totalNumKnots &&
+    true == CadKit::isEqualArray ( _numCtrPts, spline._numCtrPts, _numIndepVars ) &&
+    true == CadKit::isEqualArray ( _order,     spline._order,     _numIndepVars ) &&
+    true == CadKit::isEqualArray ( _degree,    spline._degree,    _numIndepVars ) &&
+    true == CadKit::isEqualArray ( _numKnots,  spline._numKnots,  _numIndepVars ) &&
+    true == CadKit::isEqualArray ( _allKnots,  spline._allKnots,  _totalNumKnots,  knotTol ) &&
+    true == CadKit::isEqualArray ( _allCtrPts, spline._allCtrPts, _totalNumCtrPts * _numDepVars, ctrPtTol )
+    );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Equality. This is not a member.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool operator == ( const NcSplineData<NCSDCA> &a, const NcSplineData<NCSDCA> &b )
+{
+  return a.isEqual ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Inequality. This is not a member.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool operator != ( const NcSplineData<NCSDCA> &a, const NcSplineData<NCSDCA> &b )
+{
+  return a.isNotEqual ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Confirm parametric range.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isInRange ( 
+  const IndexType &whichIndepVar, 
+  const ParameterType &u ) const
+{
+  return (
+    u >= this->getFirstKnot ( whichIndepVar ) &&
+    u <= this->getLastKnot ( whichIndepVar ) 
+    );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Resize the given array if needed.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<class AllocatorType, class SizeType, class ArrayType> inline bool _resize ( 
+  const SizeType &currentSize, 
+  const SizeType &newSize, 
+  ArrayType *&array,
+  AllocatorType &allocator )
 {
   SL_ASSERT ( newSize > 0 );
-  if ( newSize > oldSize )
-    return this->_allocateIndexArray
+  SL_ASSERT ( ( array == 0x0 ) == ( currentSize == 0 ) );
+
+  // If the new size is smaller (or the same) as the current size, and the 
+  // given array is already allocated, then just return.
+  if ( newSize <= currentSize && array != 0x0 )
+    return true;
+
+  // Allocate the new array.
+  ArrayType *newArray = allocator.allocate ( newSize );
+
+  // Check allocation.
+  NC_CHECK_ALLOCATION ( newArray != 0x0 );
+
+  // Delete the current array using the allocator.
+  if ( array != 0x0 )
+    allocator.deallocate ( array, currentSize );
+
+  // Assign the given array to the new array.
+  array = newArray;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Allocate the arrays and set the integer members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::resize ( 
+  const IndexType &numIndepVars, 
+  const IndexType &numDepVars, 
+  const IndexType *order, 
+  const IndexType *numCtrPts, 
+  const bool &rational )
+{
+  NC_CHECK_ARGUMENT ( numIndepVars >= CADKIT_NURBS_MINIMUM_NUMBER_OF_INDEPENDENT_VARIABLES );
+  NC_CHECK_ARGUMENT ( numDepVars >= CADKIT_NURBS_MINIMUM_NUMBER_OF_DEPENDENT_VARIABLES );
+  NC_CHECK_ARGUMENT ( 0x0 != numCtrPts );
+  NC_CHECK_ARGUMENT ( 0x0 != order );
+
+#ifdef _CADKIT_NURBS_CORE_CHECK_FUNCTION_ARGUMENTS
+
+  for ( IndexType ii = 0; ii < numIndepVars; ++ii )
+  {
+    SL_ASSERT ( numCtrPts[ii] >= CADKIT_NURBS_MINIMUM_NUMBER_OF_CONTROL_POINTS );
+    SL_ASSERT ( order[ii] >= CADKIT_NURBS_MINIMUM_ORDER );
+  }
+
+#endif
+
+  // Figure out the totals.
+  IndexType totalNumCtrPts ( 1 );
+  IndexType totalNumKnots ( 0 ), i;
+
+  for ( i = 0; i < numIndepVars; ++i )
+  {
+    totalNumKnots += ( numCtrPts[i] + order[i] );
+    totalNumCtrPts *= numCtrPts[i];
+  }
+
+  // For readability.
+  IndexType oldCtrPtsSize ( static_cast<IndexType>(_totalNumCtrPts * _numDepVars) );
+  IndexType newCtrPtsSize ( static_cast<IndexType>( totalNumCtrPts *  numDepVars) );
+
+  // Declare the allocators.
+  IndexAllocator ia;
+  ParameterPointerAllocator ppa;
+  ControlPointPointerAllocator cppa;
+  ParameterAllocator pa;
+  ControlPointAllocator cpa;
+
+  // Resize the arrays if needed.
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _numCtrPts, ia ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _order,     ia ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _degree,    ia ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _numKnots,  ia ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _knots,     ppa ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numDepVars,    numDepVars,    _ctrPts,    cppa ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _totalNumKnots, totalNumKnots, _allKnots,  pa ) );
+  NC_VERIFY_ALLOCATION ( CadKit::_resize ( oldCtrPtsSize,  newCtrPtsSize, _allCtrPts, cpa ) );
+
+  // Set these integer members.
+  _rational       = rational;
+  _numIndepVars   = numIndepVars;
+  _numDepVars     = numDepVars;
+  _dimension      = ( _rational ) ? numDepVars - 1 : numDepVars;
+  _totalNumCtrPts = totalNumCtrPts;
+
+  // Initialize.
+  _totalNumKnots = 0;
+
+  // For each independent variable...
+  for ( i = 0; i < _numIndepVars; ++i )
+  {
+    // Set all the integer arrays.
+    _numCtrPts[i] = numCtrPts[i];
+    _order[i]     = order[i];
+    _degree[i]    = order[i] - 1;
+    _numKnots[i]  = numCtrPts[i] + order[i];
+
+    // Set the pointers to the individual knot vectors.
+    _knots[i] = &_allKnots[_totalNumKnots];
+
+    // Increment the total.
+    _totalNumKnots += _numKnots[i];
+  }
+
+  // We increment the new one in the above loop. Make sure it ends up being 
+  // what it is supposed to be.
+  SL_ASSERT ( _totalNumKnots == totalNumKnots );
+
+  // If we are rational then set the weights to point to the start of the 
+  // last dependent variable. If not then we set it to NULL.
+  _weights = ( _rational ) ? &_allCtrPts[static_cast<IndexType>(_totalNumCtrPts * _dimension)] : 0x0;
+
+  // Set the pointers to the individual control points (i.e., pointer 
+  // to the x's, pointer to the y's, etc).
+  for ( i = 0; i < _numDepVars; ++i ) 
+    _ctrPts[i] = &_allCtrPts[static_cast<IndexType>(_totalNumCtrPts * i)];
+
+  // It worked.
+  return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Set the value. Make a hard copy if the flag says to.
+/// Set the value. Make a hard copy if the flag says to.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline bool NcSplineData<NCSDCA>::setValue ( const NcSplineData<NCSDCA> &sd, bool makeCopy )
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::setValue ( const NcSplineData<NCSDCA> &sd, const bool &makeCopy )
 {
+  NC_CHECK_ARGUMENT ( sd.isValid() );
+
   // If you are not making a "hard copy" (i.e., pointer assignments).
   if ( false == makeCopy )
   {
     // Assignments of the array-pointers will automatically transfer ownership.
     // If there is a current internal array it will get deleted.
-    rational        = sd.rational;
-    numIndepVars    = sd.numIndepVars;
-    numDepVars      = sd.numDepVars;
-    dimension       = sd.dimension;
-    totalNumCtrPts  = sd.totalNumCtrPts;
-    totalNumKnots   = sd.totalNumKnots;
-    numCtrPts       = sd.numCtrPts;
-    order           = sd.order;
-    degree          = sd.degree;
-    numKnots        = sd.numKnots;
-    allKnots        = sd.allKnots;
-    allCtrPts       = sd.allCtrPts;
-    knots           = sd.knots;
-    ctrPts          = sd.ctrPts;
-    weights         = sd.weights;
+    _rational        = sd._rational;
+    _numIndepVars    = sd._numIndepVars;
+    _numDepVars      = sd._numDepVars;
+    _dimension       = sd._dimension;
+    _totalNumCtrPts  = sd._totalNumCtrPts;
+    _totalNumKnots   = sd._totalNumKnots;
+    _numCtrPts       = sd._numCtrPts;
+    _order           = sd._order;
+    _degree          = sd._degree;
+    _numKnots        = sd._numKnots;
+    _allKnots        = sd._allKnots;
+    _allCtrPts       = sd._allCtrPts;
+    _knots           = sd._knots;
+    _ctrPts          = sd._ctrPts;
+    _weights         = sd._weights;
 
     // It worked.
     return true;
@@ -243,118 +549,33 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::setValue ( const NcSplineData
   // If we get to here then we are making a "hard copy".
   //
 
-  // Resize the arrays if needed.
-  allKnots = this->_resize ( totalNumKnots, sd.totalNumKnots, (ParameterAllocator *) 0x0 );
+  // Resize the spline.
+  NC_VERIFY_ALLOCATION ( this->resize ( sd._numIndepVars, sd._numDepVars, sd._order, sd._numCtrPts, sd._rational ) );
 
-  // If the number of knots is different...
-  if ( totalNumKnots != sd.totalNumKnots )
-  {
-    // Allocate the new array.
-    allKnots = this->_allocateIndexArray ( sd.totalNumKnots );
-  }
+  // Should be true.
+  SL_ASSERT ( _rational       == sd._rational );
+  SL_ASSERT ( _numIndepVars   == sd._numIndepVars );
+  SL_ASSERT ( _numDepVars     == sd._numDepVars );
+  SL_ASSERT ( _dimension      == sd._dimension );
+  SL_ASSERT ( _totalNumCtrPts == sd._totalNumCtrPts );
+  SL_ASSERT ( _totalNumKnots  == sd._totalNumKnots );
+  SL_ASSERT ( CadKit::isEqual ( _numCtrPts, sd._numCtrPts, _numIndepVars ) );
+  SL_ASSERT ( CadKit::isEqual ( _order,     sd._order,     _numIndepVars ) );
+  SL_ASSERT ( CadKit::isEqual ( _degree,    sd._degree,    _numIndepVars ) );
+  SL_ASSERT ( CadKit::isEqual ( _numKnots,  sd._numKnots,  _numIndepVars ) );
+  SL_ASSERT ( CadKit::isEqual ( _knots,     sd._knots,     _numIndepVars ) );
+  SL_ASSERT ( CadKit::isEqual ( _ctrPts,    sd._ctrPts,    _numDepVars ) );
 
-  // If the number of control points is different then delete and allocate.
-  if ( totalNumCtrPts != sd.totalNumCtrPts )
-  {
-    // Delete it if it exist.
-    if ( allCtrPts ) delete [] allCtrPts;
+  // Copy the _knots.
+  for ( i = 0; i < _totalNumKnots; ++i )
+    _allKnots[i] = sd._allKnots[i];
 
-    // Allocate the new array.
-    allCtrPts = new SlFloat64[sd.totalNumCtrPts * sd.numDepVars];
+  // Copy all the control points (including the _weights).
+  IndexType total ( _totalNumCtrPts * _numDepVars );
+  for ( i = 0; i < total; ++i )
+    _allCtrPts[i] = sd._allCtrPts[i];
 
-    if ( !allCtrPts )
-    {
-      SL_PUSH_ERROR ( SL_FAILED_TO_ALLOCATE_MEMORY, "In NcSplineData::setValue(), allocation of new control points failed" );
-      return SL_FALSE;
-    }
-  }
-
-  // If the number of independent variables is different then delete and allocate.
-  if ( numIndepVars != sd.numIndepVars )
-  {
-    // Delete if already exist.
-    if ( numCtrPts ) delete [] numCtrPts;
-    if ( order ) delete [] order;
-    if ( degree ) delete [] degree;
-    if ( numKnots ) delete [] numKnots;
-    if ( knots ) delete [] knots;
-
-    // Allocate the new arrays.
-    numCtrPts = new SlInt32[sd.numIndepVars];
-    order = new SlInt32[sd.numIndepVars];
-    degree = new SlInt32[sd.numIndepVars];
-    numKnots = new SlInt32[sd.numIndepVars];
-    knots = new SlFloat64 *[sd.numIndepVars];
-
-    if ( !numCtrPts || !order || !degree || !numKnots || !knots )
-    {
-      SL_PUSH_ERROR ( SL_FAILED_TO_ALLOCATE_MEMORY, "In NcSplineData::setValue(), allocation of new arrays failed" );
-      return SL_FALSE;
-    }
-  }
-
-  // If the number of dependent variables is different then delete and allocate.
-  if ( numDepVars != sd.numDepVars )
-  {
-    // Delete if already exist.
-    if ( ctrPts ) delete [] ctrPts;
-
-    // Allocate the new one.
-    ctrPts = new SlFloat64 *[sd.numDepVars];
-
-    if ( !ctrPts )
-    {
-      SL_PUSH_ERROR ( SL_FAILED_TO_ALLOCATE_MEMORY, "In NcSplineData::setValue(), allocation of new arrays failed" );
-      return SL_FALSE;
-    }
-  }
-
-  // Set the integer members.
-  rational = sd.rational;
-  numIndepVars = sd.numIndepVars;
-  numDepVars = sd.numDepVars;
-  dimension = sd.dimension;
-  totalNumCtrPts = sd.totalNumCtrPts;
-
-  // Initialize.
-  totalNumKnots = 0;
-
-  // For each independent variable...
-  for ( SlInt32 i=0; i<numIndepVars; i++ )
-  {
-    // Set all the integer arrays.
-    numCtrPts[i] = sd.numCtrPts[i];
-    order[i] = sd.order[i];
-    degree[i] = sd.degree[i];
-    numKnots[i] = sd.numKnots[i];
-
-    // Set the pointers to the individual knot vectors.
-    knots[i] = &allKnots[totalNumKnots];
-
-    // Increment the total.
-    totalNumKnots += numKnots[i];
-  }
-
-  // We increment the new one in the above loop. Make sure it end up being 
-  // what it is supposed to be.
-  SL_ASSERT ( totalNumKnots == sd.totalNumKnots );
-
-  // Copy the knots.
-  for ( i=0; i<totalNumKnots; i++ ) allKnots[i] = sd.allKnots[i];
-
-  // Copy all the control points (including the weights).
-  SlInt32 total = totalNumCtrPts * numDepVars;
-  for ( i=0; i<total; i++ ) allCtrPts[i] = sd.allCtrPts[i];
-
-  // If we are rational then set the weights to point to the start of the 
-  // last dependent variable. If not then we set it to NULL.
-  weights = ( rational ) ? &allCtrPts[totalNumCtrPts * dimension] : 0x0;
-
-  // Set the pointers to the individual control points (i.e., pointer 
-  // to the x's, pointer to the y's, etc).
-  for ( i=0; i<numDepVars; i++ ) ctrPts[i] = &allCtrPts[totalNumCtrPts * i];
-
-  // All is good.
+  // It worked.
   return true;
 }
 

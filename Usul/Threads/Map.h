@@ -36,7 +36,6 @@ public:
   typedef typename Config::guard_type guard_type;
   typedef typename Config::map_type map_type;
   typedef typename map_type::key_type key_type;
-  typedef typename map_type::data_type data_type;
   typedef typename map_type::mapped_type mapped_type;
   typedef typename map_type::value_type value_type;
   typedef typename map_type::key_compare key_compare;
@@ -63,8 +62,24 @@ public:
   Map() : _mutex ( mutex_type::create() ), _map()
   {
   }
+  Map ( const Map &m ) : _mutex ( mutex_type::create() ), _map ( m._map )
+  {
+  }
   ~Map()
   {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assignment.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Map &operator = ( const Map & )
+  {
+    guard_type guard ( *_mutex );
+    _map = m._map;
   }
 
 
@@ -169,10 +184,10 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  value_type &operator [] ( const key_type &key )
+  mapped_type &operator [] ( const key_type &key )
   {
     guard_type guard ( *_mutex );
-    return _map.operator [] ( key );
+    return _map[key];
   }
 
 
@@ -255,10 +270,6 @@ public:
 
 private:
 
-  // No copying or assignment.
-  Map ( const Map & );
-  Map &operator = ( const Map & );
-
   mutex_type *_mutex;
   map_type _map;
 };
@@ -280,7 +291,7 @@ struct struct_name \
   typedef the_mutex_type mutex_type; \
   typedef the_guard_type guard_type; \
   typedef the_map_type map_type; \
-} \
+}
 
 
 

@@ -190,13 +190,14 @@ template < class SplineType > void inline testBasisFunctions ( const SplineType 
   {
     SizeType order ( s.order ( i ) );
     N.accommodate ( order );
+    OUTPUT << "order = " << order << ", num knots = " << s.numKnots ( i ) << '\n';
     for ( SizeType j = 0; j < numParams; ++j )
     {
       IndependentType u ( IndependentType ( j ) / IndependentType ( numParams - 1 ) );
       SizeType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
       GN::Algorithms::basisFunctions ( s, i, span, u, N );
 
-      OUTPUT << "indep = " << i << ", u = " << u;
+      OUTPUT << "indep = " << i << ", u = " << u << ", span = " << span;
       for ( SizeType k = 0; k < order; ++k )
       {
         OUTPUT << ", N[" << k << "] = " << N[k];

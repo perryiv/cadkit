@@ -707,10 +707,16 @@
 				Name="File"
 				Filter="">
 				<File
+					RelativePath=".\File\Contents.h">
+				</File>
+				<File
 					RelativePath=".\File\Find.h">
 				</File>
 				<File
 					RelativePath=".\File\Path.h">
+				</File>
+				<File
+					RelativePath=".\File\Stats.h">
 				</File>
 				<File
 					RelativePath=".\File\Size.h">

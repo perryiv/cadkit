@@ -37,7 +37,7 @@ sub usage()
     my $target = shift @ARGV;
 
     # Arguments that are not filenames are options.
-    my $options;
+    my $options = "";
     my @filenames;
     my $arg;
     foreach $arg ( @ARGV )
@@ -66,8 +66,11 @@ sub usage()
         my $executable = "$source" . '2' . "$target";
         my $command = $executable . " $options$filename";
 
-        # Call the command.
+        # Print the command.
         print "$command\n";
-        `$command`;
+
+        # Call the command. Note, use "system" so that stdout 
+        # from the called executable goes to the shell.
+        system $command;
     }
 }

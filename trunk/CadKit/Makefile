@@ -4,7 +4,9 @@ SUBDIRS = \
 	SceneGraph/Core \
 	SceneGraph/OpenGL \
 	Database/XML \
-	Database/Jupiter
+	Database/Jupiter \
+	Translators/Jupiter2Xml \
+	Demos/Jt2Xml
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

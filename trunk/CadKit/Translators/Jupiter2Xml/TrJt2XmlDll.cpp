@@ -43,6 +43,13 @@
 
 #include "TrJt2XmlPrecompiled.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
+
+#ifdef _WIN32
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -50,14 +57,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-
 BOOL APIENTRY DllMain ( HINSTANCE hModule, DWORD ul_reason_for_call, LPVOID lpReserved )
 {
   return TRUE;
 }
 
-#elif _LINUX
+
+#else
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,6 +90,4 @@ void _fini()
 }
 
 
-#else
-TODO // This may be the same as _LINUX, have to check...
 #endif

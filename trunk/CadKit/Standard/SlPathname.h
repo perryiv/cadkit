@@ -50,9 +50,10 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
+# include <wchar.h>
 #endif
 
-#define SL_PATHNAME_SAFE_BUFFER_SIZE 1024
+#define SL_PATHNAME_SAFE_BUFFER_SIZE 2048
 
 #define SL_PATHNAME_PERIOD         ( static_cast<String::value_type>('.') )
 #define SL_PATHNAME_FORWARD_SLASH  ( static_cast<String::value_type>('/') )
@@ -324,7 +325,7 @@ inline void _getFullPathName ( const char *pathname, const unsigned int &bufSize
 #ifdef _WIN32
   SL_VERIFY ( NULL != ::_fullpath ( fullpath, pathname, bufSize ) );
 #else
-  TODO
+  SL_VERIFY ( NULL != ::realpath ( pathname, fullpath ) );
 #endif
 }
 

@@ -1,3 +1,6 @@
+# Include the header to set up the environment.
+include $(CADKIT_ROOT_DIR)/Make/header.mak
+
 # C++ source files.
 CPP_FILES = \
 	TrJt2Xml.cpp \
@@ -8,7 +11,11 @@ CPP_FILES = \
 LOCAL_INCLUDE = 
 
 # The libraries to link to.
-LOCAL_LIBS = -lCkDbJt_s
+LOCAL_LIBS = \
+	-lCkDbJt_s \
+	-lCkDbXml_s \
+	-lCkSl_s \
+	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = 

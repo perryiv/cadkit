@@ -243,7 +243,7 @@ namespace OsgTools
   namespace Detail
   {
     template < class Sequence > 
-    osg::Geometry::AttributeBinding normalBinding ( unsigned int numVertsPerPrim, const Sequence &points, const Sequence &normals )
+    osg::Geometry::AttributeBinding normalBinding ( const Sequence &points, const Sequence &normals )
     {
       // Initialize.
       osg::Geometry::AttributeBinding binding ( osg::Geometry::BIND_OFF );
@@ -251,12 +251,12 @@ namespace OsgTools
       // Check the respective numbers.
       if ( points.size() == normals.size() )
         binding = osg::Geometry::BIND_PER_VERTEX;
-      else if ( points.size() == normals.size() / numVertsPerPrim )
-        binding = osg::Geometry::BIND_PER_PRIMITIVE;
       else if ( 1 == normals.size() )
         binding = osg::Geometry::BIND_OVERALL;
+      else if ( 0 == normals.size() )
+        binding = osg::Geometry::BIND_OFF;
       else
-        ErrorChecker ( 1826625791u, false, "Unable to determine normal binding" );
+        ErrorChecker ( 1826625791u, false, "Unsupported normal binding" );
 
       // Return the binding flag.
       return binding;
@@ -277,9 +277,8 @@ osg::Node* Mesh::operator()() const
   ErrorChecker ( 4066213134u, _rows * _columns == _points.size() );
 
   // Figure out the normal binding.
-  unsigned int numVertsPerPrim ( 3 );
   typedef osg::Geometry::AttributeBinding Binding;
-  Binding binding ( Detail::normalBinding ( numVertsPerPrim, _points, _normals ) );
+  Binding binding ( Detail::normalBinding ( _points, _normals ) );
 
   // Declare nodes.
   osg::ref_ptr<osg::Geode>     geode   ( new osg::Geode );
@@ -287,7 +286,21 @@ osg::Node* Mesh::operator()() const
 
   // Allocate the points.
   unsigned int numVertices ( ( 2 * _rows - 2 ) * _columns );
-  osg::ref_ptr<osg::Vec3Array> points ( new osg::Vec3Array ( numVertices ) );
+  osg::ref_ptr<osg::Vec3Array> points  ( new osg::Vec3Array ( numVertices ) );
+
+  // Figure out how many normals we need.
+  unsigned int numNormals ( 0 );
+  if ( osg::Geometry::BIND_PER_VERTEX == binding )
+    numNormals = numVertices;
+  else if ( osg::Geometry::BIND_OVERALL == binding )
+    numNormals = 1;
+
+  // Allocate the normals.
+  osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array ( numNormals  ) );
+
+  // If the binding is overall, take care of it now.
+  if ( osg::Geometry::BIND_OVERALL == binding )
+    normals->at ( 0 ) = this->normal ( 0, 0 );
 
   // There is one tri-strip for each adjacent pair of rows.
   osg::Geometry::PrimitiveSetList primSetList ( _rows - 1 );
@@ -297,7 +310,7 @@ osg::Node* Mesh::operator()() const
   unsigned int length ( 2 * _columns ), start ( 0 );
 
   // Loop through all the rows.
-  for ( unsigned int i = 0; i < _rows - 1; ++i )
+  for ( unsigned int i = 0; i < primSetList.size(); ++i )
   {
     // Loop through all the columns.
     for ( unsigned int j = 0; j < _columns; ++j )
@@ -307,10 +320,18 @@ osg::Node* Mesh::operator()() const
 
       // Set the "upper" and "lower" points. (Think of a regular grid on paper,
       // marching left-to-right, from the bottom towards the top.)
-      points->at ( index++ ) = this->point ( i,     j );
       points->at ( index++ ) = this->point ( i + 1, j );
+      points->at ( index++ ) = this->point ( i,     j );
+
+      // Set the normal if we should.
+      if ( osg::Geometry::BIND_PER_VERTEX == binding )
+      {
+        normals->at ( index - 2 ) = this->normal ( i + 1, j );
+        normals->at ( index - 1 ) = this->normal ( i,     j );
+      }
     }
 
+    // Define the primitive.
     primSetList[i] = new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, start, length );
     start += length;
   }
@@ -323,22 +344,27 @@ osg::Node* Mesh::operator()() const
   geom->setVertexArray ( points.get() );
 
   // Set the normals.
-  //geom->setNormalArray ( normals.get() );
-  //geom->setNormalBinding ( binding );
+  geom->setNormalArray ( normals.get() );
+  geom->setNormalBinding ( binding );
 
   // Set the primitive-set list.
   geom->setPrimitiveSetList ( primSetList );
 
   // Tell it to use color instead of materials.
+#if 0
   osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
   ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
   osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array ( 1 ) );
   colors->at ( 0 ).set ( 1, 0, 0, 1 );
   geom->setColorArray ( colors.get() );
   geom->setColorBinding ( osg::Geometry::BIND_OVERALL );
+#endif
 
   // Add the drawable.
   geode->addDrawable ( geom.get() );
+
+  // TODO. For now... without this rendering polygons as "lines" draws a couple of weird extra line. OSG bug?
+  geom->setUseDisplayList ( false );
 
   // Release the geode and return it.
   return geode.release();

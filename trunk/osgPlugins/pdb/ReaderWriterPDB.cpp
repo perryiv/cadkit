@@ -157,8 +157,12 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   if ( !in.is_open() )
     return ReadResult::ERROR_IN_READING_FILE;
 
+  //create ifstream for psf file
+  std::string psfPath = _getPsfPath( file );
+  std::ifstream psf( psfPath.c_str());
+  
   // Parse all the file and build internal data.
-  this->_parse ( in );
+  this->_parse ( in, psf );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -202,12 +206,14 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in )
+void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
 {
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
   char buf[size];
   Molecule * molecule = NULL;
+
+  
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
@@ -247,6 +253,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
 		  Atom atom(buf, type, _periodicTable);
       molecule->addAtom(atom);
 	  }
+    /* Turn off CONECT for now
 	  else if( type == "CONECT")
     {
       molecule = this->_getCurrentMolecule();
@@ -268,7 +275,49 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
         molecule->addBond((Atom::ID) id, (Atom::ID) connect);
         columnStart += columnLength;
       }
-	  }
+	  }*/
+  }
+  if(psf.is_open())
+    _parsePsf( psf );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the PSF file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::_parsePsf( std::ifstream &in )
+{
+  Molecule *molecule = this->_getCurrentMolecule();
+  // The buffer that holds the lines. Plenty of padding just to be safe.
+  const unsigned int size ( 512 );
+  char buf[size];
+
+  while(!in.eof())
+  {
+     // Read the line.
+    in.getline ( buf, size - 1 );
+
+    // For convenience, read it into a string-stream.
+    std::istringstream line ( buf );
+
+    int num;
+    std::string type;
+
+    line >> num >> type;
+
+    //start reading bonds
+    if(type == "!NBOND:"){
+      in.getline( buf, size - 1 );
+      std::istringstream bondLine( buf );
+      for(int i = 0; i < num; i ++){
+        Atom::ID atom1, atom2;
+        //bonds are 4 per line
+        bondLine >> atom1 >> atom2;
+        molecule->addBond(atom1, atom2);
+      }
+    }
   }
 }
 
@@ -288,6 +337,22 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
     _molecules.push_back(r);
   }
   return _currentMolecule;
+}
+
+std::string ReaderWriterPDB::_getPsfPath( const std::string &file)
+{
+    std::string psf = osgDB::getStrippedName(file);
+  std::string path = osgDB::getFilePath(file);
+  psf += ".psf";
+  if(!path.empty())
+  {
+#if defined (WIN32)
+    psf = path + "\\" + psf;
+#else
+  psf = path + "/" + psf;
+#endif
+  }
+  return psf;
 }
 
 

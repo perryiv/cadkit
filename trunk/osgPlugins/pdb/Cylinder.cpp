@@ -33,13 +33,13 @@ _point2(v2)
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the geometry for the cylinder
-//  TODO get it working correctly
+//  TODO fix normals
 //  TODO have radius passed in.
 //
 ///////////////////////////////////////////////////////////////////////////////
-osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
+osg::Geometry* Cylinder::getGeometry(osg::Material *m, unsigned int steps) const
 {
-  float r=0.50f;
+  float r=0.25f;
 
   osg::ref_ptr< osg::Geometry > geometry (new osg::Geometry);
   osg::ref_ptr< osg::Vec3Array > vertices (new osg::Vec3Array);
@@ -61,58 +61,31 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
   scale = matrix.scale( osg::Vec3(r, d, r) );
   rotate.makeRotate(unPoint2, dist);
   translate.setTrans(_point1);
-  //translate.set( 1.0, 0.0, 0.0, _point1[0],
-  //               0.0, 1.0, 0.0, _point1[1],
-  //               0.0, 0.0, 1.0, _point2[2],
-  //               0.0, 0.0, 0.0, 1.0);
   osg::Matrixf transform = scale * rotate * translate;
-
-  //std::cout << scale << std::endl;
-  //std::cout << rotate << std::endl;
-  //std::cout << translate << std::endl;
-  //std::cout << transform << std::endl;
 
   float c = 3.14159 / 180.0;
   float x,y,z;
   //calculate the point for the unit cylinder then multiply it by the transform matrix
-  for(float theta = 0.0; theta <= 360; theta += step) 
+  for(unsigned int i = 0; i < steps; ++i)
   {
-    x = r * sin( c * theta ) + unPoint1[0];
+    float u = (float) i / (float) (steps - 1);
+    float theta = u * 360.0;
+    x = sin( c * theta ) + unPoint1[0];
     y = unPoint1[1];
-    z = r * cos( c * theta ) + unPoint1[2];
+    z = cos( c * theta ) + unPoint1[2];
     vertices->push_back( ( osg::Vec3(x, y, z) * transform ) );
 
-    x = r * sin( c * theta ) + unPoint2[0];
+    x = sin( c * theta ) + unPoint2[0];
     y = unPoint2[1];
-    z = r * cos( c * theta ) + unPoint2[2];
+    z = cos( c * theta ) + unPoint2[2];
     vertices->push_back( ( osg::Vec3(x, y, z) * transform ) );
-    
-    /*
-    x = r * sin(c * theta) + _point1[0];
-    z = r * cos(c * theta) + _point1[2];
-    vertices->push_back( osg::Vec3(x, _point1[1], z) );
-
-    x = r * sin(c * theta) + _point2[0];
-    z = r * cos(c * theta) + _point2[2];
-    vertices->push_back( osg::Vec3(x, _point2[1], z) );
-    */
   }
 
-  /*
-  //multiply each point by the matricies
-  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++i)
-  {  
-    //*i = translate.preMult(*i);
-    //*i = rotate.preMult(*i);
-    //*i = scale.preMult(*i);
-    *i = *i * transform;
-  }
-  */
   osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
 
   osg::Vec3 v1, v2, v3;
 
-  //calculate the normals for the tri strips
+  //calculate the normals for the tri-strips
   for(unsigned int i = 0; i < vertices->size(); ++ i)
   {
     osg::Vec3 normal;

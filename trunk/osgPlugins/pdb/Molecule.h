@@ -50,10 +50,11 @@ private:
   Molecule();
 
   Atoms _atoms;
-  Bonds _bonds;
+  mutable Bonds _bonds;
   float _maxDistanceFactor;
   float _lastRangeMax;
   unsigned int _numLodChildren;
+  unsigned int _stepFactor;
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
   mutable SphereFactory::Ptr _sphereFactory;

@@ -21,7 +21,7 @@ class Cylinder
 {
 public:
   Cylinder(const osg::Vec3&, const osg::Vec3&);
-  osg::Geometry * getGeometry(osg::Material *, float) const;
+  osg::Geometry * getGeometry(osg::Material *, unsigned int) const;
 private:
   Cylinder();
   float _getDist(const osg::Vec3&, const osg::Vec3&) const;

@@ -31,6 +31,8 @@ Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &peri
 	memset(num, 0, 9 * sizeof(char));
 	strncpy(num, atomString + 12, 4);
 	_name = num;
+  std::istringstream inName(_name);
+  inName >> _name;
 	//get center point
   memset(num, 0, 9 * sizeof(char));
   strncpy(num, atomString+30, 8);
@@ -50,6 +52,28 @@ Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &peri
   in >> symbol;
   std::transform ( symbol.begin(), symbol.end(), symbol.begin(), ::toupper );
   _element = periodicTable.getPointer(symbol);
+  if(_element == NULL)
+  {
+    for(unsigned int i = 0; i < _name.size() - 1; i++)
+    {
+      std::string test = _name.substr(i,2);
+      std::transform ( test.begin(), test.end(), test.begin(), ::toupper );
+      _element = periodicTable.getPointer(test);
+      if(_element != NULL)
+        break;
+    }
+    if(_element == NULL)
+    {
+      for(unsigned int i = 0; i < _name.size(); i++)
+      {
+        std::string test = _name.substr(i,1);
+        std::transform ( test.begin(), test.end(), test.begin(), ::toupper );
+        _element = periodicTable.getPointer(test);
+        if(_element != NULL)
+          break;
+      }
+    }
+  }
 }
 
 

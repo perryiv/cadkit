@@ -18,6 +18,8 @@
 
 #include "NcInternalMacros.h"
 
+#include "Standard/SlMinMax.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <vector>
 #endif

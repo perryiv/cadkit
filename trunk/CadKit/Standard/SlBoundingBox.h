@@ -18,6 +18,7 @@
 
 #include "SlMatrix44.h"
 #include "SlAssert.h"
+#include "Standard/SlMinMax.h"
 
 // For convenience.
 #define SL_BBOX_ZERO ( static_cast<T> ( 0 ) )

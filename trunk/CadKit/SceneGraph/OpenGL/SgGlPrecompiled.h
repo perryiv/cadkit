@@ -26,9 +26,8 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
-# define CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
-# include "SceneGraph/Core/SgClientHeaders.h"
 # include <memory>
+# include <limits>
 #endif
 
 #endif // _CADKIT_SCENEGRAPH_OPENGL_INTERNAL_PRECOMPILED_HEADERS_H_

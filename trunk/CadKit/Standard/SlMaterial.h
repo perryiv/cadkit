@@ -17,6 +17,8 @@
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_MATERIAL_CLASS_H_
 
 #include "SlVec4.h"
+#include "SlClamp.h"
+#include "SlTruncate.h"
 
 
 namespace CadKit
@@ -58,6 +60,8 @@ public:
   T &                     getShininess() { return _shininess; }
   unsigned int &          getValid()     { return _valid; }
 
+  bool                    isEqual      ( const SlMaterial<T> &material, bool checkValidFlag = false ) const;
+  bool                    isNotEqual   ( const SlMaterial<T> &material, bool checkValidFlag = false ) const { return ( false == this->isEqual ( material, checkValidFlag ) ); }
   bool                    isValid ( const unsigned int &flags ) const { return ( ( _valid & flags ) == flags ); }
 
   SlMaterial<T> &         operator = ( const SlMaterial<T> &m ) { this->setValue ( m ); return *this; }
@@ -71,8 +75,7 @@ public:
   void                    setValue     ( const SlMaterial<T> &m );
   void                    setValue     ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shininess );
 
-  bool                    isEqual      ( const SlMaterial<T> &material, bool checkValidFlag = false ) const;
-  bool                    isNotEqual   ( const SlMaterial<T> &material, bool checkValidFlag = false ) const { return ( false == this->isEqual ( material, checkValidFlag ) ); }
+  void                    truncate ( const T &negativeZero, const T &positiveZero );
 
 protected:
 
@@ -171,6 +174,22 @@ template<class T> inline void SlMaterial<T>::clamp ( const T &minColor, const T 
   _specular.clamp ( minColor, maxColor );
   _emissive.clamp ( minColor, maxColor );
   CadKit::clamp ( minShininess, maxShininess, _shininess );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Truncate to zero the values in the range [negativeZero,positiveZero].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlMaterial<T>::truncate ( const T &negativeZero, const T &positiveZero )
+{
+  _ambient.truncate  ( negativeZero, positiveZero );
+  _diffuse.truncate  ( negativeZero, positiveZero );
+  _specular.truncate ( negativeZero, positiveZero );
+  _emissive.truncate ( negativeZero, positiveZero );
+  CadKit::truncate ( negativeZero, CadKit::SlConstants<T>::zero(), positiveZero, _shininess );
 }
 
 

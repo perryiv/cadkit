@@ -1165,7 +1165,7 @@ bool DbJtDatabase::getMaterial ( AssemblyHandle assembly, SlMaterialf &material,
     return false;
 
   // Try the given entity.
-  if ( true == CadKit::getMaterial ( (eaiEntity *) assembly, material ) )
+  if ( true == CadKit::getMaterial ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, material ) )
     return true;
 
   // Bail now if we aren't supposed to try the parents.
@@ -1187,7 +1187,7 @@ bool DbJtDatabase::getMaterial ( AssemblyHandle assembly, SlMaterialf &material,
 bool DbJtDatabase::getMaterial ( PartHandle part, SlMaterialf &material, bool tryParents ) const
 {
   // Try the given entity.
-  if ( true == CadKit::getMaterial ( (eaiEntity *) part, material ) )
+  if ( true == CadKit::getMaterial ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, material ) )
     return true;
 
   // Bail now if we aren't supposed to try the parents.
@@ -1209,7 +1209,7 @@ bool DbJtDatabase::getMaterial ( PartHandle part, SlMaterialf &material, bool tr
 bool DbJtDatabase::getMaterial ( InstanceHandle instance, SlMaterialf &material, bool tryParents ) const
 {
   // Try the given entity.
-  if ( true == CadKit::getMaterial ( (eaiEntity *) instance, material ) )
+  if ( true == CadKit::getMaterial ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) instance, material ) )
     return true;
 
   // Bail now if we aren't supposed to try the parents.
@@ -1240,7 +1240,7 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
   }
 
   // Try the given entity.
-  if ( true == CadKit::getMaterial ( (eaiEntity *) temp.getValue(), material ) )
+  if ( true == CadKit::getMaterial ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) temp.getValue(), material ) )
     return true;
 
   // Bail now if we aren't supposed to try the parents.
@@ -1264,7 +1264,7 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
 bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
-  return CadKit::getTransform ( (eaiEntity *) assembly, matrix );
+  return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, matrix );
 }
 
 
@@ -1277,7 +1277,7 @@ bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, 
 bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
-  return CadKit::getTransform ( (eaiEntity *) part, matrix );
+  return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, matrix );
 }
 
 
@@ -1290,7 +1290,7 @@ bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool try
 bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
-  return CadKit::getTransform ( (eaiEntity *) instance, matrix );
+  return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) instance, matrix );
 }
 
 
@@ -1754,7 +1754,7 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
     // we jump through all these hoops (storing shape data and associating it 
     // with the handle). If we could ask for just the vertices, or just the 
     // normals (etc.) then this methodology could be eliminated and the code 
-    // greatly simplified. Perhaps version DMDTk 5.0...
+    // greatly simplified. Perhaps version DMDTk 5.1...
     if ( eai_OK == shape->getInternal ( v.getReference(), vertexCount, 
                                         n.getReference(), normalCount, 
                                         c.getReference(), colorCount, 
@@ -1803,6 +1803,12 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
   // If don't have any vertices then we failed.
   if ( vertices.empty() )
     return false;
+
+  // Truncate the numbers close to zero.
+  std::for_each ( vertices.begin(),  vertices.end(),  _truncate );
+  std::for_each ( normals.begin(),   normals.end(),   _truncate );
+  std::for_each ( colors.begin(),    colors.end(),    _truncate );
+  std::for_each ( texCoords.begin(), texCoords.end(), _truncate );
 
   // Calculate the bindings.
   if ( false == _shapeData->calculateBindings() )

@@ -21,6 +21,7 @@
 #include "Standard/SlLine2.h"
 #include "Standard/SlPrint.h"
 #include "Standard/SlConstants.h"
+#include "Standard/SlMinMax.h"
 
 using namespace CadKit;
 

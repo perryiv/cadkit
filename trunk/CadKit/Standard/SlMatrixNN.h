@@ -7,39 +7,38 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  SlMatrixNN: An NxN matrix class.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _CADKIT_STANDARD_LIBRARY_N_BY_N_TEMPLATE_MATRIX_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_N_BY_N_TEMPLATE_MATRIX_CLASS_H_
 
 #include "SlAssert.h"
 #include "SlArrayPtr.h"
-
-// For convenience.
-#define SL_MATRIX_NN_ZERO ( static_cast<T> ( 0 ) )
-#define SL_MATRIX_NN_ONE  ( static_cast<T> ( 1 ) )
-#define SL_MATRIX_NN_HALF ( static_cast<T> ( 0.5 ) )
-#define SL_MATRIX_NN_TWO  ( static_cast<T> ( 2 ) )
+#include "SlConstants.h"
+#include "SlSwap.h"
 
 
 namespace CadKit
 {
-template<class T> class SlMatrixNN
+template<class T, class I = unsigned int> class SlMatrixNN
 {
 public:
 
+  typedef T Real;
+  typedef I Index;
+
   SlMatrixNN() : _length ( 0 ), _size ( 0 ), _m ( 0x0 ){}
-  SlMatrixNN ( const unsigned int &size );
-  SlMatrixNN ( const unsigned int &size, T *m );
+  SlMatrixNN ( const I &size );
+  SlMatrixNN ( const I &size, T *m );
   SlMatrixNN ( const SlMatrixNN &copyMe );
   virtual ~SlMatrixNN();
 
   // Attach to the given pointer.
-  void                    attach ( const unsigned int &size, T *m );
+  void                    attach ( const I &size, T *m );
 
   // Clear the internal array.
   void                    clear() { this->attach ( 0, 0x0 ); }
@@ -53,7 +52,7 @@ public:
   void                    forwardBackward ( T *b ) const;
 
   // Get the size of the matrix. The size of an N x N matrix is N.
-  const unsigned int &    getSize() const { return _size; }
+  const I &               getSize() const { return _size; }
 
   // Get the internal array.
   const T *               getValue() const { return _m; }
@@ -70,22 +69,22 @@ public:
   operator const T *() const { return _m; }
 
   // Access the internal array.
-  T &                     operator [] ( const unsigned int &i )       { SL_ASSERT ( i >= 0 && i < _length ); return _m[i]; }
-  const T &               operator [] ( const unsigned int &i ) const { SL_ASSERT ( i >= 0 && i < _length ); return _m[i]; }
+  T &                     operator [] ( const I &i )       { SL_ASSERT ( i >= 0 && i < _length ); return _m[i]; }
+  const T &               operator [] ( const I &i ) const { SL_ASSERT ( i >= 0 && i < _length ); return _m[i]; }
 
   // Assignment operator.
   SlMatrixNN &            operator = ( const SlMatrixNN &copyMe );
 
   // Access the i'th row and j'th column of the matrix (as if it were a 2D array).
-  const T &               operator () ( const unsigned int &i, const unsigned int &j ) const { SL_ASSERT ( i >= 0 && j >= 0 && i < _size && j < _size ); return _m[i*_size+j]; }
-  T &                     operator () ( const unsigned int &i, const unsigned int &j )       { SL_ASSERT ( i >= 0 && j >= 0 && i < _size && j < _size ); return _m[i*_size+j]; }
+  const T &               operator () ( const I &i, const I &j ) const;
+  T &                     operator () ( const I &i, const I &j );
 
   // Set the size of the matrix. Pass true for "preserve" to copy the existing 
   // contents (as much as will fit) into the new matrix.
-  bool                    setSize ( const unsigned int &size, bool preserve );
+  bool                    setSize ( const I &size, bool preserve );
 
   // Set the value. The array has to be at least (size * size) in length.
-  bool                    setValue ( const unsigned int &size, const T *m );
+  bool                    setValue ( const I &size, const T *m );
   bool                    setValue ( const SlMatrixNN &copyMe );
 
   // Transpose the matrix.
@@ -96,90 +95,118 @@ public:
 
 protected:
 
-  unsigned int _length;
-  unsigned int _size;
-  SlArrayPtr<T> _m;
+  I _length;
+  I _size;
+  SlArrayPtr<T,I> _m;
 
-  void                    _divideColumn ( const unsigned int &bsize, T *a, T *diag ) const;
+  void                    _divideColumn ( const I &bsize, T *a, T *diag ) const;
 
-  void                    _factorDiagonal ( const unsigned int &bsize, T *a ) const;
+  void                    _factorDiagonal ( const I &bsize, T *a ) const;
   
-  void                    _getValue ( const unsigned int &n, const T &alpha, T *a, T *b ) const;
+  void                    _getValue ( const I &n, const T &alpha, T *a, T *b ) const;
   
-  void                    _modifyRow ( const unsigned int &bsize, T *a, T *diag ) const;
-  void                    _modifyRowColumn ( const unsigned int &bsize, T *a, T *row, T *col ) const;
+  void                    _modifyRow ( const I &bsize, T *a, T *diag ) const;
+  void                    _modifyRowColumn ( const I &bsize, T *a, T *row, T *col ) const;
 };
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize list, for convenience.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #define SL_MATRIX_NN_INITIALIZER_LIST _length ( 0 ), _size ( 0 ), _m ( 0x0 )
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrixNN<T>::SlMatrixNN ( const unsigned int &size ) :
+template<class T, class I> inline SlMatrixNN<T,I>::SlMatrixNN ( const I &size ) :
   SL_MATRIX_NN_INITIALIZER_LIST
 {
   SL_VERIFY ( this->setSize ( size, false ) );
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrixNN<T>::SlMatrixNN ( const unsigned int &size, T *m ) :
+template<class T, class I> inline SlMatrixNN<T,I>::SlMatrixNN ( const I &size, T *m ) :
   SL_MATRIX_NN_INITIALIZER_LIST
 {
   this->attach ( size, m );
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Copy constructor.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrixNN<T>::SlMatrixNN ( const SlMatrixNN &copyMe ) :
+template<class T, class I> inline SlMatrixNN<T,I>::SlMatrixNN ( const SlMatrixNN &copyMe ) :
   SL_MATRIX_NN_INITIALIZER_LIST
 {
   SL_VERIFY ( this->setValue ( copyMe ) );
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Destructor.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrixNN<T>::~SlMatrixNN()
+template<class T, class I> inline SlMatrixNN<T,I>::~SlMatrixNN()
 {
   // Nothing to delete, _m is a smart-pointer.
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the i'th row and j'th column of the matrix (as if it were a 
+//  2D array).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline const T &SlMatrixNN<T,I>::operator () ( const I &i, const I &j ) const 
+{
+  SL_ASSERT ( i >= 0 && j >= 0 && i < _size && j < _size );
+  return _m[i*_size+j];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the i'th row and j'th column of the matrix (as if it were a 
+//  2D array).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline T &SlMatrixNN<T,I>::operator () ( const I &i, const I &j )
+{
+  SL_ASSERT ( i >= 0 && j >= 0 && i < _size && j < _size );
+  return _m[i*_size+j];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize the matrix to identity.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::identity()
+template<class T, class I> inline void SlMatrixNN<T,I>::identity()
 {
-  unsigned int i, j, temp;
+  I i, j, temp;
   T *element = _m;
 
   for ( i = 0; i < _size; ++i )
@@ -195,13 +222,13 @@ template<class T> inline void SlMatrixNN<T>::identity()
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize the matrix to zero.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::zero()
+template<class T, class I> inline void SlMatrixNN<T,I>::zero()
 {
   T *element = _m;
   T *end = _m + _length;
@@ -214,13 +241,13 @@ template<class T> inline void SlMatrixNN<T>::zero()
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the size.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrixNN<T>::setSize ( const unsigned int &size, bool preserve )
+template<class T, class I> inline bool SlMatrixNN<T,I>::setSize ( const I &size, bool preserve )
 {
   // Trivial case.
   if ( size == _size ) 
@@ -234,7 +261,7 @@ template<class T> inline bool SlMatrixNN<T>::setSize ( const unsigned int &size,
   }
 
   // The new length.
-  unsigned int length ( size * size );
+  I length ( size * size );
 
   // Allocate.
   T *m = new T[length];
@@ -257,26 +284,26 @@ template<class T> inline bool SlMatrixNN<T>::setSize ( const unsigned int &size,
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the value.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrixNN<T>::setValue ( const SlMatrixNN &copyMe )
+template<class T, class I> inline bool SlMatrixNN<T,I>::setValue ( const SlMatrixNN &copyMe )
 {
   // Call the other one.
   return this->setValue ( copyMe.getSize(), copyMe.getValue(), true );
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Attach to the given pointer.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::attach ( const unsigned int &size, T *m )
+template<class T, class I> inline void SlMatrixNN<T,I>::attach ( const I &size, T *m )
 {
   SL_ASSERT ( ( NULL != m && 0 < size ) || ( 0 == size && NULL == m ) );
 
@@ -287,13 +314,13 @@ template<class T> inline void SlMatrixNN<T>::attach ( const unsigned int &size, 
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Detach from the internal pointer.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline T *SlMatrixNN<T>::detach()
+template<class T, class I> inline T *SlMatrixNN<T,I>::detach()
 {
   // Initialize.
   _length = _size = 0;
@@ -303,13 +330,13 @@ template<class T> inline T *SlMatrixNN<T>::detach()
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the value.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrixNN<T>::setValue ( const unsigned int &size, const T *m )
+template<class T, class I> inline bool SlMatrixNN<T,I>::setValue ( const I &size, const T *m )
 {
   SL_ASSERT ( ( NULL != m && 0 < size ) || ( 0 == size && NULL == m ) );
 
@@ -325,41 +352,41 @@ template<class T> inline bool SlMatrixNN<T>::setValue ( const unsigned int &size
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Assignment operator.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrixNN<T> &SlMatrixNN<T>::operator = ( const SlMatrixNN &copyMe )
+template<class T, class I> inline SlMatrixNN<T,I> &SlMatrixNN<T,I>::operator = ( const SlMatrixNN &copyMe )
 {
   SL_VERIFY ( this->setValue ( copyMe ) );
   return *this;
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the LU Decomposition.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::_getValue ( const unsigned int &n, const T &alpha, T *a, T *b ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::_getValue ( const I &n, const T &alpha, T *a, T *b ) const
 {
-  for ( unsigned int i = 0; i < n; ++i )
+  for ( I i = 0; i < n; ++i )
     a[i] += alpha * b[i];
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Factor the diagonal.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::_factorDiagonal ( const unsigned int &bsize, T *a ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::_factorDiagonal ( const I &bsize, T *a ) const
 {
-  unsigned int j, k;
+  I j, k;
   T alpha;
 
   for ( k = 0; k < bsize; ++k )
@@ -382,15 +409,15 @@ template<class T> inline void SlMatrixNN<T>::_factorDiagonal ( const unsigned in
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Divide column by diagonal.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::_divideColumn ( const unsigned int &bsize, T *a, T *diag ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::_divideColumn ( const I &bsize, T *a, T *diag ) const
 {
-  unsigned int j, k;
+  I j, k;
   T alpha;
 
   for ( k = 0; k < bsize; ++k )
@@ -404,15 +431,15 @@ template<class T> inline void SlMatrixNN<T>::_divideColumn ( const unsigned int 
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Modify row using diagonal.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::_modifyRow ( const unsigned int &bsize, T *a, T *diag ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::_modifyRow ( const I &bsize, T *a, T *diag ) const
 {
-  unsigned int j, k;
+  I j, k;
   T alpha;
 
   for ( k = 0; k < bsize; ++k )
@@ -434,15 +461,15 @@ template<class T> inline void SlMatrixNN<T>::_modifyRow ( const unsigned int &bs
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Modify subsequent rows and columns.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::_modifyRowColumn ( const unsigned int &bsize, T *a, T *row, T *col ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::_modifyRowColumn ( const I &bsize, T *a, T *row, T *col ) const
 {
-  unsigned int j, k;
+  I j, k;
   T alpha;
 
   for ( k = 0; k < bsize; ++k )
@@ -456,17 +483,17 @@ template<class T> inline void SlMatrixNN<T>::_modifyRowColumn ( const unsigned i
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the LU Decomposition.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::ludecomp()
+template<class T, class I> inline void SlMatrixNN<T,I>::ludecomp()
 {
   SL_ASSERT ( _m && _size > 0 && _length == _size * _size );
 
-  unsigned int i, j, k;
+  I i, j, k;
 
   // Loop over diagonal.
   for ( i = 0; i < _size; ++i )
@@ -490,18 +517,18 @@ template<class T> inline void SlMatrixNN<T>::ludecomp()
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Do the forward reduction and back substitution.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrixNN<T>::forwardBackward ( T *b ) const
+template<class T, class I> inline void SlMatrixNN<T,I>::forwardBackward ( T *b ) const
 {
   SL_ASSERT ( b );
   SL_ASSERT ( _m && _size > 0 && _length == _size * _size );
 
-  unsigned int i, j;
+  I i, j;
   T sum;
 
   // Forward substitution.
@@ -536,6 +563,33 @@ template<class T> inline void SlMatrixNN<T>::forwardBackward ( T *b ) const
     SL_ASSERT ( CadKit::isFinite ( b[i] ) );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Transpose the matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline void SlMatrixNN<T,I>::transpose()
+{
+  T temp;
+  I i, j;
+  for ( i = 0; i < _size; ++i )
+    for ( j = i; j < _size; ++j )
+      CadKit::swap ( (*this)(i,j), (*this)(j,i), temp );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Common types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef SlMatrixNN<long double> SlMatrixNNld;
+typedef SlMatrixNN<double>      SlMatrixNNd;
+typedef SlMatrixNN<float>       SlMatrixNNf;
 
 
 }; // namespace CadKit

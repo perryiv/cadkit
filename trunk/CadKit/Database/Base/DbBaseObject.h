@@ -20,9 +20,11 @@
 
 #include "Interfaces/IControlled.h"
 #include "Interfaces/IClientData.h"
+#include "Interfaces/IZeroRange.h"
 
 #include "Standard/SlRefBase.h"
 #include "Standard/SlQueryPtr.h"
+#include "Standard/SlTruncateFunctor.h"
 
 #include "Interfaces/IMessageNotify.h"
 
@@ -43,7 +45,8 @@ class DB_BASE_API DbBaseObject : public SlRefBase,
                                  public IInstanceClientData,
                                  public IGroupClientData,
                                  public ILodClientData,
-                                 public IShapeClientData
+                                 public IShapeClientData,
+                                 public IZeroRangeFloat
 {
 public:
 
@@ -89,6 +92,18 @@ public:
   virtual void            setClientData ( const LodHandle key,      const void *data );
   virtual void            setClientData ( const ShapeHandle key,    const void *data );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IZeroRangeFloat interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the range that gets truncated to zero.
+  virtual bool            getZeroRange ( float &negative, float &positive ) const;
+
+  // Set the range that gets truncated to zero.
+  virtual void            setZeroRange ( const float &negative, const float &positive );
+
 protected:
 
   typedef std::map<const void *,         const void *> GenericClientDataMap;
@@ -109,6 +124,7 @@ protected:
 
   SlRefPtr<IUnknown> _controller;
   SlQueryPtr<IMessageNotify> _messageNotify;
+  SlTruncateFunctor<float> _truncate;
 
   DbBaseObject();
   virtual ~DbBaseObject();

@@ -37,7 +37,7 @@ public:
 
   /// Rational flag.
   const bool &                  isRational() const { return _rational; }
-  void                          setRational ( const bool &state ) { _rational = state; }
+  void                          setRational ( const bool &state );
 
   /// Get integer members.
   const IndexType &             getNumIndepVars()   const { return _numIndepVars; }
@@ -309,7 +309,36 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::isValid() const
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Test the equality of the integers.
+/// Set the rational flag. All this does is flip the flag. If the spline 
+/// really is rational (i.e., it has weights) and you call this with false, 
+/// the weights will be ignored and the homogeneous control points will be 
+/// treated like regular coordinates. If the spline is nonrational and you 
+/// call this with true, then weights will be assumed. If the spline never 
+/// was rational to begin with, and you call this with true, chances are your 
+/// program will crash some time after because internally there will be 
+/// instances where it will walk off the end of an array. Only call this for 
+/// splines that are originally rational. To determine if a spline was/is 
+/// actually rational see if the number of dependent variables is equal to 
+/// the dimension.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcSplineData<NCSDCA>::setRational ( const bool &state )
+{
+  NC_CHECK_THIS ( this->isValid() );
+
+  // Set the flag.
+  _rational = state;
+
+  // If we are rational then set the weights to point to the start of the 
+  // last dependent variable. If not then we set it to NULL.
+  _weights = ( _rational ) ? &_allCtrPts[static_cast<IndexType>(_totalNumCtrPts * _dimension)] : 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Test the equality of the integers.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -31,6 +31,7 @@
 # include <map>
 # include <algorithm> // For std::transform
 # include <string>
+# include <math.h>
 #endif
 
 #endif // _CADKIT_DATABASE_BASE_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

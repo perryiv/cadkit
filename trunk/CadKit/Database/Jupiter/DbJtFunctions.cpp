@@ -64,7 +64,7 @@ eaiTransform *getTransform ( eaiEntity *entity )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool getTransform ( eaiEntity *entity, SlMatrix44f &matrix )
+bool getTransform ( const float &negativeZero, const float &positiveZero, eaiEntity *entity, SlMatrix44f &matrix )
 {
   SL_PRINT2 ( "In CadKit::getTransform(), entity = %X\n", entity );
   SL_ASSERT ( entity );
@@ -87,6 +87,9 @@ bool getTransform ( eaiEntity *entity, SlMatrix44f &matrix )
   // Fill in the given matrix. We assume that the array "elements" 
   // points to 16 valid numbers.
   matrix.setValue ( elements.getReference() );
+
+  // Truncate the numbers close to zero.
+  matrix.truncate ( negativeZero, positiveZero );
 
   // It worked.
   return true;
@@ -156,7 +159,7 @@ eaiMaterial *getMaterial ( eaiEntity *entity )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
+bool getMaterial ( const float &negativeZero, const float &positiveZero, eaiEntity *entity, SlMaterialf &mat )
 {
   SL_PRINT2 ( "In CadKit::getMaterial(), entity = %X\n", entity );
   SL_ASSERT ( entity );
@@ -180,6 +183,7 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
   material->getAmbientColor ( a.getReference() );
   if ( a.getReference() )
   {
+    // Set the color.
     mat.setAmbient ( SlVec4f ( a[0], a[1], a[2], a[3] ) );
     success = true;
   }
@@ -188,6 +192,7 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
   material->getDiffuseColor ( d.getReference() );
   if ( d.getReference() )
   {
+    // Set the color.
     mat.setDiffuse ( SlVec4f ( d[0], d[1], d[2], d[3] ) );
     success = true;
   }
@@ -196,6 +201,7 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
   material->getSpecularColor ( sp.getReference() );
   if ( sp.getReference() )
   {
+    // Set the color.
     mat.setSpecular ( SlVec4f ( sp[0], sp[1], sp[2], sp[3] ) );
     success = true;
   }
@@ -204,6 +210,7 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
   material->getEmissionColor ( e.getReference() );
   if ( e.getReference() )
   {
+    // Set the color.
     mat.setEmissive ( SlVec4f ( e[0], e[1], e[2], e[3] ) );
     success = true;
   }
@@ -212,14 +219,18 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
   material->getShininess ( sh );
   if ( BAD_SHININESS != sh )
   {
+    // Set the color.
     mat.setShininess ( sh );
     success = true;
   }
 
   // If we have a valid material then clamp the colors to [0,1] and the 
-  // shininess to [0,128].
+  // shininess to [0,128], and truncate numbers close to zero.
   if ( success )
+  {
     mat.clamp ( 0.0f, 1.0f, 0.0f, 128.0f );
+    mat.truncate ( negativeZero, positiveZero );
+  }
 
   // Did it work?
   return success;

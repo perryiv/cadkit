@@ -43,7 +43,8 @@ DbBaseObject::DbBaseObject() : SlRefBase ( 0 ),
   _lodClientDataMap      ( new LodClientDataMap ),
   _shapeClientDataMap    ( new ShapeClientDataMap ),
   _controller ( NULL ),
-  _messageNotify ( NULL )
+  _messageNotify ( NULL ),
+  _truncate ( 0.0f, 0.0f, 0.0f )
 {
   SL_PRINT2 ( "In DbBaseObject::DbBaseObject(), this = %X\n", this );
 }
@@ -89,6 +90,8 @@ IUnknown *DbBaseObject::queryInterface ( const unsigned long &iid )
     return static_cast<ILodClientData *>(this);
   case IShapeClientData::IID:
     return static_cast<IShapeClientData *>(this);
+  case IZeroRangeFloat::IID:
+    return static_cast<IZeroRangeFloat *>(this);
   case CadKit::IUnknown::IID:
     return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
@@ -194,4 +197,41 @@ void DbBaseObject::_clearClientDataMaps()
   _groupClientDataMap->clear();
   _lodClientDataMap->clear();
   _shapeClientDataMap->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the range that gets truncated to zero.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbBaseObject::getZeroRange ( float &negative, float &positive ) const
+{
+  SL_PRINT2 ( "In DbBaseObject::getZeroRange(), this = %X\n", this );
+
+  // Get the range.
+  negative = _truncate.getLow();
+  positive = _truncate.getHigh();
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the range that gets truncated to zero.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseObject::setZeroRange ( const float &negative, const float &positive )
+{
+  SL_PRINT4 ( "In DbBaseObject::setZeroRange(), this = %X, negative = %0.15f, positive = 0.15f\n", this, negative, positive );
+  SL_ASSERT ( negative <= 0.0f && 0.0f <= positive );
+
+  // Get the range.
+  _truncate.setLow   ( negative );
+  _truncate.setValue ( 0.0f );
+  _truncate.setHigh  ( positive );
 }

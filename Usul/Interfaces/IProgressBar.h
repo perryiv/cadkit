@@ -31,15 +31,18 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   // Id for this interface.
   enum { IID = 1100747838u };
 
-
-  //show the progress bar
+  // Show the progress bar
   virtual void showProgressBar () = 0;
-  //set the total of progress bar
+
+  // Set the total of progress bar
   virtual void setTotalProgressBar ( unsigned int value ) = 0;
-  // update the progress bar
+
+  // Update the progress bar
   virtual void updateProgressBar ( unsigned int value ) = 0;
-  //hide the progress bar
+
+  // Hide the progress bar
   virtual void hideProgressBar () = 0;
+
 }; // struct IProgressBar
 
 

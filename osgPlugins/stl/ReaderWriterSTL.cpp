@@ -19,8 +19,10 @@
 #include "osg/Geometry"
 
 #include "OsgTools/Visitor.h"
+
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/File/Stats.h"
+#include "Usul/File/Temp.h"
 
 #include <sstream>
 #include <iostream>
@@ -31,6 +33,9 @@
 #include "Functors.h"
 #include "PrintVisitor.h"
 
+#ifdef _DEBUG
+#define USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +44,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterSTL::ReaderWriterSTL() : BaseClass(),
-  _polygons()
+  _polygons(),
+  _binary ( true )
 {
 }
 
@@ -89,7 +95,7 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 {
   try
   {
-     // Make sure we handle files with this extension.
+    // Make sure we handle files with this extension.
     if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
       return ReadResult::FILE_NOT_HANDLED;
 
@@ -98,7 +104,7 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 
     Update progress ( 0x0 );
 
-    //read the scene
+    // Read the scene
     this->_read ( file, progress );
 
     // Build the scene.
@@ -154,7 +160,12 @@ osg::Group *ReaderWriterSTL::_build() const
     // Shortcuts to the vertices and normals.
     const Vertices &v = i->second.first;
     const Normals  &n = i->second.second;
+
+#ifdef USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+    assert ( n.size() == v.size() );
+#else
     assert ( n.size() * 3 == v.size() );
+#endif
 
     // Make vertices and normals for the geometry.
     osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( v.begin(), v.end() ) );
@@ -168,6 +179,13 @@ osg::Group *ReaderWriterSTL::_build() const
     geom->setVertexArray ( vertices.get() );
     geom->setNormalArray ( normals.get() );
     geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+#ifdef USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+    geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+    geom->setUseVertexBufferObjects ( true );
+#else
+    geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+#endif
 
     // Interpret every three osg::Vec3 as a triangle.
     geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
@@ -187,6 +205,7 @@ osg::Group *ReaderWriterSTL::_build() const
 void ReaderWriterSTL::_init()
 {
   _polygons.clear();
+  this->binary ( true );
 }
 
 
@@ -248,7 +267,7 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, const Update& progress )
+void ReaderWriterSTL::_parseBinaryFile ( std::ifstream &in, const Update &progress )
 {
   // Skip header.
   in.seekg ( 80 );
@@ -274,6 +293,11 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, const Update& progres
     ::memcpy(f, buf, 12); // copy first 12 bytes for normal
     osg::Vec3 n ( f[0], f[1], f[2] );
     _polygons[3].second.push_back ( n );
+
+#ifdef USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+    _polygons[3].second.push_back ( n );
+    _polygons[3].second.push_back ( n );
+#endif
 
     ::memcpy(f, buf+12, 12);  // copy first vertex
     osg::Vec3 v0 ( f[0], f[1], f[2] );
@@ -306,7 +330,7 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, const Update& progres
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize, const Update& progress )
+void ReaderWriterSTL::_parseAsciiFile ( std::ifstream &in, unsigned int filesize, const Update &progress )
 {
   unsigned int bytesReadSoFar ( 0 );
   const unsigned int size ( 512 );
@@ -337,6 +361,11 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize,
       osg::Vec3 n;
       in >> n[0] >> n[1] >> n[2];
       normals.push_back ( n );
+
+#ifdef USE_FAST_PATH // Need per-vertex normals for osg::Geometry's "fast path".
+      normals.push_back ( n );
+      normals.push_back ( n );
+#endif
     }
     else if (type == "outer")
     {
@@ -391,6 +420,7 @@ void ReaderWriterSTL::_read ( const std::string &filename, const Update& progres
   // See if the file is ascii.
   if ( this->_isAscii ( filename ) )
   {
+    this->binary ( false );
     std::ifstream in ( filename.c_str() );
     if ( !in.is_open() )
       throw std::runtime_error ( "Error 2346450991: Failed to open ascii file: " + filename );
@@ -400,6 +430,7 @@ void ReaderWriterSTL::_read ( const std::string &filename, const Update& progres
   // Otherwise, read the binary file.
   else
   {
+    this->binary ( true );
     std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
     if ( !in.is_open() )
       throw std::runtime_error ( "Error 3162884175: Failed to open binary file: " + filename );
@@ -413,21 +444,26 @@ void ReaderWriterSTL::_read ( const std::string &filename, const Update& progres
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, const std::string& fileName, const Options* options) \
+ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode ( const osg::Node& node, const std::string& fileName, const Options* options )
 { 
-  std::string ext = osgDB::getFileExtension(fileName);
-  if (!acceptsExtension(ext)) return WriteResult::FILE_NOT_HANDLED;
+  std::string ext = osgDB::getFileExtension ( fileName );
+  if ( !this->acceptsExtension ( ext ) )
+    return WriteResult::FILE_NOT_HANDLED;
 
+  // Get options in lower-case.
   std::string chunk ( ( options ) ? options->getOptionString() : "ascii" );
-
-  // Make it lower case.
   std::transform ( chunk.begin(), chunk.end(), chunk.begin(), ::tolower );
 
+  // Write appropriate format.
   if ( chunk == "binary" )
     return _writeBinary( node, fileName );
   else if ( chunk == "ascii" )
     return _writeAscii( node, fileName );
-  return WriteResult::ERROR_IN_WRITING_FILE;
+
+  // Incorrect options.
+  std::ostringstream out;
+  out << "Error 2815147711: Invalid options string: " << chunk << "', expected 'binary' or 'ascii'";
+  throw std::invalid_argument ( out.str() );
 }
 
 
@@ -437,23 +473,27 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& node, const std::string& filename )
+ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& node, const std::string& name )
 {
-  std::ofstream fout ( filename.c_str() );
-  if ( !fout.is_open() )
-    return WriteResult::ERROR_IN_WRITING_FILE;
+  // Make a temporary file name.
+  Usul::File::Temp file ( Usul::File::Temp::ASCII );
 
-  fout << "solid " << filename << std::endl;
-  //functor to write out facets
-  AsciiWriter writer( fout );
+  file.stream() << "solid " << name << std::endl;
 
+  // Functor to write out facets.
+  AsciiWriter writer ( file.stream() );
+
+  // Visitor to write out file
+  osg::ref_ptr<osg::NodeVisitor> printVisitor ( new PrintVisitor<AsciiWriter> ( writer ) );
+
+  // This visitor does not modify the scene.
   osg::Node &n = const_cast< osg::Node& > ( node );
-
-  //visitor to write out file
-  osg::NodeVisitor *printVisitor = new PrintVisitor<AsciiWriter> ( writer );
   n.accept( *printVisitor );
 
-  fout << "endsolid " << std::endl;
+  file.stream() << "endsolid " << std::endl;
+
+  // If we get this far then rename the temporary file.
+  file.rename ( name );
 
   return WriteResult::FILE_SAVED;
 }
@@ -465,41 +505,66 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& no
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& node, const std::string& filename )
+ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& node, const std::string& name )
 {
-  std::ofstream fout ( filename.c_str(), std::ofstream::out | std::ofstream::binary );
-  if ( !fout.is_open() )
-    return WriteResult::ERROR_IN_WRITING_FILE;
+  // Make a temporary file name.
+  Usul::File::Temp file ( Usul::File::Temp::BINARY );
 
-  char buf[84];//for the header and the number of facets
-
-  ::memset( buf, 0, 84 );
+  // For the header and the number of facets.
+  char buffer[512];
+  const unsigned int bufSize ( 84 );
+  ::memset ( buffer, 0, bufSize );
   
-  //create a header
-  std::string header = "solid " + filename;
-  ::memcpy( buf, header.c_str(), header.length() );
+  // Create a header
+  std::string header = "solid " + name;
+  ::memcpy( buffer, header.c_str(), header.length() );
 
-  FacetCounter *facetCounter = new FacetCounter();
-  //visitor to count number of facets
-  osg::ref_ptr<osg::NodeVisitor> facetVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( facetCounter, &FacetCounter::countFacets ) ) );
-
+  // Visitor to count number of facets
+  FacetCounter facetCounter;
+  osg::ref_ptr<osg::NodeVisitor> facetVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( &facetCounter, &FacetCounter::countFacets ) ) );
   osg::Node &n = const_cast< osg::Node& > ( node );
-  n.accept( *facetVisitor );
+  n.accept ( *facetVisitor );
 
-  //add number of facets to header
-  unsigned int numFacets = facetCounter->getNumFacets();
-  ::memcpy ( buf + 80, &numFacets, 4);
+  // Add number of facets to header
+  unsigned int numFacets = facetCounter.getNumFacets();
+  ::memcpy ( buffer + 80, &numFacets, 4 );
+  file.stream().write( buffer, bufSize );
 
-  fout.write( buf, 84 );
+  // Functor to write out facets
+  BinaryWriter writer ( file.stream() );
 
-  //functor to write out facets
-  BinaryWriter writer( fout );
+  // Visitor to write out file
+  osg::ref_ptr<osg::NodeVisitor> printVisitor ( new PrintVisitor<BinaryWriter> ( writer ) );
+  n.accept ( *printVisitor );
 
-  //Visitor to write out file
-  osg::NodeVisitor *printVisitor = new PrintVisitor<BinaryWriter> ( writer );
-  n.accept( *printVisitor );
+  // If we get this far then rename the temporary file.
+  file.rename ( name );
 
   return WriteResult::FILE_SAVED;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set binary flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterSTL::binary ( bool b )
+{
+  _binary = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we binary?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ReaderWriterSTL::binary() const
+{
+  return _binary;
 }
 
 

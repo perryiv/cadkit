@@ -50,6 +50,10 @@ public:
 
   bool                    isAscii ( const std::string &filename ) const { return this->_isAscii ( filename ); }
 
+  // Was last file read binary? Note: default is true.
+  bool                    binary() const;
+  void                    binary ( bool b );
+
 protected:
 
   ~ReaderWriterSTL();
@@ -65,8 +69,8 @@ protected:
 private:
 
   bool                    _isAscii ( const std::string &filename ) const;
-  void                    _parseBinaryFile( std::ifstream &in, const Update& progress );
-  void                    _parseAsciiFile ( std::ifstream &in, unsigned int filesize, const Update& progress );
+  void                    _parseBinaryFile ( std::ifstream &in, const Update &progress );
+  void                    _parseAsciiFile  ( std::ifstream &in, unsigned int filesize, const Update &progress );
 
   typedef std::list < osg::Vec3 > Vertices;
   typedef std::list < osg::Vec3 > Normals;
@@ -74,6 +78,7 @@ private:
   typedef std::map < unsigned int, PolygonList > Polygons;
 
   Polygons _polygons;
+  bool _binary;
 };
 
 

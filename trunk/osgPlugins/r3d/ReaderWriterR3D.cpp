@@ -446,6 +446,8 @@ ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const osg::Node &node, co
   if ( !this->acceptsExtension ( ext ) )
     return WriteResult::FILE_NOT_HANDLED;
 
+#ifdef _DEBUG
+
   // Make a temporary file name.
   Usul::File::Temp file ( Usul::File::Temp::BINARY );
 
@@ -495,6 +497,13 @@ ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const osg::Node &node, co
 
   // Success.
   return WriteResult::FILE_SAVED;
+
+#else // Release
+
+  throw std::runtime_error ( "Error 3001353581: Writing R3D files not implemented" );
+  return WriteResult::FILE_NOT_HANDLED;
+
+#endif
 }
 
 

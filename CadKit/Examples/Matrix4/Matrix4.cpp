@@ -40,5 +40,9 @@ void testMatrices()
 int main ( int argc, char **argv )
 {
   testMatrices();
+  
+  // Wait for user to press the 'any' key.
+  std::cin.get();
+
   return 1;
 }

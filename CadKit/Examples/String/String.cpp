@@ -85,8 +85,8 @@ int main ( int argc, char **argv )
 {
   testSplit();
 
-  // Wait for user to press a key.
-  //std::cin.get();
+  // Wait for user to press the 'any' key.
+  std::cin.get();
 
   return 0;
 }

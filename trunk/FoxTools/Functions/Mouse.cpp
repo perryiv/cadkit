@@ -28,6 +28,7 @@
 #include "FXSize.h"
 #include "FXPoint.h"
 #include "FXRectangle.h"
+#include "FXThread.h"
 #include "FXApp.h"
 
 

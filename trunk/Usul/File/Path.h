@@ -86,6 +86,32 @@ inline std::string extension ( const std::string &path )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the base file name from the path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline std::string base ( const std::string &path )
+{
+  // Handle empty strings.
+  if ( path.empty() )
+    return std::string();
+
+  // Get the directory and extension.
+  const std::string dir ( Usul::File::directory ( path, true ) );
+  const std::string ext ( Usul::File::extension ( path ) );
+
+  // Subtract them off.
+  std::string base ( path );
+  base.erase ( base.size() - ext.size() - 1 );
+  base.erase ( 0, dir.size() );
+
+  // Return the base name.
+  return base;
+}
+
+
 }; // namespace File
 }; // namespace Usul
 

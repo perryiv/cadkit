@@ -8,7 +8,7 @@ CPP_FILES = \
 	TrJt2PfPrecompiled.cpp
 
 # The include path.
-LOCAL_INCLUDE = -I/usr/include/Performer
+LOCAL_INCLUDE = -I$(PERFORMER_INCLUDE_PATH)
 
 # The libraries to link to.
 LOCAL_LIBS = \

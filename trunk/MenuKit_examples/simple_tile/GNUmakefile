@@ -13,8 +13,10 @@ LIB_OS = lib32
 endif
 
 libs = \
+         -lm \
        -L$(OPENTHREADS_LIB_DIR) -lOpenThreads \
-       -L$(OSG_LIB_DIR) -losg -losgText -losgProducer \
+       -L$(PRODUCER_LIB_DIR) -lProducer \
+       -L$(OSG_LIB_DIR) -losg -losgText -losgUtil -losgProducer \
        -L$(MENUKIT_LIB_DIR) -lMenuKit
 
 includes = \

@@ -14,6 +14,7 @@ class pfVec2
 {
 public:
   pfVec2(){}
+  pfVec2 ( float v0, float v1 ){}
   void set ( float v0, float v1 ){}
 };
 
@@ -21,6 +22,7 @@ class pfVec3
 {
 public:
   pfVec3(){}
+  pfVec3 ( float v0, float v1, float v2 ){}
   void set ( float v0, float v1, float v2 ){}
 };
 
@@ -28,6 +30,7 @@ class pfVec4
 {
 public:
   pfVec4(){}
+  pfVec4 ( float v0, float v1, float v2, float v3 ){}
   void set ( float v0, float v1, float v2, float v3 ){}
 };
 

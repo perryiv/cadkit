@@ -9,6 +9,7 @@ public:
   pfSCS() : pfGroup(){}
 protected:
   virtual ~pfSCS(){}
+  virtual pfNode *_clone() { return new pfSCS; }
 };
 
 #endif

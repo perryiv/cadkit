@@ -14,6 +14,7 @@ public:
   unsigned int getNumGSets() const { return 1; }
 protected:
   virtual ~pfGeode(){}
+  virtual pfNode *_clone() { return new pfGeode; }
 };
 
 #endif

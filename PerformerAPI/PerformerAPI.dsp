@@ -85,6 +85,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\Performer\pr\pfGeoMath.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Performer\pr\pfGeoSet.h
 # End Source File
 # Begin Source File

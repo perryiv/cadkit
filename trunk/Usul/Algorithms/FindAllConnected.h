@@ -32,9 +32,9 @@ inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigne
   typedef std::vector< Functor > TodoStack;
   typedef TodoStack::iterator TodoStackItr;
 
-  Polygons polygons ( map.polygons() );
-
   map.setAllUnvisited();
+
+  Polygons polygons ( map.polygons() );
 
   //Is the selected polygon outside of _polygons' range?
   if ( selectedPolygon >= polygons.size() )

@@ -27,7 +27,6 @@ template < class VertexType_, unsigned int numVertsPerPoly = 3 >
 class Polygon
 {
 public:
-
   typedef VertexType_ VertexType;
   typedef SharedVertex < Polygon, VertexType > SharedVertex;
   typedef std::vector< SharedVertex* > Vertices;

@@ -10,6 +10,9 @@
 #ifndef __USUL_POLYGONS_SHARED_VERTEX_H__
 #define __USUL_POLYGONS_SHARED_VERTEX_H__
 
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+
 #include <list>
 
 
@@ -22,21 +25,21 @@ namespace Polygons {
 //  Shared Vertex Class
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 template < class Polygon, class ValueType_ >
-class SharedVertex
+class SharedVertex : public Usul::Base::Referenced
 {
 public:
+  typedef Usul::Base::Referenced BaseClass;
 
   typedef typename std::list < Polygon * > PolygonList;
   typedef typename PolygonList::iterator Iterator;
   typedef typename ValueType_ ValueType;
 
-  SharedVertex ( const ValueType &v ) : _polygons(), _value ( v ), _visited ( false )
-  {
-  }
+  USUL_DECLARE_REF_POINTERS( SharedVertex );
 
-  ~SharedVertex()
+  typedef typename SharedVertex< Polygon, ValueType >::RefPtr Ptr;
+
+  SharedVertex ( const ValueType &v ) : _polygons(), _value ( v ), _visited ( false )
   {
   }
 
@@ -71,6 +74,11 @@ public:
     return _polygons;
   }
 
+  PolygonList& polygons()
+  {
+    return _polygons;
+  }
+
   const ValueType &value() const
   {
     return _value;
@@ -89,16 +97,24 @@ public:
     return n;
   }
 
-private:
+protected:
+  SharedVertex( ) : _polygons(), _value(), _visited( false ) { }
+
+  //Use Ref Counting
+  ~SharedVertex() {} 
 
   // No copying.
   SharedVertex ( const SharedVertex & );
   SharedVertex &operator = ( const SharedVertex & );
 
+private:
   PolygonList _polygons;
   ValueType _value;
   bool _visited;
-};
+  //Possibly have the normal so the geometry can be built right from the Adjacency Map
+
+}; //class SharedVertex
+
 
 
 } // namespace Polygons

@@ -20,8 +20,6 @@
 
 #include <string>
 
-//namespace OsgFox { namespace Documents { class Document; } }
-
 
 namespace Usul {
 namespace Interfaces {

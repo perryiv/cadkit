@@ -581,6 +581,26 @@ std::string Message::error ( FX::FXObject *owner,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convenience function to display an information dialog. Separate buttons 
+//  with a '|' character. For example, "OK|Cancel".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Message::info ( FX::FXObject *owner, 
+                            const std::string &b, 
+                            const std::string &title, 
+                            const std::string &text )
+{
+  Message m;
+  m.text ( title, text );
+  m.icon ( FoxTools::Icons::Factory::ICON_INFO, owner );
+  m.buttons ( b );
+  return m.run ( owner, FX::PLACEMENT_OWNER );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Used for debugging the spacing below.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -669,7 +689,7 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
         std::replace ( text.begin(), text.end(), '\t', ' ' );
 
         // Make the label.
-        new FX::FXLabel ( matrix, text.c_str(), 0x0, FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_ROW | FX::LAYOUT_FILL_COLUMN );
+        new FX::FXLabel ( matrix, text.c_str(), 0x0, FX::JUSTIFY_LEFT | FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_ROW | FX::LAYOUT_FILL_COLUMN );
       }
     }
   }

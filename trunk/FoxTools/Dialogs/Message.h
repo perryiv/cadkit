@@ -119,6 +119,13 @@ public:
   const std::string &     id() const;
   void                    id ( const std::string &s );
 
+  /// Convenience function to display an information dialog. Separate buttons 
+  /// with a '|' character. For example, "OK|Cancel".
+  static std::string      info ( FX::FXObject *owner, 
+                                 const std::string &buttons, 
+                                 const std::string &title, 
+                                 const std::string &text );
+
   /// Set resizing flag.
   void                    resizable ( bool r );
   bool                    resizable() const;

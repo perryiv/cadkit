@@ -473,6 +473,9 @@
 						RelativePath=".\Interfaces\IAcceptExtension.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICanRead.h">
+					</File>
+					<File
 						RelativePath="Interfaces\IRead.h">
 					</File>
 					<File
@@ -497,9 +500,6 @@
 					Filter="">
 					<File
 						RelativePath=".\Interfaces\ICancelNotify.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\ICanRead.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ICleanUp.h">

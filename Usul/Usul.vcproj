@@ -838,6 +838,13 @@
 					RelativePath=".\Strings\Case.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Policies"
+				Filter="">
+				<File
+					RelativePath=".\Policies\Update.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -21,6 +21,7 @@
 # ifdef _MSC_VER
 #  pragma warning ( push )
 #  pragma warning ( disable: 4244 4244 )
+//#  define __WIN32STUBS_H__
 # endif
 
 #include "Performer/pf/pfDCS.h"

@@ -92,6 +92,13 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
     mat->setShininess ( material.getShininess() );
   }
 
+//#define _MATERIAL_BUG_WORK_AROUND Only seems to work for some jt files, not all of them.
+//#ifdef _MATERIAL_BUG_WORK_AROUND
+//  static float hack ( 0.01f );
+//  mat->setShininess ( mat->getShininess() + hack );
+//  hack += hack;
+//#endif
+
   // TODO, Am I doing transparency right?
 
   // Set the state's material.

@@ -16,17 +16,16 @@
 #define _osg_tools_circle_builder_h_
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Declarations.h"
 
 namespace OsgTools
 {
 
-  template<class Vec2, class Float>
-  class OSG_TOOLS_EXPORT Circle
+  template<class Vec2>
+  class Circle
   {
   public:
     Circle(): _radius(10.0), _points(20) {}
-    Circle(Float r, unsigned int p): _radius(r), _points(p) {}
+    Circle(float r, unsigned int p): _radius(r), _points(p) {}
 
     void radius(float r) { _radius = r; }
     float radius() const { return _radius; }
@@ -39,9 +38,9 @@ namespace OsgTools
       std::vector<osg::Vec2> pts;
       for(unsigned int i=0; i<_points; i++)
       {
-        Float angle = 2.0*osg::PI / _points;
-        Float x = _radius*cos( angle );
-        Float y = _radius*sin( angle );
+        float angle = 2.0*osg::PI / _points;
+        float x = _radius*cos( angle );
+        float y = _radius*sin( angle );
         pts.push_back( Vec2(x,y) );
       }
 
@@ -49,7 +48,7 @@ namespace OsgTools
     }
 
   private:
-    Float _radius;
+    float _radius;
     unsigned int _points;
   };
 

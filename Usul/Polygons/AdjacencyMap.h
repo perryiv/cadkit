@@ -123,7 +123,7 @@ public:
         Vertex key ( *(i + j ) );
 
         //Get the iterator if the key is in the map
-        Map::iterator iter = _sharedVertsMap.find( key );
+        Map::iterator iter ( _sharedVertsMap.find( key ) );
         
         //Do we have a shared vertex already?
         if( iter == _sharedVertsMap.end() )
@@ -162,6 +162,7 @@ public:
     typedef std::vector< Functor > TodoStack;
     typedef TodoStack::iterator TodoStackItr;
 
+    //Is the selected polygon outside of _polygons' range?
     if ( selectedPolygon >= _polygons.size() )
     {
       std::ostringstream message;
@@ -169,14 +170,17 @@ public:
       throw std::runtime_error ( message.str() );
     }
 
+    //Todo stack to simulate recursive function calls
     TodoStack todoStack;
+
+    //Reserve enough room
     todoStack.reserve( _polygons.size() + _sharedVerts.size() );
 
     //put the functor for the selected polygon on the stack
     _polygons.at( selectedPolygon ).visited ( true );
     todoStack.push_back( Functor ( answer, todoStack, &_polygons.at( selectedPolygon ) ) );
 
-    TodoStackItr todoIterator = todoStack.begin();
+    TodoStackItr todoIterator ( todoStack.begin() );
 
     //loop through the todo stack
     while( todoIterator != todoStack.end() )
@@ -185,11 +189,17 @@ public:
       if( cancel() )
         return;
 
+      //Do the functor's thing
       (*todoIterator)();
+
+      //Go to the next one
       ++todoIterator;
+
+      //Send a progress upate
       updater ( answer );
     }
 
+    //Send a progress upate, make sure it updates
     updater ( answer, true );
   }
 

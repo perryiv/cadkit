@@ -29,7 +29,7 @@ template<class FT, class DT, class CT> class SlCallbackList : public std::vector
 {
 public:
 
-  typedef std::vector::size_type SizeType;
+  typedef typename std::vector<SlCallback<FT,DT,CT> >::size_type SizeType;
 
   void                          add ( const SlCallback<FT,DT,CT> &callback );
   void                          add ( const FT &function, const DT &clientData, const CT &callData );
@@ -109,7 +109,7 @@ template<class FT, class DT, class CT> inline SlCallback<FT,DT,CT> &SlCallbackLi
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function ) const
+template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function ) const
 {
   SizeType count = 0;
 
@@ -130,7 +130,7 @@ template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function, const DT &clientData ) const
+template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function, const DT &clientData ) const
 {
   SizeType count = 0;
 
@@ -187,7 +187,7 @@ template<class FT, class DT, class CT> inline bool SlCallbackList<FT,DT,CT>::has
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function )
+template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function )
 {
   SizeType count = 0;
   std::vector<SlCallback<FT,DT,CT> >::iterator i = this->begin();
@@ -219,7 +219,7 @@ template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function, const DT &clientData )
+template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function, const DT &clientData )
 {
   SizeType count = 0;
   std::vector<SlCallback<FT,DT,CT> >::iterator i = this->begin();

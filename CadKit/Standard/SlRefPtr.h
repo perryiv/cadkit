@@ -62,9 +62,11 @@ public:
 
   bool              operator == ( const SlRefPtr<T> &p ) const { return _p == p._p; }
   bool              operator == ( const T *p ) const           { return _p == p; }
+  bool              operator == ( T *p ) const                 { return _p == p; }
 
   bool              operator != ( const SlRefPtr<T> &p ) const { return _p != p._p; }
   bool              operator != ( const T *p ) const           { return _p != p; }
+  bool              operator != ( T *p ) const                 { return _p != p; }
 
   /// Set the internal pointer.
   void              setValue ( const SlRefPtr<T> &p );
@@ -85,7 +87,9 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class P> bool operator == ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
+template <class P> bool operator == ( P *p1,       const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
 template <class P> bool operator != ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
+template <class P> bool operator != ( P *p1,       const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
 
 
 ///////////////////////////////////////////////////////////////////////////////

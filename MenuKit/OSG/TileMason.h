@@ -15,7 +15,6 @@
 // std includes
 #include <numeric>  // for accumulate(...)
 
-#include "OsgTools/Box.h" // TODO: take this out!
 namespace MenuKit
 {
 
@@ -162,9 +161,6 @@ void OSG::TileMason<TileType>::apply(Menu& m)
   if( !parent )  // no parent
   {
     _scene = new osg::Group();
-    OsgTools::ColorBox cb(0.2,0.2,0.2);  // TODO: take this out
-    cb.color_policy().color( osg::Vec4(1.0,0.0,0.0,1.0) );  // TODO: take this out
-    _scene->addChild( cb() );  // TODO: take this out
 
     // escape when no parent and no text
     if( m.text().empty() )  // do not generate a graphic
@@ -179,8 +175,7 @@ void OSG::TileMason<TileType>::apply(Menu& m)
     _tile.box().width( _tile.width( m ) );
   }
 
-  Menu::Layout pl = parent->layout();
-  if( pl == Menu::HORIZONTAL )
+  if( parent->layout() == Menu::HORIZONTAL )
   {
     float width = _tile.width( m );
     _tile.box().width( width );
@@ -203,7 +198,7 @@ void OSG::TileMason<TileType>::apply(Menu& m)
   // TODO: configure the tile if necessary for different themes
   // TODO: by telling the tile what mode to be in.
   // TODO: change this default command:
-  if( m.expanded() )
+  if( m.expanded() && parent->layout()==Menu::VERTICAL )
     _tile.mode( TileType::HIGHLIGHT );
   else
     _tile.mode( TileType::NORMAL );
@@ -251,9 +246,7 @@ void TileMason<TileType>::apply(Button& b)
 
   if( parent )
   {
-    Menu::Layout pl = parent->layout();
-
-    if( pl == Menu::HORIZONTAL )
+    if( parent->layout() == Menu::HORIZONTAL )
     {
       float width = _tile.width( b );
       _tile.box().width( width );
@@ -277,9 +270,6 @@ void TileMason<TileType>::apply(Button& b)
   else // no parent
   {
     _scene = new osg::Group();
-    OsgTools::ColorBox cb(0.3,0.3,0.3);  // TODO: take this out
-    cb.color_policy().color( osg::Vec4(0.0,1.0,0.0,1.0) );  // TODO: take this out
-    _scene->addChild( cb() );  // TODO: take this out
     _tile.box().width( _tile.width( b ) );
   }
 
@@ -287,6 +277,8 @@ void TileMason<TileType>::apply(Button& b)
   // TODO: by telling the tile what mode to be in.
   // TODO: change this default command:
   _tile.mode( TileType::NORMAL );
+  if( b.marked() )
+    _tile.mode( TileType::HIGHLIGHT );
   if( !b.enabled() )
     _tile.mode( TileType::DISABLED );
 

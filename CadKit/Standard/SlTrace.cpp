@@ -48,12 +48,8 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdio.h>
-# if _WIN32 || __GNUC__
-#  include <stdarg.h>
-#  include <string.h>
-# else
-TODO
-# endif
+# include <stdarg.h>
+# include <string.h>
 #endif // _CADKIT_USE_PRECOMPILED_HEADERS
 
 
@@ -65,7 +61,7 @@ namespace CadKit
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void CadKit::_modelspaceStandardLibraryDebugTrace ( const char *formatString, ... )
+void _modelspaceStandardLibraryDebugTrace ( const char *formatString, ... )
 {
   SL_ASSERT ( formatString );
 

@@ -53,10 +53,8 @@
 
 #ifdef _WIN32
 # define SL_GETCWD ::_getcwd
-#elif __GNUC__
+#else
 # define SL_GETCWD ::getcwd
-#else // ?
-TODO
 #endif // Platforms
 
 
@@ -68,10 +66,8 @@ TODO
 
 #ifdef _WIN32
 # define SL_SNPRINTF ::_snprintf
-#elif __GNUC__
+#else
 # define SL_SNPRINTF ::snprintf
-#else // ?
-TODO
 #endif // Platforms
 
 
@@ -83,10 +79,8 @@ TODO
 
 #ifdef _WIN32
 # define SL_VSNPRINTF ::_vsnprintf
-#elif __GNUC__
+#else
 # define SL_VSNPRINTF ::vsnprintf
-#else // ?
-TODO
 #endif // Platforms
 
 
@@ -102,8 +96,10 @@ TODO
 # ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #  define __USE_ISOC99
 #  include <wchar.h>
-#  define SL_VSNWPRINTF ::vswprintf
 # endif
+# define SL_VSNWPRINTF ::vswprintf
+#elif _SGI_NATIVE_COMPILER
+# define SL_VSNWPRINTF(a,b,c,d) SL_ASSERT ( 0 )
 #else // ?
 TODO
 #endif // Platforms

@@ -64,8 +64,8 @@ public:
   static  const SlType *   getClassType();
   virtual const SlType *   getType() const = 0;
 
-  static  const SlUint32   getClassTypeId();
-  virtual const SlUint32   getTypeId() const = 0;
+  static  SlUint32         getClassTypeId();
+  virtual SlUint32         getTypeId() const = 0;
 
   bool                     isOfType ( const SlType *classType ) const;
   bool                     isOfExactType ( const SlType *classType ) const;

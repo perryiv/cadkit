@@ -44,6 +44,11 @@
 #include "DbXmlPrecompiled.h"
 #include "DbXmlGroup.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 DB_XML_IMPLEMENT_DYNAMIC_NODE(DbXmlGroup,DbXmlNode);
@@ -57,7 +62,7 @@ DB_XML_IMPLEMENT_DYNAMIC_NODE(DbXmlGroup,DbXmlNode);
 
 DbXmlGroup::DbXmlGroup() : DbXmlNode()
 {
-  SL_PRINT ( "In DbXmlGroup::DbXmlGroup(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlGroup::DbXmlGroup(), this = %X\n", this );
 }
 
 
@@ -69,7 +74,7 @@ DbXmlGroup::DbXmlGroup() : DbXmlNode()
 
 DbXmlGroup::DbXmlGroup ( const char *name ) : DbXmlNode ( name )
 {
-  SL_PRINT ( "In DbXmlGroup::DbXmlGroup(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlGroup::DbXmlGroup(), this = %X\n", this );
 }
 
 
@@ -81,7 +86,7 @@ DbXmlGroup::DbXmlGroup ( const char *name ) : DbXmlNode ( name )
 
 DbXmlGroup::~DbXmlGroup()
 {
-  SL_PRINT ( "In DbXmlGroup::~DbXmlGroup(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlGroup::~DbXmlGroup(), this = %X\n", this );
 
   // When the vector of node "smart pointers" dies, it will automatically 
   // release the nodes.

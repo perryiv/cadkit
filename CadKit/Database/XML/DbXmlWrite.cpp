@@ -49,6 +49,11 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #endif
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 DB_XML_IMPLEMENT_DYNAMIC_VISITOR(DbXmlWrite,DbXmlVisitor);
@@ -65,7 +70,7 @@ DbXmlWrite::DbXmlWrite() : DbXmlVisitor(),
   _out ( NULL ),
   _mode ( WRITE_NAME_AND_VALUE )
 {
-  SL_PRINT ( "In DbXmlWrite::DbXmlWrite(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlWrite::DbXmlWrite(), this = %X\n", this );
 }
 
 
@@ -77,7 +82,7 @@ DbXmlWrite::DbXmlWrite() : DbXmlVisitor(),
 
 DbXmlWrite::~DbXmlWrite()
 {
-  SL_PRINT ( "In DbXmlWrite::~DbXmlWrite(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlWrite::~DbXmlWrite(), this = %X\n", this );
 }
 
 
@@ -109,7 +114,7 @@ bool DbXmlWrite::write ( const DbXmlNode &node, std::ostream &out )
 bool DbXmlWrite::visit ( DbXmlNode & )
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( 0 ); // Should not be here.
+  SL_ASSERT ( 0 ); // Heads up. Remve this assertion if you intend to be here.
   return false;
 }
 

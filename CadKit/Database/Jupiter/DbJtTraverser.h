@@ -49,6 +49,8 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefBase.h"
 # include "Standard/SlAString.h"
+# include "Standard/SlMatrix4.h"
+# include <vector>
 # include <vector>
 #endif
 
@@ -109,8 +111,7 @@ public:
   typedef void * EntityHandle;
 
   // Get the current entity.
-  const EntityHandle      getCurrentEntity() const { return _currentNode; }
-  EntityHandle            getCurrentEntity()       { return _currentNode; }
+  EntityHandle            getCurrentEntity() const { return _currentNode; }
 
   // Get the current entity's property.
   bool                    getMaterial  ( EntityHandle entity, SlVec4f &ambient, SlVec4f &diffuse, SlVec4f &specular, SlVec4f &emissive, float &shininess, unsigned int &valid ) const;

@@ -141,7 +141,7 @@ const SlUint64 SlPreComputedArrays::_factorialUint64[21] =
 };
 
 // Pascal's Triangle for signed 32 bit integers.
-const SlInt32 SlPreComputedArrays::_pascalsTriangleInt32[34][34] = 
+const SlInt32 SlPreComputedArrays::_pascalsTriangleInt32[NUM_BINOMIAL_COEFFICIENT_INT_32][NUM_BINOMIAL_COEFFICIENT_INT_32] = 
 {
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -180,7 +180,7 @@ const SlInt32 SlPreComputedArrays::_pascalsTriangleInt32[34][34] =
 };
 
 // Pascal's Triangle for unsigned 32 bit integers.
-const SlUint32 SlPreComputedArrays::_pascalsTriangleUint32[34][34] = 
+const SlUint32 SlPreComputedArrays::_pascalsTriangleUint32[NUM_BINOMIAL_COEFFICIENT_UINT_32][NUM_BINOMIAL_COEFFICIENT_UINT_32] = 
 {
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -219,7 +219,7 @@ const SlUint32 SlPreComputedArrays::_pascalsTriangleUint32[34][34] =
 };
 
 // Pascal's Triangle for signed 64 bit integers.
-const SlInt64 SlPreComputedArrays::_pascalsTriangleInt64[67][67] = 
+const SlInt64 SlPreComputedArrays::_pascalsTriangleInt64[NUM_BINOMIAL_COEFFICIENT_INT_64][NUM_BINOMIAL_COEFFICIENT_INT_64] = 
 {
   {I64(1),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0)},
   {I64(1),I64(1),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0),I64(0)},
@@ -292,7 +292,7 @@ const SlInt64 SlPreComputedArrays::_pascalsTriangleInt64[67][67] =
 
 
 // Pascal's Triangle for unsigned 64 bit integers.
-const SlUint64 SlPreComputedArrays::_pascalsTriangleUint64[67][67] = 
+const SlUint64 SlPreComputedArrays::_pascalsTriangleUint64[NUM_BINOMIAL_COEFFICIENT_UINT_64][NUM_BINOMIAL_COEFFICIENT_UINT_64] = 
 {
   {UI64(1),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0)},
   {UI64(1),UI64(1),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0),UI64(0)},
@@ -366,24 +366,11 @@ const SlUint64 SlPreComputedArrays::_pascalsTriangleUint64[67][67] =
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Hard coded sizes for the sphere vertex arrays.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-const SlInt32 SlPreComputedArrays::_numSphereVerts0 = 180;
-const SlInt32 SlPreComputedArrays::_numSphereVerts1 = 720;
-const SlInt32 SlPreComputedArrays::_numSphereVerts2 = 2880;
-const SlInt32 SlPreComputedArrays::_numSphereVerts3 = 11520;
-const SlInt32 SlPreComputedArrays::_numSphereVerts4 = 46080;
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 //  Hard coded vertices for a sphere subdivision.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const SlFloat32 SlPreComputedArrays::_sphereVerts0[SlPreComputedArrays::_numSphereVerts0] = 
+const SlFloat32 SlPreComputedArrays::_sphereVerts0[NUM_SPHERE_VERTS_0] = 
 {
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f,  0.525731086730957f,  0.000000000000000f,  0.850650787353516f,  0.000000000000000f,  0.850650787353516f,  0.525731086730957f,
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f,  0.000000000000000f,  0.850650787353516f,  0.525731086730957f, -0.850650787353516f,  0.525731086730957f,  0.000000000000000f,
@@ -414,7 +401,7 @@ const SlFloat32 SlPreComputedArrays::_sphereVerts0[SlPreComputedArrays::_numSphe
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const SlFloat32 SlPreComputedArrays::_sphereVerts1[SlPreComputedArrays::_numSphereVerts1] = 
+const SlFloat32 SlPreComputedArrays::_sphereVerts1[NUM_SPHERE_VERTS_1] = 
 {
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f,  0.000000000000000f,  0.000000000000000f,  0.999999940395355f, -0.309016972780228f,  0.499999970197678f,  0.809016942977905f,
    0.525731086730957f,  0.000000000000000f,  0.850650787353516f,  0.309016972780228f,  0.499999970197678f,  0.809016942977905f,  0.000000000000000f,  0.000000000000000f,  0.999999940395355f,
@@ -505,7 +492,7 @@ const SlFloat32 SlPreComputedArrays::_sphereVerts1[SlPreComputedArrays::_numSphe
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const SlFloat32 SlPreComputedArrays::_sphereVerts2[SlPreComputedArrays::_numSphereVerts2] = 
+const SlFloat32 SlPreComputedArrays::_sphereVerts2[NUM_SPHERE_VERTS_2] = 
 {
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f, -0.273266524076462f,  0.000000000000000f,  0.961938381195068f, -0.433888554573059f,  0.259891897439957f,  0.862668514251709f,
    0.000000000000000f,  0.000000000000000f,  0.999999940395355f, -0.162459850311279f,  0.262865543365479f,  0.951056540012360f, -0.273266524076462f,  0.000000000000000f,  0.961938381195068f,
@@ -836,7 +823,7 @@ const SlFloat32 SlPreComputedArrays::_sphereVerts2[SlPreComputedArrays::_numSphe
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const SlFloat32 SlPreComputedArrays::_sphereVerts3[SlPreComputedArrays::_numSphereVerts3] = 
+const SlFloat32 SlPreComputedArrays::_sphereVerts3[NUM_SPHERE_VERTS_3] = 
 {
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f, -0.403355360031128f,  0.000000000000000f,  0.915043473243713f, -0.484441637992859f,  0.131200373172760f,  0.864929378032684f,
   -0.273266524076462f,  0.000000000000000f,  0.961938381195068f, -0.358228772878647f,  0.131655350327492f,  0.924304544925690f, -0.403355360031128f,  0.000000000000000f,  0.915043473243713f,
@@ -2127,7 +2114,7 @@ const SlFloat32 SlPreComputedArrays::_sphereVerts3[SlPreComputedArrays::_numSphe
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const SlFloat32 SlPreComputedArrays::_sphereVerts4[SlPreComputedArrays::_numSphereVerts4] = 
+const SlFloat32 SlPreComputedArrays::_sphereVerts4[NUM_SPHERE_VERTS_4] = 
 {
   -0.525731086730957f,  0.000000000000000f,  0.850650787353516f, -0.465657591819763f,  0.000000000000000f,  0.884964942932129f, -0.506298005580902f,  0.065757550299168f,  0.859847843647003f,
   -0.403355360031128f,  0.000000000000000f,  0.915043473243713f, -0.445365041494370f,  0.065816916525364f,  0.892926692962646f, -0.465657591819763f,  0.000000000000000f,  0.884964942932129f,

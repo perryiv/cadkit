@@ -44,6 +44,10 @@
 #include "DbXmlPrecompiled.h"
 #include "DbXmlLeaf.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 DB_XML_IMPLEMENT_DYNAMIC_NODE(DbXmlLeaf,DbXmlNode);
@@ -58,7 +62,7 @@ DB_XML_IMPLEMENT_DYNAMIC_NODE(DbXmlLeaf,DbXmlNode);
 DbXmlLeaf::DbXmlLeaf() : DbXmlNode(), 
   _value ( "" )
 {
-  SL_PRINT ( "In DbXmlLeaf::DbXmlLeaf(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlLeaf::DbXmlLeaf(), this = %X\n", this );
 }
 
 
@@ -71,7 +75,7 @@ DbXmlLeaf::DbXmlLeaf() : DbXmlNode(),
 DbXmlLeaf::DbXmlLeaf ( const char *name, const char *value ) : DbXmlNode ( name ), 
   _value ( ( value ) ? value : "" )
 {
-  SL_PRINT ( "In DbXmlLeaf::DbXmlLeaf(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlLeaf::DbXmlLeaf(), this = %X\n", this );
 }
 
 
@@ -83,5 +87,5 @@ DbXmlLeaf::DbXmlLeaf ( const char *name, const char *value ) : DbXmlNode ( name 
 
 DbXmlLeaf::~DbXmlLeaf()
 {
-  SL_PRINT ( "In DbXmlLeaf::~DbXmlLeaf(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlLeaf::~DbXmlLeaf(), this = %X\n", this );
 }

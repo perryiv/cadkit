@@ -118,9 +118,7 @@ public:
   bool                      setFromErrorId ( const HRESULT &error );
   #endif
 
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
   void                      split ( const wchar_t &delimiter, std::list<SlWString> &components ) const;
-  #endif
 
   // Convert all characters to upper/lower case.
   void                      toLower();
@@ -183,6 +181,33 @@ inline SlWString::SlWString ( size_type pos,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Format the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlWString::format ( const wchar_t *f, va_list ap )
+{
+   SL_ASSERT ( f );
+   SL_ASSERT ( ap );
+
+   // The string we write to. Do not make these static because I want it 
+   // to be thread-safe. Hopefully this is big enough.
+   const size_t length = SL_STRING_FUNCTION_BUFFER_SIZE - 1; // 2^15 - 1.
+   wchar_t buf[length + 1];
+
+   // Format the text into the buffer.
+   SL_VSNWPRINTF ( buf, length, f, ap );
+
+   // Check for memory problems.
+   SL_ASSERT ( ::wcslen ( buf ) <= length );
+
+   // Set the new string.
+   this->setValue ( buf );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,33 +249,6 @@ inline void SlWString::format ( const wchar_t *f, ... )
 
    // End variable argument processing.
    va_end ( ap );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Format the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void SlWString::format ( const wchar_t *f, va_list ap )
-{
-   SL_ASSERT ( f );
-   SL_ASSERT ( ap );
-
-   // The string we write to. Do not make these static because I want it 
-   // to be thread-safe. Hopefully this is big enough.
-   const size_t length = SL_STRING_FUNCTION_BUFFER_SIZE - 1; // 2^15 - 1.
-   wchar_t buf[length + 1];
-
-   // Format the text into the buffer.
-   SL_VSNWPRINTF ( buf, length, f, ap );
-
-   // Check for memory problems.
-   SL_ASSERT ( ::wcslen ( buf ) <= length );
-
-   // Set the new string.
-   this->setValue ( buf );
 }
 
 
@@ -464,9 +462,6 @@ SL_TEMPLATE_STRING_OUTPUT_OPERATOR ( SlWString, float );
 SL_TEMPLATE_STRING_OUTPUT_OPERATOR ( SlWString, double );
 
 
-#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Split the string.
@@ -478,9 +473,6 @@ inline void SlWString::split ( const wchar_t &delimiter, std::list<SlWString> &c
   // Call the non-member function.
   CadKit::_splitStringIntoList ( *this, delimiter, components );
 }
-
-
-#endif // CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
 
 
 #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SET_FROM_ERROR_ID

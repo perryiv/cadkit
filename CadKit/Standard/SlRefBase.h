@@ -106,7 +106,7 @@ inline void _decrementPointerReferenceCount ( SlRefBase *p ) { p->_decrementRefe
 // Declare a typecast for SlRefPtr. Put this in your class declaration.
 #define SL_DECLARE_REFCOUNT_TYPE(class_name) \
   public: \
-  typedef SlRefPtr < class_name > Ptr;
+  typedef SlRefPtr < class_name > Ptr
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_REFERENCE_OBJECT_CLASS_H_

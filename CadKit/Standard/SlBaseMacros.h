@@ -81,8 +81,8 @@ public: \
   static  const SlType * getBaseClassType(); \
   static  const SlType * getClassType(); \
   virtual const SlType * getType() const; \
-  static  const SlUint32 getClassTypeId(); \
-  virtual const SlUint32 getTypeId() const;
+  static  SlUint32       getClassTypeId(); \
+  virtual SlUint32       getTypeId() const
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,8 +95,8 @@ public: \
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SL_DECLARE_DYNAMIC_CLASS(class_name,id) \
-  SL_DECLARE_CLASS(class_name,id) \
-  static SlBase *createObject(); 
+  SL_DECLARE_CLASS(class_name,id); \
+  static SlBase *createObject()
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,8 +111,8 @@ public: \
   const SlType *class_name::getBaseClassType()  { return SL_CLASS_TYPE(base_class_name); } \
   const SlType *class_name::getClassType()      { return SL_CLASS_TYPE(class_name); } \
   const SlType *class_name::getType() const     { return SL_CLASS_TYPE(class_name); } \
-  const SlUint32 class_name::getClassTypeId()   { return SL_CLASS_ID(class_name); } \
-  const SlUint32 class_name::getTypeId() const  { return SL_CLASS_ID(class_name); }
+  SlUint32 class_name::getClassTypeId()         { return SL_CLASS_ID(class_name); } \
+  SlUint32 class_name::getTypeId() const        { return SL_CLASS_ID(class_name); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

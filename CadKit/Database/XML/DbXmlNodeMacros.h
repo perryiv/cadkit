@@ -63,9 +63,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_DECLARE_NODE(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE ( class_name ) \
-  SL_DECLARE_CLASS(class_name, id) \
-  _DB_XML_DECLARE_ACCEPT_FUNCTION; 
+  SL_DECLARE_REFCOUNT_TYPE ( class_name ); \
+  SL_DECLARE_CLASS(class_name, id); \
+  _DB_XML_DECLARE_ACCEPT_FUNCTION
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,9 +75,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_DECLARE_DYNAMIC_NODE(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE ( class_name ) \
-  SL_DECLARE_DYNAMIC_CLASS(class_name, id) \
-  _DB_XML_DECLARE_ACCEPT_FUNCTION; 
+  SL_DECLARE_REFCOUNT_TYPE ( class_name ); \
+  SL_DECLARE_DYNAMIC_CLASS(class_name, id); \
+  _DB_XML_DECLARE_ACCEPT_FUNCTION
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_IMPLEMENT_NODE(class_name, base_class_name) \
-  SL_IMPLEMENT_CLASS(class_name, base_class_name) \
+  SL_IMPLEMENT_CLASS(class_name, base_class_name); \
   _DB_XML_IMPLEMENT_ACCEPT_FUNCTION(class_name)
 
 
@@ -114,7 +114,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_IMPLEMENT_DYNAMIC_NODE(class_name, base_class_name) \
-  SL_IMPLEMENT_DYNAMIC_CLASS(class_name, base_class_name) \
+  SL_IMPLEMENT_DYNAMIC_CLASS(class_name, base_class_name); \
   _DB_XML_IMPLEMENT_ACCEPT_FUNCTION(class_name)
 
 

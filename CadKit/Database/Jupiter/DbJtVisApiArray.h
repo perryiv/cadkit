@@ -87,7 +87,7 @@ protected:
 
 template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
 {
-  SL_PRINT ( "In DbJtVisApiArray::~DbJtVisApiArray(), _p = %X\n", _p );
+  SL_PRINT2 ( "In DbJtVisApiArray::~DbJtVisApiArray(), _p = %X\n", _p );
 
   if ( _p )
   {

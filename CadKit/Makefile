@@ -1,9 +1,8 @@
 # List these in the order that they need to be compiled.
 SUBDIRS = \
 	Standard \
-	SceneGraph/Core \
-	SceneGraph/OpenGL \
-	Examples/BoundingBox
+	Database/Jupiter \
+	Database/XML
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

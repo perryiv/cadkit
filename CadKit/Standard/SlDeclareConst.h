@@ -51,18 +51,18 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
+#if _WIN32 || _SGI_NATIVE_COMPILER
 # define SL_CONST_INT64(n)  n
 # define SL_CONST_UINT64(n) n
 # define SL_CONST_INT32(n)  n
 # define SL_CONST_UINT32(n) n
 #elif __GNUC__
 # ifdef _64_BIT_MACHINE
-#   define SL_CONST_INT64(n)  n##L
-#   define SL_CONST_UINT64(n) n##UL
+#  define SL_CONST_INT64(n)  n##L
+#  define SL_CONST_UINT64(n) n##UL
 # else // 32 bit machines.
-#   define SL_CONST_INT64(n)  n##LL
-#   define SL_CONST_UINT64(n) n##ULL
+#  define SL_CONST_INT64(n)  n##LL
+#  define SL_CONST_UINT64(n) n##ULL
 # endif // 64/32 bit linux.
 # define SL_CONST_UINT32(n) n##U
 # define SL_CONST_UINT16(n) n##U

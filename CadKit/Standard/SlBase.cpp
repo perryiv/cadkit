@@ -122,7 +122,7 @@ const SlType *SlBase::getClassType()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlUint32 SlBase::getClassTypeId()
+SlUint32 SlBase::getClassTypeId()
 {
   return SL_CLASS_ID ( SlBase );
 }
@@ -148,7 +148,7 @@ const SlType *SlBase::getType() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlUint32 SlBase::getTypeId() const
+SlUint32 SlBase::getTypeId() const
 {
   return SL_CLASS_ID ( SlBase );
 }

@@ -95,10 +95,10 @@ Factory::Factory() : _map()
   POPULATE ( bmp, BMP, POINTS   );
   POPULATE ( bmp, BMP, SEEK     );
   POPULATE ( bmp, BMP, SET_HOME );
-  POPULATE ( bmp, BMP, TOOL_SELECTION   );
-  POPULATE ( bmp, BMP, TRIANGLE         );
-  POPULATE ( bmp, BMP, DELETE_CONNECTED );
-  POPULATE ( bmp, BMP, KEEP_CONNECTED   );
+  POPULATE ( gif, GIF, TOOL_SELECTION   );
+  POPULATE ( gif, GIF, TRIANGLE         );
+  POPULATE ( gif, GIF, DELETE_CONNECTED );
+  POPULATE ( gif, GIF, KEEP_CONNECTED   );
 }
 
 

@@ -96,10 +96,10 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
     // Make sure the internal data members are initialized.
     this->_init();
 
-    std::auto_ptr < Progress::NoUpdate > progress ( new Progress::NoUpdate );
+    Update progress ( 0x0 );
 
     //read the scene
-    this->_read ( file, progress.get() );
+    this->_read ( file, progress );
 
     // Build the scene.
     osg::ref_ptr<osg::Group> root ( this->_build() );
@@ -248,7 +248,7 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, Progress::NoUpdate *progress )
+void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, const Update& progress )
 {
   // Skip header.
   in.seekg ( 80 );
@@ -293,7 +293,7 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, Progress::NoUpdate *p
 
     if ( ( ::clock() - lastTime ) > 500 )
     {
-      (*progress ) ( ( (float ) facetsReadSoFar / totalFacets ) * 100 );
+      progress ( ( (float ) facetsReadSoFar / totalFacets ) * 100 );
       lastTime = ::clock();
     }
   }
@@ -306,7 +306,7 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, Progress::NoUpdate *p
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress )
+void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize, const Update& progress )
 {
   unsigned int bytesReadSoFar ( 0 );
   const unsigned int size ( 512 );
@@ -373,7 +373,7 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize,
 
     if ( ( ::clock() - lastTime ) > 500 )
     {
-      (*progress ) ( ( ( float ) bytesReadSoFar / filesize ) * 100 ); 
+      progress ( ( ( float ) bytesReadSoFar / filesize ) * 100 ); 
       lastTime = ::clock();
     }
   }
@@ -386,7 +386,7 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_read ( const std::string &filename, Progress::NoUpdate *progress )
+void ReaderWriterSTL::_read ( const std::string &filename, const Update& progress )
 {
   // See if the file is ascii.
   if ( this->_isAscii ( filename ) )

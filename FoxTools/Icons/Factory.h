@@ -87,6 +87,7 @@ public:
     ICON_XYZ,
     ICON_SMALL_DOT,
     ICON_WRITE,
+    ICON_LOGO,
     LAST
   };
 

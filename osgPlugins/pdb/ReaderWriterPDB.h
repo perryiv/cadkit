@@ -10,7 +10,7 @@
 #ifndef __READER_WRITER_PDB_H__
 #define __READER_WRITER_PDB_H__
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Adaptors/ProgressBarUpdate.h"
 
 #include "osgDB/ReaderWriter"
 
@@ -44,7 +44,7 @@ public:
   typedef Molecule::ShapeFactory ShapeFactory;
   typedef Molecule::Atom Atom;
   typedef Molecule::Bond Bond;
-  typedef Usul::Interfaces::IProgressBar Progress;
+  typedef Usul::Adaptors::ProgressBarUpdate Update;
 
   ReaderWriterPDB();
 
@@ -65,7 +65,7 @@ public:
   void                    setFlags ( unsigned int flags, bool state );
   void                    removeFlags ( unsigned int flags );
 
-  void                    parse ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress ) { _parse ( in, filesize, progress ); }
+  void                    parse ( std::ifstream &in, unsigned int filesize, const Update& progress ) { _parse ( in, filesize, progress ); }
 
   void                    parsePsf ( std::ifstream &in ) { _parsePsf ( in ); }
 
@@ -91,7 +91,7 @@ protected:
 
   std::string             _getPsfPath ( const std::string &file);
 
-  void                    _parse ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress );
+  void                    _parse ( std::ifstream &in, unsigned int filesize, const Update& progress );
   void                    _parsePsf ( std::ifstream &in );
 
   ReadResult              _read ( const std::string &, const Options * );

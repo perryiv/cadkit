@@ -167,6 +167,12 @@
 					RelativePath="Adaptors\MemberFunction.h">
 				</File>
 				<File
+					RelativePath=".\Adaptors\ProgressBarUpdate.cpp">
+				</File>
+				<File
+					RelativePath=".\Adaptors\ProgressBarUpdate.h">
+				</File>
+				<File
 					RelativePath=".\Adaptors\Random.h">
 				</File>
 			</Filter>
@@ -746,24 +752,6 @@
 				</File>
 				<File
 					RelativePath=".\Containers\Vector.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Animate">
-				<File
-					RelativePath=".\Animate\Frame.h">
-				</File>
-				<File
-					RelativePath=".\Animate\LinearPlayer.h">
-				</File>
-				<File
-					RelativePath=".\Animate\Movie.h">
-				</File>
-				<File
-					RelativePath=".\Animate\Player.h">
-				</File>
-				<File
-					RelativePath=".\Animate\SinglePlayer.h">
 				</File>
 			</Filter>
 			<Filter

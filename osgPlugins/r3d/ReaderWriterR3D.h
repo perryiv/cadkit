@@ -12,7 +12,8 @@
 
 #include "Export.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Adaptors/ProgressBarUpdate.h"
+
 
 #include "osgDB/ReaderWriter"
 
@@ -31,7 +32,6 @@ public:
   typedef osgDB::ReaderWriter::ReadResult ReadResult;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
   typedef osgDB::ReaderWriter::Options Options;
-  typedef Usul::Interfaces::IProgressBar Progress;
 
   ReaderWriterR3D();
   ~ReaderWriterR3D();
@@ -42,7 +42,7 @@ public:
   virtual WriteResult     writeNode ( const osg::Node &node, const std::string &filename, const Options *options );
 
   void                    init() { this->_init(); }
-  void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_parse( filename, progress ); }
+  void                    parse ( const std::string& filename, const Usul::Adaptors::ProgressBarUpdate& progress  ) { this->_parse( filename, progress ); }
   osg::Group*             build () const { return this->_build(); }
 
 protected:
@@ -53,7 +53,7 @@ protected:
 
   void                    _init();
 
-  void                    _parse ( const std::string &filename, Progress::NoUpdate *progress );
+  void                    _parse ( const std::string &filename, const Usul::Adaptors::ProgressBarUpdate& progress  );
 
   ReadResult              _read ( const std::string &, const Options * );
 

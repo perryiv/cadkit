@@ -40,9 +40,10 @@ namespace Algorithms {
     template < class VertexSequence > 
     void makePolygon ( unsigned int startIndex, unsigned int numVertsPerPoly, const VertexSequence &vertices, VertexSequence &polygon )
     {
-      for ( unsigned int i = startIndex; i < startIndex + numVertsPerPoly; ++i)
+      //for ( unsigned int i = startIndex; i < startIndex + numVertsPerPoly; ++i)
+      for ( unsigned int i = 0; i <  numVertsPerPoly; ++i)
       {
-        polygon.push_back( vertices.at( i ) );
+        polygon.at(i) = ( vertices.at( i + startIndex ) );
       }
     }
   }; //namespace Detail
@@ -50,7 +51,21 @@ namespace Algorithms {
 namespace Polygons {
 
   template < class VertexSequence >
-  struct TriangleText
+  struct TriangleTestOnePoint
+  {
+    bool operator() ( const VertexSequence &polygonOne, const VertexSequence &polygonTwo ) const
+    {
+      typedef VertexSequence::const_iterator Iterator;
+      for( Iterator i = polygonOne.begin(); i != polygonOne.end(); ++i )
+        for ( Iterator j = polygonTwo.begin(); j != polygonTwo.end(); ++j )
+          if( *i == *j )
+              return true;
+      return false;
+    }
+  };
+
+  template < class VertexSequence >
+  struct TriangleTest
   {
     bool operator() ( const VertexSequence &polygonOne, const VertexSequence &polygonTwo ) const
     {
@@ -84,7 +99,7 @@ namespace Polygons {
 //
 //  Output:
 //
-//          indices:  List of indices into "vertices". These vertices make 
+//          keepers:  List of indices into "vertices". These vertices make 
 //                    up polygons that are adjacent, either directly or 
 //                    recursively, to the initial polygon "selectedPolygon".
 //
@@ -100,7 +115,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
                     const VertexSequence &vertices, 
                     unsigned int selectedPolygon,
                     unsigned int numVertsPerPoly,
-                    IndexSequence &indices )
+                    IndexSequence &keepers )
 {
   typedef typename VertexSequence::value_type Vertex;
   typedef typename VertexSequence::size_type SizeType;
@@ -108,7 +123,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   typedef typename IndexSequence::iterator IndexIterator;
 
   // Initialize.
-  indices.erase ( indices.begin(), indices.end() );
+  keepers.erase ( keepers.begin(), keepers.end() );
 
   // Handle trivial case.
   if ( vertices.empty() )
@@ -147,39 +162,41 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     throw std::runtime_error ( message.str() );
   }
 
-  //IndexSequence orginals ( vertices.size() / numVertsPerPoly );
-  //for(unsigned int i = 0; i < vertices.size() / numVertsPerPoly; ++i)
-  //  orginals.push_back( i );
-
   // Fill the sequence of indices.
-  indices.resize ( vertices.size() / numVertsPerPoly );
+  IndexSequence indices;
+  indices.resize ( numPolyons );
   {
     SizeType count ( 0 );
     for ( IndexIterator i = indices.begin(); i != indices.end(); ++i )
-      *i = count++;
+    {
+      if( count != selectedPolygon )
+        *i = count;
+      ++count;
+    }
   }
 
   // Put the first polygon in the list of keepers.
-  IndexSequence keepers;
   keepers.insert ( keepers.end(), selectedPolygon );
 
   // Initialize the current keeper.
   IndexIterator currentItr = keepers.begin();
 
   // While there are still keepers to test...
+  VertexSequence currentPolygon;
+  currentPolygon.resize ( numVertsPerPoly );
+
+  VertexSequence testMe;
+  testMe.resize ( numVertsPerPoly );
   while ( keepers.end() != currentItr )
   {
-    // Define current polygon.
-    VertexSequence currentPolygon;
+    // Define current polygon.  
     Detail::makePolygon ( *currentItr * numVertsPerPoly, numVertsPerPoly, vertices, currentPolygon );
 
-    // Loop through all vertices.
-    //VertexIterator vi = vertices.begin();
-    IndexIterator current = indices.begin();
+    // Loop through all polygons
+    IndexIterator current = indices.begin();  
     while ( indices.end() != current )
     {
       // Define polygon to test against current.
-      VertexSequence testMe;
       Detail::makePolygon ( *current * numVertsPerPoly, numVertsPerPoly, vertices, testMe );
 
       // See if the current keeper is adjacent to this polygon.
@@ -187,7 +204,9 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
       {
         // Put the polygon into the list of keepers.
         keepers.push_back ( *current );
-        indices.erase ( current );
+        IndexIterator temp = current;
+        --current;
+        indices.erase ( temp );
       }
 
       ++current;

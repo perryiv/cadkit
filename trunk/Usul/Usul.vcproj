@@ -183,9 +183,6 @@
 					RelativePath="Algorithms\Extract.h">
 				</File>
 				<File
-					RelativePath=".\Algorithms\Polygons.h">
-				</File>
-				<File
 					RelativePath=".\Algorithms\Sphere.h">
 				</File>
 				<File
@@ -795,6 +792,22 @@
 				Filter="">
 				<File
 					RelativePath=".\Io\Reader.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Polygons"
+				Filter="">
+				<File
+					RelativePath=".\Polygons\AdjacencyMap.h">
+				</File>
+				<File
+					RelativePath=".\Polygons\Polygons.h">
+				</File>
+				<File
+					RelativePath=".\Polygons\SharedVertex.h">
+				</File>
+				<File
+					RelativePath=".\Polygons\Triangle.h">
 				</File>
 			</Filter>
 		</Filter>

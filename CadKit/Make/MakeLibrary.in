@@ -24,7 +24,7 @@ clean:
 
 # Clobber the generated files (libraries too).
 clobber:
-	rm -f $(OBJECTS) *~ core 
+	rm -f $(OBJECTS) *~ core Makedepend
 	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_s.so
 	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_a.a
 

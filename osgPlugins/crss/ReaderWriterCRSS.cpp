@@ -55,7 +55,7 @@ const float MAX_DISTANCE_FACTOR ( 100 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterCRSS::ReaderWriterCRSS() :
+ReaderWriterCRSS::ReaderWriterCRSS() : BaseClass(),
   _min          ( 0, 0, 0 ),
   _max          ( 1, 1, 1 ),
   _spheres      (),
@@ -411,12 +411,12 @@ void ReaderWriterCRSS::_init()
 
 ReaderWriterCRSS::Result ReaderWriterCRSS::_read ( const std::string &filename, const Options *options )
 {
-  // Make sure the internal data members are initialized.
-  this->_init();
-
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
     return ReadResult::FILE_NOT_HANDLED;
+
+  // Make sure the internal data members are initialized.
+  this->_init();
 
   // Open the file.
   std::ifstream in ( filename.c_str() );

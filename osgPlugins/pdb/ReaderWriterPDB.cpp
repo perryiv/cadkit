@@ -45,8 +45,6 @@
 # define STAT stat
 #endif
 
-//#define USE_EXCEPTIONS
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -54,13 +52,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterPDB::ReaderWriterPDB() :
-  _molecules( new MoleculeList ),
+ReaderWriterPDB::ReaderWriterPDB() : BaseClass(),
+  _molecules       ( new MoleculeList ),
   _materialFactory ( new MaterialFactory ),
-  _currentMolecule(NULL),
-  _shapeFactory ( new ShapeFactory ),
-  _periodicTable(),
-  _flags ( PDB::SHOW_ATOMS | PDB::SHOW_BONDS | PDB::LOAD_ATOMS | PDB::LOAD_BONDS )
+  _currentMolecule ( 0x0 ),
+  _shapeFactory    ( new ShapeFactory ),
+  _periodicTable   (),
+  _flags           ( PDB::SHOW_ATOMS | PDB::SHOW_BONDS | PDB::LOAD_ATOMS | PDB::LOAD_BONDS )
 {
 }
 
@@ -106,24 +104,16 @@ bool ReaderWriterPDB::acceptsExtension ( const std::string &ext )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, const osgDB::ReaderWriter::Options *options )
+ReaderWriterPDB::ReadResult ReaderWriterPDB::readNode ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
-#ifdef USE_EXCEPTIONS
-
   // Safely...
   try
   {
-
-#endif
-
     return this->_read ( file, options );
-
-#ifdef USE_EXCEPTIONS
-
   }
 
   // Catch known exceptions.
-  catch ( const ReaderWriterPDB::Result &r )
+  catch ( const ReaderWriterPDB::ReadResult &r )
   {
     return r;
   }
@@ -131,16 +121,48 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
   // Catch standard exceptions.
   catch ( const std::exception &e )
   {
-    return ReaderWriterPDB::Result ( e.what() );
+    return ReaderWriterPDB::ReadResult ( e.what() );
   }
 
   // Catch all other exceptions.
   catch ( ... )
   {
-    return ReaderWriterPDB::Result ( "Unknown exception caught" );
+    return ReaderWriterPDB::ReadResult ( "Unknown exception caught" );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the atoms.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode ( const osg::Node& node, const std::string &file, const osgDB::ReaderWriter::Options *options )
+{
+  // Safely...
+  try
+  {
+    return this->_write ( node, file, options );
   }
 
-#endif
+  // Catch known exceptions.
+  catch ( const ReaderWriterPDB::WriteResult &r )
+  {
+    return r;
+  }
+
+  // Catch standard exceptions.
+  catch ( const std::exception &e )
+  {
+    return ReaderWriterPDB::WriteResult ( e.what() );
+  }
+
+  // Catch all other exceptions.
+  catch ( ... )
+  {
+    return ReaderWriterPDB::WriteResult ( "Unknown exception caught" );
+  }
 }
 
 
@@ -164,17 +186,17 @@ void ReaderWriterPDB::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const osgDB::ReaderWriter::Options *options )
+ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
+  // Make sure we handle files with this extension.
+  if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
+    return ReadResult::FILE_NOT_HANDLED;
+
   // Make sure the internal data members are initialized.
   this->_init();
 
   // Configure this instance based on the options.
   this->_configure ( options );
-
-  // Make sure we handle files with this extension.
-  if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
-    return ReadResult::FILE_NOT_HANDLED;
 
   // Open the file.
   std::ifstream in ( file.c_str() );
@@ -421,12 +443,12 @@ void ReaderWriterPDB::_configure ( const Options *options )
   typedef XML::Reader < Policy, BuildCB >       Reader;
   typedef XML::File < Policy >                  File;
 
-  // Handle trivial case.
-  if ( !options )
-    return;
-
   // Get the string.
-  std::string chunk ( options->getOptionString() );
+  std::string chunk ( ( options ) ? options->getOptionString() : std::string() );
+
+  // Handle trivial case.
+  if ( chunk.empty() )
+    return;
 
   // If the chunk is a filename then get the contents.
   if ( Usul::Predicates::FileExists() ( chunk ) )
@@ -525,7 +547,13 @@ bool ReaderWriterPDB::hasFlags ( unsigned int flags ) const
 }
 
 
-ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode(const osg::Node& node, const std::string& filename, const Options* options)
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterPDB::WriteResult ReaderWriterPDB::_write ( const osg::Node& node, const std::string& filename, const Options* options )
 {
   std::string ext = osgDB::getFileExtension(filename);
   if (!acceptsExtension(ext)) 
@@ -534,7 +562,6 @@ ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode(const osg::Node& node, c
   std::ofstream fout ( filename.c_str() );
   if ( !fout.is_open() )
     return WriteResult::ERROR_IN_WRITING_FILE;
-
 
   Molecules molecules ( _molecules->molecules() );
 
@@ -549,6 +576,7 @@ ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode(const osg::Node& node, c
 
   return WriteResult::ERROR_IN_WRITING_FILE;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -17,16 +17,23 @@
 #include <string>
 #include <iosfwd>
 
-namespace osg { class Group; class Geode; };
+namespace osg { class Group; class Node; };
 
 
 class ReaderWriterYARN : public osgDB::ReaderWriter
 {
 public:
 
+  typedef osgDB::ReaderWriter BaseClass;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
+  typedef osg::Vec3f Vec3;
+  typedef OsgTools::Mesh::value_type Vertex;
+  typedef OsgTools::Mesh::value_type Normal;
+  typedef std::vector<Vec3> CenterCurve;
+  typedef std::pair<CenterCurve,OsgTools::Mesh> YarnData;
+  typedef std::vector<YarnData> Yarns;
 
   ReaderWriterYARN();
   ~ReaderWriterYARN();
@@ -39,6 +46,7 @@ protected:
 
   osg::Group *            _build() const;
   void                    _init();
+  osg::Node *             _makeFan ( const Vec3 &center, const OsgTools::Mesh &mesh, unsigned int stack ) const;
   void                    _parseYarns     ( std::ifstream &in );
   void                    _parseNumStacks ( std::ifstream& fin, unsigned int numYarns, unsigned int numSlices );
   void                    _parseStack     ( std::ifstream& fin, unsigned int numSlices, const osg::Vec3 &center );
@@ -46,10 +54,7 @@ protected:
 
 private:
 
-  typedef OsgTools::Mesh::value_type Vertex;
-  typedef OsgTools::Mesh::value_type Normal;
-  typedef std::vector<OsgTools::Mesh> Meshes;
-  Meshes _meshes;
+  Yarns _yarns;
 };
 
 

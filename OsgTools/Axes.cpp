@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Perry L. Miller IV and John K. Grant
@@ -12,10 +13,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Axes.h"
-#include "ErrorChecker.h"
-#include "Torus.h"
-#include "Box.h"
+#include "OsgTools/Axes.h"
+#include "OsgTools/Torus.h"
+#include "OsgTools/Box.h"
+
+#include "Usul/Errors/Checker.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -27,6 +29,8 @@
 #include "Usul/Bits/Bits.h"
 
 using namespace OsgTools;
+
+typedef Usul::Errors::Checker ErrorChecker;
 
 
 ///////////////////////////////////////////////////////////////////////////////

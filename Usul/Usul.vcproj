@@ -262,6 +262,9 @@
 					RelativePath="Errors\AssertPolicy.h">
 				</File>
 				<File
+					RelativePath=".\Errors\Checker.h">
+				</File>
+				<File
 					RelativePath="Errors\CompositePolicy.h">
 				</File>
 				<File

@@ -37,7 +37,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterSTL::ReaderWriterSTL() :
+ReaderWriterSTL::ReaderWriterSTL() : BaseClass(),
   _polygons()
 {
 }
@@ -345,12 +345,12 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
 
 ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, const Options *options )
 {
-  // Make sure the internal data members are initialized.
-  this->_init();
-
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
     return ReadResult::FILE_NOT_HANDLED;
+
+  // Make sure the internal data members are initialized.
+  this->_init();
 
   // See if the file is ascii.
   if ( this->_isAscii ( filename ) )

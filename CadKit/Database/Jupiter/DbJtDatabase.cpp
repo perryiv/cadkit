@@ -661,16 +661,12 @@ bool DbJtDatabase::_startPart ( eaiPart *part )
   if ( false == PROGRESS ( FORMAT ( "    Part, level %2d, name: %s", _current->getLevel(), part->name() ) ) )
     return false;
 
-  // Initialize.
-  bool doLods ( false );
-
   // Try this interface.
   SlQueryPtr<IPartNotify> partNotify ( _target );
   if ( partNotify.isValid() )
   {
     if ( false == CadKit::handleEntityStart ( partNotify.getValue(), (PartHandle) part, THIS_UNKNOWN, _messageNotify ) )
       return false;
-    doLods = true;
   }
 
   // Try this interface.
@@ -679,17 +675,15 @@ bool DbJtDatabase::_startPart ( eaiPart *part )
   {
     if ( false == CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) part, THIS_UNKNOWN, _messageNotify ) )
       return false;
-    doLods = true;
   }
-
-  // If we get to here, see if we are supposed to process the LODs. 
-  // This will be true if one of the above interfaces worked.
-  if ( doLods )
-    return this->_processLods ( part );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
+  if ( false == ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE ) )
+    return false;
+
+  // Process the LODs. 
+  return this->_processLods ( part );
 }
 
 
@@ -837,7 +831,7 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
+bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
   SL_ASSERT ( part );
@@ -891,7 +885,7 @@ bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int &whichShape )
+bool DbJtDatabase::_processShape ( eaiPart *part, int whichLod, int whichShape )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processShape(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
   SL_ASSERT ( part );
@@ -945,7 +939,7 @@ bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichShape, const int &whichSet )
+bool DbJtDatabase::_processSet ( eaiShape *shape, int whichShape, int whichSet )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processSet(), this = %X, shape = %X, whichSet = %d\n", this, shape, whichSet );
   SL_ASSERT ( shape );
@@ -954,14 +948,11 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichShape, const i
   SL_ASSERT ( UNSET_INDEX != _current->getShape() );
   SL_ASSERT ( whichSet == _current->getSet() );
 
-  // Used frequently below.
-  SlRefPtr<CadKit::IUnknown> unknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
-
   // Try this interface.
   SlQueryPtr<ISetNotify> set ( _target );
   if ( set.isValid() )
   {
-    if ( false == set->startEntity ( CadKit::makeSetHandle ( whichSet ), unknown ) )
+    if ( false == set->startEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
     {
       if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
@@ -978,48 +969,11 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichShape, const i
       SlQueryPtr<ITriangleAppendFloat> triangle ( _target );
       if ( triangle.isValid() )
       {
-        // Get the matrix that transforms the vertices from local to global.
-        SlMatrix44f localToGlobal ( true );
-        _matrixStack.multiply ( localToGlobal );
-
-        // Set the shape data. Even though we already have a pointer to the 
-        // eaiShape, we have make a handle so that the correct _setShapeData() 
-        // is called.
-        this->_setShapeData ( CadKit::makeShapeHandle ( whichShape ) );
-
-        // Get the number of vertices.
-        unsigned int numVertices ( _shapeData->getVertices().size ( whichSet ) );
-
-        // Should be true.
-        SL_ASSERT ( numVertices >= 3 );
-
-        // Grab the first two vertices.
-        SlVec3f v0 ( _shapeData->getVertices() ( whichSet, 0 ) );
-        SlVec3f v1 ( _shapeData->getVertices() ( whichSet, 1 ) ), v2;
-
-        // Convert from local to global coordinates.
-        v0 = localToGlobal * v0;
-        v1 = localToGlobal * v1;
-
-        // Loop through the vertices.
-        for ( unsigned int i = 2; i < numVertices; ++i )
+        // Append the triangles to the source.
+        if ( false == this->_appendTriangles ( CadKit::makeShapeHandle ( whichShape ), whichSet ) )
         {
-          // Get the next triangle.
-          v2 = _shapeData->getVertices() ( whichSet, i );
-
-          // Convert from local to global coordinates.
-          v2 = localToGlobal * v2;
-
-          // Append the triangle.
-          triangle->appendTriangle ( 
-            v0[0], v0[1], v0[2],
-            v1[0], v1[1], v1[2],
-            v2[0], v2[1], v2[2],
-            unknown );
-
-          // Swap vertices so that we get the 3rd vertex of a new triangle next time.
-          v0 = v1;
-          v1 = v2;
+          if ( false == ERROR ( FORMAT ( "Failed to append triangles from tri-strip for set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
+            return false;
         }
       }
     }
@@ -1027,9 +981,85 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichShape, const i
 
   // Try this interface.
   if ( set.isValid() )
-    if ( false == set->endEntity ( CadKit::makeSetHandle ( whichSet ), unknown ) )
+  {
+    if ( false == set->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+    {
       if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
+    }
+  }
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the vertices of the given set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_appendTriangles ( ShapeHandle shape, int whichSet )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_appendTriangles(), this = %X, shape = %X, whichSet = %d\n", this, shape, whichSet );
+  SL_ASSERT ( shape );
+  SL_ASSERT ( UNSET_INDEX != _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX != _current->getShape() );
+  SL_ASSERT ( whichSet == _current->getSet() );
+
+  // Check before calling this function. This keeps definition of 
+  // ITriangleAppendFloat out of this class's header file.
+  SlQueryPtr<ITriangleAppendFloat> triangle ( _target );
+  SL_ASSERT ( triangle.isValid() );
+
+  // Used frequently below.
+  SlRefPtr<CadKit::IUnknown> unknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
+
+  // Set the shape data. Even though we already have a pointer to the 
+  // eaiShape, we make a handle so that the correct _setShapeData() 
+  // is called.
+  if ( false == this->_setShapeData ( shape ) )
+    return false;
+
+  // Get the number of vertices.
+  unsigned int numVertices ( _shapeData->getVertices().size ( whichSet ) );
+
+  // Should be true.
+  SL_ASSERT ( numVertices >= 3 );
+
+  // Grab the first two vertices.
+  SlVec3f v0 ( _shapeData->getVertices() ( whichSet, 0 ) );
+  SlVec3f v1 ( _shapeData->getVertices() ( whichSet, 1 ) ), v2;
+
+  // Get the matrix that transforms the vertices from local to global.
+  SlMatrix44f localToGlobal ( true );
+  _matrixStack.multiply ( localToGlobal );
+
+  // Convert from local to global coordinates.
+  v0 = localToGlobal * v0;
+  v1 = localToGlobal * v1;
+
+  // Loop through the vertices.
+  for ( unsigned int i = 2; i < numVertices; ++i )
+  {
+    // Get the next triangle.
+    v2 = _shapeData->getVertices() ( whichSet, i );
+
+    // Convert from local to global coordinates.
+    v2 = localToGlobal * v2;
+
+    // Append the triangle.
+    triangle->appendTriangle ( 
+      v0[0], v0[1], v0[2],
+      v1[0], v1[1], v1[2],
+      v2[0], v2[1], v2[2],
+      unknown );
+
+    // Swap vertices so that we get the 3rd vertex of a new triangle next time.
+    v0 = v1;
+    v1 = v2;
+  }
 
   // If we get to here then it worked.
   return true;
@@ -1734,7 +1764,7 @@ void DbJtDatabase::_resetStateIndices()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-eaiShape *DbJtDatabase::_getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const
+eaiShape *DbJtDatabase::_getShape ( eaiPart *part, int whichLod, int whichShape ) const
 {
   SL_PRINT5 ( "In DbJtDatabase::_getShape(), this = %X, part = %X, whichLod = %d, whichShape = %d\n", this, part, whichLod, whichShape );
   SL_ASSERT ( part );

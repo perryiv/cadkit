@@ -73,7 +73,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../../" /I "$(FOX_INCLUDE_DIR)" /I "../" /D "_WINDOWS" /D "WIN32" /D "_DEBUG" /D "FOXDLL" /D "HAVE_OPENGL" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../../" /I "$(FOX_INCLUDE_DIR)" /I "../" /D "_WINDOWS" /D "WIN32" /D "_DEBUG" /D "FOXDLL" /D "HAVE_OPENGL" /FD /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /o "NUL" /win32

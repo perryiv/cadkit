@@ -21,8 +21,6 @@
 
 #include "Database/Base/DbBaseTarget.h"
 
-#include "Interfaces/IEntityNotify.h"
-#include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/ITriangleAppend.h"
 
 #include "Standard/SlStack.h"
@@ -36,11 +34,6 @@
 namespace CadKit
 {
 class DB_STL_API DbStlDatabase : public DbBaseTarget,
-                                 public IAssemblyNotify,
-                                 public IPartNotify,
-                                 public IInstanceNotify,
-                                 public ILodNotify,
-                                 public IShapeNotify,
                                  public ITriangleAppendFloat
 {
 public:
@@ -67,66 +60,6 @@ public:
 
   // Store the data.
   virtual bool            storeData ( const std::string &filename );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IAssemblyNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // End the assembly.
-  virtual bool            endEntity ( AssemblyHandle assembly, IUnknown *caller );
-
-  // Start the assembly.
-  virtual bool            startEntity ( AssemblyHandle assembly, IUnknown *caller );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IPartNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // End the part.
-  virtual bool            endEntity ( PartHandle assembly, IUnknown *caller );
-
-  // Start the part.
-  virtual bool            startEntity ( PartHandle assembly, IUnknown *caller );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IInstanceNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // End the instance.
-  virtual bool            endEntity ( InstanceHandle assembly, IUnknown *caller );
-
-  // Start the instance.
-  virtual bool            startEntity ( InstanceHandle assembly, IUnknown *caller );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  ILodNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // End the lod.
-  virtual bool            endEntity ( LodHandle lod, IUnknown *caller );
-
-  // Start the lod.
-  virtual bool            startEntity ( LodHandle lod, IUnknown *caller );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IShapeNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // End the shape.
-  virtual bool            endEntity ( ShapeHandle shape, IUnknown *caller );
-
-  // Start the shape.
-  virtual bool            startEntity ( ShapeHandle shape, IUnknown *caller );
 
   /////////////////////////////////////////////////////////////////////////////
   //

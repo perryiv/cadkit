@@ -285,6 +285,8 @@ protected:
 
   virtual ~DbJtDatabase();
 
+  bool                    _appendTriangles ( ShapeHandle shape, int whichSet );
+
   bool                    _endAssembly ( eaiAssembly *assembly );
   bool                    _endInstance ( eaiInstance *instance );
   bool                    _endPart     ( eaiPart *part );
@@ -293,7 +295,7 @@ protected:
   eaiInstance *           _getCurrentInstance() const;
   eaiPart *               _getCurrentPart() const;
   eaiShape *              _getShape ( ShapeHandle shape ) const;
-  eaiShape *              _getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const;
+  eaiShape *              _getShape ( eaiPart *part, int whichLod, int whichShape ) const;
   eaiAssembly *           _getTopAssembly() const;
 
   static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level );
@@ -302,9 +304,9 @@ protected:
   bool                    _postActionTraversalNotify   ( eaiHierarchy *hierarchy, int level );
 
   bool                    _processLods  ( eaiPart *part );
-  bool                    _processLod   ( eaiPart *part,   const int &whichLod );
-  bool                    _processShape ( eaiPart *part,   const int &whichLod, const int &whichShape );
-  bool                    _processSet   ( eaiShape *shape, const int &whichShape, const int &whichSet );
+  bool                    _processLod   ( eaiPart *part,   int whichLod );
+  bool                    _processShape ( eaiPart *part,   int whichLod, int whichShape );
+  bool                    _processSet   ( eaiShape *shape, int whichShape, int whichSet );
 
   void                    _pushAssembly ( eaiAssembly *assembly );
   void                    _popAssembly();

@@ -22,7 +22,7 @@
 # include <stack>
 #endif
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
+#if _WIN32 || __sgi
 # define _sequence c
 #elif __GNUC__
 # define _sequence _M_c

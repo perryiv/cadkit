@@ -314,7 +314,7 @@ inline void _getFullPathName ( const wchar_t *pathname, const unsigned int &bufS
   SL_VERIFY ( NULL != ::_wfullpath ( fullpath, pathname, bufSize ) );
 #elif __GNUC__
   TODO
-#elif _SGI_NATIVE_COMPILER
+#elif __sgi
   SL_ASSERT ( 0 ); // Not supported (that I know of).
 #else
   TODO

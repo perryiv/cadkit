@@ -345,6 +345,9 @@
 					RelativePath="Interfaces\ICommand.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxAddTab.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxApp.h">
 				</File>
 				<File
@@ -370,6 +373,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFoxToolbar.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFoxTreeList.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFoxWindow.h">
@@ -451,6 +457,9 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IUnknown.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IUpdateTreeControls.h">
 				</File>
 				<File
 					RelativePath="Interfaces\IWrite.h">

@@ -952,3 +952,23 @@ bool DbJtTraverser::getShapeType ( EntityHandle entity,
   // It worked.
   return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the original part or assembly associated with the given instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DbJtTraverser::EntityHandle DbJtTraverser::getOriginal ( EntityHandle entity ) const
+{
+  SL_PRINT3 ( "In DbJtTraverser::getOriginal(), this = %X, entity = %X\n", this, entity );
+  SL_ASSERT ( entity );
+
+  // It has to be an instance.
+  if ( eaiEntity::eaiINSTANCE != ((eaiEntity *) entity)->typeID() )
+    return NULL;
+
+  // Return a pointer to the original part or assembly (which may be null).
+  return ((eaiInstance *) entity)->original();
+}

@@ -52,6 +52,7 @@
 # include <list>
 # include <string>
 # include <vector>
+# include <map>
 #endif
 
 class pfDCS;
@@ -107,10 +108,12 @@ protected:
     SlMaterialf _material;
   };
 
-  bool _verbose;
   typedef std::list<Group> Assemblies;
+  typedef std::map<DbJtTraverser::EntityHandle, pfGroup *> GroupMap;
+  bool _verbose;
   DbJtTraverser::Ptr _jtTraverser;
   std::string _error;
+  std::auto_ptr<GroupMap> _groupMap;
   Assemblies _assemblies;
 
   bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
@@ -128,6 +131,8 @@ protected:
   bool                    _createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group );
 
   bool                    _endCurrentGroup();
+
+  pfGroup *               _findGroup ( DbJtTraverser::EntityHandle entity ) const;
 
   int *                   _makeIntArray ( const std::vector<unsigned int> &vec ) const;
   pfVec3 *                _makeVec3Array ( const std::vector<SlVec3f> &vec ) const;

@@ -9,13 +9,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IDataTarget: Interface for a data target.
+//  IOutputAttribute: Interface for output format attributes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_DATA_TARGET_H_
-#define _CADKIT_INTERFACE_DATA_TARGET_H_
+#ifndef _CADKIT_INTERFACE_OUTPUT_ATTRIBUTE_H_
+#define _CADKIT_INTERFACE_OUTPUT_ATTRIBUTE_H_
 
+#include "Enum.h"
 #include "IUnknown.h"
 
 #include <string>
@@ -23,20 +24,17 @@
 
 namespace CadKit
 {
-class IDataTarget : public IUnknown
+class IOutputAttribute : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032674768 };
+  enum { IID = 1054759438 };
 
-  // Tell the target it is about to receive data.
-  virtual bool            dataTransferStart ( IUnknown *caller ) = 0;
-
-  // Tell the target it is done receiving data.
-  virtual bool            dataTransferEnd ( IUnknown *caller ) = 0;
+  // Set the output attribute.
+  virtual bool            setOutputAttribute ( const FormatAttribute &attribute ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_DATA_TARGET_H_
+#endif // _CADKIT_INTERFACE_OUTPUT_ATTRIBUTE_H_

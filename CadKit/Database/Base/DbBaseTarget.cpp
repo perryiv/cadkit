@@ -17,7 +17,6 @@
 #include "DbBaseTarget.h"
 
 #include "Standard/SlPrint.h"
-#include "Standard/SlPathname.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #endif
@@ -68,32 +67,4 @@ IUnknown *DbBaseTarget::queryInterface ( unsigned long iid )
   default:
     return DbBaseObject::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the default output filename, based on the given filename.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string DbBaseTarget::getDefaultOutputName ( const std::string &filename )
-{
-  SL_PRINT3 ( "In DbBaseTarget::getDefaultOutputName(), this = %X, filename = %s\n", this, filename.c_str() );
-  SL_ASSERT ( filename.size() );
-
-  // Parse the path.
-  SlPathname<std::string> path ( filename );
-
-  // Make a copy of the input filename.
-  std::string out ( filename );
-
-  // Drop the extension.
-  out.resize ( out.size() - path.getExtension().size() );
-
-  // Add the given extension.
-  out += this->getFileExtension();
-
-  // Return the output filename.
-  return out;
 }

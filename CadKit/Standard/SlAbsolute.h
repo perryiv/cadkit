@@ -25,7 +25,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline T absolute ( const T &num )
+template<class T> inline T abs ( const T &num )
 {
   return ( num < 0 ) ? -num : num;
 }
@@ -40,7 +40,7 @@ template<class T> inline T absolute ( const T &num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define SL_ABS CadKit::absolute
+#define SL_ABS CadKit::abs
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_ABSOLUTE_VALUE_H_

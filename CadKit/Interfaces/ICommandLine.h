@@ -36,17 +36,11 @@ public:
   // Convenient typedef.
   typedef std::list<std::string> Args;
 
-  // Check the arguments.
-  virtual bool            checkArguments ( const int &argc, const char **argv ) const = 0;
-
   // Parse the command-line arguments and execute.
   virtual bool            execute ( int argc, char **argv, IUnknown *source, IUnknown *target ) = 0;
 
   // Get the usage string.
-  virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const = 0;
-
-  // Parse the arguments.
-  virtual bool            parseArguments ( const int &argc, const char **argv, Args &args ) = 0;
+  virtual std::string     getUsageString ( const std::string &program, bool extended ) = 0;
 };
 
 }; // namespace CadKit

@@ -30,7 +30,7 @@ public:
   enum { IID = 1043122214 };
 
   // Set option for processing the LODs.
-  virtual void            setLodProcessOption ( LodProcessOption &option ) = 0;
+  virtual void            setLodProcessOption ( const LodProcessOption &option ) = 0;
 };
 
 }; // namespace CadKit

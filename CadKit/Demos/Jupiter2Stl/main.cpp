@@ -41,6 +41,6 @@ int main ( int argc, char **argv )
     options->setPartLoadOption ( ILoadOptions::EXPLODE_PART );
   }
 
-  bool result = CadKit::translate ( new CtTranslation, jt, new DbStlDatabase, argc, argv, true );
+  bool result = CadKit::translate ( new CtTranslation, jt, new DbStlDatabase, argc, argv );
   return ( result ) ? 1 : 0;
 }

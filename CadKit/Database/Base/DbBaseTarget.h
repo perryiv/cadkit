@@ -45,15 +45,6 @@ public:
   // See if the interface is supported.
   virtual IUnknown *      queryInterface ( unsigned long iid ) = 0;
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IDataTarget interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the default output filename, based on the given filename.
-  virtual std::string     getDefaultOutputName ( const std::string &filename );
-
 protected:
 
   DbBaseTarget();

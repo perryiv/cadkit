@@ -32,6 +32,9 @@
 # include <algorithm> // For std::transform
 # include <time.h>
 # include <math.h>
+# include <stdexcept>
+# include <sstream>
+
 #endif
 
 #endif // _CADKIT_CONTROLLER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

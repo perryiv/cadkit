@@ -29,7 +29,7 @@
 # include <list>
 # include <vector>
 # include <map>
-# include <algorithm> // For std::transform
+# include <algorithm>
 # include <string>
 # include <math.h>
 #endif

@@ -71,6 +71,21 @@ public:
   const SlVec3f &getVertex ( unsigned int which ) const { return _vertices.operator[] ( which ); }
   const SlVec3f &getNormal() const { return _normal; }
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Execute the functor with all the elements. Make sure the argument is 
+  //  a reference or else you will faul things up.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Functor > void operator () ( Functor &functor ) const
+  {
+    functor ( _vertices[0] );
+    functor ( _vertices[1] );
+    functor ( _vertices[2] );
+    functor ( _normal );
+  }
+
 private:
 
   SlVec3<SlVec3f> _vertices;

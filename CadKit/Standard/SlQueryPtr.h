@@ -48,8 +48,8 @@ struct QueryPtrDefaultPolicy
 template
 <
   class NewInterfaceType, 
-  class OldInterfaceType = CadKit::IUnknown,
-  class NoInterfacePolicy = CadKit::Private::QueryPtrDefaultPolicy
+  class NoInterfacePolicy = CadKit::Private::QueryPtrDefaultPolicy,
+  class OldInterfaceType = CadKit::IUnknown
 >
 class SlQueryPtr : public SlRefPtr<NewInterfaceType>
 {
@@ -66,6 +66,21 @@ public:
   {
     // Check the policy.
     NoInterfacePolicy() ( this->isValid(), "Interface not found" );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor. Takes a failure message. Note what we pass to the base 
+  //  class's constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Argument > SlQueryPtr ( OldInterfaceType *ptr, const Argument &argument ) : 
+    SlRefPtr<NewInterfaceType> ( static_cast<NewInterfaceType *> ( CadKit::queryInterface ( NewInterfaceType::IID, ptr ) ) )
+  {
+    // Check the policy.
+    NoInterfacePolicy() ( this->isValid(), argument );
   }
 
 

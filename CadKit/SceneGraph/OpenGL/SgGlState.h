@@ -81,8 +81,8 @@ public:
 protected:
 
   typedef std::map<unsigned int,bool> StateMap;
-  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > ErrorPolicy;
-  typedef SlStack < SlMatrix44f, ErrorPolicy > MatrixStack;
+  typedef CadKit::ErrorPolicy::Throw < std::out_of_range > StackErrorPolicy;
+  typedef SlStack < SlMatrix44f, StackErrorPolicy > MatrixStack;
 
   MatrixMode _matrixMode;
   std::auto_ptr<MatrixStack> _modelviewStack;

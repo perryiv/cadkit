@@ -81,7 +81,7 @@ int main ( int argc, char **argv )
     return 0;
 
   // Translate.
-  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbPfDatabase, argc, argv, true );
+  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbPfDatabase, argc, argv );
 
   // Done with Performer.
   ::pfExit();

@@ -30,7 +30,7 @@ public:
   enum { IID = 1034027225 };
 
   // Set the message priority level.
-  virtual bool            setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority ) = 0;
+  virtual bool            setMessagePriorityLevel ( const MessageType &type, unsigned int priority ) = 0;
 };
 
 }; // namespace CadKit

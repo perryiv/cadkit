@@ -344,13 +344,13 @@ template<class T> inline void SlBoundingBox<T>::grow ( const BoundingBox &b1, co
   // Only add _valid bounding boxes.
   SL_ASSERT ( b1._valid && b2._valid );
 
-  sum._max[0] = SL_MAX ( b1._max[0], b2._max[0], sum._max[0] );
-  sum._max[1] = SL_MAX ( b1._max[1], b2._max[1], sum._max[1] );
-  sum._max[2] = SL_MAX ( b1._max[2], b2._max[2], sum._max[2] );
+  sum._max[0] = CadKit::max ( b1._max[0], b2._max[0], sum._max[0] );
+  sum._max[1] = CadKit::max ( b1._max[1], b2._max[1], sum._max[1] );
+  sum._max[2] = CadKit::max ( b1._max[2], b2._max[2], sum._max[2] );
 
-  sum._min[0] = SL_MIN ( b1._min[0], b2._min[0], sum._min[0] );
-  sum._min[1] = SL_MIN ( b1._min[1], b2._min[1], sum._min[1] );
-  sum._min[2] = SL_MIN ( b1._min[2], b2._min[2], sum._min[2] );
+  sum._min[0] = CadKit::min ( b1._min[0], b2._min[0], sum._min[0] );
+  sum._min[1] = CadKit::min ( b1._min[1], b2._min[1], sum._min[1] );
+  sum._min[2] = CadKit::min ( b1._min[2], b2._min[2], sum._min[2] );
 
   // Don't assume the sum is valid.
 }
@@ -386,12 +386,12 @@ template<class T> inline void SlBoundingBox<T>::multiply ( const Matrix4 &M, con
   v[7] = M * v[7];
 
   // Pick the max and min coordinates.
-  b2._min[0] = SL_MIN ( v[0][0], SL_MIN ( v[1][0], SL_MIN ( v[2][0], SL_MIN ( v[3][0], SL_MIN ( v[4][0], SL_MIN ( v[5][0], SL_MIN ( v[6][0], v[7][0] ) ) ) ) ) ) );
-  b2._min[1] = SL_MIN ( v[0][1], SL_MIN ( v[1][1], SL_MIN ( v[2][1], SL_MIN ( v[3][1], SL_MIN ( v[4][1], SL_MIN ( v[5][1], SL_MIN ( v[6][1], v[7][1] ) ) ) ) ) ) );
-  b2._min[2] = SL_MIN ( v[0][2], SL_MIN ( v[1][2], SL_MIN ( v[2][2], SL_MIN ( v[3][2], SL_MIN ( v[4][2], SL_MIN ( v[5][2], SL_MIN ( v[6][2], v[7][2] ) ) ) ) ) ) );
-  b2._max[0] = SL_MAX ( v[0][0], SL_MAX ( v[1][0], SL_MAX ( v[2][0], SL_MAX ( v[3][0], SL_MAX ( v[4][0], SL_MAX ( v[5][0], SL_MAX ( v[6][0], v[7][0] ) ) ) ) ) ) );
-  b2._max[1] = SL_MAX ( v[0][1], SL_MAX ( v[1][1], SL_MAX ( v[2][1], SL_MAX ( v[3][1], SL_MAX ( v[4][1], SL_MAX ( v[5][1], SL_MAX ( v[6][1], v[7][1] ) ) ) ) ) ) );
-  b2._max[2] = SL_MAX ( v[0][2], SL_MAX ( v[1][2], SL_MAX ( v[2][2], SL_MAX ( v[3][2], SL_MAX ( v[4][2], SL_MAX ( v[5][2], SL_MAX ( v[6][2], v[7][2] ) ) ) ) ) ) );
+  b2._min[0] = CadKit::min ( v[0][0], v[1][0], v[2][0], v[3][0], v[4][0], v[5][0], v[6][0], v[7][0] );
+  b2._min[1] = CadKit::min ( v[0][1], v[1][1], v[2][1], v[3][1], v[4][1], v[5][1], v[6][1], v[7][1] );
+  b2._min[2] = CadKit::min ( v[0][2], v[1][2], v[2][2], v[3][2], v[4][2], v[5][2], v[6][2], v[7][2] );
+  b2._max[0] = CadKit::max ( v[0][0], v[1][0], v[2][0], v[3][0], v[4][0], v[5][0], v[6][0], v[7][0] );
+  b2._max[1] = CadKit::max ( v[0][1], v[1][1], v[2][1], v[3][1], v[4][1], v[5][1], v[6][1], v[7][1] );
+  b2._max[2] = CadKit::max ( v[0][2], v[1][2], v[2][2], v[3][2], v[4][2], v[5][2], v[6][2], v[7][2] );
 
   // You have to set this so that you can do this: bbox2 = M * bbox1;
   b2._valid = b1._valid;

@@ -17,7 +17,6 @@
 #define _CADKIT_DATABASE_ITRI_LIBRARY_DATABASE_H_
 
 #include "DbItriApi.h"
-#include "DbItriTriangle.h"
 
 #include "Database/Base/DbBaseTarget.h"
 
@@ -25,6 +24,7 @@
 #include "Interfaces/IFileExtension.h"
 #include "Interfaces/IDataWrite.h"
 #include "Interfaces/IOutputAttribute.h"
+#include "Interfaces/IOutputPrecision.h"
 
 #include "Standard/SlStack.h"
 
@@ -40,7 +40,8 @@ class DB_ITRI_API DbItriDatabase : public DbBaseTarget,
                                    public ITriangleAppendFloat,
                                    public IFileExtension,
                                    public IDataWrite,
-                                   public IOutputAttribute
+                                   public IOutputAttribute,
+                                   public IOutputPrecision
 {
 public:
 
@@ -107,12 +108,23 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Set the output attribute.
-  virtual bool            setOutputAttribute ( const FormatAttribute &attribute ) const;
+  virtual bool            setOutputAttribute ( const FormatAttribute &attribute );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputPrecision interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the number of decimals to output.
+  virtual bool            setOutputNumDecimals ( unsigned int numDecimals );
 
 protected:
 
-  typedef std::list<DbItriTriangle> Facets;
-  Facets _facets;
+  typedef SlVec3<SlVec3f> Triangle;
+  typedef std::list<Triangle> Triangles;
+  Triangles _triangles;
+  unsigned int _numDecimals;
 
   virtual ~DbItriDatabase();
 

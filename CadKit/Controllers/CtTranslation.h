@@ -20,7 +20,6 @@
 
 #include "Interfaces/IMessageNotify.h"
 #include "Interfaces/ICommandLine.h"
-#include "Interfaces/ITranslator.h"
 #include "Interfaces/IOutputStream.h"
 
 #include "Standard/SlRefBase.h"
@@ -29,6 +28,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <iostream>
 # include <list>
+# include <string>
 #endif
 
 
@@ -37,7 +37,6 @@ namespace CadKit
 class CT_API CtTranslation : public SlRefBase, 
                              public IMessageNotify,
                              public ICommandLine,
-                             public ITranslator,
                              public IOutputStream
 {
 public:
@@ -54,7 +53,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type );
+  virtual bool            messageNotify ( const std::string &message, unsigned long id, const MessageType &type );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -62,17 +61,11 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Check the arguments.
-  virtual bool            checkArguments ( const int &argc, const char **argv ) const;
-
   // Parse the command-line arguments and execute.
   virtual bool            execute ( int argc, char **argv, IUnknown *source, IUnknown *target );
 
   // Get the usage string.
-  virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const;
-
-  // Parse the arguments.
-  virtual bool            parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args );
+  virtual std::string     getUsageString ( const std::string &program, bool extended );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -83,20 +76,10 @@ public:
   // Set the output stream. Default is null.
   virtual void            setOutputStream ( std::ostream *out );
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  ITranslator interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Translate the database.
-  virtual bool            translate ( const std::string &name, IUnknown *source, IUnknown *target );
-
 protected:
 
   enum
   {
-    _PRINT_ERRORS   = 0x00000001,
     _PRINT_WARNINGS = 0x00000002,
     _PRINT_INFO     = 0x00000004,
   };
@@ -111,11 +94,29 @@ protected:
 
   virtual ~CtTranslation();
 
-  bool                    _execute ( int argc, char **argv, IUnknown *source, IUnknown *target );
+  void                    _attachModules();
 
-  bool                    _messageNotify ( const std::string &type, const std::string &message, const unsigned long &id ) const;
+  void                    _execute ( int argc, char **argv, IUnknown *source, IUnknown *target );
 
-  void                    _setProgressPrintLevel ( const unsigned int &level );
+  std::string             _getTargetFileExtension();
+  std::string             _getOutputName ( const std::string &filename );
+  std::string             _getUsageSubString ( const std::string &feature ) const;
+
+  bool                    _messageNotify ( const std::string &type, const std::string &message, unsigned long id ) const;
+
+  void                    _read ( const std::string &filename );
+
+  bool                    _parseArguments ( int argc, char **argv, std::list<std::string> &args );
+
+  void                    _setBinaryOutput ( bool state );
+  void                    _setLodOption ( const LodProcessOption &option );
+  void                    _setProgressPrintLevel ( unsigned int level );
+  void                    _setZeroRange ( double negative, double positive );
+  void                    _setOutputNumDecimals ( unsigned int numDecimals );
+
+  void                    _translate ( const std::string &filename );
+
+  void                    _write ( const std::string &filename );
 
   SL_DECLARE_REFERENCE_POINTER ( CtTranslation );
   SL_DECLARE_DYNAMIC_CLASS ( CtTranslation, 1032745026 );

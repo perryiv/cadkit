@@ -350,8 +350,8 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::_rgb2hsv
   const Real CONST_0   ( static_cast<Real> ( 0 ) );
 
   Real delta ( 0 );
-  Real maximum ( SL_MAX ( r, g, b ) );
-  Real minimum ( SL_MIN ( r, g, b ) );
+  Real maximum ( CadKit::max ( r, g, b ) );
+  Real minimum ( CadKit::min ( r, g, b ) );
   
   // Set the value.
   v = maximum;
@@ -577,10 +577,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::truncate
 {
   const Real CONST_1 ( static_cast<Real> ( 1 ) );
   const Real CONST_0 ( static_cast<Real> ( 0 ) );
-  _v[0] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[0] ) );
-  _v[1] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[1] ) );
-  _v[2] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[2] ) );
-  _v[3] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[3] ) );
+  _v[0] = std::max ( CONST_0, std::min ( CONST_1, _v[0] ) );
+  _v[1] = std::max ( CONST_0, std::min ( CONST_1, _v[1] ) );
+  _v[2] = std::max ( CONST_0, std::min ( CONST_1, _v[2] ) );
+  _v[3] = std::max ( CONST_0, std::min ( CONST_1, _v[3] ) );
 }
 
 

@@ -22,6 +22,10 @@
 #include "Database/Base/DbBaseTarget.h"
 
 #include "Interfaces/ITriangleAppend.h"
+#include "Interfaces/IFileExtension.h"
+#include "Interfaces/IDataWrite.h"
+#include "Interfaces/IOutputAttribute.h"
+#include "Interfaces/IOutputPrecision.h"
 
 #include "Standard/SlStack.h"
 
@@ -34,7 +38,11 @@
 namespace CadKit
 {
 class DB_STL_API DbStlDatabase : public DbBaseTarget,
-                                 public ITriangleAppendFloat
+                                 public ITriangleAppendFloat,
+                                 public IFileExtension,
+                                 public IDataWrite,
+                                 public IOutputAttribute,
+                                 public IOutputPrecision
 {
 public:
 
@@ -55,11 +63,14 @@ public:
   // Tell the target it is done receiving data.
   virtual bool            dataTransferEnd ( IUnknown *caller );
 
-  // Get the file extension.
-  virtual std::string     getFileExtension() const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFormatAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  // Store the data.
-  virtual bool            storeData ( const std::string &filename );
+  // Does the format have the attribute?
+  virtual bool            isAttributeSupported ( const FormatAttribute &attribute ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -73,18 +84,55 @@ public:
                                            float t2v0, float t2v1, float t2v2,
                                            IUnknown *caller );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFileExtension interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the file extension.
+  virtual std::string     getFileExtension() const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IDataWrite interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Write the data.
+  virtual bool            writeData ( const std::string &filename );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the output attribute.
+  virtual bool            setOutputAttribute ( const FormatAttribute &attribute );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputPrecision interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the number of decimals to output.
+  virtual bool            setOutputNumDecimals ( unsigned int numDecimals );
+
 protected:
 
   typedef std::list<DbStlTriangle> Facets;
   Facets _facets;
-  bool _ascii;
+  FormatAttribute _outputAttribute;
+  unsigned int _numDecimals;
 
   virtual ~DbStlDatabase();
 
   std::string             _getHeader() const;
 
-  bool                    _writeAscii ( const std::string &filename );
-  bool                    _writeBinary ( const std::string &filename );
+  bool                    _writeAscii ( const std::string &filename ) const;
+  bool                    _writeBinary ( const std::string &filename ) const;
 
   SL_DECLARE_REFERENCE_POINTER ( DbStlDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbStlDatabase, 1038408962 );

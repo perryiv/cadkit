@@ -16,31 +16,31 @@
 #ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_ASCII_WRITER_H_
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_ASCII_WRITER_H_
 
-#include "Standard/SlVec3IO.h"
+#include "Database/Base/DbBaseAsciiWriter.h"
 
 
 namespace CadKit
 {
-class DbStlAsciiWriter
+class DbStlAsciiWriter : public DbBaseAsciiWriter
 {
 public:
 
-  DbStlAsciiWriter ( std::ostream &out ) : _out ( out ){}
+  DbStlAsciiWriter ( std::ostream &out, unsigned int numDecimals, unsigned int width ) : 
+    DbBaseAsciiWriter ( out, numDecimals, width )
+  {
+    // Empty.
+  }
 
   void operator() ( const DbStlTriangle &facet )
   {
-    _out << "facet normal " << facet.getNormal() << "\n";
+    _out << "facet normal " << this->_write ( facet.getNormal() ) << '\n';
     _out << "outer loop\n";
-    _out << "vertex " << facet.getVertex ( 0 ) << "\n";
-    _out << "vertex " << facet.getVertex ( 1 ) << "\n";
-    _out << "vertex " << facet.getVertex ( 2 ) << "\n";
+    _out << "vertex " << this->_write ( facet.getVertex ( 0 ) ) << '\n';
+    _out << "vertex " << this->_write ( facet.getVertex ( 1 ) ) << '\n';
+    _out << "vertex " << this->_write ( facet.getVertex ( 2 ) ) << '\n';
     _out << "endloop\n";
     _out << "endfacet\n";
   }
-
-private:
-
-  std::ostream &_out;
 };
 
 }; // namespace CadKit

@@ -23,21 +23,29 @@
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlPathname.h"
-#include "Standard/SlQueryPtr.h"
 #include "Standard/SlMessageIds.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlBitmask.h"
 #include "Standard/SlScopedSet.h"
+#include "Standard/SlErrorPolicy.h"
+#include "Standard/SlQueryPtr.h"
+#include "Standard/SlPathname.h"
 
 #include "Interfaces/IDataSource.h"
-#include "Interfaces/IDataTarget.h"
+#include "Interfaces/IDataRead.h"
+#include "Interfaces/IDataWrite.h"
 #include "Interfaces/IControlled.h"
 #include "Interfaces/IMessagePriority.h"
 #include "Interfaces/ILodOption.h"
 #include "Interfaces/IZeroRange.h"
+#include "Interfaces/IFileExtension.h"
+#include "Interfaces/IOutputAttribute.h"
+#include "Interfaces/IOutputPrecision.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <time.h>
+# include <stdexcept>
+# include <sstream>
 #endif
 
 #define PRINT if ( _out ) (*_out)
@@ -45,10 +53,12 @@
 #define NEGATIVE_ZERO_INDEX 0
 #define POSITIVE_ZERO_INDEX 1
 
-// Don't bother formatting the string if the controller won't print it.
+// Don't bother formatting the string if it won't be printed.
 #define PRINT_LEVEL(priority)\
-  if ( priority <= _progressPrintLevel )\
+  if ( priority <= _progressPrintLevel && _out )\
     (*_out)
+
+namespace CadKit { typedef ErrorPolicy::Throw < std::runtime_error > ThrowIfNotFound; };
 
 using namespace CadKit;
 
@@ -63,7 +73,7 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( CtTranslation, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 CtTranslation::CtTranslation() : SlRefBase ( 0 ),
-  _out ( NULL ),
+  _out ( &(std::cout) ),
   _progressPrintLevel ( 0 ),
   _printFlags ( 0 ),
   _lodOption ( CadKit::PROCESS_ALL_LODS ),
@@ -103,8 +113,6 @@ CadKit::IUnknown *CtTranslation::queryInterface ( unsigned long iid )
     return static_cast<IMessageNotify *>(this);
   case ICommandLine::IID:
     return static_cast<ICommandLine *>(this);
-  case ITranslator::IID:
-    return static_cast<ITranslator *>(this);
   case IOutputStream::IID:
     return static_cast<IOutputStream *>(this);
   case CadKit::IUnknown::IID:
@@ -117,34 +125,24 @@ CadKit::IUnknown *CtTranslation::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Check the arguments.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
-{
-  SL_PRINT3 ( "In CtTranslation::checkArgumentCount(), this = %X, argc = %d\n", this, argc );
-  SL_ASSERT ( argv );
-
-  // Check the number of arguments.
-  return ( argc < MIN_NUM_ARGS ) ? false : true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the usage string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string CtTranslation::getUsageString ( const std::string &program, const std::string &ext, bool extended ) const
+std::string CtTranslation::getUsageString ( const std::string &program, bool extended )
 {
   SL_PRINT2 ( "In CtTranslation::getUsageString(), this = %X\n", this );
+
+  // See if you can get the source's file extension.
+  std::string ext ( "ext" );
+  SlQueryPtr<IFileExtension> fe ( _source );
+  if ( fe.isValid() )
+    ext = fe->getFileExtension();
 
   // Format the usage string.
   std::string usage;
   CadKit::format ( usage, 
-                   "\nUsage: %s [options] <filename1.%s> [filename2.%s] ...",
+                   "Usage: %s [options] <filename1.%s> [filename2.%s] ...",
                    CadKit::justFilename ( program ).c_str(),
                    ext.c_str(),
                    ext.c_str() );
@@ -157,100 +155,120 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse the arguments.
+//  Print the usage of the specific feature.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args )
+std::string CtTranslation::_getUsageSubString ( const std::string &feature ) const
 {
-  SL_PRINT3 ( "In CtTranslation::parseArguments(), this = %X, argc = %d\n", this, argc );
-  SL_ASSERT ( argc >= MIN_NUM_ARGS );
-  SL_ASSERT ( argv );
+  SL_PRINT2 ( "In CtTranslation::_getUsageSubString(), this = %X\n", this );
 
-  // Initialize.
-  args.clear();
+  // The substring.
+  std::string sub;
+
+  // Get the long usage string.
+  std::string usage ( CtUsage::getLong() );
+
+  // Search for the feature.
+  std::string::size_type start = usage.find ( feature );
+
+  // Did we find it?
+  if ( std::string::npos != start )
+  {
+    // Search for the end of the line.
+    std::string::size_type end = usage.find ( '\n', start );
+
+    // Did we find it?
+    if ( std::string::npos != end && end > start )
+    {
+      // Assign the substring.
+      sub.assign ( usage.begin() + start, usage.begin() + end );
+    }
+  }
+
+  // Return the substring, which may still be empty.
+  return sub;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the arguments. Returns true if execution should continue.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CtTranslation::_parseArguments ( int argc, char **argv, std::list<std::string> &args )
+{
+  SL_PRINT3 ( "In CtTranslation::_parseArguments(), this = %X, argc = %d\n", this, argc );
+
+  // Check the number of arguments.
+  if ( argc < MIN_NUM_ARGS || NULL == argv )
+  {
+    std::cout << this->getUsageString ( argv[0], false );
+    return false;
+  }
 
   // Get the arguments.
   for ( int i = 1; i < argc; ++i )
   {
-    // Grab the current argument.
+    // Grab the current argument test against our flags.
     std::string arg ( argv[i] );
-
-    //
-    // See if this argument is one of our flags.
-    //
 
     if ( arg == "-h" || arg == "--help" )
     {
       // Print the usage string now.
-      // TODO, this is a hack, should not be jt-specific.
-      std::cout << this->getUsageString ( argv[0], "jt", true ).c_str() << std::endl;
-      
-      // Hack! TODO, this is a temporary fix. Without it the shord help 
-      // message prints after this long one. Need a redesign of the controller.
-      ::exit ( 0 );
+      std::cout << this->getUsageString ( argv[0], true );
+      return false;
     }
 
     else if ( arg == "-pp" || arg == "--print-progress" )
     {
       // Get the next argument, if there is one.
-      std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );
+      std::string option ( ( i + 1 == argc ) ? "" : argv[++i] );
 
       // See if the option string is an integer.
       if ( true == CadKit::isUnsignedInteger ( option ) )
-      {
-        this->setOutputStream ( &(std::cout) );
         this->_setProgressPrintLevel ( CadKit::toUnsignedInteger ( option ) );
 
-        // Increment the loop index.
-        ++i;
-      }
-
-      // Otherwise return false.
+      // Otherwise...
       else
+      {
+        // Print useful message.
+        std::cout << "Error: argument " << arg << " should be followed by an unsigned integer.\n";
+        std::cout << this->_getUsageSubString ( "--print-progress" ) << '\n';
         return false;
-    }
-
-    else if ( arg == "-pe" || arg == "--print-errors" )
-    {
-      this->setOutputStream ( &(std::cout) );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
+      }
     }
 
     else if ( arg == "-pw" || arg == "--print-warnings" )
     {
-      this->setOutputStream ( &(std::cout) );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
+      _printFlags = CadKit::addBits ( _printFlags, _PRINT_WARNINGS );
     }
 
     else if ( arg == "-pi" || arg == "--print-info" )
     {
-      this->setOutputStream ( &(std::cout) );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
+      _printFlags = CadKit::addBits ( _printFlags, _PRINT_INFO );
     }
 
     else if ( arg == "-v" || arg == "--verbose" )
     {
-      this->setOutputStream ( &(std::cout) );
       this->_setProgressPrintLevel ( 1 );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
-      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
+      _printFlags = CadKit::addBits ( _printFlags, _PRINT_WARNINGS | _PRINT_INFO );
     }
 
     else if ( arg == "-al" || arg == "--all-lods" )
     {
-      _lodOption = CadKit::PROCESS_ALL_LODS;
+      this->_setLodOption ( CadKit::PROCESS_ALL_LODS );
     }
 
     else if ( arg == "-hl" || arg == "--high-lod" )
     {
-      _lodOption = CadKit::PROCESS_HIGH_LOD;
+      this->_setLodOption ( CadKit::PROCESS_HIGH_LOD );
     }
 
     else if ( arg == "-ll" || arg == "--low-lod" )
     {
-      _lodOption = CadKit::PROCESS_LOW_LOD;
+      this->_setLodOption ( CadKit::PROCESS_LOW_LOD );
     }
 
     else if ( arg == "-z" || arg == "--zero" )
@@ -262,11 +280,8 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, IComman
       // See if the strings are a numbers.
       if ( true == CadKit::isNumber ( negative ) && true == CadKit::isNumber ( positive ) )
       {
-        // Set the zero value.
-        _zeroRange[NEGATIVE_ZERO_INDEX] = ::atof ( negative.c_str() );
-        _zeroRange[POSITIVE_ZERO_INDEX] = ::atof ( positive.c_str() );
-
-        // Increment the loop index.
+        // Set the zero value and increment the loop index.
+        this->_setZeroRange ( ::atof ( negative.c_str() ), ::atof ( positive.c_str() ) );
         i += 2;
       }
 
@@ -277,12 +292,12 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, IComman
 
     else if ( arg == "-ob" || arg == "--output-binary" )
     {
-
+      this->_setBinaryOutput ( true );
     }
 
     else if ( arg == "-oa" || arg == "--output-ascii" )
     {
-
+      this->_setBinaryOutput ( false );
     }
 
     else if ( arg == "-c" || arg == "--center" )
@@ -310,9 +325,23 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, IComman
 
     }
 
-    else if ( arg == "-op" || arg == "--output-precision" )
+    else if ( arg == "-nd" || arg == "--num-decimals" )
     {
+      // Get the next argument, if there is one.
+      std::string option ( ( i + 1 == argc ) ? "" : argv[++i] );
 
+      // See if the option string is an integer.
+      if ( true == CadKit::isUnsignedInteger ( option ) )
+        this->_setOutputNumDecimals ( CadKit::toUnsignedInteger ( option ) );
+
+      // Otherwise...
+      else
+      {
+        // Print useful message.
+        std::cout << "Error: argument " << arg << " should be followed by an unsigned integer.\n";
+        std::cout << this->_getUsageSubString ( "--num-decimals" ) << '\n';
+        return false;
+      }
     }
 
     // Otherwise just save the argument.
@@ -337,25 +366,41 @@ bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown 
 {
   SL_PRINT5 ( "In CtTranslation::execute(), this = %X, argc = %d, source = %X, target = %X\n", this, argc, source, target );
 
+  std::string message;
+
   try
   {
-    return this->_execute ( argc, argv, source, target );
+    this->_execute ( argc, argv, source, target );
+    return true;
   }
 
-  catch ( std::exception &e )
+  catch ( const std::exception &e )
   {
-    PRINT << "Exception caught: " << e.what() << std::endl;
+    message = e.what();
+  }
+
+  catch ( const std::string &s )
+  {
+    message = s;
   }
 
   catch ( const char *s )
   {
-    PRINT << "Exception caught: " << s << std::endl;
+    message = s;
   }
 
   catch ( ... )
   {
     PRINT << "Unknown exception caught." << std::endl;
   }
+
+  PRINT << "Error: " << message;
+
+  // Do we need a newline character?
+  if ( message.size() && '\n' == message[message.size()-1] )
+    PRINT << std::flush;
+  else
+    PRINT << std::endl;
 
   return false;
 }
@@ -367,7 +412,7 @@ bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown *target )
+void CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown *target )
 {
   SL_PRINT5 ( "In CtTranslation::_execute(), this = %X, argc = %d, source = %X, target = %X\n", this, argc, source, target );
 
@@ -376,163 +421,119 @@ bool CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown
   SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp1 ( _target, target );
   SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp2 ( _source, source );
 
-  // Make sure we have the necessary interfaces.
-  SlQueryPtr<IDataSource> ds ( source );
-  if ( ds.isNull() )
-  {
-    PRINT << "Failed to get IDataSource interface from the data source." << std::endl;
-    return false;
-  }
-/*
-  // Check the number of arguments.
-  if ( argc < MIN_NUM_ARGS )
-  {
-    std << this
-  }
+  // Parse the arguments. Returns false if we should bail. Takes care of 
+  // printing "usage" message.
+  typedef std::list<std::string> Args;
+  Args args;
+  if ( false == this->_parseArguments ( argc, argv, args ) )
+    return;
 
-  // It's ok to have a null target.
-  if ( NULL == source )
-  {
-    SL_ASSERT ( 0 ); // Heads up.
-    return false;
-  }
-
-  // Make sure these don't get deleted.
-  SlRefPtr<IUnknown> dummy2 ( source );
-  SlRefPtr<IUnknown> dummy3 ( target );
-
-  // Loop through the arguments.
-  for ( int i = 1; i < argc; ++i )
-  {
-    // Grab the current argument.
-    std::string arg ( argv[i] );
-
-    //
-    // See if this argument is one of our flags.
-    //
-
-    if ( arg == "-h" || arg == "--help" )
-    {
-      // Print the usage string now.
-      // TODO, this is a hack, should not be jt-specific.
-      std::cout << this->getUsageString ( argv[0], "jt", true ).c_str() << std::endl;
-      
-      // Hack! TODO, this is a temporary fix. Without it the shord help 
-      // message prints after this long one. Need a redesign of the controller.
-      ::exit ( 0 );
-    }
-  }
-*/
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Translate the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *source, CadKit::IUnknown *target )
-{
-  SL_PRINT5 ( "In CtTranslation::translate(), this = %X, filename = %s, source = %X, target = %X\n", this, filename.c_str(), source, target );
-  SL_ASSERT ( false == filename.empty() );
-
-  // See if we can tell the target the priority level.
-  SlQueryPtr<IMessagePriority> targetMessagePriority ( target );
-  if ( targetMessagePriority.isValid() )
-    targetMessagePriority->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, _progressPrintLevel );
-
-  // See if we can tell the source the priority level.
-  SlQueryPtr<IMessagePriority> sourceMessagePriority ( source );
-  if ( sourceMessagePriority.isValid() )
-    sourceMessagePriority->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, _progressPrintLevel );
-
-  // See if we can tell the target which LODs to process.
-  SlQueryPtr<ILodOption> targetLodOption ( target );
-  if ( targetLodOption.isValid() )
-    targetLodOption->setLodProcessOption ( _lodOption );
-
-  // See if we can tell the source which LODs to process.
-  SlQueryPtr<ILodOption> sourceLodOption ( source );
-  if ( sourceLodOption.isValid() )
-    sourceLodOption->setLodProcessOption ( _lodOption );
-
-  // See if we can set the zero range.
-  SlQueryPtr<IZeroRangeFloat> sourceZeroRangeFloat ( source );
-  if ( sourceZeroRangeFloat.isValid() )
-    sourceZeroRangeFloat->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
-
-  // See if we can set the zero range.
-  SlQueryPtr<IZeroRangeDouble> sourceZeroRangeDouble ( source );
-  if ( sourceZeroRangeDouble.isValid() )
-    sourceZeroRangeDouble->setZeroRange ( _zeroRange[NEGATIVE_ZERO_INDEX], _zeroRange[POSITIVE_ZERO_INDEX] );
-
-  // See if we can set the zero range.
-  SlQueryPtr<IZeroRangeFloat> targetZeroRange ( target );
-  if ( targetZeroRange.isValid() )
-    targetZeroRange->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
-
-  // See if we can set the zero range.
-  SlQueryPtr<IZeroRangeDouble> targetZeroRangeDouble ( target );
-  if ( targetZeroRangeDouble.isValid() )
-    targetZeroRangeDouble->setZeroRange ( _zeroRange[NEGATIVE_ZERO_INDEX], _zeroRange[POSITIVE_ZERO_INDEX] );
-
-  // Make sure the source supports the interface we need.
-  SlQueryPtr<IDataSource> ds ( source );
-  if ( ds.isNull() )
-  {
-    PRINT << "Failed to get needed interface from the data source." << std::endl;
-    return false;
-  }
-
-  // Set the source's target.
-  ds->setDataTarget ( target );
-
-  // See if the source can be controlled.
-  SlQueryPtr<IControlled> cs ( source );
-  if ( cs.isValid() )
-    cs->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
-
-  // See if the target can be controlled.
-  SlQueryPtr<IControlled> ct ( target );
-  if ( ct.isValid() )
-    ct->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
+  // Attach the modules to each other.
+  _attachModules();
 
   // Print the current time.
   time_t now = ::time ( NULL );
   PRINT_LEVEL ( 1 ) << "Start time: " << ::asctime ( localtime ( &now ) ) << std::flush;
 
-  // Load the data.
-  if ( false == ds->loadData ( filename ) )
-  {
-    PRINT << "Failed to translate: " << filename.c_str() << std::endl;
-    return false;
-  }
-
-  // See if the target should write a file.
-  SlQueryPtr<IDataTarget> dt ( target );
-  if ( dt.isValid() )
-  {
-    // Get the output filename.
-    std::string outfile ( dt->getDefaultOutputName ( filename ) );
-
-    PRINT_LEVEL ( 1 ) << "Writing: " << outfile.c_str() << std::endl;
-
-    // Store the data.
-    if ( false == dt->storeData ( outfile ) )
-    {
-      PRINT << "Failed to write: " << outfile.c_str() << std::endl;
-      return false;
-    }
-  }
+  // Loop through the arguments.
+  for ( Args::const_iterator i = args.begin(); i != args.end(); ++i )
+    this->_translate ( *i );
 
   // Print the current time.
   now = ::time ( NULL );
   PRINT_LEVEL ( 1 ) << "End time: " << ::asctime ( localtime ( &now ) ) << std::flush;
+}
 
-  // It worked.
-  return true;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Attach the modules.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_attachModules()
+{
+  SL_PRINT2 ( "In CtTranslation::_attachModules(), this = %X\n", this );
+
+  // Make sure we have a data source interface.
+  SlQueryPtr<IDataSource,ThrowIfNotFound> ds ( _source, "Failed to get IDataSource interface from the given data source." );
+
+  // Set the source's target.
+  ds->setDataTarget ( _target );
+
+  // See if the source can be controlled.
+  SlQueryPtr<IControlled> cs ( _source );
+  if ( cs.isValid() )
+    cs->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
+
+  // See if the target can be controlled.
+  SlQueryPtr<IControlled> ct ( _target );
+  if ( ct.isValid() )
+    ct->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Translate the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_translate ( const std::string &filename )
+{
+  SL_PRINT3 ( "In CtTranslation::_translate(), this = %X, filename = %s\n", this, filename.c_str() );
+
+  // Read and write the data.
+  this->_read ( filename );
+  this->_write ( this->_getOutputName ( filename ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_read ( const std::string &filename )
+{
+  SL_PRINT3 ( "In CtTranslation::_read(), this = %X, filename = %s\n", this, filename.c_str() );
+
+  // Make sure the source supports the interfaces we need.
+  SlQueryPtr<IDataRead,ThrowIfNotFound> dr ( _source, "Failed to get IDataRead from _source." );
+
+  // Read the data.
+  if ( false == dr->readData ( filename ) )
+  {
+    std::ostringstream message;
+    message << "Failed to translate: " << filename.c_str() << std::endl;
+    throw std::runtime_error ( message.str() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_write ( const std::string &filename )
+{
+  SL_PRINT3 ( "In CtTranslation::_write(), this = %X, filename = %s\n", this, filename.c_str() );
+
+  // See if the target should write the data somewhere.
+  SlQueryPtr<IDataWrite,ThrowIfNotFound> dw ( _target, "Failed to get IDataWrite from _target." );
+
+  PRINT_LEVEL ( 1 ) << "Writing: " << filename.c_str() << std::endl;
+
+  // Write the data.
+  if ( false == dw->writeData ( filename ) )
+  {
+    std::ostringstream message;
+    message << "Failed to write: " << filename.c_str() << std::endl;
+    throw std::runtime_error ( message.str() );
+  }
 }
 
 
@@ -542,7 +543,7 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type )
+bool CtTranslation::messageNotify ( const std::string &message, unsigned long id, const MessageType &type )
 {
   SL_PRINT5 ( "In CtTranslation::messageNotify(), this = %X, id = %d, type = %d, message = %s\n", this, id, type, message.c_str() );
 
@@ -551,19 +552,18 @@ bool CtTranslation::messageNotify ( const std::string &message, const unsigned l
   {
   case CadKit::MESSAGE_ERROR:
 
-    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_ERRORS ) )
-      return this->_messageNotify ( "Error",   message, id );
+    return this->_messageNotify ( "Error",   message, id );
     break;
 
   case CadKit::MESSAGE_WARNING:
 
-    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_WARNINGS ) )
+    if ( CadKit::hasBits ( _printFlags, _PRINT_WARNINGS ) )
       return this->_messageNotify ( "Warning",   message, id );
     break;
   
   case CadKit::MESSAGE_INFO:
 
-    if ( CadKit::hasBits ( _printFlags, (unsigned int) _PRINT_INFO ) )
+    if ( CadKit::hasBits ( _printFlags, _PRINT_INFO ) )
       PRINT << message.c_str() << std::endl;
     break;
 
@@ -591,7 +591,7 @@ bool CtTranslation::messageNotify ( const std::string &message, const unsigned l
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::_messageNotify ( const std::string &type, const std::string &message, const unsigned long &id ) const
+bool CtTranslation::_messageNotify ( const std::string &type, const std::string &message, unsigned long id ) const
 {
   SL_PRINT4 ( "In CtTranslation::_messageNotify(), this = %X, message = %s, id = %d\n", this, message.c_str(), id );
 
@@ -632,8 +632,162 @@ void CtTranslation::setOutputStream ( std::ostream *out )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CtTranslation::_setProgressPrintLevel ( const unsigned int &level )
+void CtTranslation::_setProgressPrintLevel ( unsigned int level )
 {
   SL_PRINT3 ( "In CtTranslation::_setProgressPrintLevel(), this = %X, level = %d\n", this, level );
+
+  // See if we can tell the target the priority level.
+  SlQueryPtr<IMessagePriority> mp ( _target );
+  if ( mp.isValid() )
+    mp->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, level );
+
+  // See if we can tell the source the priority level.
+  mp = _source;
+  if ( mp.isValid() )
+    mp->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, level );
+
+  // Set this controller's level too.
   _progressPrintLevel = level;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the level-of-detail option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setLodOption ( const LodProcessOption &option )
+{
+  SL_PRINT3 ( "In CtTranslation::_setLodOption(), this = %X, option = %d\n", this, option );
+
+  // See if we can tell the target which LODs to process.
+  SlQueryPtr<ILodOption> targetLodOption ( _target );
+  if ( targetLodOption.isValid() )
+    targetLodOption->setLodProcessOption ( option );
+
+  // See if we can tell the source which LODs to process.
+  SlQueryPtr<ILodOption> sourceLodOption ( _source );
+  if ( sourceLodOption.isValid() )
+    sourceLodOption->setLodProcessOption ( option );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the floating-point range that gets truncated to zero.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setZeroRange ( double negative, double positive )
+{
+  SL_PRINT4 ( "In CtTranslation::_setZeroRange(), this = %X, negative = %f, positive = %f\n", this, negative, positive );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeFloat> sourceZeroRangeFloat ( _source );
+  if ( sourceZeroRangeFloat.isValid() )
+    sourceZeroRangeFloat->setZeroRange ( static_cast<float> ( negative ), static_cast<float> ( positive ) );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeDouble> sourceZeroRangeDouble ( _source );
+  if ( sourceZeroRangeDouble.isValid() )
+    sourceZeroRangeDouble->setZeroRange ( negative, positive );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeFloat> targetZeroRange ( _target );
+  if ( targetZeroRange.isValid() )
+    targetZeroRange->setZeroRange ( static_cast<float> ( negative ), static_cast<float> ( positive ) );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeDouble> targetZeroRangeDouble ( _target );
+  if ( targetZeroRangeDouble.isValid() )
+    targetZeroRangeDouble->setZeroRange ( negative, positive );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Turn binary output on/off if available.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setBinaryOutput ( bool state )
+{
+  SL_PRINT3 ( "In CtTranslation::_setBinaryOutput(), this = %X, state = %d\n", this, state );
+
+  // Set the output format attribute if the interface is available. 
+  SlQueryPtr<IOutputAttribute> oa ( _target );
+  if ( oa.isValid() )
+    oa->setOutputAttribute ( ( state ) ? FORMAT_ATTRIBUTE_BINARY : FORMAT_ATTRIBUTE_ASCII );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the output precision.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setOutputNumDecimals ( unsigned int numDecimals )
+{
+  SL_PRINT3 ( "In CtTranslation::_setOutputNumDecimals(), this = %X, numDecimals = %d\n", this, numDecimals );
+
+  // Set the output precision if the interface is available. 
+  SlQueryPtr<IOutputPrecision> oa ( _target );
+  if ( oa.isValid() )
+    oa->setOutputNumDecimals ( numDecimals );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the output filename based on the given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string CtTranslation::_getOutputName ( const std::string &filename )
+{
+  SL_PRINT3 ( "In CtTranslation::_getOutputName(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
+
+  // Parse the path.
+  SlPathname<std::string> path ( filename );
+
+  // Make a copy of the input filename.
+  std::string out ( filename );
+
+  // Drop the extension.
+  out.resize ( out.size() - path.getExtension().size() );
+
+  // Get the target's file extension.
+  std::string ext ( this->_getTargetFileExtension() );
+
+  // Add the extension, or some default.
+  out += ( ( ext.empty() ) ? "data" : ext );
+
+  // Return the output filename.
+  return out;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the target's file extension, if there is one.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string CtTranslation::_getTargetFileExtension()
+{
+  SL_PRINT2 ( "In CtTranslation::_getTargetFileExtension(), this = %X\n", this );
+
+  // Initialize the extension.
+  std::string ext;
+
+  // Try to get the extension.
+  SlQueryPtr<IFileExtension> fe ( _target );
+  if ( fe.isValid() )
+    ext = fe->getFileExtension();
+
+  // Return the extension.
+  return ext;
 }

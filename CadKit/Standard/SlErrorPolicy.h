@@ -27,13 +27,22 @@ namespace ErrorPolicy {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Exception > struct Throw
+template < class Exception > class Throw
 {
-  Throw(){}
-  template < class Argument > void operator() ( bool state, const Argument &argument )
+  template < class Argument > void _throw ( bool state, const Argument &argument )
   {
     if ( !state )
       throw Exception ( argument );
+  }
+public:
+  Throw(){}
+  template < class Argument > Throw ( bool state, const Argument &argument )
+  {
+    this->_throw ( state, argument );
+  }
+  template < class Argument > void operator() ( bool state, const Argument &argument )
+  {
+    this->_throw ( state, argument );
   }
 };
 

@@ -167,6 +167,10 @@ IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
     return static_cast<IMessagePriority *>(this);
   case ILodOption::IID:
     return static_cast<ILodOption *>(this);
+  case IFileExtension::IID:
+    return static_cast<IFileExtension *>(this);
+  case IDataRead::IID:
+    return static_cast<IDataRead *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -175,13 +179,49 @@ IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the data.
+//  Get the file extension.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::loadData ( const std::string &filename )
+std::string DbJtDatabase::getFileExtension() const
 {
-  SL_PRINT3 ( "In DbJtDatabase::loadData(), this = %X, name = %s\n", this, filename.c_str() );
+  SL_PRINT2 ( "In DbJtDatabase::getFileExtension(), this = %X\n", this );
+  return "jt";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does the format have the attribute?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::isAttributeSupported ( const FormatAttribute &attribute ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::isAttributeSupported(), this = %X, attribute = %d\n", this, attribute );
+
+  switch ( attribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return true;
+  case FORMAT_ATTRIBUTE_ASCII:
+    return false;
+  default:
+    SL_ASSERT ( 0 ); // What format is this?
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::readData ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbJtDatabase::readData(), this = %X, name = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
   // Try to traverse.
@@ -2340,7 +2380,7 @@ bool DbJtDatabase::getColorBinding ( ShapeHandle shape, VertexBinding &binding )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority )
+bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, unsigned int priority )
 {
   SL_PRINT4 ( "In DbJtDatabase::setMessagePriorityLevel(), this = %X, type = %d, priority = %d\n", this, type, priority );
 
@@ -2362,7 +2402,7 @@ bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, const unsi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbJtDatabase::setLodProcessOption ( LodProcessOption &option )
+void DbJtDatabase::setLodProcessOption ( const LodProcessOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setLodProcessOption(), this = %X, option = %d\n", this, option );
 

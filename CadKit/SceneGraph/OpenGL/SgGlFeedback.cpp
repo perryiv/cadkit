@@ -393,8 +393,8 @@ void SgGlFeedback::_calculatePrimitiveDebths()
       switch ( sortOption )
       {
       case AVERAGE:  _primitive[index].depth = ( vertex[0].z + vertex[1].z ) * 0.5f; break;
-      case MIN_Z:    _primitive[index].depth = SL_MIN ( vertex[0].z, vertex[1].z );  break;
-      case MAX_Z:    _primitive[index].depth = SL_MAX ( vertex[0].z, vertex[1].z );  break;
+      case MIN_Z:    _primitive[index].depth = std::min ( vertex[0].z, vertex[1].z );  break;
+      case MAX_Z:    _primitive[index].depth = std::max ( vertex[0].z, vertex[1].z );  break;
       default: SL_ASSERT ( 0 );
       }
 
@@ -415,8 +415,8 @@ void SgGlFeedback::_calculatePrimitiveDebths()
       switch ( sortOption )
       {
       case AVERAGE: _primitive[index].depth = ( vertex[0].z + vertex[1].z + vertex[2].z ) / numVertices; break;
-      case MIN_Z:   _primitive[index].depth = SL_MIN ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
-      case MAX_Z:   _primitive[index].depth = SL_MAX ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
+      case MIN_Z:   _primitive[index].depth = CadKit::min ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
+      case MAX_Z:   _primitive[index].depth = CadKit::max ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
       default: SL_ASSERT ( 0 );
       }
 

@@ -21,7 +21,6 @@
 #endif
 
 #include "Interfaces/ICommandLine.h"
-#include "Interfaces/ITranslator.h"
 
 #include "Standard/SlQueryPtr.h"
 #include "Standard/SlAssert.h"
@@ -40,12 +39,12 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline bool translate ( CadKit::IUnknown *controller, 
-                        CadKit::IUnknown *source, 
-                        CadKit::IUnknown *target, 
-                        int argc, 
-                        char **argv, 
-                        bool keepGoing )
+inline bool translate ( 
+  CadKit::IUnknown *controller, 
+  CadKit::IUnknown *source, 
+  CadKit::IUnknown *target, 
+  int argc, 
+  char **argv )
 {
   // It's ok to have a null target.
   if ( NULL == controller || NULL == source )
@@ -54,8 +53,7 @@ inline bool translate ( CadKit::IUnknown *controller,
     return false;
   }
 
-  // We reference all three interfaces to make sure they aren't deleted as we
-  // loop through the input files. The caller may not have referenced them yet.
+  // We reference all three interfaces to make sure they aren't deleted.
   SlRefPtr<IUnknown> dummy1 ( controller );
   SlRefPtr<IUnknown> dummy2 ( source );
   SlRefPtr<IUnknown> dummy3 ( target );
@@ -68,48 +66,8 @@ inline bool translate ( CadKit::IUnknown *controller,
     return false;
   }
 
-  // Check the arguments.
-  if ( false == commandLine->checkArguments ( argc, (const char **) argv ) )
-  {
-    // TODO, this is a hack, should not be jt-specific.
-    std::cout << commandLine->getUsageString ( argv[0], "jt", false ).c_str() << std::endl;
-    return false;
-  }
-
-  // Parse the arguments.
-  ICommandLine::Args args;
-  bool result = commandLine->parseArguments ( argc, (const char **) argv, args );
-
-  // See if it worked. If the result is true and the argument list is empty 
-  // then the user did not supply any filenames.
-  if ( false == result || args.empty() )
-  {
-    // TODO, this is a hack, should not be jt-specific.
-    std::cout << commandLine->getUsageString ( argv[0], "jt", false ).c_str() << std::endl;
-    return false;
-  }
-
-  // Get the translator interface.
-  SlQueryPtr<ITranslator> translator ( controller );
-  if ( translator.isNull() )
-  {
-    std::cout << "Failed to obtain interface to ITranslator from given controller." << std::endl;
-    return false;
-  }
-
-  // Loop through all the input files.
-  for ( ICommandLine::Args::iterator f = args.begin(); f != args.end(); ++f )
-  {
-    // Translate the files.
-    bool result = translator->translate ( *f, source, target );
-
-    // If there's an error, only return if the caller wants us to.
-    if ( false == result && false == keepGoing )
-      return false;
-  }
-
-  // It worked.
-  return true;
+  // Execute the command.
+  return commandLine->execute ( argc, argv, source, target );
 }
 
 
@@ -130,8 +88,7 @@ inline bool translate (
   SourceType *source, 
   TargetType *target, 
   int argc, 
-  char **argv, 
-  bool keepGoing )
+  char **argv )
 {
   // It's ok to have a null target.
   if ( NULL == controller || NULL == source )
@@ -145,8 +102,7 @@ inline bool translate (
                              source->queryInterface ( CadKit::IUnknown::IID ),
                              ( target ) ? target->queryInterface ( CadKit::IUnknown::IID ) : NULL,
                              argc,
-                             argv,
-                             keepGoing );
+                             argv );
 }
 
 

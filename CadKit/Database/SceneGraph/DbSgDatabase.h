@@ -38,7 +38,8 @@ class DB_SG_API DbSgDatabase : public DbBaseTarget,
                                public IInstanceNotify,
                                public ILodNotify,
                                public IShapeNotify,
-                               public ISetNotify
+                               public ISetNotify,
+                               public IFileExtension
 {
 public:
 

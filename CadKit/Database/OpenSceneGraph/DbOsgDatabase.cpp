@@ -180,6 +180,12 @@ IUnknown *DbOsgDatabase::queryInterface ( unsigned long iid )
     return static_cast<IShapeNotify *>(this);
   case ISetNotify::IID:
     return static_cast<ISetNotify *>(this);
+  case IFileExtension::IID:
+    return static_cast<IFileExtension *>(this);
+  case IDataWrite::IID:
+    return static_cast<IDataWrite *>(this);
+  case IOutputAttribute::IID:
+    return static_cast<IOutputAttribute *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -201,13 +207,51 @@ std::string DbOsgDatabase::getFileExtension() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Store the data.
+//  Does the format have the attribute?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::storeData ( const std::string &filename )
+bool DbOsgDatabase::isAttributeSupported ( const FormatAttribute &attribute ) const
 {
-  SL_PRINT3 ( "In DbOsgDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_PRINT3 ( "In DbOsgDatabase::isAttributeSupported(), this = %X, attribute = %d\n", this, attribute );
+
+  switch ( attribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return false;
+  case FORMAT_ATTRIBUTE_ASCII:
+    return true;
+  default:
+    SL_ASSERT ( 0 ); // What format is this?
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the output attribute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::setOutputAttribute ( const FormatAttribute &attribute )
+{
+  SL_PRINT3 ( "In DbOsgDatabase::setOutputAttribute(), this = %X, attribute = %d\n", this, attribute );
+
+  // There is only ascii output.
+  return ( FORMAT_ATTRIBUTE_ASCII == attribute );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::writeData ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbOsgDatabase::writeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
   SL_ASSERT ( NULL != this->_getRoot() );
 

@@ -18,9 +18,7 @@
 
 #include "IUnknown.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-#endif
+#include <string>
 
 
 namespace CadKit
@@ -31,9 +29,6 @@ public:
 
   // Id for this interface.
   enum { IID = 1032633421 };
-
-  // Load the data.
-  virtual bool            loadData ( const std::string &name ) = 0;
 
   // Set the data target.
   virtual void            setDataTarget ( IUnknown *target ) = 0;

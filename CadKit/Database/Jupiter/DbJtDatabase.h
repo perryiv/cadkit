@@ -38,6 +38,8 @@
 #include "Interfaces/IQueryTexCoords.h"
 #include "Interfaces/IMessagePriority.h"
 #include "Interfaces/ILodOption.h"
+#include "Interfaces/IFileExtension.h"
+#include "Interfaces/IDataRead.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -69,7 +71,9 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public IQueryShapeColorsVec3f,
                                public IQueryShapeTexCoordsVec2f,
                                public IMessagePriority,
-                               public ILodOption
+                               public ILodOption,
+                               public IFileExtension,
+                               public IDataRead
 {
 public:
 
@@ -82,12 +86,12 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IDataSource interface.
+  //  IFormatAttribute interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Load the data.
-  virtual bool            loadData ( const std::string &filename );
+  // Does the format have the attribute?
+  virtual bool            isAttributeSupported ( const FormatAttribute &attribute ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -255,7 +259,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Set the message priority level.
-  virtual bool            setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority );
+  virtual bool            setMessagePriorityLevel ( const MessageType &type, unsigned int priority );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -264,7 +268,25 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Set option for processing the LODs.
-  virtual void            setLodProcessOption ( LodProcessOption &option );
+  virtual void            setLodProcessOption ( const LodProcessOption &option );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFileExtension interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the file extension.
+  virtual std::string     getFileExtension() const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IDataRead interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Read the data.
+  virtual bool            readData ( const std::string &filename );
 
 protected:
 

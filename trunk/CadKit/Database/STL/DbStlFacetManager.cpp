@@ -23,6 +23,14 @@
 #include "DbStlFileIO.h"
 #include "DbStlFacetManager.h"
 
+
+#include "Standard/SlPrint.h"
+#include "Standard/SlAssert.h"
+#include "Standard/SlQueryPtr.h"
+#include "Standard/SlStringFunctions.h"
+#include "Standard/SlMessageIds.h"
+
+
 using namespace CadKit;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,7 +49,7 @@ DbStlFacetManager::DbStlFacetManager( )
   _nbuf( new Normals )
 */
 {
-  // empty
+  _vSetter.setBuffer( &_vbuf );
 }
 
   
@@ -96,7 +104,7 @@ void inline DbStlFacetManager::init( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::addFacet( SlVec3f vertices[3], SlVec3f &normal )
+void DbStlFacetManager::addFacet( SlVec3f vertices[3], const SlVec3f &normal )
 {
   DbStlFacetManager::facet f( vertices, normal );
   _facets.push_back( f );
@@ -119,7 +127,7 @@ void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2
   SlVec3f normal( v1.cross(v2) );
   normal.normalize();
 
-  DbStlFacetManager::facet f( vertices, normal );
+  DbStlFacetManager::facet f( vertex1, vertex2, vertex3, normal );
   _facets.push_back( f );
 }
 
@@ -132,7 +140,7 @@ void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2
 
 void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
 {
-  DbStlFacetManager::facet f( vertices, normal );
+  DbStlFacetManager::facet f( vertex1, vertex2, vertex3, normal );
   _facets.push_back( f );
 }
 
@@ -153,7 +161,7 @@ bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mod
     DbStlAsciiOutputFile asciiOut( filename );
 
     // check if output file was indeed opened
-    if ( asciiOut->is_open() )
+    if ( asciiOut.is_open() )
     {
       for( i = _facets.begin(); i != _facets.end(); i++ )
       {
@@ -172,7 +180,7 @@ bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mod
     DbStlBinaryOutputFile binOut( filename );
 
         // check if output file was indeed opened
-    if ( binOut->is_open() )
+    if ( binOut.is_open() )
     {
       for( i = _facets.begin(); i != _facets.end(); i++ )
       {
@@ -205,7 +213,7 @@ bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mod
 
 bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle shape )
 {
-  SL_PRINT5 ( "In DbStlFacetManager::fetchVerticesPerShape{}, this = %X, caller = %X, shape = %d\n", this, caller, shape );
+//  SL_PRINT5 ( "In DbStlFacetManager::fetchVerticesPerShape{}, this = %X, caller = %X, shape = %d\n", this, caller, shape );
   SL_ASSERT ( caller );
 
   // Get the interface we need from the caller.
@@ -228,10 +236,10 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
   case CadKit::TRI_STRIP_SET:
     {
       _vbuf.clear(); // clear out previous set if it exists
-      if ( query->getVertices ( shape, this->_Vsetter ) )
+      if ( query->getVertices ( shape, this->_vSetter ) )
       {
         int numVertices( _vbuf.getData().size() ); // number of points in all sets
-        int numSets( _vbuf.getIndicies().size() ); // number of sets
+        int numSets( _vbuf.getIndices().size() ); // number of sets
 
         if ( !_transforms.empty() ) // if there are transforms on the stack
         {
@@ -241,7 +249,7 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
           for (int i=0; i<numVertices; i++)
           {
             v.setValue( _vbuf.getData()[i] );
-            _transforms.multByUpper3x3( v, _vbuf.getData()[i] );
+            _transforms.top().multByUpper3x3( v, _vbuf.getData()[i] );
           }
         }
 
@@ -289,7 +297,7 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
   }
 
   // It didn't work.
-  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+  return false; // TODO - get this working... ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
 }
 
 
@@ -306,7 +314,7 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbStlFacetManager::TransformStack() : std::stack<SlMatrix44f>::stack()
+TransformStack::TransformStack()
 {
   // Empty.
 }
@@ -323,14 +331,14 @@ DbStlFacetManager::TransformStack() : std::stack<SlMatrix44f>::stack()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::TransformStack::push()
+void TransformStack::push()
 {
-  SL_ASSERT ( !empty() ); 
-  if ( !empty() )
+  SL_ASSERT ( !_stack.empty() ); 
+  if ( !_stack.empty() )
   {
-    SlMatrix44f tm( top() );
-    push( tm );
-    top().multLeft( tm );
+    SlMatrix44f tm( _stack.top() );
+    _stack.push( tm );
+    _stack.top().multLeft( tm );
   }
 }
 
@@ -346,16 +354,16 @@ void DbStlFacetManager::TransformStack::push()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::TransformStack::push( const SlMatrix44f &M )
+void TransformStack::push( const SlMatrix44f &M )
 {
-  if ( !empty() )
+  if ( !_stack.empty() )
   {
-    SlMatrix44f tm( top() );
-    push( M );
-    top().multLeft( tm );
+    SlMatrix44f tm( _stack.top() );
+    _stack.push( M );
+    _stack.top().multLeft( tm );
   }
   else
-    push( M );
+    _stack.push( M );
 }
 
 
@@ -373,7 +381,7 @@ void DbStlFacetManager::TransformStack::push( const SlMatrix44f &M )
 //
 ///////////////////////////////////////////////////////////////////////////////
 DbStlFacetManager::facet::facet( )
-: _vertices[0]( SL_VEC3_ZERO ), _vertices[1]( SL_VEC3_ZERO ), _vertices[2]( SL_VEC3_ZERO ), _normal( SL_VEC3_ZERO )
+//????: _vertices[0]( SL_VEC3_ZERO ), _vertices[1]( SL_VEC3_ZERO ), _vertices[2]( SL_VEC3_ZERO ), _normal( SL_VEC3_ZERO )
 {
 
 }
@@ -545,18 +553,26 @@ void inline DbStlFacetManager::facet::getVertices( SlVec3f &vertex1, SlVec3f &ve
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::DbStlVertexSetter::setData ( const unsigned int &index, const SlVec3f &vec )
+bool DbStlVertexSetter::setData ( const unsigned int &index, const SlVec3f &vec )
 {
-  // If we're out of range then resize.
-  if ( index >= DbStlFacetManager::_vbuf.getData().size() )
-    if ( false == DbStlFacetManager::_vbuf.getData().resize( index + 1 ) )
-      return false;
+  if ( _vertices ) // make sure we have a vertex buffer
+  {
+    // If we're out of range then resize.
+    if ( index >= _vertices->getData().size() )
+      _vertices->getData().resize( index + 1 );
+//        return false;
+/*      if ( false == (_vertices->getData().resize( index + 1 )) )
+        return false;*/ // this evidently isn't returning bool???
 
-  // Set the vertex.
-  (DbStlFacetManager::_vbuf.getData())[index].set( vec[0], vec[1], vec[2] );
+    // Set the vertex.
+    (_vertices->getData())[index].setValue( vec[0], vec[1], vec[2] );
 
-  // It worked.
-  return true;
+    // It worked.
+    return true;
+  }
+  else
+    return false;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -566,11 +582,16 @@ bool DbStlFacetManager::DbStlVertexSetter::setData ( const unsigned int &index, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::DbStlVertexSetter::setSize ( const unsigned int &size )
+bool DbStlVertexSetter::setSize ( const unsigned int &size )
 {
-  SL_ASSERT ( size > 0 );
-  DbStlFacetManager::_vbuf.getData().resize( size );
-  return size == DbStlFacetManager::_vbuf.getData().size();
+  if ( _vertices ) // make sure we have a vertex buffer
+  {
+    SL_ASSERT ( size > 0 );
+    _vertices->getData().resize( size );
+    return size == _vertices->getData().size();
+  }
+  else
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -580,18 +601,24 @@ bool DbStlFacetManager::DbStlVertexSetter::setSize ( const unsigned int &size )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::DbStlVertexSetter::setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length )
+bool DbStlVertexSetter::setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length )
 {
-  // If we're out of range then resize.
-  if ( index >= DbStlFacetManager::_vbuf.getIndices().size() )
-    if ( false == DbStlFacetManager::_vbuf.getIndices().resize( index + 1 ) )
-      return false;
+  if ( _vertices ) // make sure we have a vertex buffer
+  {
+    // If we're out of range then resize.
+    if ( index >= _vertices->getIndices().size() )
+      _vertices->getIndices().resize( index + 1 );
+/*      if ( false == _vertices->getIndices().resize( index + 1 ) )
+        return false;*/ // this evidently isn't returning bool??
 
-  // Set the index to start of primitive set.
-  (DbStlFacetManager::_vbuf.getIndices())[index].set( start );
+    // Set the index to start of primitive set.
+    (_vertices->getIndices())[index] = start;
 
-  // It worked.
-  return true;
+    // It worked.
+    return true;
+  }
+  else
+    return false;
 }
 
 
@@ -602,9 +629,14 @@ bool DbStlFacetManager::DbStlVertexSetter::setPrimitiveRange ( const unsigned in
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::DbStlVertexSetter::setNumPrimitives ( const unsigned int &num )
+bool DbStlVertexSetter::setNumPrimitives ( const unsigned int &num )
 {
-  SL_ASSERT ( num > 0 );
-  DbStlFacetManager::_vbuf.getIndices().resize( num );
-  return num == DbStlFacetManager::_vbuf.getIndices().size();
+  if ( _vertices ) // make sure we have a vertex buffer
+  {
+    SL_ASSERT ( num > 0 );
+    _vertices->getIndices().resize( num );
+    return num == _vertices->getIndices().size();
+  }
+  else
+    return false;
 }

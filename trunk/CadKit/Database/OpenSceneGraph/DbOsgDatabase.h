@@ -174,7 +174,7 @@ protected:
   void                    _setLodParameters ( osg::LOD *lod ) const;
 
   SL_DECLARE_REFERENCE_POINTER ( DbOsgDatabase );
-  SL_DECLARE_DYNAMIC_CLASS ( DbOsgDatabase, 1032736074 );
+  SL_DECLARE_DYNAMIC_CLASS ( DbOsgDatabase, 1034649260 );
 };
 
 }; // namespace CadKit

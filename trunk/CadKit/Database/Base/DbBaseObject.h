@@ -121,7 +121,7 @@ protected:
   bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
 
   SL_DECLARE_REFERENCE_POINTER ( DbBaseObject );
-  SL_DECLARE_CLASS ( DbBaseObject, 1032736074 );
+  SL_DECLARE_CLASS ( DbBaseObject, 1034649271 );
 };
 
 }; // namespace CadKit

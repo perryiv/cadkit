@@ -87,7 +87,7 @@ DbOsgDatabase::~DbOsgDatabase()
   // The stack should just be holding the root.
   SL_ASSERT ( 1 == _groupStack->size() );
 
-  // If the client may have referenced the root.
+  // The client may have referenced the root.
   SL_ASSERT ( this->_getRoot()->referenceCount() >= 1 );
 
   // Pop the root off the stack.
@@ -643,12 +643,12 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
   // Get the primitive type.
-  IQueryShapeVerticesVec3f::Type type;
+  VertexSetType type;
   if ( false == query->getVertexSetType ( shape, type ) )
     return ERROR ( "Failed to obtain primitive type.", FAILED );
 
   // Should be true.
-  SL_ASSERT ( IQueryShapeVerticesVec3f::UNKNOWN != type );
+  SL_ASSERT ( CadKit::UNKNOWN != type );
 
   // Get the vertices.
   DbOsgVertexSetter setter ( type );

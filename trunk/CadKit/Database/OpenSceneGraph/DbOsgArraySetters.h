@@ -48,7 +48,7 @@ public:
 
   typedef std::vector< osg::ref_ptr<osg::Primitive> > Primitives;
 
-  DbOsgVertexSetter ( const IQueryShapeVerticesVec3f::Type &type ) : _type ( type ), _vertices ( new osg::Vec3Array ){}
+  DbOsgVertexSetter ( const VertexSetType &type ) : _type ( type ), _vertices ( new osg::Vec3Array ){}
 
   osg::Vec3Array *      getVertices()   { return _vertices.get(); }
   Primitives            getPrimitives() { return _primitives; }
@@ -61,11 +61,11 @@ public:
 
 protected:
 
-  IQueryShapeVerticesVec3f::Type _type;
+  VertexSetType _type;
   osg::ref_ptr<osg::Vec3Array> _vertices;
   Primitives _primitives;
 
-  osg::Primitive::Mode _getPrimitiveMode() const;
+  osg::Primitive::Mode  _getPrimitiveMode() const;
 };
 
 
@@ -135,7 +135,7 @@ public:
   
   typedef osg::Geometry::AttributeBinding Binding;
 
-  DbOsgTextureCoordSetter() : _texCoords ( new osg::Vec2Array ), _binding ( osg::Geometry::BIND_OFF ){}
+  DbOsgTextureCoordSetter() : _binding ( CadKit::getBinding ( CadKit::BINDING_PER_VERTEX ) ), _texCoords ( new osg::Vec2Array ){}
 
   osg::Vec2Array *      getTextureCoords() { return _texCoords.get(); }
   Binding               getBinding()       { return _binding; }

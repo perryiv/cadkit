@@ -199,7 +199,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Get the set type.
-  virtual bool            getVertexSetType ( ShapeHandle shape, IQueryShapeVerticesVec3f::Type &type ) const;
+  virtual bool            getVertexSetType ( ShapeHandle shape, VertexSetType &type ) const;
 
   // Get the vertices.
   virtual bool            getVertices ( ShapeHandle shape, IQueryShapeVerticesVec3f::VertexSetter &setter ) const;

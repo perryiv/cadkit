@@ -17,7 +17,7 @@
 #define _CADKIT_INTERFACE_QUERY_COLORS_H_
 
 #include "IQueryArray.h"
-#include "VertexBindings.h"
+#include "Enum.h"
 
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec4.h"

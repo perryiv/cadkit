@@ -154,7 +154,7 @@ SOURCE=..\..\Notes\Database.txt
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Notes\open_scene_graph_scene.txt
+SOURCE=..\..\Notes\OpenSceneGraph_scene.txt
 # End Source File
 # End Group
 # End Target

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="simple_menu"
-	ProjectGUID="{E287670A-B62B-49AD-B178-B59A19E51882}"
+	Name="simple_behavior"
+	ProjectGUID="{76209C0F-BA4F-4EE2-9BA3-9662F74DE5B4}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)/OSG&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -33,12 +33,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producerd.lib osgProducerd.lib MenuKitd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib osgTextd.lib"
-				OutputFile="$(OutDir)/simple_menu.exe"
+				AdditionalDependencies="Producerd.lib osgTextd.lib osgd.lib osgGAd.lib osgProducerd.lib MenuKitd.lib"
+				OutputFile="$(OutDir)/simple_behavior.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/simple_menu.pdb"
+				ProgramDatabaseFile="$(OutDir)/simple_behavior.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)/OSG&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -82,10 +82,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producer.lib osgProducer.lib MenuKit.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
-				OutputFile="$(OutDir)/simple_menu.exe"
+				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib MenuKit.lib"
+				OutputFile="$(OutDir)/simple_behavior.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -121,7 +121,19 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\create.h">
+			</File>
+			<File
+				RelativePath=".\GraphStreamVisitor.h">
+			</File>
+			<File
 				RelativePath=".\main.cpp">
+			</File>
+			<File
+				RelativePath=".\MenuController.cpp">
+			</File>
+			<File
+				RelativePath=".\MenuController.h">
 			</File>
 		</Filter>
 	</Files>

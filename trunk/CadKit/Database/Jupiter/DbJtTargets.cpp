@@ -137,16 +137,26 @@ unsigned int DbJtTargets::getNumInterfaces() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int DbJtTargets::removeInterface ( IUnknown *unknown )
+unsigned int DbJtTargets::removeInterface ( IUnknown *ptr )
 {
-  SL_PRINT3 ( "In DbJtTargets::removeInterface(), this = %X, unknown = %X\n", this, unknown );
+  SL_PRINT3 ( "In DbJtTargets::removeInterface(), this = %X, unknown = %X\n", this, ptr );
 
   // Grab the current size.
   unsigned int size = _interfaces->size();
 
+  // Irix/CC insists that we wrap this.
+  SlRefPtr<IUnknown> unknown ( ptr );
+
   // Remove the interface if we find it.
   Interfaces::iterator begin = _interfaces->begin();
   Interfaces::iterator last = std::remove ( begin, _interfaces->end(), unknown );
+
+  // We need to release detach the ref-pointer and release the interface
+  // without deleting it. The caller may have passed an interface with a 
+  // reference count of zero.
+  //unknown.makeNull();
+  // TODO, need to make SlRefBase::unrefNoDelete() and 
+  // IUnknown::unrefNoDelete(), unless there is another way...
 
   // Resize the sequence (the docs say that std::remove() does not resize).
   _interfaces->resize ( last - begin );

@@ -1,12 +1,16 @@
 # List these in the order that they need to be compiled.
 SUBDIRS = \
 	Standard \
+	Controllers \
+	Database/Base \
 	Database/Jupiter \
-	Translators/Jupiter2Performer \
-	Demos/Jupiter2Performer \
-	Database/XML \
-	Translators/Jupiter2Xml \
-	Demos/Jupiter2Xml
+	Database/OpenSceneGraph \
+	Demos/Jupiter2Osg
+#	Translators/Jupiter2Performer \
+#	Demos/Jupiter2Performer \
+#	Database/XML \
+#	Translators/Jupiter2Xml \
+#	Demos/Jupiter2Xml \
 #	SceneGraph/Core \
 #	SceneGraph/OpenGL \
 #	Examples/BoundingBox \

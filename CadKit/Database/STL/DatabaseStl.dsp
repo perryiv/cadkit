@@ -115,7 +115,7 @@ SOURCE=.\DbStlDatabase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbStlFacet.h
+SOURCE=.\DbStlTriangle.h
 # End Source File
 # End Group
 # Begin Group "DLL"

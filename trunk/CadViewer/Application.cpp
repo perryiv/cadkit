@@ -120,10 +120,11 @@ namespace CV
   const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
   const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
 #endif
-  const unsigned long NAVIGATE_NO_NAV = BUTTON_BLUE;
-  const unsigned long NAVIGATE_FLY    = BUTTON_RED;
-  const unsigned long NAVIGATE_WALK   = BUTTON_YELLOW;
-  const unsigned long NAVIGATE_POLE   = BUTTON_GREEN;
+  const unsigned long NAVIGATE_TOGGLE = BUTTON_YELLOW;
+  const unsigned long NAVIGATE_NO_NAV = BUTTON_RED;       // helps greatly in sim mode
+  const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
+  //const unsigned long NAVIGATE_WALK   = BUTTON_GREEN;
+  //const unsigned long NAVIGATE_POLE   = BUTTON_YELLOW;
 };
 
 
@@ -460,7 +461,8 @@ void Application::_init()
 
   // Turn on navigation.
   //this->_setNavigator(); // This breaks time-based navigation. TODO, fix.
-  this->_handleNavigationCycleEvent( NAVIGATE_NO_NAV );           // activate navigation
+  this->_handleNavigationCycleEvent( NAVIGATE_NO_NAV );   // activate default navigation
+                                                          // TODO: read from _pref
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
 
@@ -976,15 +978,15 @@ void Application::_processButtons()
 {
   ErrorChecker ( 1083961848u, isAppThread(), CV::NOT_APP_THREAD );
 
-#if 0
+#if 1
   switch ( _buttons->pressed() )
   {
-    case CV::BUTTON0: std::cout << "Button 0 pressed" << std::endl; break;
-    case CV::BUTTON1: std::cout << "Button 1 pressed" << std::endl; break;
-    case CV::BUTTON2: std::cout << "Button 2 pressed" << std::endl; break;
-    case CV::BUTTON3: std::cout << "Button 3 pressed" << std::endl; break;
-    case CV::BUTTON4: std::cout << "Button 4 pressed" << std::endl; break;
-    case CV::BUTTON5: std::cout << "Button 5 pressed" << std::endl; break;
+    case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)" << std::endl; break;
+    case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)" << std::endl; break;
+    case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)" << std::endl; break;
+    case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)" << std::endl; break;
+    case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
+    case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)" << std::endl; break;
   }
 #endif
 
@@ -1100,14 +1102,41 @@ bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest 
 {
   MenuKit::Message cycle_message = MenuKit::MESSAGE_SELECTED; // simulate message/item from MenuKit
   MenuKit::Item *cycle_item (0x0);                            // NULL b/c it never needed
+  const unsigned long walkID = 1084438120u;                   // comes from AppCallback.cpp
   bool handled;
+
   unsigned long mode = _buttons->released();
   if ( eventRequest )                                         // if mode NOT specified with function call ...
     mode = eventRequest;                                      // ... get information from buttons
 
   switch ( mode )                                             // which button was used???
   {
-    case NAVIGATE_FLY :                                       // BUTTON_RED
+    case NAVIGATE_TOGGLE :                                    // BUTTON_YELLOW, if not walking, set walk ...
+      std::cout << "TOGGLE: ";                                //                if walking, set pole
+      if ( _navigatorH.valid() &&                             // IF h and v control are valid
+           _navigatorV.valid() &&                             // AND both set to walkID
+           walkID == _navigatorV->id() &&
+           walkID == _navigatorH->id() )
+      {                                                       // if WALK, set navigation to POLE
+        std::cout << "POLE" << std::endl;
+        // Stop navigation first, to prevent menu style callbacks from toggling navigation off
+        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
+        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
+        // Set navigation mode using 'simulated' call from menu
+        this->_poleNav ( cycle_message, cycle_item );         // activate navigation (POLE)
+        handled = true;                                       // button event has been handled
+      }
+      else                                                // if anything else, set navigation to WALK
+      {
+        std::cout << "WALK" << std::endl;
+        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
+        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
+        this->_hvTransGlobalXZ ( cycle_message, cycle_item ); // activate navigation (WALK)
+        handled = true;                                       // button event has been handled
+      }
+      break;
+      
+    case NAVIGATE_FLY :                                       // BUTTON_BLUE (FLY in the BLUE sky)
       std::cout << "FLY" << std::endl;
       // Stop navigation first.  This prevents toggling off when already in a nav mode
       _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
@@ -1117,23 +1146,23 @@ bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest 
       handled = true;                                         // button event has been handled
       break;
 
-    case NAVIGATE_WALK :                                      // BUTTON_YELLOW
-      std::cout << "WALK" << std::endl;
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      this->_hvTransGlobalXZ ( cycle_message, cycle_item );   // activate navigation (WALK)
-      handled = true;                                         // button event has been handled
-      break;
+    //case NAVIGATE_WALK :                                      // BUTTON_GREEN (WALK on the GREEN grass)
+    //  std::cout << "WALK" << std::endl;
+    //  _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+    //  _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+    //  this->_hvTransGlobalXZ ( cycle_message, cycle_item );   // activate navigation (WALK)
+    //  handled = true;                                         // button event has been handled
+    //  break;
 
-    case NAVIGATE_POLE :                                      // BUTTON_GREEN
-      std::cout << "POLE" << std::endl;
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      this->_poleNav ( cycle_message, cycle_item );           // activate navigation (POLE)
-      handled = true;                                         // button event has been handled
-      break;
+    //case NAVIGATE_POLE :                                      // BUTTON_YELLOW
+    //  std::cout << "POLE" << std::endl;
+    //  _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+    //  _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+    //  this->_poleNav ( cycle_message, cycle_item );           // activate navigation (POLE)
+    //  handled = true;                                         // button event has been handled
+    //  break;
 
-    case NAVIGATE_NO_NAV :                                    // BUTTON_BLUE
+    case NAVIGATE_NO_NAV :                                    // BUTTON_RED (RED means stop (NO_NAV) )
       std::cout << "STOP NAVIGATION" << std::endl;
       _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
       _navigatorV = 0x0;                                      // invalidate response to vertical joystick

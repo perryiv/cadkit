@@ -26,6 +26,7 @@ clean:
 clobber:
 	rm -f $(OBJECTS) *~ core Makedepend Makedepend.bak so_locations
 	rm -fr ii_files
+	rm -f lib$(TARGET)_s.so lib$(TARGET)_a.a
 	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_s.so
 	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_a.a
 	echo ----- Target $(TARGET) clobbered! -----

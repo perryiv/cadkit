@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(OSGHOME)/include"
+				AdditionalIncludeDirectories="../;$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -48,13 +48,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib"
-				OutputFile="../bin/OsgToolsd.dll"
+				OutputFile="$(OSG_TOOLS_LIB_DIR)/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSGHOME)/lib;../bin"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/OsgToolsd.pdb"
-				ImportLibrary="../bin/OsgToolsd.lib"/>
+				ImportLibrary="$(OSG_TOOLS_LIB_DIR)/OsgToolsd.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../;$(OSGHOME)/include"
+				AdditionalIncludeDirectories="../;$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -117,12 +117,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
-				OutputFile="../bin/OsgTools.dll"
+				OutputFile="$(OSG_TOOLS_LIB_DIR)/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSGHOME)/lib;../bin"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
-				ImportLibrary="../bin/OsgTools.lib"/>
+				ImportLibrary="$(OSG_TOOLS_LIB_DIR)/OsgTools.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

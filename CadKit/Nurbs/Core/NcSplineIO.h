@@ -48,7 +48,7 @@ template<NCSDTA> inline void write ( const CadKit::NcSpline<NCSDCA> &spline, std
   out << "Total number of knots ................. " << spline.getTotalNumKnots()            << std::endl;
   out << "Total number of control points ........ " << spline.getTotalNumControlPoints()    << std::endl;
 
-  I i ( 0 ), j ( 0 );
+  IndexType i ( 0 ), j ( 0 );
 
   for ( i = 0; i < spline.getNumIndepVars(); ++i )
   {

@@ -16,7 +16,7 @@
 #ifndef _CADKIT_NURBS_CORE_LIBRARY_SPLINE_CLASS_H_
 #define _CADKIT_NURBS_CORE_LIBRARY_SPLINE_CLASS_H_
 
-#include "NcInternalMacros.h"
+#include "NcFindSpan.h"
 
 #include "Standard/SlPartitionedVector.h"
 #include "Standard/SlAssert.h"
@@ -29,9 +29,9 @@ template<NCSDTCD> class NcSpline
 {
 public:
 
-  DECLATE_TYPEDEFS;
+  DECLARE_TYPEDEFS;
 
-  enum // Possible flags.
+  enum /// Possible flags.
   {
     RATIONAL = 0x0001,
   };
@@ -40,76 +40,85 @@ public:
   NcSpline ( const NcSpline &spline );
   ~NcSpline(){}
 
-  // Get the control point.
+  /// Find the span in the knot vector given the parameter.
+  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u, IndexType low ) const;
+
+  /// Get the control point.
   ControlPointType              getControlPoint ( const IndexType &whichDepVar, const IndexType &whichControlPoint ) const { return _ctrPts ( whichDepVar, whichControlPoint ); }
 
-  // Get the control points.
+  /// Get the control points.
   const ControlPointArray &     getControlPoints() const { return _ctrPts; }
   ControlPointArray &           getControlPoints()       { return _ctrPts; }
 
-  // Get the degree.
+  /// Get the degree.
   IndexType                     getDegree ( const IndexType &whichIndepVar ) const { return ( this->getOrder ( whichIndepVar ) - 1 ); }
 
-  // Get the dimension.
+  /// Get the dimension.
   IndexType                     getDimension() const { return ( this->isRational() ) ? this->getNumDepVars() - 1 : this->getNumDepVars(); }
 
-  // Get the knot.
+  /// Get the first knot.
+  ParameterType                 getFirstKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, 0 ); }
+
+  /// Get the last knot.
+  ParameterType                 getLastKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
+
+  /// Get the knot.
   ParameterType                 getKnot ( const IndexType &whichIndepVar, const IndexType &whichKnot ) const { return _knots ( whichIndepVar, whichKnot ); }
 
-  // Get the knot vector.
+  /// Get the knot vector.
   const ParameterArray &        getKnotVector() const { return _knots; }
   ParameterArray &              getKnotVector()       { return _knots; }
 
-  // Get the number of bytes for the types.
-  static unsigned int           getNumBytesIndexType()        { return sizeof ( I ); }
-  static unsigned int           getNumBytesParameterType()    { return sizeof ( P ); }
-  static unsigned int           getNumBytesControlPointType() { return sizeof ( C ); }
+  /// Get the number of bytes for the types.
+  static unsigned int           getNumBytesIndexType()        { return sizeof ( IndexType ); }
+  static unsigned int           getNumBytesParameterType()    { return sizeof ( ParameterType ); }
+  static unsigned int           getNumBytesControlPointType() { return sizeof ( ControlPointType ); }
 
-  // Get the number of control points.
+  /// Get the number of control points.
   IndexType                     getNumControlPoints ( const IndexType &whichIndepVar ) const;
 
-  // Get the number of dependent variables.
+  /// Get the number of dependent variables.
   const IndexType &             getNumDepVars() const { return _numDepVars; }
 
-  // Get the number of independent variables.
+  /// Get the number of independent variables.
   const IndexType &             getNumIndepVars() const { return _numIndepVars; }
 
-  // Get the number of knots.
+  /// Get the number of knots.
   IndexType                     getNumKnots ( const IndexType &whichIndepVar ) const { return ( this->getNumControlPoints ( whichIndepVar ) + this->getOrder ( whichIndepVar ) ); }
 
-  // Get the order.
+  /// Get the order.
   IndexType                     getOrder ( const IndexType &whichIndepVar ) const;
 
-  // Get the total number of control points.
+  /// Get the total number of control points.
   IndexType                     getTotalNumControlPoints() const;
 
-  // Get the total number of knots.
+  /// Get the total number of knots.
   IndexType                     getTotalNumKnots() const { return _knots.getData().size(); }
 
-  // Equality test.
+  /// Equality test.
   bool                          isEqual    ( const NcSpline &spline ) const;
   bool                          isEqual    ( const NcSpline &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const;
 
-  // Inequality test.
+  /// Inequality test.
   bool                          isNotEqual ( const NcSpline &spline ) const { return false == this->isEqual ( spline ); }
   bool                          isNotEqual ( const NcSpline &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
 
-  // See if the given spline configuration is ok.
+  /// See if the given spline configuration is ok.
   bool                          isOk ( const IndexType &numIndepVars, const IndexType &numDepVars, const IndexType *order, const IndexType *numCtrPts, const bool &rational );
 
-  // Is it rational?
+  /// Is it rational?
   bool                          isRational() const { return this->hasFlags ( RATIONAL ); }
 
-  // Assignment operator.
+  /// Assignment operator.
   NcSpline &                    operator = ( const NcSpline &spline ) { this->setValue ( spline ); return *this; }
 
-  // Resize the spline data.
+  /// Resize the spline data.
   bool                          resize ( const IndexType &numIndepVars, const IndexType &numDepVars, const IndexType *order, const IndexType *numCtrPts, const bool &rational );
 
-  // Set the rational flag.
+  /// Set the rational flag.
   void                          setRational ( const bool &state );
 
-  // Set the value.
+  /// Set the value.
   void                          setValue ( const NcSpline &spline );
 
 protected:
@@ -130,9 +139,9 @@ protected:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
+///
+///  Constructor.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline() :
@@ -145,9 +154,9 @@ template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline() :
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Copy constructor.
-//
+///
+///  Copy constructor.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline ( const NcSpline<NCSDCA> &spline ) :
@@ -164,9 +173,9 @@ template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline ( const NcSpline<NCSDCA> &spl
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the value.
-//
+///
+///  Set the value.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline void NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA> &spline )
@@ -182,12 +191,12 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA>
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of control points.
-//
+///
+///  Get the number of control points.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline I NcSpline<NCSDCA>::getNumControlPoints ( const I &whichIndepVar ) const
+template<NCSDTA> inline IndexType NcSpline<NCSDCA>::getNumControlPoints ( const IndexType &whichIndepVar ) const
 {
   SL_ASSERT ( whichIndepVar == 0 || whichIndepVar > 0 ); // Make g++ happy.
   SL_ASSERT ( whichIndepVar < _numIndepVars );
@@ -196,12 +205,12 @@ template<NCSDTA> inline I NcSpline<NCSDCA>::getNumControlPoints ( const I &which
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the order.
-//
+///
+///  Get the order.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline I NcSpline<NCSDCA>::getOrder ( const I &whichIndepVar ) const
+template<NCSDTA> inline IndexType NcSpline<NCSDCA>::getOrder ( const IndexType &whichIndepVar ) const
 {
   SL_ASSERT ( whichIndepVar == 0 || whichIndepVar > 0 ); // Make g++ happy.
   SL_ASSERT ( whichIndepVar < _numIndepVars );
@@ -210,21 +219,21 @@ template<NCSDTA> inline I NcSpline<NCSDCA>::getOrder ( const I &whichIndepVar ) 
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the total number of control points.
-//
+///
+///  Get the total number of control points.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline I NcSpline<NCSDCA>::getTotalNumControlPoints() const
+template<NCSDTA> inline IndexType NcSpline<NCSDCA>::getTotalNumControlPoints() const
 {
   return ( _ctrPts.getData().empty() ) ? 0 : ( _ctrPts.getData().size() ) / this->getNumDepVars();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the rational flag.
-//
+///
+///  Set the rational flag.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline void NcSpline<NCSDCA>::setRational ( const bool &state )
@@ -237,9 +246,34 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setRational ( const bool &state )
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the given spline configuration is ok.
-//
+///
+///  Find the span in the knot vector given the parameter.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline IndexType NcSpline<NCSDCA>::findSpan ( 
+  const IndexType &whichDepVar, 
+  const ParameterType &u, 
+  IndexType low ) const
+{
+  SL_ASSERT ( false == _knots.getData().empty() );
+
+  // Get the start of the knot vector.
+  const ParameterType *knots = _knots.getDataPointer ( whichDepVar );
+
+  // Get the number of controls points and degree.
+  IndexType numCtrPtr ( this->getNumControlPoints ( whichDepVar ) );
+  IndexType degree ( this->getDegree ( whichDepVar ) );
+
+  // Call the function to find the span.
+  return NcFindSpan<NCSDCA>::find ( knots, numCtrPtr, u, degree );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///  See if the given spline configuration is ok.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::isOk (
@@ -255,9 +289,9 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::isOk (
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Resize the spline data.
-//
+///
+///  Resize the spline data.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::resize (
@@ -348,9 +382,9 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::resize (
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Equality.
-//
+///
+///  Equality.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual ( const NcSpline<NCSDCA> &spline ) const
@@ -368,9 +402,9 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual ( const NcSpline<NCSDCA> 
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Equality.
-//
+///
+///  Equality.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual 
@@ -389,9 +423,9 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Equality.
-//
+///
+///  Equality.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool operator == ( const NcSpline<NCSDCA> &a, const NcSpline<NCSDCA> &b )
@@ -401,68 +435,14 @@ template<NCSDTA> inline bool operator == ( const NcSpline<NCSDCA> &a, const NcSp
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Inequality.
-//
+///
+///  Inequality.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool operator != ( const NcSpline<NCSDCA> &a, const NcSpline<NCSDCA> &b )
 {
   return a.isNotEqual ( b );
-}
-
-
-/////////////////////////////////////////////////////////////////////
-//
-//  Find the span in the knot vector given the parameter.
-//
-//  knots:      The knot vector.
-//  numCtrPts:  The number of control points for the independent 
-//              direction associated with the given knot vector.
-//  u:          The parameter we are finding the span for.
-//  low:        The starting point in the knot vector to look, The 
-//              lowest "low" is the degree (which is what usually 
-//              is passed in). It gets changed.
-//
-/////////////////////////////////////////////////////////////////////
-
-template<NCSDTA> inline I NcSpline<NCSDCA>::findSpan ( 
-  const NcSpline<NCSDCA>::ParameterArray *knots, 
-  const SlInt32 &numCtrPts, 
-  const SlFloat64 &u, 
-  SlInt32 low ) const
-{
-  SL_ASSERT ( knots && numCtrPts > 1 && low > 0 );
-
-  // See if it's the last knot.
-  if ( u == knots[numCtrPts] ) return numCtrPts - 1;
-
-  // Set the high value, the low is passed in (usually the degree).
-  SlInt32 high = numCtrPts, mid;
-
-  while ( low <= high )
-  {
-    mid = SlInt32 ( SlFloat64 ( low + high ) * 0.5 );  
-
-    if ( u == knots[mid] )
-    {
-      // Handle knot multiplicities.
-      while ( u == knots[mid + 1] ) mid++;
-      return mid;
-    }
-
-    if ( u < knots[mid] ) high = mid - 1; 
-    else low = mid + 1; 
-  }
-
-  if ( u == knots[high] )
-  {
-    // Handle knot multiplicities.
-    while( u == knots[high + 1] ) high++;
-    return high;
-  }
-
-  return low - 1;
 }
 
 

@@ -29,19 +29,32 @@ template<NCSDTCD> class NcCurve : public NcSpline<NCSDCA>
 {
 public:
 
-  DECLATE_TYPEDEFS;
+  DECLARE_TYPEDEFS;
 
   NcCurve(){}
   NcCurve ( const NcCurve<NCSDCA> &sd ) : NcSpline<NCSDCA> ( sd ){}
   ~NcCurve(){}
 
-  // Assignment operator.
+  /// Find the span in the knot vector given the parameter.
+  IndexType                     findSpan ( const ParameterType &u ) const { return this->findSpan ( u, this->getDegree() ); }
+  IndexType                     findSpan ( const ParameterType &u, const IndexType &low ) const { return NcSpline<NCSDCA>::findSpan ( 0, u, low ); }
+
+  /// Get the degree.
+  IndexType                     getDegree() const { return NcSpline<NCSDCA>::getDegree ( 0 ); }
+
+  /// Get the first knot.
+  ParameterType                 getFirstKnot() const { return NcSpline<NCSDCA>::getFirstKnot ( 0 ); }
+
+  /// Get the last knot.
+  ParameterType                 getLastKnot() const { return NcSpline<NCSDCA>::getLastKnot ( 0 ); }
+
+  /// Assignment operator.
   NcCurve &                     operator = ( const NcCurve &sd ) { this->setValue ( sd ); return *this; }
 
-  // Set the value.
+  /// Set the value.
   void                          setValue ( const NcSpline<NCSDCA> &spline ) { return _sd.setData ( spline._sd ); }
 
-  // Resize the curve.
+  /// Resize the curve.
   bool                          resize ( const IndexType &numIndepVars, const IndexType &numDepVars, const IndexType &order, const IndexType &numCtrPts, const bool &rational );
 };
 

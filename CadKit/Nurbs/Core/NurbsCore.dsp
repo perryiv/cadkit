@@ -137,5 +137,17 @@ SOURCE=.\NcSplineIO.h
 SOURCE=.\NcInternalMacros.h
 # End Source File
 # End Group
+# Begin Group "Algorithms"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\NcAlgorithm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\NcFindSpan.h
+# End Source File
+# End Group
 # End Target
 # End Project

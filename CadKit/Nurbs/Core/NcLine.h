@@ -26,7 +26,7 @@ template<NCSDTA> class NcLine : public NcCreate<NCSDCA>
 {
 public:
 
-  DECLATE_TYPEDEFS;
+  DECLARE_TYPEDEFS;
 
   // Create the line.
   static bool create ( const ControlPointType *pt1, 

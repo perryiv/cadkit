@@ -31,6 +31,33 @@
 using namespace CadKit;
 
 
+template<NCSDTA> void testFindSpan ( NcCurve<NCSDCA> &curve )
+{
+  // Find the first and last knot.
+  NcCurve<NCSDCA>::Parameter firstU ( curve.getFirstKnot() );
+  NcCurve<NCSDCA>::Parameter lastU  ( curve.getLastKnot() );
+  std::cout << "C01: First knot = " << firstU << std::endl;
+  std::cout << "C02: Last knot  = " << lastU << std::endl;
+
+	// For loop speed.
+  NcCurve<NCSDCA>::Index numParams ( 100 );
+	NcCurve<NCSDCA>::Parameter denom ( static_cast<NcCurve<NCSDCA>::Parameter> ( numParams - 1 ) );
+	NcCurve<NCSDCA>::Parameter invDenom = 1.0f / denom, u, q, r;
+	NcCurve<NCSDCA>::Parameter diffU ( lastU - firstU );
+
+  // Loop through the parameters.
+  for ( NcCurve<NCSDCA>::Index i = 0; i < numParams; ++i )
+  {
+		u = static_cast<NcCurve<NCSDCA>::Parameter> ( i );
+		q =	u * invDenom;
+		r =	u - q * denom;
+		u = q + r * invDenom;
+		u = firstU + u * diffU;
+    std::cout << "C03: i = " << i << ", u = " << u << ", span = " << curve.findSpan ( u ) << std::endl;
+  }
+}
+
+
 template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1, 
                                               const Vec &p2, 
                                               NcCurve<NCSDCA> &c1, 
@@ -54,11 +81,15 @@ template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1,
   c1.setRational ( true );
   std::cout << "A09: c1 = \n" << c1 << std::endl;
   std::cout << "A10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+
+  // Test the span finding algorithm.
+  testFindSpan ( c1 );
+  testFindSpan ( c2 );
 }
 
 
 template<NCSDTA, class Vec> void testCurve2 ( const Vec &center, 
-                                              const C &radius, 
+                                              const ControlPointType &radius, 
                                               NcCurve<NCSDCA> &c1, 
                                               NcCurve<NCSDCA> &c2 )
 {
@@ -80,6 +111,10 @@ template<NCSDTA, class Vec> void testCurve2 ( const Vec &center,
   c1.setRational ( false );
   std::cout << "B09: c1 = \n" << c1 << std::endl;
   std::cout << "B10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+
+  // Test the span finding algorithm.
+  testFindSpan ( c1 );
+  testFindSpan ( c2 );
 }
 
 

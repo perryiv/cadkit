@@ -8,9 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  IUnknown: Interface for reference counting and querying other interfaces.
-//
+///
+///  IUnknown: Interface for reference counting and querying other interfaces.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _CADKIT_INTERFACE_UNKNOWN_H_
@@ -23,17 +23,19 @@ class IUnknown
 {
 public:
 
-  // Id for this interface.
+  /// Id for this interface.
   enum { IID = 1032561430 };
 
-  // Get the reference count.
+  /// Get the reference count.
   virtual unsigned long   getRefCount() const = 0;
 
-  // See if the interface is supported.
+  /// See if the interface is supported.
   virtual IUnknown *      queryInterface ( const unsigned long &iid ) = 0;
 
-  // Reference/unreference the interface.
+  /// Reference the interface.
   virtual void            ref() = 0;
+
+  /// Unreference the interface.
   virtual void            unref() = 0;
 };
 
@@ -41,9 +43,9 @@ public:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro to declare IUnknown member functions.
-//
+///
+///  Macro to declare IUnknown member functions.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_DECLARE_IUNKNOWN_MEMBERS \
@@ -55,10 +57,10 @@ public: \
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro to implement IUnknown member functions (except queryInterface).
-//  Typically the base class will be SlRefBase or some child thereof.
-//
+///
+///  Macro to implement IUnknown member functions (except queryInterface).
+///  Typically the base class will be SlRefBase or some child thereof.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS(class_name,base_class) \

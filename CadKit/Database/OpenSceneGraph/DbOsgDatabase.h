@@ -187,6 +187,7 @@ protected:
   typedef CadKit::ErrorPolicy::Throw < std::out_of_range > StackErrorPolicy;
   typedef SlStack < osg::Group *, StackErrorPolicy > GroupStack;
   std::auto_ptr<GroupStack> _groupStack;
+  FormatAttribute _outputAttribute;
 
   virtual ~DbOsgDatabase();
 

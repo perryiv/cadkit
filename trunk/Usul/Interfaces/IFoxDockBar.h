@@ -9,36 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the scene
+//  Interface for adding fox dockable toolbar
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SCENE_H_
-#define _USUL_INTERFACE_SCENE_H_
+#ifndef _USUL_INTERFACE_FOX_DOCKBAR_H__
+#define _USUL_INTERFACE_FOX_DOCKBAR_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Node; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IScene : public Usul::Interfaces::IUnknown
+struct IFoxDockBar : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IScene );
+  USUL_DECLARE_QUERY_POINTERS ( IFoxDockBar );
 
   /// Id for this interface.
-  enum { IID = 2543180277u };
+  enum { IID = 1851586789u };
 
-  virtual void setScene( osg::Node* ) = 0;
-  virtual osg::Node* getScene() = 0;
-}; // class IScene
+  virtual void addDockBar( Usul::Interfaces::IUnknown *caller ) = 0;
+  
+}; // class IFoxDockBar
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SCENE_H_
+#endif // _USUL_INTERFACE_FOX_DOCKBAR_H__

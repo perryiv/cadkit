@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2004, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,36 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the scene
+//  Interface for getting positions
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SCENE_H_
-#define _USUL_INTERFACE_SCENE_H_
+#ifndef _USUL_INTERFACE_GET_POSITIONS_H_
+#define _USUL_INTERFACE_GET_POSITIONS_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Node; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IScene : public Usul::Interfaces::IUnknown
+struct IGetPosition : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IScene );
+  USUL_DECLARE_QUERY_POINTERS ( IGetPosition );
 
   /// Id for this interface.
-  enum { IID = 2543180277u };
+  enum { IID = 3237528025u };
 
-  virtual void setScene( osg::Node* ) = 0;
-  virtual osg::Node* getScene() = 0;
-}; // class IScene
+  virtual int getXInt() = 0;
+  virtual int getYInt() = 0;
+
+}; // IGetPosition
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SCENE_H_
+#endif // _USUL_INTERFACE_GET_POSITIONS_H_

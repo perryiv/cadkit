@@ -200,34 +200,23 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   //Make an vector that contains the number of adjacent polygons found
   std::vector < unsigned int > adjacentCount ( numPolygons, 0 );
 
-  SizeType polygonsDone = 0;
   // While there are still keepers to test...
+  
   while ( keepers.end() != keeperItr )
   {
     // Loop through all polygons
     IndexIterator indexItr = indices.begin();  
     while ( indices.end() != indexItr )
     {
-      // See if the current keeper is adjacent to this polygon.
-      if ( true == adjacentTest ( vertices, *keeperItr * numVertsPerPoly, *indexItr * numVertsPerPoly ) )
-      {
-        adjacentCount[ *keeperItr ] ++;
-        adjacentCount[ *indexItr ] ++;
-        // Put the polygon into the list of keepers.
-        keepers.push_back ( *indexItr );
-        IndexIterator temp = indexItr;
-        --indexItr;
-        indices.erase ( temp );
-      }
-
-      ++indexItr;
-      if( adjacentCount [ *keeperItr ] == numVertsPerPoly )
-        break;
+      //findAdjacentPolygon ( keeperItr, indexItr, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount);
+      indexItr = searchPolygonList <IndexIterator, VertexSequence, IndexSequence, AdjacentTest > 
+        ( keeperItr, indexItr, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount);
+      
+      
     }
 
     // Go to the next keeper.
     ++keeperItr;
-    ++polygonsDone;
     double percent = (double) ( keepers.size() * numVertsPerPoly ) / vertices.size();
 #ifdef _DEBUG
     std::ostringstream os;
@@ -238,6 +227,89 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   }
 }
 
+template < class KeeperIter, class Iter, class VertexSequence, class IndexSequence, class AdjacentTest >
+bool findAdjacentPolygon ( KeeperIter& keeperItr,
+                           Iter& indexItr,
+                           const VertexSequence& vertices,
+                           IndexSequence& keepers,
+                           IndexSequence& indices,
+                           const AdjacentTest& adjacentTest,
+                           unsigned int numVertsPerPoly,
+                           std::vector< unsigned int >& adjacentCount )
+{
+  // See if the current keeper is adjacent to this polygon.
+  if ( true == adjacentTest ( vertices, *keeperItr * numVertsPerPoly, *indexItr * numVertsPerPoly ) )
+  {
+    adjacentCount[ *keeperItr ] ++;
+    adjacentCount[ *indexItr ] ++;
+    // Put the polygon into the list of keepers.
+    keepers.push_back ( *indexItr );
+    removeFromIndexSequence( indices, indexItr );
+    return true;
+  }
+
+  return false;
+}
+
+template < class IndexSequence, class Iter >
+void removeFromIndexSequence(IndexSequence &indices, Iter& iter)
+{
+  Iter temp ( iter );
+  --iter;
+  indices.erase ( temp );
+}
+
+template < >
+void removeFromIndexSequence< std::list< unsigned int > , std::list<unsigned int>::reverse_iterator> 
+(std::list< unsigned int > &indices, std::list< unsigned int >::reverse_iterator& iter)
+{
+  std::list< unsigned int >::iterator temp ( iter.base() );
+  --iter;
+  indices.erase ( temp );
+}
+
+template < class Iter, class VertexSequence, class IndexSequence, class AdjacentTest >
+Iter searchPolygonList   ( Iter& keeperItr,
+                           Iter& indexItr,
+                           const VertexSequence& vertices,
+                           IndexSequence& keepers,
+                           IndexSequence& indices,
+                           const AdjacentTest& adjacentTest,
+                           unsigned int numVertsPerPoly,
+                           std::vector< unsigned int >& adjacentCount )
+{
+  IndexSequence::reverse_iterator rIter ( indexItr );
+  IndexSequence::iterator fIter( indexItr );
+  bool done = false;
+
+  while ( !done )
+  {
+    if( rIter != indices.rend() )
+    {
+      if ( findAdjacentPolygon ( keeperItr, rIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
+      {
+        ++rIter;
+        return rIter.base();
+      }
+      ++rIter;
+    }
+     
+    if( fIter != indices.end() )
+    {
+      if ( findAdjacentPolygon ( keeperItr, fIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
+      {
+        ++fIter;
+        return fIter;
+      }
+      ++fIter;
+    }
+    if( adjacentCount [ *keeperItr ] == numVertsPerPoly )
+        break;
+    if( rIter == indices.rend() && fIter == indices.end() )
+      done = true;
+  }
+  return indices.end();
+}
 
 }; // namespace Polygons
 }; // namespace Algorithms

@@ -318,6 +318,9 @@
 				Name="Interfaces"
 				Filter="">
 				<File
+					RelativePath=".\Interfaces\IActiveView.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IClassFactory.h">
 				</File>
 				<File
@@ -343,6 +346,9 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IRead.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISceneIntersect.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISequence.h">

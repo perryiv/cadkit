@@ -1,3 +1,6 @@
+# Include the header to set up the environment.
+include $(CADKIT_ROOT_DIR)/Make/header.mak
+
 # C++ source files.
 CPP_FILES = \
   SlBase.cpp \

@@ -30,7 +30,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::ostream &operator << ( std::ostream &out, const CadKit::SlVec4<T> &vec )
+template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlVec4<T> &vec )
 {
   out << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3];
   return out;
@@ -43,7 +43,7 @@ template<class T> inline std::ostream &operator << ( std::ostream &out, const Ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::istream &operator >> ( std::istream &in, CadKit::SlVec4<T> &vec )
+template < typename T > inline std::istream &operator >> ( std::istream &in, CadKit::SlVec4<T> &vec )
 {
   in >> vec[0] >> vec[1] >> vec[2] >> vec[3];
   return in;
@@ -78,7 +78,7 @@ typedef SlFloatManip<SlVec4f>  SlVec4fManip;
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template < typename Vec > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlManip < Vec > &manip )
+template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlManip < CadKit::SlVec4<T> > &manip )
 {
   out << std::setw ( manip.width() ) << manip.value()[0];
   out << std::setw ( manip.width() ) << manip.value()[1];
@@ -98,7 +98,7 @@ template < typename Vec > inline std::ostream &operator << ( std::ostream &out, 
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlFloatManip < Vec > &manip )
+template < typename T > inline std::ostream &operator << ( std::ostream &out, const CadKit::SlFloatManip < CadKit::SlVec4<T> > &manip )
 {
   CadKit::SlOstreamSetReset reset ( out, manip.numDecimals() );
   out << std::setw ( manip.width() ) << manip.value()[0];

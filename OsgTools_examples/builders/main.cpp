@@ -3,6 +3,7 @@
 #include "osg/Vec3"
 #include "osg/Matrix"
 #include "osg/MatrixTransform"
+#include "osgDB/ReadFile"
 
 #include "osgProducer/Viewer"
 
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 
 osg::Group* create_scene()
 {
-  unsigned int types(6);
+  unsigned int types(7);
 
   osg::Vec4 BLUE  ( 0.0, 0.0, 1.0, 1.0 );
   osg::Vec4 GREEN ( 0.0, 1.0, 0.0, 1.0 );
@@ -96,6 +97,12 @@ osg::Group* create_scene()
               OsgTools::Axes::POSITIVE_Z |
               OsgTools::Axes::NEGATIVE_Z   );
   mtwalk->addChild( walk() );
+
+  // load <cursor>.osg
+  osg::ref_ptr<osg::MatrixTransform> mtext_cursor = new osg::MatrixTransform();
+  std::string cursor_name( "$OSGFILEPATH/cow.osg" );
+  osg::Node* ext_cursor = osgDB::readNodeFile( cursor_name.c_str() );
+  mtext_cursor->addChild( ext_cursor );
 
   // mystery box
   osg::ref_ptr<osg::MatrixTransform> mtmbox = new osg::MatrixTransform();
@@ -156,6 +163,10 @@ osg::Group* create_scene()
                                              (*cpoint)[5][1],
                                              (*cpoint)[5][2]) );
 
+  mtext_cursor->setMatrix ( osg::Matrix::translate((*cpoint)[6][0],
+                                                   (*cpoint)[6][1],
+                                                   (*cpoint)[6][2]) );
+
   osg::ref_ptr<osg::Group> group = new osg::Group;
   group->addChild( mtcbox.get() );
   //group->addChild( mtmbox.get() );
@@ -165,5 +176,6 @@ osg::Group* create_scene()
   group->addChild( mtorigin.get() );
   group->addChild( mtpole.get() );
   group->addChild( mtwalk.get() );
+  group->addChild( mtext_cursor.get() );
   return group.release();
 }

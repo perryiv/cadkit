@@ -31,7 +31,7 @@ struct IMenuEntry : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IMenuEntry );
 
   // Id for this interface.
-  enum { IID = 2280889375 };
+  enum { IID = 2280889375u };
 
   // Get the menu text.
   virtual std::string   menuText() const = 0;
@@ -49,3 +49,4 @@ struct IMenuEntry : public Usul::Interfaces::IUnknown
 
 
 #endif // _USUL_INTERFACE_MENU_ENTRY_H_
+

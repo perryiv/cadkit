@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
-
+#include <stdexcept>
 
 using namespace Usul;
 using namespace Usul::File;

@@ -20,6 +20,8 @@
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Exceptions/Thrower.h"
 
+#include <stdexcept>
+
 using namespace Threads;
 using namespace Threads::OT;
 

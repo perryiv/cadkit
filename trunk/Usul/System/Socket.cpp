@@ -13,13 +13,8 @@
 #include <stdexcept>
 
 #ifndef _MSC_VER 
-#include <unistd.h>
-#include <netdb.h>
 #include <errno.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <netinet/in.h>
 #endif
 
 using namespace Usul::System;

@@ -23,13 +23,13 @@ COMPILER = c++
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-COMPILER = CC
-OS_COMP_FLAGS = -n32 -LANG:std
-OS_LINK_FLAGS = -n32 -LANG:std -v
+COMPILER = g++ #CC
+OS_COMP_FLAGS = -mabi=n32 -mips4 #-n32 -LANG:std
+OS_LINK_FLAGS = -L/usr/freeware/lib32 #-n32 -LANG:std -v
 endif
 
 COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_FOX_TOOLS
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
@@ -41,7 +41,7 @@ INCLUDES = \
 
 
 LIBS = \
-	-L${FOX_LIB_DIR}
+	-L${FOX_LIB_DIR} -lFOX-1.4
 
 TARGET      = FoxTools
 ARCHIVE_LIB = lib$(TARGET)_a.a

@@ -13,6 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef __sgi
+#define _CPP_CMATH 1
+#endif
+
 #include "FoxTools/Dialogs/FileSelection.h"
 #include "FoxTools/Functions/App.h"
 #include "FoxTools/Functions/MainWindow.h"

@@ -8,9 +8,9 @@ default : shared_lib archive_lib
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 OS := IRIX32
-CXX = CC -n32 -LANG:std -woff 1682 -mips3
-CXXFLAGS = 
-LIB_OS = lib32
+CXX = g++ #CC -n32 -LANG:std -woff 1682 -mips3
+CXXFLAGS = -mabi=n32 -mips4  
+LIB_OS = -L/usr/freeware/lib32 #lib32
 endif
 
 #-- default values for includes and libs --#
@@ -25,7 +25,8 @@ endif
 
 libs = \
 	-L$(OSG_LIB_DIR) -losg \
-	-L$(USUL_LIB_DIR) -lUsul_s
+	-L$(USUL_LIB_DIR) -lUsul_s \
+	-L${OPENTHREADS_LIB_DIR} -lOpenThreads
 
 includes = \
 	-I$(OSG_INC_DIR) \

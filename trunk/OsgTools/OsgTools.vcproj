@@ -173,6 +173,9 @@
 					RelativePath="Box.h">
 				</File>
 				<File
+					RelativePath=".\Circle.h">
+				</File>
+				<File
 					RelativePath="Grid.cpp">
 				</File>
 				<File
@@ -189,6 +192,12 @@
 				</File>
 				<File
 					RelativePath="Ray.h">
+				</File>
+				<File
+					RelativePath=".\Sphere.cpp">
+				</File>
+				<File
+					RelativePath=".\Sphere.h">
 				</File>
 				<File
 					RelativePath="Text.cpp">

@@ -34,10 +34,13 @@ template<class CharType> class SlString
 {
 public:
 
-  typedef std::basic_string<CharType> StringType;
-  typedef CharType                    value_type;
-  typedef const value_type *          const_iterator;
-  typedef value_type *                iterator;
+  typedef typename std::basic_string<CharType> StringType;
+  typedef typename StringType::size_type       SizeType;
+  typedef CharType                                     value_type;
+  typedef const value_type *                           const_iterator;
+  typedef value_type *                                 iterator;
+  
+  static const typename StringType::size_type npos;
 
   // Constructors.
   SlString(){}
@@ -58,7 +61,7 @@ public:
   // Erase the elements.
   iterator                      erase ( iterator first, iterator last ) { return _s.erase ( first, last ); }
   iterator                      erase ( iterator it ) { return _s.erase ( it ); } // STLport debug doesn't like.
-  StringType &                  erase ( unsigned int p0 = 0, unsigned int n = StringType::npos ) { return _s.erase ( p0, n ); }
+  StringType &                  erase ( unsigned int p0 = 0, unsigned int n = npos) { return _s.erase ( p0, n ); }
 
   // Iterators.
   const_iterator                begin() const { return _s.begin(); }
@@ -142,6 +145,11 @@ protected:
 
   StringType _s;
 };
+
+
+// Define npos.
+template<class CharType>
+const typename SlString<CharType>::SizeType SlString<CharType>::npos = -1;
 
 
 ///////////////////////////////////////////////////////////////////////////////

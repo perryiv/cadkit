@@ -18,6 +18,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <wchar.h>
+# include <stdio.h>
 #endif
 
 

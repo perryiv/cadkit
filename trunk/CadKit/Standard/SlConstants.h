@@ -94,7 +94,7 @@ template<class T> class SlConstants{};
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
+#if defined(_MSC_VER) && _MSC_VER <= 1200
 # define _CADKIT_TEMPLATE_CLASS
 #else
 # define _CADKIT_TEMPLATE_CLASS template<>

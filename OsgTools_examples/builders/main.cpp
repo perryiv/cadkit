@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
 osg::Group* create_scene()
 {
-  unsigned int types(4);
+  unsigned int types(5);
 
   osg::Vec4 BLUE(0.0,0.0,1.0,1.0);
   osg::Vec4 GREEN(0.0,1.0,0.0,1.0);
@@ -53,6 +53,17 @@ osg::Group* create_scene()
   OsgTools::ColorSphere csphere;
   csphere.color_policy().color( RED );
   mtcsph->addChild( csphere() );
+
+  // green torus
+  osg::ref_ptr<osg::MatrixTransform> mttor = new osg::MatrixTransform();
+  OsgTools::Torus ctorus( 0.7,                            // inner radius
+                          1.0,                            // outer radius
+                          osg::DegreesToRadians(   0.0 ), // start angle
+                          osg::DegreesToRadians( 300.0 ), // end angle
+                          50,                             // circle cuts
+                          50 );                           // sweep cuts
+  ctorus.setColor( GREEN );
+  mttor->addChild( ctorus() );
 
   // mystery box
   osg::ref_ptr<osg::MatrixTransform> mtmbox = new osg::MatrixTransform();
@@ -97,10 +108,15 @@ osg::Group* create_scene()
                                             (*cpoint)[3][1],
                                             (*cpoint)[3][2]) );
 
+  mttor->setMatrix ( osg::Matrix::translate((*cpoint)[4][0],
+                                            (*cpoint)[4][1],
+                                            (*cpoint)[4][2]) );
+
   osg::ref_ptr<osg::Group> group = new osg::Group;
   group->addChild( mtcbox.get() );
   group->addChild( mtmbox.get() );
   group->addChild( mtcsph.get() );
   group->addChild( mtmsph.get() );
+  group->addChild( mttor.get() );
   return group.release();
 }

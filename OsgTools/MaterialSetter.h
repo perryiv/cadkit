@@ -44,10 +44,10 @@ namespace OsgTools
       FRONT=1
     };
 
-    void operator ()(osg::Drawable* d);
-    void operator ()(osg::Node* g);
+    void operator ()(osg::Drawable* d) const;
+    void operator ()(osg::Node* g) const;
 
-    void adjust_stateset(osg::StateSet* ss);
+    void adjust_stateset(osg::StateSet* ss) const;
 
     // TODO: test setters/getters
     void ambient(const osg::Vec4& c,Face f=FRONT) { f ? _af=c : _ab=c; }

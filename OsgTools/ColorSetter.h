@@ -37,8 +37,8 @@ namespace OsgTools
 
     ColorSetter& operator =(const ColorSetter& cs);
 
-    void operator ()(osg::ShapeDrawable* sd);
-    void operator ()(osg::Geometry* g);
+    void operator ()(osg::ShapeDrawable* sd) const;
+    void operator ()(osg::Geometry* g) const;
 
     void color(const osg::Vec4& c) { _color = c; }
     const osg::Vec4& color() const { return _color; }

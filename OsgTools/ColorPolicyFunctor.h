@@ -34,7 +34,7 @@ namespace OsgTools
 
     ColorPolicyFunctor& operator =(const ColorPolicyFunctor& c) { _cp = c._cp; }
 
-    virtual osg::Node* operator()() = 0;
+    virtual osg::Node* operator()() const = 0;
 
     void color_policy(const ColorPolicy& c) { _cp = c; }
     const ColorPolicy& color_policy() const { return _cp; }

@@ -145,7 +145,7 @@ template < class SplineType > struct KnotInserter
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType >
+template < class SplineType > inline
 bool canInsertKnot ( const SplineType &spline, 
                      typename SplineType::SizeType whichIndepVar, 
                      typename SplineType::IndependentArgument newKnot, 
@@ -164,7 +164,7 @@ bool canInsertKnot ( const SplineType &spline,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType >
+template < class SplineType > inline
 bool canInsertKnot ( const SplineType &spline, 
                      typename SplineType::SizeType whichIndepVar, 
                      typename SplineType::IndependentArgument newKnot, 

@@ -22,6 +22,8 @@
 #include "GN/Math/Matrix.h"
 #include "GN/Algorithms/FindSpan.h"
 #include "GN/Algorithms/BasisFunctions.h"
+#include "GN/Algorithms/Parameterize.h"
+#include "GN/Algorithms/KnotVector.h"
 
 #include <algorithm>
 
@@ -244,6 +246,66 @@ void global ( const typename CurveType::SizeType &order,
 
   // Call the other one.
   GN::Interpolate::global ( order, params, knots, points, true, matrix, pivots, curve );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Global interpolation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class CurveType, 
+  class DependentContainerType
+>
+void global ( const typename CurveType::SizeType &order,
+              const DependentContainerType &points,
+              typename CurveType::IndependentArgument power,
+              CurveType &curve )
+{
+  GN_CAN_BE_CURVE ( CurveType );
+  typedef typename CurveType::SizeType SizeType;
+  typedef typename CurveType::IndependentSequence IndependentSequence;
+  typedef typename CurveType::Power PowerFunctor;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+  typedef GN::Algorithms::Parameterize < IndependentSequence, DependentContainerType, PowerFunctor, ErrorCheckerType > Parameterize;
+  typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
+  GN_ERROR_CHECK ( false == points.empty() );
+
+  // Make the parameters.
+  IndependentSequence params;
+  Parameterize::fit ( points, power, params );
+
+#if 0
+  {
+    typedef typename CurveType::IndependentType IndependentType;
+    std::ostringstream out;
+    std::copy ( params.begin(), params.end(), std::ostream_iterator<IndependentType> ( out, "\n" ) );
+    ::OutputDebugString ( "params = \n" );
+    ::OutputDebugString ( out.str().c_str() );
+  }
+#endif
+
+  // Make the knot vector. Size it for interpolation.
+  IndependentSequence knots;
+  SizeType numDataPts ( points.at(0).size() );
+  knots.resize ( numDataPts + order );
+  KnotVectorBuilder::build ( params, order, knots );
+
+#if 0
+  {
+    typedef typename CurveType::IndependentType IndependentType;
+    std::ostringstream out;
+    std::copy ( knots.begin(), knots.end(), std::ostream_iterator<IndependentType> ( out, "\n" ) );
+    ::OutputDebugString ( "knots = \n" );
+    ::OutputDebugString ( out.str().c_str() );
+  }
+#endif
+
+  // Call the other one.
+  GN::Interpolate::global ( order, params, knots, points, curve );
 }
 
 

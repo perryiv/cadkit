@@ -44,8 +44,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace osg {
-namespace Detail {
+namespace Config {
+namespace OsgDetail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -192,7 +192,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace Detail.
+//  End of namespace OsgDetail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -207,16 +207,22 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class RealType_ > class Config
+template
+<
+  class IndependentType_, 
+  class DependentType_ = IndependentType_,
+  class SizeType_ = unsigned int
+>
+class OsgConfig
 {
 public:
 
-  typedef Detail::ThrowingPolicy  ErrorCheckerType;
-  typedef Detail::StringData      BaseClassType;
+  typedef OsgDetail::ThrowingPolicy  ErrorCheckerType;
+  typedef OsgDetail::StringData      BaseClassType;
 
-  typedef unsigned int SizeType;
-  typedef RealType_    IndependentType;
-  typedef RealType_    DependentType;
+  typedef IndependentType_  IndependentType;
+  typedef DependentType_    DependentType;
+  typedef SizeType_         SizeType;
 
 private:
 
@@ -236,13 +242,13 @@ public:
   typedef ::osg::Vec4       Vec4;
   typedef ::osg::Matrixf    Matrix44;
 
-  typedef Detail::FloatTester<IndependentType>  IndependentTester;
-  typedef Detail::FloatTester<DependentType>    DependentTester;
-  typedef Detail::Translation<Matrix44,Vec3>    Translation;
-  typedef Detail::Scale<Matrix44,Vec3>          Scale;
-  typedef Detail::Multiply<Matrix44,Vec4,Vec3>  Multiply;
-  typedef Detail::SquareRoot<DependentType>     SquareRoot;
-  typedef Detail::Power<DependentType>          Power;
+  typedef OsgDetail::FloatTester<IndependentType>  IndependentTester;
+  typedef OsgDetail::FloatTester<DependentType>    DependentTester;
+  typedef OsgDetail::Translation<Matrix44,Vec3>    Translation;
+  typedef OsgDetail::Scale<Matrix44,Vec3>          Scale;
+  typedef OsgDetail::Multiply<Matrix44,Vec4,Vec3>  Multiply;
+  typedef OsgDetail::SquareRoot<DependentType>     SquareRoot;
+  typedef OsgDetail::Power<DependentType>          Power;
 };
 
 
@@ -252,7 +258,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace osg
+}; // namespace Config
 }; // namespace GN
 
 

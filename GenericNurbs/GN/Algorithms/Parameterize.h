@@ -39,12 +39,24 @@ template
 >
 struct Parameterize
 {
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Typedefs.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
   typedef typename DependentContainer::size_type SizeType;
   typedef typename IndependentContainer::value_type IndependentType;
   typedef GN::Math::DistanceSquared2d < DependentContainer, ErrorCheckerType > DistanceSquared;
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Fit the data.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
   static void fit ( const DependentContainer &points,
-                    const SizeType &order,
                     IndependentType power,
                     IndependentContainer &u )
   {

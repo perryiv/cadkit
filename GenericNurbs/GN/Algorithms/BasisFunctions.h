@@ -81,7 +81,7 @@ struct BasisFunctions
                           WorkSpace &left,
                           WorkSpace &right )
   {
-    GN_ERROR_CHECK ( span < knots.size() - order );
+    GN_ERROR_CHECK ( span <= knots.size() - order );
 
     // Needed below.
     BlendingCoefficient saved, temp;
@@ -301,6 +301,7 @@ template
   class SplineType, 
   class BlendingCoefficients
 >
+inline
 void basisFunctions ( const SplineType &spline,
                       typename SplineType::SizeType whichIndepVar,
                       typename SplineType::SizeType span,
@@ -342,6 +343,7 @@ template
   class CurveType, 
   class BlendingCoefficients
 >
+inline
 void basisFunctions ( const CurveType &curve,
                       typename CurveType::SizeType span,
                       typename CurveType::IndependentArgument u,

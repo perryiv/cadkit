@@ -13,9 +13,9 @@
 int main ( int, char ** )
 {
   // GMTL-based configuration types.
-  typedef GN::gmtl::Config<long double> GmtlConfigld;
-  typedef GN::gmtl::Config<double>      GmtlConfigd;
-  typedef GN::gmtl::Config<float>       GmtlConfigf;
+  typedef GN::Config::GmtlConfig<long double> GmtlConfigld;
+  typedef GN::Config::GmtlConfig<double>      GmtlConfigd;
+  typedef GN::Config::GmtlConfig<float>       GmtlConfigf;
 
   try
   {

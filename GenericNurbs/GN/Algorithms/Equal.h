@@ -36,7 +36,7 @@ namespace Equal {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CT, class Pred > 
+template < class CT, class Pred > inline
 bool nestedContainers ( const CT &c1, const CT &c2, Pred pred )
 {
   typedef typename CT::size_type size_type;

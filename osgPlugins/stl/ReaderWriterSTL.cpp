@@ -202,6 +202,7 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
          '+' != c &&
          ':' != c &&
          '\\' != c &&
+         '/' != c &&
          'E' != c &&
          'e' != c )
     {
@@ -556,7 +557,7 @@ void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const
   f1 = normal[0];
   f2 = normal[1];
   f3 = normal[2];
-  ::memcpy( buf    , &f1  , 4);
+  ::memcpy( buf    , &f1, 4);
   ::memcpy( buf + 4, &f2, 4);
   ::memcpy( buf + 8, &f3, 4);
 
@@ -564,7 +565,7 @@ void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const
   f1 = v1[0];
   f2 = v1[1];
   f3 = v1[2];
-  ::memcpy( buf + 12, &f1  , 4);
+  ::memcpy( buf + 12, &f1, 4);
   ::memcpy( buf + 16, &f2, 4);
   ::memcpy( buf + 20, &f3, 4);
 
@@ -572,7 +573,7 @@ void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const
   f1 = v2[0];
   f2 = v2[1];
   f3 = v2[2];
-  ::memcpy( buf + 24, &f1  , 4);
+  ::memcpy( buf + 24, &f1, 4);
   ::memcpy( buf + 28, &f2, 4);
   ::memcpy( buf + 32, &f3, 4);
 
@@ -580,7 +581,7 @@ void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const
   f1 = v3[0];
   f2 = v3[1];
   f3 = v3[2];
-  ::memcpy( buf + 36, &f1  , 4);
+  ::memcpy( buf + 36, &f1, 4);
   ::memcpy( buf + 40, &f2, 4);
   ::memcpy( buf + 44, &f3, 4);
 

@@ -176,10 +176,7 @@ template < class Real, class Sequence > void sphere ( unsigned int n, Sequence &
 
 template
 <
-  class Real, 
-  class Points, 
-  class Normals, 
-  class Indices
+  class Real
 >
 struct LatLongSphere
 {

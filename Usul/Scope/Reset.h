@@ -16,6 +16,7 @@
 #ifndef _USUL_SET_FOR_THIS_SCOPE_H_
 #define _USUL_SET_FOR_THIS_SCOPE_H_
 
+#include "Usul/Adaptors/MemberFunction.h"
 
 namespace Usul {
 namespace Scope {
@@ -43,23 +44,46 @@ private:
   T3 _final;
 };
 
-#if 0 //TODO
+#if 0
+//It would be nice if these worked
+
 template < class Function, typename T1, typename T2 = T1 >
 struct FunctionReset
 {
-  FunctionReset( Function *fun, const T1& v1, const T2& v2 )
+  FunctionReset( Function *fun, const T1& v1, const T2& v2 ) :
     _fun   ( fun ),
     _orig  ( v1 ),
     _final ( v2 )
   {
-    (*fun) ( v1 );
+    (*_fun) ( _orig );
   }
   ~FunctionReset()
   {
-    (*fun) ( v2 );
+    (*_fun) ( _final );
   }
 private:
   Function *_fun;
+  T1 _orig;
+  T2 _final;
+};
+
+
+template < class ObjectType, class FunctionType, typename T1, typename T2 = T1 >
+struct MemberFunctionReset 
+{
+  MemberFunctionReset ( ObjectType o, FunctionType f, const T1& v1, const T2& v2 ) :
+  _fun ( o, f ),
+  _orig ( v1 ),
+  _final ( v2 )
+  {
+    _fun ( _orig );
+  }
+  ~MemberFunctionReset()
+  {
+    _fun ( _final );
+  }
+private:
+  Usul::Adaptors::MemberFunction<ObjectType, FunctionType> _fun;
   T1 _orig;
   T2 _final;
 };

@@ -116,10 +116,9 @@ template
   class IndexSequence, 
   class Loops, 
   class AdjacencyTest,
-  class UpdateFunctor,
-  class CancelFunctor
+  class UpdateFunctor
 >
-inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater, const CancelFunctor& cancel)
+inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
 {
   typedef typename AdjacencyMap::Polygons Polygons;
   typedef typename Polygons::value_type Polygon;
@@ -134,10 +133,6 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
   //Walk through all the polygons
   for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
   { 
-    //Return now if we need to cancel
-    if( cancel() )
-      return;
-    
     //Get list of neighbors that share one point
     PolygonList neighbors ( (*iter)->getNeighbors() );
 

@@ -376,16 +376,37 @@ ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, co
   return root.release();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the file
+//
+///////////////////////////////////////////////////////////////////////////////
 ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, const std::string& fileName, const Options* options) \
 { 
   std::string ext = osgDB::getFileExtension(fileName);
   if (!acceptsExtension(ext)) return WriteResult::FILE_NOT_HANDLED;
 
-  std::ofstream fout ( fileName.c_str() );
+  std::string chunk ( options->getOptionString() );
+
+  if(chunk == "Binary")
+    return _writeBinary( node, fileName );
+  else if(chunk == "Ascii")
+    return _writeAscii( node, fileName );
+  return WriteResult::ERROR_IN_WRITING_FILE;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write an ascii file
+//
+///////////////////////////////////////////////////////////////////////////////
+ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& node, const std::string& filename )
+{
+  std::ofstream fout ( filename.c_str() );
   if ( !fout.is_open() )
     return WriteResult::ERROR_IN_WRITING_FILE;
 
-  fout << "solid " << fileName << std::endl;
+  fout << "solid " << filename << std::endl;
 
   AsciiWriter writer( fout );
 
@@ -394,12 +415,51 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, c
   osg::ref_ptr<osg::NodeVisitor> geodeVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( geodeWriter, &GeodeWriter<AsciiWriter>::writeGeode ) ) );
 
   osg::Node &n = const_cast< osg::Node& > ( node );
-
   n.accept( *geodeVisitor);
 
-  fout << "endsolid " << fileName << std::endl;
+  fout << "endsolid " << filename << std::endl;
 
-  return WriteResult::FILE_SAVED; 
+  return WriteResult::FILE_SAVED;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write an binary file
+//
+///////////////////////////////////////////////////////////////////////////////
+ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& node, const std::string& filename )
+{
+  std::ofstream fout ( filename.c_str(), std::ofstream::out | std::ofstream::binary );
+  if ( !fout.is_open() )
+    return WriteResult::ERROR_IN_WRITING_FILE;
+
+  char buf[84];//for the header and the number of facets
+
+  ::memset( buf, 0, 84 );
+  
+  std::string header = "solid " + filename;
+  ::memcpy( buf, header.c_str(), header.length() );
+
+  FacetCounter *facetCounter = new FacetCounter();
+
+  osg::ref_ptr<osg::NodeVisitor> facetVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( facetCounter, &FacetCounter::countFacets ) ) );
+
+  osg::Node &n = const_cast< osg::Node& > ( node );
+  n.accept( *facetVisitor );
+
+  unsigned int numFacets = facetCounter->getNumFacets();
+  ::memcpy ( buf + 80, &numFacets, 4);
+
+  fout.write( buf, 84 );
+
+  BinaryWriter writer( fout );
+
+  GeodeWriter<BinaryWriter> *geodeWriter = new GeodeWriter<BinaryWriter> ( writer );
+
+  osg::ref_ptr<osg::NodeVisitor> geodeVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( geodeWriter, &GeodeWriter<BinaryWriter>::writeGeode ) ) );
+  n.accept( *geodeVisitor );
+
+  return WriteResult::FILE_SAVED;
 }
 
 template < class Writer >
@@ -430,6 +490,25 @@ void ReaderWriterSTL::GeodeWriter< Writer >::writeGeode( osg::Geode *geode )
   }
 }
 
+void ReaderWriterSTL::FacetCounter::countFacets( osg::Geode *geode )
+{
+  unsigned int numDrawables ( geode->getNumDrawables() );
+  for ( unsigned int i = 0; i < numDrawables; ++i )
+  {
+    // Get the drawable.
+    const osg::Drawable *drawable = geode->getDrawable ( i );
+
+    // See if the drawable is a geometry.
+    const osg::Geometry *geometry = drawable->asGeometry();
+    if(geometry)
+    {
+      const osg::Vec3Array *normals = geometry->getNormalArray();
+
+      _numFacets += normals->size();
+    }
+  }
+}
+
 void ReaderWriterSTL::AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
 {
   _out << "facet normal " << normal[0] << " " << normal[1] << " " << normal[2] << " " << std::endl;
@@ -443,43 +522,48 @@ void ReaderWriterSTL::AsciiWriter::operator () ( const osg::Vec3& normal, const 
 
 void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
 {
-  char* buf[50]; //50 bytes to define a facet
+  char buf[50]; //50 bytes to define a facet
+  ::memset( buf, 0, 50 );
 
-  float f[3];
+  float f1, f2, f3;
 
   //write normal
-  f[0] = normal[0];
-  f[1] = normal[1];
-  f[2] = normal[2];
-  ::memcpy( buf    , f  , 4);
-  ::memcpy( buf + 4, f+4, 4);
-  ::memcpy( buf + 8, f+8, 4);
+  f1 = normal[0];
+  f2 = normal[1];
+  f3 = normal[2];
+  ::memcpy( buf    , &f1  , 4);
+  ::memcpy( buf + 4, &f2, 4);
+  ::memcpy( buf + 8, &f3, 4);
 
-  f[0] = v1[0];
-  f[1] = v1[1];
-  f[2] = v1[2];
-  ::memcpy( buf + 12, f  , 4);
-  ::memcpy( buf + 16, f+4, 4);
-  ::memcpy( buf + 20, f+8, 4);
+  //write first vertex
+  f1 = v1[0];
+  f2 = v1[1];
+  f3 = v1[2];
+  ::memcpy( buf + 12, &f1  , 4);
+  ::memcpy( buf + 16, &f2, 4);
+  ::memcpy( buf + 20, &f3, 4);
 
-  f[0] = v2[0];
-  f[1] = v2[1];
-  f[2] = v2[2];
-  ::memcpy( buf + 24, f  , 4);
-  ::memcpy( buf + 28, f+4, 4);
-  ::memcpy( buf + 32, f+8, 4);
+  //write second vertex
+  f1 = v2[0];
+  f2 = v2[1];
+  f3 = v2[2];
+  ::memcpy( buf + 24, &f1  , 4);
+  ::memcpy( buf + 28, &f2, 4);
+  ::memcpy( buf + 32, &f3, 4);
 
-  f[0] = v3[0];
-  f[1] = v3[1];
-  f[2] = v3[2];
-  ::memcpy( buf + 36, f  , 4);
-  ::memcpy( buf + 40, f+4, 4);
-  ::memcpy( buf + 44, f+8, 4);
+  //write third vertex
+  f1 = v3[0];
+  f2 = v3[1];
+  f3 = v3[2];
+  ::memcpy( buf + 36, &f1  , 4);
+  ::memcpy( buf + 40, &f2, 4);
+  ::memcpy( buf + 44, &f3, 4);
 
-  ::memcpy( buf + 48, 0x0, 1);
-  ::memcpy( buf + 49, 0x0, 1);
+  //write spacers
+  ::memcpy( buf + 48, "\0", 1);
+  ::memcpy( buf + 49, "\0", 1);
 
-  _out << buf;
+  _out.write( buf, 50 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

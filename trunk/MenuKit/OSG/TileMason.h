@@ -83,17 +83,8 @@ namespace MenuKit
       Detail::Box _determine_tile_size(const Menu& m,Menu::Layout parent_layout);
       Detail::Box _determine_tile_size(const Button& b,Menu::Layout parent_layout);
 
-      template<typename ItemType>
-      inline typename tile_type::display_mode _determine_tile_display_mode(const ItemType& m)
-      {
-        tile_type::display_mode dm( tile_type::NORMAL );
-        if( m.marked() || m.expanded() )
-          dm = tile_type::HIGHLIGHT;
-        if( !m.enabled() )
-          dm = tile_type::DISABLED;
-
-        return dm;
-      }
+      typename tile_type::display_mode _determine_tile_display_mode(const Button& m);
+      typename tile_type::display_mode _determine_tile_display_mode(const Menu& m);
 
     private:
       ///\todo TODO: evaluate if this class is copyable
@@ -110,7 +101,11 @@ namespace MenuKit
     template<typename T>
     void Mason<T>::apply(Menu& m)
     {
-      ///\todo TODO: find if there is a better way to reset the _scene
+      /**\todo TODO: find if there is a better way to reset the _scene.
+        * This will only work for the case where a top level menu has been traversed.
+        * If it is desired to begin traversal at a submenu, the effect is unknown.
+        * A switch should be invented.
+        */
       // grab some info
       Menu* parent = m.parent();
       Menu::Layout pl;
@@ -264,7 +259,7 @@ namespace MenuKit
       {
         for(Menu::Items::const_iterator iter=items.begin(); iter!=items.end(); ++iter)
         {
-          float temp = _tile->width( (*iter).get() );  ///\todo TODO: this call assumes menu and button are calculated with the same formula, could be improved
+          float temp = _tile->width( (*iter).get() );
           if( max_value < temp )
             max_value = temp;
         }
@@ -326,6 +321,30 @@ namespace MenuKit
       }
 
       return box;
+    }
+
+    template<typename T>
+    typename Mason<T>::tile_type::display_mode Mason<T>::_determine_tile_display_mode(const Menu& m)
+    {
+      tile_type::display_mode dm( tile_type::NORMAL );
+      if( m.marked() || m.expanded() )
+        dm = tile_type::HIGHLIGHT;
+      if( !m.enabled() )
+        dm = tile_type::DISABLED;
+
+      return dm;
+    }
+
+    template<typename T>
+    typename Mason<T>::tile_type::display_mode Mason<T>::_determine_tile_display_mode(const Button& b)
+    {
+      tile_type::display_mode dm( tile_type::NORMAL );
+      if( b.marked() || b.expanded() )
+        dm = tile_type::HIGHLIGHT;
+      if( !b.enabled() )
+        dm = tile_type::DISABLED;
+
+      return dm;
     }
 
   };

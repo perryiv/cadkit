@@ -85,7 +85,7 @@ template<typename T>
 osg::Node* ThemeSkinTile<T>::operator ()(const Menu& m)
 {
   // configure the skin
-  _skin->theme( _proper_theme() );
+  _skin->theme( this->_proper_theme() );
   _skin->graphic_width( this->box().width() );
 
   // produce the graphic
@@ -96,7 +96,7 @@ template<typename T>
 osg::Node* ThemeSkinTile<T>::operator ()(const Button& b)
 {
   // configure the skin
-  _skin->theme( _proper_theme() );
+  _skin->theme( this->_proper_theme() );
   _skin->graphic_width( this->box().width() );
 
   // produce the graphic

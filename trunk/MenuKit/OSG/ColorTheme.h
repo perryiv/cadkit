@@ -30,21 +30,22 @@ namespace MenuKit
       * it will still be necessary to provide smart initial values,
       * and that was the original purpose of writing this class. :/
       */
-    template<class ColorType>
+    template<typename ColorType>
     class ColorTheme
     {
-      /// TODO: rename class to 'Theme' because our definition of "theme" is just a color map, or not?
     public:
+      typedef ColorType color_type;
       typedef std::map<std::string,ColorType> color_map;
 
       ColorTheme(): _colormap()
       {
         /// TODO: optimize initial value assigment with an algorithm
-        _colormap["text"] = ColorType(0.0f,0.0f,0.0f,1.0f);        // black
-        _colormap["middle"] = ColorType(0.5f,0.5f,0.5f,1.0f);      // gray
-        _colormap["border"] = ColorType(0.0f,0.0f,0.8f,1.0f);      // blue
-        _colormap["background"] = ColorType(0.7f,0.7f,0.8f,1.0f);  // light gray
-        _colormap["special"] = ColorType(0.2f,0.2f,0.6f,1.0f);     // dark gray
+        _colormap["text"] = color_type(0.0f,0.0f,0.0f,1.0f);        // black
+        _colormap["middle"] = color_type(0.5f,0.5f,0.5f,1.0f);      // gray
+        _colormap["border"] = color_type(0.0f,0.0f,0.8f,1.0f);      // blue
+        _colormap["horizontal_background"] = color_type(0.5f,0.5f,0.5f,1.0f);  // gray
+        _colormap["vertical_background"] = color_type(0.7f,0.7f,0.8f,1.0f);  // light gray
+        _colormap["special"] = color_type(0.2f,0.2f,0.6f,1.0f);     // dark gray
       }
 
       ColorTheme(const ColorTheme& bt): _colormap(bt._colormap) {}

@@ -39,8 +39,8 @@ INCLUDES = \
 OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
 	-L${OPENTHREADS_LIB_DIR} \
-	-l${PRODUCER_LIB_DIR} \
-	-losgDB -losg
+	-L${PRODUCER_LIB_DIR} \
+	-losgDB -losg -lProducer -lOpenThreads
 
 USUL_LIBS = \
 	-L${USUL_LIB_DIR} \

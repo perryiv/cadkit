@@ -50,13 +50,6 @@ class eaiPart;
 class eaiShape;
 class eaiClientData;
 
-// The arguments have changed from DMDTk 5.0 to 5.2.
-//#if ( DMDTK_MAJOR_VERSION == 5 & DMDTK_MINOR_VERSION >= 2 )
-# define TRAVERSER_CALLBACK_ARGUMENTS eaiHierarchy *hierarchy, int level, eaiClientData *data
-//#else
-//# define TRAVERSER_CALLBACK_ARGUMENTS eaiHierarchy *hierarchy, int level
-//#endif
-
 
 namespace CadKit
 {
@@ -306,8 +299,10 @@ protected:
   eaiShape *              _getShape ( eaiPart *part, int whichLod, int whichShape ) const;
   eaiAssembly *           _getTopAssembly() const;
 
-  static int              _preActionTraversalCallback  ( TRAVERSER_CALLBACK_ARGUMENTS );
-  static int              _postActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS );
+  static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level, eaiClientData *data ); // DMDTk >= 5.2
+  static int              _postActionTraversalCallback ( eaiHierarchy *hierarchy, int level, eaiClientData *data ); // DMDTk >= 5.2
+  static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level ); // DMDTk < 5.2
+  static int              _postActionTraversalCallback ( eaiHierarchy *hierarchy, int level ); // DMDTk < 5.2
   bool                    _preActionTraversalNotify    ( eaiHierarchy *hierarchy, int level );
   bool                    _postActionTraversalNotify   ( eaiHierarchy *hierarchy, int level );
 

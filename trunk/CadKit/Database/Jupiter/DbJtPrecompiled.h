@@ -26,8 +26,6 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "DbJtVisApiHeaders.h"
-# include <iostream>
 # include <vector>
 # include <list>
 # include <map>

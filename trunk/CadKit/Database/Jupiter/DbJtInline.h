@@ -17,6 +17,7 @@
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 
 #include "DbJtVisApiArray.h"
+#include "DbJtVisApiHeaders.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"

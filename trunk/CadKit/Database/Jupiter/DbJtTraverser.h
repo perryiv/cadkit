@@ -151,7 +151,8 @@ protected:
   static void             _setCurrent ( DbJtTraverser *traverser );
 
   bool                    _traverse ( const char *filename );
-  static int              _traverseCallback ( eaiHierarchy *node, int level, eaiClientData * );
+  static int              _traverseCallback ( eaiHierarchy *hierarchy, int level, eaiClientData *data ); // DMDTk >= 5.2
+  static int              _traverseCallback ( eaiHierarchy *hierarchy, int level ); // DMDTk < 5.2
   int                     _traverseNotify ( eaiHierarchy *node, int level );
 
   SL_DECLARE_REFERENCE_POINTER ( DbJtTraverser );

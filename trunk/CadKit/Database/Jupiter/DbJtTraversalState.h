@@ -17,6 +17,7 @@
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_TRAVERSAL_STATE_H_
 
 #include "DbJtApi.h"
+#include "DbJtVisApiHeaders.h"
 
 #include "Standard/SlRefPtr.h"
 

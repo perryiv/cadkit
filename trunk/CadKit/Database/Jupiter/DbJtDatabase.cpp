@@ -19,6 +19,7 @@
 #include "DbJtFunctions.h"
 #include "DbJtTraversalState.h"
 #include "DbJtVisApi.h"
+#include "DbJtVisApiHeaders.h"
 
 #include "Interfaces/ITriangleAppend.h" // Keep this first or else VC++ internal compiler error.
 #include "Interfaces/IMessageNotify.h"  // VC++ internal compiler error if
@@ -33,10 +34,6 @@
 #include "Standard/SlVec2.h"
 #include "Standard/SlVec3.h"
 #include "Standard/SlInline.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "DbJtVisApiHeaders.h"
-#endif
 
 // This is the only way to get a pointer to the traverser from inside the 
 // callback function.
@@ -335,11 +332,11 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Pre-action traversal callback.
+//  Pre-action traversal callback. For DMDTk < 5.2.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_preActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS )
+int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
 {
   SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );
@@ -351,14 +348,48 @@ int DbJtDatabase::_preActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Post-action traversal callback.
+//  Post-action traversal callback. For DMDTk < 5.2.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_postActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS )
+int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
 {
   SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );
+
+  // Call the other one.
+  return ( true == _traverser->_postActionTraversalNotify ( hierarchy, level ) ) ? eai_OK : eai_ERROR;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-action traversal callback. For DMDTk >= 5.2.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *hierarchy, int level, eaiClientData *data )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_ASSERT ( _traverser );
+  SL_ASSERT ( NULL == data );
+
+  // Call the other one.
+  return ( true == _traverser->_preActionTraversalNotify ( hierarchy, level ) ) ? eai_OK : eai_ERROR;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Post-action traversal callback. For DMDTk >= 5.2.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *hierarchy, int level, eaiClientData *data )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_ASSERT ( _traverser );
+  SL_ASSERT ( NULL == data );
 
   // Call the other one.
   return ( true == _traverser->_postActionTraversalNotify ( hierarchy, level ) ) ? eai_OK : eai_ERROR;

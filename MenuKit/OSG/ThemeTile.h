@@ -45,7 +45,7 @@ namespace MenuKit
 
       virtual const theme_type& _proper_theme() const
       {
-        DisplayModeThemeMap::const_iterator iter( _thememap.find(display_mode()) );
+        DisplayModeThemeMap::const_iterator iter( _thememap.find( this->mode() ) );
         if( iter == _thememap.end() ) ///\todo TODO: use Perry's exception code here
           assert( 0 );
         return iter->second;

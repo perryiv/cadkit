@@ -35,7 +35,7 @@ namespace MenuKit
     public:
       typedef Referenced base_class;
       MENUKIT_DECLARE_POINTER( TileFunctor );
-      enum display_mode { DISABLED, NORMAL, HIGHLIGHT };
+      enum display_mode { NORMAL, DISABLED, HIGHLIGHT };
 
       TileFunctor(): _box(1.0,1.0), _mode(display_mode::NORMAL) {}
 

@@ -25,17 +25,18 @@
 
 #include "MenuKit/OSG/osg_types.h"
 
-/*
------------------------------------------------|
-|                                              |
-| ----------              ----------           |
-| |        |              |        |           |
-| | middle |   T E X T    | middle |           |
-| |        |              |        |           |
-| ----------              ----------           |
-|             background                       |
-|----------------------------------------------|
-               border
+/**\todo
+  FIX: make this diagram correct.
+  TODO: make the implementation reflect it!
+---------------------------------------------|
+| m a r g i n              b                 |
+| a ----------             o ----------      |
+| r |        |             r |        |      |
+| g | MIDDLE |   T E X T   d | MIDDLE |      |
+| i |        |             e |        |      |
+| n ----------             r ----------      |
+|             background                     |
+|--------------------------------------------|
 */
 
 namespace MenuKit
@@ -54,7 +55,7 @@ namespace MenuKit
       * It is intended to be a leaf class, which has many
       * OSG specific methods.
       */
-    class VisualThemeSkin : public ThemeSkin<osg_color_map>
+    class VisualThemeSkin : public MenuKit::OSG::osgThemeSkin
     {
       ///\todo TODO: should i map depths to the keys of the color map?
     public:
@@ -87,9 +88,8 @@ namespace MenuKit
       virtual float width(const Button& b) const;
       virtual float width(const Item* i) const;
 
-      void font(osgText::Font* f)       { _font = f; }
-      osgText::Font* font()             { return _font.get(); }
-      const osgText::Font* font() const { return _font.get(); }
+      void font(const osg::ref_ptr<osgText::Font> f) { _font = f; }
+      const osg::ref_ptr<osgText::Font> font() const { return _font; }
 
       void border(float m) { _border=m; }
       float border() const { return _border; }
@@ -104,7 +104,7 @@ namespace MenuKit
       float _word_width(const std::string& word) const;
       float _item_width(const std::string& w,const Menu* m) const;
       osg::Node* _item_graphic(const std::string& txt, const Menu* parent, ItemBits b);
-      osg::Node* _separator_graphic();
+      osg::Node* _separator_graphic(MenuKit::Menu::Layout parent_layout);
 
       ItemBits _gather_bits(unsigned int menubits);
 
@@ -126,7 +126,7 @@ namespace MenuKit
       //}
 
       float _margin,  // distance between box's edge to an add-on
-            _border;  ///\todo TODO: rename this // must be an extra width parameter, don't remember
+            _border;  // distance from the margin to the graphic's edge
       osg::ref_ptr<osgText::Font> _font;
     };
 
@@ -152,7 +152,13 @@ osg::Node* VisualThemeSkin::operator ()(const Menu& m)
 
   // check for a 'SEPARATOR'  >:-/
   if( m.separator() )
-    node = _separator_graphic();
+  {
+    MenuKit::Menu::Layout pl(MenuKit::Menu::HORIZONTAL);
+    const MenuKit::Menu* p(m.parent());
+    if( p )
+      pl = p->layout();
+    node = _separator_graphic(pl);
+  }
 
   else
   {
@@ -170,7 +176,13 @@ osg::Node* VisualThemeSkin::operator ()(const Button& b)
 
   // check for a 'SEPARATOR'  >:-/
   if( b.separator() )
-    node = _separator_graphic();
+  {
+    MenuKit::Menu::Layout pl(MenuKit::Menu::HORIZONTAL);
+    const MenuKit::Menu* p(b.parent());
+    if( p )
+      pl = p->layout();
+    node = _separator_graphic(pl);
+  }
 
   else
   {
@@ -217,7 +229,8 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
   const base_class::theme_type& scheme = this->theme();
   base_class::theme_type::const_iterator middleiter = scheme.find("middle");
-  base_class::theme_type::const_iterator backgrounditer = scheme.find("background");
+  base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
+  base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
   base_class::theme_type::const_iterator textiter = scheme.find("text");
   base_class::theme_type::const_iterator specialiter = scheme.find("special");
   base_class::theme_type::const_iterator borderiter = scheme.find("border");
@@ -226,14 +239,14 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
   if( pl==Menu::HORIZONTAL )
   {
-    if( middleiter != scheme.end() )
-      borderbox.color( middleiter->second );
+    if( hbgiter != scheme.end() )
+      borderbox.color( hbgiter->second );
   }
 
   else
   {
-    if( backgrounditer != scheme.end() )
-      borderbox.color( backgrounditer->second );
+    if( vbgiter != scheme.end() )
+      borderbox.color( vbgiter->second );
   }
 
   osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
@@ -280,13 +293,9 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   mt->addChild( group.get() );
   mt->setMatrix( osg::Matrix::translate(0.5*thebox.width(),-0.5*thebox.height(),0.0) );
 
-  // escape if  null parent
-  if( !parent || pl==Menu::HORIZONTAL )  // valid parent  TODO: implement
-  {
-    ///\todo TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
-    ///\todo TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
+  // escape if  null parent or parent has a horizontal layout
+  if( !parent || pl==Menu::HORIZONTAL )
     return mt;
-  }
 
   ///\todo TODO: make other graphic boxes.  completed?
   // left side
@@ -315,17 +324,17 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   typedef MenuKit::Bits<unsigned int> checker;
   if( checker::has(itembits, TOGGLE) )
   {
+    // the border
+    Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);
+    Detail::Box inny(outy.height()-2.0*_border,outy.height()-2.0*_border);
+    Border brdr(outy,inny,0.001);
+    if( specialiter != scheme.end() )
+      brdr.color( specialiter->second );
+
+    lgmt->addChild( brdr() );
+
     if( checker::has(itembits, CHECKED) )
     {
-      // the border
-      Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);
-      Detail::Box inny(outy.height()-2.0*_border,outy.height()-2.0*_border);
-      Border brdr(outy,inny,0.001);
-      if( specialiter != scheme.end() )
-        brdr.color( specialiter->second );
-
-      lgmt->addChild( brdr() );
-
       FlatBox markclosed(0.5*inny.height(),0.5*inny.width(),0.002);
       if( specialiter != scheme.end() )
         markclosed.color( specialiter->second );
@@ -380,8 +389,16 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
     if( !checker::has(itembits, EXPANDED) )
     {
       Arrow expander(0.5*mark.height(),0.001);
-      if( backgrounditer != scheme.end() )
-        expander.color( backgrounditer->second );
+      if( pl==Menu::HORIZONTAL )
+      {
+        if( hbgiter != scheme.end() )
+          expander.color( hbgiter->second );
+      }
+      else
+      {
+        if( vbgiter != scheme.end() )
+          expander.color( vbgiter->second );
+      }
       osg::ref_ptr<osg::Drawable> exdraw = expander();
       mgeo->addDrawable( exdraw.get() );
     }
@@ -418,19 +435,28 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 }
 
 ///\todo TODO: support vertical separators for horizontal menus, low priority
-osg::Node* VisualThemeSkin::_separator_graphic()
+osg::Node* VisualThemeSkin::_separator_graphic(MenuKit::Menu::Layout pl)
 {
   FlatBox bgbox(this->separator_height(),
                 this->graphic_width(),
                 -0.002);
 
   const base_class::theme_type& scheme = this->theme();
-  base_class::theme_type::const_iterator backgrounditer = scheme.find("background");
+  base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
+  base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
   base_class::theme_type::const_iterator middleiter = scheme.find("middle");
   base_class::theme_type::const_iterator textiter = scheme.find("text");
 
-  if( backgrounditer != scheme.end() )
-    bgbox.color( backgrounditer->second );
+  if( pl==MenuKit::Menu::HORIZONTAL )
+  {
+    if( hbgiter != scheme.end() )
+      bgbox.color( hbgiter->second );
+  }
+  else
+  {
+    if( vbgiter != scheme.end() )
+      bgbox.color( vbgiter->second );
+  }
   osg::ref_ptr<osg::Drawable> bgdraw = bgbox();
 
   // make the background geode and add the geometry

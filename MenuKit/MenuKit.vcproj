@@ -225,6 +225,12 @@
 					RelativePath=".\Referenced.h">
 				</File>
 				<File
+					RelativePath=".\SampleMenu.cpp">
+				</File>
+				<File
+					RelativePath=".\SampleMenu.h">
+				</File>
+				<File
 					RelativePath=".\Stack.h">
 				</File>
 				<File

@@ -24,6 +24,7 @@
 #include "osg/ShadeModel"
 
 #include <stdexcept>
+#include <iostream>
 
 using namespace OsgTools;
 

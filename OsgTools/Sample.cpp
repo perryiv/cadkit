@@ -19,7 +19,7 @@ using namespace OsgTools;
 
 osg::Node* Sample::make_scene()
 {
-  const unsigned int variables(7);
+  const unsigned int variables(6);
 
   osg::Vec4 BLUE  ( 0.0, 0.0, 1.0, 1.0 );
   osg::Vec4 GREEN ( 0.0, 1.0, 0.0, 1.0 );
@@ -28,18 +28,21 @@ osg::Node* Sample::make_scene()
 
   // blue box
   osg::ref_ptr<osg::MatrixTransform> mtcbox = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtcbox");
   OsgTools::ColorBox cbox;
   cbox.color_policy().color( BLUE );
   mtcbox->addChild( cbox() );
 
   // red sphere
   osg::ref_ptr<osg::MatrixTransform> mtcsph = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtcsph");
   OsgTools::ColorSphere csphere;
   csphere.color_policy().color( RED );
   mtcsph->addChild( csphere() );
 
   // green torus
   osg::ref_ptr<osg::MatrixTransform> mttor = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mttor");
   OsgTools::Torus ctorus( 0.7,                            // inner radius
                           1.0,                            // outer radius
                           osg::DegreesToRadians(   0.0 ), // start angle
@@ -51,6 +54,7 @@ osg::Node* Sample::make_scene()
 
   // origin
   osg::ref_ptr<osg::MatrixTransform> mtorigin = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtorigin");
   OsgTools::Axes origin;
   origin.state( OsgTools::Axes::POSITIVE_X |
                 OsgTools::Axes::POSITIVE_Y |
@@ -64,6 +68,7 @@ osg::Node* Sample::make_scene()
 
   // pole cursor
   osg::ref_ptr<osg::MatrixTransform> mtpole = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtpole");
   OsgTools::Axes pole;
   pole.state( OsgTools::Axes::POSITIVE_Y |
               OsgTools::Axes::NEGATIVE_Y |
@@ -72,6 +77,7 @@ osg::Node* Sample::make_scene()
 
   // fly/walk cursor
   osg::ref_ptr<osg::MatrixTransform> mtwalk = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtwalk");
   OsgTools::Axes walk;
   walk.state( OsgTools::Axes::POSITIVE_X |
               OsgTools::Axes::NEGATIVE_X |
@@ -79,15 +85,9 @@ osg::Node* Sample::make_scene()
               OsgTools::Axes::NEGATIVE_Z   );
   mtwalk->addChild( walk() );
 
-  // load <cursor>.osg
-  //osg::ref_ptr<osg::MatrixTransform> mtext_cursor = new osg::MatrixTransform();
-  //std::string cursor_name( "$OSGFILEPATH/cow.osg" );
-  //std::string cursor_name( "/home/users/hansenp/models/Cursors/zoom_in.flt" );
-  //osg::Node* ext_cursor = osgDB::readNodeFile( cursor_name.c_str() );
-  //mtext_cursor->addChild( ext_cursor );
-
   // mystery box
   osg::ref_ptr<osg::MatrixTransform> mtmbox = new osg::MatrixTransform();
+  mtcbox->setName("OsgTools_Sample_scene_mtmbox");
   OsgTools::MaterialBox mbox;
 
   // front side material properties
@@ -100,7 +100,9 @@ osg::Node* Sample::make_scene()
 
   // mystery sphere
   osg::ref_ptr<osg::MatrixTransform> mtmsph = new osg::MatrixTransform();
+  mtcbox->setName("Sample_scene_mtmsph");
   OsgTools::MaterialSphere msphere;
+  msphere.radius(1.2*msphere.radius());
 
   // front side material properties
   msphere.color_policy().ambient( osg::Vec4(0.8,0.8,0.8,1.0) );  // good light
@@ -110,7 +112,7 @@ osg::Node* Sample::make_scene()
   msphere.color_policy().specular( osg::Vec4(0.5,0.5,0.5,1.0) ); // some specular
   mtmsph->addChild( msphere() );
 
-  OsgTools::Circle circle((float)variables,variables);
+  OsgTools::Circle circle(3.0f,variables);
   osg::Vec3Array* cpoint = circle();
 
   mtcbox->setMatrix( osg::Matrix::translate((*cpoint)[0][0],
@@ -145,11 +147,12 @@ osg::Node* Sample::make_scene()
                                              (*cpoint)[5][1],
                                              (*cpoint)[5][2]) );
 
-  osg::Group* group = new osg::Group;
+  osg::Group* group = new osg::Group();
+  mtcbox->setName("OsgTools_Sample_scene_group");
   group->addChild( mtcbox.get() );
-  //group->addChild( mtmbox.get() );
+  group->addChild( mtmbox.get() );
   group->addChild( mtcsph.get() );
-  //->addChild( mtmsph.get() );
+  group->addChild( mtmsph.get() );
   group->addChild( mttor.get()  );
   group->addChild( mtorigin.get() );
   group->addChild( mtpole.get() );

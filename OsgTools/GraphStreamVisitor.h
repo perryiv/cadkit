@@ -93,6 +93,7 @@ namespace OsgTools
     const std::string& group_description() { return _group; }
 
   protected:
+    GraphStreamVisitor(); // not implemented by design
     virtual ~GraphStreamVisitor() {}
 
   private:

@@ -45,7 +45,7 @@ namespace OsgTools
       /// TODO: use Perry's exception code to catch a NULL Drawable
 
       const osg::BoundingBox& b( d->getBound() );
-      float value;
+      float value(0);
 
       switch( _k )
       {

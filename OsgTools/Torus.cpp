@@ -23,12 +23,13 @@ using namespace OsgTools;
 
 osg::Geode* Torus::operator() () const
 {
-  osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+  osg::Geode* geode = new osg::Geode;
+  geode->setName("OsgTools_Torus_geode");
 
   bool create_body( this->valid() );
 
   bool create_caps(false);
-// TODO: create_caps
+/// TODO: create_caps for torus
 //   if( (this->getEndSweep() - this->getStartSweep()) < osg::DegreesToRadians(360.0) )
 //     create_caps = true;
 
@@ -143,7 +144,7 @@ osg::Geode* Torus::operator() () const
 
     if(create_caps)
     {
-      // TODO: make the starting cap
+      /// TODO: make the starting cap
       {
         osg::ref_ptr<osg::Geometry> start_cap = new osg::Geometry;
         osg::Vec3Array* start_vertices = new osg::Vec3Array;
@@ -193,12 +194,12 @@ osg::Geode* Torus::operator() () const
         geode->addDrawable( start_cap.get() );
       } // end start cap
 
-      // TODO:  make the end cap
+      /// TODO:  make the end cap
       {
         float end_sweep = this->getEndSweep();
       } // end end cap
     } // endif create_caps
   } // endif create_body
 
-  return( geode.release() );
+  return( geode );
 }

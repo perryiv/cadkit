@@ -50,7 +50,9 @@ namespace OsgTools
       hints->setDetailRatio ( _detailRatio );
       sd->setTessellationHints ( hints.get() );
       _cp( sd.get() );  // apply the color policy adjustments
+
       osg::ref_ptr<osg::Geode> node = new osg::Geode();
+      node->setName("OsgTools_Sphere_geode");
       node->addDrawable( sd.get() );
       return node.release();
     }

@@ -108,7 +108,9 @@ namespace OsgTools
 						    0,vertices->size()) );
 
       _cp( geometry.get() );
+
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+      geode->setName("OsgTools_Box_geode");
       geode->addDrawable( geometry.get() );
       return( geode.release() );
     }

@@ -15,6 +15,12 @@
 namespace OsgTools
 {
 
+  /** Sample
+    * The Sample class is a tool to provide a scene by default,
+    * normally used with applications testing code other than
+    * scene generation.  So, enjoy it.  By the way, it uses
+    * geometry functors from the OsgTools library.
+    */
   class OSG_TOOLS_EXPORT Sample
   {
   public:

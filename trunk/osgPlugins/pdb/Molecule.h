@@ -44,6 +44,7 @@ public:
   void addBond(Atom::ID, Atom::ID);
 
   Atoms& atoms() { return _atoms; }
+  const Atoms& atoms() const { return _atoms; }
   Bonds& bonds() { return _bonds; }
 
 protected:

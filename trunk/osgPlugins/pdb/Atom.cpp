@@ -10,6 +10,7 @@
 #include <sstream>
 #include <algorithm> //for std::transform
 
+
 #include "osg/Matrixd"
 
 #include "Atom.h"
@@ -71,6 +72,7 @@ using namespace osgPlugins::pdb;
 Atom::Atom ( const char *atomString, const std::string& type, const PeriodicTable &periodicTable ) :
 BaseClass(),
 _type( type ),
+_charge("  "),
 _matrix ( new osg::MatrixTransform )
 {
 	char num[9]; //temp storage
@@ -84,6 +86,10 @@ _matrix ( new osg::MatrixTransform )
   std::istringstream inName(_name);
   inName >> _name;
 
+  //get alternate location
+  _getData(num, atomString, 16, 1);
+  _altLocation = num[0];
+
   //get residue name
   _getData(num, atomString, 17, 3);
   _residueName = num;
@@ -95,6 +101,10 @@ _matrix ( new osg::MatrixTransform )
   //get Residue ID
   _getData(num, atomString, 22, 4);
   _residueId = atoi(num);
+
+  //get alternate location
+  _getData(num, atomString, 26, 1);
+  _insertion = num[0];
 
   //get center point
   //get X
@@ -149,6 +159,13 @@ _matrix ( new osg::MatrixTransform )
           break;
       }
     }
+  }
+
+  if(::strlen ( atomString ) > 78 )
+  {
+    //get charge
+    _getData(num, atomString, 78, 2);
+    _charge = num;
   }
 
   _setMatrix();
@@ -268,3 +285,5 @@ void Atom::fixed ( bool fixed )
 {
   this->_occupancy = ( ( fixed ) ? 1.0f : 0.0f );
 }
+
+

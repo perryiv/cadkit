@@ -34,6 +34,7 @@ public:
   typedef osg::ref_ptr< Molecule > MoleculePtr;
   typedef std::vector< MoleculePtr > Molecules;
   typedef osgDB::ReaderWriter::ReadResult Result;
+  typedef osgDB::ReaderWriter::WriteResult WriteResult;
   typedef osgDB::ReaderWriter::Options Options;
   typedef Molecule::MaterialFactory MaterialFactory;
   typedef Molecule::ShapeFactory ShapeFactory;
@@ -62,6 +63,8 @@ public:
   virtual const char*     className();
 
   virtual Result          readNode ( const std::string &filename, const Options * );
+
+  virtual WriteResult     writeNode(const osg::Node& node, const std::string& fileName, const Options* options);
 
   // Show/hide the item.
   void                    showAtoms ( bool );

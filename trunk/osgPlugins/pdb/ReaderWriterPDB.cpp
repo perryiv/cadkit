@@ -152,8 +152,8 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
 
 void ReaderWriterPDB::_init()
 {
-  _molecules->clear();
-  _materialFactory->clear();
+  //_molecules->clear();
+  //_materialFactory->clear();
   _currentMolecule = NULL;
 }
 
@@ -198,7 +198,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   osg::ref_ptr<osg::Group> root ( _build() );
 
   // Initialized again to free accumulated data.
-  //this->_init();
+  this->_init();
 
   // Return the scene
   return root.release();
@@ -524,6 +524,31 @@ bool ReaderWriterPDB::hasFlags ( unsigned int flags ) const
   return Usul::Bits::has ( _flags, flags );
 }
 
+
+ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode(const osg::Node& node, const std::string& filename, const Options* options)
+{
+  std::string ext = osgDB::getFileExtension(filename);
+  if (!acceptsExtension(ext)) 
+    return WriteResult::FILE_NOT_HANDLED;
+
+  std::ofstream fout ( filename.c_str() );
+  if ( !fout.is_open() )
+    return WriteResult::ERROR_IN_WRITING_FILE;
+
+
+  Molecules molecules ( _molecules->molecules() );
+
+  for (Molecules::const_iterator i = molecules.begin(); i != molecules.end(); ++i)
+  {
+    const MoleculePtr &molecule = *i;
+    const Molecule::Atoms &atoms ( molecule->atoms() );
+
+    for( unsigned int i = 0; i < atoms.size(); ++i )
+      fout << *atoms.at(i) << std::endl;
+  }
+
+  return WriteResult::ERROR_IN_WRITING_FILE;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

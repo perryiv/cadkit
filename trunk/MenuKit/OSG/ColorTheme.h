@@ -7,6 +7,7 @@
 #define _menukit_osg_colortheme_h_
 
 #include "osg/Vec4"
+#include <map>
 
 namespace MenuKit
 {
@@ -14,61 +15,60 @@ namespace MenuKit
   namespace OSG
   {
 
+    /** ColorTheme
+      * The ColorTheme class is a simple convenience class encapsulating
+      * a "theme" (like a map of colors) for other (more complicated)
+      * classes to use as an object member.  It uses a std::map<>
+      * with a 4D (color) vector type as the template argument.
+      * It could be replaced with only the map, but this class helps
+      * to provide good initial color values for the map.
+      *
+      * This class could easily be rewritten as just an implementation
+      * of extending STL's map container template.  Then it would not
+      * be so specific to 4-d vector types as the constructor here has
+      * limited the class to such a template argument.  Then again,
+      * it will still be necessary to provide smart initial values,
+      * and that was the original purpose of writing this class. :/
+      */
     template<class ColorType>
     class ColorTheme
     {
+      /// TODO: rename class to 'Theme' because our definition of "theme" is just a color map
     public:
-      ColorTheme():
-        _text(), _middle(), _back(), _border(), _special(), _specialbg()
-      {}
-
-      ColorTheme(const ColorTheme& bt):
-        _text(bt._text), _middle(bt._middle), _back(bt._back), _border(bt._border),
-          _special(bt.special), _specialbg(bt._specialbg)
-      {}
-
-      ColorTheme(const ColorType& t, const ColorType& m, const ColorType& bak,
-                 const ColorType& bor, const ColorType& sp, const ColorType& spbg):
-        _text(t), _middle(m), _back(bak), _border(bor), _special(sp), _specialbg(spbg)
-      {}
-
-      virtual ~ColorTheme()
-      {}
-
-      ColorTheme& operator= (const ColorTheme& bt)
+      typedef std::map<std::string,ColorType> ColorMap;
+      ColorTheme(): _colormap()
       {
-        _text = bt._text;
-        _middle = bt._middle;
-        _back = bt._back;
-        _border = bt._border;
-        _special = bt._special;
-        _specialbg = bt._specialbg;
-        return( *this );
+        /// TODO: optimize initial value assigment with an algorithm
+        _colormap["text"] = ColorType(0.0f,0.0f,0.0f,1.0f);
+        _colormap["middle"] = ColorType(0.5f,0.5f,0.5f,1.0f);
+        _colormap["border"] = ColorType(0.0f,0.0f,0.8f,1.0f);
+        _colormap["background"] = ColorType(0.7f,0.7f,0.8f,1.0f);
+        _colormap["special"] = ColorType(0.2f,0.2f,0.6f,1.0f);
       }
 
-      void back(const ColorType& c) { _back = c; }
-      const ColorType& back() const { return _back; }
+      ColorTheme(const ColorTheme& bt): _colormap(bt._colormap) {}
+      ColorTheme(const ColorMap& cm): _colormap(cm) {}
+      virtual ~ColorTheme() {}
+      ColorTheme& operator= (const ColorTheme& bt) { _colormap = bt._colormap; return( *this ); }
 
-      void text(const ColorType& c) { _text = c; }
-      const ColorType& text() const { return _text; }
+      const ColorType& operator [](const std::string& key) const
+      {
+        ColorMap::const_iterator iter = _colormap.find( key );
+        if( iter == _colormap.end() ) /// TODO: use Perry's exception code here
+          assert( 0 );
 
-      void middle(const ColorType& c) { _middle = c; }
-      const ColorType& middle() const { return _middle; }
+        return iter->second;
+      }
 
-      void border(const ColorType& c) { _border = c; }
-      const ColorType& border() const { return _border; }
-
-      void special(const ColorType& c) { _special = c; }
-      const ColorType& special() const { return _special; }
-
-      void special_back(const ColorType& c) { _specialbg = c; }
-      const ColorType& special_back() const { return _specialbg; }
+      void color_map(const ColorMap& m) { _colormap = m; }
+      const ColorMap& color_map() const { return _colormap; }
+      ColorMap& color_map() { return _colormap; }
 
     private:
-      ColorType _text, _middle, _back, _border, _special, _specialbg;
+      ColorMap _colormap;
     };
 
-    typedef ColorTheme<osg::Vec4> osgColor;
+    typedef ColorTheme<osg::Vec4> osgColorTheme;
   };
 
 };

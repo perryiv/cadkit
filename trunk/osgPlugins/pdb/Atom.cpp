@@ -23,33 +23,55 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable ) :
+_type( type ),
 _matrix ( new osg::MatrixTransform )
 {
-	char num[9];
+	char num[9]; //temp storage
 	//get id number
-	memset(num, 0, 9 * sizeof(char));
-	strncpy(num, atomString + 6, 5);
+  _getData(num, atomString, 6, 5);
 	_id = atoi(num);
-	//get name
-	memset(num, 0, 9 * sizeof(char));
-	strncpy(num, atomString + 12, 4);
+
+  //get name
+  _getData(num, atomString, 12, 4);
 	_name = num;
   std::istringstream inName(_name);
   inName >> _name;
-	//get center point
-  memset(num, 0, 9 * sizeof(char));
-  strncpy(num, atomString+30, 8);
-  _point[0] = (float) atof(num);
-  memset(num, 0, 9 * sizeof(char));
-  strncpy(num, atomString+38, 8);
+
+  //get residue name
+  _getData(num, atomString, 17, 3);
+  _residueName = num;
+
+  //get residue ID
+  _getData(num, atomString, 22, 4);
+  _residueId = atoi(num);
+
+  //get center point
+  //get X
+  _getData(num, atomString, 30, 8);
+  _point[0] = (float) atof( num );
+
+  //get Y
+  _getData(num, atomString, 38, 8);
   _point[1] = (float) atof(num);
-  memset(num, 0, 9 * sizeof(char));
-  strncpy(num, atomString+46, 8);
+
+  //get Z
+  _getData(num, atomString, 46, 8);
   _point[2] = (float) atof(num);
-	_type = type;
+
+  //get occupancy
+  _getData(num, atomString, 54, 6);
+  _occupancy = atof(num);
+
+  //get temp Factor
+  _getData(num, atomString, 60, 6);
+  _tempFactor = atof(num);
+
+  //get segment ID
+  _getData(num, atomString, 72, 4);
+  _segmentId = num;
+
   //get symbol
-  memset(num, 0, 9 * sizeof(char));
-  strncpy(num, atomString + 76, 2);
+  _getData(num, atomString, 76, 2);
   std::string symbol = num;
   std::istringstream in (symbol);
   in >> symbol;
@@ -78,19 +100,7 @@ _matrix ( new osg::MatrixTransform )
     }
   }
 
-  // Make a translation.
-  osg::Matrixd T;
-  T.makeTranslate ( _point );
-
-  // Random rotation.
-  osg::Matrixd R;
-  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
-  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
-  axis.normalize();
-  R.makeRotate ( angle, axis );
-
-  // Make a matrix-transform.
-  _matrix->setMatrix ( R * T );
+  _setMatrix();
 }
 
 
@@ -158,4 +168,27 @@ const float Atom::getRadius() const
   if(_element == NULL)
     return 0.5f;
   return _element->getRadius();
+}
+
+void Atom::_setMatrix()
+{
+  // Make a translation.
+  osg::Matrixd T;
+  T.makeTranslate ( _point );
+
+  // Random rotation.
+  osg::Matrixd R;
+  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
+  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
+  axis.normalize();
+  R.makeRotate ( angle, axis );
+
+  // Make a matrix-transform.
+  _matrix->setMatrix ( R * T );
+}
+
+void Atom::_getData(char * temp, const char* string, unsigned int offset, unsigned int length)
+{
+  memset(temp, 0, 9 * sizeof(char));
+  strncpy(temp, string+offset, length);
 }

@@ -26,7 +26,7 @@ namespace Detail
       _data.push_back(data);
     }
 
-    void pop()  // TODO: test this member
+    void pop()
     {
       if( !_data.empty() )
         _data.remove( *(--_data.end()) );  // .remove only valid for list<>

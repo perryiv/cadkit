@@ -128,19 +128,28 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\BackgroundBox.cpp">
+			</File>
+			<File
+				RelativePath=".\BackgroundBox.h">
+			</File>
+			<File
 				RelativePath=".\BaseMenu.cpp">
 			</File>
 			<File
 				RelativePath=".\BaseMenu.h">
 			</File>
 			<File
-				RelativePath=".\BaseTileFunctor.h">
+				RelativePath=".\BasicTheme.h">
 			</File>
 			<File
-				RelativePath=".\ColorTheme.h">
+				RelativePath=".\ColorThemeSkin.h">
 			</File>
 			<File
-				RelativePath=".\ColorThemeTile.h">
+				RelativePath=".\ColorThemeSkinTile.h">
+			</File>
+			<File
+				RelativePath=".\DrawableFunctor.h">
 			</File>
 			<File
 				RelativePath=".\Export.h">
@@ -170,7 +179,16 @@
 				RelativePath=".\Skin.h">
 			</File>
 			<File
+				RelativePath=".\ThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\TileFunctor.h">
+			</File>
+			<File
 				RelativePath=".\TileLayer.h">
+			</File>
+			<File
+				RelativePath=".\Word.h">
 			</File>
 		</Filter>
 	</Files>

@@ -1,11 +1,11 @@
 #ifndef _menukit_osg_themeskin_h_
 #define _menukit_osg_themeskin_h_
 
-#include "Menu.h"
-#include "Button.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
 #include "osgText/Font"
-#include "Box.h"
+#include "MenuKit/Box.h"
 
 namespace osg
 {

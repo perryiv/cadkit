@@ -42,7 +42,7 @@ template < class T > struct Bits
 
   static T add ( T number, T bits )
   {
-    return ( number | bits );
+    return ( T(number | bits) ); // added the cast, -jg
   }
 
 

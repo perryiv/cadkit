@@ -56,9 +56,9 @@ _unknowns()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load( unsigned long iid, std::list<std::string> &plugins  )
+void Manager::load( unsigned long iid, const std::list<std::string> &plugins  )
 {
-  typedef std::list<std::string>::iterator Iterator;
+  typedef std::list<std::string>::const_iterator Iterator;
 
   for( Iterator i = plugins.begin(); i != plugins.end(); ++ i)
   {

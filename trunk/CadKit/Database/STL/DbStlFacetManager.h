@@ -69,11 +69,16 @@ public:
 
   //  Override the default push function so that the new matrix is multiplied
 	//  by the matrix on top of the stack.
-  void init( ) { SlMatrix44f id; id.identity(); _stack.clear(); _stack.push( id ); } // clear and push identity
+  void init( ) { _stack.clear(); pushIdentity(); } // clear and push identity
   void push( );
+/*DEBUG*/  void pop( );  // pop the stack
+// /*RESTORE*/  void pop( ) { if ( !_stack.empty() ) _stack.pop(); } // pop the stack
+// /*RESTORE*/  void pushIdentity( ) { SlMatrix44f id; id.identity(); _stack.push( id ); } // push identity
+/*DEBUG*/  void pushIdentity( ) { SlMatrix44f id; id.identity(); push( id ); } // push identity
   void clear( ) { _stack.clear(); }
   bool empty( ) const { return _stack.empty(); }
 	void push ( const SlMatrix44f &val );
+  bool applyTransforms( const SlVec3f &input, SlVec3f &output ); // apply top transforms to input vector and return in output
   SlStack<SlMatrix44f> &getStack( ) { return _stack; } // get the stack
   SlMatrix44f &top( ) { return _stack.top(); } // get the stack
 protected:
@@ -221,7 +226,13 @@ public:
   int getNumFacets ( ) { return _facets.size(); }
 
   // Push a transform onto the stack.
-  void pushTransform ( const SlMatrix44f &matrix ) { _transforms.push ( matrix ); }
+  void pushTransform ( const SlMatrix44f &matrix ) { _transforms.push( matrix ); }
+
+  // Push a transform onto the stack.
+  void pushTransformIdentity ( ) { _transforms.pushIdentity( ); }
+
+  // Pop a transform onto the stack.
+  void popTransform ( ) { _transforms.pop(); }
 
 
 

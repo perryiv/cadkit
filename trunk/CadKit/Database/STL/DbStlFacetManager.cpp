@@ -29,9 +29,13 @@
 #include "Standard/SlQueryPtr.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
-
+/*DEBUG*/#include <iostream>
+/*DEBUG*/#include "Standard/SlVec3IO.h"
 
 using namespace CadKit;
+
+///*DEBUG*/std::ofstream stl_err( "d:/temp/stl_err.txt", std::ios_base::out | std::ios_base::trunc );
+/*DEBUG*/#define stl_err std::cout
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -243,13 +247,18 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
 
         if ( !_transforms.empty() ) // if there are transforms on the stack
         {
-          SlVec3f v; // need nonmutable copy of vector for transform op
+          SlVec3f vIn, vOut; // need nonmutable copy of vector for transform op
 
           // Transform all vertices w/ current transformations
           for (int i=0; i<numVertices; i++)
           {
-            v.setValue( _vbuf.getData()[i] );
-            _transforms.top().multByUpper3x3( v, _vbuf.getData()[i] );
+            vIn.setValue( _vbuf.getData()[i] );
+
+/*DEBUG*/std::cout << "vIn[" << vIn << "], ";
+            _transforms.applyTransforms( vIn, vOut );
+            _vbuf.getData()[i].setValue( vOut );
+/*DEBUG*/std::cout << "vOut[" << vOut << "], ";// << std::endl;
+/*DEBUG*/std::cout << "stored[" <<  _vbuf.getData()[i] << "]" << std::endl;
           }
         }
 
@@ -319,6 +328,18 @@ TransformStack::TransformStack()
   // Empty.
 }
 
+/*DEBUG*/
+/*DEBUG*/void TransformStack::pop()
+/*DEBUG*/{
+/*DEBUG*/stl_err << std::flush << "*******************************************************************" << std::endl;
+/*DEBUG*/stl_err << "Popping stack...." << std::endl;
+/*DEBUG*/stl_err << "Old stack size = " << _stack.size() << std::endl;
+/*DEBUG*/  _stack.pop();
+/*DEBUG*/stl_err << "New top matrix = " << std::endl << _stack.top() << std::endl;
+/*DEBUG*/stl_err << "New stack size = " << _stack.size() << std::endl;
+/*DEBUG*/stl_err << "*******************************************************************" << std::endl;
+/*DEBUG*/}
+/*DEBUG*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -333,12 +354,19 @@ TransformStack::TransformStack()
 
 void TransformStack::push()
 {
+/*DEBUG*/stl_err << std::flush << "*******************************************************************" << std::endl;
+/*DEBUG*/stl_err << "Pushing stack in TransformStack::push()...." << std::endl;
+/*DEBUG*/stl_err << "Old stack size = " << _stack.size() << std::endl;
   SL_ASSERT ( !_stack.empty() ); 
   if ( !_stack.empty() )
   {
     SlMatrix44f tm( _stack.top() );
+/*DEBUG*/stl_err << "Old top matrix = " << std::endl << tm << std::endl << std::endl;
     _stack.push( tm );
     _stack.top().multLeft( tm );
+/*DEBUG*/stl_err << "New top matrix = top()*top() = " << std::endl << _stack.top() << std::endl << std::endl;
+/*DEBUG*/stl_err << "New stack size = " << _stack.size() << std::endl;
+/*DEBUG*/stl_err << "*******************************************************************" << std::endl;
   }
 }
 
@@ -356,14 +384,45 @@ void TransformStack::push()
 
 void TransformStack::push( const SlMatrix44f &M )
 {
+/*DEBUG*/stl_err << std::flush << "*******************************************************************" << std::endl;
+/*DEBUG*/stl_err << "Pushing stack in TransformStack::push( const SlMatrix44f &M )...." << std::endl;
+/*DEBUG*/stl_err << "Old stack size = " << _stack.size() << std::endl;
   if ( !_stack.empty() )
   {
     SlMatrix44f tm( _stack.top() );
+/*DEBUG*/stl_err << "Old top matrix = " << std::endl << tm << std::endl << std::endl;
     _stack.push( M );
+/*DEBUG*/stl_err << "M matrix = " << std::endl << M << std::endl << std::endl;
     _stack.top().multLeft( tm );
+/*DEBUG*/stl_err << "New top matrix = tm*M = " << std::endl << _stack.top() << std::endl << std::endl;
   }
   else
+/*DEBUG*/{
+/*DEBUG*/stl_err << "(stack empty) New top matrix M = " << std::endl << M << std::endl << std::endl;
     _stack.push( M );
+/*DEBUG*/}
+/*DEBUG*/stl_err << "New stack size = " << _stack.size() << std::endl;
+/*DEBUG*/stl_err << "*******************************************************************" << std::endl;
+
+}
+
+
+bool TransformStack::applyTransforms( const SlVec3f &input, SlVec3f &output )
+{
+  SlMatrix44f m;
+  
+  if ( !_stack.empty() )
+  {
+    m = _stack.top();
+
+    output[0]  = m[0]  * input[0]  + m[4]  * input[1]  + m[8]  * input[2]  + m[12];
+    output[1]  = m[1]  * input[0]  + m[5]  * input[1]  + m[9]  * input[2]  + m[13];
+    output[2]  = m[2]  * input[0]  + m[6]  * input[1]  + m[10] * input[2]  + m[14];
+
+    return true;
+  }
+  else
+    return false;
 }
 
 

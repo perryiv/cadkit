@@ -1,74 +1,69 @@
-
-#define CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
-#define CADKIT_DEFINE_SL_VECTOR_STD_OSTREAM_OPERATOR
-
 #ifdef _WIN32
 #pragma warning(disable:4786) // Truncated debug names.
 #endif
 
 #include "Standard/SlString.h"
 #include "Standard/SlStringFunctions.h"
-#include "Standard/SlList.h"
 #include "Standard/SlStringIO.h"
-using namespace CadKit;
-
 #include <iostream>
-using namespace std;
+#include <vector>
+
+using namespace CadKit;
 
 
 void testSplit ( char *splitMe )
 {
-  cout << "Original = " << splitMe << endl;
+  std::cout << "Original = " << splitMe << std::endl;
   char delim = ';';
   SlAString text ( splitMe );
-  SlList<SlAString> parts;
+  std::vector<SlAString> parts;
   CadKit::split ( text, delim, parts );
   size_t size = parts.size();
   for ( size_t i = 0; i < size; ++i ) 
-    cout << "Component[" << i << "] = " << parts[i] << endl;
+    std::cout << "Component[" << i << "] = " << parts[i] << std::endl;
 }
 
 
 void testSplit ( wchar_t *splitMe )
 {
-  wcout << L"Original = " << splitMe << endl;
+  std::wcout << L"Original = " << splitMe << std::endl;
   wchar_t delim = L';';
   SlWString text ( splitMe );
-  SlList<SlWString> parts;
+  std::vector<SlWString> parts;
   CadKit::split ( text, delim, parts );
   size_t size = parts.size();
   for ( size_t i = 0; i < size; ++i ) 
-    wcout << L"Component[" << i << L"] = " << parts[i] << endl;
+    std::wcout << L"Component[" << i << L"] = " << parts[i] << std::endl;
 }
 
 
 void testSplit()
 {
   SlAString s1 ( "The Quick Brown Fox Jumped Over the Lazy Dog" );
-  cout << s1 << endl;
+  std::cout << s1 << std::endl;
   CadKit::toUpper ( s1 );
-  cout << s1 << endl;
+  std::cout << s1 << std::endl;
   CadKit::toLower ( s1 );
-  cout << s1 << endl;
+  std::cout << s1 << std::endl;
 
   SlWString s2 ( L"The Quick Brown Fox Jumped Over the Lazy Dog" );
-  wcout << s2 << endl;
+  std::wcout << s2 << std::endl;
   CadKit::toUpper ( s2 );
-  wcout << s2 << endl;
+  std::wcout << s2 << std::endl;
   CadKit::toLower ( s2 );
-  wcout << s2 << endl;
+  std::wcout << s2 << std::endl;
 
   SlAString s3 (  CadKit::format ( "int = %d, double = %f, string = %s", 2, 2.0,  "hi" ) );
-  cout << s3 << endl;
+  std::cout << s3 << std::endl;
 
   SlWString s4 ( CadKit::format ( L"int = %d, double = %f, string = %s", 2, 2.0, L"hi" ) );
-  wcout << s4 << endl;
+  std::wcout << s4 << std::endl;
 
   SlAString s5 (  "To be or not to be, that is the question" );
   SlWString s6 ( L"To be or not to be, that is the question" );
 
-  cout  << CadKit::convert ( s6 ) << endl;
-  wcout << CadKit::convert ( s5 ) << endl;
+  std::cout  << CadKit::convert ( s6 ) << std::endl;
+  std::wcout << CadKit::convert ( s5 ) << std::endl;
 
   testSplit ( "The;Quick;Brown;Fox.Jumped.Over;the;Lazy;Dog" );
   testSplit ( "Perry Miller" );

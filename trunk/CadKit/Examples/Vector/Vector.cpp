@@ -1,17 +1,16 @@
-
-#define CADKIT_DEFINE_SL_VECTOR_4_STD_OSTREAM_OPERATOR
-#define CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
-#define CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
 #include "Standard/SlVec4.h"
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec2.h"
+#include "Standard/SlVec4IO.h"
+#include "Standard/SlVec3IO.h"
+#include "Standard/SlVec2IO.h"
 #include <iostream>
 #include <assert.h>
 
 using namespace CadKit;
 
 
-template<class Vec> testVector ( Vec &v1, Vec &v2 )
+template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 {
   // Print them to stdout using vector's "<<" operator.
   std::cout << "A01: v1 = " << v1 << std::endl;
@@ -94,7 +93,7 @@ template<class Vec> testVector ( Vec &v1, Vec &v2 )
 }
 
 
-template<class Vec> testVector4 ( Vec &v1, Vec &v2 )
+template<class Vec> void testVector4 ( Vec &v1, Vec &v2 )
 {
   // Print the vector's elements.
   Vec::Type x, y, z, w;
@@ -108,7 +107,7 @@ template<class Vec> testVector4 ( Vec &v1, Vec &v2 )
 }
 
 
-template<class Vec> testVector3 ( Vec &v1, Vec &v2 )
+template<class Vec> void testVector3 ( Vec &v1, Vec &v2 )
 {
   // Print the vector's elements.
   Vec::Type x, y, z;
@@ -122,7 +121,7 @@ template<class Vec> testVector3 ( Vec &v1, Vec &v2 )
 }
 
 
-template<class Vec> testVector2 ( Vec &v1, Vec &v2 )
+template<class Vec> void testVector2 ( Vec &v1, Vec &v2 )
 {
   // Print the vector's elements.
   Vec::Type x, y;

@@ -61,7 +61,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class std::ostream, class T> inline void write ( const SlMatrix4<T> &M, std::ostream &out )
+template<class T> inline void write ( const SlMatrix4<T> &M, std::ostream &out )
 {
   out << M[0] << " " << M[4] << " " << M[8]  << " " << M[12] << "\n";
   out << M[1] << " " << M[5] << " " << M[9]  << " " << M[13] << "\n";
@@ -77,41 +77,12 @@ template<class std::ostream, class T> inline void write ( const SlMatrix4<T> &M,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class std::istream, class T> inline void read ( SlMatrix4<T> &M, std::istream &in )
+template<class T> inline void read ( SlMatrix4<T> &M, std::istream &in )
 {
   in >> M[0] >> M[4] >> M[8]  >> M[12];
   in >> M[1] >> M[5] >> M[9]  >> M[13];
   in >> M[2] >> M[6] >> M[10] >> M[14];
   in >> M[3] >> M[7] >> M[11] >> M[15];
-}
-
-
-}; // namespace CadKit.
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output operator. Keep in global namespace.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::ostream &operator << ( std::ostream &out, const SlMatrix4<T> &M )
-{
-  CadKit::write ( M, out );
-  return out;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input operator. Keep in global namespace.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::istream &operator >> ( std::istream &in, const SlMatrix4<T> &M )
-{
-  CadKit::read ( M, in );
-  return in;
 }
 
 
@@ -121,8 +92,7 @@ template<class T> inline std::istream &operator >> ( std::istream &in, const SlM
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrix4<T>::write 
-  ( const SlMatrix4<T> &M, FILE *fp, const char *format ) const
+template<class T> inline void write ( const SlMatrix4<T> &M, FILE *fp, const char *format )
 {
   SL_ASSERT ( fp );
 
@@ -157,8 +127,7 @@ template<class T> inline void SlMatrix4<T>::write
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrix4<T>::read 
-  ( SlMatrix4<T> &M, FILE *fp, const char *format )
+template<class T> inline void read ( SlMatrix4<T> &M, FILE *fp, const char *format )
 {
   SL_ASSERT ( fp );
   SL_ASSERT ( 0 ); // Untested. If it works then take this assert out.
@@ -182,6 +151,35 @@ template<class T> inline void SlMatrix4<T>::read
   fscanf ( fp, format, &(M[7]) );
   fscanf ( fp, format, &(M[11]) );
   fscanf ( fp, format, &(M[15]) );
+}
+
+
+}; // namespace CadKit.
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Output operator. Keep in global namespace.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline std::ostream &operator << ( std::ostream &out, const CadKit::SlMatrix4<T> &M )
+{
+  CadKit::write ( M, out );
+  return out;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Input operator. Keep in global namespace.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline std::istream &operator >> ( std::istream &in, const CadKit::SlMatrix4<T> &M )
+{
+  CadKit::read ( M, in );
+  return in;
 }
 
 

@@ -56,6 +56,10 @@ public:
   SharedVertex * vertexOne()    { return _v1; }
   SharedVertex * vertexTwo()    { return _v2; }
   SharedVertex * vertexThree()  { return _v3; }
+
+  const SharedVertex * vertexOne()   const  { return _v1; }
+  const SharedVertex * vertexTwo()   const  { return _v2; }
+  const SharedVertex * vertexThree() const  { return _v3; }
   
   //Has this triangle been visited?
   bool visited () const   { return _visited; }
@@ -64,6 +68,18 @@ public:
   //Get the index
   unsigned int index() const           { return _index; }
   void         index( unsigned int i ) { _index = i; }
+
+  //Get all the neighbors of this triangle
+  std::list< Triangle* > getNeighbors() const
+  {
+    std::list< Triangle* > triangles;
+
+    triangles.splice( triangles.begin(), _v1->getPolygons() );
+    triangles.splice( triangles.end(),   _v2->getPolygons() );
+    triangles.splice( triangles.end(),   _v3->getPolygons() );
+
+    return triangles;
+  }
 
 private:
   unsigned int _index;
@@ -191,9 +207,9 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class VertexSequence >
 struct TriangleTest
 {
+#if 0
   bool operator() ( const VertexSequence &vertices, unsigned int p1, unsigned int p2 ) const
   {
     typedef typename VertexSequence::value_type Vertex;
@@ -217,6 +233,35 @@ struct TriangleTest
     if( count == 0 )
       return true;
     if( polyOneP3 != polyTwoP1 && polyOneP3 != polyTwoP2 && polyOneP3 != polyTwoP3 )
+      ++count;
+    if( count >= 2 )
+      return false;
+    return true;
+  }
+#endif
+
+  bool operator () ( const Triangle* t1, const Triangle *t2 ) const
+  {
+    typedef Triangle::SharedVertex SharedVertex;
+    unsigned int count ( 0 );
+
+    const SharedVertex* t1v1 ( t1->vertexOne() );
+    const SharedVertex* t1v2 ( t1->vertexTwo() );
+    const SharedVertex* t1v3 ( t1->vertexThree() );
+
+    const SharedVertex* t2v1 ( t2->vertexOne() );
+    const SharedVertex* t2v2 ( t2->vertexTwo() );
+    const SharedVertex* t2v3 ( t2->vertexThree() );
+
+    if( t1v1 != t2v1 && t1v1 != t2v2 && t1v1 != t2v3 )
+      ++count;
+    if( t1v2 != t2v1 && t1v2 != t2v2 && t1v2 != t2v3 )
+      ++count;
+    if( count == 2 )
+      return false;
+    if( count == 0 )
+      return true;
+    if( t1v3 != t2v1 && t1v3 != t2v2 && t1v3 != t2v3 )
       ++count;
     if( count >= 2 )
       return false;

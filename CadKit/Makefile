@@ -11,6 +11,7 @@ SUBDIRS = \
 	Database/XML \
 	Translators/Jupiter2Performer \
 	Translators/Jupiter2Xml \
+	Nurbs \
 	Demos/Jupiter2Osg \
 	Demos/Jupiter2Performer \
 	Demos/Jupiter2Xml \
@@ -18,7 +19,8 @@ SUBDIRS = \
 	Examples/Matrix4 \
 	Examples/Pathname \
 	Examples/String \
-	Examples/Vector
+	Examples/Vector \
+	Examples/Nurbs
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

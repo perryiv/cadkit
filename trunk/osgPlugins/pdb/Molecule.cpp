@@ -9,6 +9,7 @@
 
 #include "Molecule.h"
 #include "BondFinder.h"
+#include "Enum.h"
 
 #include "osg/Geometry"
 #include "osg/MatrixTransform"
@@ -23,8 +24,6 @@
 #include <vector>
 #include <iostream>
 
-//#define COMPILE_FOR_SCREEN_SHOT
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -32,7 +31,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf ) : 
+Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags ) : 
   _atoms             (),
   _bonds             (),
   _maxDistanceFactor ( 50 ),
@@ -46,7 +45,8 @@ Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf
   _minNumSegsLat     (  3 ),
   _maxNumSegsLat     ( 50 ),
   _minNumSegsLong    (  6 ),
-  _maxNumSegsLong    ( 50 )
+  _maxNumSegsLong    ( 50 ),
+  _flags             ( flags )
 {
 }
 
@@ -99,28 +99,34 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 
 osg::Group *Molecule::_build() const
 {
+  // If no bonds exist use nearest neighbor to guess where they are.
   BondFinder bf;
-  //if no bonds exist use nearest neighbor to guess where they are
-  if(_bonds.empty())
-    bf.findBonds(bf.mapToVector(_atoms), _bonds);
+  if ( _bonds.empty() && ( PDB::LOAD_BONDS == ( _flags & PDB::LOAD_BONDS ) ) )
+    bf.findBonds ( bf.mapToVector ( _atoms ), _bonds );
   
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  // Loop through all the atoms.
-  for ( Atoms::const_iterator i = _atoms.begin(); i != _atoms.end(); ++i )
+  // If we are supposed to load the atoms...
+  if ( PDB::LOAD_ATOMS == ( _flags & PDB::LOAD_ATOMS ) )
   {
-    // Add the node for this atom.
-    root->addChild ( this->_makeAtom ( i->second ) );
+    // Loop through all the atoms.
+    for ( Atoms::const_iterator i = _atoms.begin(); i != _atoms.end(); ++i )
+    {
+      // Add the node for this atom.
+      root->addChild ( this->_makeAtom ( i->second ) );
+    }
   }
 
-  // Loop through the bonds.
-  for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
+  // If we are supposed to load the bonds...
+  if ( PDB::LOAD_BONDS == ( _flags & PDB::LOAD_BONDS ) )
   {
-    // Add the node for this bond.
-//#ifdef COMPILE_FOR_SCREEN_SHOT
-    root->addChild ( this->_makeBond ( *i ) );
-//#endif
+    // Loop through the bonds.
+    for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
+    {
+      // Add the node for this bond.
+      root->addChild ( this->_makeBond ( *i ) );
+    }
   }
 
   std::cout << "Number of Atoms: " << _atoms.size() << std::endl;

@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="xml_dom"
+	Name="lib: XmlDom"
+	ProjectGUID="{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -139,6 +140,9 @@
 			</File>
 			<File
 				RelativePath="Config.h">
+			</File>
+			<File
+				RelativePath=".\Convert.h">
 			</File>
 			<File
 				RelativePath="Error.h">

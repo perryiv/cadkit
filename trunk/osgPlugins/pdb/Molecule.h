@@ -32,7 +32,7 @@ public:
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
 
-  Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf );
+  Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags );
   osg::Group* build() const { return _build(); }
   void addAtom(const Atom&);
   void addBond(Atom::ID, Atom::ID);
@@ -67,6 +67,7 @@ private:
   unsigned int _maxNumSegsLat;
   unsigned int _minNumSegsLong;
   unsigned int _maxNumSegsLong;
+  unsigned int _flags;
 };
 
 

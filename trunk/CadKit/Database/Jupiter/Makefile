@@ -9,7 +9,8 @@ CPP_FILES = \
 	DbJtPrecompiled.cpp \
 	DbJtTargets.cpp \
 	DbJtTraversalState.cpp \
-	DbJtTraverser.cpp
+	DbJtTraverser.cpp \
+	DbJtVisApi.cpp
 
 # The include path.
 LOCAL_INCLUDE = -I$(DMDTK_DEV_PATH)/include/

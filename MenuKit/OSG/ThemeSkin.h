@@ -34,6 +34,7 @@ namespace MenuKit
         _box = ts._box;
         _font = ts._font;
         _theme = ts._theme;
+        return( *this );
       }
 
       ~ThemeSkin() {}

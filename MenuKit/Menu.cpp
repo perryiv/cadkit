@@ -40,20 +40,6 @@ Menu::Menu(): BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layout, Callback *cb, MenuKit::Message m ) :
-  BaseClass ( name, icon_file, cb, m ),
-  _items      (), 
-  _layout     ( layout )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layout ) :
   BaseClass ( name, icon_file ),
   _items  (), 

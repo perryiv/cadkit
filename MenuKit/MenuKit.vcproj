@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(VJ_BASE_DIR)/include"
+				AdditionalIncludeDirectories="../;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -71,7 +71,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../;$(VJ_BASE_DIR)/include"
+				AdditionalIncludeDirectories="../;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="TRUE"

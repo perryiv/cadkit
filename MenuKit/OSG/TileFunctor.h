@@ -36,6 +36,7 @@ namespace MenuKit
       TileFunctor& operator = (const TileFunctor& btf)
       {
         _box = btf._box;
+        return( *this );
       }
 
       virtual float width(const Menu&)=0;

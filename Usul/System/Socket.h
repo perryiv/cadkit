@@ -21,6 +21,11 @@
 #if defined(_MSC_VER) 
 #include <winsock2.h>
 #else
+#include <unistd.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 

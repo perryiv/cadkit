@@ -10,14 +10,14 @@ COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_OPEN_THREADS_EXTENSIONS
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-COMPILER = CC
-OS_COMP_FLAGS = -n32 -LANG:std
-OS_LINK_FLAGS = -n32 -LANG:std -v
+COMPILER = g++ #CC
+OS_COMP_FLAGS = -mabi=n32 -mips4  #-n32 -LANG:std
+OS_LINK_FLAGS = -L/usr/freeware/lib32 #-n32 -LANG:std -v
 COMMON_FLAGS  = -g -D_DEBUG -D_COMPILING_OPEN_THREADS_EXTENSIONS
 endif
 
 
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
@@ -36,7 +36,7 @@ LIBS = \
 TARGET      = OpenThreadsEx
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = lib$(TARGET)_s.so
-BIN_DIR     = $(OSG_FOX_BIN_DIR)/bin
+BIN_DIR     = $(OSG_FOX_BIN_DIR)
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)

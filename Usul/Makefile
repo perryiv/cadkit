@@ -26,14 +26,14 @@ COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-COMPILER = CC
-OS_COMP_FLAGS = -n32 -LANG:std
-OS_LINK_FLAGS = -n32 -LANG:std -v
+COMPILER = g++  #CC
+OS_COMP_FLAGS = -mabi=n32 -mips4 #-n32 -LANG:std
+OS_LINK_FLAGS = -L/usr/freeware/lib32 #-n32 -LANG:std -v
 COMMON_FLAGS  = -g -D_DEBUG -D_COMPILING_USUL -D__SGI
 endif
 
 
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
@@ -64,7 +64,7 @@ $(TARGET) : $(OBJECTS)
 	mv $(SHARED_LIB) $(BIN_DIR)
 
 .cpp.o :
-	$(COMPILE_COMMAND) $(INCLUDES) -c $< -o $@
+	$(COMPILE_COMMAND)$(INCLUDES) -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS)

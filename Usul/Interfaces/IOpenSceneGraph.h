@@ -31,7 +31,7 @@ struct IOpenSceneGraph : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IOpenSceneGraph );
 
   /// Id for this interface.
-  enum { IID = 2851842570 };
+  enum { IID = 2851842570u };
 
   /// Get the pointer to the base class for all OSG objects.
   virtual const osg::Referenced *       osgReferenced() const = 0;

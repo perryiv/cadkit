@@ -95,7 +95,8 @@ Usul::Interfaces::IUnknown* Manager::getInterface( unsigned long iid )
 {
   for( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
-    if( (*i)->queryInterface( iid ) )
+    IUnknown *u ( (*i).get() );
+    if( u->queryInterface( iid ) )
       return (*i).get();
   }
 
@@ -115,7 +116,8 @@ Manager::UnknownSet Manager::getInterfaces( unsigned long iid )
 
   for( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
-    if( (*i)->queryInterface( iid ) )
+    IUnknown *u ( (*i).get() );
+    if( u->queryInterface( iid ) )
       set.insert( *i );
   }
 
@@ -135,7 +137,8 @@ Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long i
 
   for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
-    if ( (*i)->queryInterface ( iid1 ) && (*i)->queryInterface ( iid2 )  )
+    IUnknown *u ( i->get() );
+    if ( u->queryInterface ( iid1 ) && u->queryInterface ( iid2 )  )
       set.insert (  *i );
   }
 

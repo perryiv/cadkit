@@ -239,22 +239,40 @@
 			Name="OSG"
 			Filter="">
 			<File
+				RelativePath=".\Osg\Arrow.h">
+			</File>
+			<File
+				RelativePath=".\Osg\Border.h">
+			</File>
+			<File
 				RelativePath=".\Osg\ColorTheme.h">
 			</File>
 			<File
-				RelativePath=".\Osg\ColorThemeSkin.h">
+				RelativePath=".\Osg\Disk.h">
 			</File>
 			<File
-				RelativePath=".\Osg\ColorThemeSkinTile.h">
+				RelativePath=".\Osg\DrawableFunctor.h">
+			</File>
+			<File
+				RelativePath=".\Osg\FlatBox.h">
 			</File>
 			<File
 				RelativePath=".\Osg\ThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\Osg\ThemeTile.h">
 			</File>
 			<File
 				RelativePath=".\Osg\TileFunctor.h">
 			</File>
 			<File
 				RelativePath=".\Osg\TileMason.h">
+			</File>
+			<File
+				RelativePath=".\Osg\VisualThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\Osg\Word.h">
 			</File>
 		</Filter>
 	</Files>

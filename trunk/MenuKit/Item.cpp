@@ -18,7 +18,7 @@
 #include "Bits.h"
 #include "Errors.h"
 
-#include "boost/mpl/assert_is_same.hpp"
+/// TODO: fix this! #include "boost/mpl/assert_is_same.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -199,7 +199,7 @@ namespace Detail
 
 void Item::removeAll ( Callback::Ptr c )
 {
-  BOOST_MPL_ASSERT_IS_SAME ( Callbacks::mapped_type, Callback::Ptr );
+  /// TODO: this call was not in boost version 1_32: BOOST_MPL_ASSERT_IS_SAME ( Callbacks::mapped_type, Callback::Ptr );
 
   // Initialize.
   bool loop ( true );

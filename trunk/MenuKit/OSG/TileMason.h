@@ -2,10 +2,10 @@
 #define _menukit_osg_tilemason_h_
 
 // menukit includes
-#include "Visitor.h"           // the base class
-#include "Stack.h"
+#include "MenuKit/Visitor.h"           // the base class
+#include "MenuKit/Stack.h"
 
-#include "ThemeSkinTile.h"   // included for typedef
+#include "MenuKit/OSG/ThemeSkinTile.h"   // included for typedef
 
 // osg includes
 #include "osg/Group"

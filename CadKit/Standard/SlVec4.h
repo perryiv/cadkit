@@ -122,7 +122,9 @@ public:
   SlVec4 &                operator += ( const SlVec4 &vec );
   SlVec4 &                operator -= ( const SlVec4 &vec );
   SlVec4                  operator - () const;
-  friend SlVec4           operator * ( const SlVec4 &vec, const T &value );
+
+  // Friend operators. See http://gcc.gnu.org/faq.html#friend
+  template<class P> friend SlVec4<P> operator * ( const SlVec4<P> &vec, const P &value );
   friend SlVec4           operator * ( const T &value, const SlVec4 &vec );
   friend SlVec4           operator / ( const SlVec4 &vec, const T &value );
   friend SlVec4           operator + ( const SlVec4 &vecA, const SlVec4 &vecB );

@@ -20,8 +20,8 @@ SUBDIRS = \
 	Examples/Matrix4 \
 	Examples/Pathname \
 	Examples/String \
-	Examples/Vector \
-	Examples/Nurbs
+	Examples/Vector
+#	Examples/Nurbs
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

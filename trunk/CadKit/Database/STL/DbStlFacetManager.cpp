@@ -269,7 +269,7 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
             // Need to be careful of order because of the way normals
             // are automatically calculated.
             // TODO... check first vertex normal to determine if we have the right direction for this strip
-            for (int j=offset+2; j<numVerticesInSet; j++)
+            for (int j=offset+2; j<offset+numVerticesInSet; j++)
             {
               if ( j % 2 == 0 ) //if index is even
                 addFacet( _vbuf.getData()[j-2], _vbuf.getData()[j-1], _vbuf.getData()[j] );

@@ -48,20 +48,22 @@
 #endif
 
 
+#ifdef _WIN32
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //  Entry point for Win32 DLL.
 //
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-
 BOOL APIENTRY DllMain ( HINSTANCE hModule, DWORD ul_reason_for_call, LPVOID lpReserved )
 {
   return TRUE;
 }
 
-#elif _LINUX
+
+#else
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,6 +90,4 @@ void _fini()
 }
 
 
-#else
-TODO // This may be the same as _LINUX, have to check...
 #endif

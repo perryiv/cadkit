@@ -80,10 +80,8 @@ public:
   void                      setClientData ( const void *clientData ) { _clientData = clientData; }
 
   // The client can set a name for the node.
-  const char *              getNameA() const { return static_cast<char *>(_name);; }
-  const wchar_t *           getNameW() const { return static_cast<wchar_t *>(_name); }
-  void                      setNameA ( const char *name );
-  void                      setNameW ( const wchar_t *name );
+  const char *              getName() const { return _name; }
+  void                      setName ( const char *name );
 
   // Set the data members from the given node.
   void                      setValue ( const SgNode &node );
@@ -101,13 +99,11 @@ protected:
   Flags _flags;
   mutable const void *_reservedData;
   const void *_clientData;
-  void *_name; // Instance of std::string is 16 bytes, this is 4.
+  char *_name; // Instance of std::string is 16 bytes, this is 4.
 
   SgNode();
   SgNode ( const SgNode &node );
   virtual ~SgNode();
-
-  void                      _setName ( const void *name );
 
   SG_DECLARE_NODE ( SgNode, 0x0000101C );
   SL_DECLARE_BITMASK_FUNCTIONS(NodeFlags,Flags,_flags);

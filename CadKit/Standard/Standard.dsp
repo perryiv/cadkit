@@ -227,6 +227,18 @@ SOURCE=.\SlConvertStrings.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlString.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlStringFunctions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlStringIO.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlTString.h
 # End Source File
 # Begin Source File

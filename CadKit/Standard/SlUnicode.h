@@ -37,7 +37,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  SlUnicode: Inline functions for unicode.
+//  SlUnicode: Inline functions for unicode. 
+//
+//  Note: If CadKit::convert() works correctly then this file will be 
+//  depreciated.
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -46,12 +49,15 @@
 
 #include "SlAssert.h"
 
-#ifdef _WIN32
-# define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers.
-# define NOMINMAX            // Do not define min and max as macros.
-# include <windows.h>
-#endif // _WIN32
-#include <string>
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# ifdef _WIN32
+#  define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers.
+#  define NOMINMAX            // Do not define min and max as macros.
+#  include <windows.h>
+# endif // _WIN32
+# include <string>
+#endif
+
 
 namespace CadKit 
 {
@@ -147,12 +153,14 @@ inline HRESULT unicodeToAnsi ( const unsigned int &wsize, const wchar_t *wchars,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Converts the ANSI string chars to a Unicode string and returns the Unicode 
-// string through wchars.
+//  Converts the ANSI string chars to a Unicode string and returns the Unicode 
+//  string through wchars.
+//
+//  Note: this could probably be a template based on the string type.
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
-inline HRESULT ansiToUnicode ( const std::string &chars, std::wstring &wchars )
+inline HRESULT ansiToUnicode ( const std::basic_string<char> &chars, std::basic_string<wchar_t> &wchars )
 {
   // Handle trivial case.
   if ( 0 == chars.size() )
@@ -175,7 +183,8 @@ inline HRESULT ansiToUnicode ( const std::string &chars, std::wstring &wchars )
   SL_ASSERT ( ::wcslen ( wtemp ) == wsize - 1 );
 
   // Copy to the given wide string.
-  if ( SUCCEEDED ( hr ) ) wchars = wtemp;
+  if ( SUCCEEDED ( hr ) ) 
+    wchars = wtemp;
 
   // Done with this.
   delete [] wtemp;
@@ -187,12 +196,14 @@ inline HRESULT ansiToUnicode ( const std::string &chars, std::wstring &wchars )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Converts the Unicode string wchars to an ANSI string and returns the ANSI 
-// string through chars.
+//  Converts the Unicode string wchars to an ANSI string and returns the ANSI 
+//  string through chars.
+//
+//  Note: this could probably be a template based on the string type.
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
-inline HRESULT unicodeToAnsi ( const std::wstring &wchars, std::string &chars )
+inline HRESULT unicodeToAnsi ( const std::basic_string<wchar_t> &wchars, std::basic_string<char> &chars )
 {
   // Handle trivial case.
   if ( 0 == wchars.size() )
@@ -217,7 +228,8 @@ inline HRESULT unicodeToAnsi ( const std::wstring &wchars, std::string &chars )
   SL_ASSERT ( ::strlen ( ctemp ) <= csize - 1 );
 
   // Copy to the given wide string.
-  if ( SUCCEEDED ( hr ) ) chars = ctemp;
+  if ( SUCCEEDED ( hr ) ) 
+    chars = ctemp;
 
   // Done with this.
   delete [] ctemp;

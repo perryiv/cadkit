@@ -136,10 +136,11 @@ const SlFloat32 SL_SQRT_3_F     = 1.73205080757f;          // Same as sqrtf(3.0f
 const SlFloat64 SL_INV_SQRT_3_D = 0.577350269189;          // Same as 1.0 / sqrt(3.0)
 const SlFloat32 SL_INV_SQRT_3_F = 0.577350269189f;         // Same as 1.0f / sqrtf(3.0f)
 
-// Special characters.
-const SlWchar SL_CHAR_COPYRIGHT    = 0xA9;
-const SlWchar SL_CHAR_BULLET_SOLID = 0xF9;
-
+// Special characters. Note: these are #defined instead of true constants 
+// because if we introduce wchar_t we need <wchar.h>, plus we would need 
+// 4 definitions instead of just 2 (2 for char, 2 for wchar_t).
+#define SL_CHAR_COPYRIGHT      = 0xA9;
+#define SL_CHAR_BULLET_SOLID   = 0xF9;
 };
 
 #endif

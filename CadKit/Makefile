@@ -1,8 +1,10 @@
 # List these in the order that they need to be compiled.
 SUBDIRS = \
 	Standard \
-	Database/Jupiter \
-	Database/XML
+	SceneGraph/Core \
+	SceneGraph/OpenGL \
+	Database/XML \
+	Database/Jupiter
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

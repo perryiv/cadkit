@@ -47,7 +47,6 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
 # include "Standard/SlThread.h"
-# include "Standard/SlTString.h"
 # ifndef _WIN32 // unix
 #  define __USE_GNU  // For wcsdup().
 #  include <wchar.h> // For wcsdup().
@@ -122,7 +121,7 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
   #endif
 
   // Set the name.
-  this->_setName ( node._name );
+  this->setName ( node._name );
 }
 
 
@@ -140,7 +139,7 @@ SgNode::~SgNode()
   #endif
 
   // Free the name is if it has been allocated.
-  this->_setName ( NULL );
+  this->setName ( NULL );
 }
 
 
@@ -150,7 +149,7 @@ SgNode::~SgNode()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgNode::_setName ( const void *name )
+void SgNode::setName ( const char *name )
 {
   SL_ASSERT ( this );
 
@@ -161,46 +160,9 @@ void SgNode::_setName ( const void *name )
   // Initialize (every time).
   _name = NULL;
 
-  // If the given name is not valid then just return.
-  if ( NULL == name )
-    return;
-
-  // If we are in unicode mode...
-  if ( this->hasNodeFlags ( SgNode::UNICODE_NAME ) )
-  {
-    SlTString<wchar_t> temp ( static_cast<const wchar_t *>(name) );
-    _name = (void *) temp.getArrayCopy();
-  }
-
-  // Otherwise...
-  else
-    _name = ::strdup ( static_cast<const char *>(name) );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name as an ascii string.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgNode::setNameA ( const char *name )
-{
-  this->removeNodeFlags ( SgNode::UNICODE_NAME );
-  this->_setName ( (const void *) name );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name as a unicode string.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgNode::setNameW ( const wchar_t *name )
-{
-  this->addNodeFlags ( SgNode::UNICODE_NAME );
-  this->_setName ( (const void *) name );
+  // If the given name is valid then copy it.
+  if ( name )
+    _name = ::strdup ( name );
 }
 
 
@@ -216,5 +178,5 @@ void SgNode::setValue ( const SgNode &node )
   _reservedData = node._reservedData;
   _clientData = node._clientData;
   _flags = node._flags;
-  this->_setName ( node._name );
+  this->setName ( node._name );
 }

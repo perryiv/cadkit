@@ -46,7 +46,7 @@
 #include "DbJtVisApiArray.h"
 
 // This hack is because DMDataTk/eaiStandard.h (which is indirectly included 
-// below) includes <iostream.h>. This causes error C2874 when using STLport.
+// below) includes <iostream.h>. This causes VC++ error C2874 with STLport.
 #ifdef _WIN32
 #define EAI_STANDARD_HXX // From DMDataTk/eaiStandard.h
 #define EAI_TOOLKIT_API __declspec(dllimport)

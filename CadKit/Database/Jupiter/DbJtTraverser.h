@@ -48,7 +48,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefBase.h"
-# include "Standard/SlAString.h"
+# include "Standard/SlString.h"
 # include "Standard/SlMatrix4.h"
 # include <vector>
 # include <vector>
@@ -125,7 +125,7 @@ public:
   bool                    getType      ( EntityHandle entity, EntityType &type ) const;
 
   // Get the last error.
-  const SlAString &       getLastError() const { return _error; }
+  const std::string &     getLastError() const { return _error; }
 
   // Set the client's callback.
   void                    setCallback ( DbJtTraverserCB *callback, const void *clientData );
@@ -150,7 +150,7 @@ protected:
   static int              _traverseCallback ( eaiHierarchy *node, int level );
   int                     _traverseNotify ( eaiHierarchy *node, int level );
 
-  SlAString _error;
+  std::string _error;
   eaiHierarchy *_currentNode;
   DbJtTraverserCB *_clientCallback;
   const void *_clientData;

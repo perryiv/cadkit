@@ -39,14 +39,16 @@
 //
 //  SlConvertStrings: String conversion functions.
 //
+//  Note: If CadKit::convert() works correctly then this file will be 
+//  depreciated.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef _CADKIT_STANDARD_LIBRARY_CONVERT_STRINGS_HEADER_
 #define _CADKIT_STANDARD_LIBRARY_CONVERT_STRINGS_HEADER_
 
-#include "SlWString.h"
-#include "SlAString.h"
+#include "SlString.h"
 #include "SlUnicode.h"
 
 
@@ -58,7 +60,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline SlAString unicodeToAnsi ( const SlWString &ws )
+inline SlAString unicodeToAnsi ( const SlAString &ws )
 {
   SlAString cs;
   HRESULT hr = unicodeToAnsi ( ws, cs );
@@ -72,7 +74,7 @@ inline SlAString unicodeToAnsi ( const SlWString &ws )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline SlWString ansiToUnicode ( const SlAString &cs )
+inline SlWString ansiToUnicode ( const SlWString &cs )
 {
   SlWString ws;
   HRESULT hr = ansiToUnicode ( cs, ws );

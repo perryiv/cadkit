@@ -1,19 +1,17 @@
-# Source files go in here.
-include MakeSource.in
+# Include the header to set up the environment.
+include $(CADKIT_ROOT_DIR)/Make/header.mak
+
+# C++ source files.
+include ./source.mak
 
 # The include path.
-INCLUDE = \
-	-I./ \
-	-I$(CADKIT_ROOT_DIR)
+LOCAL_INCLUDE =
 
 # The libraries to link to.
-LIBS = \
-	-L$(CADKIT_ROOT_DIR)/bin \
-	-lCkSg_s \
-	-lCkSl_s
+LOCAL_LIBS = -lCkSg_s -lCkSl_s
 
 # Any flags for the compiler.
-CPPFLAGS = -D_LINUX -D_DEBUG -w
+LOCAL_CPPFLAGS =
 
 # The name of the thing we are making.
 TARGET = CkSgGl
@@ -22,4 +20,4 @@ TARGET = CkSgGl
 default: lib
 
 # The common rules for compiling are in here.
-include $(CADKIT_ROOT_DIR)/Make/MakeLibrary.in
+include $(CADKIT_ROOT_DIR)/Make/library.mak

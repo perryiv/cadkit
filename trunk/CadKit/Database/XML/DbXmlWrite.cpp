@@ -92,6 +92,30 @@ DbXmlWrite::~DbXmlWrite()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+bool DbXmlWrite::write ( const DbXmlNode &node, const char *filename )
+{
+  // Handle trivial case.
+  if ( NULL == filename )
+    return false;
+
+  // Try to open the file for writing.
+  std::ofstream out ( filename );
+
+  // See if it opened.
+  if ( false == out.is_open() )
+    return false;
+
+  // Call the other one.
+  return this->write ( node, out );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool DbXmlWrite::write ( const DbXmlNode &node, std::ostream &out )
 {
   // Assign the output stream.

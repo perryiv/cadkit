@@ -46,6 +46,7 @@
 
 #include "SlAssert.h"
 #include "SlStringFunctions.h"
+//#include "SlPrint.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -161,15 +162,13 @@ template<class String> inline void SlPathname<String>::setPathname ( const SlPat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SlPrint.h"
-
 template<class String> inline void SlPathname<String>::setPathname ( const String &p )
 {
   // Initialize.
-  _drive.clear();
-  _dir.clear();
-  _file.clear();
-  _ext.clear();
+  _drive.erase();
+  _dir.erase();
+  _file.erase();
+  _ext.erase();
 
   // Handle trivial case.
   if ( p.empty() )
@@ -287,7 +286,7 @@ template<class String> inline void SlPathname<String>::getPathname ( String &pat
   this->getComponents ( drive, dir, filename, ext );
 
   // Initialize.
-  pathname.clear();
+  pathname.erase();
 
   // Append the components to create the pathname.
   if ( drive.size() )
@@ -427,6 +426,19 @@ template<class String> inline void SlPathname<String>::toFullPath()
 
   // Set this instance.
   this->setPathname ( full );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return just the filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class String> inline String justFilename ( const String &pathname )
+{
+  SlPathname<String> temp ( pathname );
+  return temp.getFilename();
 }
 
 

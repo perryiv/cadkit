@@ -42,7 +42,13 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name TranslateJupiter2Xml
+    Project_Dep_Name TranslateJt2Xml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
     End Project Dependency
 }}}
 
@@ -195,7 +201,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "TranslateJupiter2Xml"=.\Translators\Jupiter2Xml\TranslateJupiter2Xml.dsp - Package Owner=<4>
+Project: "TranslateJt2Xml"=.\Translators\Jupiter2Xml\TranslateJt2Xml.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -204,13 +210,13 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name Standard
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name DatabaseJt
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
     End Project Dependency
 }}}
 

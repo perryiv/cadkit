@@ -328,8 +328,8 @@ template<class Char, class String> inline bool splitAtFirst
   ( const String &string, const Char &delimiter, String &left, String &right )
 {
   // Initialize.
-  left.clear();
-  right.clear();
+  left.erase();
+  right.erase();
 
   // Split the string into a list.
   std::list<String> parts;
@@ -361,8 +361,8 @@ template<class Char, class String> inline bool splitAtLast
 
 {
   // Initialize.
-  left.clear();
-  right.clear();
+  left.erase();
+  right.erase();
 
   // Split the string into a list.
   std::list<String> parts;

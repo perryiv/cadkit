@@ -64,7 +64,7 @@ typedef double              SlFloat64;
 #ifdef _WIN32
 typedef __int64             SlInt64;
 typedef unsigned __int64    SlUint64;
-#elif _LINUX
+#elif __GNUC__
 typedef long long           SlInt64;
 typedef unsigned long long  SlUint64;
 #else

@@ -116,6 +116,9 @@ public:
   // Clear the string. Some implementations of std::basic_string do not have this.
   void                      clear();
 
+  // Get a copy of the c-style array.
+  T                         getArrayCopy() const;
+
   // Return the first and last letters, or '\0' if the string is empty.
   T                         getFirst() const { return ( this->empty() ) ? ((T)0) : this->at ( 0 ); }
   T                         getLast()  const { return ( this->empty() ) ? ((T)0) : this->at ( this->size() - 1 ); }

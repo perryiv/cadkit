@@ -87,8 +87,15 @@ public:
   bool            isParallelTo ( const Line3 &line ) const;
   bool            isPerpendicularTo ( const Line3 &line ) const;
 
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend bool operator == ( const SlLine3<P> &line1, const SlLine3<P> &line2 );
+  template<class P> friend bool operator != ( const SlLine3<P> &line1, const SlLine3<P> &line2 );
+#else
   friend bool     operator == ( const Line3 &line1, const Line3 &line2 );
   friend bool     operator != ( const Line3 &line1, const Line3 &line2 );
+#endif
 
   void            normalize() { _vec.normalize(); }
 

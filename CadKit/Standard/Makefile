@@ -8,7 +8,7 @@ INCLUDE = -I./
 LIBS = 
 
 # Any flags for the compiler.
-CPPFLAGS = -D_LINUX -D_DEBUG
+CPPFLAGS = -D_DEBUG
 
 # The name of the thing we are making.
 TARGET = CkSl

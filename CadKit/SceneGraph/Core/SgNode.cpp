@@ -47,6 +47,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
 # include "Standard/SlThread.h"
+# include "Standard/SlTString.h"
 # ifndef _WIN32 // unix
 #  define __USE_GNU  // For wcsdup().
 #  include <wchar.h> // For wcsdup().
@@ -166,7 +167,10 @@ void SgNode::_setName ( const void *name )
 
   // If we are in unicode mode...
   if ( this->hasNodeFlags ( SgNode::UNICODE_NAME ) )
-    _name = ::wcsdup ( static_cast<const wchar_t *>(name) );
+  {
+    SlTString<wchar_t> temp ( static_cast<const wchar_t *>(name) );
+    _name = (void *) temp.getArrayCopy();
+  }
 
   // Otherwise...
   else

@@ -48,12 +48,11 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdio.h>
-# ifdef _WIN32
+# if _WIN32 || __GNUC__
 #  include <stdarg.h>
+#  include <string.h>
 # else
-#  include <streambuf.h> // For va_list, is there a better header? Can't
-                         // find where it is actually defined, but this 
-                         // makes it compile.
+TODO
 # endif
 #endif // _CADKIT_USE_PRECOMPILED_HEADERS
 

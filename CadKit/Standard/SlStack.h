@@ -50,7 +50,7 @@
 
 #ifdef _WIN32
 # define _sequence c
-#elif _LINUX
+#elif __GNUC__
 # define _sequence _M_c
 #else
 TODO

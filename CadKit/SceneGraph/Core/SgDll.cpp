@@ -61,7 +61,7 @@ BOOL APIENTRY DllMain ( HINSTANCE hModule, DWORD ul_reason_for_call, LPVOID lpRe
   return TRUE;
 }
 
-#elif _LINUX
+#elif __GNUC__
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,5 +89,5 @@ void _fini()
 
 
 #else
-TODO // This may be the same as _LINUX, have to check...
+TODO // This may be the same as __GNUC__, have to check...
 #endif

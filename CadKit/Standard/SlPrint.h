@@ -75,7 +75,7 @@
 #  define SL_WPRINT3 SL_WPRINT
 #  define SL_WPRINT4 SL_WPRINT
 #  define SL_WPRINT5 SL_WPRINT
-# elif _LINUX
+# elif __GNUC__
 #  define SL_PRINT(exp) ((void)0)
 #  define SL_PRINT2(exp1,exp2) ((void)0)
 #  define SL_PRINT3(exp1,exp2,exp3) ((void)0)

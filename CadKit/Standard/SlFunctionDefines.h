@@ -53,7 +53,7 @@
 
 #ifdef _WIN32
 # define SL_GETCWD ::_getcwd
-#elif _LINUX
+#elif __GNUC__
 # define SL_GETCWD ::getcwd
 #else // ?
 TODO
@@ -68,7 +68,7 @@ TODO
 
 #ifdef _WIN32
 # define SL_SNPRINTF ::_snprintf
-#elif _LINUX
+#elif __GNUC__
 # define SL_SNPRINTF ::snprintf
 #else // ?
 TODO
@@ -83,7 +83,7 @@ TODO
 
 #ifdef _WIN32
 # define SL_VSNPRINTF ::_vsnprintf
-#elif _LINUX
+#elif __GNUC__
 # define SL_VSNPRINTF ::vsnprintf
 #else // ?
 TODO
@@ -98,7 +98,7 @@ TODO
 
 #ifdef _WIN32
 # define SL_VSNWPRINTF ::_vsnwprintf
-#elif _LINUX
+#elif __GNUC__
 # ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #  define __USE_ISOC99
 #  include <wchar.h>

@@ -88,11 +88,31 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
+# include <map>
 #endif
 
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetCount,SgVisitor);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hiding the std::map because of VC++ warning 4786. A pragma isn't helping.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CadKit
+{
+typedef std::map<const SlType *, IndexGetCount> CountMap;
+
+inline CountMap *_getCountMap ( void *mapPtr ) 
+{
+  return (CountMap *) mapPtr;
+}
+
+#define _MAP ( CadKit::_getCountMap ( _countMap ) )
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,8 +142,8 @@ SgGetCount::~SgGetCount()
   SL_PRINT2 ( "SgGetCount::~SgGetCount(), this = %X\n", this );
 
   // Delete the map.
-  if ( _countMap )
-    delete _countMap;
+  if ( _MAP )
+    delete _MAP;
 }
 
 
@@ -159,10 +179,10 @@ bool SgGetCount::count ( SgNode &scene )
 IndexGetCount SgGetCount::getCount ( const SlType *type ) const
 {
   // Look for a corresponding iterator.
-  CountMap::const_iterator i = _countMap->find ( type );
+  CountMap::const_iterator i = _MAP->find ( type );
 
   // Return the count, or zero if the given type is not in the map.
-  return ( i != _countMap->end() ) ? i->second : 0;
+  return ( i != _MAP->end() ) ? i->second : 0;
 }
 
 
@@ -176,10 +196,10 @@ IndexGetCount SgGetCount::getCount ( const SlType *type ) const
 void SgGetCount::_incrementCount ( const SlType *type )
 {
   // Look for a corresponding iterator.
-  CountMap::iterator i = _countMap->find ( type );
+  CountMap::iterator i = _MAP->find ( type );
 
   // If we got a good one...
-  if ( i != _countMap->end() )
+  if ( i != _MAP->end() )
   {
     // Increment the count and return.
     i->second += 1;
@@ -187,7 +207,7 @@ void SgGetCount::_incrementCount ( const SlType *type )
   }
 
   // If we get to here then insert the first counter for this type.
-  (*_countMap)[type] = 1;
+  (*_MAP)[type] = 1;
 }
 
 

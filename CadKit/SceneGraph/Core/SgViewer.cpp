@@ -55,7 +55,11 @@
 # include "Standard/SlPrint.h"
 # include "Standard/SlTrace.h"
 # include "Standard/SlTrackball.h"
-# include <map>
+# ifdef __GNUC__
+#  include <vector>
+# else
+#  include <map>
+# endif
 #endif
 
 using namespace CadKit;
@@ -88,7 +92,11 @@ enum // Dragger state.
 namespace CadKit
 {
   enum KeyState { KEY_UP, KEY_DOWN };
-  typedef std::map<long,KeyState> KeyStates;
+#ifdef __GNUC__
+  typedef std::vector<KeyState> KeyStates;
+#else
+  typedef std::map<unsigned long,KeyState> KeyStates;
+#endif
   KeyStates _keyStates;
 };
 
@@ -861,6 +869,12 @@ bool SgViewer::keyDown ( const unsigned long &theChar )
 {
   SL_ASSERT ( this );
 
+#ifdef __GNUC__
+  // Make sure your usage of std::vector is ok.
+  // See if you can figure out how to use std::map.
+  SL_ASSERT ( 0 ); 
+#endif
+
   // Set the state.
   CadKit::_keyStates[theChar] = CadKit::KEY_DOWN;
 
@@ -956,7 +970,7 @@ void SgViewer::spinNotify()
   SL_ASSERT ( this );
 
   // If there is a camera then rotate it.
-  if ( _camera ) 
+  if ( _camera.isValid() ) 
     _camera->rotate ( _dR );
 }
 
@@ -970,8 +984,8 @@ void SgViewer::spinNotify()
 bool SgViewer::getRay ( long x, long y, SlLine3f &line ) const
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( _renderer );
-  SL_ASSERT ( _camera );
+  SL_ASSERT ( _renderer.isValid() );
+  SL_ASSERT ( _camera.isValid() );
 
   // Get the viewport.
   SlViewporti viewport;
@@ -1035,8 +1049,8 @@ bool SgViewer::getRay2 ( const long &winX, const long &winY, SlLine3f &line ) co
 {
   SL_ASSERT ( this );
   SL_PRINT3 ( "In SgViewer::getRay2(), winX = %4d, winY = %4d\n", winX, winY );
-  SL_ASSERT ( _renderer );
-  SL_ASSERT ( _camera );
+  SL_ASSERT ( _renderer.isValid() );
+  SL_ASSERT ( _camera.isValid() );
 
   // Get the viewport.
   SlViewporti vp;

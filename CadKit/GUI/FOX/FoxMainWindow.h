@@ -20,7 +20,7 @@
 # define NOMINMAX // Fox includes <windows.h>
 #endif
 
-#include "fox/fx.h"
+#include <fx.h>
 
 #include "FoxApi.h"
 

@@ -33,8 +33,8 @@
 # define NOMINMAX // Fox includes <windows.h>
 #endif
 
-#include "fox/fx.h"
-#include "fox/FXCURCursor.h"
+#include <fx.h>
+#include <FXCURCursor.h>
 
 
 using namespace CadKit;

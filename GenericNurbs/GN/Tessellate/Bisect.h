@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Perry L. Miller IV
@@ -15,9 +16,13 @@
 #ifndef _GENERIC_NURBS_LIBRARY_BISECTION_TESSELLATION_H_
 #define _GENERIC_NURBS_LIBRARY_BISECTION_TESSELLATION_H_
 
-
 #include "GN/Macros/ErrorCheck.h"
 #include "GN/MPL/TypeCheck.h"
+#include "GN/Math/Distance.h"
+#include "GN/Math/Absolute.h"
+#include "GN/Math/LinearBlend.h"
+#include "GN/Predicates/Finite.h"
+#include "GN/Algorithms/Sort.h"
 
 
 namespace GN {
@@ -39,7 +44,7 @@ namespace Detail {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParameterContainerType > struct Bisector
+template < class CurveType, class ParamContainerType > struct Bisector
 {
   typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
   typedef typename CurveType::KnotArgument KnotArgument;
@@ -48,12 +53,19 @@ template < class CurveType, class ParameterContainerType > struct Bisector
   typedef typename CurveType::ControlPointTester ControlPointTester;
   typedef typename CurveType::ControlPointType ControlPointType;
   typedef typename CurveType::ControlPointArgument ControlPointArgument;
-  typedef typename ParameterContainerType::value_type ParameterType;
+  typedef typename ParamContainerType::value_type ParameterType;
+  typedef typename GN::Math::Distance<CurveType> Distance;
+  typedef typename GN::Math::LinearBlend<PointType> LinearBlend;
+  typedef typename GN::Predicates::Finite<CurveType> Finite;
+  typedef typename ParamContainerType::const_iterator ParamIterator;
+  typedef typename std::iterator_traits<ParamIterator>::iterator_category ParamIteratorTag;
+  typedef typename GN::Algorithms::Sort<ParamIteratorTag> Sort;
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Fill the given container with the tessellation points.
+  //  Fill the given container with the tessellation points. Note: we do not 
+  //  initialize the incoming container to support repeated calls.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -61,18 +73,18 @@ template < class CurveType, class ParameterContainerType > struct Bisector
                            KnotArgument u0, 
                            KnotArgument u1, 
                            ControlPointArgument chordHeight, 
-                           ParameterContainerType &u )
+                           ParamContainerType &u )
   {
-    GN_ERROR_CHECK ( u0 >= curve.firstKnot() );
+    GN_CAN_BE_CURVE ( CurveType );
+    GN_ERROR_CHECK ( u0 >= curve.firstKnot ( 0 ) );
     GN_ERROR_CHECK ( u0 < u1 );
-    GN_ERROR_CHECK ( u1 <= curve.lastKnot() );
+    GN_ERROR_CHECK ( u1 <= curve.lastKnot ( 0 ) );
     GN_ERROR_CHECK ( chordHeight > 0 );
-
-    // Initialize the container.
-    u.erase ( u.begin(), u.end() );
 
     // Get the points on the boundaries.
     PointType pt0, pt1;
+    pt0.resize ( curve.dimension() );
+    pt1.resize ( curve.dimension() );
     GN::Evaluate::point ( curve, u0, pt0 );
     GN::Evaluate::point ( curve, u1, pt1 );
 
@@ -84,7 +96,7 @@ template < class CurveType, class ParameterContainerType > struct Bisector
     _bisect ( curve, u0, u1, pt0, pt1, chordHeight * chordHeight, u );
 
     // Sort the parameters.
-    std::sort ( u.begin(), u.end() );
+    Sort::ascending ( u );
   }
 
 private:
@@ -102,21 +114,24 @@ private:
                         const PointType &pt0, 
                         const PointType &pt2, 
                         ControlPointArgument chordHeightSquared, 
-                        ParameterContainerType &u )
+                        ParamContainerType &u )
   {
+    GN_CAN_BE_CURVE ( CurveType );
     GN_ERROR_CHECK ( chordHeightSquared > 0 );
     GN_ERROR_CHECK ( KnotTester::finite ( u0 ) );
     GN_ERROR_CHECK ( KnotTester::finite ( u2 ) );
-    GN_ERROR_CHECK ( ControlPointTester::finite ( pt0 ) );
-    GN_ERROR_CHECK ( ControlPointTester::finite ( pt2 ) );
-    GN_ERROR_CHECK ( u0 >= curve.firstKnot() );
-    GN_ERROR_CHECK ( u0 < u1 );
-    GN_ERROR_CHECK ( u1 <= curve.lastKnot() );
+    GN_ERROR_CHECK ( Finite::check ( pt0 ) );
+    GN_ERROR_CHECK ( Finite::check ( pt2 ) );
+    GN_ERROR_CHECK ( u0 >= curve.firstKnot ( 0 ) );
+    GN_ERROR_CHECK ( u0 < u2 );
+    GN_ERROR_CHECK ( u2 <= curve.lastKnot ( 0 ) );
+    GN_ERROR_CHECK ( pt0.size() == pt2.size() );
+    GN_ERROR_CHECK ( pt0.size() == curve.dimension() );
 
     // If the given range is zero then return. Sometimes this happens when 
     // the curve has repeated knots or a discontinuity. The right way to fix 
     // it is to tessellate each knot span separately.
-    if ( std::abs ( u0 - u2 ) < 1e-8 ) // TODO, remove hard-coded value.
+    if ( GN::Math::absolute ( u0 - u2 ) < 1e-8f ) // TODO, remove hard-coded value.
       return;
 
     // Get the parametric middle.
@@ -127,16 +142,20 @@ private:
 
     // Evaluate the point at the parametric middle.
     PointType pt1;
+    pt1.resize ( curve.dimension() );
     GN::Evaluate::point ( curve, u1, pt1 );
 
     // Make sure it's a good number.
-    GN_ERROR_CHECK ( ControlPointTester::finite ( pt1 ) );
+    GN_ERROR_CHECK ( Finite::check ( pt1 ) );
 
-    // Calculate the mid point of the end points.
-    PointType mid ( ( pt0 + pt2 ) * 0.5f );
+    // Calculate the mid-point of the end points.
+    PointType mid;
+    mid.resize ( pt0.size() );
+    LinearBlend average ( 0.5f );
+    std::transform ( pt0.begin(), pt0.end(), pt2.begin(), mid.begin(), average );
 
     // Make sure it's a good number.
-    GN_ERROR_CHECK ( ControlPointTester::finite ( mid ) );
+    GN_ERROR_CHECK ( Finite::check ( mid ) );
 
     // Get the squared distance between the geometric and 
     // parametric midpoints.
@@ -149,10 +168,10 @@ private:
     if ( dist < chordHeightSquared )
       return;
 
-    // Otherwise keep the parameter and bisect again.
+    // Otherwise, keep the parameter and bisect again.
     u.insert ( u.end(), u1 );
-    _bisect ( u0, u1, pt0, pt1, chordHeightSquared, u );
-    _bisect ( u1, u2, pt1, pt2, chordHeightSquared, u );
+    _bisect ( curve, u0, u1, pt0, pt1, chordHeightSquared, u );
+    _bisect ( curve, u1, u2, pt1, pt2, chordHeightSquared, u );
   }
 };
 
@@ -172,16 +191,16 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParameterContainerType >
+template < class CurveType, class ParamContainerType >
 void bisect ( const CurveType &curve,
               typename CurveType::KnotArgument u0,
               typename CurveType::KnotArgument u1,
               typename CurveType::ControlPointArgument chordHeight,
-              ParameterContainerType &u )
+              ParamContainerType &u )
 {
-  GN_IS_CURVE ( CurveType );
+  GN_CAN_BE_CURVE ( CurveType );
   typedef typename CurveType::SplineClass SC;
-  typedef ParameterContainerType PCT;
+  typedef ParamContainerType PCT;
   return Detail::Bisector<SC,PCT>::tessellate ( curve, u0, u1, chordHeight, u );
 }
 
@@ -192,13 +211,13 @@ void bisect ( const CurveType &curve,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParameterContainerType >
+template < class CurveType, class ParamContainerType >
 void bisect ( const CurveType &curve,
               typename CurveType::ControlPointArgument chordHeight,
-              ParameterContainerType &u )
+              ParamContainerType &u )
 {
-  GN_IS_CURVE ( CurveType );
-  return bisect ( curve, curve.firstKnot(), curve.lastKnot(), chordHeight, u );
+  GN_CAN_BE_CURVE ( CurveType );
+  return bisect ( curve, curve.firstKnot ( 0 ), curve.lastKnot ( 0 ), chordHeight, u );
 }
 
 

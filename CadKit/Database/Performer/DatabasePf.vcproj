@@ -2,8 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Database Performer"
-	ProjectGUID="{DA77122D-72B0-4ACA-8994-BBF13B15FAF1}"
+	Name="DatabasePf"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

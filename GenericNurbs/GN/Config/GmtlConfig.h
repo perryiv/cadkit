@@ -78,6 +78,21 @@ template < class T > struct FloatTester
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class for calculating the square root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > struct SquareRoot
+{
+  static T calculate ( const T &v )
+  {
+    return ::sqrt ( v );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Adaptor class for making a 4x4 translation matrix.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -198,6 +213,7 @@ public:
   typedef Detail::Translation<Matrix44,Vec3>      Translation;
   typedef Detail::Scale<Matrix44,Vec3>            Scale;
   typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
+  typedef Detail::SquareRoot<ControlPointType>    SquareRoot;
 };
 
 

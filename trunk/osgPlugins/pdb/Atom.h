@@ -15,48 +15,58 @@
 #include "osg/Vec3"
 #include "osg/MatrixTransform"
 #include "osg/ref_ptr"
-#include "Element.h"
-#include <string>
 
+#include "Element.h"
+#include "Export.h"
+
+#include <string>
 
 class PeriodicTable;
 
-class Atom : public osg::Referenced
+
+class OSG_PDB_EXPORT Atom : public osg::Referenced
 {
 public:
   typedef osg::Referenced BaseClass;
+  typedef osg::ref_ptr< Atom > Ptr;
   typedef unsigned int ID;
 
-  Atom(const char*, std::string, const PeriodicTable &);
+  Atom(const char*, const std::string&, const PeriodicTable &);
   Atom(const Atom&);
-  ~Atom();
-  const std::string getName() const { return _name; }
-  const std::string getType() const { return _type; }
-  const std::string getSymbol() const { return _element->getElementSymbol(); }
+  Atom& operator=(const Atom&);
+  
+  //Getters for ATOM information
+  const std::string& getType() const { return _type; }
   const ID getId() const { return _id; }
-  const osg::Vec3& getVec3() const { return _point; }
+  const std::string& getName() const { return _name; }
+  const std::string& getResidueName() const { return _residueName; } 
+  const ID getChainId() const { return _chainId; }
+  const ID getResidueId() const { return _residueId; }
+  const osg::Vec3& getCenter() const { return _point; }
+  const float getOccupancy() const { return _occupancy; }
+  const float getTempFactor() const { return _tempFactor; }
+  const std::string& getSegmentId() const { return _segmentId; }
+  const std::string& getSymbol() const { return _element->getElementSymbol(); }
+  
   const float length2() const { return _point.length2(); }
   const float length() const { return _point.length(); }
   std::string toString() const;
   bool valid() const { return _id != 0; }
   const float getRadius() const;
-  Atom& operator=(const Atom&);
-  const Element* getElement() const { return _element; }
+  
+  //Get/Set the matrix transform
   osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
   void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
-  const ID getResidueId() const { return _residueId; }
-  const std::string getResidueName() const { return _residueName; }
-  const std::string getSegmentId() const { return _segmentId; }
-  const float getOccupancy() const { return _occupancy; }
-  const float getTempFactor() const { return _tempFactor; }
-private:
+  
+protected:
   Atom();
-
+  virtual ~Atom();
+private:
   void _setMatrix();
   void _getData(char* temp, const char* string, unsigned int offset, unsigned int length);
 
-  const Element * _element;
-  ID _id, _residueId;
+  Element::Ptr _element;
+  ID _id, _residueId, _chainId;
   osg::Vec3 _point;
   std::string _type, _name, _residueName, _segmentId;
   float _occupancy, _tempFactor;

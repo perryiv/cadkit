@@ -13,14 +13,19 @@
 
 #include "osg/Matrixd"
 
-Bond::Bond(const Atom& lhs, const Atom& rhs, int id)  :
-BaseClass(),
-_matrix ( new osg::MatrixTransform )
-{
-  _id = id;
-  _point1 = lhs.getVec3();
-  _point2 = rhs.getVec3();
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+Bond::Bond(Atom::Ptr lhs, Atom::Ptr rhs, int id)  :
+BaseClass (),
+_id       ( id ),
+_point1   ( lhs->getCenter() ),
+_point2   ( rhs->getCenter() ),
+_matrix   ( new osg::MatrixTransform )
+{
   osg::Vec3 uY (0.0, 1.0, 0.0);
 
   //get distance
@@ -42,7 +47,7 @@ _matrix ( new osg::MatrixTransform )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -61,5 +66,5 @@ const std::string Bond::toString() const
 {
   std::ostringstream out;
 	out << _id << " " << _point1[0] << " " <<  _point1[1] << " " <<  _point1[2];
-	return std::string(out.str());
+	return out.str();
 }

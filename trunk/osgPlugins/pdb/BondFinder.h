@@ -20,11 +20,12 @@
 class BondFinder
 {
 public:
-  typedef std::pair< Atom::ID, Atom > AtomPair;
-  typedef std::map<Atom::ID, Atom >  Map;
-  typedef std::vector< Atom > Atoms;
-  typedef std::list< Bond > Bonds;
+  typedef std::pair< Atom::ID, Atom::Ptr > AtomPair;
+  typedef std::map<Atom::ID, Atom::Ptr >  Map;
+  typedef std::vector< Atom::Ptr > Atoms;
+  typedef std::list< Bond::Ptr > Bonds;
 
+#if 0
   struct SortAtom : public std::binary_function< Atom, Atom, bool>
   {
     bool operator() (const Atom &a, const Atom &b)
@@ -44,10 +45,10 @@ public:
 
     for(Atoms::iterator i = sorted.begin(); i != sorted.end(); ++i)
     {
-      const Atom &atom = *i;
-      float radius = atom.getRadius();
+      const Atom::Ptr atom = *i;
+      float radius = atom->getRadius();
       float delta = distanceFunc(radius, maxRadius);
-      float distance = atom.length2();
+      float distance = atom->length2();
       //TODO fix MaxDistance so don't have to check atoms beyond it
       float maxDistance = distance + (delta + radius + maxRadius) * (delta + radius + maxRadius);
       Atoms::iterator walking = i;
@@ -56,11 +57,11 @@ public:
       {
         if(walking != i)
         {
-          float check = distanceFunc(walking->getRadius(), radius) + radius + walking->getRadius();
+          float check = distanceFunc( (*walking)->getRadius(), radius) + radius + (*walking)->getRadius();
           check *= check;
-          float d = (walking->getVec3() - atom.getVec3()).length2();
+          float d = ( (*walking)->getCenter() - atom->getCenter()).length2();
           if(d <= check)
-            bonds.push_back( Bond(atom, *walking, bonds.size() + 1));
+            bonds.push_back( new Bond(atom, *walking, bonds.size() + 1));
         }
         ++walking;
         if(walking >= sorted.end())
@@ -79,6 +80,8 @@ public:
     }
     return atoms;
   }
+
+#endif
 
 private:
   float distanceFunc(float r1, float r2)

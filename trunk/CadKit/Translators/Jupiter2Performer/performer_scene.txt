@@ -12,7 +12,6 @@ PfScene (Database)
 				pfGeoSet
 					pfGeoState
 						pfMaterial
-						pfMatrix
 						pfTexture
 					TriStrip
 						Vertices

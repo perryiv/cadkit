@@ -90,7 +90,7 @@ protected:
   bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
   bool                    _addColor      ( const unsigned int &valid, const unsigned int &which, const SlVec4f &color, const char *colorName, DbXmlGroup &material );
   bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
-  bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, DbXmlGroup &lods );
+  bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, DbXmlGroup &part );
   bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part );
   bool                    _addName       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
   bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );

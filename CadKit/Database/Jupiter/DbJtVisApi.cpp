@@ -20,17 +20,10 @@
 
 #include "DMDataTk/eaiEntityFactory.h"
 
+#include "Standard/SlAssert.h"
+
 
 using namespace CadKit;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Static data member(s).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int DbJtVisApi::_customerId = 0;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,11 +32,28 @@ unsigned int DbJtVisApi::_customerId = 0;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbJtVisApi::DbJtVisApi()
+DbJtVisApi::DbJtVisApi() :
+  _customerId ( 0 ),
+  _isInitialized ( false )
 {
 #if ( DMDTK_MAJOR_VERSION >= 5 ) // Defined in eaiStandard.h
   eaiEntityFactory::init();
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy constructor. Probably not needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DbJtVisApi::DbJtVisApi ( const DbJtVisApi &visApi ) :
+  _customerId ( visApi._customerId ),
+  _isInitialized ( visApi._isInitialized )
+{
+  // Note: Do not call eaiEntityFactory::init().
+  SL_ASSERT ( 0 ); // If you need to be here then take this assertion out.
 }
 
 
@@ -69,11 +79,18 @@ DbJtVisApi::~DbJtVisApi()
 
 bool DbJtVisApi::init()
 {
+  // Only do this once.
+  if ( _isInitialized )
+    return true;
+
   // Get the customer number.
   const unsigned int &customer = this->getCustomerId();
 
   // Register the customer.
-  return ( eai_OK == eaiEntityFactory::registerCustomer ( customer ) );
+  _isInitialized = ( eai_OK == eaiEntityFactory::registerCustomer ( customer ) );
+
+  // Did it work?
+  return _isInitialized;
 }
 
 

@@ -193,5 +193,13 @@ SOURCE=.\SgMfcApi.h
 SOURCE=.\SgMfcDll.cpp
 # End Source File
 # End Group
+# Begin Group "Notes"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Notes\SceneGraph.txt
+# End Source File
+# End Group
 # End Target
 # End Project

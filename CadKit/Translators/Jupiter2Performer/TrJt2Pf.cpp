@@ -767,7 +767,10 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // Get the number of sets for this shape.
   unsigned int numSets ( 0 );
   if ( false == _jtTraverser->getNumShapeSets ( entity, whichLOD, whichShape, numSets ) )
+  {
+    SL_ASSERT ( 0 ); // Why didn't it work?
     return false;
+  }
 
   // Should be true.
   SL_ASSERT ( numSets > 0 );
@@ -795,7 +798,10 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // (it's most likely a part), we want the type of its shape.
   DbJtTraverser::EntityType type;
   if ( false == _jtTraverser->getShapeType ( entity, whichLOD, whichShape, type ) )
+  {
+    SL_ASSERT ( 0 ); // Why didn't it work?
     return false;
+  }
 
   // Set the GeoSet's primitive type.
   switch ( type )
@@ -838,7 +844,10 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
     // Get the shape.
     if ( false == _jtTraverser->getShapeSet ( entity, whichLOD, whichShape, i, vertices, normals, colors, textureCoords, valid ) )
+    {
+      SL_ASSERT ( 0 ); // Why didn't it work?
       return false;
+    }
 
     // Set the length of this most recent set of vertices.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
@@ -880,7 +889,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // If there are no vertices then return.
   if ( 0 == vertices.size() )
   {
-    SL_ASSERT ( 0 ); // Should never happen.
+    SL_ASSERT ( 0 ); // Why no vertices?
     return false;
   }
 
@@ -895,21 +904,71 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
     }
   }
 
-  // For now, just per-vertex normal bindings.
-  if ( vertices.size() != normals.size() )
-  {
-    //SL_ASSERT ( 0 );
-    return false; // TODO, handle per-prim, etc.
-  }
-
-  // TODO: Ignoring colors and texture coordinates. Put this in.
-
-  // Set the vertex attributes.
-  gset->setAttr ( PFGS_COORD3,  PFGS_PER_VERTEX, this->_makeVec3Array ( vertices ), NULL );
-  gset->setAttr ( PFGS_NORMAL3, PFGS_PER_VERTEX, this->_makeVec3Array ( normals ),  NULL );
+  // Set the vertices.
+  gset->setAttr ( PFGS_COORD3, PFGS_PER_VERTEX, this->_makeVec3Array ( vertices ), NULL );
 
   // Tell the GeoSet the length of the primitives.
   gset->setPrimLengths ( this->_makeIntArray ( numVertices ) );
+
+  // If we have normals...
+  if ( normals.size() )
+  {
+    // If we have per-vertex normal binding...
+    if ( vertices.size() == normals.size() )
+      gset->setAttr ( PFGS_NORMAL3, PFGS_PER_VERTEX, this->_makeVec3Array ( normals ),  NULL );
+
+    // If we have per-prim normal binding...
+    else if ( numVertices.size() == normals.size() )
+      gset->setAttr ( PFGS_NORMAL3, PFGS_PER_PRIM, this->_makeVec3Array ( normals ), NULL );
+
+    // If we have overall normal binding...
+    else if ( 1 == normals.size() )
+      gset->setAttr ( PFGS_NORMAL3, PFGS_OVERALL, this->_makeVec3Array ( normals ), NULL );
+
+    // Otherwise, do we have a bug or a corrupt database?
+    else
+      SL_ASSERT ( 0 );
+  }
+
+  // If we have colors...
+  if ( colors.size() )
+  {
+    // If we have per-vertex color binding...
+    if ( vertices.size() == colors.size() )
+      gset->setAttr ( PFGS_COLOR4, PFGS_PER_VERTEX, this->_makeVec4Array ( colors ),  NULL );
+
+    // If we have per-prim color binding...
+    else if ( numVertices.size() == colors.size() )
+      gset->setAttr ( PFGS_COLOR4, PFGS_PER_PRIM, this->_makeVec4Array ( colors ), NULL );
+
+    // If we have overall color binding...
+    else if ( 1 == colors.size() )
+      gset->setAttr ( PFGS_COLOR4, PFGS_OVERALL, this->_makeVec4Array ( colors ), NULL );
+
+    // Otherwise, do we have a bug or a corrupt database?
+    else
+      SL_ASSERT ( 0 );
+  }
+
+  // If we have textures...
+  if ( textureCoords.size() )
+  {
+    // If we have per-vertex texture binding...
+    if ( vertices.size() == textureCoords.size() )
+      gset->setAttr ( PFGS_TEXCOORD2, PFGS_PER_VERTEX, this->_makeVec2Array ( textureCoords ),  NULL );
+
+    // If we have per-prim texture binding...
+    else if ( numVertices.size() == textureCoords.size() )
+      gset->setAttr ( PFGS_TEXCOORD2, PFGS_PER_PRIM, this->_makeVec2Array ( textureCoords ), NULL );
+
+    // If we have overall texture binding...
+    else if ( 1 == textureCoords.size() )
+      gset->setAttr ( PFGS_TEXCOORD2, PFGS_OVERALL, this->_makeVec2Array ( textureCoords ), NULL );
+
+    // Otherwise, do we have a bug or a corrupt database?
+    else
+      SL_ASSERT ( 0 );
+  }
 
   // Attach the GeoState to the GeoSet.
   gset->setGState ( state );
@@ -917,7 +976,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // Add the GeoSet to the geode.
   geode.addGSet ( gset );
 
-  // It work ed.
+  // It worked.
   return true;
 }
 
@@ -949,7 +1008,7 @@ bool TrJt2Pf::_endCurrentGroup()
 
 int *TrJt2Pf::_makeIntArray ( const std::vector<unsigned int> &vec ) const
 {
-  SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+  SL_PRINT3 ( "In TrJt2Pf::_makeIntArray(), this = %X, vec.size() = %d\n", this, vec.size() );
 
   // Handle trivial case.
   if ( vec.empty() )
@@ -969,6 +1028,40 @@ int *TrJt2Pf::_makeIntArray ( const std::vector<unsigned int> &vec ) const
   // Fill up the array.
   for ( unsigned int i = 0; i < size; ++i )
     array[i] = vec[i];
+
+  // Return the new array.
+  return array;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an array from the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pfVec2 *TrJt2Pf::_makeVec2Array ( const std::vector<SlVec2f> &vec ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_makeVec2Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+
+  // Handle trivial case.
+  if ( vec.empty() )
+    return NULL;
+
+  // Allocate an array.
+  unsigned int size = vec.size();
+  pfVec2 *array = new pfVec2[size];
+
+  // Check allocation.
+  if ( NULL == array )
+  {
+    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
+    return NULL;
+  }
+
+  // Fill up the array.
+  for ( unsigned int i = 0; i < size; ++i )
+    array[i].set ( vec[i][0], vec[i][1] );
 
   // Return the new array.
   return array;
@@ -1003,6 +1096,40 @@ pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<SlVec3f> &vec ) const
   // Fill up the array.
   for ( unsigned int i = 0; i < size; ++i )
     array[i].set ( vec[i][0], vec[i][1], vec[i][2] );
+
+  // Return the new array.
+  return array;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an array from the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pfVec4 *TrJt2Pf::_makeVec4Array ( const std::vector<SlVec4f> &vec ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_makeVec4Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+
+  // Handle trivial case.
+  if ( vec.empty() )
+    return NULL;
+
+  // Allocate an array.
+  unsigned int size = vec.size();
+  pfVec4 *array = new pfVec4[size];
+
+  // Check allocation.
+  if ( NULL == array )
+  {
+    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
+    return NULL;
+  }
+
+  // Fill up the array.
+  for ( unsigned int i = 0; i < size; ++i )
+    array[i].set ( vec[i][0], vec[i][1], vec[i][2], vec[i][3] );
 
   // Return the new array.
   return array;

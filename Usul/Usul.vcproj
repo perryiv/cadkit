@@ -482,6 +482,9 @@
 						RelativePath=".\Interfaces\ICanWrite.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFileSelectionFilters.h">
+					</File>
+					<File
 						RelativePath="Interfaces\IRead.h">
 					</File>
 					<File

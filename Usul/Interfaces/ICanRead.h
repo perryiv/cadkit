@@ -37,7 +37,7 @@ struct ICanRead : public Usul::Interfaces::IUnknown
 
   /// See if the extension is supported. The string can be just the 
   /// extension or the whole filename.
-  virtual bool canRead ( const std::string &name, Unknown *caller ) = 0;
+  virtual bool canRead ( const std::string &name ) = 0;
 };
 
 

@@ -51,8 +51,13 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdarg.h>
 # include <string>
+# if __GNUC__
+   typedef basic_string <wchar_t> wstring; // See /usr/include/g++-3/string
+# endif
 # include <algorithm>
-# include <locale>
+# ifdef _WIN32
+#  include <locale>
+# endif
 #endif
 
 #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_OSTREAM_OPERATOR
@@ -131,8 +136,10 @@ public:
 
   // Typecast operators.
   operator                  const T * const () const { return this->c_str(); }
+#ifdef _WIN32
   operator                  const std::basic_string<T> & () const { return *this; }
   operator                  std::basic_string<T> & () { return *this; }
+#endif
 
   // Bracket operator.
   const T &                 operator [] ( size_t index ) const;
@@ -151,42 +158,88 @@ public:
   SlTString &               operator += ( T c );
 
   // These will append.
+#if __GNUC__ >= 2
+  template<class P> friend SlTString<P> &operator << ( SlTString<P> &lhs, const SlTString<P> &rhs );
+  template<class P> friend SlTString<P> &operator << ( SlTString<P> &lhs, const std::basic_string<P> &rhs );
+  template<class P> friend SlTString<P> &operator << ( SlTString<P> &lhs, const P *rhs );
+  template<class P> friend SlTString<P> &operator << ( SlTString<P> &lhs, P rhs );
+#else
   friend SlTString &        operator << ( SlTString &lhs, const SlTString &rhs );
   friend SlTString &        operator << ( SlTString &lhs, const std::basic_string<T> &rhs );
   friend SlTString &        operator << ( SlTString &lhs, const T *rhs );
   friend SlTString &        operator << ( SlTString &lhs, T rhs );
+#endif
 
   // Equality.
-  friend bool               operator == ( const SlTString &sa,       const SlTString &sb );
-  friend bool               operator == ( const SlTString &sa,       const std::basic_string<T> &sb );
-  friend bool               operator == ( const SlTString &sa,       const T *sb );
-  friend bool               operator == ( const SlTString &sa,       T sb );
+#if __GNUC__ >= 2
+  template<class P> friend bool operator == ( const SlTString<P> &sa, const SlTString<P> &sb );
+  template<class P> friend bool operator == ( const SlTString<P> &sa, const std::basic_string<P> &sb );
+  template<class P> friend bool operator == ( const SlTString<P> &sa, const P *sb );
+  template<class P> friend bool operator == ( const SlTString<P> &sa, P sb );
+  template<class P> friend bool operator == ( const std::basic_string<P> &sa, const SlTString<P> &sb );
+  template<class P> friend bool operator == ( const P *sa, const SlTString<P> &sb );
+  template<class P> friend bool operator == ( P sa, const SlTString<P> &sb );
+#else
+  friend bool               operator == ( const SlTString &sa, const SlTString &sb );
+  friend bool               operator == ( const SlTString &sa, const std::basic_string<T> &sb );
+  friend bool               operator == ( const SlTString &sa, const T *sb );
+  friend bool               operator == ( const SlTString &sa, T sb );
   friend bool               operator == ( const std::basic_string<T> &sa, const SlTString &sb );
-  friend bool               operator == ( const T *sa,               const SlTString &sb );
-  friend bool               operator == ( T sa,                      const SlTString &sb );
+  friend bool               operator == ( const T *sa, const SlTString &sb );
+  friend bool               operator == ( T sa, const SlTString &sb );
+#endif
 
   // Inequality.
-  friend bool               operator != ( const SlTString &sa,       const SlTString &sb );
-  friend bool               operator != ( const SlTString &sa,       const std::basic_string<T> &sb );
-  friend bool               operator != ( const SlTString &sa,       const T *sb );
-  friend bool               operator != ( const SlTString &sa,       T sb );
+#if __GNUC__ >= 2
+  template<class P> friend bool operator != ( const SlTString<P> &sa, const SlTString<P> &sb );
+  template<class P> friend bool operator != ( const SlTString<P> &sa, const std::basic_string<P> &sb );
+  template<class P> friend bool operator != ( const SlTString<P> &sa, const P *sb );
+  template<class P> friend bool operator != ( const SlTString<P> &sa, P sb );
+  template<class P> friend bool operator != ( const std::basic_string<P> &sa, const SlTString<P> &sb );
+  template<class P> friend bool operator != ( const P *sa, const SlTString<P> &sb );
+  template<class P> friend bool operator != ( P sa, const SlTString<P> &sb );
+#else
+  friend bool               operator != ( const SlTString &sa, const SlTString &sb );
+  friend bool               operator != ( const SlTString &sa, const std::basic_string<T> &sb );
+  friend bool               operator != ( const SlTString &sa, const T *sb );
+  friend bool               operator != ( const SlTString &sa, T sb );
   friend bool               operator != ( const std::basic_string<T> &sa, const SlTString &sb );
-  friend bool               operator != ( const T *sa,               const SlTString &sb );
-  friend bool               operator != ( T sa,                      const SlTString &sb );
+  friend bool               operator != ( const T *sa, const SlTString &sb );
+  friend bool               operator != ( T sa, const SlTString &sb );
+#endif
 
   // I/O.
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_OSTREAM_OPERATOR
+#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_OSTREAM_OPERATOR
+#if __GNUC__ >= 2
+  template<class P> friend ::ostream &operator << ( ::ostream &out, const SlTString<P> &s );
+#else
   friend ::ostream &        operator << ( ::ostream &out, const SlTString &s );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_STD_OSTREAM_OPERATOR
+#endif
+#endif
+
+#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_STD_OSTREAM_OPERATOR
+#if __GNUC__ >= 2
+  template<class P> friend std::ostream &operator << ( std::ostream &out, const SlTString<P> &s );
+#else
   friend std::ostream &     operator << ( std::ostream &out, const SlTString &s );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_ISTREAM_OPERATOR
+#endif
+#endif
+
+#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_ISTREAM_OPERATOR
+#if __GNUC__ >= 2
+  template<class P> friend ::istream &operator >> ( ::istream &in, SlTString<P> &s );
+#else
   friend ::istream &        operator >> ( ::istream &in, SlTString &s );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_STD_ISTREAM_OPERATOR
+#endif
+#endif
+
+#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_STD_ISTREAM_OPERATOR
+#if __GNUC__ >= 2
+  template<class P> friend std::istream &operator >> ( std::istream &in, SlTString<P> &s );
+#else
   friend std::istream &     operator >> ( std::istream &in, SlTString &s );
-  #endif
+#endif
+#endif
 
   // Replace all occurances of the one character with the other.
   void                      replace ( const T &oldChar, const T &newChar );
@@ -206,8 +259,8 @@ public:
   // Convert all characters to upper/lower case. Pass true for "useLocale" to 
   // use the location information. Pass false to treat the characters as if 
   // they were English. Not sure what that means for unicode.
-  void                      toLower ( const bool &useLocale = false );
-  void                      toUpper ( const bool &useLocale = false );
+  void                      toLower ( const bool &useLocale );
+  void                      toUpper ( const bool &useLocale );
 };
 
 

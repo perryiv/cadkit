@@ -167,41 +167,71 @@ public:
   SlMatrix4 &             operator *= ( const SlMatrix4 &M );
   SlMatrix4 &             operator /= ( const T &value );
 
-  friend SlMatrix4        operator * ( const SlMatrix4 &A, const SlMatrix4 &B );
-  friend Vec4             operator * ( const SlMatrix4 &M, const Vec4 &v );
-  friend Vec3             operator * ( const SlMatrix4 &M, const Vec3 &v );
-
-  friend Vec4             operator / ( const Vec4 &v, const SlMatrix4 &M );
-  friend Vec3             operator / ( const Vec3 &v, const SlMatrix4 &M );
-
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend SlMatrix4<P> operator *  ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
+  template<class P> friend SlVec4<P>    operator *  ( const SlMatrix4<P> &M, const SlVec4<P> &v );
+  template<class P> friend SlVec3<P>    operator *  ( const SlMatrix4<P> &M, const SlVec3<P> &v );
+  template<class P> friend SlVec4<P>    operator /  ( const SlVec4<P> &v,    const SlMatrix4<P> &M );
+  template<class P> friend SlVec3<P>    operator /  ( const SlVec3<P> &v,    const SlMatrix4<P> &M );
+  template<class P> friend bool         operator == ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
+  template<class P> friend bool         operator != ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
+#else
+  friend SlMatrix4        operator *  ( const SlMatrix4 &A, const SlMatrix4 &B );
+  friend Vec4             operator *  ( const SlMatrix4 &M, const Vec4 &v );
+  friend Vec3             operator *  ( const SlMatrix4 &M, const Vec3 &v );
+  friend Vec4             operator /  ( const Vec4 &v,      const SlMatrix4 &M );
+  friend Vec3             operator /  ( const Vec3 &v,      const SlMatrix4 &M );
   friend bool             operator == ( const SlMatrix4 &A, const SlMatrix4 &B );
   friend bool             operator != ( const SlMatrix4 &A, const SlMatrix4 &B );
+#endif
 
   // Access the i'th row and j'th column of the matrix (as if it were a 2D array), like matrix(i,j).
   const T &               operator () ( const int &i, const int &j ) const;
   T &                     operator () ( const int &i, const int &j );
 
   // I/O.
-  #ifdef CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
+#ifdef CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
+#if __GNUC__ >= 2
+  template<class P> friend ::ostream &operator << ( ::ostream &out, const SlMatrix4<P> &M );
+#else
   friend ::ostream &      operator << ( ::ostream &out, const SlMatrix4 &M );
+#endif
   void                    write ( ::ostream &out ) const;
-  #endif
-  #ifdef CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
+#endif
+  
+#ifdef CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
+#if __GNUC__ >= 2
+  template<class P> friend std::ostream &operator << ( std::ostream &out, const SlMatrix4<P> &M );
+#else
   friend std::ostream &   operator << ( std::ostream &out, const SlMatrix4 &M );
+#endif
   void                    write ( std::ostream &out ) const;
-  #endif
-  #ifdef CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
+#endif
+
+#ifdef CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
+#if __GNUC__ >= 2
+  template<class P> friend ::istream &operator >> ( ::istream &in, SlMatrix4<P> &M );
+#else
   friend ::istream &      operator >> ( ::istream &in, SlMatrix4 &M );
+#endif
   void                    read ( ::istream &in );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
+#endif
+
+#ifdef CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
+#if __GNUC__ >= 2
+  template<class P> friend std::istream &operator >> ( std::istream &in, SlMatrix4<P> &M );
+#else
   friend std::istream &   operator >> ( std::istream &in, SlMatrix4 &M );
+#endif
   void                    read ( std::istream &in );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
+#endif
+
+#ifdef CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
   void                    read  ( FILE *fp, const char *format = "%f" );
   void                    write ( FILE *fp, const char *format = "%f" ) const;
-  #endif
+#endif
 
   // Transform by "a twist about an arbitrary axis". Make sure "axis" is normalized.
   void                    rotate ( const T &radians, const Vec3 &axis );

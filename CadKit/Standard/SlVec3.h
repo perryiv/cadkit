@@ -125,13 +125,26 @@ public:
   SlVec3 &                operator += ( const SlVec3 &vec );
   SlVec3 &                operator -= ( const SlVec3 &vec );
   SlVec3                  operator - () const;
-  friend SlVec3           operator * ( const SlVec3 &vec, const T &value );
-  friend SlVec3           operator * ( const T &value, const SlVec3 &vec );
-  friend SlVec3           operator / ( const SlVec3 &vec, const T &value );
-  friend SlVec3           operator + ( const SlVec3 &vecA, const SlVec3 &vecB );
-  friend SlVec3           operator - ( const SlVec3 &vecA, const SlVec3 &vecB );
+
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend SlVec3<P> operator *  ( const SlVec3<P> &vec,  const P &value );
+  template<class P> friend SlVec3<P> operator *  ( const P &value,        const SlVec3<P> &vec );
+  template<class P> friend SlVec3<P> operator /  ( const SlVec3<P> &vec,  const P &value );
+  template<class P> friend SlVec3<P> operator +  ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
+  template<class P> friend SlVec3<P> operator -  ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
+  template<class P> friend bool      operator == ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
+  template<class P> friend bool      operator != ( const SlVec3<P> &vecA, const SlVec3<P> &vecB );
+#else
+  friend SlVec3           operator *  ( const SlVec3 &vec,  const T &value );
+  friend SlVec3           operator *  ( const T &value,     const SlVec3 &vec );
+  friend SlVec3           operator /  ( const SlVec3 &vec,  const T &value );
+  friend SlVec3           operator +  ( const SlVec3 &vecA, const SlVec3 &vecB );
+  friend SlVec3           operator -  ( const SlVec3 &vecA, const SlVec3 &vecB );
   friend bool             operator == ( const SlVec3 &vecA, const SlVec3 &vecB );
   friend bool             operator != ( const SlVec3 &vecA, const SlVec3 &vecB );
+#endif
 
   // I/O.
   #ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR

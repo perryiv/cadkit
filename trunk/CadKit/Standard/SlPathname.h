@@ -44,7 +44,19 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_PATHNAME_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_PATHNAME_CLASS_H_
 
+#include "SlAssert.h"
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <list>
+#endif
+
 #define SL_PATHNAME_SAFE_BUFFER_SIZE 1024
+
+#ifdef _WIN32
+# define SL_PATHNAME_SLASH ( static_cast<S::value_type>('\\') )
+#else
+# define SL_PATHNAME_SLASH ( static_cast<S::value_type>('/') )
+#endif
 
 
 namespace CadKit
@@ -57,18 +69,18 @@ public:
   SlPathname ( const S &pathname );
   SlPathname ( const SlPathname &pathname );
 
-  S                     getDrive()     const { S temp; this->getDrive     ( temp ); return temp; }
-  S                     getDirectory() const { S temp; this->getDirectory ( temp ); return temp; }
-  S                     getFilename()  const { S temp; this->getFilename  ( temp ); return temp; }
-  S                     getExtension() const { S temp; this->getExtension ( temp ); return temp; }
+  const S &             getDrive()     const { return _drive; }
+  const S &             getDirectory() const { return _dir; }
+  const S &             getFilename()  const { return _file; }
+  const S &             getExtension() const { return _ext; }
   S                     getFullpath()  const { S temp; this->getFullpath  ( temp ); return temp; }
   S                     getPathname()  const { S temp; this->getPathname  ( temp ); return temp; }
 
   void                  getComponents ( S &drive, S &directory, S &filename, S &extension ) const;
-  void                  getDrive      ( S &drive )     const;
-  void                  getDirectory  ( S &directory ) const;
-  void                  getFilename   ( S &filename )  const;
-  void                  getExtension  ( S &extension ) const;
+  void                  getDrive      ( S &drive )     const { drive = this->getDrive(); }
+  void                  getDirectory  ( S &directory ) const { directory = this->getDirectory(); }
+  void                  getFilename   ( S &filename )  const { filename = this->getFilename(); }
+  void                  getExtension  ( S &extension ) const { extension = this->getExtension(); }
   void                  getFullpath   ( S &fullpath )  const;
   void                  getPathname   ( S &pathname )  const;
 
@@ -77,11 +89,13 @@ public:
   void                  setPathname ( const S &pathname );
   void                  setPathname ( const SlPathname &pathname );
 
+  void                  toFullPath();
+
 protected:
 
   typedef std::list<S> Dirs;
   S _drive;
-  Dirs _dirs;
+  S _dir;
   S _file;
   S _ext;
 };
@@ -131,7 +145,10 @@ template<class S> inline SlPathname<S>::SlPathname ( const SlPathname &pathname 
 
 template<class S> inline void SlPathname<S>::setPathname ( const SlPathname<S> &pathname )
 {
-  this->setPathname ( pathname._pathname );
+  _drive = pathname._drive;
+  _dir   = pathname._dir;
+  _file  = pathname._file;
+  _ext   = pathname._ext;
 }
 
 
@@ -141,22 +158,170 @@ template<class S> inline void SlPathname<S>::setPathname ( const SlPathname<S> &
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class S> inline void SlPathname<S>::setPathname ( const S &pathname )
+#include "SlPrint.h"
+
+template<class S> inline void SlPathname<S>::setPathname ( const S &p )
 {
-  _pathname = pathname;
+  // Initialize.
+  _drive.clear();
+  _dir.clear();
+  _file.clear();
+  _ext.clear();
+
+  // Handle trivial case.
+  if ( p.empty() )
+    return;
+
+  // Make a copy.
+  S pathname = p;
+
+  // Split the given string at the drive.
+  S drive, dir, file, ext, temp1, temp2;
+  pathname.splitAtFirst ( static_cast<S::value_type>(':'), drive, temp1 );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), pathname = %s\n", pathname.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), drive = %s\n", drive.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), temp1 = %s\n", temp1.c_str() );
+
+  // See if we have a drive.
+  if ( drive.size() )
+  {
+    // Assign it.
+    _drive = drive;
+
+    // Pop the drive and colin off the begining of the string.
+    pathname.popFront();
+    pathname.popFront();
+  }
+
+  // Now split at the extension.
+  pathname.splitAtLast ( static_cast<S::value_type>('.'), temp1, ext );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), pathname = %s\n", pathname.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), temp1 = %s\n", temp1.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), ext = %s\n", ext.c_str() );
+
+  // See if we have an extension.
+  if ( ext.size() )
+  {
+    // Make sure that the period we just split on is not the right-most slash 
+    // in a relative pathname. If it is then the first character in the extension 
+    // will be a slash.
+    if ( SL_PATHNAME_SLASH != ext.getFirst() )
+    {
+      // Assign it.
+      _ext = ext;
+
+      // Pop the extension and period off.
+      for ( unsigned int i = 0; i < ext.size() + 1; ++i )
+      {
+        pathname.popBack();
+      }
+    }
+  }
+
+  // When we get to here we should only have a directory and filename.
+  // Split at the last slash to get the filename.
+  pathname.splitAtLast ( SL_PATHNAME_SLASH, dir, file );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), pathname = %s\n", pathname.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), dir = %s\n", dir.c_str() );
+  SL_WPRINT2 ( L"In SlPathname::setPathname(), file = %s\n", file.c_str() );
+
+  // If we didn't get a split...
+  if ( dir.empty() && file.empty() )
+  {
+    // If we have an extension...
+    if ( ext.size() )
+    {
+      // Then the pathname is the file.
+      file = pathname;
+    }
+
+    // Otherwise..
+    else
+    {
+      // Assume it is a directory (which it may not be).
+      dir = pathname;
+    }
+  }
+
+  // Set the directory and filename.
+  _dir = dir;
+  _file = file;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
- :
-  _pathname ( "" )//
+//
 //  Get the (unaltered) path name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class S> inline void SlPathname<S>::getPathname ( S &pathname ) const
 {
-  pathname = _pathname;
+  // Get the components.
+  S drive, dir, filename, ext;
+  this->getComponents ( drive, dir, filename, ext );
+
+  // Initialize.
+  pathname.clear();
+
+  // Append the components to create the pathname.
+  if ( drive.size() )
+  {
+    pathname += drive;
+    pathname += static_cast<S::value_type>(':');
+  }
+
+  if ( dir.size() )
+  {
+    pathname += dir;
+  }
+
+  if ( filename.size() )
+  {
+    pathname += filename;
+  }
+
+  if ( ext.size() )
+  {
+    pathname += static_cast<S::value_type>('.');
+    pathname += ext;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the full path name from the given relative path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void _getFullPathName ( const char *pathname, const unsigned int &bufSize, char *fullpath )
+{
+#ifdef _WIN32
+  SL_VERIFY ( NULL != ::_fullpath ( fullpath, pathname, bufSize ) );
+#else
+  TODO
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the full path name from the given relative path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void _getFullPathName ( const wchar_t *pathname, const unsigned int &bufSize, wchar_t *fullpath )
+{
+#ifdef _WIN32
+  SL_VERIFY ( NULL != ::_wfullpath ( fullpath, pathname, bufSize ) );
+#elif __GNUC__
+  TODO
+#elif _SGI_NATIVE_COMPILER
+  SL_ASSERT ( 0 ); // Not supported (that I know of).
+#else
+  TODO
+#endif
 }
 
 
@@ -168,7 +333,16 @@ template<class S> inline void SlPathname<S>::getPathname ( S &pathname ) const
 
 template<class S> inline void SlPathname<S>::getFullpath ( S &fullpath ) const
 {
-  CadKit::_getFullPathName ( _pathname, fullpath );
+  // Get the current path.
+  S current = this->getPathname();
+
+  // Convert to the full path.
+  const unsigned int bufSize ( SL_PATHNAME_SAFE_BUFFER_SIZE );
+  S::value_type temp[bufSize];
+  _getFullPathName ( current.c_str(), bufSize, temp );
+
+  // Set the given string.
+  fullpath = temp;
 }
 
 
@@ -180,62 +354,11 @@ template<class S> inline void SlPathname<S>::getFullpath ( S &fullpath ) const
 
 template<class S> inline void SlPathname<S>::getComponents ( S &drive, S &directory, S &filename, S &extension ) const
 {
-  // Convert to the full path name and get the split components.
-  S fullpath;
-  this->getFullpath ( fullpath );
-  CadKit::_splitFullPathName ( fullpath, drive, directory, filename, extension );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the drive letter.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class S> inline void SlPathname<S>::getDrive ( S &drive ) const
-{
-  S directory, filename, extension;
-  this->getComponents ( drive, directory, filename, extension );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class S> inline void SlPathname<S>::getDirectory ( S &directory ) const
-{
-  S drive, filename, extension;
-  this->getComponents ( drive, directory, filename, extension );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the filename.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class S> inline void SlPathname<S>::getFilename ( S &filename ) const
-{
-  S drive, directory, extension;
-  this->getComponents ( drive, directory, filename, extension );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the extension.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class S> inline void SlPathname<S>::getExtension ( S &extension ) const
-{
-  S drive, directory, filename;
-  this->getComponents ( drive, directory, filename, extension );
+  // Get the components.
+  this->getDrive ( drive );
+  this->getDirectory ( directory );
+  this->getFilename ( filename );
+  this->getExtension ( extension );
 }
 
 
@@ -256,8 +379,8 @@ template<class S> inline bool SlPathname<S>::isSamePath ( const SlPathname<S> &p
 #ifdef _WIN32
 
   // Make them both upper case.
-  CadKit::_convertStringToUpperCase ( fullpath1 );
-  CadKit::_convertStringToUpperCase ( fullpath2 );
+  fullpath1.toUpper();
+  fullpath2.toUpper();
 
 #endif
 
@@ -266,126 +389,23 @@ template<class S> inline bool SlPathname<S>::isSamePath ( const SlPathname<S> &p
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to the full path name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class S> inline void SlPathname<S>::toFullPath()
+{
+  // Get the full path name.
+  S full = this->getFullPath();
+
+  // Set this instance.
+  this->setPathname ( full );
+}
+
+
 }; // End of namespace CadKit
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Function to split a full path name into its components.
-//
-///////////////////////////////////////////////////////////////////////////////
-/*
-inline void _splitFullPathName ( const std::string &fullpath, 
-                                       std::string &drive, 
-                                       std::string &directory, 
-                                       std::string &filename, 
-                                       std::string &extension )
-{
-#ifdef _WIN32
-
-  // Temporary storage.
-  char tempDrive    [SL_PATHNAME_SAFE_BUFFER_SIZE];
-  char tempDirectory[SL_PATHNAME_SAFE_BUFFER_SIZE];
-  char tempFilename [SL_PATHNAME_SAFE_BUFFER_SIZE];
-  char tempExtension[SL_PATHNAME_SAFE_BUFFER_SIZE];
-
-  // Split the given path.
-  ::_splitpath ( fullpath.c_str(), tempDrive, tempDirectory, tempFilename, tempExtension );
-
-  // Lose the "." before the extension.
-  char *ext = ( '.' == tempExtension[0] ) ? (char *) (&(tempExtension[1])) : (char *) tempExtension;
-
-  // Copy to the given components.
-  drive     = tempDrive;
-  directory = tempDirectory;
-  filename  = tempFilename;
-  extension = ext;
-
-#else
-
-  // Split the path into its components.
-  SlAString tempPath ( fullpath );
-  std::list<SlAString> components;
-  tempPath.split ( '/', components );
-
-  // Split the last component again to get the extension.
-  SlAString lastComponent;
-  std::list<SlAString> filenameAndExtension;
-  lastComponent.split ( '.', filenameAndExtension );
-
-  // Assign the components.
-  drive = "";
-  //  directory = 
-  SL_ASSERT ( 0 ); // TODO.
-
-
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Function to split a full path name into its components.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _splitFullPathName ( const std::wstring &fullpath, 
-                                       std::wstring &drive, 
-                                       std::wstring &directory, 
-                                       std::wstring &filename, 
-                                       std::wstring &extension )
-{
-  // Temporary storage.
-  wchar_t tempDrive    [SL_PATHNAME_SAFE_BUFFER_SIZE];
-  wchar_t tempDirectory[SL_PATHNAME_SAFE_BUFFER_SIZE];
-  wchar_t tempFilename [SL_PATHNAME_SAFE_BUFFER_SIZE];
-  wchar_t tempExtension[SL_PATHNAME_SAFE_BUFFER_SIZE];
-
-  // Split the given path.
-  ::_wsplitpath ( fullpath.c_str(), tempDrive, tempDirectory, tempFilename, tempExtension );
-
-  // Lose the "." before the extension.
-  wchar_t *ext = ( L'.' == tempExtension[0] ) ? (wchar_t *) (&(tempExtension[1])) : (wchar_t *) tempExtension;
-
-  // Copy to the given components.
-  drive     = tempDrive;
-  directory = tempDirectory;
-  filename  = tempFilename;
-  extension = ext;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the full path name from the given relative path.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _getFullPathName ( const std::string &pathname, std::string &fullpath )
-{
-  char temp [SL_PATHNAME_SAFE_BUFFER_SIZE];
-
-  SL_VERIFY ( 0x0 != ::_fullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
-
-  fullpath = temp;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the full path name from the given relative path.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _getFullPathName ( const std::wstring &pathname, std::wstring &fullpath )
-{
-  wchar_t temp [SL_PATHNAME_SAFE_BUFFER_SIZE];
-
-  SL_VERIFY ( 0x0 != ::_wfullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
-
-  fullpath = temp;
-}
-*/
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_PATHNAME_CLASS_H_

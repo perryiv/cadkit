@@ -82,6 +82,7 @@ public:
   SlWString &               append ( const std::basic_string<wchar_t> &str );
   SlWString &               append ( size_type n, wchar_t c );
   SlWString &               append ( const_iterator first, const_iterator last );
+  SlWString &               append ( wchar_t c );
   SlWString &               append ( int i );
   SlWString &               append ( unsigned int i );
   SlWString &               append ( float d );
@@ -119,6 +120,8 @@ public:
   #endif
 
   void                      split ( const wchar_t &delimiter, std::list<SlWString> &components ) const;
+  void                      splitAtFirst ( const char &delimiter, SlWString &left, SlWString &right) const;
+  void                      splitAtLast ( const char &delimiter, SlWString &left, SlWString &right) const;
 
   // Convert all characters to upper/lower case.
   void                      toLower();
@@ -392,12 +395,11 @@ inline SlWString &SlWString::append ( const_iterator first, const_iterator last 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32 // TODO, other platforms. Redo in a platform independent way.
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, int,           L"%d", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, unsigned int,  L"%u", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, float,         L"%f", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, double,        L"%f", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
-#endif
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, wchar_t,       L"%c", ::swprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, int,           L"%d", ::swprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, unsigned int,  L"%u", ::swprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, float,         L"%f", ::swprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, double,        L"%f", ::swprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -472,6 +474,32 @@ inline void SlWString::split ( const wchar_t &delimiter, std::list<SlWString> &c
 {
   // Call the non-member function.
   CadKit::_splitStringIntoList ( *this, delimiter, components );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlWString::splitAtFirst ( const char &delimiter, SlWString &left, SlWString &right) const
+{
+  // Call the non-member function.
+  CadKit::_splitStringAtFirst ( *this, delimiter, left, right );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlWString::splitAtLast ( const char &delimiter, SlWString &left, SlWString &right) const
+{
+  // Call the non-member function.
+  CadKit::_splitStringAtLast ( *this, delimiter, left, right );
 }
 
 

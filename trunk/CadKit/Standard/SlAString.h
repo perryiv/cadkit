@@ -79,6 +79,7 @@ public:
   SlAString &               append ( const std::basic_string<char> &str );
   SlAString &               append ( size_type n, char c );
   SlAString &               append ( const_iterator first, const_iterator last );
+  SlAString &               append ( char c );
   SlAString &               append ( int i );
   SlAString &               append ( unsigned int i );
   SlAString &               append ( float d );
@@ -116,6 +117,8 @@ public:
   #endif
 
   void                      split ( const char &delimiter, std::list<SlAString> &components ) const;
+  void                      splitAtFirst ( const char &delimiter, SlAString &left, SlAString &right) const;
+  void                      splitAtLast ( const char &delimiter, SlAString &left, SlAString &right) const;
   
   // Convert all characters to upper/lower case.
   void                      toLower();
@@ -376,10 +379,11 @@ inline SlAString &SlAString::append ( const_iterator first, const_iterator last 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, int,          "%d", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, unsigned int, "%u", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, float,        "%f", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
-SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, double,       "%f", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, char,         "%c", ::sprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, int,          "%d", ::sprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, unsigned int, "%u", ::sprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, float,        "%f", ::sprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, double,       "%f", ::sprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -454,6 +458,32 @@ inline void SlAString::split ( const char &delimiter, std::list<SlAString> &comp
 {
   // Call the non-member function.
   CadKit::_splitStringIntoList ( *this, delimiter, components );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlAString::splitAtFirst ( const char &delimiter, SlAString &left, SlAString &right) const
+{
+  // Call the non-member function.
+  CadKit::_splitStringAtFirst ( *this, delimiter, left, right );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlAString::splitAtLast ( const char &delimiter, SlAString &left, SlAString &right) const
+{
+  // Call the non-member function.
+  CadKit::_splitStringAtLast ( *this, delimiter, left, right );
 }
 
 

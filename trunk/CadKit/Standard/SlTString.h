@@ -92,9 +92,12 @@ template<class T> class SlTString : public std::basic_string<T>
 {
 public:
 
+  // These are defined in basic_string, but SGI's compiler doesn't 
+  // seem to know that.
 #ifdef _SGI_NATIVE_COMPILER
   typedef size_t size_type;
-  typedef const T *const_iterator;
+  typedef T value_type;
+  typedef const value_type *const_iterator;
 #endif
 
   // Constructors.
@@ -250,6 +253,14 @@ public:
   friend std::istream &     operator >> ( std::istream &in, SlTString &s );
 #endif
 #endif
+
+  // Pop a character off the string.
+  void                      popBack()  { if ( this->empty() ) return; this->erase ( this->size() - 1, 1 ); }
+  void                      popFront() { if ( this->empty() ) return; this->erase ( this->begin() ); }
+
+  // Push a character onto the string.
+  void                      pushBack  ( const T &c ) { this->insert ( this->end(),   c ); }
+  void                      pushFront ( const T &c ) { this->insert ( this->begin(), c ); }
 
   // Replace all occurances of the one character with the other.
   void                      replace ( const T &oldChar, const T &newChar );
@@ -1089,28 +1100,27 @@ template<class T> inline bool operator != ( T sa, const SlTString<T> &sb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T, class L> inline void _splitStringIntoList ( const SlTString<T> &string, 
-                                                              const T &delimiter, 
-                                                              std::list<L> &components )
+template<class CharType, class StringType, class ListType>
+inline void _splitStringIntoList ( const StringType &string, 
+                                   const CharType &delimiter, 
+                                   ListType &components )
 {
-  // Clear the list.
+  // Clear the list. The list size is the only indication to the user as to 
+  // what happened in this function.
   components.clear();
 
-  // Handle trivial case.
-  if ( string.empty() ) return;
-
   // Needed below.
-  SlTString<T> current;
+  StringType current;
 
   // Loop through the string.
   size_t size = string.length();
   for ( size_t i = 0; i < size; ++i )
   {
-    // If this character is not the delimiter, or if it's the last one...
+    // If this character is not the delimiter.
     if ( string.at ( i ) != delimiter )
     {
       // Append it to the current string.
-      current += string.at ( i );
+      current += static_cast<CharType>( string.at ( i ) );
     }
 
     // Otherwise...
@@ -1124,8 +1134,120 @@ template<class T, class L> inline void _splitStringIntoList ( const SlTString<T>
     }
   }
 
-  // Push the last string onto the list.
+  // Push the last string onto the list. If the given string is empty then
+  // here we will push an empty string onto the list. That is wanted.
   components.push_back ( current );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assemble the string from the list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class CharType, class ListType, class StringType> 
+inline void _assembleStringFromList ( const CharType &delimiter, 
+                                      const ListType &components, 
+                                      StringType &string )
+{
+  // Initialize.
+  string.clear();
+
+  // Loop through the list.
+  unsigned int count = components.size();
+  ListType::const_iterator i = components.begin();
+  for ( ListType::const_iterator j = components.begin(); j != components.end(); ++j )
+  {
+    // Add the string.
+    string += *j;
+
+    // If this isn't the last one...
+    if ( 0 != count )
+    {
+      // Add the delimiter.
+      string += static_cast<CharType>( delimiter );
+    }
+
+    // Decrement the count.
+    --count;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string. This is a template function (not a member).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class CharType, class StringType>
+inline void _splitStringAtFirst ( const StringType &string, 
+                                  const CharType &delimiter, 
+                                  StringType &left,
+                                  StringType &right )
+{
+  // Initialize.
+  left.clear();
+  right.clear();
+
+  // Split the string into a list.
+  std::list<StringType> components;
+  _splitStringIntoList ( string, delimiter, components );
+
+  // Should be true.
+  SL_ASSERT ( components.size() >= 1 );
+
+  // If the list only has one member then we didn't split.
+  if ( 1 == components.size() )
+    return;
+
+  // The first member of the list is the left.
+  left = components.front();
+
+  // Remove the first element.
+  components.pop_front();
+
+  // Assemble the rest of the list into the right portion.
+  _assembleStringFromList ( delimiter, components, right );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the string. This is a template function (not a member).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class CharType, class StringType>
+inline void _splitStringAtLast ( const StringType &string, 
+                                 const CharType &delimiter, 
+                                 StringType &left,
+                                 StringType &right )
+{
+  // Initialize.
+  left.clear();
+  right.clear();
+
+  // Split the string into a list.
+  std::list<StringType> components;
+  _splitStringIntoList ( string, delimiter, components );
+
+  // Should be true.
+  SL_ASSERT ( components.size() >= 1 );
+
+  // If the list only has one member then we didn't split.
+  if ( 1 == components.size() )
+    return;
+
+  // The last member of the list is the right.
+  right = components.back();
+
+  // Remove the last element.
+  components.pop_back();
+
+  // Assemble the rest of the list into the left portion.
+  _assembleStringFromList ( delimiter, components, left );
 }
 
 
@@ -1215,6 +1337,9 @@ template<class T> inline void SlTString<T>::toLower ( const bool &useLocale )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Macro used in derived classes to implement the append() members.
+//  Note: since there is no unix equivalent of _snprintf() and _snwprintf(),
+//  we now cross our fingers and hope the buffer isn't overflowed. The
+//  assertion was added to indicate that we wrote off the end.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1222,8 +1347,9 @@ template<class T> inline void SlTString<T>::toLower ( const bool &useLocale )
 inline class_name &class_name::append ( data_type data ) \
 { \
   buffer_type buffer[buffer_size]; \
-  SL_VERIFY ( -1 != format_function ( buffer, buffer_size, format_string, data ) ); \
+  format_function ( buffer, format_string, data ); \
   SlTString<buffer_type>::append ( buffer ); \
+  SL_ASSERT ( this->length() < buffer_size ); \
   return *this; \
 }
 

@@ -35,7 +35,7 @@ public:
   typedef std::vector< MoleculePtr > Molecules;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
-  typedef Molecule::SphereFactory SphereFactory;
+  typedef Molecule::ShapeFactory ShapeFactory;
 
   ReaderWriterPDB();
   ~ReaderWriterPDB();
@@ -84,8 +84,8 @@ private:
   Molecules _molecules; 
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
-  SphereFactory::Ptr _sphereFactory;
-  CylinderFactory::Ptr _cylinderFactory;
+  ShapeFactory::Ptr _shapeFactory;
+  //CylinderFactory::Ptr _cylinderFactory;
   PeriodicTable _periodicTable;
   unsigned int _flags;
 };

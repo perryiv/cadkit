@@ -32,7 +32,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags ) : 
+Molecule::Molecule ( MaterialChooser *mc, ShapeFactory *sf,/* CylinderFactory *cf,*/ unsigned int flags ) : 
   _atoms             (),
   _bonds             (),
   _maxDistanceFactor ( 100 ),
@@ -41,8 +41,8 @@ Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf
   _stepFactor        ( 10 ),
   _lodDistancePower  (  2 ),
   _materialChooser   ( mc ),
-  _sphereFactory     ( sf ),
-  _cylinderFactory   ( cf ),
+  _shapeFactory     ( sf ),
+  //_cylinderFactory   ( cf ),
   _minNumSegsLat     (  3 ),
   _maxNumSegsLat     ( 50 ),
   _minNumSegsLong    (  6 ),
@@ -210,7 +210,7 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
 osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const
 {
   // Make a cylinder of length one with given radius and number of sides.
-  osg::ref_ptr<osg::Geometry> geometry ( _cylinderFactory->create ( radius, sides ) );
+  osg::ref_ptr<osg::Geometry> geometry ( _shapeFactory->cylinder ( radius, sides ) );
 
   // TODO, make this an option. Display lists crash with really big files.
   geometry->setUseDisplayList ( true );
@@ -283,10 +283,10 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   unsigned int longitude ( _minNumSegsLong + detail[1] * ( _maxNumSegsLong - _minNumSegsLong ) );
 
   // Make a sphere.
-  SphereFactory::MeshSize size ( latitude, longitude );
-  SphereFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
-  SphereFactory::LongitudeRange longRange (  0.0f, 360.0f );
-  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->sphere ( radius, size, latRange, longRange ) );
+  ShapeFactory::MeshSize size ( latitude, longitude );
+  ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
+  ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
+  osg::ref_ptr<osg::Geometry> geometry ( _shapeFactory->sphere ( radius, size, latRange, longRange ) );
 
   // TODO, make this an option. Display lists crash with really big files.
   geometry->setUseDisplayList ( true );

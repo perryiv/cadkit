@@ -221,7 +221,7 @@ struct NoUpdateFunctor
 {
   void operator () ( int ) { }
   void operator () ( const std::string& ) { }
-  void operator() ( const IndexSequence& keepers, bool b = false ) { }
+  void operator () ( const IndexSequence& keepers, bool b = false ) { }
 };
 
 };
@@ -253,14 +253,16 @@ inline void buildAdjacencyGraph (
                     unsigned int numVertsPerPoly
                     )
 {
+  //useful typedefs
   typedef typename PolygonSequence::value_type Polygon;
   typedef typename SharedVertexSequence::value_type SharedVertex;
-
   typedef typename VertexSequence::const_iterator VertexIterator;
+  typedef typename Map::iterator MapItr;
+  typedef typename PolygonSequence::iterator PolygonItr;
 
   //build the polygons, shared vertices, and map
   updater ( "Finding shared vertices...");
-  PolygonSequence::iterator currentPolygon ( polygons.begin() );
+  PolygonItr currentPolygon ( polygons.begin() );
   unsigned int polyIndex ( 0 );
   //Loop through all the vertices
   for( VertexIterator i = vertices.begin(); i != vertices.end(); i+=numVertsPerPoly )
@@ -272,7 +274,7 @@ inline void buildAdjacencyGraph (
     //Add the vertices to the polygon
     for( unsigned int j = 0; j < numVertsPerPoly; ++j )
     {
-      Map::iterator iter = getMapIter< Map::iterator, Map, SharedVertex > ( sharedVertsMap, *(i + j), sharedVerts );
+      MapItr iter ( getMapIter< MapItr, Map, SharedVertex > ( sharedVertsMap, *(i + j), sharedVerts ) );
       currentPolygon->append ( iter->second );
       iter->second->append( &*currentPolygon );
     }
@@ -281,12 +283,8 @@ inline void buildAdjacencyGraph (
     ++currentPolygon;
 
     //update the progress
-    if( sharedVerts.size() % 500 == 0 )
-    {
-      //std::ostringstream message;
-      //message << "Found " << sharedVerts.size() << " shared vertices. ";
+    if( sharedVerts.size() % 1000 == 0 )
       updater ( sharedVerts.size() );
-    }
   }
 }
 
@@ -313,10 +311,12 @@ inline void walkAdjacencyGraph (
                     unsigned int numVertsPerPoly
                     )
 {
+  //Useful typedefs
   typedef typename SharedVertexSequence::value_type SharedVertex;
   typedef typename PolygonSequence::value_type Polygon;
   typedef Detail::UberFunctor< IndexSequence, Polygon, SharedVertex > Functor;
   typedef std::vector< Functor > TodoStack;
+  typedef TodoStack::iterator TodoStackItr;
 
   TodoStack todoStack;
   todoStack.reserve( polygons.size() + sharedVerts.size() );
@@ -325,7 +325,7 @@ inline void walkAdjacencyGraph (
   polygons.at( selectedPolygon ).visited ( true );
   todoStack.push_back( Functor ( answer, todoStack, &polygons.at( selectedPolygon ) ) );
 
-  TodoStack::iterator todoIterator = todoStack.begin();
+  TodoStackItr todoIterator = todoStack.begin();
 
   //loop through the todo stack
   while( todoIterator != todoStack.end() )
@@ -335,8 +335,7 @@ inline void walkAdjacencyGraph (
       return;
 
     (*todoIterator)();
-    //todoStack.pop_front();
-    ++todoIterator;// = todoStack.begin();
+    ++todoIterator;
     updater ( answer );
   }
 
@@ -382,9 +381,9 @@ inline void findAdjacent (
   typedef typename VertexSequence::size_type SizeType;
   typedef typename VertexSequence::const_iterator VertexIterator;
   typedef typename IndexSequence::iterator IndexIterator;
-
   typedef std::vector< Polygon > Polygons;
   typedef std::map< Vertex, SharedVertex * > Map;
+  typedef std::vector< SharedVertex > SharedVertices;
 
   // Initialize.
   answer.erase ( answer.begin(), answer.end() );
@@ -430,7 +429,6 @@ inline void findAdjacent (
   Polygons polygons;
   polygons.resize( numPolygons );
   //Vector to hold all shared vertices
-  typedef std::vector< SharedVertex > SharedVertices;
   SharedVertices sharedVerts;
   sharedVerts.reserve( (int ) (numPolygons * 1.6) );
   //Map of the shared vertices

@@ -101,7 +101,7 @@ protected:
     pfGroup *getGroup() { return _group; }
     const SlMaterialf &getMaterial() const { return _material; }
     void setGroup ( pfGroup *group ) { _group = group; }
-    void setMaterial ( const SlMaterialf &material ) { _material = material; }
+    void setMaterial ( const SlMaterialf &material ) { _material.setValue ( material ); }
   protected:
     pfGroup *_group;
     SlMaterialf _material;

@@ -67,7 +67,7 @@ public:
   typedef T Type; // For the client.
 
   SlMaterial();
-  SlMaterial ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shinniness );
+  SlMaterial ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shininess );
   SlMaterial ( const SlMaterial<T> &material );
 
   const SlVec4<T> &       getAmbient()   const { return _ambient; }
@@ -95,7 +95,7 @@ public:
   void                    setShininess ( const T &shininess )         { _shininess = shininess; _valid |= SHININESS; }
   void                    setValid     ( const unsigned int &valid )  { _valid = valid; }
   void                    setValue     ( const SlMaterial<T> &m );
-  void                    setValue     ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shinniness );
+  void                    setValue     ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shininess );
 
   bool                    isEqual      ( const SlMaterial<T> &material, bool checkValidFlag = false ) const;
   bool                    isNotEqual   ( const SlMaterial<T> &material, bool checkValidFlag = false ) const { return ( false == this->isEqual ( material, checkValidFlag ) ); }
@@ -152,7 +152,7 @@ template<class T> inline SlMaterial<T>::SlMaterial (
   const SlVec4<T> &diffuse, 
   const SlVec4<T> &emissive, 
   const SlVec4<T> &specular, 
-  const T &shinniness ) :
+  const T &shininess ) :
   _ambient   ( ambient ),
   _diffuse   ( diffuse ),
   _specular  ( specular ),
@@ -193,14 +193,14 @@ template<class T> inline void SlMaterial<T>::setValue (
   const SlVec4<T> &diffuse, 
   const SlVec4<T> &emissive, 
   const SlVec4<T> &specular, 
-  const T &shinniness )
+  const T &shininess )
 {
   // Set all the colors.
-  _ambient.setValue   ( _ambient );
-  _diffuse.setValue   ( _diffuse );
-  _specular.setValue  ( _specular );
-  _emissive.setValue  ( _emissive );
-  _shininess          = _shininess;
+  _ambient.setValue   ( ambient );
+  _diffuse.setValue   ( diffuse );
+  _specular.setValue  ( specular );
+  _emissive.setValue  ( emissive );
+  _shininess          = shininess;
 
   // They are all valid.
   _valid = ALL;

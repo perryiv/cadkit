@@ -149,10 +149,10 @@ int Socket::listen()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Socket::_read(void *buf, int len) const 
+int Socket::_read(char *buf, int len) const 
 {
 #if defined(_MSC_VER)
-  return ::recv( _sd, (char*) buf, len, 0 ); // windows lacks the read() call
+  return ::recv( _sd, buf, len, 0 ); // windows lacks the read() call
 #else
   return ::read(_sd, buf, len);
 #endif
@@ -166,14 +166,21 @@ int Socket::_read(void *buf, int len) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Socket::_write(const void *buf, int len)  const
+int Socket::_write(const char *buf, int len)  const
 {
 #if defined(_MSC_VER)
-  return ::send( _sd, (const char*) buf, len, 0 );  // windows lacks the write() call
+  return ::send( _sd, buf, len, 0 );  // windows lacks the write() call
 #else
   return ::write(_sd, buf, len);
 #endif
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check for specified time to see if socket is readable.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool Socket::_selectRead( int seconds ) const
 {
@@ -196,6 +203,13 @@ bool Socket::_selectRead( int seconds ) const
   //If FD_ISSET returns zero, then _sd is not ready for reading
   return (FD_ISSET(_sd, &rfd ) != 0 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check for specified time to see if socket is writable
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool Socket::_selectWrite( int seconds ) const
 {
@@ -220,6 +234,12 @@ bool Socket::_selectWrite( int seconds ) const
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read from the socket
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool Socket::read ( Buffer &buf, bool wait, int seconds ) const
 {
   if( wait )
@@ -242,11 +262,16 @@ bool Socket::read ( Buffer &buf, bool wait, int seconds ) const
     buffer += numRead;
     buf.size( buf.size() + numRead );
   }
-  
-  //buf.buffer( buffer );
 
   return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write to the socket
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool Socket::write ( Buffer &buf, bool wait, int seconds ) const
 {

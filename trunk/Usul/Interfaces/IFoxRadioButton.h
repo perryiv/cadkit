@@ -7,28 +7,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Interface for adding radio button.
+//
+/////////////////////////////////////////////////////////////////////////////
+
 #ifndef __USUL_INTERFACES_FOX_RADIO_BUTTON_H__
 #define __USUL_INTERFACES_FOX_RADIO_BUTTON_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul
+namespace Usul {
+namespace Interfaces {
+    
+struct IFoxRadioButton : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    class IFoxRadioButton : public Usul::Interfaces::IUnknown
-    {
-    public:
-      typedef Usul::Interfaces::IUnknown Unknown;
+  typedef Usul::Interfaces::IUnknown Unknown;
 
-      /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxRadioButton);
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IFoxRadioButton);
 
-      enum { IID = 1101838442u };
+  enum { IID = 1101838442u };
 
 
-    }; //class IFoxRadioButton
-  }; //namespace Interfaces
+}; //class IFoxRadioButton
+
+}; //namespace Interfaces
 }; //namespace Usul
 
 #endif // __USUL_INTERFACES_FOX_RADIO_BUTTON_H__

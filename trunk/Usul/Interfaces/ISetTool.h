@@ -17,7 +17,7 @@
 #define _USUL_INTERFACE_SET_TOOL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/IToolCommand.h"
+#include "Usul/Interfaces/IFoxEvent.h"
 
 namespace Usul {
 namespace Interfaces {
@@ -30,8 +30,8 @@ struct ISetTool : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1104426962u };
 
-  virtual void setTool ( Usul::Interfaces::IToolCommand * ) = 0;
-  virtual Usul::Interfaces::IToolCommand* getTool () = 0;
+  virtual void setTool ( Usul::Interfaces::IFoxEvent * ) = 0;
+  virtual Usul::Interfaces::IFoxEvent* getTool () = 0;
   virtual void doneTool () = 0;
   virtual void loadLastTool () = 0;
 

@@ -12,22 +12,21 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul
+namespace Usul {
+namespace Interfaces {
+
+struct IPreferencesManager : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    class IPreferencesManager : public Usul::Interfaces::IUnknown
-    {
-    public:
-      /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IPreferencesManager );
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IPreferencesManager );
 
-      enum { IID = 1102358547u };
+  enum { IID = 1102358547u };
 
-      virtual Usul::Interfaces::IUnknown* getPreferences ( ) = 0;
+  virtual Usul::Interfaces::IUnknown* getPreferences ( ) = 0;
 
-    }; //class IPreferenceManager
-  }; //namespace Interfaces
+}; // IPreferenceManager
+
+}; //namespace Interfaces
 }; //namespace Usul
 
 #endif // __USUL_INTERFACES_PREFERENCES_MANAGER_H__

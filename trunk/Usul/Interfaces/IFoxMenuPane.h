@@ -7,33 +7,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Interface for building a fox menu
+//
+/////////////////////////////////////////////////////////////////////////////
+
 #ifndef __USUL_INTERFACES_FOX_MENU_PANE_H__
 #define __USUL_INTERFACES_FOX_MENU_PANE_H__
 
-#include <string>
 
 namespace FX { class FXWindow; class FXMenuBar; }
 
-namespace Usul 
+namespace Usul  {
+namespace Interfaces  {
+    
+struct IFoxMenuPane : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    class IFoxMenuPane : public Usul::Interfaces::IUnknown
-    {
-    public:
-      // Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxMenuPane );
+  // Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IFoxMenuPane );
 
-      enum { IID = 1101919453u };
+  enum { IID = 1101919453u };
 
-      // Get the menu text.
-      virtual std::string   menuText() const = 0;
+  //build the menu
+  virtual void buildMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow*, FX::FXMenuBar* ) = 0;
 
-      //build the menu
-      virtual void buildMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow*, FX::FXMenuBar* ) = 0;
-
-    }; // class IFoxMenuPane
-  }; //namespace Usul
+}; // class IFoxMenuPane
+}; //namespace Usul
 }; // namespace Interfaces
 
 #endif // __USUL_INTERFACES_FOX_MENU_PANE_H__

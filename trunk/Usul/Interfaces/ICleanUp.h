@@ -18,21 +18,21 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul
+namespace Usul {
+namespace Interfaces  {
+    
+struct ICleanUp : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    struct ICleanUp : public Usul::Interfaces::IUnknown
-    {
-      // Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( ICleanUp );
+  // Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( ICleanUp );
 
-      enum { IID = 1104796696u };
+  enum { IID = 1104796696u };
 
-      virtual void cleanUp( Usul::Interfaces::IUnknown* caller ) = 0;
+  virtual void cleanUp( Usul::Interfaces::IUnknown* caller ) = 0;
 
-    };//class ICleanUp
-  }; //namespace Interfaces
+};// ICleanUp
+
+}; //namespace Interfaces
 };//namespace Usul
 
 #endif //__USUL_INTERFACE_CLEAN_UP_H__

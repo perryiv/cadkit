@@ -7,6 +7,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Interface for building a sub menu
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __USUL_INTERFACES_FOX_SUB_MENU_H__
 #define __USUL_INTERFACES_FOX_SUB_MENU__H__
 
@@ -14,26 +20,22 @@
 
 namespace FX { class FXWindow; class FXMenuPane; }
 
-namespace Usul 
+namespace Usul  {
+namespace Interfaces   {
+    
+struct IFoxSubMenu : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    class IFoxSubMenu : public Usul::Interfaces::IUnknown
-    {
-    public:
-      // Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxSubMenu );
+  // Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IFoxSubMenu );
 
-      enum { IID = 1102691747u };
+  enum { IID = 1102691747u };
 
-      // Get the menu text.
-      virtual std::string   menuText() const = 0;
+  //build the menu
+  virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow *owner, FX::FXMenuPane *menuPane  ) = 0;
 
-      //build the menu
-      virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow *owner, FX::FXMenuPane *menuPane  ) = 0;
+}; // class IFoxSubMenu
 
-    }; // class IFoxSubMenu
-  }; //namespace Usul
+}; //namespace Usul
 }; // namespace Interfaces
 
 #endif // __USUL_INTERFACES_FOX_SUB_MENU_H__

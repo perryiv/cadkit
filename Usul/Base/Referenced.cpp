@@ -44,18 +44,30 @@ namespace Usul
 
     #ifdef _DEBUG
 
-      typedef std::set<Referenced*> InstanceContainer;
-      USUL_DECLARE_SET_CONFIG ( InstanceMapConfig, Mutex, Guard, InstanceContainer );
-      typedef Usul::Threads::Set<InstanceMapConfig> InstanceSet;
+    struct InstanceManager
+    {
+      typedef std::set<Referenced*> Set;
   
-      InstanceSet *_instanceSet()
+      InstanceManager() : _set()
       {
-        // This cannot be declared before the mutex factory-function is set.
-        static InstanceSet *set = 0x0;
-        if ( 0x0 == set )
-          set = new InstanceSet;
-        return set;
       }
+
+      ~InstanceManager()
+      {
+        USUL_ASSERT ( _set.empty() );
+      }
+
+      Set &set()
+      {
+        return _set;
+      }
+
+    private:
+
+      Set _set;
+    };
+
+    InstanceManager im;
 
     #endif
   };
@@ -74,7 +86,7 @@ Referenced::Referenced() : Typed(),
 {
 #if _DEBUG
   // Make sure this address is not already in our set, and insert it.
-  std::pair<InstanceSet::iterator,bool> result = _instanceSet()->insert ( this );
+  std::pair<InstanceManager::Set::iterator,bool> result = im.set().insert ( this );
   USUL_ASSERT ( true == result.second );
   USUL_ASSERT ( this == *(result.first) );
 #endif
@@ -93,7 +105,7 @@ Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
 {
 #if _DEBUG
   // Make sure this address is not already in our set, and insert it.
-  std::pair<InstanceSet::iterator,bool> result = _instanceSet()->insert ( this );
+  std::pair<InstanceManager::Set::iterator,bool> result = im.set().insert ( this );
   USUL_ASSERT ( true == result.second );
   USUL_ASSERT ( this == *(result.first) );
 #endif
@@ -109,7 +121,7 @@ Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
 Referenced::~Referenced()
 {
   // Remove this address from the set. Should be one occurance.
-  USUL_ASSERT ( 1 == _instanceSet()->erase ( this ) );
+  USUL_ASSERT ( 1 == im.set().erase ( this ) );
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
@@ -225,4 +237,3 @@ unsigned long Referenced::refCount() const
   Guard guard ( *_rcMutex );
   return _refCount;
 }
-

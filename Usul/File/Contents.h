@@ -47,11 +47,11 @@ template < class Stream, class Container > inline void contents ( Stream &in, Co
 template < class Container > inline void contents ( const std::string &filename, bool binary, Container &container )
 {
   // Get the size of the file.
-  unsigned int size ( Usul::File::size ( filename ) );
+  const unsigned int size ( Usul::File::size ( filename ) );
   container.reserve ( size );
 
   // Set proper flags.
-  std::ifstream::openmode mode ( ( binary ) ? std::ifstream::in | std::ifstream::binary : std::ifstream::in );
+  const std::ifstream::openmode mode ( ( binary ) ? std::ifstream::in | std::ifstream::binary : std::ifstream::in );
 
   // Open the file.
   std::ifstream in ( filename.c_str(), mode );

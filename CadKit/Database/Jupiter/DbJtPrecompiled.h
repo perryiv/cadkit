@@ -55,6 +55,7 @@
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlClientHeaders.h"
+# include <iostream>
 #endif
 
 #endif // _CADKIT_DATABASE_JUPITER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

@@ -101,10 +101,17 @@ bool TrJt2Xml::init()
   SL_PRINT2 ( "In TrJt2Xml::init(), this = %X,\n", this );
 
   // Allocate.
-  _jtTraverser = new DbJtTraverser;
+  _jtTraverser = new DbJtTraverser ( DbJtTraverser::VERBOSE );
   if ( _jtTraverser.isNull() )
   {
     _error = "Failed to allocate memory.";
+    return false;
+  }
+
+  // Initialize.
+  if ( false == _jtTraverser->init() )
+  {
+    _error = "Failed to initialize jt traverser.";
     return false;
   }
 
@@ -850,6 +857,22 @@ bool TrJt2Xml::_endCurrentGroup()
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the verbose flag. If true it will print progress notifications 
+//  to stdout. Default is false.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TrJt2Xml::setVerbose ( bool verbose )
+{
+  SL_PRINT2 ( "In TrJt2Xml::setVerbose(), this = %X\n", this );
+  SL_ASSERT ( _jtTraverser.isValid() );
+
+  _jtTraverser->addFlags ( DbJtTraverser::VERBOSE );
 }
 
 /*

@@ -70,13 +70,19 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 # include "Standard/SlPrint.h"
 # include "Standard/SlStringFunctions.h"
 # include "Standard/SlInline.h"
+# include <iostream>
 #endif
 
 // This is the only way to get a pointer to the traverser from inside the 
 // callback function.
 namespace CadKit { DbJtTraverser *_currentTraverser = NULL; }
 
+#define UNSET_CUSTOMER_NUMBER 0
+
 using namespace CadKit;
+
+// Macro for reporting progress.
+#define NOTIFY if ( this->hasFlags ( VERBOSE ) ) std::cout
 
 SL_IMPLEMENT_DYNAMIC_CLASS(DbJtTraverser,SlRefBase);
 
@@ -87,12 +93,14 @@ SL_IMPLEMENT_DYNAMIC_CLASS(DbJtTraverser,SlRefBase);
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbJtTraverser::DbJtTraverser() : SlRefBase ( 0 ),
+DbJtTraverser::DbJtTraverser ( const unsigned int &flags ) : SlRefBase ( 0 ),
+  _flags ( flags ),
   _error ( "" ),
   _currentNode ( NULL ),
   _clientCallback ( NULL ),
   _clientData ( NULL ),
-  _currentLevel ( 0 )
+  _currentLevel ( 0 ),
+  _customerNumber ( UNSET_CUSTOMER_NUMBER )
 {
   SL_PRINT2 ( "In DbJtTraverser::DbJtTraverser(), this = %X\n", this );
 
@@ -111,6 +119,53 @@ DbJtTraverser::DbJtTraverser() : SlRefBase ( 0 ),
 DbJtTraverser::~DbJtTraverser()
 {
   SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtTraverser::init()
+{
+  SL_PRINT2 ( "In DbJtTraverser::init(), this = %X\n", this );
+
+#if ( _DMDTK_VERSION > 4 )
+
+  NOTIFY << "Initializing DirectModel Data Toolkit... " << std::flush;
+
+  // Initialize DMDTk.
+  if ( eai_ERROR == eaiEntityFactory::init() )
+  {
+    CadKit::format ( _error, "Failed to initialize the DirectModel Data Toolkit." ); 
+    NOTIFY << _error;
+    return false;
+  }
+
+  NOTIFY << "done" << std::endl;
+
+#endif // _DMDTK_VERSION
+
+  // Get the customer number.
+  unsigned int customerNumber = this->getCustomerNumber();
+
+  NOTIFY << "Attempting to register customer number " << customerNumber << "... " << std::flush;
+
+  // Register the customer.
+  if ( eai_ERROR == eaiEntityFactory::registerCustomer ( customerNumber ) )
+  {
+    CadKit::format ( _error, "Failed to register customer number: %d.", customerNumber ); 
+    NOTIFY << _error;
+    return false;
+  }
+
+  NOTIFY << "done" << std::endl;
+
+  // We are now initialized.
+  this->addFlags ( _INITIALIZED );
+  return true;
 }
 
 
@@ -194,6 +249,7 @@ bool DbJtTraverser::traverse ( const char *filename )
   catch ( ... )
   {
     CadKit::format ( _error, "Exception generated when attempting to traverse." );
+    NOTIFY << _error;
     return false;
   }
 }
@@ -214,6 +270,8 @@ bool DbJtTraverser::_traverse ( const char *filename )
   _currentNode = NULL;
   _currentLevel = 0;
 
+  NOTIFY << "Creating CAD importer... " << std::flush;
+
   // Declare a CAD importer. The returned instance has a zero reference count.
   // Assigning it to the SlRefPtr will increment it to one. When the SlRefPtr 
   // goes out of scope the internal pointer will be deferenced (back to zero),
@@ -221,9 +279,12 @@ bool DbJtTraverser::_traverse ( const char *filename )
   SlRefPtr<eaiCADImporter> importer = eaiEntityFactory::createCADImporter();
   if ( importer.isNull() )
   {
-    CadKit::format ( _error, "Failed to create CAD importer." );
+    CadKit::format ( _error, "Failed to create CAD importer. Is your license set up correctly?" );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "done" << std::endl;
 
   // We want all the levels of detail.
   //  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
@@ -235,13 +296,18 @@ bool DbJtTraverser::_traverse ( const char *filename )
   // We want to use instances (rather than explode and make separate parts).
   importer->setAssemblyOption ( eaiCADImporter::eaiINSTANCE_ASSEMBLY );
 
+  NOTIFY << "Creating traverser... " << std::flush;
+
   // Declare the traverser. Note: returned pointer has ref-count of one.
   SlRefPtr<eaiTraverser> traverser = eaiEntityFactory::createTraverser();
   if ( traverser.isNull() )
   {
     CadKit::format ( _error, "Failed to create database traverser." );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "done" << std::endl;
 
   // Hook up the callback function.
   SL_VERIFY ( eai_OK == traverser->setupPreActionCallback ( &DbJtTraverser::_traverseCallback ) );
@@ -250,21 +316,28 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( IMPORT_START ) )
   {
     CadKit::format ( _error, "Failed to start importing database: %s", filename );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "Importing '" << filename << "'... " << std::flush;
 
   // Import the database. Note: returned pointer has ref-count of one.
   SlRefPtr<eaiHierarchy> root = importer->import ( filename );
   if ( root.isNull() )
   {
     CadKit::format ( _error, "Failed to import database: %s", filename );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "done" << std::endl;
 
   // Notify the client.
   if ( false == this->_sendMessage ( IMPORT_FINISH ) )
   {
     CadKit::format ( _error, "Failed to finish importing database: %s", filename );
+    NOTIFY << _error;
     return false;
   }
 
@@ -276,20 +349,27 @@ bool DbJtTraverser::_traverse ( const char *filename )
   if ( false == this->_sendMessage ( TRAVERSAL_START ) )
   {
     CadKit::format ( _error, "Failed to start traversal." );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "Traversing '" << filename << "'" << std::endl;
 
   // Traverse the database.
   if ( eai_OK != traverser->traverseGraph ( root ) )
   {
     CadKit::format ( _error, "Failed to traverse database." );
+    NOTIFY << _error;
     return false;
   }
+
+  NOTIFY << "Done traversing '" << filename << "'" << std::endl;
 
   // Notify the client.
   if ( false == this->_sendMessage ( TRAVERSAL_FINISH ) )
   {
     CadKit::format ( _error, "Failed to finish traversal." );
+    NOTIFY << _error;
     return false;
   }
 
@@ -364,6 +444,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       if ( false == this->_sendMessage ( LEVEL_PUSH ) )
       {
         CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+        NOTIFY << _error;
         return eai_ERROR;
       }
     }
@@ -381,6 +462,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
       if ( false == this->_sendMessage ( LEVEL_POP ) )
       {
         CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+        NOTIFY << _error;
         return eai_ERROR;
       }
     }
@@ -393,6 +475,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
   if ( false == this->_sendMessage ( ENTITY ) )
   {
     CadKit::format ( _error, "Error processing node %X, type %d, name = %s.", node, node->typeID(), node->name() );
+    NOTIFY << _error;
     return eai_ERROR;
   }
 
@@ -971,4 +1054,28 @@ DbJtTraverser::EntityHandle DbJtTraverser::getOriginal ( EntityHandle entity ) c
 
   // Return a pointer to the original part or assembly (which may be null).
   return ((eaiInstance *) entity)->original();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the customer number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const unsigned int &DbJtTraverser::getCustomerNumber()
+{
+  SL_PRINT2 ( "In DbJtTraverser::getCustomerNumber(), this = %X\n", this );
+
+  // Was it set by the client?
+  if ( UNSET_CUSTOMER_NUMBER != _customerNumber )
+    return _customerNumber;
+
+  // Try to get it from the environment.
+  const char *temp = ::getenv ( "DMDTK_CUSTOMER_NUMBER" );
+  if ( temp ) 
+    _customerNumber = ::atoi ( temp );
+
+  // Return what we have.
+  return _customerNumber;
 }

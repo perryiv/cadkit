@@ -130,10 +130,17 @@ bool TrJt2Pf::init()
   SL_PRINT2 ( "In TrJt2Pf::init(), this = %X,\n", this );
 
   // Allocate.
-  _jtTraverser = new DbJtTraverser;
+  _jtTraverser = new DbJtTraverser ( DbJtTraverser::VERBOSE );
   if ( _jtTraverser.isNull() )
   {
     _error = "Failed to allocate memory.";
+    return false;
+  }
+
+  // Initialize.
+  if ( false == _jtTraverser->init() )
+  {
+    _error = "Failed to initialize jt traverser.";
     return false;
   }
 
@@ -1152,4 +1159,20 @@ pfGroup *TrJt2Pf::_findGroup ( DbJtTraverser::EntityHandle entity ) const
 
   // Return the result (which may be null).
   return ( i != _groupMap->end() ) ? i->second : NULL;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the verbose flag. If true it will print progress notifications 
+//  to stdout. Default is false.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TrJt2Pf::setVerbose ( bool verbose )
+{
+  SL_PRINT2 ( "In TrJt2Pf::setVerbose(), this = %X\n", this );
+  SL_ASSERT ( _jtTraverser.isValid() );
+
+  _jtTraverser->addFlags ( DbJtTraverser::VERBOSE );
 }

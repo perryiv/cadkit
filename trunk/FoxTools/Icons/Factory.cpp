@@ -99,6 +99,7 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, LINES              );
   POPULATE ( gif, GIF, POINTS             );
   POPULATE ( gif, GIF, STOP               );
+  POPULATE ( gif, GIF, PAUSE              );
   POPULATE ( gif, GIF, PLAY               );
   POPULATE ( gif, GIF, PLAY_BACKWARDS     );
   POPULATE ( gif, GIF, FORWARD_ARROW      );

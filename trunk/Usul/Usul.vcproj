@@ -324,7 +324,19 @@
 					RelativePath="Interfaces\ICommand.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IMenuEntry.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\INotify.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IOpenSceneGraph.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IRead.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IStartup.h">
 				</File>
 				<File
 					RelativePath="Interfaces\IUndo.h">

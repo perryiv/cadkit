@@ -979,17 +979,17 @@ void Application::_processButtons()
   // See if there is a command for the combination of buttons that are down.
   Commands::Map::iterator i = _commands.down.find ( _buttons->down() );
   if ( _commands.down.end() != i )
-    i->second->execute();
+    i->second->execute ( ValidUnknown ( this ) );
 
   // Now check the buttons that were just pressed.
   i = _commands.pressed.find ( _buttons->pressed() );
   if ( _commands.pressed.end() != i )
-    i->second->execute();
+    i->second->execute ( ValidUnknown ( this ) );
 
   // Now check the buttons that were just released.
   i = _commands.released.find ( _buttons->released() );
   if ( _commands.released.end() != i )
-    i->second->execute();
+    i->second->execute ( ValidUnknown ( this ) );
 }
 
 

@@ -9,30 +9,38 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for executing a command.
+//  Interface a component that has a menu button.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_COMMAND_H_
-#define _USUL_INTERFACE_COMMAND_H_
+#ifndef _USUL_INTERFACE_MENU_ENTRY_H_
+#define _USUL_INTERFACE_MENU_ENTRY_H_
 
 #include "Usul/Interfaces/IUnknown.h"
+
+#include <string>
 
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct ICommand : public Usul::Interfaces::IUnknown
+struct IMenuEntry : public Usul::Interfaces::IUnknown
 {
   // Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ICommand );
+  USUL_DECLARE_QUERY_POINTERS ( IMenuEntry );
 
   // Id for this interface.
-  enum { IID = 3572469257u };
+  enum { IID = 2280889375 };
 
-  // Execute the command.
-  virtual void execute ( Usul::Interfaces::IUnknown *caller ) = 0;
+  // Get the menu text.
+  virtual std::string   menuText() const = 0;
+
+  // Get the hot-key text.
+  virtual std::string   hotKeyText() const = 0;
+
+  // Get the status-bar text.
+  virtual std::string   statusBarText() const = 0;
 };
 
 
@@ -40,4 +48,4 @@ struct ICommand : public Usul::Interfaces::IUnknown
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_COMMAND_H_
+#endif // _USUL_INTERFACE_MENU_ENTRY_H_

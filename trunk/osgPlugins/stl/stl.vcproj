@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plug osgPlugin stl"
+	Name="plug osgPlugin STL"
 	ProjectGUID="{848F88F3-B756-4D39-808B-796D86B2BE7E}"
 	SccProjectName=""
 	SccLocalPath="">
@@ -154,12 +154,6 @@
 		<Filter
 			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
-			<File
-				RelativePath=".\facet.cpp">
-			</File>
-			<File
-				RelativePath=".\facet.h">
-			</File>
 			<File
 				RelativePath=".\ReaderWriterSTL.cpp">
 			</File>

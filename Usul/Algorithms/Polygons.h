@@ -85,16 +85,23 @@ private:
   bool _visited;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor for pushing tasks on to the todo stack.
+//
+///////////////////////////////////////////////////////////////////////////////
 template < class IndexSequence, class Polygon, class SharedVertex >
 struct UberFunctor
 {
-  UberFunctor ( IndexSequence& answer, std::list< UberFunctor >& todoStack, Polygon *p ) :
+  typedef std::vector< UberFunctor > TodoStack;
+
+  UberFunctor ( IndexSequence& answer, TodoStack& todoStack, Polygon *p ) :
   _answer( answer ),
   _todoStack( todoStack ),
   _polygon ( p ),
   _sharedVertex( 0x0 )
   { }
-  UberFunctor ( IndexSequence& answer, std::list< UberFunctor >& todoStack, SharedVertex *sv ) :
+  UberFunctor ( IndexSequence& answer, TodoStack& todoStack, SharedVertex *sv ) :
   _answer( answer ),
   _todoStack( todoStack ),
   _polygon ( 0x0 ),
@@ -125,9 +132,18 @@ struct UberFunctor
       }
     }
   }
+
+  bool operator= ( const UberFunctor& that )
+  {
+    this->_answer = that._answer;
+    this->_todoStack = that._todoStack;
+    this->_polygon = that._polygon;
+    this->_sharedVertex = that._sharedVertex;
+    return true;
+  }
 private:
   IndexSequence &_answer;
-  std::list< UberFunctor > &_todoStack;
+  TodoStack &_todoStack;
   Polygon *_polygon;
   SharedVertex *_sharedVertex;
 };
@@ -192,6 +208,11 @@ inline Iter getMapIter( Map& map, const osg::Vec3& key, std::vector< Value >& va
   return iter;
 }
 
+struct DoNothingFunctor
+{
+  bool operator() () { return false; }
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -214,16 +235,18 @@ template
 <
   class Polygon,
   class SharedVertex,
-  class Updater,
+  class UpdateFunctor,
   class VertexSequence,
-  class IndexSequence
+  class IndexSequence,
+  class CancelFunctor
 > 
 inline void findAdjacent (
-                    Updater &updater,
+                    UpdateFunctor &updater,
                     const VertexSequence &vertices, 
                     unsigned int selectedPolygon,
                     unsigned int numVertsPerPoly,
-                    IndexSequence &answer )
+                    IndexSequence &answer,
+                    CancelFunctor &cancelFunctor )
 {
   //Useful typedefs
   typedef typename VertexSequence::value_type Vertex;
@@ -274,18 +297,24 @@ inline void findAdjacent (
     throw std::runtime_error ( message.str() );
   }
 
+  //Vector to hold all polygons
   Polygons polygons;
   polygons.resize( numPolygons );
+  //Vector to hold all shared vertices
   std::vector< SharedVertex > sharedVerts;
   sharedVerts.reserve( (int ) (numPolygons * 1.6) );
+  //Map of the shared vertices
   Map sharedVertsMap;
 
   //build the polygons, shared vertices, and map
-  updater.statusMessage( "Finding shared vertices...");
+  updater ( "Finding shared vertices...");
   Polygons::iterator currentPolygon ( polygons.begin() );
   unsigned int polyIndex ( 0 );
   for( VertexIterator i = vertices.begin(); i != vertices.end(); i+=numVertsPerPoly )
   {
+    if( cancelFunctor() )
+      return;
+
     for( unsigned int j = 0; j < numVertsPerPoly; ++j )
     {
       Map::iterator iter = getMapIter< Map::iterator, Map, SharedVertex > ( sharedVertsMap, *(i + j), sharedVerts );
@@ -300,25 +329,30 @@ inline void findAdjacent (
     {
       std::ostringstream message;
       message << "Found " << sharedVerts.size() << " shared vertices. ";
-      updater.statusMessage( message.str() );
+      updater ( message.str() );
     }
   }
 
-  typedef std::list< Detail::UberFunctor < IndexSequence,Polygon, SharedVertex > > TodoStack;
+  typedef Detail::UberFunctor< IndexSequence, Polygon, SharedVertex > Functor;
+  typedef std::vector< Functor > TodoStack;
   TodoStack todoStack;
+  todoStack.reserve( polygons.size() + sharedVerts.size() );
 
   //put the functor for the selected polygon on the stack
   polygons.at( selectedPolygon ).visited ( true );
-  todoStack.push_back( Detail::UberFunctor< IndexSequence, Polygon, SharedVertex > ( answer, todoStack, &polygons.at( selectedPolygon ) ) );
+  todoStack.push_back( Functor ( answer, todoStack, &polygons.at( selectedPolygon ) ) );
 
   TodoStack::iterator todoIterator = todoStack.begin();
 
   //loop through the todo stack
   while( todoIterator != todoStack.end() )
   {
+    if( cancelFunctor() )
+      return;
+
     (*todoIterator)();
-    todoStack.pop_front();
-    todoIterator = todoStack.begin();
+    //todoStack.pop_front();
+    ++todoIterator;// = todoStack.begin();
     updater ( answer );
   }
 

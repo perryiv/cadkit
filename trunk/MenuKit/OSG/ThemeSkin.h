@@ -16,8 +16,13 @@ namespace MenuKit
   {
 
     /** ThemeSkin
-      * Abstract base class for Skin's using a theme
-      * that can be used with Tile's that use a theme
+      * 
+      * This is an abstract base class for implementing classes
+      * that want to take advantage of a 'Theme' member.
+      *
+      * Imlementing classes will need to manufacture graphic
+      * objects.  Derived classes will most likey use the
+      * ThemeType member for color designation.
       */
     template<class ThemeType>
     class ThemeSkin
@@ -60,6 +65,7 @@ namespace MenuKit
 
       void theme(const ThemeType& t) { _theme = t; }
       const ThemeType& theme() const { return _theme; }
+      ThemeType& theme() { return _theme; }
 
     private:
       Detail::Box _box;

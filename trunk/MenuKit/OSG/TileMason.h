@@ -21,9 +21,13 @@ namespace MenuKit
   namespace OSG
   {
     /**
-      * TileMason: a class that uses a
-      * tile to produce a menu consisting
+      * TileMason: a class that uses a tile to produce a menu consisting
       * of multiple menu item tiles.
+      * 
+      * The main goal of the Mason is to use a tile to obtain size
+      * information so that each item can be placed adjacent to other items.
+      *
+      * A secondary goal is to configure the tile for display attributes.
       */
     template<class TileType>
     class TileMason : public Visitor
@@ -121,6 +125,7 @@ void TileMason<TileType>::determine_push(const Button& b)
 template<class TileType>
 void TileMason<TileType>::pop_children(const Menu& m)
 {
+  // TODO: fix this now!!!
 //  // clear the current stack spots
 //  for(Menu::const_iterator iter=m.begin(); iter!=m.end(); ++iter)
 //  {
@@ -251,6 +256,11 @@ void OSG::TileMason<TileType>::apply(Menu& m)
     _tile.box().width( width );
   }
 
+  // TODO: configure the tile if necessary for different themes
+  // TODO: by telling the tile what mode to be in.
+  // TODO: change this default command:
+  _tile.mode( TileType::NORMAL );
+
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( m );
 
@@ -309,6 +319,11 @@ void TileMason<TileType>::apply(Button& b)
     float width = _tile.width( b );
     _tile.box().width( width );
   }
+
+  // TODO: configure the tile if necessary for different themes
+  // TODO: by telling the tile what mode to be in.
+  // TODO: change this default command:
+  _tile.mode( osgTile::NORMAL );
 
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( b );

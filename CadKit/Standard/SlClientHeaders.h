@@ -83,5 +83,6 @@
 #include "SlStack.h"
 #include "SlPathname.h"
 #include "SlMaterial.h"
+#include "SlInline.h"
 
 #endif // _CADKIT_STANDARD_LIBRARY_CLIENT_HEADERS_H_

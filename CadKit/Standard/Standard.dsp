@@ -258,12 +258,16 @@ SOURCE=.\SlWString.h
 SOURCE=.\SlThread.h
 # End Source File
 # End Group
-# Begin Group "Color"
+# Begin Group "Color and Material"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\SlColor.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlMaterial.h
 # End Source File
 # End Group
 # Begin Group "Matrix"

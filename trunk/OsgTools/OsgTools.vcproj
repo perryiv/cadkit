@@ -225,10 +225,16 @@
 					RelativePath="Convert.h">
 				</File>
 				<File
+					RelativePath=".\FlipNormals.h">
+				</File>
+				<File
 					RelativePath=".\Font.cpp">
 				</File>
 				<File
 					RelativePath=".\Font.h">
+				</File>
+				<File
+					RelativePath=".\ForEach.h">
 				</File>
 				<File
 					RelativePath="Group.cpp">

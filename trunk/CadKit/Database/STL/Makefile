@@ -3,13 +3,8 @@ include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	DbStlAsciiOutputFile.cpp \
-	DbStlBinaryOutputFile.cpp \
 	DbStlDatabase.cpp \
-	DbStlDll.cpp \
-	DbStlFacetManager.cpp \
-	DbStlOutputFile.cpp \
-	DbStlPrecompiled.cpp
+	DbStlDll.cpp
 
 # The include path.
 LOCAL_INCLUDE = -I$(OSGHOME)/include

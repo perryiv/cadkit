@@ -52,7 +52,7 @@ template<class CharType, class StringType> inline bool trimStringBeginning (
   }
 
   // Should never get here.
-  SL_ASSERT ( 0 ); // Bug!
+  SL_ASSERT ( 0 );
 
   // Assume the string was trimmed.
   return true;
@@ -93,7 +93,7 @@ template<class CharType, class StringType> inline bool trimStringEnd (
   }
 
   // Should never get here.
-  SL_ASSERT ( 0 ); // Bug!
+  SL_ASSERT ( 0 );
 
   // Assume the string was trimmed.
   return true;

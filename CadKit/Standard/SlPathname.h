@@ -18,6 +18,7 @@
 
 #include "SlAssert.h"
 #include "SlStringFunctions.h"
+#include "SlStringCase.h"
 //#include "SlPrint.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
@@ -55,9 +56,9 @@ public:
   String                getPathname()  const { String temp; this->getPathname  ( temp ); return temp; }
 
   void                  getComponents ( String &drive, String &directory, String &filename, String &extension ) const;
-  void                  getDrive      ( String &drive )     const { drive = this->getDrive(); }
+  void                  getDrive      ( String &drive )     const { drive     = this->getDrive(); }
   void                  getDirectory  ( String &directory ) const { directory = this->getDirectory(); }
-  void                  getFilename   ( String &filename )  const { filename = this->getFilename(); }
+  void                  getFilename   ( String &filename )  const { filename  = this->getFilename(); }
   void                  getExtension  ( String &extension ) const { extension = this->getExtension(); }
   void                  getFullpath   ( String &fullpath )  const;
   void                  getPathname   ( String &pathname )  const;

@@ -32,53 +32,9 @@
 # include <wchar.h>
 # include <string>
 # include <list>
-# include <algorithm> // For std::transform
-# ifndef __CYGWIN__   // CygWin is missing wctype.h
-#  include <wctype.h> // For towupper()
-# endif
 #endif
 
 #define SL_STRING_FUNCTION_BUFFER_SIZE 32768 // 2^15
-
-
-#ifdef __CYGWIN__
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  CygWin is missing towupper(), and wctype.h
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline wint_t towupper ( wint_t theChar )
-{
-  // For readability.
-  const wint_t a ( 97 ), z ( 122 ), offset ( 32 );
-
-  // If the given wide character is in range, return the offset. Otherwise, 
-  // return the given character. This only works for the ascii range.
-  return ( theChar >= a && theChar <= z ) ? ( theChar - offset ) : theChar;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  CygWin is missing towlower(), and wctype.h
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline wint_t towlower ( wint_t theChar )
-{
-  // For readability.
-  const wint_t A ( 65 ), Z ( 90 ), offset ( 32 );
-
-  // If the given wide character is in range, return the offset. Otherwise, 
-  // return the given character. This only works for the ascii range.
-  return ( theChar >= A && theChar <= Z ) ? ( theChar + offset ) : theChar;
-}
-
-
-#endif // __CYGWIN__
 
 
 namespace CadKit
@@ -129,63 +85,6 @@ template <class StringType> inline unsigned int toUnsignedInteger ( const String
   SL_ASSERT ( true == CadKit::isUnsignedInteger ( s ) );
   int integer = ::atoi ( s.c_str() );
   return ( integer > 0 ) ? (unsigned int) integer : 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make the string all upper/lower case.
-//
-//  The simple way is to use the current locale, found at:
-//  http://sunsite.ualberta.ca/Documentation/Gnu/libstdc++-2.90.8/html/21_strings/howto.html#4
-//
-//  Another way to do it, which lets the client pass in the locale, is at:
-//  http://gcc.gnu.org/onlinedocs/libstdc++/22_locale/howto.html
-//  I wasn't able to get that method to compile on all platforms.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void toUpper ( std::basic_string<char> &s )
-{
-  std::transform ( s.begin(), s.end(), s.begin(), ::toupper );
-}
-
-inline void toUpper ( std::basic_string<wchar_t> &s )
-{
-  std::transform ( s.begin(), s.end(), s.begin(), ::towupper );
-}
-
-inline void toLower ( std::basic_string<char> &s )
-{
-  std::transform ( s.begin(), s.end(), s.begin(), ::tolower );
-}
-
-inline void toLower ( std::basic_string<wchar_t> &s )
-{
-  std::transform ( s.begin(), s.end(), s.begin(), ::towlower );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the given string is equal to this string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class String> inline bool isEqual ( const String &s1, const String &s2, bool caseInsensitive )
-{
-  // If we are doing case-insensitive...
-  if ( caseInsensitive )
-  {
-    // Compare the upper-case copies.
-    String a ( s1 ), b ( s2 );
-    CadKit::toUpper ( a );
-    CadKit::toUpper ( b );
-    return ( a == b );
-  }
-
-  // Otherwise, compare them as-is.
-  return ( s1 == s2 );
 }
 
 

@@ -1,0 +1,61 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The "bin" of shapes that will be drawn.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _GENERIC_SCENE_GRAPH_CORE_RENDER_BIN_H_
+#define _GENERIC_SCENE_GRAPH_CORE_RENDER_BIN_H_
+
+#include "GSG/Core/RenderElement.h"
+
+
+namespace GSG {
+
+
+class GSG_CORE_EXPORT RenderBin : public Referenced
+{
+public:
+
+  GSG_DECLARE_CLONE ( RenderBin );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( RenderBin, Referenced );
+  typedef GSG_SEQUENCE_CONTAINER_TYPE < RenderElement::ValidPtr > Elements;
+  typedef Elements::size_type size_type;
+  typedef Elements::iterator iterator;
+  typedef Elements::const_iterator const_iterator;
+  typedef Elements::reference reference;
+  typedef Elements::const_reference const_reference;
+
+  explicit RenderBin();
+  RenderBin ( const RenderBin &group );
+
+  // Iterators to the shapes.
+  const_iterator                begin() const;
+  iterator                      begin();
+  const_iterator                end() const;
+  iterator                      end();
+
+  // Add an element.
+  void                          add ( RenderElement *e );
+
+protected:
+
+  virtual ~RenderBin();
+
+  Elements _elements;
+};
+
+
+}; // namespace GSG
+
+
+#endif // _GENERIC_SCENE_GRAPH_CORE_RENDER_BIN_H_

@@ -126,19 +126,31 @@ inline bool calculateBindings ( const PartitionedVector &vertices,
 
   // If we don't have any attributes...
   if ( attribute.getData().empty() )
+  {
     binding = BINDING_OFF;
+    return true;
+  }
 
   // If we have per-vertex binding...
   else if ( vertices.getData().size() == attribute.getData().size() )
+  {
     binding = BINDING_PER_VERTEX;
+    return true;
+  }
 
   // If we have per-primitive binding...
   else if ( vertices.getIndices().size() == attribute.getData().size() )
+  {
     binding = BINDING_PER_PRIMITIVE;
+    return true;
+  }
 
   // If we have overall binding...
   else if ( 1 == attribute.getData().size() )
+  {
     binding = BINDING_OVERALL;
+    return true;
+  }
 
   // Otherwise...
   else

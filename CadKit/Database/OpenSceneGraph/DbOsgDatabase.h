@@ -158,6 +158,8 @@ protected:
 
   osg::Group *            _findGroup ( const void *key ) const;
 
+  bool                    _hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) const;
+
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();
 

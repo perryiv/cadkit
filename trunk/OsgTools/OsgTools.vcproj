@@ -176,6 +176,9 @@
 					RelativePath=".\Circle.h">
 				</File>
 				<File
+					RelativePath=".\ColorGraphic.h">
+				</File>
+				<File
 					RelativePath="Grid.cpp">
 				</File>
 				<File

@@ -1,11 +1,28 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, John K. Grant
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Help defining a Circle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef _osg_tools_circle_builder_h_
 #define _osg_tools_circle_builder_h_
+
+#include "OsgTools/Export.h"
+#include "OsgTools/Declarations.h"
 
 namespace OsgTools
 {
 
   template<class Vec2, class Float>
-  class Circle
+  class OSG_TOOLS_EXPORT Circle
   {
   public:
     Circle(): _radius(10.0), _points(20) {}
@@ -22,9 +39,9 @@ namespace OsgTools
       std::vector<osg::Vec2> pts;
       for(unsigned int i=0; i<_points; i++)
       {
-        Float angle = 360.0 / _points;
-        Float x = cos( angle );
-        Float y = sin( angle );
+        Float angle = 2.0*osg::PI / _points;
+        Float x = _radius*cos( angle );
+        Float y = _radius*sin( angle );
         pts.push_back( Vec2(x,y) );
       }
 

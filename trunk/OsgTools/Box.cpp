@@ -17,7 +17,7 @@
 
 #include "osg/Geode"
 #include "osg/Geometry"
-#include "osg/ShadeModel"
+//#include "osg/ShadeModel"
 
 using namespace OsgTools;
 
@@ -77,7 +77,7 @@ osg::Geode* Box::operator()() const
   normals->push_back( osg::Vec3(1.0,0.0,0.0) );
 
   osg::Vec4Array* colors = new osg::Vec4Array;
-  colors->push_back( _color );
+  colors->push_back( this->getColor() );
 
   osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
   geometry->setVertexArray( vertices );

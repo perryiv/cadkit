@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlArraySetters: Implementations of the abstract array-setting class.
+//  DbStlArraySetters: Implementations of the abstract array-setting class. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -49,8 +49,8 @@ public:
   virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
   virtual bool          setSize ( const unsigned int &size );
 
-  virtual bool          setNumPrimitives  ( const unsigned int &num ) { /* ignoring primitives */ }
-  virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { /* ignoring primitives */ }
+  virtual bool          setNumPrimitives  ( const unsigned int &num );
+  virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ); 
 
 protected:
 

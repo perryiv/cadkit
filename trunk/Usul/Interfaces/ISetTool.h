@@ -8,38 +8,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Interface for setting the cursor
-//
+///
+///  Interface for setting and releasing tools
+///
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SET_CURSOR_H__
-#define _USUL_INTERFACE_SET_CURSOR_H__
+#ifndef _USUL_INTERFACE_SET_TOOL_H_
+#define _USUL_INTERFACE_SET_TOOL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace FX { class FXCursor; }
+#include "Usul/Interfaces/IToolCommand.h"
 
 namespace Usul {
 namespace Interfaces {
 
-
-struct ISetCursor : public Usul::Interfaces::IUnknown
+struct ISetTool : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ISetCursor );
+  USUL_DECLARE_QUERY_POINTERS ( ISetTool );
 
   /// Id for this interface.
-  enum { IID = 1104265934u };
+  enum { IID = 1104426962u };
 
-  virtual FX::FXCursor* getCursor() = 0;
+  virtual void setTool ( Usul::Interfaces::IToolCommand * ) = 0;
+  virtual Usul::Interfaces::IToolCommand* getTool () = 0;
+  virtual void doneTool () = 0;
+  virtual void loadLastTool () = 0;
 
-  
-}; // class ISetCursor
+
+}; //  ISetTool
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SET_CURSOR_H__
+#endif // _USUL_INTERFACE_SET_TOOL_H_

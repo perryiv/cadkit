@@ -417,6 +417,9 @@
 					RelativePath=".\Interfaces\ISetCursor.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ISetTool.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IStatusBar.h">
 				</File>
 				<File

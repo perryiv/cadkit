@@ -1,7 +1,7 @@
 # Set these variables for all platforms.
 CPP = g++
-GLOBAL_CPP_FLAGS = -D_DEBUG -g
-#GLOBAL_CPP_FLAGS =
+#GLOBAL_CPP_FLAGS = -D_DEBUG -g
+GLOBAL_CPP_FLAGS =
 GLOBAL_LINK_FLAGS =
 
 # Set these variables based on the operating system.

@@ -81,7 +81,7 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   // Shininess.
   if ( material.isValid ( SlMaterialf::SHININESS ) )
   {
-    // Both Jupiter and Performer use the [0,128] scale for shininess.
+    // Both Jupiter and OpenSceneGraph use the [0,128] scale for shininess.
     mat->setShininess ( osg::Material::FRONT, material.getShininess() );
   }
 

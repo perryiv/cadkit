@@ -200,6 +200,11 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
     success = true;
   }
 
+  // If we have a valid material then clamp the colors to [0,1] and the 
+  // shininess to [0,128].
+  if ( success )
+    mat.clamp ( 0.0f, 1.0f, 0.0f, 128.0f );
+
   // Did it work?
   return success;
 }

@@ -43,6 +43,8 @@ public:
 
   void                    bisect ( const SlVec4 &pt0, const SlVec4 &pt1 );
 
+  void                    clamp ( const T &minValue, const T &maxValue );
+
   T                       dot ( const SlVec4 &vec ) const;
 
   static short            getDimension() { return 4; }
@@ -547,6 +549,21 @@ template<class T> inline void SlVec4<T>::bisect ( const SlVec4<T> &pt0, const Sl
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec4<T> vec ( pt0 + pt1 );
   this->setValue ( vec / SL_VEC4_TWO );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clamp the vector's elements to the given range.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlVec4<T>::clamp ( const T &minValue, const T &maxValue )
+{
+  CadKit::clamp ( minValue, maxValue, _v[0] );
+  CadKit::clamp ( minValue, maxValue, _v[1] );
+  CadKit::clamp ( minValue, maxValue, _v[2] );
+  CadKit::clamp ( minValue, maxValue, _v[3] );
 }
 
 

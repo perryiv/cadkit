@@ -141,8 +141,11 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Get the corresponding part.
-  virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const;
+  // Get the assembly that the given instance represents, or null.
+  virtual AssemblyHandle  getCorrespondingAssembly ( InstanceHandle instance ) const;
+
+  // Get the part that the given instance represents, or null.
+  virtual PartHandle      getCorrespondingPart ( InstanceHandle instance ) const;
 
   // Get the name.
   virtual std::string     getName ( InstanceHandle instance ) const;
@@ -259,6 +262,7 @@ protected:
   std::auto_ptr<DbJtTraversalState> _current;
   std::auto_ptr<ShapeData> _shapeData;
   unsigned int _progressPriorityLevel;
+  bool _result;
 
   virtual ~DbJtDatabase();
 

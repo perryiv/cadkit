@@ -82,7 +82,8 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
   _shapeData ( new ShapeData ( NULL ) ),
-  _progressPriorityLevel ( 0 ) // Send everything.
+  _progressPriorityLevel ( 0 ), // Send everything.
+  _result ( true )
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _assemblies.get() );
@@ -311,8 +312,8 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   // TODO: It throws an exception when I allow this to be unref'd (and deleted).
   importer.makeNull();
 
-  // It worked.
-  return true;
+  // Did it work?
+  return _result;
 }
 
 
@@ -358,6 +359,11 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
 {
   SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalNotify(), hierarchy = %X, level = %d\n", hierarchy, level );
 
+  // If we failed then just return. Return false makes the DMDTk 
+  // throw an exception.
+  if ( false == _result )
+    return true;
+
   // Check the level.
   if ( level < 0 )
   {
@@ -369,7 +375,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
   _current->setLevel ( level );
 
   // Initialize.
-  bool result ( false );
+  _result = false;
   this->_resetStateIndices();
   _shapeData->init ( NULL );
 
@@ -382,7 +388,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_pushAssembly ( (eaiAssembly *) hierarchy );
 
     // Start the assembly.
-    result = this->_startAssembly ( (eaiAssembly *) hierarchy );
+    _result = this->_startAssembly ( (eaiAssembly *) hierarchy );
     break;
 
   case eaiHierarchy::eaiPART:
@@ -391,7 +397,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_setCurrentPart ( (eaiPart *) hierarchy );
 
     // Start the part.
-    result = this->_startPart ( (eaiPart *) hierarchy );
+    _result = this->_startPart ( (eaiPart *) hierarchy );
     break;
 
   case eaiHierarchy::eaiINSTANCE:
@@ -400,13 +406,13 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_setCurrentInstance ( (eaiInstance *) hierarchy );
 
     // Start the instance.
-    result = this->_startInstance ( (eaiInstance *) hierarchy );
+    _result = this->_startInstance ( (eaiInstance *) hierarchy );
     break;
 
   default:
 
     SL_ASSERT ( 0 ); // What entity type is this?
-    result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
+    _result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
     break;
   }
 
@@ -414,7 +420,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
   _current->setLevel ( UNSET_INDEX );
 
   // Return the result.
-  return result;
+  return _result;
 }
 
 
@@ -428,6 +434,11 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 {
   SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalNotify(), hierarchy = %X, level = %d\n", hierarchy, level );
 
+  // If we failed then just return. Return false makes the DMDTk 
+  // throw an exception.
+  if ( false == _result )
+    return true;
+
   // Check the level.
   if ( level < 0 )
   {
@@ -439,7 +450,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   _current->setLevel ( level );
 
   // Initialize.
-  bool result ( false );
+  _result = false;
   this->_resetStateIndices();
   _shapeData->init ( NULL );
 
@@ -452,7 +463,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
     SL_ASSERT ( ((eaiAssembly *) hierarchy) == this->_getCurrentAssembly() );
 
     // End the assembly.
-    result = this->_endAssembly ( (eaiAssembly *) hierarchy );
+    _result = this->_endAssembly ( (eaiAssembly *) hierarchy );
 
     // Done with this assembly.
     this->_popAssembly();
@@ -461,7 +472,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   case eaiHierarchy::eaiPART:
 
     // End the part.
-    result = this->_endPart ( (eaiPart *) hierarchy );
+    _result = this->_endPart ( (eaiPart *) hierarchy );
 
     // No more part.
     this->_setCurrentPart ( NULL );
@@ -470,7 +481,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   case eaiHierarchy::eaiINSTANCE:
 
     // End the instance.
-    result = this->_endInstance ( (eaiInstance *) hierarchy );
+    _result = this->_endInstance ( (eaiInstance *) hierarchy );
 
     // No more instance.
     this->_setCurrentInstance ( NULL );
@@ -479,7 +490,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   default:
 
     SL_ASSERT ( 0 ); // What entity type is this?
-    result = WARNING ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), UNKNOWN_ENTITY );
+    _result = WARNING ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), UNKNOWN_ENTITY );
     break;
   }
 
@@ -487,7 +498,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   _current->setLevel ( UNSET_INDEX );
 
   // Return the result.
-  return result;
+  return _result;
 }
 
 
@@ -1007,9 +1018,9 @@ void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const { return CadKit::getName ( assembly ); }
-std::string DbJtDatabase::getName ( PartHandle part )         const { return CadKit::getName ( part ); }
-std::string DbJtDatabase::getName ( InstanceHandle instance ) const { return CadKit::getName ( instance ); }
+std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const { return CadKit::getName ( (eaiEntity *) assembly ); }
+std::string DbJtDatabase::getName ( PartHandle part )         const { return CadKit::getName ( (eaiEntity *) part ); }
+std::string DbJtDatabase::getName ( InstanceHandle instance ) const { return CadKit::getName ( (eaiEntity *) instance ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1186,7 +1197,7 @@ AssemblyHandle DbJtDatabase::getParent ( AssemblyHandle assembly ) const
   }
 
   // Make sure it is an assembly.
-  if ( false == CadKit::isOfType ( assembly, eaiEntity::eaiASSEMBLY ) )
+  if ( false == CadKit::isValidHandle ( assembly ) )
   {
     SL_ASSERT ( 0 ); // Heads up.
     return NULL;
@@ -1240,7 +1251,7 @@ AssemblyHandle DbJtDatabase::getParent ( PartHandle part ) const
   }
 
   // Make sure it is a part.
-  if ( false == CadKit::isOfType ( part, eaiEntity::eaiPART ) )
+  if ( false == CadKit::isValidHandle ( part ) )
   {
     SL_ASSERT ( 0 ); // Heads up.
     return NULL;
@@ -1272,7 +1283,7 @@ AssemblyHandle DbJtDatabase::getParent ( InstanceHandle instance ) const
   }
 
   // Make sure it is an instance.
-  if ( false == CadKit::isOfType ( instance, eaiEntity::eaiINSTANCE ) )
+  if ( false == CadKit::isValidHandle ( instance ) )
   {
     SL_ASSERT ( 0 ); // Heads up.
     return NULL;
@@ -1390,21 +1401,55 @@ ShapeHandle DbJtDatabase::getParent ( SetHandle set ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the corresponding part or assembly.
+//  Get the corresponding part.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HierarchyHandle DbJtDatabase::getCorresponding ( InstanceHandle instance ) const
+PartHandle DbJtDatabase::getCorrespondingPart ( InstanceHandle instance ) const
 {
   SL_PRINT3 ( "In DbJtDatabase::getCorrespondingPart(), this = %X, instance = %X\n", this, instance );
   SL_ASSERT ( instance );
 
   // It has to be an instance.
-  if ( false == CadKit::isOfType ( instance, eaiEntity::eaiINSTANCE ) )
+  if ( false == CadKit::isValidHandle ( instance ) )
     return NULL;
 
-  // Return a pointer to the original part or assembly (which may be null).
-  return (HierarchyHandle) ((eaiInstance *) instance)->original();
+  // Get a pointer to the original hierarchy (which may be null).
+  eaiHierarchy *hierarchy = ((eaiInstance *) instance)->original();
+
+  // It has to be a part.
+  if ( false == CadKit::isPart ( hierarchy ) )
+    return NULL;
+
+  // Return the part.
+  return (PartHandle) ((eaiPart *) hierarchy);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the corresponding assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AssemblyHandle DbJtDatabase::getCorrespondingAssembly ( InstanceHandle instance ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getCorrespondingAssembly(), this = %X, instance = %X\n", this, instance );
+  SL_ASSERT ( instance );
+
+  // It has to be an instance.
+  if ( false == CadKit::isValidHandle ( instance ) )
+    return NULL;
+
+  // Get a pointer to the original hierarchy (which may be null).
+  eaiHierarchy *hierarchy = ((eaiInstance *) instance)->original();
+
+  // It has to be an assembly.
+  if ( false == CadKit::isAssembly ( hierarchy ) )
+    return NULL;
+
+  // Return the assembly.
+  return (AssemblyHandle) ((eaiAssembly *) hierarchy);
 }
 
 

@@ -145,8 +145,8 @@ public:
 
 protected:
 
-  osg::ref_ptr<osg::Vec2Array> _texCoords;
   Binding _binding;
+  osg::ref_ptr<osg::Vec2Array> _texCoords;
 };
 
 

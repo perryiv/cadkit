@@ -48,7 +48,8 @@
 #define FORMAT   CadKit::getString
 
 #define LAST_LOD_RANGE            1e7
-#define MAX_LOD_DISTANCE_FACTOR   20
+#define MAX_LOD_DISTANCE_FACTOR   30
+#define SIMPLE_LOD_ALGORITHM
 
 using namespace CadKit;
 
@@ -63,12 +64,10 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbOsgDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbOsgDatabase::DbOsgDatabase() : DbBaseTarget(),
-  _groupStack ( new GroupStack ),
-  _groupMap ( new GroupMap )
+  _groupStack ( new GroupStack )
 {
   SL_PRINT2 ( "In DbOsgDatabase::DbOsgDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
-  SL_ASSERT ( NULL != _groupMap.get() );
 
   // Push a new group onto stack.
   this->_pushGroup ( new osg::Group );
@@ -108,9 +107,6 @@ bool DbOsgDatabase::dataTransferStart ( IUnknown *caller )
 
   // Should be true.
   SL_ASSERT ( 1 == _groupStack->size() );
-
-  // Clear the group map.
-  _groupMap->clear();
 
   // Clear the group stack.
   this->_clearGroupStack();
@@ -239,18 +235,18 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
   // Create a group (really a MatrixTransform).
-  SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue() );
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue(), (osg::Group *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", NO_INTERFACE );
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", FAILED );
 
   // Add this group to the scene.
   _groupStack->top()->addChild ( mt );
 
-  // Put the group into our map.
-  (*_groupMap)[assembly] = mt;
-
   // Make it the new current group.
   this->_pushGroup ( mt );
+
+  // Set the client data for this assembly.
+  this->setClientData ( assembly, mt.getValue() );
 
   // It worked.
   return true;
@@ -267,7 +263,6 @@ bool DbOsgDatabase::endEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Done with this group.
   this->_popGroup();
@@ -294,18 +289,13 @@ bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Get the interface we need from the caller.
-  SlQueryPtr<IPartClientData> clientData ( caller );
-  if ( clientData.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
-
   // Create a group (really a MatrixTransform).
-  SlRefPtr<osg::Group> mt = CadKit::createGroup ( part, query.getValue() );
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( part, query.getValue(), (osg::Group *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", NO_INTERFACE );
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", FAILED );
 
-  // Create a LOD group.
-  SlRefPtr<osg::LOD> lod = new osg::LOD;
+  // Create a LOD.
+  SlRefPtr<osg::LOD> lod ( new osg::LOD );
   if ( lod.isNull() )
     return ERROR ( "Failed to create osg::LOD for given lod handle.", FAILED );
 
@@ -315,11 +305,8 @@ bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
   // Add this LOD to the MatrixTransform.
   mt->addChild ( lod );
 
-  // Put the MatrixTransform into our map.
-  (*_groupMap)[part] = mt;
-
   // Set the client data for this part.
-  clientData->setClientData ( part, lod.getValue() );
+  this->setClientData ( part, mt.getValue() );
 
   // It worked.
   return true;
@@ -336,31 +323,58 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
-  // Get the interface we need from the caller.
-  SlQueryPtr<IPartClientData> partClientData ( caller );
-  if ( partClientData.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+  // Get the osg::Group associated with the part.
+  SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( part ) ) );
+  SlRefPtr<osg::Group> group ( dynamic_cast<osg::Group *> ( object.getValue() ) );
+  if ( group.isNull() )
+    return ERROR ( "Failed to find group for part.", FAILED );
 
-  // Get the osg::LOD associated with the lod's parent part.
-  SlRefPtr<osg::Object> object = (osg::Object *) ( partClientData->getClientData ( part ) );
-  SlRefPtr<osg::LOD> lod = dynamic_cast<osg::LOD *> ( object.getValue() );
+  // Should be true.
+  SL_ASSERT ( 1 == group->getNumChildren() );
+
+  // Get the lod from the group.
+  SlRefPtr<osg::LOD> lod ( dynamic_cast<osg::LOD *> ( group->getChild ( 0 ) ) );
   if ( lod.isNull() )
-    return ERROR ( "Failed to find lod group to set ranges for.", FAILED );
+    return ERROR ( "Failed to find lod to set ranges for.", FAILED );
 
-  // If there are no children then just return.
+  // Set the lod center and ranges.
+  this->_setLodParameters ( lod );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the lod center and ranges.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbOsgDatabase::_setLodParameters ( osg::LOD *lod ) const
+{
+  SL_PRINT3 ( "In DbOsgDatabase::_setLodParameters(), this = %X, lod = %X\n", this, lod );
+
+  // If there are no children then just return. Do not assert, this has 
+  // happened with some big files.
   if ( 0 == lod->getNumChildren() )
-  {
-    SL_ASSERT ( 0 ); // Should this have happened?
-    return true;
-  }
+    return;
+
+  // Get the first child.
+  osg::Node *child = lod->getChild ( 0 );
 
   // Get the bounding sphere for the first child.
-  const osg::BoundingSphere &boundingSphere = lod->getChild ( 0 )->getBound();
+  const osg::BoundingSphere &boundingSphere = child->getBound();
 
   // The maximum distance for the lod ranges.
   float maxDist = MAX_LOD_DISTANCE_FACTOR * boundingSphere.radius();
+
+  // Get the center of the bounding sphere.
+  const osg::Vec3 &center = boundingSphere.center();
+
+  // Set the center of this lod to be the center of the bounding sphere.
+  lod->setCenter ( center );
 
   // Set the first range.
   lod->setRange ( 0, 0.0f );
@@ -370,11 +384,12 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
   for ( unsigned int i = 1; i < numChildren; ++i )
   {
     // Get the i'th child node.
-    osg::Node *child = lod->getChild ( i );
+    child = lod->getChild ( i );
     SL_ASSERT ( child );
 
-    // Set the center of this lod to be the center of the bounding sphere.
-    lod->setCenter ( child->getBound().center() );
+    // As of now, this should be true. However, it isn't important to the 
+    // algorithm. Take this out if/when this is no longer true.
+    SL_ASSERT ( NULL != dynamic_cast<osg::Geode *> ( child ) );
 
     // Set the range.
     float dist = ( ( (float) i ) * maxDist ) / ( (float) ( numChildren - 1 ) );
@@ -383,9 +398,6 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
 
   // There should be one more range value than the number of children.
   lod->setRange ( numChildren, LAST_LOD_RANGE );
-
-  // It worked.
-  return true;
 }
 
 
@@ -399,62 +411,24 @@ bool DbOsgDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Get the interface we need from the caller.
   SlQueryPtr<IInstanceQueryFloat> query ( caller );
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Create a group (really a MatrixTransform).
-  SlRefPtr<osg::Group> mt = CadKit::createGroup ( instance, query.getValue() );
+  // Find the group associated with the corresponding part or assembly.
+  osg::Group *group = this->_findGroup ( instance, query );
+  if ( NULL == group )
+    return ERROR ( "Failed to find group associated with the corresponding part or assembly.", FAILED );
+
+  // Create a group (really a MatrixTransform) by making a shallow copy of 
+  // the given group. The new group contains all the same children as the given group.
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( instance, query.getValue(), group );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for instance.", NO_INTERFACE );
+    return ERROR ( "Failed to create osg::MatrixTransform for instance.", FAILED );
 
-  // Get the corresponding part or assembly.
-  HierarchyHandle hierarchy = query->getCorresponding ( instance );
-  if ( NULL == hierarchy )
-    return ERROR ( "Failed to get corresponding part or assembly from the instance.", FAILED );
-
-  // Call this function to handle the LODs.
-//  if ( false == CadKit::createInstanceLods() )
-//    return ERROR ( "Failed to process (and create) LOD(s) for instance.", NO_INTERFACE );
-
-/*
-  HERE
-
-  If the hierarchy is a part, then the corresponding group should hold only 
-  one child (an osg::LOD). You need to make another osg::LOD and attach all
-  the children from the part's osg::LOD, and add the same ranges. However,
-  you also have to calculate the bounding sphere's and set the new osg::LOD's
-  center's (they will be different than the corresponding part because of the
-  different transformation.
-
-  If the hierarchy is an assembly then you have to traverse that assembly's
-  osg::MatrixTransform and find all of the osg::LODs. For each one of these
-  osg::LODs you have to do something similar to what is described above for
-  a part. Probably, you'll want to make a copy of the assembly's scene down
-  to the osg::LODs. Copy the osg::LODs but set different centers. Then just
-  add the same children of the original osg::LOD to the new osg::LOD. You
-  will probably need a recursive function for this.
-*/
-  // Find the group that corresponds with this part or assembly.
-  SlRefPtr<osg::Group> original = dynamic_cast<osg::Group *> ( this->_findGroup ( hierarchy ) );
-  if ( original.isNull() )
-    return ERROR ( "Failed to find group associated with instance's corresponding part or assembly.", FAILED );
-
-  // Should be true (as of when I type this).
-  SL_ASSERT ( 1 == original->getNumChildren() );
-  SL_ASSERT ( NULL != dynamic_cast<osg::LOD *> ( original->getChild ( 0 ) ) );
-
-  // Make a new lod.
-
-  // Add all of the original group's children to the instance's group.
-  unsigned int numChildren = original->getNumChildren();
-  for ( unsigned int i = 0; i < numChildren; ++i )
-    mt->addChild ( original->getChild ( i ) );
-
-  // Add this group to the scene.
+  // Add this MatrixTransform to the scene.
   _groupStack->top()->addChild ( mt );
 
   // It worked.
@@ -472,7 +446,6 @@ bool DbOsgDatabase::endEntity ( InstanceHandle instance, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Nothing to do.
   return true;
@@ -489,39 +462,36 @@ bool DbOsgDatabase::startEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Get the interface we need from the caller.
   SlQueryPtr<ILodQuery> query ( caller );
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Get the interface we need from the caller.
-  SlQueryPtr<IPartClientData> partClientData ( caller );
-  if ( partClientData.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
-
-  // Get the interface we need from the caller.
-  SlQueryPtr<ILodClientData> lodClientData ( caller );
-  if ( lodClientData.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
-
   // Create a Geode.
-  SlRefPtr<osg::Geode> geode = new osg::Geode;
+  SlRefPtr<osg::Geode> geode ( new osg::Geode );
   if ( geode.isNull() )
     return ERROR ( "Failed to create osg::Geode for given lod handle.", FAILED );
 
-  // Get the osg::LOD associated with the lod's parent part.
-  SlRefPtr<osg::Object> object = (osg::Object *) ( partClientData->getClientData ( query->getParent ( lod ) ) );
-  SlRefPtr<osg::LOD> osgLod = dynamic_cast<osg::LOD *> ( object.getValue() );
+  // Get the osg::Group associated with the lod's parent part.
+  SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( query->getParent ( lod ) ) ) );
+  SlRefPtr<osg::Group> group ( dynamic_cast<osg::Group *> ( object.getValue() ) );
+  if ( group.isNull() )
+    return ERROR ( "Failed to find lod to add geode to.", FAILED );
+
+  // Should be true.
+  SL_ASSERT ( 1 == group->getNumChildren() );
+
+  // The lod should be the only child of the group.
+  SlRefPtr<osg::LOD> osgLod ( dynamic_cast<osg::LOD *> ( group->getChild ( 0 ) ) );
   if ( osgLod.isNull() )
-    return ERROR ( "Failed to find lod group to add geode to.", FAILED );
+    return ERROR ( "Failed to find lod to add geode to.", FAILED );
 
   // Add this Geode to the LOD.
   osgLod->addChild ( geode );
 
   // Set the client data for this lod.
-  lodClientData->setClientData ( lod, geode.getValue() );
+  this->setClientData ( lod, geode.getValue() );
 
   // It worked.
   return true;
@@ -538,7 +508,6 @@ bool DbOsgDatabase::endEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Nothing to do.
   return true;
@@ -555,31 +524,25 @@ bool DbOsgDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Get the interface we need from the caller.
   SlQueryPtr<IShapeQueryFloatUchar> query ( caller );
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Get the interface we need from the caller.
-  SlQueryPtr<ILodClientData> lodClientData ( caller );
-  if ( lodClientData.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
-
   // Get the osg::Geode we need.
-  SlRefPtr<osg::Object> object = (osg::Object *) ( lodClientData->getClientData ( query->getParent ( shape ) ) );
-  SlRefPtr<osg::Geode> geode = dynamic_cast<osg::Geode *> ( object.getValue() );
+  SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( query->getParent ( shape ) ) ) );
+  SlRefPtr<osg::Geode> geode ( dynamic_cast<osg::Geode *> ( object.getValue() ) );
   if ( geode.isNull() )
     return ERROR ( "Failed to find geode to add shape geometry to.", FAILED );
 
   // Create a Geometry drawable.
-  SlRefPtr<osg::Geometry> geometry = new osg::Geometry;
+  SlRefPtr<osg::Geometry> geometry ( new osg::Geometry );
   if ( geometry.isNull() )
     return ERROR ( "Failed to create osg::Geometry for given shape handle.", FAILED );
 
   // Create a StateSet.
-  SlRefPtr<osg::StateSet> state = new osg::StateSet;
+  SlRefPtr<osg::StateSet> state ( new osg::StateSet );
   if ( state.isNull() )
     return ERROR ( "Failed to create osg::StateSet for given shape handle.", FAILED );
 
@@ -851,7 +814,6 @@ bool DbOsgDatabase::endEntity ( ShapeHandle shape, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Nothing to do.
   return true;
@@ -868,7 +830,6 @@ bool DbOsgDatabase::startEntity ( SetHandle set, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, set = %d, caller = %X\n", this, set, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // We ignore this because we build the geometry in the shape function above.
   return true;
@@ -885,7 +846,6 @@ bool DbOsgDatabase::endEntity ( SetHandle set, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, set = %d, caller = %X\n", this, set, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Nothing to do.
   return true;
@@ -947,18 +907,25 @@ void DbOsgDatabase::_popGroup()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Find the group associated with the key.
+//  Find the group associated with the instance's part or assembly.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *DbOsgDatabase::_findGroup ( const void *key ) const
+osg::Group *DbOsgDatabase::_findGroup ( InstanceHandle instance, IInstanceQueryFloat *query ) const
 {
-  SL_PRINT3 ( "In DbOsgDatabase::_findGroup(), this = %X, key = %X\n", this, key );
-  SL_ASSERT ( NULL != _groupMap.get() );
+  SL_PRINT4 ( "In DbOsgDatabase::_findGroup(), this = %X, instance = %X, query = %X\n", this, instance, query );
+  SL_ASSERT ( query );
 
-  // See if it's in our map.
-	GroupMap::iterator i = _groupMap->find ( key );
+  // See if this instance is a part.
+  PartHandle part = query->getCorrespondingPart ( instance );
+  if ( NULL != part )
+    return dynamic_cast<osg::Group *> ( (osg::Object *) ( this->getClientData ( part ) ) );
 
-  // Return the result (which may be null).
-  return ( i != _groupMap->end() ) ? i->second : NULL;
+  // See if this instance is an assembly.
+  AssemblyHandle assembly = query->getCorrespondingAssembly ( instance );
+  if ( NULL != assembly )
+    return dynamic_cast<osg::Group *> ( (osg::Object *) ( this->getClientData ( assembly ) ) );
+
+  // It didn't work.
+  return NULL;
 }

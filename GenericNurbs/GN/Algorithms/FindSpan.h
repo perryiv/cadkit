@@ -17,6 +17,9 @@
 #define _GENERIC_NURBS_LIBRARY_FIND_SPAN_ALGORITHM_H_
 
 #include "GN/Macros/ErrorCheck.h"
+#include "GN/Traits/Arguments.h"
+#include "GN/Limits/Nurbs.h"
+#include "GN/MPL/TypeCheck.h"
 
 
 namespace GN {
@@ -38,14 +41,20 @@ namespace Detail {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > struct KnotSpan
+template
+<
+  class IndependentSequence_,
+  class SizeType_,
+  class ErrorCheckerType_
+>
+struct KnotSpan
 {
-  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineType::IndependentSequence IndependentSequence;
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::IndependentArgument IndependentArgument;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::Limits Limits;
+  typedef IndependentSequence_                                  IndependentSequence;
+  typedef typename IndependentSequence::value_type              IndependentType;
+  typedef typename GN::Traits::Argument<IndependentType>::Type  IndependentArgument;
+  typedef typename SizeType_                                    SizeType;
+  typedef GN::Limits::Nurbs<SizeType>                           Limits;
+  typedef ErrorCheckerType_                                     ErrorCheckerType;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -103,25 +112,6 @@ template < class SplineType > struct KnotSpan
 
     return low - 1;
   }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Find the span in the knot vector given the parameter.
-  //
-  //  spline:         The spline.
-  //  whichIndepVar:  The independent variable (which knot vector).
-  //  u:              The parameter we are finding the span for.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  static SizeType find ( const SplineType &spline, SizeType whichIndepVar, IndependentArgument u )
-  {
-    const IndependentSequence &knots = spline.knotVector ( whichIndepVar );
-    SizeType numCtrPts ( spline.numControlPoints ( whichIndepVar ) );
-    SizeType low ( spline.degree ( whichIndepVar ) );
-    return find ( knots, numCtrPts, low, u );
-  }
 };
 
 
@@ -138,20 +128,30 @@ template < class SplineType > struct KnotSpan
 //
 //  Find the span in the knot vector given the parameter.
 //
-//  spline:         The spline.
-//  whichIndepVar:  The independent variable (which knot vector).
+//  knots:          The knot vector.
 //  u:              The parameter we are finding the span for.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class SplineType >
-typename SplineType::SizeType findKnotSpan ( 
-  const SplineType &spline, 
-  typename SplineType::SizeType whichIndepVar, 
-  typename SplineType::IndependentArgument u )
+typename SplineType::SizeType findKnotSpan ( const SplineType &spline, 
+                                             typename SplineType::SizeType whichIndepVar, 
+                                             typename SplineType::IndependentArgument u )
 {
+  // Declare types.
   typedef typename SplineType::SplineClass SplineClass;
-  return Detail::KnotSpan<SplineClass>::find ( spline, whichIndepVar, u );
+  typedef typename SplineType::IndependentSequence IndependentSequence;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
+  typedef Detail::KnotSpan<IndependentSequence,SizeType,ErrorCheckerType> KnotSpan;
+
+  // Get the data we need.
+  const IndependentSequence &knots = spline.knotVector ( whichIndepVar );
+  SizeType numCtrPts ( spline.numControlPoints ( whichIndepVar ) );
+  SizeType low ( spline.degree ( whichIndepVar ) );
+
+  // Call helper function.
+  return KnotSpan::find ( knots, numCtrPts, low, u );
 }
 
 
@@ -165,13 +165,14 @@ typename SplineType::SizeType findKnotSpan (
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class CurveType >
-typename CurveType::SizeType findKnotSpan ( 
-  const CurveType &curve, 
-  typename CurveType::IndependentArgument u )
+typename CurveType::SizeType findKnotSpan ( const CurveType &curve, 
+                                            typename CurveType::IndependentArgument u )
 {
+  // Has to be a curve.
   GN_IS_CURVE ( CurveType );
-  typedef typename CurveType::SplineClass SplineClass;
-  return Detail::KnotSpan<SplineClass>::find ( curve, 0, u );
+
+  // Delegate.
+  return GN::Algorithms::findKnotSpan ( curve.spline(), 0, u );
 }
 
 

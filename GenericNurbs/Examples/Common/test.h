@@ -37,7 +37,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool global_output_flag ( false );
+bool global_output_flag ( true );
 #define OUTPUT if ( ::global_output_flag ) std::cout
 
 

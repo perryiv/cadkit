@@ -18,6 +18,7 @@
 
 #include "GN/Macros/ErrorCheck.h"
 #include "GN/MPL/TypeCheck.h"
+#include "GN/MPL/StaticAssert.h"
 #include "GN/Math/Matrix.h"
 #include "GN/Algorithms/FindSpan.h"
 #include "GN/Algorithms/BasisFunctions.h"
@@ -39,17 +40,38 @@ namespace Detail
 {
   template
   <
-    class SizeType,
-    class MatrixType, 
-    class IndependentSequenceType, 
-    class BasisFunctionsType
+    class SizeType_,
+    class MatrixType_, 
+    class IndependentSequence_, 
+    class BlendingCoefficients_,
+    class WorkSpace_,
+    class ErrorCheckerType_
   >
   struct BlendingMatrix
   {
+    typedef SizeType_ SizeType;
+    typedef MatrixType_ MatrixType;
+    typedef IndependentSequence_ IndependentSequence;
+    typedef BlendingCoefficients_ BlendingCoefficients;
+    typedef WorkSpace_ WorkSpace;
+    typedef ErrorCheckerType_ ErrorCheckerType;
+    typedef GN::Algorithms::Detail::KnotSpan<IndependentSequence,SizeType,ErrorCheckerType> KnotSpan;
+    typedef GN::Algorithms::Detail::BasisFunctions
+    <
+      IndependentSequence,
+      SizeType,
+      BlendingCoefficients,
+      WorkSpace,
+      ErrorCheckerType
+    >
+    BasisFunctions;
+
     static void fill ( const SizeType &order,
-                       const IndependentSequenceType &params,
-                       const IndependentSequenceType &knots,
-                       BasisFunctionsType &N,
+                       const IndependentSequence &params,
+                       const IndependentSequence &knots,
+                       BlendingCoefficients &N,
+                       WorkSpace &left,
+                       WorkSpace &right,
                        MatrixType &matrix )
     {
       // Initialize the matrix.
@@ -70,14 +92,14 @@ namespace Detail
       {
         // Find the span.
         low = std::max ( degree, span );
-        span = GN::Algorithms::findKnotSpan ( knots, numCtrPts, low, params[i] );
+        span = KnotSpan::find ( knots, numCtrPts, low, params[i] );
 
         // Calculate the blending functions.
-        GN::Algorithms::basisFunctions ( spline, 0, span, params[i], N );
+        BasisFunctions::calculate ( knots, order, span, params[i], N, left, right );
 
         // Fill in the matrix.
-        for ( SlInt32 j = 0; j < order; ++j )
-          matrix[i][span-degree+j] = N[j];
+        for ( SizeType j = 0; j < order; ++j )
+          matrix(i,span-degree+j) = N[j];
       }
     }
   };
@@ -106,15 +128,28 @@ void global ( const typename CurveType::SizeType &order,
               typename MatrixType::SizeContainer &pivots,
               CurveType &curve )
 {
-  GN_CAN_BE_CURVE ( CurveType );
   typedef typename CurveType::SplineClass SplineClass;
   typedef typename SplineClass::SizeType SizeType;
   typedef typename SplineClass::SizeContainer SizeContainer;
   typedef typename SplineClass::DependentContainer MatrixContainer;
   typedef typename SplineClass::DependentTester DependentTester;
+  typedef typename SplineClass::DependentSequence DependentSequence;
   typedef typename SplineClass::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineClass::WorkSpace BasisFunctions;
-  typedef GN::Interpolate::Detail::BlendingMatrix<SizeType,MatrixType,IndependentSequenceType,BasisFunctions> BlendingMatrix;
+  typedef typename SplineClass::WorkSpace WorkSpace;
+  typedef GN::Interpolate::Detail::BlendingMatrix
+  <
+    SizeType,
+    MatrixType,
+    IndependentSequenceType,
+    WorkSpace,
+    WorkSpace,
+    ErrorCheckerType
+  >
+  BlendingMatrix;
+
+  GN_CAN_BE_CURVE ( CurveType );
+  GN_ASSERT_SAME_TYPE ( typename SizeContainer::value_type, typename MatrixType::SizeContainer::value_type );
+  GN_ASSERT_SAME_TYPE ( typename SizeContainer::value_type, SizeType );
 
   // Get reference to spline.
   SplineClass &spline = curve.spline();
@@ -140,15 +175,40 @@ void global ( const typename CurveType::SizeType &order,
   // Perform LU decomposition if requested.
   if ( doLU )
   {
+    // Shortcuts.
+    WorkSpace &N = spline.work().basis;
+    WorkSpace &left = spline.work().left;
+    WorkSpace &right = spline.work().right;
+
     // Fill the matrix.
-    BlendingMatrix::fill ( order, params, knots, spline.work().basis, matrix );
+    BlendingMatrix::fill ( order, params, knots, N, left, right, matrix );
+
+#if 0
+    matrix.print ( "%12.8f", std::cout );
+#endif
 
     // Perform the LU decomposition.
     matrix.luDecomp ( pivots );
 
     // Make sure we have all good numbers.
-    matrix.apply ( DependentTester() );
+    matrix.apply ( DependentTester::finite );
   }
+
+  // For each dimension...
+  for ( SizeType i = 0; i < dimension; ++i )
+  {
+    // Shortcut to this dimension's control points.
+    DependentSequence &ctrPts = spline.controlPoints ( i );
+
+    // Copy the data points to the control points.
+    GN_ERROR_CHECK ( points[i].size() == ctrPts.size() );
+    std::copy ( points[i].begin(), points[i].end(), ctrPts.begin() );
+
+    // Solve for the control points (Ax=b).
+    matrix.luSolve ( pivots, ctrPts );
+  }
+
+  // TODO. Looks good so far, but need to confirm with pictures and perhaps against Mn and/or Nl.
 }
 
 
@@ -172,7 +232,7 @@ void global ( const typename CurveType::SizeType &order,
 {
   GN_CAN_BE_CURVE ( CurveType );
   typedef typename CurveType::SizeType SizeType;
-  typedef typename CurveType::DependentContainer SizeContainer;
+  typedef typename CurveType::SizeContainer SizeContainer;
   typedef typename CurveType::DependentContainer MatrixContainer;
   typedef typename CurveType::DependentTester DependentTester;
   typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
@@ -185,8 +245,7 @@ void global ( const typename CurveType::SizeType &order,
   SizeContainer pivots;
 
   // Call the other one.
-  // Uncomment and deal with compiler errors...
-  //GN::Interpolate::global ( order, params, knots, points, true, matrix, pivots, curve );
+  GN::Interpolate::global ( order, params, knots, points, true, matrix, pivots, curve );
 }
 
 

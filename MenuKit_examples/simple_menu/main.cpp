@@ -8,6 +8,7 @@
 #include "MenuKit/OSG/TileMason.h"
 
 #include "osgProducer/Viewer"
+#include "osgUtil/Optimizer"
 
 // prototypes
 MenuKit::Menu* create_menu();
@@ -34,12 +35,20 @@ int main(unsigned int argc, char* argv[])
   hil.middle(lightblue);
   hil.back(lightblue);
   hil.border(blue);
+  hil.special_back(lightblue);
+  hil.special(blue);
 
   // normal theme
-  MenuKit::OSG::osgColor nor(black,darkgrey,lightgrey,lightgrey);
+  MenuKit::OSG::osgColor nor;
+  nor.text(black);
+  nor.middle(darkgrey);
+  nor.back(lightgrey);
+  nor.border(lightgrey);
+  nor.special_back(lightblue);
+  nor.special(blue);
 
   // disabled theme
-  MenuKit::OSG::osgColor dis(darkgrey,darkgrey,lightgrey,lightgrey);
+  MenuKit::OSG::osgColor dis(darkgrey,darkgrey,lightgrey,lightgrey,blue,lightblue);
 
   // make a tile mason
   MenuKit::OSG::osgTileMason::Ptr mason = new MenuKit::OSG::osgTileMason();
@@ -52,6 +61,10 @@ int main(unsigned int argc, char* argv[])
   // produce the menu scene
   menu->accept( *mason );
   osg::ref_ptr<osg::Node> scene = mason->scene();
+
+  // optimize the menu
+  osgUtil::Optimizer mizer;
+  mizer.optimize( scene.get() );
 
   // place menu graphics into scene
   osg::ref_ptr<osg::MatrixTransform> root = new osg::MatrixTransform();
@@ -136,8 +149,9 @@ MenuKit::Menu* create_menu()
 
   MenuKit::Button::Ptr xyz = new MenuKit::Button();
   xyz->text( "XYZ" );
-  xyz->toggle( true );
   xyz->checked( true );
+  xyz->marked( true );
+  xyz->toggle( true );
 
   MenuKit::Button::Ptr rotate = new MenuKit::Button();
   rotate->text( "Rotate" );

@@ -171,7 +171,7 @@ namespace MenuKit
         traverse( m );
 
         // pop for all children
-        if( ml == VERTICAL )
+        if( ml == Menu::VERTICAL )
         {
           for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
             _vert.pop();
@@ -180,7 +180,7 @@ namespace MenuKit
         else
         {
           for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
-            _vert.pop();
+            _hori.pop();
         }
 
         // pop off the initial move before traversing childen

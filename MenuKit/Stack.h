@@ -1,7 +1,7 @@
 #ifndef _menukit_detail_stack_h_
 #define _menukit_detail_stack_h_
 
-#include <list>
+#include <vector>
 
 namespace MenuKit
 {
@@ -12,7 +12,7 @@ namespace MenuKit
     {
     public:
       typedef TypeName value_type;
-      typedef std::list<value_type> DataVec;
+      typedef std::vector<value_type> DataVec;
 
       Stack(): _data() {}
       Stack(const Stack& s): _data(s._data) {}
@@ -32,7 +32,7 @@ namespace MenuKit
       void pop()
       {
         if( !_data.empty() )
-          _data.remove( *(--_data.end()) );  // .remove only valid for list<>
+          _data.pop_back();
       }
 
       const TypeName& top() { return *(--_data.end()); }  // TODO: test

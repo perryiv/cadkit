@@ -107,6 +107,22 @@ SOURCE=.\DbStlPrecompiled.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\DbStlAsciiOutputFile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbStlAsciiOutputFile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbStlBinaryOutputFile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbStlBinaryOutputFile.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbStlDatabase.cpp
 # End Source File
 # Begin Source File
@@ -123,11 +139,11 @@ SOURCE=.\DbStlFacetManager.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbStlFileIO.cpp
+SOURCE=.\DbStlOutputFile.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbStlFileIO.h
+SOURCE=.\DbStlOutputFile.h
 # End Source File
 # End Group
 # Begin Group "DLL"

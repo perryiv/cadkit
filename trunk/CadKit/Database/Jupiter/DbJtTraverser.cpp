@@ -256,8 +256,8 @@ bool DbJtTraverser::_traverse ( const char *filename )
   NOTIFY << "Done creating CAD importer." << std::endl;
 
   // We want all the levels of detail.
-  //importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
-  importer->setShapeLoadOption ( eaiCADImporter::eaiHIGH_LOD );
+  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
+  //importer->setShapeLoadOption ( eaiCADImporter::eaiHIGH_LOD );
 
   // We only want tessellations for now (default is eaiBREP_ONLY).
   importer->setBrepLoadOption ( eaiCADImporter::eaiTESS_ONLY );

@@ -221,7 +221,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Store the data.
-  bool storeData ( const char *filename, const StlFileMode &mode );
+  bool storeData ( const std::string &filename, const StlFileMode &mode );
 
   // Clear all data structures
   void clearAll( );

@@ -36,6 +36,7 @@
 # include <fstream>
 # include <vector>
 # include <set>
+# include <string>
 #endif
 
 #endif // _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

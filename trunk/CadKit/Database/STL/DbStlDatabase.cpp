@@ -272,8 +272,8 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
 
   // Write the root to file.
-  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
-//  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_BINARY_FILE_MODE );
+//  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
+  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_BINARY_FILE_MODE );
   //TODO - flag for choosing binary or ascii
 }
 

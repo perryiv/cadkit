@@ -20,7 +20,8 @@
 //????????????
 
 #include "DbStlPrecompiled.h"
-#include "DbStlFileIO.h"
+#include "DbStlAsciiOutputFile.h"
+#include "DbStlBinaryOutputFile.h"
 #include "DbStlFacetManager.h"
 
 /*DEBUG*/ #include <iostream>
@@ -151,14 +152,14 @@ void DbStlFacetManager::addFacet( const SlVec3f &vertex1, const SlVec3f &vertex2
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mode )
+bool DbStlFacetManager::storeData ( const std::string &filename, const StlFileMode &mode )
 {
   Facets::iterator i;
   SlVec3f vertices[3], normal;
 
   if ( mode == STL_ASCII_FILE_MODE )
   {
-    DbStlAsciiOutputFile asciiOut( filename );
+    DbStlAsciiOutputFile asciiOut ( filename );
 
     // check if output file was indeed opened
     if ( asciiOut.is_open() )
@@ -178,7 +179,7 @@ bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mod
   }
   else if ( mode == STL_BINARY_FILE_MODE )
   {
-    DbStlBinaryOutputFile binOut( filename );
+    DbStlBinaryOutputFile binOut ( filename );
 
         // check if output file was indeed opened
     if ( binOut.is_open() )

@@ -11,7 +11,7 @@
 #include "Cylinder.h"
 
 #include "osg/Geometry"
-#include "osg/Group"
+#include "osg/MatrixTransform"
 #include "osg/Geode"
 #include "osg/LOD"
 #include "osg/Shape"
@@ -30,7 +30,7 @@
 Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf ) : 
   _atoms(),
   _bonds(),
-  _maxDistanceFactor ( 5 ),
+  _maxDistanceFactor ( 10 ),
   _lastRangeMax ( std::numeric_limits<float>::max() ),
   _numLodChildren ( 5 ),
   _lodDistancePower ( 2 ),
@@ -51,11 +51,23 @@ Molecule::~Molecule()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an atom.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Molecule::addAtom(const Atom& atom)
 {
   _atoms.insert( Map::value_type (atom.getId(), atom) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a bond.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 {
@@ -66,6 +78,7 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
   if(_atoms.end() != i1 && _atoms.end() != i2)
     _bonds.push_back( Bond ( i1->second, i2->second, _bonds.size() + 1));
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -81,27 +94,15 @@ osg::Group *Molecule::_build() const
   // Loop through all the atoms.
   for ( Atoms::const_iterator i = _atoms.begin(); i != _atoms.end(); ++i )
   {
-    // Get the atom.
-    const Atom &atom = i->second;
-
-    // Make the geometry for this point.
-    osg::ref_ptr<osg::LOD> lod ( this->_makeAtom ( atom ) );
-
-    // Add the lod to the root.
-    root->addChild ( lod.get() );
+    // Add the node for this atom.
+    root->addChild ( this->_makeAtom ( i->second ) );
   }
 
   // Loop through the bonds.
   for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
   {
-    // Get the bond.
-    const Bond &bond = *i;
-
-    // Make the geometry.
-    osg::ref_ptr<osg::LOD> lod ( this->_makeBond ( bond ) );
-
-    // Add the lod to the root.
-    root->addChild ( lod.get() );
+    // Add the node for this bond.
+    root->addChild ( this->_makeBond ( *i ) );
   }
 
   // Return the root.
@@ -112,11 +113,10 @@ osg::Group *Molecule::_build() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Make an bond.
-//  TODO, make several branches in the lod. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::LOD *Molecule::_makeBond (const Bond &bond ) const
+osg::Node *Molecule::_makeBond (const Bond &bond ) const
 {
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
@@ -142,13 +142,14 @@ osg::LOD *Molecule::_makeBond (const Bond &bond ) const
   return lod.release();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Make an atom.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
+osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
 {
   // The lod holding the various representations.
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
@@ -190,7 +191,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float detail ) const
+osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float detail ) const
 {
   // Make the sphere.
   osg::ref_ptr<osg::Sphere> sphere ( new osg::Sphere ( center, radius ) );
@@ -219,17 +220,36 @@ osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &c, float r, unsigned int div ) const
+osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsigned int div ) const
 {
+  // Make a transmation.
+  osg::Matrixd T;
+  T.makeTranslate ( center );
+
+  // Make a scale.
+  osg::Matrixd S;
+  S.makeScale ( radius, radius, radius );
+
+  // Make a matrix-transform.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  //mt->setMatrix ( T * S );
+  mt->setMatrix ( T );
+
   // Make a sphere.
-  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div, c, r ) );
+  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div ) );
+
+  // TODO, make this an option. Display lists crash with really big files.
+  geometry->setUseDisplayList ( false );
 
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( geometry.get() );
 
-  // Return the geode.
-  return geode.release();
+  // Add the geode to the matrix-transform.
+  mt->addChild ( geode.get() );
+
+  // Return the matrix-transform.
+  return mt.release();
 }
 
 
@@ -239,7 +259,7 @@ osg::Geode *Molecule::_makeSphere ( const osg::Vec3 &c, float r, unsigned int di
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geode *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
+osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
 {
   // Make the sphere.
   osg::ref_ptr<osg::Box> cube ( new osg::Box ( center, size ) );

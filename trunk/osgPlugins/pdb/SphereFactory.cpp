@@ -33,20 +33,78 @@ SphereFactory::SphereFactory() :
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create a sphere.
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 SphereFactory::~SphereFactory()
 {
-  // Contained vectors are raw pointers. Some of them are null.
-  for ( Spheres::iterator i = _spheres.begin(); i != _spheres.end(); ++i )
-  {
-    Vertices *v = *i;
-    if ( v )
-      v->clear();
-  }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry *SphereFactory::create ( unsigned int numDivisions )
+{
+  // Make sure we have room.
+  if ( numDivisions >= _spheres.size() )
+    _spheres.resize ( numDivisions + 1 );
+
+  // If we have this one already...
+  if ( _spheres.at(numDivisions).valid() )
+    return _spheres.at(numDivisions).get();
+
+  // Generate the points (which are both vertices and normals).
+  std::vector<osg::Vec3> points;
+  Usul::Algorithms::sphere<float> ( numDivisions, points );
+
+#ifdef _DEBUG
+  //points.resize ( 24 );
+#endif
+
+  // Make new vertices and normals.
+  unsigned int num ( points.size() );
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( num ) );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( num ) );
+
+  // Copy the vertices and normals.
+  std::copy ( points.begin(), points.end(), vertices->begin() );
+  std::copy ( points.begin(), points.end(), normals->begin() );
+
+  // Make a new geometry.
+  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+
+  // Tri-strip it.
+  osgUtil::TriStripVisitor visitor;
+  //visitor.stripify ( *geometry );
+
+  // Save this geometry in our collection and return it.
+  _spheres.at(numDivisions) = geometry;
+  return geometry.get();
+}
+
+
+#if 0
+
+Need a trip-stripper that works.
+1. Bag of vertices -> bag of triangles
+2. Find adjacent triangles, start new strip when exhausted search
+3. When done, discard excess vertices (i.e., make the strip).
+
+Need to cache a geometry for each radii so that you can properly size the normals. 
+Otherwise you will have to turn on GL_NORMALIZE.
+
+Once you have tri-strips, see if they are faster than the shape-drawables.
+
+#endif
 
 
 #if 0
@@ -67,20 +125,8 @@ subdivided spheres.
 #endif
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
+#if 0
 
-osg::Geometry *SphereFactory::create ( unsigned int numDivisions, const osg::Vec3 &center, float radius )
-{
-  // Make sure we have room. Pass null for default value.
-  if ( numDivisions >= _spheres.size() )
-    _spheres.resize ( numDivisions + 1, 0x0 );
-
-  // If we have this one already...
-  if ( _spheres[numDivisions] )
   {
     // Shortcut.
     Vertices &verts = *(_spheres[numDivisions]);
@@ -118,17 +164,5 @@ osg::Geometry *SphereFactory::create ( unsigned int numDivisions, const osg::Vec
     return sphere.release();
   }
 
-  // Otherwise, make the new sphere vertices.
-  else
-  {
-    // Generate the vertices (which are also normals).
-    std::auto_ptr<Vertices> verts ( new Vertices );
-    Usul::Algorithms::sphere<float> ( numDivisions, *verts );
 
-    // Put these vertices into our list.
-    _spheres.at(numDivisions) = verts.release();
-
-    // Recursively call this function to make the geometry.
-    return this->create ( numDivisions, center, radius );
-  }
-}
+#endif

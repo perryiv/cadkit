@@ -171,6 +171,9 @@
 				<File
 					RelativePath=".\Algorithms\Sphere.h">
 				</File>
+				<File
+					RelativePath=".\Algorithms\TriStrip.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Base"

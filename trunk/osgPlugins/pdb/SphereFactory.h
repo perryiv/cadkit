@@ -24,13 +24,13 @@ class SphereFactory : public osg::Referenced
 public:
 
   typedef osg::ref_ptr<SphereFactory> Ptr;
-  typedef std::vector<osg::Vec3> Vertices;
-  typedef std::vector<Vertices *> Spheres;
+  typedef osg::ref_ptr<osg::Geometry> Sphere;
+  typedef std::vector<Sphere> Spheres;
 
   SphereFactory();
 
   // Create a sphere.
-  osg::Geometry*        create ( unsigned int numDivisions, const osg::Vec3 &center, float radius );
+  osg::Geometry*        create ( unsigned int numDivisions );
 
 protected:
 

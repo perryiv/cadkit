@@ -322,18 +322,30 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
     1, 2, 1, 2, 1, 2, // y
     0, 0, 0, 0, 0, 0  // z
   };
-
+#if 0
   // Copy to a container.
+  Revisit this function. Don't use ** in the function signature and the 
+  2D array may work. Might have to rename to copy2dTo2d(), etc.
   DataContainer points;
   GN::Algorithms::copy ( data, dimension, numDataPts, points );
 
   // Make the parameters.
+  Redo in a way that does not need the spline. You may want to parameterize in
+  a portion of your program that does not have a spline instance. This design
+  will not permit that.
   ParamContainer params;
-  GN::Algorithms::parameterize ( s, points, dimension, order, power, params );
+  GN::Algorithms::parameterize ( s, points, order, power, params );
+
+  // Size knot vector for interpolation.
+  UIntType numKnots ( numDataPts + order );
+
+  // Make the knot vector.
+  Put the new knots directly in the spline.
+  GN::Algorithms::knotVector ( s, params, order, numKnots );
 
   // Interpolate.
-  GN::Interpolate::global ( s, points, params, dimension, order );
-
+  GN::Interpolate::global ( s, points, params, knots, order );
+#endif
   // Check.
   ::confirm ( s );
 

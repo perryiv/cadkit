@@ -255,6 +255,9 @@
 					RelativePath=".\Gn\Algorithms\InsertKnot.h">
 				</File>
 				<File
+					RelativePath=".\Gn\Algorithms\KnotVector.h">
+				</File>
+				<File
 					RelativePath=".\Gn\Algorithms\Parameterize.h">
 				</File>
 				<File

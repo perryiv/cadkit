@@ -2,7 +2,7 @@
 include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
-CPP_FILES = Pathname.cpp
+CPP_FILES = String.cpp
 
 # The include path.
 LOCAL_INCLUDE =
@@ -17,7 +17,7 @@ LOCAL_CPP_FLAGS =
 LOCAL_LINK_FLAGS =
 
 # The name of the thing we are making.
-TARGET = pathname
+TARGET = string
 
 # The common rules for compiling are in here.
 include $(CADKIT_ROOT_DIR)/Make/executable.mak

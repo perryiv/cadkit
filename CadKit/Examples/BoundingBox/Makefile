@@ -1,22 +1,23 @@
+# Include the header to set up the environment.
+include $(CADKIT_ROOT_DIR)/Make/header.mak
+
 # C++ source files.
-CPPFILES = BoundingBox.cpp
+CPP_FILES = BoundingBox.cpp
 
 # The include path.
-INCLUDE = \
-	-I./ \
-	-I$(CADKIT_ROOT_DIR)
+LOCAL_INCLUDE =
 
 # The libraries to link to.
-LIBS = 
+LOCAL_LIBS =
 
-# Any flags for the compiler.
-CPPFLAGS = -D_LINUX -D_DEBUG
+# Any flags for the compiler. 
+LOCAL_CPP_FLAGS =
+
+# Any flags for the linker.
+LOCAL_LINK_FLAGS =
 
 # The name of the thing we are making.
 TARGET = bbox
 
-# By default we compile the executable.
-default: $(TARGET)
-
 # The common rules for compiling are in here.
-include $(CADKIT_ROOT_DIR)/Make/MakeExecutable.in
+include $(CADKIT_ROOT_DIR)/Make/executable.mak

@@ -53,7 +53,7 @@
 enum { eai_ERROR = 0, eai_OK = 1 };
 enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, 
              METERS, KILOMETERS, INCHES, FEET, YARDS, MILES, MILS };
-#endif
+#endif // _WIN32
 
 #include "DMDataTk/eaiEntityFactory.h" // Doesn't compile in DbJtPrecompiled.h
 #include "DMDataTk/eaiCADImporter.h"

@@ -294,19 +294,18 @@ template<class Char, class String, class Sequence> inline bool split
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class Char, class String, class Sequence> inline void assemble
-  ( const Char &delimiter, const Sequence &parts, String &str )
+template<class Char, class String> inline void assemble
+  ( const Char &delimiter, const std::list<String> &parts, String &str )
 {
   // Note: do not clear the string. Let the client handle that because he/she
   // may want to call this function more than once with the same string.
 
   // Loop through the list.
   unsigned int count = parts.size();
-  Sequence::const_iterator i = parts.begin();
-  for ( Sequence::const_iterator j = parts.begin(); j != parts.end(); ++j )
+  for ( std::list<String>::const_iterator i = parts.begin(); i != parts.end(); ++i )
   {
     // Add the string.
-    str += *j;
+    str += *i;
 
     // If this isn't the last one, and we are supposed to insert the delimiter...
     if ( ( 0 != count ) && delimiter )

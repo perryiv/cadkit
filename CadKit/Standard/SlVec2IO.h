@@ -57,7 +57,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::ostream &operator << ( std::ostream &out, const SlVec2<T> &vec )
+template<class T> inline std::ostream &operator << ( std::ostream &out, const CadKit::SlVec2<T> &vec )
 {
   out << vec[0] << " " << vec[1];
   return out;
@@ -70,7 +70,7 @@ template<class T> inline std::ostream &operator << ( std::ostream &out, const Sl
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::istream &operator >> ( std::istream &in, SlVec2<T> &vec )
+template<class T> inline std::istream &operator >> ( std::istream &in, CadKit::SlVec2<T> &vec )
 {
   in >> vec[0] >> vec[1];
   return in;

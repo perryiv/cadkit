@@ -1,9 +1,8 @@
-
-#define CADKIT_DEFINE_SL_VECTOR_STD_OSTREAM_OPERATOR
-#define CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
-#define CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
 #include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix4IO.h"
 #include "Standard/SlConstants.h"
+#include <iostream>
+
 using namespace CadKit;
 
 

@@ -2,13 +2,13 @@
 include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
-CPP_FILES = Pathname.cpp
+CPP_FILES = Vector.cpp
 
 # The include path.
 LOCAL_INCLUDE =
 
 # The libraries to link to.
-LOCAL_LIBS =
+LOCAL_LIBS = -lm
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS =
@@ -17,7 +17,7 @@ LOCAL_CPP_FLAGS =
 LOCAL_LINK_FLAGS =
 
 # The name of the thing we are making.
-TARGET = pathname
+TARGET = vector
 
 # The common rules for compiling are in here.
 include $(CADKIT_ROOT_DIR)/Make/executable.mak

@@ -47,6 +47,7 @@
 #include "SlString.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <wchar.h>
 # include <iostream>
 #endif
 
@@ -57,7 +58,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::ostream &operator << ( std::ostream &out, const CadKit::SlString<char> &str )
+inline std::ostream &operator << ( std::ostream &out, const CadKit::SlAString &str )
 {
   out << str.c_str();
   return out;
@@ -70,7 +71,7 @@ inline std::ostream &operator << ( std::ostream &out, const CadKit::SlString<cha
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::wostream &operator << ( std::wostream &out, const CadKit::SlString<wchar_t> &str )
+inline std::wostream &operator << ( std::wostream &out, const CadKit::SlWString &str )
 {
   out << str.c_str();
   return out;
@@ -83,7 +84,7 @@ inline std::wostream &operator << ( std::wostream &out, const CadKit::SlString<w
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::istream &operator >> ( std::istream &in, CadKit::SlString<char> &str )
+inline std::istream &operator >> ( std::istream &in, CadKit::SlAString &str )
 {
   in >> str.getString();
   return in;
@@ -96,7 +97,7 @@ inline std::istream &operator >> ( std::istream &in, CadKit::SlString<char> &str
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::wistream &operator >> ( std::wistream &in, CadKit::SlString<wchar_t> &str )
+inline std::wistream &operator >> ( std::wistream &in, CadKit::SlWString &str )
 {
   in >> str.getString();
   return in;

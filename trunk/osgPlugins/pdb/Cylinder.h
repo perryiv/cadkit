@@ -21,7 +21,7 @@ class Cylinder : public osg::Referenced
 {
 public:
   Cylinder();
-  Cylinder(unsigned int sides);
+  Cylinder(float r, unsigned int sides);
   //osg::Geometry * getGeometry(osg::Material *, unsigned int) const;
   osg::Geometry * getGeometry() { return _geometry.get(); }
   bool valid() { return _point1.valid() && _point2.valid(); }

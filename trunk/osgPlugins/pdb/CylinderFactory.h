@@ -24,7 +24,7 @@ public:
   typedef std::vector< osg::ref_ptr<Cylinder> > Cylinders;
   CylinderFactory();
 
-  osg::Geometry*  create(unsigned int sides);
+  osg::Geometry*  create(float r, unsigned int sides);
 private:
   Cylinders _cylinders;
 };

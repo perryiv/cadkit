@@ -25,7 +25,7 @@ _point2()
 //  Constructor.  Creates a unit cylinder
 //
 ///////////////////////////////////////////////////////////////////////////////
-Cylinder::Cylinder(unsigned int sides)
+Cylinder::Cylinder(float r, unsigned int sides)
 {
   _geometry = new osg::Geometry();
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
@@ -49,14 +49,14 @@ Cylinder::Cylinder(unsigned int sides)
   {
     float u = (float) i / (float) (sides - 1);
     float theta = u * 360.0;
-    x = sin( c * theta ) + unPoint1[0];
+    x = r * sin( c * theta ) + unPoint1[0];
     y = unPoint1[1];
-    z = cos( c * theta ) + unPoint1[2];
+    z = r * cos( c * theta ) + unPoint1[2];
     vertices->push_back( osg::Vec3(x, y, z) );
 
-    x = sin( c * theta ) + unPoint2[0];
+    x = r * sin( c * theta ) + unPoint2[0];
     y = unPoint2[1];
-    z = cos( c * theta ) + unPoint2[2];
+    z = r * cos( c * theta ) + unPoint2[2];
     vertices->push_back( osg::Vec3(x, y, z) );
   }
 
@@ -67,17 +67,21 @@ Cylinder::Cylinder(unsigned int sides)
 
   osg::Vec3 v1, v2, v3;
 
+  normals->reserve(vertices->size());
+
   //calculate the normals for the tri-strips
-  for(unsigned int i = 0; i < vertices->size(); ++ i)
+  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++ i)
   {
-    osg::Vec3 normal;
-    v1 = vertices->at( (i+2) % (vertices->size() - 1) );
+    
+    osg::Vec3 normal = *i;
+    
+    /*v1 = vertices->at( (i+2) % (vertices->size() - 1) );
     v2 = vertices->at( (i+1) % (vertices->size() - 1) );
     v3 = vertices->at(i);
     normal = (v3-v1)^(v2-v1);
+    */
     normal.normalize();
     normals->push_back(normal);
-    //normals->push_back(vertices->at(i));
   }
 
   _geometry->setNormalArray(normals.get());

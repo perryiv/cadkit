@@ -17,6 +17,7 @@
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
 
 #include "DbStlApi.h"
+#include "DbStlFacetmanager.h"
 
 #include "Database/Base/DbBaseTarget.h"
 
@@ -24,12 +25,12 @@
 #include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlStack.h"
-#include "DbStlFacetmanager.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
 # include <map>
 #endif
+
 
 namespace CadKit
 {
@@ -141,11 +142,12 @@ public:
 protected:
 
   DbStlFacetManager _fmgr;
-  virtual ~DbStlDatabase();
   std::set<PartHandle> _partLodCheck; //used to make sure we only proces one LOD per part as stl doesn't support LODs
 
+  virtual ~DbStlDatabase();
+
   SL_DECLARE_REFERENCE_POINTER ( DbStlDatabase );
-  SL_DECLARE_DYNAMIC_CLASS ( DbStlDatabase, 1034649260 );
+  SL_DECLARE_DYNAMIC_CLASS ( DbStlDatabase, 1038408962 );
 };
 
 }; // namespace CadKit

@@ -12,9 +12,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "DbStlPrecompiled.h"
 #include "DbStlFileIO.h"
+
 #include "Standard/SlTypedefs.h"
 #include "Standard/SlVec3IO.h"
+
 #include <iostream>
 #include <fstream>
 

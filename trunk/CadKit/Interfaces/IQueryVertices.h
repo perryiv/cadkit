@@ -17,6 +17,7 @@
 #define _CADKIT_INTERFACE_QUERY_VERTICES_H_
 
 #include "IQueryArray.h"
+#include "Enum.h"
 
 #include "Standard/SlVec3.h"
 

@@ -97,19 +97,6 @@ SOURCE=.\Handles.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\IAssemblyQuery.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\ICommandLine.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -175,33 +162,20 @@ SOURCE=.\IEntityNotify.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IEntityQuery.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IErrorNotify.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\IGroupNotify.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\IInstanceNotify.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -254,32 +228,6 @@ SOURCE=.\ILoadOptions.h
 # Begin Source File
 
 SOURCE=.\IOutputStream.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\IPartNotify.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\IPartQuery.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

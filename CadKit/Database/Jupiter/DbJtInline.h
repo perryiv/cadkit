@@ -18,6 +18,7 @@
 
 #include "DbJtPrecompiled.h"
 #include "DbJtVisApiArray.h"
+#include "DbJtFunctions.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"
@@ -53,10 +54,10 @@ template <class HandleType> inline bool isOfType ( HandleType ptr, const eaiEnti
 template <class HandleType> inline bool isHierarchy ( HandleType ptr )
 {
   return ( 
-      CadKit::isOfType ( ptr, eaiEntity::eaiASSEMBLY ) ||
-      CadKit::isOfType ( ptr, eaiEntity::eaiPART ) ||
-      CadKit::isOfType ( ptr, eaiEntity::eaiINSTANCE ) 
-      );
+    CadKit::isOfType ( ptr, eaiEntity::eaiASSEMBLY ) ||
+    CadKit::isOfType ( ptr, eaiEntity::eaiPART ) ||
+    CadKit::isOfType ( ptr, eaiEntity::eaiINSTANCE ) 
+    );
 }
 
 
@@ -77,48 +78,6 @@ template <class HandleType> inline std::string getName ( HandleType ptr )
 
   // Return the name (which may still be blank).
   return name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the transformation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class HandleType> inline bool getTransform ( HandleType ptr, float matrix[16] )
-{
-  // If we don't have a hierarchy then return.
-  if ( false == CadKit::isHierarchy ( ptr ) )
-    return false;
-
-  // Ask for the transformation (there may not be one).
-  eaiTransform *temp = NULL;
-  ((eaiHierarchy *) ptr)->getTransform ( temp );
-
-  // Auto-release. This assignment will increment it from 0 -> 1.
-  SlRefPtr<eaiTransform> transform ( temp );
-
-  // If we didn't get a transform then just return.
-  if ( transform.isNull() )
-    return false;
-
-  // Get the elements of the matrix.
-  DbJtVisApiArray<float> elements;
-  transform->getTElements ( elements.getReference() );
-
-  // For convenience.
-  const float *m = elements.getReference();
-
-  // Do we have elements?
-  if ( NULL == m )
-    return false;
-
-  // Fill in the given matrix.
-  std::copy ( m, m + 16, (float *) matrix );
-
-  // It worked.
-  return true;
 }
 
 

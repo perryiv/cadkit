@@ -120,7 +120,11 @@ SOURCE=.\DbJtDatabase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbJtFunctors.h
+SOURCE=.\DbJtFunctions.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtFunctions.h
 # End Source File
 # Begin Source File
 

@@ -16,37 +16,24 @@
 #ifndef _CADKIT_INTERFACE_INSTANCE_QUERY_H_
 #define _CADKIT_INTERFACE_INSTANCE_QUERY_H_
 
-#include "IUnknown.h"
-#include "Handles.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-#endif
+#include "IEntityQuery.h"
 
 
 namespace CadKit
 {
-template <const unsigned int id, class Real> class IInstanceQuery : public IUnknown
+template <const unsigned int id, class Real> 
+class IInstanceQuery : public IEntityQuery<id,InstanceHandle,Real>
 {
 public:
 
-  // Id for this interface.
-  enum { IID = id };
-
   // Get the corresponding part or assembly.
   virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const = 0;
-
-  // Get the name.
-  virtual std::string     getName ( InstanceHandle instance ) const = 0;
-
-  // Get the transformation matrix.
-  virtual bool            getTransform ( InstanceHandle instance, Real matrix[16] ) const = 0;
 };
 
 
 // Common types.
-typedef IInstanceQuery<1032919857,float>  IInstanceQueryFloat;
-typedef IInstanceQuery<1032919869,double> IInstanceQueryDouble;
+typedef IInstanceQuery<1033022176,float>  IInstanceQueryFloat;
+typedef IInstanceQuery<1033022177,double> IInstanceQueryDouble;
 
 
 }; // namespace CadKit

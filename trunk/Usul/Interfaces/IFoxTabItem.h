@@ -9,7 +9,7 @@
 
 
 #ifndef _USUL_INTERFACE_FOX_TAB_ITEM_H_
-#define _USUL_INTERFACE_FOX_TAB_ITEM__H_
+#define _USUL_INTERFACE_FOX_TAB_ITEM_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -40,4 +40,4 @@ struct IFoxTabItem : public Usul::Interfaces::IUnknown
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_FOX_TAB_ITEM__H_
+#endif // _USUL_INTERFACE_FOX_TAB_ITEM_H_

@@ -34,7 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SAFE_CAST_FOX(Type,pointer)\
-  ( (pointer) && (pointer)->isMemberOf ( FXMETACLASS ( Type ) ) ) ? reinterpret_cast < Type * > ( pointer ) : 0x0;
+  ( ( (pointer) && (pointer)->isMemberOf ( FXMETACLASS ( Type ) ) ) ? reinterpret_cast < Type * > ( pointer ) : 0x0 )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SAFE_CAST_FOX_CONST(Type,pointer)\
-  ( (pointer) && (pointer)->isMemberOf ( FXMETACLASS ( Type ) ) ) ? reinterpret_cast < const Type * > ( pointer ) : 0x0;
+  ( ( (pointer) && (pointer)->isMemberOf ( FXMETACLASS ( Type ) ) ) ? reinterpret_cast < const Type * > ( pointer ) : 0x0 )
 
 
 #endif // _USUL_CAST_H_

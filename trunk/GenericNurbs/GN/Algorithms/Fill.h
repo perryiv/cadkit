@@ -47,7 +47,11 @@ template < class ContainerType > inline void fill
 
   // Handle values at either end.
   if ( 1 <= num )
+  {
     c.front() = minimum;
+    if ( 1 == num )
+      return;
+  }
   if ( 2 <= num )
   {
     c.back() = maximum;

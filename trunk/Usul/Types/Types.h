@@ -21,11 +21,29 @@ namespace Usul {
 namespace Types {
 
 
-typedef unsigned long     Uint32;
-typedef unsigned short    Uint16;
+#ifdef _MSC_VER // Visual C++
 
-typedef long              Int32;
-typedef short             Int16;
+    typedef unsigned __int64  Uint64;
+    typedef unsigned __int32  Uint32;
+    typedef unsigned __int16  Uint16;
+
+    typedef __int64           Int64;
+    typedef __int32           Int32;
+    typedef __int16           Int16;
+
+#elif
+
+  #include <stdint.h>
+
+  typedef uint64_t            Uint64;
+  typedef uint32_t            Uint32;
+  typedef uint16_t            Uint16;
+
+  typedef int64_t             Int64;
+  typedef int32_t             Int32;
+  typedef int16_t             Int16;
+
+#endif
 
 
 }; // namespace Types

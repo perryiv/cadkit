@@ -30,22 +30,25 @@ namespace OsgTools
   {
   public:
     typedef ColorPolicyFunctor<ColorPolicy> CPF;
-    Sphere(): CPF(), _radius(0.5) {}
-    Sphere(float r): CPF(), _radius(r) {}
-    Sphere(const Sphere& s): CPF(s), _radius(s._radius) {}
+    Sphere(): CPF(), _radius(0.5f), _detailRatio(0.75f) {}
+    Sphere(float r, float dr=0.75f): CPF(), _radius(r), _detailRatio(dr) {}
+    Sphere(const Sphere& s): CPF(s), _radius(s._radius), _detailRatio(s._detailRatio) {}
     virtual ~Sphere() {}
 
     Sphere& operator = (const Sphere& s)
     {
       CPF::operator =(s);
       _radius = s._radius;
+      _detailRatio = s._detailRatio;
     }
 
     virtual osg::Node* operator()() const
     {
       osg::ref_ptr<osg::Sphere> s = new osg::Sphere(osg::Vec3(0.0,0.0,0.0),_radius);
       osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable( s.get() );
-
+      osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints );
+      hints->setDetailRatio ( _detailRatio );
+      sd->setTessellationHints ( hints.get() );
       _cp( sd.get() );  // apply the color policy adjustments
       osg::ref_ptr<osg::Geode> node = new osg::Geode();
       node->addDrawable( sd.get() );
@@ -57,6 +60,7 @@ namespace OsgTools
 
   private:
     float _radius;
+    float _detailRatio;
   };
 
   typedef Sphere<ColorSetter> ColorSphere;

@@ -33,7 +33,7 @@ namespace OsgTools
     typedef ColorPolicyFunctor<ColorPolicy> CPF;
     Box(): CPF(), _width(1.0), _height(1.0), _depth(1.0) {}
     Box(float w,float h,float d): CPF(), _width(w), _height(h), _depth(d) {}
-    Box(float size): CPF(), _width(size), _height(size), _depth(size) {}
+    Box(float size, float detailRatio): CPF(), _width(size), _height(size), _depth(size) {}
     Box(const Box& b): CPF(b), _width(b._width), _height(b._height), _depth(b._depth) {}
 
     virtual ~Box() {}

@@ -66,8 +66,8 @@ Factory::Factory() : _map()
 
   // Populate the map.
   POPULATE ( png, PNG, ABOUT    );
-  POPULATE ( png, PNG, OPEN     );
-  POPULATE ( png, PNG, INSERT   );
+  POPULATE ( bmp, BMP, OPEN     );
+  POPULATE ( bmp, BMP, INSERT   );
   POPULATE ( gif, GIF, COPY     );
   POPULATE ( gif, GIF, CUT      );
   POPULATE ( gif, GIF, DELETE   );
@@ -83,8 +83,8 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, PASTE    );
   POPULATE ( gif, GIF, PRINT    );
   POPULATE ( gif, GIF, QUESTION );
-  POPULATE ( gif, GIF, SAVE     );
-  POPULATE ( gif, GIF, SAVE_AS  );
+  POPULATE ( bmp, BMP, SAVE     );
+  POPULATE ( bmp, BMP, SAVE_AS  );
   POPULATE ( gif, GIF, TUX      );
   POPULATE ( gif, GIF, WARNING  );
   POPULATE ( gif, GIF, CAMERA   );
@@ -101,7 +101,6 @@ Factory::Factory() : _map()
   POPULATE ( bmp, BMP, TRIANGLE         );
   POPULATE ( bmp, BMP, DELETE_CONNECTED );
   POPULATE ( bmp, BMP, KEEP_CONNECTED   );
-  POPULATE ( bmp, BMP, OPEN_BMP   );
 }
 
 

@@ -75,7 +75,6 @@ public:
     ICON_DELETE_CONNECTED,
     ICON_KEEP_CONNECTED,
     ICON_CAMERA,
-    ICON_OPEN_BMP,
     LAST
   };
 

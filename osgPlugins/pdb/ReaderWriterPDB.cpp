@@ -18,11 +18,11 @@
 #include "osgDB/FileNameUtils"
 #include "osgDB/FileUtils"
 
-#include "XmlDom/Error.h"
-#include "XmlDom/Config.h"
-#include "XmlDom/Callback.h"
-#include "XmlDom/Node.h"
+#include "XmlDom/Policy.h"
 #include "XmlDom/Reader.h"
+#include "XmlDom/File.h"
+#include "XmlDom/BuildTree.h"
+#include "XmlDom/Node.h"
 #include "XmlDom/Convert.h"
 
 #include "Usul/Bits/Bits.h"
@@ -408,6 +408,13 @@ std::string ReaderWriterPDB::_getPsfPath( const std::string &file)
 
 void ReaderWriterPDB::_configure ( const Options *options )
 {
+  // For convenience.
+  typedef XML::Config::Policy<>                 Policy;
+  typedef XML::Node < Policy >                  Node;
+  typedef XML::Callback::BuildTree < Node >     BuildCB;
+  typedef XML::Reader < Policy, BuildCB >       Reader;
+  typedef XML::File < Policy >                  File;
+
   // Handle trivial case.
   if ( !options )
     return;
@@ -419,36 +426,18 @@ void ReaderWriterPDB::_configure ( const Options *options )
   if ( Usul::Predicates::FileExists() ( chunk ) )
     this->_getFileContents ( chunk, chunk );
 
-  // For convenience.
-  const bool checkForErrors ( true );
-  const bool createMissingChildren ( true );
-  typedef XML::Error::Assert < checkForErrors > AssertPolicy;
-  typedef XML::Error::Thrower < checkForErrors > ThrowPolicy;
-  typedef XML::Error::Pair < AssertPolicy, ThrowPolicy > ErrorPolicy;
-  typedef XML::Node < std::string, ErrorPolicy, createMissingChildren > Node;
-  typedef XML::Callback::Notify < std::string, ReaderWriterPDB * > NodeCallback;
-  typedef XML::Config::Trim TrimPolicy;
-  typedef XML::Reader < Node, ErrorPolicy, NodeCallback, TrimPolicy > Reader;
-  typedef Reader::Node Node;
-  typedef Node::Pointer Pointer;
-  typedef Node::String String;
-
   // Construct the node tree and get the root.
   Reader reader ( chunk.begin(), chunk.end() );
-  Pointer root ( reader.root() );
+  Node *root = reader.callback().root();
 
   // Needed to convert.
   XML::Convert<bool> toBool;
-  //XML::Convert<int> toInt;
-  //XML::Convert<unsigned int> toUint;
-  //XML::Convert<float> toFloat;
-  //XML::Convert<double> toDouble;
 
   // Set our members.
-  this->setFlags ( PDB::SHOW_ATOMS, toBool ( root->getChild ( "atoms/show", '/' )->getValue() ) );
-  this->setFlags ( PDB::SHOW_BONDS, toBool ( root->getChild ( "bonds/show", '/' )->getValue() ) );
-  this->setFlags ( PDB::LOAD_ATOMS, toBool ( root->getChild ( "atoms/load", '/' )->getValue() ) );
-  this->setFlags ( PDB::LOAD_BONDS, toBool ( root->getChild ( "bonds/load", '/' )->getValue() ) );
+  this->setFlags ( PDB::SHOW_ATOMS, toBool ( root->child ( "atoms/show", '/' )->value() ) );
+  this->setFlags ( PDB::SHOW_BONDS, toBool ( root->child ( "bonds/show", '/' )->value() ) );
+  this->setFlags ( PDB::LOAD_ATOMS, toBool ( root->child ( "atoms/load", '/' )->value() ) );
+  this->setFlags ( PDB::LOAD_BONDS, toBool ( root->child ( "bonds/load", '/' )->value() ) );
 }
 
 

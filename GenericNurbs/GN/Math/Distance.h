@@ -173,7 +173,7 @@ public:
 
   static RealType get ( const Vec2 &a, const Vec2 &b )
   {
-    return Helper<V>::get ( a, b );
+    return Helper<Vec2>::get ( a, b );
   }
 };
 

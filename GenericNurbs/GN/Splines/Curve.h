@@ -369,7 +369,7 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Predicate_ > bool equal ( const ThisType &s, const Predicate_ &pred ) const
+  template < class Predicate_ > bool equal ( const ThisType &c, const Predicate_ &pred ) const
   {
     return BaseClass::equal ( c, pred );
   }

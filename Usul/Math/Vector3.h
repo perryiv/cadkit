@@ -210,7 +210,7 @@ public:
 
   Vector3 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / s;
+    T reciprocal = static_cast < T > ( 1 ) / value;
     _v[0] *= reciprocal;
     _v[1] *= reciprocal;
     _v[2] *= reciprocal;

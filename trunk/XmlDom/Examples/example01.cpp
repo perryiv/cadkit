@@ -17,11 +17,11 @@
 # pragma warning(disable:4786) // Truncated debug names.
 #endif
 
-#include "Error.h"
-#include "Config.h"
-#include "Callback.h"
-#include "Node.h"
-#include "Reader.h"
+#include "XmlDom/Error.h"
+#include "XmlDom/Config.h"
+#include "XmlDom/Callback.h"
+#include "XmlDom/Node.h"
+#include "XmlDom/Reader.h"
 
 #include <iterator>
 #include <string>
@@ -38,9 +38,6 @@
 #define STAT stat
 #endif
 
-// For convenience.
-typedef std::string String;
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -50,21 +47,20 @@ typedef std::string String;
 
 template < class Node > struct Print
 {
-  typedef typename Node::String String;
   typedef typename Node::Pointer Pointer;
 
   void operator() ( const Pointer &node )
   {
-    static String indent;
+    static std::string indent;
 
-    String name = node->getName();
-    String value = node->getValue();
+    std::string name = node->name();
+    std::string value = node->value();
 
     std::cout << indent << '<' << name << '>';
 
     indent += " ";
 
-    if ( 0 == node->getNumChildren() )
+    if ( 0 == node->numChildren() )
     {
       std::cout << value << "</" << name << ">\n";
       indent.resize ( indent.size() - 1 );
@@ -95,8 +91,8 @@ template < class I > void read ( const I &start, const I &stop )
   typedef typename XML::Error::Assert < checkForErrors > AssertPolicy;
   typedef typename XML::Error::Thrower < checkForErrors > ThrowPolicy;
   typedef typename XML::Error::Pair < AssertPolicy, ThrowPolicy > ErrorPolicy;
-  typedef typename XML::Node < String, ErrorPolicy, createMissingChildren > Node;
-  typedef typename XML::Callback::Notify < String > NodeCallback;
+  typedef typename XML::Node < ErrorPolicy, createMissingChildren > Node;
+  typedef typename XML::Callback::Notify < std::string, void * > NodeCallback;
   typedef typename XML::Config::Trim TrimPolicy;
   typedef typename XML::Reader < Node, ErrorPolicy, NodeCallback, TrimPolicy > Reader;
   typedef typename Reader::Node Node;
@@ -107,20 +103,20 @@ template < class I > void read ( const I &start, const I &stop )
 
   // Print the node tree.
   Print<Node> print;
-  print ( reader.getRoot() );
+  print ( reader.root() );
 
   // Try to find a specific node.
   try
   {
-    Pointer root = reader.getRoot();
-    Pointer node = root->getChild ( 0, "b0" );
-    node = node->getChild ( 0, "c2" );
-    node = node->getChild ( 0, "e" );
-    node = node->getChild ( 0, "s" );
-    node = root->getChild ( 0, "article" )->getChild ( 0, "date" )->getChild ( 0, "year" );
-    node = root->getChild ( "article/date/year", '/' );
-    node = root->getChild ( "article/author/title/prefix", '/' );
-    node = root->getChild ( "article/author/name/prefix", '/' );
+    Pointer root = reader.root();
+    Pointer node = root->child ( 0, "b0" );
+    node = node->child ( 0, "c2" );
+    node = node->child ( 0, "e" );
+    node = node->child ( 0, "s" );
+    node = root->child ( 0, "article" )->child ( 0, "date" )->child ( 0, "year" );
+    node = root->child ( "article/date/year", '/' );
+    node = root->child ( "article/author/title/prefix", '/' );
+    node = root->child ( "article/author/name/prefix", '/' );
   }
   catch ( const std::exception &e )
   {
@@ -139,7 +135,7 @@ template < class I > void read ( const I &start, const I &stop )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void getString ( const String &filename, String &contents )
+void getString ( const std::string &filename, std::string &contents )
 {
   struct STAT buf;
   int result = _stat ( filename.c_str(), &buf );
@@ -153,7 +149,7 @@ void getString ( const String &filename, String &contents )
   assert ( in.is_open() );
 
   // Read the file into the string.
-  for ( String::size_type i = 0; i < contents.size(); ++i )
+  for ( std::string::size_type i = 0; i < contents.size(); ++i )
     contents[i] = in.get();
 }
 
@@ -164,10 +160,10 @@ void getString ( const String &filename, String &contents )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void testString ( const String &filename )
+void testString ( const std::string &filename )
 {
   // Get file as a string.
-  String contents;
+  std::string contents;
   getString ( filename, contents );
 
   // Read the file.
@@ -181,9 +177,9 @@ void testString ( const String &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void testIstream ( const String &filename )
+void testIstream ( const std::string &filename )
 {
-  typedef String::value_type Char;
+  typedef std::string::value_type Char;
 
   // Open the file.
   std::ifstream in ( filename.c_str() );
@@ -200,12 +196,12 @@ void testIstream ( const String &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void testArray ( const String &filename )
+void testArray ( const std::string &filename )
 {
-  typedef String::value_type Char;
+  typedef std::string::value_type Char;
 
   // Get file as a string.
-  String s;
+  std::string s;
   getString ( filename, s );
 
   // Read the file.
@@ -220,12 +216,12 @@ void testArray ( const String &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void testList ( const String &filename )
+void testList ( const std::string &filename )
 {
-  typedef String::value_type Char;
+  typedef std::string::value_type Char;
 
   // Get file as a string.
-  String s;
+  std::string s;
   getString ( filename, s );
 
   // Construct a list.
@@ -242,12 +238,12 @@ void testList ( const String &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void testVector ( const String &filename )
+void testVector ( const std::string &filename )
 {
-  typedef String::value_type Char;
+  typedef std::string::value_type Char;
 
   // Get file as a string.
-  String s;
+  std::string s;
   getString ( filename, s );
 
   // Construct a list.
@@ -267,7 +263,7 @@ void testVector ( const String &filename )
 int main ( int argc, char **argv )
 {
   // Get the file size.
-  String filename ( "test.xml" );
+  std::string filename ( "example01.xml" );
 
   // Run the tests.
   testArray ( filename );

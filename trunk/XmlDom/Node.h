@@ -16,7 +16,10 @@
 #ifndef _XML_NODE_CLASS_H_
 #define _XML_NODE_CLASS_H_
 
+#include "XmlDom/Predicates.h"
+
 #include <list>
+#include <string>
 #include <algorithm>
 
 
@@ -31,7 +34,6 @@ namespace XML {
 
 template
 <
-  class StringType, 
   class ErrorPolicyType, 
   bool CREATE_MISSING_CHILDREN
 >
@@ -80,54 +82,11 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   typedef std::list < Pointer > Children;
-  typedef StringType String;
-  typedef typename String::value_type Char;
+  typedef typename std::string::value_type Char;
   typedef typename Children::iterator Iterator;
   typedef typename Children::const_iterator ConstIterator;
-  typedef typename Children::size_type ChildIndex;
+  typedef typename Children::size_type SizeType;
   typedef ErrorPolicyType ErrorPolicy;
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Predicate to test for an equal name.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct EqualName
-  {
-    EqualName ( const StringType &name ) : _name ( name ){}
-    bool operator() ( const Pointer &p ) { return ( _name == p->getName() ); }
-  private:
-    StringType _name;
-  };
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Predicate to test for the i'th equal name.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct IthEqualName
-  {
-    IthEqualName ( const StringType &name, ChildIndex i ) : _name ( name ), _i ( i ), _count ( 0 ){}
-    bool operator() ( const Pointer &p )
-    {
-      if ( _name == p->getName() )
-      {
-        if ( _i == _count++ )
-        {
-          return true;
-        }
-      }
-      return false;
-    }
-  private:
-    StringType _name;
-    ChildIndex _i;
-    ChildIndex _count;
-  };
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -136,14 +95,13 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Node ( const String &name = String(), const String &value = String(), const String &attributes = String() ) :
+  Node ( const std::string &name = std::string(), const std::string &value = std::string(), const std::string &attributes = std::string() ) :
     _children(),
     _name ( name ),
     _value ( value ),
     _attributes ( attributes ),
     _refCount ( 0 )
   {
-    // Empty.
   }
 
 
@@ -160,7 +118,6 @@ public:
     _attributes ( n._attributes ),
     _refCount   ( 0 )
   {
-    // Empty.
   }
 
 
@@ -189,7 +146,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void appendChild ( Node *n )
+  void append ( const Node &n )
   {
     Pointer::check ( n );
     _children.push_back ( Pointer ( n ) );
@@ -202,10 +159,10 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pointer getChild ( ChildIndex i ) const
+  const Node &child ( SizeType i ) const
   {
-    if ( i >= 0 && i < _children.size() ) 
-      return this->_getMissingChild();
+    if ( i > _children.size() ) 
+      return this->_appendEmptyChildren ( i );
 
     ConstIterator it = _children.begin();
     std::advance ( it, i );
@@ -219,10 +176,10 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pointer getChild ( ChildIndex i, const StringType &name ) const
+  Pointer child ( SizeType i, const std::string &name ) const
   {
     ConstIterator it = std::find_if ( this->begin(), this->end(), IthEqualName ( name, i ) );
-    return ( it == this->end() ) ? this->_getMissingChild() : *it;
+    return ( it == this->end() ) ? this->_appendEmptyChildren ( i ) : *it;
   }
 
 
@@ -232,10 +189,10 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pointer getChild ( const StringType &path, Char delim ) const
+  Pointer child ( const std::string &path, Char delim ) const
   {
     // Get the child, which may be null.
-    Pointer child = this->_getChild ( path, delim );
+    Pointer child = this->_child ( path, delim );
 
     // Only return null if we are supposed to.
     return ( child.valid() ) ? child : this->_getMissingChild();
@@ -248,7 +205,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  ChildIndex getNumChildren() const
+  SizeType numChildren() const
   {
     return _children.size();
   }
@@ -260,7 +217,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  unsigned int getNumAttributes() const
+  unsigned int numAttributes() const
   {
     ErrorPolicy() ( false ); // TODO.
     return 0;
@@ -273,7 +230,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const StringType &getName() const
+  const std::string &name() const
   {
     return _name;
   }
@@ -285,7 +242,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const StringType &getValue() const
+  const std::string &value() const
   {
     return _value;
   }
@@ -297,7 +254,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  StringType getAttribute ( unsigned int i )
+  std::string attribute ( unsigned int i )
   {
     ErrorPolicy() ( false ); // TODO.
   }
@@ -309,7 +266,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  StringType getAttribute ( const StringType &attribName )
+  std::string attribute ( const std::string &attribName )
   {
     ErrorPolicy() ( false ); // TODO.
   }
@@ -321,7 +278,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void setName ( const StringType &name )
+  void name ( const std::string &name )
   {
     _name = name;
   }
@@ -333,7 +290,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void setValue ( const StringType &value )
+  void value ( const std::string &value )
   {
     _value = value;
   }
@@ -346,7 +303,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void setAttribute ( const StringType &attribName, const StringType &attribValue )
+  void attribute ( const std::string &attribName, const std::string &attribValue )
   {
     ErrorPolicy() ( false ); // TODO.
   }
@@ -433,12 +390,12 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Visitor > struct Accept
+  template < class VisitorType > struct Accept
   {
-    Accept ( const Visitor &visitor ) : _visitor ( visitor ){}
-    void operator() ( Pointer p ) { p->accept ( _visitor ); }
+    Accept ( const VisitorType &visitor ) : _visitor ( visitor ){}
+    template < PointerType > void operator() ( PointerType p ) { p->accept ( _visitor ); }
   private:
-    Visitor _visitor;
+    VisitorType &_visitor;
   };
 
   
@@ -448,7 +405,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Visitor > void accept ( Visitor visitor )
+  template < class VisitorType > void accept ( VisitorType visitor )
   {
     // Visit this node.
     visitor ( Pointer ( this ) );
@@ -461,9 +418,9 @@ public:
 protected:
 
   Children _children;
-  StringType _name;
-  StringType _value;
-  StringType _attributes;
+  std::string _name;
+  std::string _value;
+  std::string _attributes;
   unsigned int _refCount;
 
 
@@ -473,9 +430,8 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  ~Node()
+  virtual ~Node()
   {
-    // Empty.
   }
 
 
@@ -485,15 +441,15 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pointer _getChild ( const StringType &path, Char delim ) const
+  Pointer _child ( const std::string &path, Char delim ) const
   {
-    typedef typename StringType::const_iterator SI;
+    typedef typename std::string::const_iterator SI;
 
     // Look for the first name in the path.
     SI last = std::find ( path.begin(), path.end(), delim );
 
     // Make the name.
-    String name ( path.begin(), last );
+    std::string name ( path.begin(), last );
 
     // If we're already at the end of the path-string...
     if ( last == path.end() )
@@ -514,11 +470,11 @@ protected:
       Pointer child ( *i );
 
       // Do the names match?
-      if ( name == child->getName() )
+      if ( name == child->name() )
       {
         // Call this function recursively with the rest of the path-string.
-        String temp ( last, path.end() );
-        child = child->_getChild ( temp, delim );
+        std::string temp ( last, path.end() );
+        child = child->_child ( temp, delim );
 
         // Did we find it?
         if ( child.valid() )

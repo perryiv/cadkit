@@ -16,6 +16,15 @@
 #ifndef _XML_ERROR_POLICY_CLASSES_H_
 #define _XML_ERROR_POLICY_CLASSES_H_
 
+#include <sstream>
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for assert.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifdef _WIN32
 # include <crtdbg.h>
 # define XML_ASSERT_MACRO _ASSERT
@@ -26,7 +35,7 @@
 
 
 namespace XML {
-namespace Error {
+namespace Config {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,27 +44,13 @@ namespace Error {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < bool doit > struct Assert;
-template <> struct Assert < true >
+struct Assert
 {
-  void operator () ( bool state ) const
+  void operator () ( unsigned int id, bool state ) const
   {
     XML_ASSERT_MACRO ( state );
   }
 };
-template <> struct Assert < false >
-{
-  void operator () ( bool state ) const {}
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Exception class.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct Exception{};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,61 +59,41 @@ struct Exception{};
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < bool doit > struct Thrower;
-template <> struct Thrower < true >
+template < class Exception > struct Thrower
 {
-  void operator () ( bool state ) const
+  void operator () ( unsigned int id, bool state ) const
   {
     if ( !state )
     {
-      throw Exception();
+      std::ostringstream message;
+      message << "XML Error: " << id;
+      throw Exception ( message.str() );
     }
   }
 };
-template <> struct Thrower < false >
-{
-  void operator () ( bool state ) const {}
-};
-
-
-#if 0 // ( _MSC_VER > 1200 ) // More recent than VC++ 6.0 SP 5
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Callback policy. Uses partial template specialization. 
-//  Won't work with VC6.
+//  Callback policy.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Function, class Data, bool doit > struct Callback;
-template < class Function, class Data > struct Callback < Function, Data, true >
+template < class Functor > struct Callback
 {
-  Callback<true> : _function ( 0 ), _data ( 0 ){}
-  void operator () ( bool state ) const
+  Callback() : _f(){}
+  Callback ( const Callback &cb ) : _f ( cb._f ){}
+  void operator () ( unsigned int id, bool state ) const
   {
-    if ( !state && _function )
-    {
-      _function ( _data );
-    }
+    _f ( id, state );
   }
-  void setCallback ( Function function, const Data &data )
+  void functor ( Functor f )
   {
-    _function = function;
-    _data = data;
+    _f = f;
   }
 protected:
-  Function _function;
-  Data _data;
+  Functor _f;
 };
-template < class Function, class Data > struct Callback < Function, Data, false >
-{
-  void operator () ( bool state ) const {}
-  void setCallback ( Function function, const Data &data ){}
-};
-
-
-#endif // _MSC_VER
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,20 +104,26 @@ template < class Function, class Data > struct Callback < Function, Data, false 
 
 template < class PolicyA, class PolicyB > struct Pair
 {
-  void operator () ( bool state ) const
+  void operator () ( unsigned int id, bool state ) const
   {
     if ( !state )
     {
-      PolicyA() ( state );
-      PolicyB() ( state );
+      PolicyA() ( id, state );
+      PolicyB() ( id, state );
     }
   }
 };
 
 
-}; // namespace Error
+}; // namespace Config
 }; // namespace XML
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cleanup
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #undef XML_ASSERT_MACRO
 

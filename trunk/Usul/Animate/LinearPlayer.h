@@ -21,7 +21,7 @@ namespace Usul
       typedef typename Sequence::value_type Frame;
       typedef typename Player< Sequence, Callback > BaseClass;
 
-      LinearPlayer ( Callback cb ) : BaseClass( cb ) { }
+      LinearPlayer ( Callback *cb ) : BaseClass( cb ) { }
 
       template < class Itr > _play ( Itr first, Itr second, Itr end)
       {
@@ -29,7 +29,9 @@ namespace Usul
         {
           if(_stop)
             break;
-          _callback ( *first, *second );
+          _callback->setFrameOne( *first );
+          _callback->setFrameTwo( *second );
+          (*_callback) (  );
           ++first;
           ++second;
         }

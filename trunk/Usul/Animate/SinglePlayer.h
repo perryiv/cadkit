@@ -21,7 +21,7 @@ namespace Usul
       typedef typename Sequence::value_type Frame;
       typedef typename Player< Sequence, Callback > BaseClass;
 
-      SinglePlayer ( Callback cb ) : BaseClass( cb ) { }
+      SinglePlayer ( Callback *cb ) : BaseClass( cb ) { }
 
       virtual void play()  { }
       virtual void forward ( Sequence &frames ) { }

@@ -175,10 +175,6 @@ SOURCE=.\SlInlineMath.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlPathname.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlPreComputedArrays.cpp
 # End Source File
 # Begin Source File
@@ -400,6 +396,18 @@ SOURCE=.\SlQueryPtr.h
 # Begin Source File
 
 SOURCE=.\SlRefPtr.h
+# End Source File
+# End Group
+# Begin Group "File System"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlFileStats.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlPathname.h
 # End Source File
 # End Group
 # End Target

@@ -27,10 +27,10 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/File/Size.h"
 
 #include <fstream>
 #include <sstream>
-#include <sys/stat.h>
 #include <cassert>
 
 #include <ctime>
@@ -38,12 +38,6 @@
 
 #include "Atom.h"
 #include "Bond.h"
-
-#ifdef _WIN32
-# define STAT _stat
-#else
-# define STAT stat
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -209,12 +203,9 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
   //std::string psfPath = _getPsfPath( file );
   //std::ifstream psf( psfPath.c_str());
 
-  //Get the file size
-  struct STAT filebuf;
-  int result ( _stat ( file.c_str(), &filebuf ) );
   
   // Parse all the file and build internal data.
-  this->_parse ( in, filebuf.st_size );
+  this->_parse ( in, Usul::File::filesize( file ) );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );

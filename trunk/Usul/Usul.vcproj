@@ -324,6 +324,9 @@
 				Name="Interfaces"
 				Filter="">
 				<File
+					RelativePath=".\Interfaces\IAcceptExtension.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IActiveView.h">
 				</File>
 				<File
@@ -343,6 +346,9 @@
 				</File>
 				<File
 					RelativePath="Interfaces\ICommand.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDocument.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFoxAddTab.h">
@@ -399,6 +405,9 @@
 					RelativePath=".\Interfaces\ILoadFileDialog.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IMainWindow.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IMenuEntry.h">
 				</File>
 				<File
@@ -435,6 +444,9 @@
 					RelativePath=".\Interfaces\ISaveFileDialog.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IScene.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h">
 				</File>
 				<File
@@ -469,6 +481,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IUpdateTreeControls.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IView.h">
 				</File>
 				<File
 					RelativePath="Interfaces\IWrite.h">
@@ -696,6 +711,9 @@
 				</File>
 				<File
 					RelativePath=".\File\Path.h">
+				</File>
+				<File
+					RelativePath=".\File\Size.h">
 				</File>
 			</Filter>
 			<Filter

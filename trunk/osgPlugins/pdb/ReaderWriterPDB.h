@@ -88,6 +88,8 @@ public:
 
   MoleculeList*           getMolecules() { return _molecules.get(); }
 
+  void init() { this->_init(); }
+
 protected:
 
   osg::Group *            _build() const;

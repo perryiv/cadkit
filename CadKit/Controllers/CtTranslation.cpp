@@ -42,11 +42,10 @@
 #include "Interfaces/IOutputAttribute.h"
 #include "Interfaces/IOutputPrecision.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <time.h>
-# include <stdexcept>
-# include <sstream>
-#endif
+#include <time.h>
+#include <stdexcept>
+#include <sstream>
+
 
 #define PRINT if ( _out ) (*_out)
 #define MIN_NUM_ARGS 2
@@ -79,7 +78,8 @@ CtTranslation::CtTranslation() : SlRefBase ( 0 ),
   _lodOption ( CadKit::PROCESS_ALL_LODS ),
   _zeroRange ( 0.0, 0.0 ),
   _target ( 0x0 ),
-  _source ( 0x0 )
+  _source ( 0x0 ),
+  _outputDir ( "" )
 {
   SL_PRINT2 ( "In CtTranslation::CtTranslation(), this = %X\n", this );
 }
@@ -342,6 +342,20 @@ bool CtTranslation::_parseArguments ( int argc, char **argv, std::list<std::stri
         std::cout << this->_getUsageSubString ( "--num-decimals" ) << '\n';
         return false;
       }
+    }
+
+    else if ( arg == "-od" || arg == "--output-directory" )
+    {
+      // Get the next argument, if there is one.
+      _outputDir = ( ( i + 1 == argc ) ? "" : argv[++i] );
+
+      // Make sure the directory exists. TODO
+      //if ( false == CadKit::makeDirectory ( _outputDir ) )
+      //{
+      //  // Print useful message.
+      //  std::cout << "Error: unable to create output directory: " << _outputDir << '\n';
+      //  return false;
+      //}
     }
 
     // Otherwise just save the argument.
@@ -755,20 +769,18 @@ std::string CtTranslation::_getOutputName ( const std::string &filename )
   // Parse the path.
   SlPathname<std::string> path ( filename );
 
-  // Make a copy of the input filename.
-  std::string out ( filename );
-
-  // Drop the extension.
-  out.resize ( out.size() - path.getExtension().size() );
+  // Replace the directory if we have a valid one.
+  if ( false == _outputDir.empty() )
+    path.setDirectory ( _outputDir );
 
   // Get the target's file extension.
   std::string ext ( this->_getTargetFileExtension() );
 
-  // Add the extension, or some default.
-  out += ( ( ext.empty() ) ? "data" : ext );
+  // Set the extension, or some default.
+  path.setExtension ( ( ext.empty() ) ? "data" : ext );
 
   // Return the output filename.
-  return out;
+  return path.getPathname();
 }
 
 

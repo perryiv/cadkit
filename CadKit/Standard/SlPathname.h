@@ -67,8 +67,12 @@ public:
 
   bool                  isSamePath ( const SlPathname<String> &pathname );
 
-  void                  setPathname ( const String &pathname );
-  void                  setPathname ( const SlPathname &pathname );
+  void                  setDrive     ( const String &drive )     { _drive = drive; }
+  void                  setDirectory ( const String &directory ) { _dir = directory; }
+  void                  setFilename  ( const String &filename )  { _file = filename; }
+  void                  setExtension ( const String &extension ) { _ext = extension; }
+  void                  setPathname  ( const String &pathname );
+  void                  setPathname  ( const SlPathname &pathname );
 
   void                  toFullPath();
 

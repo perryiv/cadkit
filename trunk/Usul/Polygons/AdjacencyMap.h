@@ -248,8 +248,8 @@ public:
       for( PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
       {
         //If these two polygons are adjacent...
-        if( adjacent ( &*iter, *i ) )
-          adjacent.push_back( *i );
+        //if( adjacent ( &*iter, *i ) )
+        //  adjacent.push_back( *i );
       }
 
       //If we don't have the right number of adjacent polygons...

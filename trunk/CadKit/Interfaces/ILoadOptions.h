@@ -51,11 +51,11 @@ public:
   };
 
   // Possible shape load options. (Depreciated in favor of ILodOption.)
-//  enum ShapeLoadOption
-//  {
-//    ALL_LODS,
-//    HIGH_LOD
-//  };
+  enum ShapeLoadOption
+  {
+    ALL_LODS,
+    HIGH_LOD
+  };
 
   // Set the assembly load option. Returns false if not supported.
   virtual bool            setAssemblyLoadOption ( const AssemblyLoadOption &option ) = 0;
@@ -67,7 +67,7 @@ public:
   virtual bool            setPartLoadOption ( const PartLoadOption &option ) = 0;
 
   // Set the shape load option. Returns false if not supported.
-//  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option ) = 0;
+  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option ) = 0;
 };
 
 }; // namespace CadKit

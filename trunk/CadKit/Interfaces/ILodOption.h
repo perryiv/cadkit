@@ -17,6 +17,7 @@
 #define _CADKIT_INTERFACE_LEVEL_OF_DETAIL_OPTION_H_
 
 #include "IUnknown.h"
+#include "Enum.h"
 
 
 namespace CadKit

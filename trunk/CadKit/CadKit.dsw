@@ -39,6 +39,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DatabaseXml"=.\Database\XML\DatabaseXml.dsp - Package Owner=<4>
 
 Package=<5>
@@ -47,6 +62,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -170,6 +188,12 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -182,6 +206,27 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "jt2xml"=.\Translators\jt2xml\jt2xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
 }}}
 
 ###############################################################################

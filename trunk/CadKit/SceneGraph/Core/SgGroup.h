@@ -86,7 +86,7 @@ public:
   void            removeAllChildren();
   void            removeAllExcept ( const SgNode *notMe );
 
-  // Remove the specified child, decrementing it's reference number. If the child's
+  // Remove the specified child, decrementing its reference number. If the child's
   // reference number goes to zero then it's automatically deleted. The first one 
   // returns false if it cannot find the specified child. The second one will assert
   // (in debug build) if the given index is out of range.

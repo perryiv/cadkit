@@ -108,6 +108,9 @@ public:
   SlTString &               append ( size_type n, T c );
   SlTString &               append ( const_iterator first, const_iterator last );
 
+  // Clear the string. Some implementations of std::basic_string do not have this.
+  void                      clear();
+
   // Return the first and last letters, or '\0' if the string is empty.
   T                         getFirst() const { return ( this->empty() ) ? ((T)0) : this->at ( 0 ); }
   T                         getLast()  const { return ( this->empty() ) ? ((T)0) : this->at ( this->size() - 1 ); }
@@ -362,6 +365,19 @@ template<class T> inline SlTString<T> &SlTString<T>::append ( const_iterator fir
 {
   ((std::basic_string<T> &) *this).append ( first, last );
   return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the string. Some implementations of std::basic_string do not have.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlTString<T>::clear()
+{
+  // Removes from [first,last), so we can pass "end()" for "last".
+  this->erase ( this->begin(), this->end() );
 }
 
 

@@ -16,6 +16,9 @@
 #include <list>
 #include <map>
 
+#include <iostream>
+#include <fstream>
+
 namespace osg { class Group; class Geode; };
 
 
@@ -24,6 +27,7 @@ class ReaderWriterSTL : public osgDB::ReaderWriter
 public:
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
+  typedef osgDB::ReaderWriter::WriteResult WriteResult;
 
   ReaderWriterSTL();
   ~ReaderWriterSTL();
@@ -32,6 +36,8 @@ public:
   virtual const char*     className();
   virtual Result          readNode ( const std::string &filename, const Options *options );
 
+  virtual WriteResult     writeNode(const osg::Node& node, const std::string& fileName, const Options* options);
+
 
 protected:
 
@@ -39,6 +45,32 @@ protected:
   void                    _init();
   void                    _parse ( std::ifstream &in );
   Result                  _read ( const std::string &, const Options * );
+
+  template < class Writer >
+  struct GeodeWriter
+  {
+    GeodeWriter( Writer writer ) : _writer ( writer ) { } 
+    void writeGeode( osg::Geode * );
+  private:
+    Writer _writer;
+  };
+
+  struct AsciiWriter
+  {
+    AsciiWriter( std::ostream& out ) : _out ( out ) { }
+    void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
+  private:
+    std::ostream &_out;
+  };
+
+  struct BinaryWriter
+  {
+    BinaryWriter( std::ostream& out ) : _out ( out ) { }
+    void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
+  private:
+    std::ostream &_out;
+  };
+
 
 private:
 

@@ -18,6 +18,9 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
+#include "OsgTools/Visitor.h"
+#include "Usul/Adaptors/MemberFunction.h"
+
 #include <sstream>
 #include <iostream>
 #include <cassert>
@@ -68,7 +71,7 @@ bool ReaderWriterSTL::acceptsExtension ( const std::string &ext )
 
 const char* ReaderWriterSTL::className()
 {
-  return "STL Reader";
+  return "STL Reader/Writer";
 }
 
 
@@ -197,6 +200,8 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
          '.' != c &&
          '-' != c &&
          '+' != c &&
+         ':' != c &&
+         '\\' != c &&
          'E' != c &&
          'e' != c )
     {
@@ -371,6 +376,111 @@ ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, co
   return root.release();
 }
 
+ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, const std::string& fileName, const Options* options) \
+{ 
+  std::string ext = osgDB::getFileExtension(fileName);
+  if (!acceptsExtension(ext)) return WriteResult::FILE_NOT_HANDLED;
+
+  std::ofstream fout ( fileName.c_str() );
+  if ( !fout.is_open() )
+    return WriteResult::ERROR_IN_WRITING_FILE;
+
+  fout << "solid " << fileName << std::endl;
+
+  AsciiWriter writer( fout );
+
+  GeodeWriter<AsciiWriter> *geodeWriter = new GeodeWriter<AsciiWriter> ( writer );
+
+  osg::ref_ptr<osg::NodeVisitor> geodeVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( geodeWriter, &GeodeWriter<AsciiWriter>::writeGeode ) ) );
+
+  osg::Node &n = const_cast< osg::Node& > ( node );
+
+  n.accept( *geodeVisitor);
+
+  fout << "endsolid " << fileName << std::endl;
+
+  return WriteResult::FILE_SAVED; 
+}
+
+template < class Writer >
+void ReaderWriterSTL::GeodeWriter< Writer >::writeGeode( osg::Geode *geode )
+{
+  //loop through the drawables
+  unsigned int numDrawables ( geode->getNumDrawables() );
+  for ( unsigned int i = 0; i < numDrawables; ++i )
+  {
+    // Get the drawable.
+    const osg::Drawable *drawable = geode->getDrawable ( i );
+
+    // See if the drawable is a geometry.
+    const osg::Geometry *geometry = drawable->asGeometry();
+    if(geometry)
+    {
+      const osg::Array *constarray = geometry->getVertexArray();
+      osg::Array *array = const_cast < osg::Array*> ( constarray );
+      osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array*> (array);
+      const osg::Vec3Array *constvec3array = geometry->getNormalArray();
+      osg::ref_ptr< osg::Vec3Array > normals  = const_cast<osg::Vec3Array *> (constvec3array);
+
+      for(unsigned int j = 0; j < normals->size(); ++j)
+      {
+        _writer(normals->at(j), vertices->at(j*3), vertices->at(j*3+1), vertices->at(j*3+2));
+      }
+    }
+  }
+}
+
+void ReaderWriterSTL::AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
+{
+  _out << "facet normal " << normal[0] << " " << normal[1] << " " << normal[2] << " " << std::endl;
+  _out << "  outer loop " << std::endl;
+  _out << "    vertex "   << v1[0] << " " << v1[1] << " " << v1[2] << " " << std::endl;
+  _out << "    vertex "   << v2[0] << " " << v2[1] << " " << v2[2] << " " << std::endl;
+  _out << "    vertex "   << v3[0] << " " << v3[1] << " " << v3[2] << " " << std::endl;
+  _out << "  endloop"     << std::endl;
+  _out << "endfacet"      << std::endl;
+}
+
+void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
+{
+  char* buf[50]; //50 bytes to define a facet
+
+  float f[3];
+
+  //write normal
+  f[0] = normal[0];
+  f[1] = normal[1];
+  f[2] = normal[2];
+  ::memcpy( buf    , f  , 4);
+  ::memcpy( buf + 4, f+4, 4);
+  ::memcpy( buf + 8, f+8, 4);
+
+  f[0] = v1[0];
+  f[1] = v1[1];
+  f[2] = v1[2];
+  ::memcpy( buf + 12, f  , 4);
+  ::memcpy( buf + 16, f+4, 4);
+  ::memcpy( buf + 20, f+8, 4);
+
+  f[0] = v2[0];
+  f[1] = v2[1];
+  f[2] = v2[2];
+  ::memcpy( buf + 24, f  , 4);
+  ::memcpy( buf + 28, f+4, 4);
+  ::memcpy( buf + 32, f+8, 4);
+
+  f[0] = v3[0];
+  f[1] = v3[1];
+  f[2] = v3[2];
+  ::memcpy( buf + 36, f  , 4);
+  ::memcpy( buf + 40, f+4, 4);
+  ::memcpy( buf + 44, f+8, 4);
+
+  ::memcpy( buf + 48, 0x0, 1);
+  ::memcpy( buf + 49, 0x0, 1);
+
+  _out << buf;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

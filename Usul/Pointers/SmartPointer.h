@@ -268,6 +268,29 @@ struct SmartPointer
     return saved;
   }
 
+  
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Predicate to determine if another smart pointer is equal to this
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct IsEqual
+  {
+    IsEqual( element_type* p ) :
+    _p ( p )
+    { }
+
+    bool operator() ( const ThisType& t ) const
+    {
+      return _p == t.get();
+    }
+
+  private:
+    IsEqual();
+
+    element_type *_p;
+  };
 
 protected:
 

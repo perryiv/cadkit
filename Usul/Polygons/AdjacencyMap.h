@@ -243,7 +243,7 @@ public:
         iter->second->append( &p );
       }
 
-      //Set the polygon's index and go to the next polygon
+      //Set the polygon's index
       p.index( _polygons.size() - 1 );
 
       //update the progress

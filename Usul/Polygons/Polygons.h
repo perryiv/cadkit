@@ -132,25 +132,6 @@ private:
   SharedVertex *       _sharedVertex;
 };
 
-template< class Polygon >
-struct PolyLess : public std::binary_function< Polygon, Polygon, bool >
-{
-  bool operator () ( const Polygon* p1, const Polygon* p2 ) const
-  {
-    return p1->index() < p2->index();
-  }
-};
-
-template< class Polygon >
-struct PolyEqual : public std::binary_function< Polygon, Polygon, bool >
-{
-  bool operator () ( const Polygon* p1, const Polygon* p2 ) const
-  {
-    return p1->index() == p2->index();
-  }
-};
-
-
 
 } //namespace Polygons
 

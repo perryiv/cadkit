@@ -819,6 +819,9 @@
 					RelativePath=".\Polygons\Polygons.h">
 				</File>
 				<File
+					RelativePath=".\Polygons\Predicates.h">
+				</File>
+				<File
 					RelativePath=".\Polygons\SharedVertex.h">
 				</File>
 				<File

@@ -577,6 +577,9 @@
 				Name="Containers"
 				Filter="">
 				<File
+					RelativePath=".\Containers\OctTree.h">
+				</File>
+				<File
 					RelativePath=".\Containers\Vector.h">
 				</File>
 			</Filter>

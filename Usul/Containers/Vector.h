@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_CONTAINERS_s_CLASSES_H_
-#define _USUL_CONTAINERS_s_CLASSES_H_
+#ifndef _USUL_CONTAINERS_VECTOR_CLASS_H_
+#define _USUL_CONTAINERS_VECTOR_CLASS_H_
 
 #include <functional>
 
@@ -456,4 +456,4 @@ template < class S, class E > inline bool operator !=
 }
 
 
-#endif // _USUL_CONTAINERS_s_CLASSES_H_
+#endif // _USUL_CONTAINERS_VECTOR_CLASS_H_

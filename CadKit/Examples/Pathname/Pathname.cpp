@@ -2,15 +2,24 @@
 #define CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
 #define CADKIT_DEFINE_SL_VECTOR_STD_OSTREAM_OPERATOR
 
+#ifdef _WIN32
+#pragma warning(disable:4786) // Truncated debug names.
+#endif
+
 #include "Standard/SlPathname.h"
+#include "Standard/SlAString.h"
+#include "Standard/SlWString.h"
 using namespace CadKit;
 
 #include <iostream>
 using namespace std;
 
+typedef SlPathname<SlAString> SlAPathname;
+typedef SlPathname<SlWString> SlWPathname;
+
 
 void test ( const char *filename )
-{
+{/*
   SlAPathname path1 ( filename );
   std::cout << " pathname: " << path1.getPathname() << std::endl;
   std::cout << " fullpath: " << path1.getFullpath() << std::endl;
@@ -35,7 +44,7 @@ void test ( const char *filename )
   std::cout << "path1.isSamePath ( path2 ) = " << path1.isSamePath ( path2 ) << std::endl;
   std::cout << "path2.isSamePath ( path1 ) = " << path2.isSamePath ( path1 ) << std::endl;
   std::cout << std::endl;
-
+*/
   SlWPathname path3 ( L"./test3" );
   std::wcout << L" pathname: " << path3.getPathname() << std::endl;
   std::wcout << L" fullpath: " << path3.getFullpath() << std::endl;

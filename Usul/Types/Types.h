@@ -31,17 +31,23 @@ namespace Types {
   typedef __int32           Int32;
   typedef __int16           Int16;
 
+  typedef float             Float32;
+  typedef double            Float64;
+
 #else
 
   #include <stdint.h>
 
-  typedef uint64_t            Uint64;
-  typedef uint32_t            Uint32;
-  typedef uint16_t            Uint16;
+  typedef uint64_t          Uint64;
+  typedef uint32_t          Uint32;
+  typedef uint16_t          Uint16;
 
-  typedef int64_t             Int64;
-  typedef int32_t             Int32;
-  typedef int16_t             Int16;
+  typedef int64_t           Int64;
+  typedef int32_t           Int32;
+  typedef int16_t           Int16;
+
+  typedef float             Float32;
+  typedef double            Float64;
 
 #endif
 

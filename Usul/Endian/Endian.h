@@ -155,6 +155,10 @@ template <> struct ReverseBytes < sizeof ( Usul::Types::Uint32 ) >
   {
     Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint32&, n ) );
   }
+  void operator () ( Usul::Types::Float32 &n ) const
+  {
+    Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint32&, n ) );
+  }
 };
 template <> struct ReverseBytes < sizeof ( Usul::Types::Uint64 ) >
 {
@@ -163,6 +167,10 @@ template <> struct ReverseBytes < sizeof ( Usul::Types::Uint64 ) >
     Usul::Endian::Detail::_reverseBytes ( n );
   }
   void operator () ( Usul::Types::Int64 &n ) const
+  {
+    Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint64&, n ) );
+  }
+  void operator () ( Usul::Types::Float64 &n ) const
   {
     Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint64&, n ) );
   }

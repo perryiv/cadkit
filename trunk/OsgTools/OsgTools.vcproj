@@ -304,9 +304,6 @@
 					RelativePath="Declarations.h">
 				</File>
 				<File
-					RelativePath="ErrorChecker.h">
-				</File>
-				<File
 					RelativePath="Export.h">
 				</File>
 			</Filter>

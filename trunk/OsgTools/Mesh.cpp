@@ -13,18 +13,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Mesh.h"
-#include "ErrorChecker.h"
+#include "OsgTools/Mesh.h"
+
+#include "Usul/Errors/Checker.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"
 
-#include "Usul/Exceptions/Thrower.h"
-
-#include <fstream>
-#include <iomanip>
-
 using namespace OsgTools;
+
+typedef Usul::Errors::Checker ErrorChecker;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,100 +142,6 @@ Mesh::reference Mesh::normal ( size_type r, size_type c )
 Mesh::const_reference Mesh::normal ( size_type r, size_type c ) const
 {
   return _normals.at ( r * _columns + c );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reads a simple ascii text file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Mesh::read ( const std::string &filename )
-{
-  // Open the file.
-  std::ifstream in ( filename.c_str(), std::ios::in );
-  if ( !in )
-  {
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 1389143263, failed to open.",
-        "\n\tFile: ", filename );
-  }
-
-  // Read the number of points.
-  unsigned int rows    ( 0 );
-  unsigned int columns ( 0 );
-  in >> rows >> columns;
-  if ( rows < 2 )
-  {
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 1208199594, Invalid number of rows in file, need at least two.",
-        "\n\tFile: ", filename,
-        "\n\tRows: ", rows );
-  }
-  if ( columns < 2 )
-  {
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 1226441327, Invalid number of columns in file, need at least two.",
-        "\n\tFile:    ", filename,
-        "\n\tColumns: ", columns );
-  }
-
-  // The points and normals.
-  Vectors points, normals;
-  points.resize  ( rows * columns );
-  normals.resize ( rows * columns );
-
-  // Read the points.
-  for ( Vectors::size_type j = 0; j < points.size(); ++j )
-  {
-    // Make sure there are more.
-    if ( in.fail() || in.eof() )
-    {
-      Usul::Exceptions::Thrower<std::runtime_error>
-        ( "Error 3070575716, there should be ", points.size(), " data points.",
-          "\n\tFile: ", filename );
-    }
-
-    // Discard for now...
-    unsigned int row, column;
-    in >> row >> column;
-
-    // Set this element.
-    in >> points[j][0] >> points[j][1] >> points[j][2];
-
-    // Read the rest of the line, discarding additional dimensions.
-    while ( '\n' != in.peek() )
-      in.get();
-  }
-
-  // Read the normals.
-  for ( Vectors::size_type i = 0; i < normals.size(); ++i )
-  {
-    // Make sure there are more.
-    if ( in.fail() || in.eof() )
-    {
-      Usul::Exceptions::Thrower<std::runtime_error>
-        ( "Error 3418646572, there should be ", normals.size(), " normals.",
-          "\n\tFile: ", filename );
-    }
-
-    // Discard for now...
-    unsigned int row, column;
-    in >> row >> column;
-
-    // Set this element.
-    in >> normals[i][0] >> normals[i][1] >> normals[i][2];
-  }
-
-  // Assign the members.
-  _rows    = rows;
-  _columns = columns;
-  _points  = points;
-  _normals = normals;
-
-  // Normalize the normals.
-  this->normalize();
 }
 
 

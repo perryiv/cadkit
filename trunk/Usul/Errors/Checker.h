@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Specify the type of error checking.
+//  Typical error checking.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OSG_TOOLS_ERROR_CHECKER_H_
-#define _OSG_TOOLS_ERROR_CHECKER_H_
+#ifndef _USUL_ERROR_CHECKER_H_
+#define _USUL_ERROR_CHECKER_H_
 
 #include "Usul/Errors/AssertPolicy.h"
 #include "Usul/Errors/PrintingPolicy.h"
@@ -25,7 +25,8 @@
 #include <stdexcept>
 
 
-namespace OsgTools {
+namespace Usul {
+namespace Errors {
 
 
 #ifdef _DEBUG
@@ -37,22 +38,23 @@ namespace OsgTools {
       Usul::Errors::AssertPolicy, 
       Usul::Errors::ThrowingPolicy < std::runtime_error >
     >
-    ErrorChecker;
+    Checker;
 
   #else
 
-    typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorChecker;
+    typedef Usul::Errors::ThrowingPolicy < std::runtime_error > Checker;
 
   #endif
 
 #else
 
-  typedef Usul::Errors::DoNothingPolicy ErrorChecker;
+  typedef Usul::Errors::DoNothingPolicy Checker;
 
 #endif
 
 
-}; // namespace OsgTools
+}; // namespace Errors
+}; // namespace Usul
 
 
-#endif // _OSG_TOOLS_ERROR_CHECKER_H_
+#endif // _USUL_ERROR_CHECKER_H_

@@ -30,10 +30,12 @@ namespace osg { class Group; class LOD; class Geode; };
 class OSG_PDB_EXPORT ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
+
+  typedef osgDB::ReaderWriter BaseClass;
   typedef osgPlugins::pdb::Molecule Molecule;
   typedef osg::ref_ptr< Molecule > MoleculePtr;
   typedef std::vector< MoleculePtr > Molecules;
-  typedef osgDB::ReaderWriter::ReadResult Result;
+  typedef osgDB::ReaderWriter::ReadResult ReadResult;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
   typedef osgDB::ReaderWriter::Options Options;
   typedef Molecule::MaterialFactory MaterialFactory;
@@ -62,9 +64,9 @@ public:
 
   virtual const char*     className();
 
-  virtual Result          readNode ( const std::string &filename, const Options * );
+  virtual ReadResult      readNode ( const std::string &filename, const Options * );
 
-  virtual WriteResult     writeNode(const osg::Node& node, const std::string& fileName, const Options* options);
+  virtual WriteResult     writeNode ( const osg::Node& node, const std::string& fileName, const Options* options );
 
   // Show/hide the item.
   void                    showAtoms ( bool );
@@ -101,7 +103,9 @@ protected:
   void                    _parse ( std::ifstream &in, unsigned int filesize);
   void                    _parsePsf ( std::ifstream &in );
 
-  Result                  _read ( const std::string &, const Options * );
+  ReadResult              _read ( const std::string &, const Options * );
+
+  WriteResult             _write ( const osg::Node &, const std::string &, const Options * );
 
 private:
   

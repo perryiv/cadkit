@@ -28,9 +28,11 @@ struct FileExists : public std::unary_function < const std::string &, bool >
 {
   struct File
   {
-    File();
-    File ( const File &f );
-    File ( const std::string &filename ) : _fp ( ::fopen ( filename.c_str(), "r" ) ){}
+    File ( const std::string &filename ) : _fp ( 0x0 )
+    {
+      if ( !filename.empty() )
+        _fp = ::fopen ( filename.c_str(), "r" );
+    }
     ~File()
     {
       if ( _fp )
@@ -38,9 +40,14 @@ struct FileExists : public std::unary_function < const std::string &, bool >
     }
     bool exists() const { return 0x0 != _fp; }
   protected:
+    File();                 // No default construction.
+    File ( const File &f ); // No copy construction.
+  private:
     FILE *_fp;
   };
-  FileExists(){}
+  FileExists()
+  {
+  }
   bool operator () ( const std::string &s ) const
   {
     File file ( s );

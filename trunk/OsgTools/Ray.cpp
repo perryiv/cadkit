@@ -13,14 +13,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Ray.h"
-#include "ErrorChecker.h"
+#include "OsgTools/Ray.h"
+
+#include "Usul/Errors/Checker.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/LineWidth"
 
 using namespace OsgTools;
+
+typedef Usul::Errors::Checker ErrorChecker;
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -33,8 +33,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterYARN::ReaderWriterYARN() :
-  _meshes()
+ReaderWriterYARN::ReaderWriterYARN() : BaseClass(),
+  _yarns()
 {
 }
 
@@ -110,6 +110,45 @@ ReaderWriterYARN::Result ReaderWriterYARN::readNode ( const std::string &file, c
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build the triangle-fan.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterYARN::_makeFan ( const Vec3 &center, const OsgTools::Mesh &mesh, unsigned int stack ) const
+{
+  const unsigned int size ( mesh.rows() + 1 );
+  osg::ref_ptr<osg::Vec3Array> points ( new osg::Vec3Array ( size ) );
+  osg::ref_ptr<osg::Vec3Array> normal ( new osg::Vec3Array ( 1 ) );
+
+  points->at(0) = center;
+  for ( unsigned int i = 1; i < size; ++i )
+    points->at(i) = mesh.point ( i - 1, stack );
+
+  Vec3 a ( points->at(1) - center );
+  Vec3 b ( points->at(2) - center );
+  Vec3 c ( a ^ b ); // Cross-product
+  c.normalize();
+
+  // Flip the normal if we are at the end.
+  if ( 0 == stack )
+    c *= -1;
+
+  normal->at(0) = c;
+
+  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  geometry->setVertexArray ( points.get() );
+  geometry->setNormalArray ( normal.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_FAN, 0, points->size() ) );
+
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,17 +162,33 @@ osg::Group *ReaderWriterYARN::_build() const
   OsgTools::MaterialFactory::Ptr materialFactory ( new OsgTools::MaterialFactory );
 
   // Loop through the meshes.
-  for ( Meshes::const_iterator i = _meshes.begin(); i != _meshes.end(); ++i )
+  for ( Yarns::const_iterator i = _yarns.begin(); i != _yarns.end(); ++i )
   {
+    const CenterCurve &curve = i->first;
+    const OsgTools::Mesh &mesh = i->second;
+
     // Generate the node.
-    osg::ref_ptr<osg::Node> node ( (*i)() );
+    osg::ref_ptr<osg::Node> node ( mesh() );
 
     // Set the material.
     osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-    ss->setAttribute ( materialFactory->create() );
+    osg::ref_ptr<osg::Material> mat ( materialFactory->create() );
+    ss->setAttribute ( mat.get() );
 
     // Add new mesh to the root.
     root->addChild ( node.get() );
+
+    // Make a triangle-fan on the left side and set the material.
+    osg::ref_ptr<osg::Node> cap ( this->_makeFan ( curve.front(), mesh, 0 ) );
+    ss = cap->getOrCreateStateSet();
+    ss->setAttribute ( mat.get() );
+    root->addChild ( cap.get() );
+
+    // Same on the right.
+    cap = this->_makeFan ( curve.back(),  mesh, curve.size() - 1 );
+    ss = cap->getOrCreateStateSet();
+    ss->setAttribute ( mat.get() );
+    root->addChild ( cap.get() );
   }
 
   // Return the root.
@@ -149,7 +204,7 @@ osg::Group *ReaderWriterYARN::_build() const
 
 void  ReaderWriterYARN::_init()
 {
-  _meshes.clear();
+  _yarns.clear();
 }
 
 
@@ -161,12 +216,12 @@ void  ReaderWriterYARN::_init()
 
 ReaderWriterYARN::Result ReaderWriterYARN::_read ( const std::string &filename, const Options *options )
 {
-  // Make sure the internal data members are initialized.
-  this->_init();
-
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
     return ReadResult::FILE_NOT_HANDLED;
+
+  // Make sure the internal data members are initialized.
+  this->_init();
 
   // Open the file.
   std::ifstream in ( filename.c_str() );
@@ -217,7 +272,7 @@ void ReaderWriterYARN::_parseYarns ( std::ifstream& fin )
     if ( word == "total_yarn_number" )
     {
       in >> numYarns;
-      _meshes.resize ( numYarns );
+      _yarns.resize ( numYarns );
     }
 
     else if ( word == "number_of_slices" )
@@ -254,9 +309,10 @@ void ReaderWriterYARN::_parseNumStacks ( std::ifstream& fin, unsigned int numYar
   for ( unsigned int i = 0; i < numYarns; ++i )
   {
     fin >> yarn >> stacks;
-    _meshes.at(yarn).points().resize  ( stacks * numSlices );
-    _meshes.at(yarn).normals().resize ( stacks * numSlices );
-    _meshes.at(yarn).size ( numSlices, stacks );
+    _yarns.at(yarn).second.points().resize  ( stacks * numSlices );
+    _yarns.at(yarn).second.normals().resize ( stacks * numSlices );
+    _yarns.at(yarn).second.size ( numSlices, stacks );
+    _yarns.at(yarn).first.resize ( stacks ); // Number of points in center-curve.
   }
 }
 
@@ -278,20 +334,23 @@ void ReaderWriterYARN::_parseStack ( std::ifstream& fin, unsigned int numSlices,
     fin >> yarn >> stack >> slice >> x >> y >> z;
 
     // Set the vertex.
-    Vertex &v = _meshes.at(yarn).point ( slice, stack );
+    Vertex &v = _yarns.at(yarn).second.point ( slice, stack );
     v[0] = x;
     v[1] = y;
     v[2] = z;
 
     // Set the normal.
-    Normal &n = _meshes.at(yarn).normal ( slice, stack );
+    Normal &n = _yarns.at(yarn).second.normal ( slice, stack );
     n = v - center;
     n.normalize();
   }
 
   // Close the loop by setting the last vertex to be the first.
-  _meshes.at(yarn).point  ( numSlices, stack ) = _meshes.at(yarn).point  ( 0, stack );
-  _meshes.at(yarn).normal ( numSlices, stack ) = _meshes.at(yarn).normal ( 0, stack );
+  _yarns.at(yarn).second.point  ( numSlices, stack ) = _yarns.at(yarn).second.point  ( 0, stack );
+  _yarns.at(yarn).second.normal ( numSlices, stack ) = _yarns.at(yarn).second.normal ( 0, stack );
+
+  // Set the center point.
+  _yarns.at(yarn).first.at(stack) = center;
 }
 
 

@@ -25,6 +25,8 @@ namespace osg { class Group; class Geode; };
 class ReaderWriterSTL : public osgDB::ReaderWriter
 {
 public:
+
+  typedef osgDB::ReaderWriter BaseClass;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;

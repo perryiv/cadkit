@@ -50,6 +50,7 @@ public:
   void                normalize();
 
   // Access to the normals.
+  void                normals ( const Vectors &n ) { _normals = n; }
   Vectors &           normals()       { return _normals; }
   const Vectors &     normals() const { return _normals; }
 
@@ -58,15 +59,13 @@ public:
   const_reference     normal ( size_type row, size_type column ) const;
 
   // Access to the points.
+  void                points ( const Vectors &p ) { _points = p; }
   Vectors &           points()       { return _points; }
   const Vectors &     points() const { return _points; }
 
   // Access to a single point.
   reference           point ( size_type row, size_type column );
   const_reference     point ( size_type row, size_type column ) const;
-
-  // Reads a simple text file.
-  void                read ( const std::string &filename );
 
   // The number of rows.
   unsigned int        rows() const { return _rows; }

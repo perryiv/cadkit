@@ -34,7 +34,9 @@ SL_IMPLEMENT_CLASS ( DbBaseSource, DbBaseObject );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbBaseSource::DbBaseSource() : DbBaseObject(),
-  _target ( NULL )
+  _target ( NULL ),
+  _scale ( true ),
+  _needToScale ( true )
 {
   SL_PRINT2 ( "In DbBaseSource::DbBaseSource(), this = %X\n", this );
 }
@@ -66,6 +68,10 @@ IUnknown *DbBaseSource::queryInterface ( unsigned long iid )
   {
   case IDataSource::IID:
     return static_cast<IDataSource *>(this);
+  case IScaleDouble::IID:
+    return static_cast<IScaleDouble *>(this);
+  case IScaleFloat::IID:
+    return static_cast<IScaleFloat *>(this);
   default:
     return DbBaseObject::queryInterface ( iid );
   }
@@ -84,4 +90,78 @@ void DbBaseSource::setDataTarget ( IUnknown *target )
 
   // Set the target, it may be null.
   _target = target;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the current scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::scale ( double x, double y, double z )
+{
+  SL_PRINT5 ( "In DbBaseSource::scale(), this = %X, x = %f, y = %f, z = %f\n", this, x, y, z );
+
+  // Multiply the scale.
+  SlMatrix44d scale;
+  scale.setScale ( SlVec3d ( x, y, z ) );
+  _scale *= scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the current scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::scale ( float x, float y, float z )
+{
+  SL_PRINT5 ( "In DbBaseSource::scale(), this = %X, x = %f, y = %f, z = %f\n", this, x, y, z );
+
+  // Call the other one.
+  this->scale ( static_cast < float > ( x ), static_cast < float > ( y ), static_cast < float > ( z ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply the scale one time until the flag gets reset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::_applyScaleOnce ( SlMatrix44d &scale ) const
+{
+  if ( this->_doWeNeedToScale() )
+  {
+    scale *= _scale;
+    _needToScale = false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply the scale one time until the flag gets reset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::_applyScaleOnce ( SlMatrix44f &s ) const
+{
+  if ( this->_doWeNeedToScale() )
+  {
+    // Probably not the most efficient way...
+    SlMatrix44d t ( 
+      s(0,0), s(0,1), s(0,2), s(0,3),
+      s(1,0), s(1,1), s(1,2), s(1,3),
+      s(2,0), s(2,1), s(2,2), s(2,3),
+      s(3,0), s(3,1), s(3,2), s(3,3) );
+    this->_applyScaleOnce ( t );
+    s.setValue ( 
+      static_cast<float>(t(0,0)), static_cast<float>(t(0,1)), static_cast<float>(t(0,2)), static_cast<float>(t(0,3)),
+      static_cast<float>(t(1,0)), static_cast<float>(t(1,1)), static_cast<float>(t(1,2)), static_cast<float>(t(1,3)),
+      static_cast<float>(t(2,0)), static_cast<float>(t(2,1)), static_cast<float>(t(2,2)), static_cast<float>(t(2,3)),
+      static_cast<float>(t(3,0)), static_cast<float>(t(3,1)), static_cast<float>(t(3,2)), static_cast<float>(t(3,3)) );
+  }
 }

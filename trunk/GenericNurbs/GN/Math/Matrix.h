@@ -20,6 +20,7 @@
 #include "GN/Math/Absolute.h"
 
 #include <stdexcept>
+#include <limits>
 
 
 namespace GN {
@@ -34,7 +35,9 @@ namespace Math {
 
 template
 <
+  class SizeType_,
   class ContainerType_,   // Should behave as a vector of vectors.
+  class SizeContainer_,
   class ValueTester_,
   class ErrorCheckerType
 >
@@ -48,10 +51,11 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
+  typedef SizeType_ SizeType;
   typedef ContainerType_ ContainerType;
+  typedef SizeContainer_ SizeContainer;
   typedef typename ContainerType::value_type VectorType;
   typedef typename VectorType::value_type ValueType;
-  typedef typename VectorType::size_type SizeType;
   typedef ValueTester_ ValueTester;
 
 
@@ -215,6 +219,27 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //	Set all elements to the given value.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class T > void set ( const T &value )
+  {
+    // Get the existing size.
+    SizeType r ( this->rows() );
+    SizeType c ( this->columns() );
+
+    // Loop through the rows.
+    for ( SizeType i = 0; i < r; ++i )
+    {
+      // Assign the entire column.
+      _m[i].assign ( c, value );
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Assignment operator.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -253,7 +278,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void luDecomp ( VectorType &index )
+  void luDecomp ( SizeContainer &index )
   {
     SizeType imax, i, j, k;
     SizeType n ( this->rows() );
@@ -350,7 +375,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void luSolve ( const VectorType &index, VectorType &b )
+  void luSolve ( const SizeContainer &index, VectorType &b ) const
   {
     SizeType i, ii ( 0 ), ip, j;
     SizeType n ( this->rows() );
@@ -379,6 +404,24 @@ public:
       for ( j = i + 1; j <= n; ++j )
         sum -= (*this)(i,j,1) * b[j-1];
       b[i-1] = sum / (*this)(i,i,1);
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //	Apply the functor to each element.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Functor > void apply ( Functor f )
+  {
+    // Loop through the rows.
+    SizeType r ( this->rows() );
+    for ( SizeType i = 0; i < r; ++i )
+    {
+      // Apply to every element in this row.
+      std::for_each ( _m[i].begin(), _m[i].end(), f );
     }
   }
 

@@ -348,7 +348,7 @@ public:
   void set ( const ThisType &c )
   {
     // Call base class' function.
-    BaseClass::set ( s );
+    BaseClass::set ( c );
   }
 
 
@@ -360,7 +360,7 @@ public:
 
   ThisType &operator = ( const ThisType &c )
   {
-    this->set ( s );
+    this->set ( c );
     return *this;
   }
 
@@ -371,9 +371,9 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  bool equal ( const ThisType &c ) const
+  bool equal ( const ThisType &s ) const
   {
-    return BaseClass::equal ( c );
+    return BaseClass::equal ( s );
   }
 
 
@@ -386,7 +386,7 @@ public:
 
   template < class Predicate_ > bool equal ( const ThisType &s, const Predicate_ &pred ) const
   {
-    return BaseClass::equal ( c, pred );
+    return BaseClass::equal ( s, pred );
   }
 
 

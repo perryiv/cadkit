@@ -630,12 +630,12 @@ public:
                 SizeType numCtrPtsV, 
                 bool rational )
   {
-    UIntContainer o;
+    SizeContainer o;
     o.resize ( 2 );
     o[0] = orderU;
     o[1] = orderV;
 
-    UIntContainer n;
+    SizeContainer n;
     n.resize ( 2 );
     n[0] = numCtrPtsU;
     n[1] = numCtrPtsV;

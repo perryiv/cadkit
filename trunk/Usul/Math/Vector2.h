@@ -205,7 +205,7 @@ public:
 
   Vector2 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / s;
+    T reciprocal = static_cast < T > ( 1 ) / value;
     _v[0] *= reciprocal;
     _v[1] *= reciprocal;
     return *this;
@@ -220,8 +220,8 @@ public:
 
   Vector2 &operator += ( T s )
   {
-    v[0] += s;
-    v[1] += s;
+    _v[0] += s;
+    _v[1] += s;
     return *this;
   }
 
@@ -234,8 +234,8 @@ public:
 
   Vector2 &operator -= ( T s )
   {
-    v[0] -= s;
-    v[1] -= s;
+    _v[0] -= s;
+    _v[1] -= s;
     return *this;
   }
 

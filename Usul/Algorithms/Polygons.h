@@ -24,67 +24,38 @@
 
 namespace Usul {
 namespace Algorithms {
-
-  namespace Detail 
-  {
-    template < class Iterator, class VertexSequence > 
-    void makePolygon ( Iterator &iter, unsigned int numVertsPerPoly, const VertexSequence &vertices, VertexSequence &polygon )
-    {
-      for ( unsigned int i = 0; i < numVertsPerPoly; ++i)
-      {
-        polygon.push_back( *iter );
-        ++iter
-      }
-    }
-
-    template < class VertexSequence > 
-    void makePolygon ( unsigned int startIndex, unsigned int numVertsPerPoly, const VertexSequence &vertices, VertexSequence &polygon )
-    {
-      //for ( unsigned int i = startIndex; i < startIndex + numVertsPerPoly; ++i)
-      for ( unsigned int i = 0; i <  numVertsPerPoly; ++i)
-      {
-        polygon.at(i) = ( vertices.at( i + startIndex ) );
-      }
-    }
-  }; //namespace Detail
-
 namespace Polygons {
-
-  template < class VertexSequence >
-  struct TriangleTestOnePoint
-  {
-    bool operator() ( const VertexSequence &polygonOne, const VertexSequence &polygonTwo ) const
-    {
-      typedef VertexSequence::const_iterator Iterator;
-      for( Iterator i = polygonOne.begin(); i != polygonOne.end(); ++i )
-        for ( Iterator j = polygonTwo.begin(); j != polygonTwo.end(); ++j )
-          if( *i == *j )
-              return true;
-      return false;
-    }
-  };
 
   template < class VertexSequence >
   struct TriangleTest
   {
-    bool operator() ( const VertexSequence &polygonOne, const VertexSequence &polygonTwo ) const
+    bool operator() ( const VertexSequence &vertices, unsigned int p1, unsigned int p2 ) const
     {
-      typedef VertexSequence::const_iterator Iterator;
-      bool foundAdjacent = false;
-      for( Iterator i = polygonOne.begin(); i != polygonOne.end(); ++i )
-      {
-        for ( Iterator j = polygonTwo.begin(); j != polygonTwo.end(); ++j )
-        {
-          if( *i == *j )
-          {
-            if( foundAdjacent )
-              return true;
-            else
-              foundAdjacent = true;
-          }
-        }
-      }
-      return false;
+      typedef typename VertexSequence::value_type Vertex;
+
+      unsigned int count = 0;
+
+      const Vertex &polyOneP1 = vertices.at( p1 );
+      const Vertex &polyOneP2 = vertices.at( p1 + 1 );
+      const Vertex &polyOneP3 = vertices.at( p1 + 2 );
+
+      const Vertex &polyTwoP1 = vertices.at( p2 );
+      const Vertex &polyTwoP2 = vertices.at( p2 + 1 );
+      const Vertex &polyTwoP3 = vertices.at( p2 + 2 );
+
+      if( polyOneP1 != polyTwoP1 && polyOneP1 != polyTwoP2 && polyOneP1 != polyTwoP3 )
+        count++;
+      if( polyOneP2 != polyTwoP1 && polyOneP2 != polyTwoP2 && polyOneP2 != polyTwoP3 )
+        count++;
+      if( count == 2 )
+        return false;
+      if( count == 0 )
+        return true;
+      if( polyOneP3 != polyTwoP1 && polyOneP3 != polyTwoP2 && polyOneP3 != polyTwoP3 )
+        count++;
+      if( count >= 2 )
+        return false;
+      return true;
     }
   };
 
@@ -182,25 +153,14 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   IndexIterator currentItr = keepers.begin();
 
   // While there are still keepers to test...
-  VertexSequence currentPolygon;
-  currentPolygon.resize ( numVertsPerPoly );
-
-  VertexSequence testMe;
-  testMe.resize ( numVertsPerPoly );
   while ( keepers.end() != currentItr )
   {
-    // Define current polygon.  
-    Detail::makePolygon ( *currentItr * numVertsPerPoly, numVertsPerPoly, vertices, currentPolygon );
-
     // Loop through all polygons
     IndexIterator current = indices.begin();  
     while ( indices.end() != current )
     {
-      // Define polygon to test against current.
-      Detail::makePolygon ( *current * numVertsPerPoly, numVertsPerPoly, vertices, testMe );
-
       // See if the current keeper is adjacent to this polygon.
-      if ( true == adjacentTest ( currentPolygon, testMe ) )
+      if ( true == adjacentTest ( vertices, *currentItr * numVertsPerPoly, *current * numVertsPerPoly ) )
       {
         // Put the polygon into the list of keepers.
         keepers.push_back ( *current );

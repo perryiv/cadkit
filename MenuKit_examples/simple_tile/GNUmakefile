@@ -16,7 +16,7 @@ libs = \
          -lm \
        -L$(OPENTHREADS_LIB_DIR) -lOpenThreads \
        -L$(PRODUCER_LIB_DIR) -lProducer \
-       -L$(OSG_LIB_DIR) -losg -losgText -losgUtil -losgProducer \
+       -L$(OSG_LIB_DIR) -losg -losgText -losgUtil -losgProducer -losgGA -losgDB \
        -L$(MENUKIT_LIB_DIR) -lMenuKit
 
 includes = \

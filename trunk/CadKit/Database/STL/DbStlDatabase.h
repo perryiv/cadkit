@@ -24,20 +24,12 @@
 #include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlStack.h"
+#include "DbStlFacetmanager.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
 # include <map>
 #endif
-
-namespace osg 
-{
-  class Group;
-  class LOD;
-  class Geometry;
-  class StateSet;
-};
-
 
 namespace CadKit
 {
@@ -148,19 +140,9 @@ public:
 
 protected:
 
-//  typedef SlStack<osg::Group *> GroupStack;
-//  std::auto_ptr<GroupStack> _groupStack;
-
+  DbStlFacetManager _fmgr;
   virtual ~DbStlDatabase();
-
-  bool                    _addDataSets   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-  bool                    _addVertices   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-  bool                    _addNormals    ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-
-  void                    _pushGroup ( osg::Group *group );
-  void                    _popGroup();
-
-  void                    _setLodParameters ( osg::LOD *lod ) const;
+  std::set<PartHandle> _partLodCheck; //used to make sure we only proces one LOD per part as stl doesn't support LODs
 
   SL_DECLARE_REFERENCE_POINTER ( DbStlDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbStlDatabase, 1034649260 );

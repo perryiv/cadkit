@@ -13,6 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+//???????????
+// I need this up here or else I get this VC++ error (and many others):
+// SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
+#include <math.h>
+//????????????
+
 #include "DbStlPrecompiled.h"
 #include "DbStlDatabase.h"
 #include "DbStlFunctions.h"
@@ -171,7 +177,6 @@ bool DbStlDatabase::storeData ( const std::string &filename )
 {
   SL_PRINT3 ( "In DbStlDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
-  SL_ASSERT ( NULL != this->_getRoot() );
 
   // Write the root to file.
   return _fmgr.storeData( filename.c_str, DbStlFacetManager::STL_ASCII_FILE_MODE );
@@ -189,7 +194,6 @@ bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Get the interface we need from the caller.
   SlQueryPtr<IAssemblyQueryFloat> query ( caller );
@@ -232,7 +236,6 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
   SL_ASSERT ( caller );
-  SL_ASSERT ( false == _groupStack->empty() );
 
   // Get the interface we need from the caller.
   SlQueryPtr<IPartQueryFloat> query ( caller );
@@ -365,14 +368,14 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   if ( lodQuery.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  PartHandle p( lodQuery->getParent( shapeQuery->getParent() ) );
+  PartHandle p( lodQuery->getParent( shapeQuery->getParent( shape ) ) );
   if ( p ) // check for null
     if ( _partLodCheck.find( p ) == _partLodCheck.end() ) // only procede if no entry for part
     {
       _partLodCheck.insert( p ); // create entry so we don't process another lod for this part
 
       // Add the vertices and normals. 
-      if ( false == _fmgr.fetchVerticesPerShape( caller, shape )
+      if ( false == _fmgr.fetchVerticesPerShape( caller, shape ) )
         return ERROR ( "Failed to add shape sets for given shape.", FAILED );
     }
 

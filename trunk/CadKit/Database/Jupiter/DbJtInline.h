@@ -22,6 +22,8 @@
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"
 
+#include "Interfaces/IErrorNotify.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
 #endif
@@ -126,14 +128,52 @@ template <class HandleType> inline bool getTransform ( HandleType ptr, float mat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class FunctorType, class HandleType> inline bool handleEntityStart 
-  ( const char *name, NotifyType &notify, HandleType entity, IUnknown *caller )
+template <class NotifyType, class HandleType> inline bool handleEntityStart
+  ( NotifyType *notify, HandleType entity, IUnknown *caller, IErrorNotify *controller )
 {
+  SL_ASSERT ( NULL != notify );
+  SL_ASSERT ( NULL != entity );
   SL_ASSERT ( NULL != caller );
 
   // Let the target know we have a new entity.
-  if ( false == functor ( entity, caller ) )
-    return ERROR ( FORMAT ( "Failed to start %s '%s' at level %d\n\tCall to IAssemblyNotify::endAssembly() returned false", name, entity->name(), level ), 0 );
+  if ( false == notify->startEntity ( entity, caller ) )
+  {
+    // If there is no controller then we failed.
+    if ( NULL == controller )
+      return false;
+
+    // Otherwise, ask the controller.
+    return controller->errorNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED );
+  }
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle an entity.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class NotifyType, class HandleType> inline bool handleEntityEnd
+  ( NotifyType *notify, HandleType entity, IUnknown *caller, IErrorNotify *controller )
+{
+  SL_ASSERT ( NULL != notify );
+  SL_ASSERT ( NULL != entity );
+  SL_ASSERT ( NULL != caller );
+
+  // Let the target know we have a new entity.
+  if ( false == notify->endEntity ( entity, caller ) )
+  {
+    // If there is no controller then we failed.
+    if ( NULL == controller )
+      return false;
+
+    // Otherwise, ask the controller.
+    return controller->errorNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED );
+  }
 
   // It worked.
   return true;

@@ -124,7 +124,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Get the corresponding part.
-  virtual PartHandle      getCorrespondingPart ( InstanceHandle instance ) const;
+  virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const;
 
   // Get the name.
   virtual std::string     getName ( InstanceHandle Instance ) const;

@@ -62,6 +62,19 @@ template <class E, class I1, class I2> inline DbJtFunctor::DbJtFunctor ( E entit
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class E, class I1, class I2> inline DbJtFunctor::~DbJtFunctor()
+{
+  CadKit::safeUnref ( _use );
+  CadKit::safeUnref ( _pass );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  DbJtNotifyStartFunctor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,8 +102,6 @@ public:
   virtual bool operator()() { _use->endNotify ( _entity, _pass ); }
 };
 
-Inline virtual functions... does it matter?
-Use these functors in DbJtDatabase::_startAssembly() and friends.
 
 }; // namespace CadKit
 

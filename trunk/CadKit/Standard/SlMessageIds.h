@@ -48,8 +48,9 @@
 
 namespace CadKit
 {
-const unsigned long NO_INTERFACE          ( 1032730909 );
-
-}; // namespace CadKit
+const unsigned long OK                                = 1033011600;
+const unsigned long FAILED                            = 1033010419;
+const unsigned long NO_INTERFACE                      = 1032730909;
+};
 
 #endif // _CADKIT_STANDARD_LIBRARY_ERROR_IDS_H_

@@ -33,8 +33,8 @@ public:
   // Id for this interface.
   enum { IID = id };
 
-  // Get the corresponding part.
-  virtual PartHandle      getCorrespondingPart ( InstanceHandle instance ) const = 0;
+  // Get the corresponding part or assembly.
+  virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const = 0;
 
   // Get the name.
   virtual std::string     getName ( InstanceHandle instance ) const = 0;

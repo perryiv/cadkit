@@ -30,10 +30,10 @@ public:
   enum { IID = id };
 
   // End the entity.
-  virtual bool            endNotify ( EntityHandle entity, IUnknown *caller ) = 0;
+  virtual bool            endEntity ( EntityHandle entity, IUnknown *caller ) = 0;
 
   // Start the entity.
-  virtual bool            startNotify ( EntityHandle entity, IUnknown *caller ) = 0;
+  virtual bool            startEntity ( EntityHandle entity, IUnknown *caller ) = 0;
 };
 
 

@@ -64,10 +64,10 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // End the assembly.
-  virtual bool            endNotify ( AssemblyHandle assembly, IUnknown *caller );
+  virtual bool            endEntity ( AssemblyHandle assembly, IUnknown *caller );
 
   // Start the assembly.
-  virtual bool            startNotify ( AssemblyHandle assembly, IUnknown *caller );
+  virtual bool            startEntity ( AssemblyHandle assembly, IUnknown *caller );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -76,10 +76,10 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // End the part.
-  virtual bool            endNotify ( PartHandle assembly, IUnknown *caller );
+  virtual bool            endEntity ( PartHandle assembly, IUnknown *caller );
 
   // Start the part.
-  virtual bool            startNotify ( PartHandle assembly, IUnknown *caller );
+  virtual bool            startEntity ( PartHandle assembly, IUnknown *caller );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -88,10 +88,10 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // End the instance.
-  virtual bool            endNotify ( InstanceHandle assembly, IUnknown *caller );
+  virtual bool            endEntity ( InstanceHandle assembly, IUnknown *caller );
 
   // Start the instance.
-  virtual bool            startNotify ( InstanceHandle assembly, IUnknown *caller );
+  virtual bool            startEntity ( InstanceHandle assembly, IUnknown *caller );
 
 protected:
 

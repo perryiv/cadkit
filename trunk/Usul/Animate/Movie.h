@@ -14,10 +14,11 @@ namespace Usul
 {
   namespace Animate
   {
-    template < class Sequence, class Player > class Movie
+    template < class Player > class Movie
     {
     public:
-      typedef typename Sequence::value_type Frame;
+      typedef typename Player::Frames Sequence;
+      typedef typename Player::Frame Frame;
 
       Movie () : _frames() { }
 

@@ -19,13 +19,23 @@ namespace Usul
     {
     public:
       typedef typename Sequence::value_type Frame;
+      typedef typename Player< Sequence, Callback > BaseClass;
 
-      LinearPlayer ( Callback cb ) : Player( cb ) { }
+      LinearPlayer ( Callback cb ) : BaseClass( cb ) { }
 
       virtual void operator() ( Sequence &frames )
       {
-        for( Sequence::const_iterator i = frames.begin(); i < frames.end() - 1; ++i)
-          _callback ( *i, *(i + 1));
+        if (frames.size() < 2 )
+          return;
+        Sequence::const_iterator frameA = frames.begin();
+        Sequence::const_iterator frameB = frames.begin();
+        ++frameB;
+        while ( frameB != frames.end() )
+        {
+          _callback ( *frameA, *frameB );
+          ++frameA;
+          ++frameB;
+        }
       }
 
     }; // Linear Player

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plug: osgPlugin pdb"
+	Name="plug osgPlugin pdb"
 	ProjectGUID="{2835E2F2-C91A-4B61-AD3F-9F5E183CC2D0}"
 	SccProjectName=""
 	SccLocalPath="">
@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(USUL_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -90,7 +90,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/vmg"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(USUL_INC_DIR)&quot;"
 				PreprocessorDefinitions="_WINDOWS;_USRDLL;WIN32;_DEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

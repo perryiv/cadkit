@@ -448,7 +448,8 @@ bool DbOsgDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   if ( state.isNull() )
     return ERROR ( "Failed to create osg::StateSet for given shape handle.", FAILED );
 
-  // Add the vertices, normals, etc.
+  // Add the vertices, normals, etc. We have to call this before we add the 
+  // attributes (like material) because in OSG, materials take precedence.
   if ( false == this->_addDataSets ( caller, shape, geometry ) )
     return ERROR ( "Failed to add shape sets for given shape.", FAILED );
 
@@ -484,10 +485,15 @@ bool DbOsgDatabase::_addAttributes ( IUnknown *caller, ShapeHandle shape, osg::S
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Get the material from the shape, part, or assembly.
-  SlMaterialf material;
-  if ( true == query->getMaterial ( shape, material, true ) )
-    CadKit::setMaterial ( material, state );
+  // If there are no color attributes then look for a material. We do this 
+  // because OSG will use the material first.
+  if ( false == this->_hasColorAttribute ( caller, shape ) )
+  {
+    // Get the material from the shape, part, or assembly.
+    SlMaterialf material;
+    if ( true == query->getMaterial ( shape, material, true ) )
+      CadKit::setMaterial ( material, state );
+  }
 
   // TODO, texture.
   return true;
@@ -671,6 +677,32 @@ bool DbOsgDatabase::_addTexCoords ( IUnknown *caller, ShapeHandle shape, osg::Ge
 
   // It didn't work. Don't report an error, there may not be any.
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given shape has any color attributes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) const
+{
+  SL_PRINT4 ( "In DbOsgDatabase::_hasColorAttribute(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
+  SL_ASSERT ( caller );
+
+  // Get the interface we need from the caller.
+  SlQueryPtr<IQueryShapeColorsVec4f> query ( caller );
+  if ( query.isNull() )
+    return false;
+
+  // Get the color binding.
+  VertexBinding binding;
+  if ( false == query->getColorBinding ( shape, binding ) )
+    return false;
+
+  // Does it have colors?
+  return BINDING_OFF != binding;
 }
 
 

@@ -355,5 +355,13 @@ SOURCE=..\..\..\..\programs\UGS\DMDTk\dev\include\DMDataTk\eaiWrepWire.h
 SOURCE=..\..\..\..\programs\UGS\DMDTk\dev\include\DMDataTk\eaiXYZCurve.h
 # End Source File
 # End Group
+# Begin Group "Notes"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Notes\Database.txt
+# End Source File
+# End Group
 # End Target
 # End Project

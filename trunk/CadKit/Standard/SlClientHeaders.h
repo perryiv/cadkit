@@ -54,14 +54,16 @@
 #include <locale>
 #include <stack>
 #include <list>
+#include <algorithm> // For std::transform
 
+// Note: SlStringIO.h is left out because it includes <iostream>
 #include "SlVec2.h"
 #include "SlVec3.h"
 #include "SlVec4.h"
 #include "SlRefBase.h"
 #include "SlPrint.h"
-#include "SlAString.h"
-#include "SlWString.h"
+#include "SlString.h"
+#include "SlStringFunctions.h"
 #include "SlThread.h"
 #include "SlColor.h"
 #include "SlConstants.h"

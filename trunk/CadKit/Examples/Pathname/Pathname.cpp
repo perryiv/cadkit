@@ -7,19 +7,28 @@
 #endif
 
 #include "Standard/SlPathname.h"
-#include "Standard/SlAString.h"
-#include "Standard/SlWString.h"
+#include "Standard/SlString.h"
+#include "Standard/SlStringIO.h"
 using namespace CadKit;
 
 #include <iostream>
 using namespace std;
 
-typedef SlPathname<SlAString> SlAPathname;
-typedef SlPathname<SlWString> SlWPathname;
+// Works with either, take your pick.
+#if 0
+typedef std::basic_string<char>    StringA;
+typedef std::basic_string<wchar_t> StringW;
+#else
+typedef SlString<char>             StringA;
+typedef SlString<wchar_t>          StringW;
+#endif
+
+typedef SlPathname<StringA>      SlAPathname;
+typedef SlPathname<StringW>      SlWPathname;
 
 
 void test ( const char *filename )
-{/*
+{
   SlAPathname path1 ( filename );
   std::cout << " pathname: " << path1.getPathname() << std::endl;
   std::cout << " fullpath: " << path1.getFullpath() << std::endl;
@@ -29,7 +38,7 @@ void test ( const char *filename )
   std::cout << "extension: " << path1.getExtension() << std::endl;
   std::cout << std::endl;
 
-  SlAPathname path2 ( "test" );
+  SlAPathname path2 ( "../../test" );
   std::cout << " pathname: " << path2.getPathname() << std::endl;
   std::cout << " fullpath: " << path2.getFullpath() << std::endl;
   std::cout << "    drive: " << path2.getDrive() << std::endl;
@@ -44,7 +53,7 @@ void test ( const char *filename )
   std::cout << "path1.isSamePath ( path2 ) = " << path1.isSamePath ( path2 ) << std::endl;
   std::cout << "path2.isSamePath ( path1 ) = " << path2.isSamePath ( path1 ) << std::endl;
   std::cout << std::endl;
-*/
+
   SlWPathname path3 ( L"./test3" );
   std::wcout << L" pathname: " << path3.getPathname() << std::endl;
   std::wcout << L" fullpath: " << path3.getFullpath() << std::endl;
@@ -77,7 +86,7 @@ int main ( int argc, char **argv )
   test ( argv[0] );
 
   // Wait for user to press the 'any' key.
-  std::cin.get();
+  //std::cin.get();
 
   return 0;
 }

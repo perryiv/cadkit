@@ -380,10 +380,10 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addColor ( const unsigned int &valid, 
-                         const unsigned int &which, 
-                         const SlVec4f &color, 
-                         const char *colorName, 
-                         DbXmlGroup &material )
+                           const unsigned int &which, 
+                           const SlVec4f &color, 
+                           const char *colorName, 
+                           DbXmlGroup &material )
 {
   SL_PRINT ( "In TrJt2Xml::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
   SL_ASSERT ( colorName );
@@ -534,8 +534,8 @@ bool TrJt2Xml::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity, 
-                       const unsigned int &whichLOD, 
-                       DbXmlGroup &lods )
+                         const unsigned int &whichLOD, 
+                         DbXmlGroup &lods )
 {
   SL_PRINT ( "In TrJt2Xml::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
 
@@ -581,9 +581,9 @@ bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity, 
-                         const unsigned int &whichLOD, 
-                         const unsigned int &whichShape, 
-                         DbXmlGroup &lod )
+                           const unsigned int &whichLOD, 
+                           const unsigned int &whichShape, 
+                           DbXmlGroup &lod )
 {
   SL_PRINT ( "In TrJt2Xml::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 
@@ -649,11 +649,11 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addSet ( DbJtTraverser::EntityHandle entity, 
-                       const unsigned int &whichLOD, 
-                       const unsigned int &whichShape, 
-                       const unsigned int &whichSet, 
-                       const std::string &name,
-                       DbXmlGroup &shape )
+                         const unsigned int &whichLOD, 
+                         const unsigned int &whichShape, 
+                         const unsigned int &whichSet, 
+                         const std::string &name,
+                         DbXmlGroup &shape )
 {
   SL_PRINT ( "In TrJt2Xml::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( false == name.empty() );

@@ -88,7 +88,7 @@ SgMfcView::SgMfcView() : CView(),
   _viewer ( NULL ),
   _cursor ( NULL )
 {
-  SL_PRINT ( "SgMfcView::SgMfcView(), this = %X\n", this );
+  SL_PRINT2 ( "SgMfcView::SgMfcView(), this = %X\n", this );
 }
 
 
@@ -100,7 +100,7 @@ SgMfcView::SgMfcView() : CView(),
 
 SgMfcView::~SgMfcView()
 {
-  SL_PRINT ( "SgMfcView::~SgMfcView(), this = %X\n", this );
+  SL_PRINT2 ( "SgMfcView::~SgMfcView(), this = %X\n", this );
 
   // The _viewer is a reference-pointer, no need to do anything.
 }

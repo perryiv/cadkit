@@ -288,12 +288,8 @@ SgNode *SgPath::getLastOfType ( const SlType *type ) const
   SL_ASSERT ( this && type );
 
   // Loop through all the nodes.
-#ifdef __GNUC__
-  SL_ASSERT ( 0 ); // Make sure this works. Had to hack it in because gcc didn't like me using const_reverse_iterator.
+  SL_ASSERT ( 0 ); // Make sure this works. Had to hack this in because gcc and VC++ didn't like me using const_reverse_iterator.
   for ( Nodes::const_iterator i = _nodes->end(); i != _nodes->begin(); --i )
-#else
-  for ( Nodes::const_reverse_iterator i = _nodes->rbegin(); i != _nodes->rend(); ++i )
-#endif
   {
     // If the node is the right type then return it.
     if ( i->getValue()->isOfType ( type ) ) 

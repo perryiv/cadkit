@@ -37,7 +37,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  SlFunctionDefine: Pound defines of certain functions.
+//  SlFunctionDefines: Pound defines of certain functions.
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +97,7 @@
 #  define __USE_ISOC99
 #  include <wchar.h>
 # endif
-# define SL_VSNWPRINTF ::vswprintf
+# define SL_VSNWPRINTF ::vsnwprintf
 #elif _SGI_NATIVE_COMPILER
 # define SL_VSNWPRINTF(a,b,c,d) SL_ASSERT ( 0 )
 #else // ?

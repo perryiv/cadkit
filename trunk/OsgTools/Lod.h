@@ -1,7 +1,6 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, John K. Grant
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,27 +8,28 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Declarations: Forward declarations.
+//  Class to work with lods.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OSG_TOOLS_FORWARD_DECLARATIONS_H_
-#define _OSG_TOOLS_FORWARD_DECLARATIONS_H_
+#ifndef _OSG_TOOLS_LOD_H_
+#define _OSG_TOOLS_LOD_H_
+
+#include "Export.h"
+#include "Declarations.h"
 
 
-namespace osg
+namespace OsgTools {
+
+
+struct OSG_TOOLS_EXPORT Lod
 {
-  class Node;
-  class Group;
-  class Geode;
-  class StateSet;
-  class LOD;
+  // Set the lod center and ranges.
+  static void setCentersAndRanges ( float maxDistanceFactor, float lastRangeMax, osg::LOD *lod );
 };
 
-namespace osgText
-{
-  class Text;
-};
+
+}; // namespace OsgTools
 
 
-#endif // _OSG_TOOLS_FORWARD_DECLARATIONS_H_
+#endif // _OSG_TOOLS_LOD_H_

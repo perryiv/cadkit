@@ -237,6 +237,12 @@
 					RelativePath="Group.h">
 				</File>
 				<File
+					RelativePath=".\Lod.cpp">
+				</File>
+				<File
+					RelativePath=".\Lod.h">
+				</File>
+				<File
 					RelativePath=".\MaterialSetter.cpp">
 				</File>
 				<File

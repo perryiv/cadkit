@@ -3,14 +3,12 @@
 //# pragma warning ( disable : 4541 ) // warning about multiple inheritance within osg
 //#endif
 
-#include "osg/Group"
+#include "osg/MatrixTransform"
 #include "osgProducer/Viewer"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/OSG/TileLayer.h"
-
-#include "OsgTools/Box.h"
 
 // prototypes
 MenuKit::Menu* create_menu();
@@ -27,23 +25,65 @@ int main(int argc, char* argv[])
   MenuKit::OSG::osgSkin osgskin;
   osgskin.font( font.get() );
 
-  // make the graphics manufacturer
-  MenuKit::OSG::osgTileLayer::Ptr layer = new MenuKit::OSG::osgTileLayer();
-  layer->tile().skin( osgskin );
+  // define some colors
+  osg::Vec4 red(1.0,0.0,0.0,1.0);
+  osg::Vec4 green(0.0,1.0,0.0,1.0);
+  osg::Vec4 blue(0.0,0.0,1.0,1.0);
+  osg::Vec4 black(0.0,0.0,0.0,1.0);
+  osg::Vec4 white(1.0,1.0,1.0,1.0);
+  osg::Vec4 transwhite(1.0,1.0,1.0,0.5);
 
-  // make the menu graphics
-  menu->accept( *layer );
-  osg::ref_ptr<osg::Node> scene = layer->scene();
+  // define some themes
+  MenuKit::OSG::osgColor redblue;
+  redblue.front( blue );
+  redblue.middle( white );
+  redblue.back( red );
+
+  MenuKit::OSG::osgColor redgreen;
+  redgreen.front( green  );
+  redgreen.middle( black );
+  redgreen.back( red );
+
+  MenuKit::OSG::osgColor blackwhite;
+  blackwhite.back( black );
+  blackwhite.middle( red );
+  blackwhite.front( transwhite );
+
+  // define a skin
+  MenuKit::OSG::osgSkin skinner;
+
+  // define a tile
+  MenuKit::OSG::osgTile tile;
+  tile.skin( skinner );
+  tile.normal( blackwhite);
+  tile.highlight( redgreen );
+  tile.disabled( redblue  );
+  tile.box().height( 1.0 );
+
+  // define a menu item
+  MenuKit::Menu::Ptr button = new MenuKit::Menu();
+  button->text( "File" );
+  //button->expanded( true );
+  //button->radio( true );
+  //button->checked( true );
+
+  // generate the graphic for the item
+  tile.box().width( tile.skin().width( *button ) );
+  osg::ref_ptr<osg::Node> scene = tile( *button );
 
   // place menu gfx into scene
-  osg::ref_ptr<osg::Group> root = new osg::Group;
+  osg::ref_ptr<osg::MatrixTransform> root = new osg::MatrixTransform();
   root->addChild( scene.get() );
+
+  // spin the model
+  root->setMatrix( osg::Matrix::rotate( osg::DegreesToRadians(90.0),
+                                        osg::Vec3(1.0,0.0,0.0)) );
 
   // make a viewer
   osg::ref_ptr<osgProducer::Viewer> viewer = new osgProducer::Viewer();
   viewer->setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
 
-  viewer->setSceneData( scene.get() );
+  viewer->setSceneData( root.get() );
   viewer->realize();
 
   while( !viewer->done() )

@@ -279,6 +279,12 @@
 					RelativePath=".\MaterialSetter.h">
 				</File>
 				<File
+					RelativePath=".\ReadModel.cpp">
+				</File>
+				<File
+					RelativePath=".\ReadModel.h">
+				</File>
+				<File
 					RelativePath=".\Sample.cpp">
 				</File>
 				<File

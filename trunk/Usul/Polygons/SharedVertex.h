@@ -74,11 +74,6 @@ public:
     return _polygons;
   }
 
-  PolygonList& polygons()
-  {
-    return _polygons;
-  }
-
   const ValueType &value() const
   {
     return _value;

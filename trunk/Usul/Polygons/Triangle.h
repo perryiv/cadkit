@@ -10,13 +10,10 @@
 #ifndef __USUL_POLYGONS_TRIANGLES_H__
 #define __USUL_POLYGONS_TRIANGLES_H__
 
-#include "Usul/Polygons/Polygons.h"
+#include "Usul/Polygons/SharedVertex.h"
+#include "Usul/Polygons/Predicates.h"
 #include "Usul/Errors/Assert.h"
 
-#if 0
-#include <sstream>
-#include <windows.h>
-#endif
 
 namespace Usul {
 namespace Polygons {
@@ -63,6 +60,12 @@ public:
       _v3 = v;
   }
 
+  //Get the vertex values
+  const VertexType& value1() const { return _v1->value(); }
+  const VertexType& value2() const { return _v2->value(); }
+  const VertexType& value3() const { return _v3->value(); }
+
+  //Get the shared vertex
   SharedVertex * vertex1() { return _v1.get(); }
   SharedVertex * vertex2() { return _v2.get(); }
   SharedVertex * vertex3() { return _v3.get(); }
@@ -79,29 +82,24 @@ public:
   unsigned int index() const           { return _index; }
   void         index( unsigned int i ) { _index = i; }
 
-  //Get all the neighbors of this triangle
+  //Get all the neighbors of this triangle ( all triangles that share at least one point )
   std::list< Triangle* > getNeighbors()
   {
     typedef std::list< Triangle* > Triangles;
     Triangles triangles;
 
-    triangles.splice( triangles.begin(), _v1->polygons() );
-    triangles.splice( triangles.end(),   _v2->polygons() );
-    triangles.splice( triangles.end(),   _v3->polygons() );
+    //Insert each shared vertex's list of polygons
+    triangles.insert ( triangles.end(), _v1->begin(), _v1->end() );
+    triangles.insert ( triangles.end(), _v2->begin(), _v2->end() );
+    triangles.insert ( triangles.end(), _v3->begin(), _v3->end() );
 
+    //Sort them in ascending order
     triangles.sort ( PolyLess< Triangle >() );
 
+    //Remove all unique polygons
     triangles.unique ( PolyEqual < Triangle >() );
 
-#if 0
-    std::ostringstream os;
-    os << std::endl;
-    for( Triangles::const_iterator i = triangles.begin(); i != triangles.end(); ++i )
-      os << (*i)->index() << " ";
-    os << std::endl;
-    ::OutputDebugString( os.str().c_str() );
-#endif
-
+    //Return our list of neighbors
     return triangles;
   }
 
@@ -137,6 +135,7 @@ private:
 template < class IndexSequence, class Vertex >
 struct TriangleFunctor
 {
+  typedef TriangleFunctor< IndexSequence, Vertex > ThisType;
   typedef std::vector< TriangleFunctor > TodoStack;
   typedef typename Triangle<Vertex>::SharedVertex SharedVertex;
   typedef typename SharedVertex::Ptr SharedVertexPtr;
@@ -157,6 +156,7 @@ struct TriangleFunctor
   _sharedVertex( sv )
   { }
 
+  //This handles a triangle or a shared vertex based on which one is valid
   void operator() ()
   {
     //If we have a triangle...
@@ -169,21 +169,21 @@ struct TriangleFunctor
       //Have we visited v1 yet?
       if( !v1->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v1 ) );
+        _todoStack.push_back( ThisType ( _answer, _todoStack, v1 ) );
         v1->visited( true );
       }
 
       //Have we visited v2 yet?
       if( !v2->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v2 ) );
+        _todoStack.push_back( ThisType ( _answer, _todoStack, v2 ) );
         v2->visited( true );
       }
 
       //Have we visited v3 yet?
       if( !v3->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v3 ) );
+        _todoStack.push_back( ThisType ( _answer, _todoStack, v3 ) );
         v3->visited( true );
       }
       
@@ -201,7 +201,7 @@ struct TriangleFunctor
         if( !(*triangle)->visited() )
         {
           //Add the functor to the todo statck
-          _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, *triangle ) );
+          _todoStack.push_back( ThisType ( _answer, _todoStack, *triangle ) );
           (*triangle)->visited ( true );
         }
       }

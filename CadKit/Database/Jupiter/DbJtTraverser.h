@@ -34,6 +34,7 @@
 class eaiHierarchy;
 class eaiMaterial;
 class eaiShape;
+class eaiClientData;
 
 
 namespace CadKit
@@ -150,7 +151,7 @@ protected:
   static void             _setCurrent ( DbJtTraverser *traverser );
 
   bool                    _traverse ( const char *filename );
-  static int              _traverseCallback ( eaiHierarchy *node, int level );
+  static int              _traverseCallback ( eaiHierarchy *node, int level, eaiClientData * );
   int                     _traverseNotify ( eaiHierarchy *node, int level );
 
   SL_DECLARE_REFERENCE_POINTER ( DbJtTraverser );

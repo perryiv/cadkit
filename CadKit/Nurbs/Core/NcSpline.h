@@ -28,10 +28,6 @@ public:
 
   DECLARE_TYPEDEFS;
 
-  enum /// Possible flags.
-  {
-  };
-
   NcSpline();
   NcSpline ( const NcSpline &spline );
   ~NcSpline(){}

@@ -2,7 +2,7 @@
 include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
-CPP_FILES = Matrix4.cpp
+CPP_FILES = Matrix44.cpp
 
 # The include path.
 LOCAL_INCLUDE =

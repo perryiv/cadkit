@@ -17,6 +17,7 @@
 #define _CADKIT_NURBS_CORE_LIBRARY_INTERNAL_MACROS_H_
 
 #include "Standard/SlAssert.h"
+#include "Standard/SlPartitionedVector.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -19,6 +19,7 @@
 
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec3IO.h"
+#include "Standard/SlArrayPtr.h"
 
 #include "Nurbs/Core/NcCurve.h"
 #include "Nurbs/Core/NcSurface.h"
@@ -31,7 +32,7 @@
 using namespace CadKit;
 
 
-template<NCSDTA> void testFindSpan ( NcCurve<NCSDCA> &curve )
+template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 {
   // Find the first and last knot.
   NcCurve<NCSDCA>::Parameter firstU ( curve.getFirstKnot() );
@@ -40,20 +41,35 @@ template<NCSDTA> void testFindSpan ( NcCurve<NCSDCA> &curve )
   std::cout << "C02: Last knot  = " << lastU << std::endl;
 
 	// For loop speed.
-  NcCurve<NCSDCA>::Index numParams ( 100 );
-	NcCurve<NCSDCA>::Parameter denom ( static_cast<NcCurve<NCSDCA>::Parameter> ( numParams - 1 ) );
-	NcCurve<NCSDCA>::Parameter invDenom = 1.0f / denom, u, q, r;
-	NcCurve<NCSDCA>::Parameter diffU ( lastU - firstU );
+  NcCurve<NCSDCA>::Index numParams ( 25 );
+  NcCurve<NCSDCA>::Index order ( curve.getOrder() );
+	NcCurve<NCSDCA>::Parameter diffU ( lastU - firstU ), u, sum;
+  SlArrayPtr<NcCurve<NCSDCA>::Parameter> N ( new NcCurve<NCSDCA>::Parameter[order] );
 
   // Loop through the parameters.
   for ( NcCurve<NCSDCA>::Index i = 0; i < numParams; ++i )
   {
-		u = static_cast<NcCurve<NCSDCA>::Parameter> ( i );
-		q =	u * invDenom;
-		r =	u - q * denom;
-		u = q + r * invDenom;
+		u = static_cast<NcCurve<NCSDCA>::Parameter> ( i ) 
+      / static_cast<NcCurve<NCSDCA>::Parameter> ( numParams - 1 );
 		u = firstU + u * diffU;
-    std::cout << "C03: i = " << i << ", u = " << u << ", span = " << curve.findSpan ( u ) << std::endl;
+
+    // Print the span.
+    NcCurve<NCSDCA>::Index span = curve.findSpan ( u );
+    std::cout << "C03: i = " << i << ", u = " << u << ", span = " << span << std::endl;
+
+    // Print the basis functions.
+    curve.basisFunctions ( u, N );
+    sum = 0;
+    std::cout << "C04: N[" << i << "] = ( ";
+    for ( NcCurve<NCSDCA>::Index j = 0; j < order; ++j )
+    {
+      std::cout << N.get()[j] << ( ( order - 1 == j ) ? " )" : ", " );
+      sum += N.get()[j];
+    }
+    std::cout << ", sum = " << sum << ", sum - 1 = " << sum - 1 << std::endl;
+
+    // Print the point.
+    curve.evaluate
   }
 }
 
@@ -82,9 +98,9 @@ template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1,
   std::cout << "A09: c1 = \n" << c1 << std::endl;
   std::cout << "A10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
 
-  // Test the span finding algorithm.
-  testFindSpan ( c1 );
-  testFindSpan ( c2 );
+  // Test the evaluation algorithms.
+  testEvaluation ( c1 );
+  testEvaluation ( c2 );
 }
 
 
@@ -112,9 +128,9 @@ template<NCSDTA, class Vec> void testCurve2 ( const Vec &center,
   std::cout << "B09: c1 = \n" << c1 << std::endl;
   std::cout << "B10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
 
-  // Test the span finding algorithm.
-  testFindSpan ( c1 );
-  testFindSpan ( c2 );
+  // Test the evaluation algorithms.
+  testEvaluation ( c1 );
+  testEvaluation ( c2 );
 }
 
 

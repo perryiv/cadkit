@@ -6,14 +6,14 @@ SUBDIRS = \
 	Translators/Jupiter2Xml \
 	Demos/Jt2Xml \
 	Translators/Jupiter2Performer \
-	Demos/Jt2Pf
-#	SceneGraph/Core \
-#	SceneGraph/OpenGL \
-#	Examples/BoundingBox \
-#	Examples/Matrix4 \
-#	Examples/Pathname \
-#	Examples/String \
-#	Examples/Vector
+	Demos/Jt2Pf \
+	SceneGraph/Core \
+	SceneGraph/OpenGL \
+	Examples/BoundingBox \
+	Examples/Matrix4 \
+	Examples/Pathname \
+	Examples/String \
+	Examples/Vector
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

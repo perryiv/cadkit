@@ -27,6 +27,9 @@
 #include <stdexcept>
 #include <locale>
 
+#include "Functors.h"
+#include "PrintVisitor.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -410,15 +413,14 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeAscii  ( const osg::Node& no
   fout << "solid " << filename << std::endl;
   //functor to write out facets
   AsciiWriter writer( fout );
-  
-  GeodeWriter<AsciiWriter> *geodeWriter = new GeodeWriter<AsciiWriter> ( writer );
-  //visitor to write out file
-  osg::ref_ptr<osg::NodeVisitor> geodeVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( geodeWriter, &GeodeWriter<AsciiWriter>::writeGeode ) ) );
 
   osg::Node &n = const_cast< osg::Node& > ( node );
-  n.accept( *geodeVisitor);
 
-  fout << "endsolid " << filename << std::endl;
+  //visitor to write out file
+  osg::NodeVisitor *printVisitor = new PrintVisitor<AsciiWriter> ( writer );
+  n.accept( *printVisitor );
+
+  fout << "endsolid " << std::endl;
 
   return WriteResult::FILE_SAVED;
 }
@@ -458,139 +460,13 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::_writeBinary ( const osg::Node& no
   //functor to write out facets
   BinaryWriter writer( fout );
 
-  GeodeWriter<BinaryWriter> *geodeWriter = new GeodeWriter<BinaryWriter> ( writer );
-  //visitor to write out file
-  osg::ref_ptr<osg::NodeVisitor> geodeVisitor ( OsgTools::MakeVisitor<osg::Geode>::make ( Usul::Adaptors::memberFunction ( geodeWriter, &GeodeWriter<BinaryWriter>::writeGeode ) ) );
-  n.accept( *geodeVisitor );
+  //Visitor to write out file
+  osg::NodeVisitor *printVisitor = new PrintVisitor<BinaryWriter> ( writer );
+  n.accept( *printVisitor );
 
   return WriteResult::FILE_SAVED;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write out a geode's geometry to the file
-//  TODO, only write out Highest LOD geometry.
-//  TODO, convert other primitives to triangles.
-//
-///////////////////////////////////////////////////////////////////////////////
-template < class Writer >
-void ReaderWriterSTL::GeodeWriter< Writer >::writeGeode( osg::Geode *geode )
-{
-  //loop through the drawables
-  unsigned int numDrawables ( geode->getNumDrawables() );
-  for ( unsigned int i = 0; i < numDrawables; ++i )
-  {
-    // Get the drawable.
-    const osg::Drawable *drawable = geode->getDrawable ( i );
-
-    // See if the drawable is a geometry.
-    const osg::Geometry *geometry = drawable->asGeometry();
-    if(geometry)
-    {
-      const osg::Array *constarray = geometry->getVertexArray();
-      osg::Array *array = const_cast < osg::Array*> ( constarray );
-      osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array*> (array);
-      const osg::Vec3Array *constvec3array = geometry->getNormalArray();
-      osg::ref_ptr< osg::Vec3Array > normals  = const_cast<osg::Vec3Array *> (constvec3array);
-
-      for(unsigned int j = 0; j < normals->size(); ++j)
-      {
-        _writer(normals->at(j), vertices->at(j*3), vertices->at(j*3+1), vertices->at(j*3+2));
-      }
-    }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the number of facets in this geometry to the running total
-//
-///////////////////////////////////////////////////////////////////////////////
-void ReaderWriterSTL::FacetCounter::countFacets( osg::Geode *geode )
-{
-  unsigned int numDrawables ( geode->getNumDrawables() );
-  for ( unsigned int i = 0; i < numDrawables; ++i )
-  {
-    // Get the drawable.
-    const osg::Drawable *drawable = geode->getDrawable ( i );
-
-    // See if the drawable is a geometry.
-    const osg::Geometry *geometry = drawable->asGeometry();
-    if(geometry)
-    {
-      const osg::Vec3Array *normals = geometry->getNormalArray();
-
-      _numFacets += normals->size();
-    }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write out a facet in Ascii
-//
-///////////////////////////////////////////////////////////////////////////////
-void ReaderWriterSTL::AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
-{
-  _out << "facet normal " << normal[0] << " " << normal[1] << " " << normal[2] << " " << std::endl;
-  _out << "  outer loop " << std::endl;
-  _out << "    vertex "   << v1[0] << " " << v1[1] << " " << v1[2] << " " << std::endl;
-  _out << "    vertex "   << v2[0] << " " << v2[1] << " " << v2[2] << " " << std::endl;
-  _out << "    vertex "   << v3[0] << " " << v3[1] << " " << v3[2] << " " << std::endl;
-  _out << "  endloop"     << std::endl;
-  _out << "endfacet"      << std::endl;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write out a facet in binary
-//
-///////////////////////////////////////////////////////////////////////////////
-void ReaderWriterSTL::BinaryWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
-{
-  char buf[50]; //50 bytes to define a facet
-  ::memset( buf, 0, 50 );
-
-  float f1, f2, f3;
-
-  //write normal
-  f1 = normal[0];
-  f2 = normal[1];
-  f3 = normal[2];
-  ::memcpy( buf    , &f1, 4);
-  ::memcpy( buf + 4, &f2, 4);
-  ::memcpy( buf + 8, &f3, 4);
-
-  //write first vertex
-  f1 = v1[0];
-  f2 = v1[1];
-  f3 = v1[2];
-  ::memcpy( buf + 12, &f1, 4);
-  ::memcpy( buf + 16, &f2, 4);
-  ::memcpy( buf + 20, &f3, 4);
-
-  //write second vertex
-  f1 = v2[0];
-  f2 = v2[1];
-  f3 = v2[2];
-  ::memcpy( buf + 24, &f1, 4);
-  ::memcpy( buf + 28, &f2, 4);
-  ::memcpy( buf + 32, &f3, 4);
-
-  //write third vertex
-  f1 = v3[0];
-  f2 = v3[1];
-  f3 = v3[2];
-  ::memcpy( buf + 36, &f1, 4);
-  ::memcpy( buf + 40, &f2, 4);
-  ::memcpy( buf + 44, &f3, 4);
-
-  //write spacers
-  ::memcpy( buf + 48, "\0", 1);
-  ::memcpy( buf + 49, "\0", 1);
-
-  _out.write( buf, 50 );
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

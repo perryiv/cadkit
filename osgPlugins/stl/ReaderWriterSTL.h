@@ -49,41 +49,6 @@ protected:
   WriteResult             _writeAscii  ( const osg::Node& node, const std::string& filename );
   WriteResult             _writeBinary ( const osg::Node& node, const std::string& filename );
 
-  template < class Writer >
-  struct GeodeWriter
-  {
-    GeodeWriter( Writer writer ) : _writer ( writer ) { } 
-    void writeGeode( osg::Geode * );
-  private:
-    Writer _writer;
-  };
-
-  struct FacetCounter
-  {
-    FacetCounter() : _numFacets(0) { }
-    void countFacets( osg::Geode * );
-    unsigned int getNumFacets() { return _numFacets; }
-  private:
-    unsigned int _numFacets;
-  };
-
-  struct AsciiWriter
-  {
-    AsciiWriter( std::ostream& out ) : _out ( out ) { }
-    void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
-  private:
-    std::ostream &_out;
-  };
-
-  struct BinaryWriter
-  {
-    BinaryWriter( std::ostream& out ) : _out ( out ) { }
-    void operator() ( const osg::Vec3&, const osg::Vec3&, const osg::Vec3&, const osg::Vec3&);
-  private:
-    std::ostream &_out;
-  };
-
-
 private:
 
   bool                    _isAscii ( const std::string &filename ) const;

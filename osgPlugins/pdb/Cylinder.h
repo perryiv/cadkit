@@ -10,22 +10,24 @@
 #ifndef __OSG_PDB_PLUGIN_CYLINDER_H__
 #define __OSG_PDB_PLUGIN_CYLINDER_H__
 
-
-
 #include "osg/Vec3"
-
+#include "osg/Geometry"
+#include "osg/ref_ptr"
+#include "osg/Referenced"
 
 namespace osg { class Material; class Geometry; }
 
-class Cylinder
+class Cylinder : public osg::Referenced
 {
 public:
-  Cylinder(const osg::Vec3&, const osg::Vec3&);
-  osg::Geometry * getGeometry(osg::Material *, unsigned int) const;
-private:
   Cylinder();
-  float _getDist(const osg::Vec3&, const osg::Vec3&) const;
-  osg::Vec3 _point1, _point2;
+  Cylinder(unsigned int sides);
+  //osg::Geometry * getGeometry(osg::Material *, unsigned int) const;
+  osg::Geometry * getGeometry() { return _geometry.get(); }
+  bool valid() { return _point1.valid() && _point2.valid(); }
+private:
+  osg::Vec3 _point1, _point2, _center;
+  osg::ref_ptr< osg::Geometry > _geometry;
 };
 
 

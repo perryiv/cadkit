@@ -36,6 +36,7 @@ ReaderWriterPDB::ReaderWriterPDB() :
   _materialChooser(),
   _currentMolecule(NULL),
   _sphereFactory ( new SphereFactory ),
+  _cylinderFactory ( new CylinderFactory ),
   _periodicTable()
 {
 }
@@ -332,7 +333,7 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get() );
+    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get(), _cylinderFactory.get() );
     osg::ref_ptr< Molecule > r = _currentMolecule;
     _molecules.push_back(r);
   }

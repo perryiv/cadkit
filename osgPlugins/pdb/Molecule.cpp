@@ -18,6 +18,7 @@
 #include "osg/Shape"
 #include "osg/ShapeDrawable"
 #include "osg/Material"
+#include "osg/Vec3"
 
 #include <limits>
 #include <vector>
@@ -30,7 +31,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf ) : 
+Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf ) : 
   _atoms(),
   _bonds(),
   _maxDistanceFactor ( 10 ),
@@ -39,7 +40,8 @@ Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf ) :
   _stepFactor( 10 ),
   _lodDistancePower ( 2 ),
   _materialChooser ( mc ),
-  _sphereFactory ( sf )
+  _sphereFactory ( sf ),
+  _cylinderFactory ( cf )
 {
 }
 
@@ -86,7 +88,7 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Build the molecule
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -95,7 +97,7 @@ osg::Group *Molecule::_build() const
   BondFinder bf;
   //if no bonds exist use nearest neighbor to guess where they are
   if(_bonds.empty())
-    _bonds = bf.findBonds(bf.mapToVector(_atoms));
+    bf.findBonds(bf.mapToVector(_atoms), _bonds);
   
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
@@ -132,16 +134,17 @@ osg::Group *Molecule::_build() const
 osg::Node *Molecule::_makeBond (const Bond &bond ) const
 {
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
-
-  Cylinder c(bond.getPoint1(), bond.getPoint2());
+  
+  // Set the lod's material. This will effect all the children.
+  osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
+  osg::ref_ptr< osg::Material > m = _materialChooser->getMaterial( "Bond" );
+  ss->setAttribute ( m.get() );
 
   //add several cylinders
   for(unsigned int i = 0; i < _numLodChildren; ++i)
   {
-    unsigned int steps = 4 + (_numLodChildren - i) * _stepFactor;
-    osg::ref_ptr< osg::Geode > geode (new osg::Geode);
-    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), steps) ));
-    lod->addChild(geode.release());
+    unsigned int sides = 4 + (_numLodChildren - i) * _stepFactor;
+    lod->addChild(this->_makeCylinder( bond.getPoint1(), bond.getPoint2(), 0.25f, sides));
   }
 
   lod->setName( bond.toString());
@@ -151,6 +154,56 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   //this->_setCentersAndRanges ( lod.get() );
 
   return lod.release();
+}
+
+osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const
+{
+  osg::Vec3 uY (0.0, 1.0, 0.0);
+
+  //get distance
+  osg::Vec3 dist = point2 - point1;
+  float d = dist.length();
+  dist.normalize();
+  
+  //set up Matrix Transforms
+  osg::Matrixf scale, rotate, translate, matrix;
+  scale = matrix.scale( osg::Vec3(radius, d, radius) );
+  rotate.makeRotate(uY, dist);
+  translate.setTrans(point1);
+  osg::Matrixf T = scale * rotate * translate;
+
+  // Make a matrix-transform.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  //mt->setMatrix ( T * S );
+  mt->setMatrix ( T );
+
+  // Make a sphere.
+  osg::ref_ptr<osg::Geometry> geometry ( _cylinderFactory->create ( sides ) );
+
+  osg::ref_ptr< osg::Vec3Array > normals = geometry->getNormalArray();
+
+  for(osg::Vec3Array::iterator i = normals->begin(); i != normals->end(); ++i)
+  {
+    osg::Vec3 &v = *i;
+    v[0] /= radius;
+    v[1] /= d;
+    v[2] /= radius;
+  }
+
+  geometry->setNormalArray(normals.get());
+
+  // TODO, make this an option. Display lists crash with really big files.
+  geometry->setUseDisplayList ( false );
+
+  // Add the geometry to a geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
+
+  // Add the geode to the matrix-transform.
+  mt->addChild ( geode.get() );
+
+  // Return the matrix-transform.
+  return mt.release();
 }
 
 

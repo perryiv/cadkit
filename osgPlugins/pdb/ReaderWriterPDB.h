@@ -56,6 +56,7 @@ private:
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
   SphereFactory::Ptr _sphereFactory;
+  CylinderFactory::Ptr _cylinderFactory;
   PeriodicTable _periodicTable;
 };
 

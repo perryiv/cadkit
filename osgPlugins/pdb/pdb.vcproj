@@ -164,6 +164,9 @@
 				RelativePath=".\Cylinder.cpp">
 			</File>
 			<File
+				RelativePath=".\CylinderFactory.cpp">
+			</File>
+			<File
 				RelativePath=".\Element.cpp">
 			</File>
 			<File
@@ -199,6 +202,9 @@
 			</File>
 			<File
 				RelativePath=".\Cylinder.h">
+			</File>
+			<File
+				RelativePath=".\CylinderFactory.h">
 			</File>
 			<File
 				RelativePath=".\Element.h">

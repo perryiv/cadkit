@@ -55,8 +55,10 @@ namespace MenuKit
 
       ~ColorThemeSkinTile() {}
 
-      // asks the skin to compute the width
+      // asks the skin to compute dimensions
       // of the resulting graphic
+      virtual float height(const Menu&);
+      virtual float height(const Button&);
       virtual float width(const Menu&);
       virtual float width(const Button&);
       virtual float width(const Item* itm);
@@ -120,6 +122,8 @@ osg::Node* ColorThemeSkinTile<ThemeType,SkinType>::operator ()(const Menu& m)
   _skin.theme( this->proper_theme() );
   _skin.box( this->box() );
 
+  // TODO: make the graphic NULL, _skin.icon(NULL);
+
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(m);
   return node.release();
@@ -132,9 +136,23 @@ osg::Node* ColorThemeSkinTile<ThemeType,SkinType>::operator ()(const Button& b)
   _skin.theme( proper_theme() );
   _skin.box( this->box() );
 
+  // TODO: load a graphic, _skin.load_icon( b.icon_file() );
+
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(b);
   return node.release();
+}
+
+template<class ThemeType, class SkinType>
+float ColorThemeSkinTile<ThemeType,SkinType>::height(const Menu& m)
+{
+  return( _skin.height(m) );
+}
+
+template<class ThemeType, class SkinType>
+float ColorThemeSkinTile<ThemeType,SkinType>::height(const Button& b)
+{
+  return( _skin.height(b) );
 }
 
 template<class ThemeType, class SkinType>

@@ -11,7 +11,11 @@ LOCAL_INCLUDE =
 LOCAL_LIBS = -lm
 
 # Any flags for the compiler. 
+# Note: not sure how to do an "else if".
 LOCAL_CPP_FLAGS =
+ifeq ($(OS), IRIX)
+	LOCAL_CPP_FLAGS = -woff 1183
+endif
 
 # Any flags for the linker.
 LOCAL_LINK_FLAGS =

@@ -391,7 +391,7 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
 
   if ( material.isValid ( SlMaterialf::DIFFUSE ) )
   {
-    const SlVec4f &color = material.getAmbient();
+    const SlVec4f &color = material.getDiffuse();
     mat->setColor ( PFMTL_DIFFUSE, color[0], color[1], color[2] );
     success = true;
 
@@ -402,14 +402,14 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
 
   if ( material.isValid ( SlMaterialf::SPECULAR ) )
   {
-    const SlVec4f &color = material.getAmbient();
+    const SlVec4f &color = material.getSpecular();
     mat->setColor ( PFMTL_SPECULAR, color[0], color[1], color[2] );
     success = true;
   }
 
   if ( material.isValid ( SlMaterialf::EMISSIVE ) )
   {
-    const SlVec4f &color = material.getAmbient();
+    const SlVec4f &color = material.getEmissive();
     mat->setColor ( PFMTL_EMISSION, color[0], color[1], color[2] );
     success = true;
   }

@@ -11,7 +11,6 @@ SUBDIRS = \
 	Database/XML \
 	Translators/Jupiter2Performer \
 	Translators/Jupiter2Xml \
-	Nurbs \
 	Demos/Jupiter2Osg \
 	Demos/Jupiter2Performer \
 	Demos/Jupiter2Xml \

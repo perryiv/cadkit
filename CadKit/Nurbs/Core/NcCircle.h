@@ -28,6 +28,8 @@ template<NCSDTA> class NcCircle : public NcCreate<NCSDCA>
 {
 public:
 
+  DECLATE_TYPEDEFS;
+
   // Create the 2D circle.
   static bool create ( const SlVec2<ControlPointType> &center, 
                        const ControlPointType &radius, 

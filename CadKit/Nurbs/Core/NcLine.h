@@ -24,7 +24,9 @@ namespace CadKit
 {
 template<NCSDTA> class NcLine : public NcCreate<NCSDCA>
 {
-  public:
+public:
+
+  DECLATE_TYPEDEFS;
 
   // Create the line.
   static bool create ( const ControlPointType *pt1, 

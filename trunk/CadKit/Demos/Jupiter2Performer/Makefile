@@ -5,7 +5,7 @@ include $(CADKIT_ROOT_DIR)/Make/header.mak
 CPP_FILES = main.cpp
 
 # The include path.
-LOCAL_INCLUDE =  -I$(PERFORMER_INCLUDE_PATH)
+LOCAL_INCLUDE = 
 
 # The libraries to link to.
 LOCAL_LIBS = \

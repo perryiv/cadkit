@@ -7,13 +7,20 @@ CPP_FILES = main.cpp
 # The include path.
 LOCAL_INCLUDE = 
 
+# OSG gets "installed" in a different directory, depending on the platform
+ifeq ($(OS), IRIX)
+	LOCAL_OSG_LIB_DIR = $(OSGHOME)/lib32
+else
+	LOCAL_OSG_LIB_DIR = $(OSGHOME)/lib
+endif
+
 # The libraries to link to.
 LOCAL_LIBS = \
 	-lCkCt_s \
 	-lCkDbJt_s \
 	-lCkDbOsg_s \
 	-lCkSl_s \
-	-L$(OSGHOME)/lib \
+	-L$(LOCAL_OSG_LIB_DIR) \
 	-losgDB \
 	-losg \
 	-L$(DMDTK_DEV_PATH)/lib/$(os) \

@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="DatabaseJt"
+	Name="lib: Database Jupiter"
+	ProjectGUID="{0ED9001A-3976-4174-B167-4BC3823DDB15}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

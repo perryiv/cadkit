@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plug: osg_sal"
+	Name="plug: SAL OSG"
 	ProjectGUID="{9B109CBA-756C-4EDD-A083-187A761B4BAD}"
 	SccProjectName=""
 	SccLocalPath="">

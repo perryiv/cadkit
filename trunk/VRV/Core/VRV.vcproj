@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: VRV"
+	Name="lib: VRV Core"
 	ProjectGUID="{2228A7FB-34E3-43F7-9C45-3C5F822245B2}"
 	SccProjectName=""
 	SccLocalPath="">

@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="DatabaseBase"
+	Name="lib: Database Base"
+	ProjectGUID="{70453574-6167-4280-8A8B-9759458798AA}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

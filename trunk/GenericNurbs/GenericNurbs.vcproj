@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="GenericNurbs"
+	Name="lib: GenericNurbs"
 	ProjectGUID="{1C8F8A43-B135-4301-959A-1ED41708A63F}"
 	SccProjectName=""
 	SccLocalPath="">

@@ -229,38 +229,19 @@ public:
     updater ( answer, true );
   }
 
-  template < class IndexSequence, class AdjacencyTest >
-  void capPolygons( IndexSequence& uncapped, const AdjacencyTest& adjacent, unsigned int vertsPerPoly )
+  Polygons&       polygons ()       { return _polygons; }
+  const Polygons& polygons () const { return _polygons; }
+
+  void setAllUnvisited()
   {
-    typedef typename SharedVertex::PolygonList PolygonList;
-
-    //Walk through all the polygons
     for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
-    {
-      PolygonList neighbors ( iter->getNeighbors() );
+      iter->visited( false );
 
-      PolygonList adjacentPolygons;
-
-      //Loop through all this polygon's neighbors
-      for( PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
-      {
-        //Self check...
-        if( iter->index() != (*i)->index() )
-        {
-          //If these two polygons are adjacent...
-          if( adjacent ( &*iter, *i ) )
-            adjacentPolygons.push_back( *i );
-        }
-      }
-
-      //If we don't have the right number of adjacent polygons...
-      if( adjacentPolygons.size() < vertsPerPoly )
-      {
-        uncapped.push_back( iter->index() );
-      }
-    }
+    for( Map::iterator i = _sharedVertsMap.begin(); i != _sharedVertsMap.end(); ++i )
+      i->second.visited( false );
   }
 
+  unsigned int size() const { _polygons.size() + _sharedVertsMap.size(); }
 
 private:
   Map            _sharedVertsMap;

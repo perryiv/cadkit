@@ -218,6 +218,15 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name Standard
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
 }}}
 
 ###############################################################################

@@ -13,6 +13,46 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
+
+/*<DEBUG>*/
+#define _CADKIT_STL_PRINT_DEBUG
+
+#ifdef _CADKIT_STL_PRINT_DEBUG
+# include <stdio.h>
+# define STL_PRINT ::printf
+# define STL_PRINT2 STL_PRINT
+# define STL_PRINT3 STL_PRINT
+# define STL_PRINT4 STL_PRINT
+# define STL_PRINT5 STL_PRINT
+# define STL_PRINT6 STL_PRINT
+# define STL_WPRINT ::wprintf
+# define STL_WPRINT2 STL_WPRINT
+# define STL_WPRINT3 STL_WPRINT
+# define STL_WPRINT4 STL_WPRINT
+# define STL_WPRINT5 STL_WPRINT
+# define STL_WPRINT6 STL_WPRINT
+#else // No _CADKIT_STL_PRINT_DEBUG
+# define STL_PRINT(exp) ((void)0)
+# define STL_PRINT2(exp1,exp2) ((void)0)
+# define STL_PRINT3(exp1,exp2,exp3) ((void)0)
+# define STL_PRINT4(exp1,exp2,exp3,exp4) ((void)0)
+# define STL_PRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
+# define STL_PRINT6(exp1,exp2,exp3,exp4,exp5,exp6) ((void)0)
+# define STL_WPRINT(exp) ((void)0)
+# define STL_WPRINT2(exp1,exp2) ((void)0)
+# define STL_WPRINT3(exp1,exp2,exp3) ((void)0)
+# define STL_WPRINT4(exp1,exp2,exp3,exp4) ((void)0)
+# define STL_WPRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
+# define STL_WPRINT6(exp1,exp2,exp3,exp4,exp5,exp6) ((void)0)
+#endif // _CADKIT_STL_PRINT_DEBUG
+/*</DEBUG>*/
+
+
+
+
+
+
 //???????????
 // I need this up here or else I get this VC++ error (and many others):
 // SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
@@ -90,6 +130,7 @@ DbStlDatabase::~DbStlDatabase()
 bool DbStlDatabase::dataTransferStart ( IUnknown *caller )
 {
   SL_PRINT3 ( "In DbStlDatabase::dataTransferStart(), this = %X, caller = %X\n", this, caller );
+  STL_PRINT3 ( "In DbStlDatabase::dataTransferStart(), this = %X, caller = %X\n", this, caller );
 
   // init FacetManager
   _fmgr.init();
@@ -111,6 +152,7 @@ bool DbStlDatabase::dataTransferStart ( IUnknown *caller )
 bool DbStlDatabase::dataTransferEnd ( IUnknown *caller )
 {
   SL_PRINT3 ( "In DbStlDatabase::dataTransferEnd(), this = %X, caller = %X\n", this, caller );
+  STL_PRINT3 ( "In DbStlDatabase::dataTransferEnd(), this = %X, caller = %X\n", this, caller );
 
   // Should be true.
 //  SL_ASSERT ( _fmgr._transforms.size() );
@@ -177,6 +219,7 @@ bool DbStlDatabase::storeData ( const std::string &filename )
 
   // Write the root to file.
   return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
+//  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_BINARY_FILE_MODE );
   //TODO - flag for choosing binary or ascii
 }
 
@@ -190,6 +233,7 @@ bool DbStlDatabase::storeData ( const std::string &filename )
 bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
+  STL_PRINT4 ( "START ASSEMBLY %X - In DbStlDatabase::startEntity(), this = %X, caller = %X\n", assembly, this, caller );
   SL_ASSERT ( caller );
 
   // Get the interface we need from the caller.
@@ -197,10 +241,12 @@ bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Push the matrix if there is one.
+  // Push the matrix if there is one, else the identity
   SlMatrix44f matrix;
   if ( true == query->getTransform ( assembly, matrix, false ) )
     _fmgr.pushTransform ( matrix );
+  else
+    _fmgr.pushTransformIdentity();
 
   // It worked
   return true;
@@ -216,9 +262,12 @@ bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
 bool DbStlDatabase::endEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
+  STL_PRINT4 ( "END ASSEMBLY %X - In DbStlDatabase::endEntity(), this = %X, caller = %X\n", assembly, this, caller );
   SL_ASSERT ( caller );
 
-  // nothing to do
+  // pop transformation matrix from stack
+  _fmgr.popTransform();
+
   return true;
 }
 
@@ -232,6 +281,7 @@ bool DbStlDatabase::endEntity ( AssemblyHandle assembly, IUnknown *caller )
 bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  STL_PRINT4 ( "START PART %X - In DbStlDatabase::startEntity(), this = %X, caller = %X\n", part, this, caller );
   SL_ASSERT ( caller );
 
   // Get the interface we need from the caller.
@@ -239,10 +289,12 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Push the matrix if there is one.
+  // Push the matrix if there is one, else identity
   SlMatrix44f matrix;
   if ( true == query->getTransform ( part, matrix, false ) )
     _fmgr.pushTransform ( matrix );
+  else
+    _fmgr.pushTransformIdentity();
 
   // It worked
   return true;
@@ -258,9 +310,12 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
 bool DbStlDatabase::endEntity ( PartHandle part, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  STL_PRINT4 ( "END PART %X - In DbStlDatabase::endEntity(), this = %X, caller = %X\n", part, this, caller );
   SL_ASSERT ( caller );
 
-  // nothing to do
+  // pop transformation matrix from stack
+  _fmgr.popTransform();
+
   return true;
 }
 
@@ -274,6 +329,7 @@ bool DbStlDatabase::endEntity ( PartHandle part, IUnknown *caller )
 bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  STL_PRINT4 ( "START INSTANCE %X - In DbStlDatabase::startEntity(), this = %X, caller = %X\n", instance, this, caller );
   SL_ASSERT ( caller );
 
   // Get the interface we need from the caller.
@@ -281,10 +337,12 @@ bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  // Push the matrix if there is one.
+  // Push the matrix if there is one, else identity
   SlMatrix44f matrix;
   if ( true == query->getTransform ( instance, matrix, false ) )
     _fmgr.pushTransform ( matrix );
+  else
+    _fmgr.pushTransformIdentity();
 
   // It worked
   return true;
@@ -300,9 +358,12 @@ bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
 bool DbStlDatabase::endEntity ( InstanceHandle instance, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  STL_PRINT4 ( "END INSTANCE %X - In DbStlDatabase::endEntity(), this = %X, caller = %X\n", instance, this, caller );
   SL_ASSERT ( caller );
 
-  // Nothing to do.
+  // pop transformation matrix from stack
+  _fmgr.popTransform();
+
   return true;
 }
 
@@ -316,6 +377,7 @@ bool DbStlDatabase::endEntity ( InstanceHandle instance, IUnknown *caller )
 bool DbStlDatabase::startEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
+  STL_PRINT4 ( "START LOD %X - In DbStlDatabase::startEntity(), this = %X, caller = %X\n", lod, this, caller );
   SL_ASSERT ( caller );
 
   // Nothing to do.
@@ -332,6 +394,7 @@ bool DbStlDatabase::startEntity ( LodHandle lod, IUnknown *caller )
 bool DbStlDatabase::endEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
+  STL_PRINT4 ( "END LOD %X - In DbStlDatabase::endEntity(), this = %X, lod = %d, caller = %X\n", lod, this, caller );
   SL_ASSERT ( caller );
 
   // Nothing to do.
@@ -348,6 +411,7 @@ bool DbStlDatabase::endEntity ( LodHandle lod, IUnknown *caller )
 bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
+  STL_PRINT4 ( "START SHAPE %X - In DbStlDatabase::startEntity(), this = %X, caller = %X\n", shape, this, caller );
   SL_ASSERT ( caller );
 
 
@@ -363,15 +427,19 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
   PartHandle p( lodQuery->getParent( shapeQuery->getParent( shape ) ) );
+/*DEBUG*/std::cout << "LOD[" << shapeQuery->getParent( shape ) << "], PartHandle = " << p;
   if ( p ) // check for null
     if ( _partLodCheck.find( p ) == _partLodCheck.end() ) // only procede if no entry for part
     {
+/*DEBUG*/std::cout << " - FIRST LOD... PROCESSING" << std::endl;
       _partLodCheck.insert( p ); // create entry so we don't process another lod for this part
 
       // Add the vertices and normals. 
       if ( false == _fmgr.fetchVerticesPerShape( caller, shape ) )
         return ERROR ( "Failed to add shape sets for given shape.", FAILED );
     }
+/*DEBUG*/else
+/*DEBUG*/std::cout << " - EXTRA LOD... SKIPPING" << std::endl;
 
   // It worked.
   return true;
@@ -387,6 +455,7 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
 bool DbStlDatabase::endEntity ( ShapeHandle shape, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
+  STL_PRINT4 ( "END SHAPE %X - In DbStlDatabase::endEntity(), this = %X, caller = %X\n", shape, this, caller );
   SL_ASSERT ( caller );
 
   // Nothing to do.

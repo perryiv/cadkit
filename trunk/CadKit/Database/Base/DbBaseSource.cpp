@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbBaseTarget: Base class for other target database classes.
+//  DbBaseSource: Base class for other source database classes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "DbBasePrecompiled.h"
-#include "DbBaseTarget.h"
+#include "DbBaseSource.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlPathname.h"
@@ -24,7 +24,7 @@
 
 using namespace CadKit;
 
-SL_IMPLEMENT_CLASS ( DbBaseTarget, DbBaseObject );
+SL_IMPLEMENT_CLASS ( DbBaseSource, DbBaseObject );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,9 +33,10 @@ SL_IMPLEMENT_CLASS ( DbBaseTarget, DbBaseObject );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbBaseTarget::DbBaseTarget() : DbBaseObject()
+DbBaseSource::DbBaseSource() : DbBaseObject(),
+  _target ( NULL )
 {
-  SL_PRINT2 ( "In DbBaseTarget::DbBaseTarget(), this = %X\n", this );
+  SL_PRINT2 ( "In DbBaseSource::DbBaseSource(), this = %X\n", this );
 }
 
 
@@ -45,9 +46,9 @@ DbBaseTarget::DbBaseTarget() : DbBaseObject()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbBaseTarget::~DbBaseTarget()
+DbBaseSource::~DbBaseSource()
 {
-  SL_PRINT2 ( "In DbBaseTarget::~DbBaseTarget(), this = %X\n", this );
+  SL_PRINT2 ( "In DbBaseSource::~DbBaseSource(), this = %X\n", this );
 }
 
 
@@ -57,16 +58,16 @@ DbBaseTarget::~DbBaseTarget()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbBaseTarget::queryInterface ( const unsigned long &iid )
+IUnknown *DbBaseSource::queryInterface ( const unsigned long &iid )
 {
-  SL_PRINT2 ( "In DbBaseTarget::queryInterface(), this = %X\n", this );
+  SL_PRINT2 ( "In DbBaseSource::queryInterface(), this = %X\n", this );
 
   switch ( iid )
   {
-  case IDataTarget::IID:
-    return static_cast<IDataTarget *>(this);
+  case IDataSource::IID:
+    return static_cast<IDataSource *>(this);
   case CadKit::IUnknown::IID:
-    return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
+    return static_cast<CadKit::IUnknown *>(static_cast<IDataSource *>(this));
   default:
     return DbBaseObject::queryInterface ( iid );
   }
@@ -75,27 +76,14 @@ IUnknown *DbBaseTarget::queryInterface ( const unsigned long &iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the default output filename, based on the given filename.
+//  Set the data target.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string DbBaseTarget::getDefaultOutputName ( const std::string &filename )
+void DbBaseSource::setDataTarget ( IUnknown *target )
 {
-  SL_PRINT3 ( "In DbBaseTarget::getDefaultOutputName(), this = %X, filename = %s\n", this, filename.c_str() );
-  SL_ASSERT ( filename.size() );
+  SL_PRINT3 ( "In DbBaseSource::setDataTarget(), this = %X, target = %X\n", this, target );
 
-  // Parse the path.
-  SlPathname<std::string> path ( filename );
-
-  // Make a copy of the input filename.
-  std::string out ( filename );
-
-  // Drop the extension.
-  out.resize ( out.size() - path.getExtension().size() );
-
-  // Add the given extension.
-  out += this->getFileExtension();
-
-  // Return the output filename.
-  return out;
+  // Set the target, it may be null.
+  _target = target;
 }

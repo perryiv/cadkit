@@ -18,12 +18,11 @@
 
 #include "DbJtPrecompiled.h"
 #include "DbJtVisApiArray.h"
-#include "DbJtFunctions.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"
 
-#include "Interfaces/IErrorNotify.h"
+#include "Interfaces/IMessageNotify.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -88,7 +87,7 @@ template <class HandleType> inline std::string getName ( HandleType ptr )
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class NotifyType, class HandleType> inline bool handleEntityStart
-  ( NotifyType *notify, HandleType entity, IUnknown *caller, IErrorNotify *controller )
+  ( NotifyType *notify, HandleType entity, IUnknown *caller, IMessageNotify *controller )
 {
   SL_ASSERT ( NULL != notify );
   SL_ASSERT ( NULL != entity );
@@ -102,7 +101,7 @@ template <class NotifyType, class HandleType> inline bool handleEntityStart
       return false;
 
     // Otherwise, ask the controller.
-    return controller->errorNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED );
+    return controller->messageNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
   }
 
   // It worked.
@@ -117,7 +116,7 @@ template <class NotifyType, class HandleType> inline bool handleEntityStart
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class NotifyType, class HandleType> inline bool handleEntityEnd
-  ( NotifyType *notify, HandleType entity, IUnknown *caller, IErrorNotify *controller )
+  ( NotifyType *notify, HandleType entity, IUnknown *caller, IMessageNotify *controller )
 {
   SL_ASSERT ( NULL != notify );
   SL_ASSERT ( NULL != entity );
@@ -131,7 +130,7 @@ template <class NotifyType, class HandleType> inline bool handleEntityEnd
       return false;
 
     // Otherwise, ask the controller.
-    return controller->errorNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED );
+    return controller->messageNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
   }
 
   // It worked.

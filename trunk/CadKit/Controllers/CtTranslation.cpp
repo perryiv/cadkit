@@ -25,9 +25,6 @@
 #include "Standard/SlQueryPtr.h"
 #include "Standard/SlMessageIds.h"
 
-#include "Interfaces/IErrorNotify.h"
-#include "Interfaces/IWarningNotify.h"
-#include "Interfaces/IProgressNotify.h"
 #include "Interfaces/IDataSource.h"
 #include "Interfaces/IDataTarget.h"
 #include "Interfaces/IControlled.h"
@@ -81,12 +78,8 @@ CadKit::IUnknown *CtTranslation::queryInterface ( const unsigned long &iid )
 
   switch ( iid )
   {
-  case IErrorNotify::IID:
-    return static_cast<IErrorNotify *>(this);
-  case IProgressNotify::IID:
-    return static_cast<IProgressNotify *>(this);
-  case IWarningNotify::IID:
-    return static_cast<IWarningNotify *>(this);
+  case IMessageNotify::IID:
+    return static_cast<IMessageNotify *>(this);
   case ICommandLine::IID:
     return static_cast<ICommandLine *>(this);
   case ITranslator::IID:
@@ -94,7 +87,7 @@ CadKit::IUnknown *CtTranslation::queryInterface ( const unsigned long &iid )
   case IOutputStream::IID:
     return static_cast<IOutputStream *>(this);
   case CadKit::IUnknown::IID:
-    return static_cast<CadKit::IUnknown *>(static_cast<IWarningNotify *>(this));
+    return static_cast<CadKit::IUnknown *>(static_cast<IMessageNotify *>(this));
   default:
     return NULL;
   }
@@ -232,16 +225,29 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Notification of progress.
+//  Notification of a message.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::progressNotify ( const std::string &message ) const
+bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type ) const
 {
-  SL_PRINT3 ( "In CtTranslation::errorNotify(), this = %X, message = %s\n", this, message.c_str() );
+  SL_PRINT5 ( "In CtTranslation::messageNotify(), this = %X, id = %d, type = %d, message = %s\n", this, id, type, message.c_str() );
 
-  // Print the error.
-  PRINT << message.c_str() << std::endl;
+  // See what kind of message it is.
+  switch ( type )
+  {
+  case IMessageNotify::MESSAGE_ERROR:
+    return this->_messageNotify ( "Error",   message, id );
+  case IMessageNotify::MESSAGE_WARNING:
+    return this->_messageNotify ( "Warning", message, id );
+  case IMessageNotify::MESSAGE_PROGRESS:
+  case IMessageNotify::MESSAGE_INFO:
+    PRINT << message.c_str() << std::endl;
+    break;
+  default:
+    SL_ASSERT ( 0 ); // What message is this?
+    break;
+  }
 
   // Keep going.
   return true;
@@ -250,33 +256,7 @@ bool CtTranslation::progressNotify ( const std::string &message ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Notification of an error.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool CtTranslation::errorNotify ( const std::string &message, const unsigned long &id ) const
-{
-  SL_PRINT4 ( "In CtTranslation::errorNotify(), this = %X, message = %s, id = %d\n", this, message.c_str(), id );
-  return this->_messageNotify ( "Error", message, id );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notification of a warning.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool CtTranslation::warningNotify ( const std::string &message, const unsigned long &id ) const
-{
-  SL_PRINT4 ( "In CtTranslation::errorNotify(), this = %X, message = %s, id = %d\n", this, message.c_str(), id );
-  return this->_messageNotify ( "Warning", message, id );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notification of a message with an id.
+//  Notification of a message.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

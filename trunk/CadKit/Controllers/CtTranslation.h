@@ -18,9 +18,7 @@
 
 #include "CtApi.h"
 
-#include "Interfaces/IErrorNotify.h"
-#include "Interfaces/IProgressNotify.h"
-#include "Interfaces/IWarningNotify.h"
+#include "Interfaces/IMessageNotify.h"
 #include "Interfaces/ICommandLine.h"
 #include "Interfaces/ITranslator.h"
 #include "Interfaces/IOutputStream.h"
@@ -36,9 +34,7 @@
 namespace CadKit
 {
 class CT_API CtTranslation : public SlRefBase, 
-                             public IErrorNotify,
-                             public IProgressNotify,
-                             public IWarningNotify,
+                             public IMessageNotify,
                              public ICommandLine,
                              public ITranslator,
                              public IOutputStream
@@ -52,30 +48,12 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IErrorNotify interface.
+  //  IMessageNotify interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Report an error. Return true if the caller should continue.
-  virtual bool            errorNotify ( const std::string &message, const unsigned long &id ) const;
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IProgressNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Report progress. Return true if the caller should continue.
-  virtual bool            progressNotify ( const std::string &message ) const;
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IWarningNotify interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Report a warning. Return true if the caller should continue.
-  virtual bool            warningNotify ( const std::string &message, const unsigned long &id ) const;
+  // Notification of a message.
+  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //

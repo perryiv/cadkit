@@ -18,18 +18,19 @@
 
 #include "DbJtApi.h"
 
-#include "Interfaces/IDataSource.h"
-#include "Interfaces/IControlled.h"
-#include "Interfaces/ILoadOptions.h"
-#include "Interfaces/IEntityQuery.h"
-#include "Interfaces/IInstanceQuery.h"
+#include "Database/Base/DbBaseSource.h"
 
-#include "Standard/SlRefBase.h"
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlBitmask.h"
 #include "Standard/SlStack.h"
 
-#include <vector>
+#include "Interfaces/ILoadOptions.h"
+#include "Interfaces/IEntityQuery.h"
+#include "Interfaces/IInstanceQuery.h"
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <vector>
+#endif
 
 class eaiAssembly;
 class eaiHierarchy;
@@ -39,9 +40,7 @@ class eaiPart;
 
 namespace CadKit
 {
-class DB_JT_API DbJtDatabase : public SlRefBase, 
-                               public IDataSource,
-                               public IControlled,
+class DB_JT_API DbJtDatabase : public DbBaseSource, 
                                public ILoadOptions,
                                public IAssemblyQueryFloat,
                                public IPartQueryFloat,
@@ -64,18 +63,6 @@ public:
 
   // Load the data.
   virtual bool            loadData ( const std::string &filename );
-
-  // Set the data target.
-  virtual void            setDataTarget ( IUnknown *target );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IControlled interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Set the controller.
-  virtual void            setController ( IUnknown *controller );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -144,8 +131,6 @@ protected:
 
   typedef SlStack<eaiAssembly *> Assemblies;
 
-  SlRefPtr<IUnknown> _target;
-  SlRefPtr<IUnknown> _controller;
   unsigned int _customerId;
   bool _initialized;
   AssemblyLoadOption _assemblyLoadOption;

@@ -16,16 +16,16 @@
 #include "DbJtPrecompiled.h"
 #include "DbJtDatabase.h"
 #include "DbJtInline.h"
-
-#include "Interfaces/IEntityNotify.h"
-#include "Interfaces/IWarningNotify.h"
-#include "Interfaces/IProgressNotify.h"
+#include "DbJtFunctions.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 #include "Standard/SlQueryPtr.h"
+
+#include "Interfaces/IMessageNotify.h"
+#include "Interfaces/IEntityNotify.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -53,7 +53,7 @@ void _incrementPointerReferenceCount ( eaiEntity *p );
 void _decrementPointerReferenceCount ( eaiEntity *p );
 };
 
-SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtDatabase, SlRefBase );
+SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtDatabase, DbBaseSource );
 CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtDatabase, SlRefBase );
 
 
@@ -63,9 +63,7 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtDatabase, SlRefBase );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : SlRefBase ( 0 ),
-  _target ( NULL ),
-  _controller ( NULL ),
+DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _customerId ( customerId ),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
@@ -117,7 +115,7 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
   case CadKit::IUnknown::IID:
     return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
-    return NULL;
+    return DbBaseSource::queryInterface ( iid );
   }
 }
 
@@ -480,7 +478,7 @@ bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *enti
     return false;
 
   // Get the controller's error handling interface.
-  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
+  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
 
   // Try this interface.
   SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
@@ -509,7 +507,7 @@ bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity
   SL_PRINT3 ( "In DbJtDatabase::_endAssembly(), entity = %X, level = %d\n", entity, level );
 
   // Get the controller's error handling interface.
-  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
+  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
 
   // Try this interface.
   SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
@@ -585,36 +583,6 @@ bool DbJtDatabase::_endInstance ( const unsigned int &level, eaiInstance *instan
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the data target.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtDatabase::setDataTarget ( IUnknown *target )
-{
-  SL_PRINT3 ( "In DbJtDatabase::setDataTarget(), this = %X, target = %X\n", this, target );
-
-  // Set the target, it may be null.
-  _target = target;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the controller.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtDatabase::setController ( IUnknown *controller )
-{
-  SL_PRINT3 ( "In DbJtDatabase::setController(), this = %X, controller = %X\n", this, controller );
-
-  // Set the controller, it may be null.
-  _controller = controller;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the customer number.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -648,14 +616,14 @@ bool DbJtDatabase::_notifyError ( const std::string &message, const unsigned lon
   SL_PRINT4 ( "In DbJtDatabase::_notifyError(), this = %X, id = %d, message = \n", this, id, message.c_str() );
 
   // See if the controller supports the proper interface.
-  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
+  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
   if ( controller.isNull() )
     return true;
 
   // Let the controller know.
-  return controller->errorNotify ( message, id );
+  return controller->messageNotify ( message, id, IMessageNotify::MESSAGE_ERROR );
 }
 
 
@@ -670,14 +638,14 @@ bool DbJtDatabase::_notifyProgress ( const std::string &message )
   SL_PRINT3 ( "In DbJtDatabase::_notifyProgress(), this = %X, message = \n", this, message.c_str() );
 
   // See if the controller supports the proper interface.
-  SlQueryPtr<IProgressNotify> controller ( IProgressNotify::IID, _controller );
+  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
   if ( controller.isNull() )
     return true;
 
   // Let the controller know.
-  return controller->progressNotify ( message );
+  return controller->messageNotify ( message, 0, IMessageNotify::MESSAGE_PROGRESS );
 }
 
 
@@ -692,14 +660,14 @@ bool DbJtDatabase::_notifyWarning ( const std::string &message, const unsigned l
   SL_PRINT4 ( "In DbJtDatabase::_notifyWarning(), this = %X, id = %d, message = \n", this, id, message.c_str() );
 
   // See if the controller supports the proper interface.
-  SlQueryPtr<IWarningNotify> controller ( IWarningNotify::IID, _controller );
+  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
   if ( controller.isNull() )
     return true;
 
   // Let the controller know.
-  return controller->warningNotify ( message, id );
+  return controller->messageNotify ( message, id, IMessageNotify::MESSAGE_WARNING );
 }
 
 

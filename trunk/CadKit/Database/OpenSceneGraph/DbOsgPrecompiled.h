@@ -26,12 +26,10 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "osg/MatrixTransform"
-# include "osg/Geode"
-# include "osg/Geometry"
-# include "osgDB/WriteFile"
+# include <math.h>
 # include <list>
 # include <stack>
+# include <algorithm>
 #endif
 
 #endif // _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

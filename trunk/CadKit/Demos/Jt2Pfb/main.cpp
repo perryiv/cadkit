@@ -118,11 +118,44 @@ int main ( int argc, char **argv )
     std::cout << " <filename1.jt> [filename2.jt] ..." << std::endl;
     return 0;
   }
-
+  /*
+  // Initialize the shared arenas. From the man pages, "However, a libpr
+  // application that wishes to use Performer's arenas, must call 
+  // pfInitArenas before calling pfInit to ensure that the type system
+  // is created in shared memory."
+  result = ::pfInitArenas();
+  if ( 1 != result )
+  {
+    std::cout << "Failed to initialize Performer's shared memory arenas, pfInitArenas() returned " << result << std::endl;
+    return 0;
+  }
+  */
   // Initialize Performer.
-  ::pfInit();
-  ::pfInitArenas();
+  int result = ::pfInit();
+  if ( 1 != result )
+  {
+    std::cout << "Failed to initialize Performer, pfInit() returned " << result << std::endl;
+    return 0;
+  }
+
+  // Tell Performer to print all warnings.
   ::pfNotifyLevel ( PFNFY_ALWAYS );
+
+  // No multiprocessing.
+  result = ::pfMultiprocess ( 0 );
+  if ( 1 != result )
+  {
+    std::cout << "Failed to set the number of processes, pfMultiprocess(0) returned " << result << std::endl;
+    return 0;
+  }
+
+  // Configure Performer, this finally gets Performer to a usable state.
+  result = ::pfConfig();
+  if ( 1 != result )
+  {
+    std::cout << "Failed to configure Performer, pfConfig(0) returned " << result << std::endl;
+    return 0;
+  }
 
   // Declare an instance of the Jupiter to Performer translator.
   TrJt2Pf jt2pf;
@@ -130,7 +163,7 @@ int main ( int argc, char **argv )
   // Initialize.
   if ( false == jt2pf.init() )
   {
-    std::cout << "Failed to initialize translator" << std::endl;
+    std::cout << "Failed to initialize translator." << std::endl;
     return 0;
   }
 

@@ -9,9 +9,9 @@ LOCAL_INCLUDE =
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-lCkTrJt2Pf_a \
-	-lCkDbJt_a \
-	-lCkSl_a \
+	-lCkTrJt2Pf_s \
+	-lCkDbJt_s \
+	-lCkSl_s \
 	-lpfdu \
 	-lpfui \
 	-lpfutil \

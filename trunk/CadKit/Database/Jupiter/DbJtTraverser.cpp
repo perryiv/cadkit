@@ -493,13 +493,7 @@ bool DbJtTraverser::getTransform ( EntityHandle entity, SlMatrix4f &matrix ) con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtTraverser::getMaterial ( EntityHandle entity, 
-                                  SlVec4f &ambient, 
-                                  SlVec4f &diffuse, 
-                                  SlVec4f &specular, 
-                                  SlVec4f &emissive, 
-                                  float &shininess, 
-                                  unsigned int &valid ) const
+bool DbJtTraverser::getMaterial ( EntityHandle entity, SlMaterialf &mat ) const
 {
   SL_PRINT3 ( "In DbJtTraverser::getMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
@@ -509,7 +503,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
 
   // Initialize.
   bool success ( false );
-  valid = 0;
+  mat.setValid ( 0 );
 
   // Ask for the material (there may not be one).
   eaiMaterial *temp = NULL;
@@ -529,8 +523,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
   material->getAmbientColor ( a.getReference() );
   if ( a.getReference() )
   {
-    ambient.setValue ( a[0], a[1], a[2], a[3] );
-    valid |= MATERIAL_COLOR_AMBIENT;
+    mat.setAmbient ( SlVec4f ( a[0], a[1], a[2], a[3] ) );
     success = true;
   }
 
@@ -538,8 +531,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
   material->getDiffuseColor ( d.getReference() );
   if ( d.getReference() )
   {
-    diffuse.setValue ( d[0], d[1], d[2], d[3] );
-    valid |= MATERIAL_COLOR_DIFFUSE;
+    mat.setDiffuse ( SlVec4f ( d[0], d[1], d[2], d[3] ) );
     success = true;
   }
 
@@ -547,8 +539,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
   material->getSpecularColor ( sp.getReference() );
   if ( sp.getReference() )
   {
-    specular.setValue ( sp[0], sp[1], sp[2], sp[3] );
-    valid |= MATERIAL_COLOR_SPECULAR;
+    mat.setSpecular ( SlVec4f ( sp[0], sp[1], sp[2], sp[3] ) );
     success = true;
   }
 
@@ -556,8 +547,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
   material->getEmissionColor ( e.getReference() );
   if ( e.getReference() )
   {
-    emissive.setValue ( e[0], e[1], e[2], e[3] );
-    valid |= MATERIAL_COLOR_EMISSIVE;
+    mat.setEmissive ( SlVec4f ( e[0], e[1], e[2], e[3] ) );
     success = true;
   }
 
@@ -565,8 +555,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
   material->getShininess ( sh );
   if ( BAD_SHININESS != sh )
   {
-    shininess = sh;
-    valid |= MATERIAL_COLOR_SHININESS;
+    mat.setShininess ( sh );
     success = true;
   }
 

@@ -21,7 +21,7 @@ LOCAL_LIBS = \
 	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 
-LOCAL_CPP_FLAGS = 
+LOCAL_CPP_FLAGS = -D_CADKIT_SL_PRINT_DEBUG
 
 # The name of the thing we are making.
 TARGET = CkTrJt2Pf

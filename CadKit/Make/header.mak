@@ -1,13 +1,23 @@
 # Set these variables for all platforms.
 CPP = g++
-GLOBAL_CPP_FLAGS = -D_DEBUG -g
-#GLOBAL_CPP_FLAGS =
+
+DEBUG_CPP_FLAGS = -D_DEBUG -g
+
+GLOBAL_CPP_FLAGS =
 GLOBAL_LINK_FLAGS =
+
+PLATFORM_CPP_FLAGS =
+PLATFORM_LINK_FLAGS =
+
+EXECUTABLE_EXTENSION =
+
+# Append target names with a 'd' if this is a debug build.
+ifdef ($_DEBUG)
+	TARGET_SUFFIX = d
+endif
 
 # Set these variables based on the operating system.
 # Note: Need OS_TYPE in environment table.
-# Note: When I figure out how to do if-elseif-else 
-#			 statements I will change this.
 
 # If we are on Irix.
 ifeq ($(OS_TYPE), Irix)
@@ -21,10 +31,16 @@ endif
 
 # If we are on Linux. The flag '_ISOC99_SOURCE' is for vswprintf()
 ifeq ($(OS_TYPE), Linux)
-	CPP = g++
 	OS = LINUX
 	Os = Linix
 	os = linux
 	PLATFORM_CPP_FLAGS = -D_ISOC99_SOURCE
-	PLATFORM_LINK_FLAGS =
+endif
+
+# If we are on Cygwin.
+ifeq ($(OS_TYPE), Cygwin)
+	OS = CYGWIN
+	Os = Cygwin
+	os = cygwin
+	EXECUTABLE_EXTENSION = .exe
 endif

@@ -47,15 +47,18 @@
 #include "TrJt2XmlApi.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Database/XML/DbXmlGroup.h"
 # include "Database/Jupiter/DbJtTraverser.h"
+# include "Standard/SlVec4.h"
 # include <list>
 # include <string>
 # include <vector>
 #endif
 
+
 namespace CadKit
 {
+class DbXmlGroup;
+
 class TR_JT_2_XML_API TrJt2Xml
 {
 public:
@@ -64,7 +67,7 @@ public:
   ~TrJt2Xml();
 
   // Get the last error.
-  const SlAString &       getLastError() const { return _error; }
+  const std::string &     getLastError() const { return _error; }
 
   // Initialize. Call this before doing anything else.
   bool                    init();
@@ -76,7 +79,7 @@ protected:
 
   typedef std::list<DbXmlGroup *> XmlGroupStack;
   DbJtTraverser::Ptr _jtTraverser;
-  SlAString _error;
+  std::string _error;
   XmlGroupStack _groupStack;
 
   bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
@@ -92,7 +95,7 @@ protected:
   bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
   bool                    _assemblyStart ( DbJtTraverser::EntityHandle entity );
 
-  DbXmlGroup::Ptr         _createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity );
+  DbXmlGroup *            _createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity );
 
   bool                    _endCurrentGroup();
 

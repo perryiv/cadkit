@@ -57,10 +57,11 @@
 class pfDCS;
 class pfGroup;
 class pfNode;
-class pfObject;
+class pfMemory;
 class pfGeode;
 class pfGeoSet;
 class pfGeoState;
+class pfVec3;
 
 
 namespace CadKit
@@ -85,7 +86,7 @@ public:
 
 protected:
 
-  // Class to contain a group and all associated with it.
+  // Class to contain a Performer group and all associated with it.
   class Group
   {
   public:
@@ -94,7 +95,7 @@ protected:
     Group ( const Group &group ) : _group ( group._group ), _material ( group._material ){}
     Group &operator = ( const Group &group ) { _group = group._group; _material = group._material; return *this; }
     pfGroup *getGroup() { return _group; }
-    SlMaterialf &getMaterial() { return _material; }
+    const SlMaterialf &getMaterial() const { return _material; }
     void setGroup ( pfGroup *group ) { _group = group; }
     void setMaterial ( const SlMaterialf &material ) { _material = material; }
   protected:
@@ -102,10 +103,10 @@ protected:
     SlMaterialf _material;
   };
 
-  typedef std::list<Group> GroupStack;
+  typedef std::list<Group> Assemblies;
   DbJtTraverser::Ptr _jtTraverser;
   std::string _error;
-  GroupStack _groupStack;
+  Assemblies _assemblies;
 
   bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
   bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, Group &part );
@@ -123,11 +124,12 @@ protected:
 
   bool                    _endCurrentGroup();
 
-  pfVec3 *                _getVec3Array ( const std::vector<float> &vec ) const;
+  pfVec3 *                _makeVec3Array ( const std::vector<float> &vec ) const;
+  int *                   _makeIntArray ( const std::vector<unsigned int> &vec ) const;
 
   bool                    _processEntity ( DbJtTraverser::EntityHandle entity );
 
-  void                    _setArrayString ( const std::vector<float> &array, SlAString &s );
+  bool                    _setMaterial ( const SlMaterialf &material, pfGeoState &state ) const;
 
   static bool             _traverseCallback ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData );
   bool                    _traverseNotify   ( const DbJtTraverser::Message &message );
@@ -135,8 +137,8 @@ protected:
 
 
 // So class SlRefPtr works with class pfMemory. 
-void _incrementPointerReferenceCount ( pfMemory *p );
-void _decrementPointerReferenceCount ( pfMemory *p );
+TR_JT_2_PF_API void _incrementPointerReferenceCount ( pfMemory *p );
+TR_JT_2_PF_API void _decrementPointerReferenceCount ( pfMemory *p );
 
 
 }; // namespace CadKit

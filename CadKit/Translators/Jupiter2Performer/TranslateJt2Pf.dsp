@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"TrJt2PfPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /I "$(DMDTK_DEV_PATH)/include" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_SL_PRINT_DEBUG" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_TRANSLATOR_JUPITER_2_PERFORMER_LIBRARY" /YX"TrJt2PfPrecompiled.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /I "$(DMDTK_DEV_PATH)/include" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_TRANSLATOR_JUPITER_2_PERFORMER_LIBRARY" /YX"TrJt2PfPrecompiled.h" /FD /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
@@ -151,6 +151,10 @@ SOURCE=..\..\Performer\pr\pfLinMath.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Performer\pr\pfMaterial.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Performer\pr\pfMemory.h
 # End Source File
 # Begin Source File
@@ -186,6 +190,22 @@ SOURCE=..\..\Performer\pf\pfNode.h
 SOURCE=..\..\Performer\pf\pfSCS.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\Performer\pf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pfdu.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pfutil.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Performer\pr.h
+# End Source File
 # End Group
 # Begin Group "Notes"
 

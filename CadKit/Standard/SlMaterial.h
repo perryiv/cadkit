@@ -45,13 +45,6 @@
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_MATERIAL_CLASS_H_
 
 #include "SlVec4.h"
-#include "SlVec3.h"
-
-// For convenience.
-#define SL_MATERIAL_ZERO ( static_cast<T> ( 0 ) )
-#define SL_MATERIAL_ONE  ( static_cast<T> ( 1 ) )
-#define SL_MATERIAL_HALF ( static_cast<T> ( 0.5 ) )
-#define SL_MATERIAL_TWO  ( static_cast<T> ( 2 ) )
 
 
 namespace CadKit
@@ -140,7 +133,7 @@ template<class T> inline SlMaterial<T>::SlMaterial() :
   _ambient   ( 0, 0, 0, 1 ),
   _diffuse   ( 0, 0, 0, 1 ),
   _specular  ( 0, 0, 0, 1 ),
-  _emissive  ( 0, 0, 0, 0 ),
+  _emissive  ( 0, 0, 0, 1 ),
   _shininess ( 0 ),
   _valid     ( 0 )
 {

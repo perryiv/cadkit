@@ -13,32 +13,25 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_DOCUMENT_H_
-#define _USUL_INTERFACE_DOCUMENT_H_
+#ifndef _USUL_INTERFACE_GET_DOCUMENT_H_
+#define _USUL_INTERFACE_GET_DOCUMENT_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace OsgFox { namespace Documents { class Document; } }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IDocument : public Usul::Interfaces::IUnknown
+struct IGetDocument : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDocument );
+  USUL_DECLARE_QUERY_POINTERS ( IGetDocument );
 
   /// Id for this interface.
-  enum { IID = 3762815634u };
+  enum { IID = 1895447766u };
 
-  virtual void                         modified ( bool m ) = 0;
-  virtual bool                         modified() const = 0;
-
-  virtual const std::string&           filename() const = 0;
-  virtual void                         filename( const std::string& f ) = 0;
-  
-}; // class IDocument
+  virtual Usul::Interfaces::IUnknown* getDocument() = 0;
+}; // class IGetDocument
 
 
 }; // namespace Interfaces

@@ -78,6 +78,8 @@ namespace MenuKit
       const SkinType& skin() const { return _skin; }
       SkinType& skin() { return _skin; }
 
+    protected:
+
     private:
       SkinType _skin;
       ThemeType _disabled, _highlight, _normal;
@@ -108,8 +110,9 @@ template<class ThemeType, class SkinType>
 osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Menu& m)
 {
   // configure the skin
-  _skin.theme( proper_theme() );
-  _skin.box( box() );
+  _skin.theme( this->proper_theme() );
+  _skin.box().height( this->box().height() );
+  _skin.box().width( this->box().width() );
 
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(m);
@@ -121,7 +124,8 @@ osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Button& b)
 {
   // configure the skin
   _skin.theme( proper_theme() );
-  _skin.box( box() );
+  _skin.box().height( this->box().height() );
+  _skin.box().width( this->box().width() );
 
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(b);
@@ -131,14 +135,14 @@ osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Button& b)
 template<class ThemeType, class SkinType>
 float SkinTile<ThemeType,SkinType>::width(const Menu& m)
 {
-  _skin.box().height( box().height() );
+  _skin.box().height( this->box().height() );
   return( _skin.width(m) );
 }
 
 template<class ThemeType, class SkinType>
 float SkinTile<ThemeType,SkinType>::width(const Button& b)
 {
-  _skin.box().height( box().height() );
+  _skin.box().height( this->box().height() );
   return( _skin.width(b) );
 }
 

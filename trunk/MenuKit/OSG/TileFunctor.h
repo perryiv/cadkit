@@ -24,7 +24,7 @@ namespace MenuKit
     class TileFunctor
     {
     public:
-      TileFunctor(): _box(0.0,1.0)
+      TileFunctor(): _box(1.0,0.0)
       {}
 
       TileFunctor(const TileFunctor& b): _box(b._box)

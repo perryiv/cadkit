@@ -40,6 +40,12 @@ namespace Detail
 
     float widest() { return _widest; }
 
+    static float width(const MenuKit::Menu::Items& children,const Evaluator& skin)
+    {
+      // TODO: fix WIF !!!
+      return 2.0;
+    }
+
   private:
     Evaluator _tile;
     float _widest;

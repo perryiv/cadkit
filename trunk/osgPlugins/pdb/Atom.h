@@ -27,8 +27,9 @@ public:
 	const float getY() const { return _point[1]; }
 	const float getZ() const { return _point[2]; }
 	const float getR() const { return _r; }
-	std::string getName() const { return _name; }
-	std::string getType() const { return _type; }
+	const std::string getName() const { return _name; }
+	const std::string getType() const { return _type; }
+  const std::string getSymbol() const { return _symbol; }
 	const ID getId() const { return _id; }
 	const osg::Vec3& getVec3() const { return _point; }
 	std::string toString() const;
@@ -39,7 +40,7 @@ private:
 	ID _id;
   osg::Vec3 _point;
 	float _r;
-	std::string _name, _type;
+	std::string _name, _type, _symbol;
 };
 
 #endif

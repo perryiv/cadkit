@@ -161,10 +161,16 @@
 				RelativePath=".\Bond.cpp">
 			</File>
 			<File
+				RelativePath=".\Element.cpp">
+			</File>
+			<File
 				RelativePath=".\MaterialChooser.cpp">
 			</File>
 			<File
 				RelativePath=".\Molecule.cpp">
+			</File>
+			<File
+				RelativePath=".\PeriodicTable.cpp">
 			</File>
 			<File
 				RelativePath=".\Radii.cpp">
@@ -183,10 +189,16 @@
 				RelativePath=".\Bond.h">
 			</File>
 			<File
+				RelativePath=".\Element.h">
+			</File>
+			<File
 				RelativePath=".\MaterialChooser.h">
 			</File>
 			<File
 				RelativePath=".\Molecule.h">
+			</File>
+			<File
+				RelativePath=".\PeriodicTable.h">
 			</File>
 			<File
 				RelativePath=".\Radii.h">

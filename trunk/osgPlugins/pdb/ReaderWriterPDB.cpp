@@ -25,12 +25,6 @@
 #include "Atom.h"
 #include "Bond.h"
 
-#ifdef _WIN32
-#define STAT _stat
-#else
-#define STAT stat
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -149,13 +143,8 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   if ( !in.is_open() )
     return ReadResult::ERROR_IN_READING_FILE;
 
-  struct STAT filebuf;
-
-  int result = _stat ( file.c_str(), &filebuf );
-  assert ( 0 == result );
-
   // Parse all the file and build internal data.
-  this->_parse ( in, filebuf.st_size );
+  this->_parse ( in );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -201,7 +190,7 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
+void ReaderWriterPDB::_parse ( std::ifstream &in )
 {
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
@@ -253,10 +242,12 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
       const int columnLength = 5;
       char num[6];
       len = strlen(buf);
+      //get the id of the atom to connect bonds from
       memset(num, 0, 6 * sizeof(char));
       strncpy(num, buf + columnStart, columnLength);
       id = atoi (num);
       columnStart += columnLength;
+      //loop through the connecting atoms and add bonds
       while(columnStart < len - 5)
       {
         memset(num,0, 6*sizeof(char));
@@ -269,7 +260,11 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
   }
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns point to current molecule.  If none exists, it creates a new one.
+//
+///////////////////////////////////////////////////////////////////////////////
 Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)

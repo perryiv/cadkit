@@ -781,6 +781,13 @@
 					RelativePath=".\Endian\Endian.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="IO"
+				Filter="">
+				<File
+					RelativePath=".\Io\Reader.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

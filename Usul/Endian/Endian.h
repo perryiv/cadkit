@@ -38,6 +38,49 @@ namespace Endian {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Enumerations defining the two types of endian order implemented.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+enum Order
+{
+  LITTLE, // PC
+  BIG     // Sun, SGI, HP, etc.
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Compile-time detection of byte order. See boost/detail/limits.hpp and 
+//  http://www.unixpapa.com/incnote/byteorder.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if   defined ( __sparc     ) || \
+      defined ( __sparc__   ) || \
+      defined ( __powerpc__ ) || \
+      defined ( __ppc__     ) || \
+      defined ( __hppa      ) || \
+      defined ( _MIPSEB     ) || \
+      defined ( _POWER      )
+#define USUL_BIG_ENDIAN
+#elif defined ( __i386__    ) || \
+      defined ( __alpha__   ) || \
+      defined ( __ia64      ) || \
+      defined ( __ia64__    ) || \
+      defined ( i386        ) || \
+      defined ( __i386__    ) || \
+      defined ( _M_IX86     ) || \
+      defined ( vax         ) || \
+      defined ( __alpha     )
+#define USUL_LITTLE_ENDIAN
+#else
+#error Unknown endian type in Usul/Endian/Endian.h
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  See if the machine is big endian.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,6 +278,74 @@ inline void reverseBits ( Usul::Types::Int32 &n )
   n = ((n >>  8) & 0x00ff00ff) | ((n <<  8) & 0xff00ff00);
   n = ((n >> 16) & 0x0000ffff) | ((n << 16) & 0xffff0000);
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the bytes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct FromSystemToBig
+{
+  template < class T > static void convert ( T &t )
+  {
+    #ifdef USUL_LITTLE_ENDIAN
+    Usul::Endian::reverseBytes ( t );
+    #endif
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the bytes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct FromSystemToLittle
+{
+  template < class T > static void convert ( T &t )
+  {
+    #ifdef USUL_BIG_ENDIAN
+    Usul::Endian::reverseBytes ( t );
+    #endif
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the bytes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct FromBigToSystem
+{
+  template < class T > static void convert ( T &t )
+  {
+    #ifdef USUL_LITTLE_ENDIAN
+    Usul::Endian::reverseBytes ( t );
+    #endif
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the bytes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct FromLittleToSystem
+{
+  template < class T > static void convert ( T &t )
+  {
+    #ifdef USUL_BIG_ENDIAN
+    Usul::Endian::reverseBytes ( t );
+    #endif
+  }
+};
 
 
 }; // namespace Endian

@@ -14,6 +14,7 @@
 
 #include <string>
 #include <iosfwd>
+#include <vector>
 
 namespace osg { class Group; };
 
@@ -47,6 +48,13 @@ protected:
 
   void                    _skipLine ( std::istream &in ) const;
   void                    _skipWord ( std::istream &in ) const;
+
+private:
+
+  typedef std::vector < osg::Vec3f > Vectors;
+
+  Vectors _vertices;
+  Vectors _normals;
 };
 
 

@@ -15,7 +15,9 @@
 
 #include "Controllers/CtInline.h"
 #include "Controllers/CtTranslation.h"
+
 #include "Database/Jupiter/DbJtDatabase.h"
+
 #include "Database/OpenSceneGraph/DbOsgDatabase.h"
 
 using namespace CadKit;

@@ -17,15 +17,19 @@
 #include "DbJtDatabase.h"
 #include "DbJtInline.h"
 #include "DbJtFunctions.h"
+#include "DbJtTraversalState.h"
+
+#include "Interfaces/IMessageNotify.h" // VC++ internal compiler error if
+#include "Interfaces/IEntityNotify.h"  // if these are after SlInline.h
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 #include "Standard/SlQueryPtr.h"
-
-#include "Interfaces/IMessageNotify.h"
-#include "Interfaces/IEntityNotify.h"
+#include "Standard/SlVec2.h"
+#include "Standard/SlVec3.h"
+#include "Standard/SlInline.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -35,7 +39,7 @@
 // callback function.
 namespace CadKit { DbJtDatabase *_traverser = NULL; }
 
-// To help shorted up the lines.
+// To help shorten up the lines.
 #undef  ERROR
 #define ERROR         this->_notifyError
 #define PROGRESS      this->_notifyProgress
@@ -46,7 +50,7 @@ namespace CadKit { DbJtDatabase *_traverser = NULL; }
 
 using namespace CadKit;
 
-// These live in DbJtTraverser for now...
+// These live in DbJtTraverser for now.
 namespace CadKit
 {
 void _incrementPointerReferenceCount ( eaiEntity *p );
@@ -68,13 +72,15 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _brepLoadOption ( TESS_ONLY ),
-  _shapeLoadOption ( ALL_LODS ),
+  _shapeLoadOption ( HIGH_LOD ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
-  _currentPart ( NULL ),
-  _currentInstance ( NULL )
+  _current ( new DbJtTraversalState ),
+  _shapeData ( new ShapeData ( NULL ) )
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _assemblies.get() );
+  SL_ASSERT ( NULL != _current.get() );
+  SL_ASSERT ( NULL != _shapeData.get() );
 }
 
 
@@ -87,6 +93,13 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
 DbJtDatabase::~DbJtDatabase()
 {
   SL_PRINT2 ( "In DbJtDatabase::~DbJtDatabase(), this = %X\n", this );
+  SL_ASSERT ( UNSET_INDEX == _current->getLevel() );
+  SL_ASSERT ( UNSET_INDEX == _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+  SL_ASSERT ( NULL == _current->getPart() );
+  SL_ASSERT ( NULL == _current->getInstance() );
+  SL_ASSERT ( true == _assemblies->empty() );
 }
 
 
@@ -108,12 +121,18 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
     return static_cast<IPartQueryFloat *>(this);
   case IInstanceQueryFloat::IID:
     return static_cast<IInstanceQueryFloat *>(this);
-  case IDataSource::IID:
-    return static_cast<IDataSource *>(this);
-  case IControlled::IID:
-    return static_cast<IControlled *>(this);
-  case CadKit::IUnknown::IID:
-    return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
+  case ILodQuery::IID:
+    return static_cast<ILodQuery *>(this);
+  case IShapeQueryFloatUchar::IID:
+    return static_cast<IShapeQueryFloatUchar *>(this);
+  case ISetQuery::IID:
+    return static_cast<ISetQuery *>(this);
+  case IQueryShapeVerticesVec3f::IID:
+    return static_cast<IQueryShapeVerticesVec3f *>(this);
+  case IQueryShapeNormalsVec3f::IID:
+    return static_cast<IQueryShapeNormalsVec3f *>(this);
+  case IQueryShapeColorsVec3f::IID:
+    return static_cast<IQueryShapeColorsVec3f *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -215,9 +234,8 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   SL_PRINT3 ( "In DbJtDatabase::_traverse(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
-  // Initialize.
-//  _currentNode = NULL;
-//  _currentLevel = 0;
+  // Make sure the client data is cleared.
+  this->_clearClientDataMaps();
 
   if ( false == PROGRESS ( "Creating CAD importer." ) )
     return false;
@@ -297,6 +315,9 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   // Reset this.
   _traverser = NULL;
 
+  // Once again, clear the client data.
+  this->_clearClientDataMaps();
+
   if ( false == PROGRESS ( FORMAT ( "Done traversing: %s", filename.c_str() ) ) )
     return false;
 
@@ -357,8 +378,13 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     return ERROR ( FORMAT ( "Traverser reported eaiHierarchy at level: %2d, name: %s", level, hierarchy->name() ), 0 );
   }
 
+  // Grab the level.
+  _current->setLevel ( level );
+
   // Initialize.
   bool result ( false );
+  this->_resetStateIndices();
+  _shapeData->init ( NULL );
 
   // Determine the type.
   switch ( hierarchy->typeID() )
@@ -369,7 +395,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_pushAssembly ( (eaiAssembly *) hierarchy );
 
     // Start the assembly.
-    result = this->_startAssembly ( (unsigned int) level, (eaiAssembly *) hierarchy );
+    result = this->_startAssembly ( (eaiAssembly *) hierarchy );
     break;
 
   case eaiHierarchy::eaiPART:
@@ -378,7 +404,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_setCurrentPart ( (eaiPart *) hierarchy );
 
     // Start the part.
-    result = this->_startPart ( (unsigned int) level, (eaiPart *) hierarchy );
+    result = this->_startPart ( (eaiPart *) hierarchy );
     break;
 
   case eaiHierarchy::eaiINSTANCE:
@@ -387,7 +413,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     this->_setCurrentInstance ( (eaiInstance *) hierarchy );
 
     // Start the instance.
-    result = this->_startInstance ( (unsigned int) level, (eaiInstance *) hierarchy );
+    result = this->_startInstance ( (eaiInstance *) hierarchy );
     break;
 
   default:
@@ -396,6 +422,9 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
     break;
   }
+
+  // Reset the level.
+  _current->setLevel ( UNSET_INDEX );
 
   // Return the result.
   return result;
@@ -419,16 +448,24 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
     return ERROR ( FORMAT ( "Traverser reported eaiHierarchy at level: %2d, name: %s", level, hierarchy->name() ), 0 );
   }
 
+  // Grab the level.
+  _current->setLevel ( level );
+
   // Initialize.
   bool result ( false );
+  this->_resetStateIndices();
+  _shapeData->init ( NULL );
 
   // Determine the type.
   switch ( hierarchy->typeID() )
   {
   case eaiHierarchy::eaiASSEMBLY:
 
+    // Should be true.
+    SL_ASSERT ( ((eaiAssembly *) hierarchy) == this->_getCurrentAssembly() );
+
     // End the assembly.
-    result = this->_endAssembly ( (unsigned int) level, (eaiAssembly *) hierarchy );
+    result = this->_endAssembly ( (eaiAssembly *) hierarchy );
 
     // Done with this assembly.
     this->_popAssembly();
@@ -437,7 +474,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   case eaiHierarchy::eaiPART:
 
     // End the part.
-    result = this->_endPart ( (unsigned int) level, (eaiPart *) hierarchy );
+    result = this->_endPart ( (eaiPart *) hierarchy );
 
     // No more part.
     this->_setCurrentPart ( NULL );
@@ -446,7 +483,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   case eaiHierarchy::eaiINSTANCE:
 
     // End the instance.
-    result = this->_endInstance ( (unsigned int) level, (eaiInstance *) hierarchy );
+    result = this->_endInstance ( (eaiInstance *) hierarchy );
 
     // No more instance.
     this->_setCurrentInstance ( NULL );
@@ -455,9 +492,12 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   default:
 
     SL_ASSERT ( 0 ); // What entity type is this?
-    result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
+    result = WARNING ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), UNKNOWN_ENTITY );
     break;
   }
+
+  // Reset the level.
+  _current->setLevel ( UNSET_INDEX );
 
   // Return the result.
   return result;
@@ -470,29 +510,27 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *entity )
+bool DbJtDatabase::_startAssembly ( eaiAssembly *assembly )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_startAssembly(), assembly = %X, level = %d\n", entity, level );
+  SL_PRINT3 ( "In DbJtDatabase::_startAssembly(), assembly = %X, level = %d\n", assembly, _current->getLevel() );
+  SL_ASSERT ( assembly );
 
-  if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", level, entity->name() ) ) )
+  if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", _current->getLevel(), assembly->name() ) ) )
     return false;
 
-  // Get the controller's error handling interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
-
   // Try this interface.
-  SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
+  SlQueryPtr<IAssemblyNotify> assemblyNotify ( _target );
   if ( assemblyNotify.isValid() )
-    return CadKit::handleEntityStart ( assemblyNotify.getValue(), (AssemblyHandle) entity, THIS_UNKNOWN, controller );
+    return CadKit::handleEntityStart ( assemblyNotify.getValue(), (AssemblyHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // Try this interface.
-  SlQueryPtr<IGroupNotify> groupNotify ( IGroupNotify::IID, _target );
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
   if ( groupNotify.isValid() )
-    return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) entity, THIS_UNKNOWN, controller );
+    return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), NO_INTERFACE );
 }
 
 
@@ -502,26 +540,24 @@ bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *enti
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity )
+bool DbJtDatabase::_endAssembly ( eaiAssembly *assembly )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_endAssembly(), entity = %X, level = %d\n", entity, level );
-
-  // Get the controller's error handling interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
+  SL_PRINT3 ( "In DbJtDatabase::_endAssembly(), assembly = %X, level = %d\n", assembly, _current->getLevel() );
+  SL_ASSERT ( assembly );
 
   // Try this interface.
-  SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
+  SlQueryPtr<IAssemblyNotify> assemblyNotify ( _target );
   if ( assemblyNotify.isValid() )
-    return CadKit::handleEntityEnd ( assemblyNotify.getValue(), (AssemblyHandle) entity, THIS_UNKNOWN, controller );
+    return CadKit::handleEntityEnd ( assemblyNotify.getValue(), (AssemblyHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // Try this interface.
-  SlQueryPtr<IGroupNotify> groupNotify ( IGroupNotify::IID, _target );
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
   if ( groupNotify.isValid() )
-    return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) entity, THIS_UNKNOWN, controller );
+    return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) assembly, THIS_UNKNOWN, _messageNotify );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), CadKit::NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to end assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -531,11 +567,43 @@ bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_startPart ( const unsigned int &level, eaiPart *part )
+bool DbJtDatabase::_startPart ( eaiPart *part )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_startPart(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_PRINT3 ( "In DbJtDatabase::_startPart(), part = %X, level = %d\n", part, _current->getLevel() );
+  SL_ASSERT ( part );
 
-  return PROGRESS ( FORMAT ( "    part, level %2d, name: %s", level, part->name() ) );
+  if ( false == PROGRESS ( FORMAT ( "    part, level %2d, name: %s", _current->getLevel(), part->name() ) ) )
+    return false;
+
+  // Initialize.
+  bool doLods ( false );
+
+  // Try this interface.
+  SlQueryPtr<IPartNotify> partNotify ( _target );
+  if ( partNotify.isValid() )
+  {
+    if ( false == CadKit::handleEntityStart ( partNotify.getValue(), (PartHandle) part, THIS_UNKNOWN, _messageNotify ) )
+      return false;
+    doLods = true;
+  }
+
+  // Try this interface.
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
+  if ( groupNotify.isValid() )
+  {
+    if ( false == CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) part, THIS_UNKNOWN, _messageNotify ) )
+      return false;
+    doLods = true;
+  }
+
+  // If we get to here, see if we are supposed to process the LODs. 
+  // This will be true if one of the above interfaces worked.
+  if ( doLods )
+    return this->_processLods ( part );
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), NO_INTERFACE );
 }
 
 
@@ -545,11 +613,24 @@ bool DbJtDatabase::_startPart ( const unsigned int &level, eaiPart *part )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_endPart ( const unsigned int &level, eaiPart *part )
+bool DbJtDatabase::_endPart ( eaiPart *part )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_endPart(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_PRINT3 ( "In DbJtDatabase::_endPart(), part = %X, level = %d\n", part, _current->getLevel() );
+  SL_ASSERT ( part );
 
-  return true;
+  // Try this interface.
+  SlQueryPtr<IPartNotify> partNotify ( _target );
+  if ( partNotify.isValid() )
+    return CadKit::handleEntityEnd ( partNotify.getValue(), (PartHandle) part, THIS_UNKNOWN, _messageNotify );
+
+  // Try this interface.
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
+  if ( groupNotify.isValid() )
+    return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) part, THIS_UNKNOWN, _messageNotify );
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to end part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), NO_INTERFACE );
 }
 
 
@@ -559,11 +640,27 @@ bool DbJtDatabase::_endPart ( const unsigned int &level, eaiPart *part )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_startInstance ( const unsigned int &level, eaiInstance *instance )
+bool DbJtDatabase::_startInstance ( eaiInstance *instance )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_startInstance(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_PRINT3 ( "In DbJtDatabase::_startInstance(), instance = %X, level = %d\n", instance, _current->getLevel() );
+  SL_ASSERT ( instance );
 
-  return PROGRESS ( FORMAT ( "instance, level %2d, name: %s", level, instance->name() ) );
+  if ( false == PROGRESS ( FORMAT ( "instance, level %2d, name: %s", _current->getLevel(), instance->name() ) ) )
+    return false;
+
+  // Try this interface.
+  SlQueryPtr<IInstanceNotify> instanceNotify ( _target );
+  if ( instanceNotify.isValid() )
+    return CadKit::handleEntityStart ( instanceNotify.getValue(), (InstanceHandle) instance, THIS_UNKNOWN, _messageNotify );
+
+  // Try this interface.
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
+  if ( groupNotify.isValid() )
+    return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) instance, THIS_UNKNOWN, _messageNotify );
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to start instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), NO_INTERFACE );
 }
 
 
@@ -573,10 +670,201 @@ bool DbJtDatabase::_startInstance ( const unsigned int &level, eaiInstance *inst
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_endInstance ( const unsigned int &level, eaiInstance *instance )
+bool DbJtDatabase::_endInstance ( eaiInstance *instance )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_endInstance(), hierarchy = %X, level = %d\n", hierarchy, level );
+  SL_PRINT3 ( "In DbJtDatabase::_endInstance(), instance = %X, level = %d\n", instance, _current->getLevel() );
+  SL_ASSERT ( instance );
 
+  // Try this interface.
+  SlQueryPtr<IInstanceNotify> instanceNotify ( _target );
+  if ( instanceNotify.isValid() )
+    return CadKit::handleEntityEnd ( instanceNotify.getValue(), (InstanceHandle) instance, THIS_UNKNOWN, _messageNotify );
+
+  // Try this interface.
+  SlQueryPtr<IGroupNotify> groupNotify ( _target );
+  if ( groupNotify.isValid() )
+    return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) instance, THIS_UNKNOWN, _messageNotify );
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to end instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), NO_INTERFACE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the LODs of the given part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processLods ( eaiPart *part )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_processLods(), this = %X, part = %X\n", this, part );
+  SL_ASSERT ( part );
+  SL_ASSERT ( UNSET_INDEX == _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // Initialize.
+  this->_resetStateIndices();
+
+  // Get the number of LODs.
+  int numLods = part->numPolyLODs();
+
+  // Loop through the LODs.
+  for ( int i = 0; i < numLods; ++i )
+  {
+    // Set the current indices.
+    _current->setLod ( i );
+    _current->setShape ( UNSET_INDEX );
+    _current->setSet ( UNSET_INDEX );
+
+    // Process the shapes.
+    if ( false == this->_processLod ( part, i ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process LOD %d in part '%s'", i, part->name() ), FAILED ) )
+        return false;
+  }
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the shapes of the given LOD.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
+  SL_ASSERT ( whichLod == _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // We have to initialize the shape data each time we process a new LOD.
+  _shapeData->init ( NULL );
+
+  // Try this interface.
+  SlQueryPtr<ILodNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), FAILED ) )
+        return false;
+
+  // Get the number of shapes for this LOD.
+  int numShapes = part->numPolyShapes ( whichLod );
+
+  // Loop through the shapes.
+  for ( int i = 0; i < numShapes; ++i )
+  {
+    // Set the current indices.
+    _current->setShape ( i );
+    _current->setSet ( UNSET_INDEX );
+
+    // Process the shape.
+    if ( false == this->_processShape ( part, whichLod, i ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), FAILED ) )
+        return false;
+  }
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), FAILED ) )
+        return false;
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the sets of the given shape.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int &whichShape )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processShape(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
+  SL_ASSERT ( whichShape >= 0 && whichShape < part->numPolyShapes ( whichLod ) );
+  SL_ASSERT ( whichLod == _current->getLod() );
+  SL_ASSERT ( whichShape == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // Try this interface.
+  SlQueryPtr<IShapeNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makeShapeHandle ( whichShape ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED ) )
+        return false;
+  
+  // Get the shape.
+  SlRefPtr<eaiShape> shape = this->_getShape ( part, whichLod, whichShape );
+  if ( shape.isNull() )
+    return ERROR ( FORMAT ( "Failed to get shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED );
+
+  // Get the number of sets for this shape.
+  int numSets = shape->numOfSets();
+
+  // Loop through the sets.
+  for ( int i = 0; i < numSets; ++i )
+  {
+    // Set the current index.
+    _current->setSet ( i );
+
+    // Process the set.
+    if ( false == this->_processSet ( shape, i ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process vertices for set %d, shape %d, LOD %d, part '%s'", i, whichShape, whichLod, part->name() ), FAILED ) )
+        return false;
+  }
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makeShapeHandle ( whichShape ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED ) )
+        return false;
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the vertices of the given set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processSet(), this = %X, shape = %X, whichSet = %d\n", this, shape, whichSet );
+  SL_ASSERT ( shape );
+  SL_ASSERT ( whichSet >= 0 && whichSet < shape->numOfSets() );
+  SL_ASSERT ( UNSET_INDEX != _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX != _current->getShape() );
+  SL_ASSERT ( whichSet == _current->getSet() );
+
+  // Try this interface.
+  SlQueryPtr<ISetNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), FAILED ) )
+        return false;
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), FAILED ) )
+        return false;
+
+  // If we get to here then it worked.
   return true;
 }
 
@@ -602,72 +890,6 @@ const unsigned int &DbJtDatabase::_getCustomerId()
 
   // Return what we have.
   return _customerId;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Error notification.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtDatabase::_notifyError ( const std::string &message, const unsigned long &id )
-{
-  SL_PRINT4 ( "In DbJtDatabase::_notifyError(), this = %X, id = %d, message = \n", this, id, message.c_str() );
-
-  // See if the controller supports the proper interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
-
-  // If the interface is not implemented then return true to proceed.
-  if ( controller.isNull() )
-    return true;
-
-  // Let the controller know.
-  return controller->messageNotify ( message, id, IMessageNotify::MESSAGE_ERROR );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Progress notification.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtDatabase::_notifyProgress ( const std::string &message )
-{
-  SL_PRINT3 ( "In DbJtDatabase::_notifyProgress(), this = %X, message = \n", this, message.c_str() );
-
-  // See if the controller supports the proper interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
-
-  // If the interface is not implemented then return true to proceed.
-  if ( controller.isNull() )
-    return true;
-
-  // Let the controller know.
-  return controller->messageNotify ( message, 0, IMessageNotify::MESSAGE_PROGRESS );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Warning notification.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtDatabase::_notifyWarning ( const std::string &message, const unsigned long &id )
-{
-  SL_PRINT4 ( "In DbJtDatabase::_notifyWarning(), this = %X, id = %d, message = \n", this, id, message.c_str() );
-
-  // See if the controller supports the proper interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
-
-  // If the interface is not implemented then return true to proceed.
-  if ( controller.isNull() )
-    return true;
-
-  // Let the controller know.
-  return controller->messageNotify ( message, id, IMessageNotify::MESSAGE_WARNING );
 }
 
 
@@ -735,9 +957,9 @@ void DbJtDatabase::_pushAssembly ( eaiAssembly *assembly )
   SL_ASSERT ( assembly );
 
   // Push it onto our stack.
-  _assemblies->push ( assembly );
+  _assemblies->push_front ( assembly );
 
-  // Reference it.
+  // This is not a stack of ref-pointers. We have to manually reference it.
   assembly->ref();
 }
 
@@ -753,11 +975,43 @@ void DbJtDatabase::_popAssembly()
   SL_PRINT2 ( "In DbJtDatabase::_popAssembly(), this = %X\n", this );
   SL_ASSERT ( false == _assemblies->empty() );
 
-  // Unreference the top one.
-  _assemblies->top()->unref();
+  // This is not a stack of ref-pointers. We have to manually unreference it.
+  this->_getCurrentAssembly()->unref();
 
   // Pop it off of our stack.
-  _assemblies->pop();
+  _assemblies->pop_front();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiAssembly *DbJtDatabase::_getCurrentAssembly() const
+{
+  SL_ASSERT ( NULL != _assemblies.get() );
+
+  // We are pushing the assemblies onto the front of the list. 
+  // Therefore, the current assembly will be on the front.
+  return ( _assemblies->empty() ) ? NULL : _assemblies->front();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the top-level assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiAssembly *DbJtDatabase::_getTopAssembly() const
+{
+  SL_ASSERT ( NULL != _assemblies.get() );
+
+  // We are pushing the assemblies onto the front of the list.
+  // Therefore, the top assembly will be on the back.
+  return ( _assemblies->empty() ) ? NULL : _assemblies->back();
 }
 
 
@@ -770,17 +1024,7 @@ void DbJtDatabase::_popAssembly()
 void DbJtDatabase::_setCurrentPart ( eaiPart *part )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setCurrentPart(), this = %X, part = %X\n", this, part );
-
-  // Release the old one if valid.
-  if ( _currentPart )
-    _currentPart->unref();
-
-  // Set the new one.
-  _currentPart = part;
-
-  // Reference the new one if valid.
-  if ( _currentPart )
-    _currentPart->ref();
+  _current->setPart ( part );
 }
 
 
@@ -793,17 +1037,7 @@ void DbJtDatabase::_setCurrentPart ( eaiPart *part )
 void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setCurrentInstance(), this = %X, instance = %X\n", this, instance );
-
-  // Release the old one if valid.
-  if ( _currentInstance )
-    _currentInstance->unref();
-
-  // Set the new one.
-  _currentInstance = instance;
-
-  // Reference the new one if valid.
-  if ( _currentInstance )
-    _currentInstance->ref();
+  _current->setInstance ( instance );
 }
 
 
@@ -820,24 +1054,378 @@ std::string DbJtDatabase::getName ( InstanceHandle instance ) const { return Cad
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the transformation matrix.
+//  Get the assembly's material.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) assembly, matrix ); }
-bool DbJtDatabase::getTransform ( PartHandle part,         SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) part,     matrix ); }
-bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix4f &matrix ) const { return CadKit::getTransform ( (eaiEntity *) instance, matrix ); }
+bool DbJtDatabase::getMaterial ( AssemblyHandle assembly, SlMaterialf &material, bool tryParents ) const
+{
+  // Handle trivial case. Do not assert.
+  if ( NULL == assembly )
+    return false;
+
+  // Try the given entity.
+  if ( true == CadKit::getMaterial ( (eaiEntity *) assembly, material ) )
+    return true;
+
+  // Bail now if we aren't supposed to try the parents.
+  if ( false == tryParents )
+    return false;
+
+  // If we get to here then recursively try the parent (if it isn't null).
+  AssemblyHandle parent = this->getParent ( assembly );
+  return ( parent ) ? this->getMaterial ( parent, material, tryParents ) : false;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the material.
+//  Get the part's material.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getMaterial ( AssemblyHandle assembly, SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) assembly, material ); }
-bool DbJtDatabase::getMaterial ( PartHandle part,         SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) part,     material ); }
-bool DbJtDatabase::getMaterial ( InstanceHandle instance, SlMaterialf &material ) const { return CadKit::getMaterial ( (eaiEntity *) instance, material ); }
+bool DbJtDatabase::getMaterial ( PartHandle part, SlMaterialf &material, bool tryParents ) const
+{
+  // Try the given entity.
+  if ( true == CadKit::getMaterial ( (eaiEntity *) part, material ) )
+    return true;
+
+  // Bail now if we aren't supposed to try the parents.
+  if ( false == tryParents )
+    return false;
+
+  // If we get to here then try the parent assembly (which may be null).
+  AssemblyHandle parent = this->getParent ( part );
+  return ( parent ) ? this->getMaterial ( parent, material, tryParents ) : false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the instance's material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getMaterial ( InstanceHandle instance, SlMaterialf &material, bool tryParents ) const
+{
+  // Try the given entity.
+  if ( true == CadKit::getMaterial ( (eaiEntity *) instance, material ) )
+    return true;
+
+  // Bail now if we aren't supposed to try the parents.
+  if ( false == tryParents )
+    return false;
+
+  // If we get to here then try the parent assembly.
+  AssemblyHandle parent = this->getParent ( instance );
+  SL_ASSERT ( parent );
+  return this->getMaterial ( parent, material, tryParents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shape's material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool tryParents ) const
+{
+  // Get the shape.
+  SlRefPtr<eaiShape> temp = this->_getShape ( shape );
+  if ( temp.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Try the given entity.
+  if ( true == CadKit::getMaterial ( (eaiEntity *) temp.getValue(), material ) )
+    return true;
+
+  // Bail now if we aren't supposed to try the parents.
+  if ( false == tryParents )
+    return false;
+
+  // If we get to here then try the parent part.
+  LodHandle lod = this->getParent ( shape );
+  SL_ASSERT ( lod );
+  PartHandle part = this->getParent ( lod );
+  return this->getMaterial ( part, material, tryParents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the assembly's transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix, bool tryParents ) const
+{
+  // TODO. Handle "tryParents".
+  return CadKit::getTransform ( (eaiEntity *) assembly, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the part's transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix4f &matrix, bool tryParents ) const
+{
+  // TODO. Handle "tryParents".
+  return CadKit::getTransform ( (eaiEntity *) part, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the instance's transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix4f &matrix, bool tryParents ) const
+{
+  // TODO. Handle "tryParents".
+  return CadKit::getTransform ( (eaiEntity *) instance, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTexture ( ShapeHandle shape, std::vector<unsigned char> &texture, bool tryParents ) const
+{
+  return false; // TODO.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AssemblyHandle DbJtDatabase::getParent ( AssemblyHandle assembly ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, assembly = %X\n", this, assembly );
+
+  // Handle trivial cases.
+  if ( NULL == assembly || true == _assemblies->empty() )
+  {
+    // For the usage that I have in mind, this should not happen.
+    // If that proves not to be the case, then take this assertion out.
+    SL_ASSERT ( 0 );
+    return NULL;
+  }
+
+  // Make sure it is an assembly.
+  if ( false == CadKit::isOfType ( assembly, eaiEntity::eaiASSEMBLY ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // Is this the top-level assembly?
+  if ( ((eaiAssembly *) assembly) == this->_getTopAssembly() )
+    return NULL;
+
+  // Since we push/pop assemblies from the front of the list, the parent 
+  // assembly will be the one directly after the given assembly.
+  Assemblies::iterator i = std::find ( _assemblies->begin(), _assemblies->end(), (eaiAssembly *) assembly );
+
+  // Should be true.
+  SL_ASSERT ( i != _assemblies->end() );
+
+  // This iterator is the one before the one we want. So increment one.
+  ++i;
+
+  // Should still be true.
+  SL_ASSERT ( i != _assemblies->end() );
+
+  // Grab the parent.
+  eaiAssembly *parent = *i;
+
+  // When we get to here this should be true.
+  SL_ASSERT ( parent );
+
+  // Return the parent.
+  return (AssemblyHandle) parent;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AssemblyHandle DbJtDatabase::getParent ( PartHandle part ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, part = %X\n", this, part );
+
+  // Handle trivial cases.
+  if ( NULL == part )
+  {
+    // For the usage that I have in mind, this should not happen.
+    // If that proves not to be the case, then take this assertion out.
+    SL_ASSERT ( 0 );
+    return NULL;
+  }
+
+  // Make sure it is a part.
+  if ( false == CadKit::isOfType ( part, eaiEntity::eaiPART ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // We assume that the parent is our current assembly.
+  eaiAssembly *parent = this->_getCurrentAssembly();
+  return (AssemblyHandle) parent;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AssemblyHandle DbJtDatabase::getParent ( InstanceHandle instance ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, instance = %X\n", this, instance );
+
+  // Handle trivial cases.
+  if ( NULL == instance || true == _assemblies->empty() )
+  {
+    // For the usage that I have in mind, this should not happen.
+    // If that proves not to be the case, then take this assertion out.
+    SL_ASSERT ( 0 );
+    return NULL;
+  }
+
+  // Make sure it is an instance.
+  if ( false == CadKit::isOfType ( instance, eaiEntity::eaiINSTANCE ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // We assume that the parent is our current assembly.
+  eaiAssembly *parent = this->_getCurrentAssembly();
+  return (AssemblyHandle) parent;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PartHandle DbJtDatabase::getParent ( LodHandle lod ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, lod = %d\n", this, lod );
+  SL_ASSERT ( _current->getPart() );
+  SL_ASSERT ( lod );
+
+  // Get the index from the handle.
+  int whichLod = CadKit::makeLodIndex ( lod );
+
+  // Handle bad cases.
+  if ( UNSET_INDEX == whichLod || 
+       whichLod < 0 || 
+       whichLod >= _current->getPart()->numPolyLODs() )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // We assume that the parent is our current part.
+  return (PartHandle) _current->getPart();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LodHandle DbJtDatabase::getParent ( ShapeHandle shape ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, shape = %d\n", this, shape );
+  SL_ASSERT ( _current->getPart() );
+  SL_ASSERT ( shape );
+
+  // Get the index from the handle.
+  int whichShape = CadKit::makeShapeIndex ( shape );
+
+  // Handle bad cases.
+  if ( UNSET_INDEX == _current->getLod() ||
+       _current->getLod() < 0 || 
+       _current->getLod() >= _current->getPart()->numPolyLODs() ||
+       UNSET_INDEX == whichShape || 
+       whichShape < 0 || 
+       whichShape >= _current->getPart()->numPolyShapes ( _current->getLod() ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // We assume that the parent is our current lod.
+  return CadKit::makeLodHandle ( _current->getLod() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ShapeHandle DbJtDatabase::getParent ( SetHandle set ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, set = %d\n", this, set );
+  SL_ASSERT ( _current->getPart() );
+  SL_ASSERT ( set );
+
+  // Get the index from the handle.
+  int whichSet = CadKit::makeSetIndex ( set );
+
+  // Handle bad cases.
+  if ( UNSET_INDEX == whichSet ||
+       whichSet < 0 ||
+       UNSET_INDEX == _current->getLod() ||
+       _current->getLod() < 0 || 
+       _current->getLod() >= _current->getPart()->numPolyLODs() ||
+       UNSET_INDEX == _current->getShape() || 
+       _current->getShape() < 0 || 
+       _current->getShape() >= _current->getPart()->numPolyShapes ( _current->getLod() ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // Get the shape.
+  SlRefPtr<eaiShape> shape = this->_getShape ( _current->getPart(), _current->getLod(), _current->getShape() );
+  if ( shape.isNull() )
+    return NULL;
+
+  // See if the given set index is too big (we tested "too small" above).
+  if ( whichSet >= shape->numOfSets() )
+    return NULL;
+
+  // We assume that the parent is our current shape.
+  return CadKit::makeShapeHandle ( _current->getShape() );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -857,4 +1445,460 @@ HierarchyHandle DbJtDatabase::getCorresponding ( InstanceHandle instance ) const
 
   // Return a pointer to the original part or assembly (which may be null).
   return (HierarchyHandle) ((eaiInstance *) instance)->original();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the state indices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_resetStateIndices()
+{
+  SL_PRINT2 ( "In DbJtDatabase::_resetStateIndices(), this = %X\n", this );
+
+  // Reset.
+  _current->setLod   ( UNSET_INDEX );
+  _current->setShape ( UNSET_INDEX );
+  _current->setSet   ( UNSET_INDEX );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shape. The returned pointer will have a reference count of zero. 
+//  The caller has to reference it (and ultimately dereference it).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiShape *DbJtDatabase::_getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const
+{
+  SL_PRINT5 ( "In DbJtDatabase::_getShape(), this = %X, part = %X, whichLod = %d, whichShape = %d\n", this, part, whichLod, whichShape );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
+  SL_ASSERT ( whichShape >= 0 && whichShape < part->numPolyShapes ( whichLod ) );
+
+  // Ask for the shape (there may not be one).
+  eaiShape *shape = NULL;
+  part->getPolyShape ( shape, whichLod, whichShape );
+
+  // Return the shape (which may still be null).
+  return shape;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shape.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiShape *DbJtDatabase::_getShape ( ShapeHandle shape ) const
+{
+  // Handle trivial case.
+  if ( NULL == shape )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // Get the parent LOD.
+  LodHandle lod = this->getParent ( shape );
+  if ( NULL == lod )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Get the LOD's parent part.
+  PartHandle part = this->getParent ( lod );
+  if ( NULL == part )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Return the shape.
+  return this->_getShape ( (eaiPart *) part, CadKit::makeLodIndex ( lod ), CadKit::makeShapeIndex ( shape ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the shape data if needed. The shape data is mutable, which is why 
+//  this functions can be const. It is called from other "get" functions 
+//  which are also const.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_setShapeData ( ShapeHandle sh )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setShapeData(), this = %X, shape = %X\n", this, sh );
+
+  // If the given shape is the one saved with the data then we're already set.
+  if ( sh == _shapeData->getToken() )
+    return true;
+
+  // Initialize the shape data.
+  _shapeData->init ( NULL );
+
+  // Get the shape.
+  SlRefPtr<eaiShape> shape = this->_getShape ( sh );
+  if ( shape.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Call the other one.
+  if ( false == this->_setShapeData ( shape ) )
+    return false;
+
+  // Set the new token.
+  _shapeData->setToken ( sh );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the shape data if needed. The shape data is mutable, which is why 
+//  this functions can be const. It is called from other "get" functions 
+//  which are also const.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_setShapeData ( eaiShape *shape )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setShapeData(), this = %X, shape = %X\n", this, shape );
+
+  // Handle trivial case.
+  if ( NULL == shape )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // Initialize the shape data.
+  _shapeData->init ( NULL );
+
+  // For convenience.
+  std::vector<SlVec3f> &vertices  = _shapeData->getVertices().getData();
+  std::vector<SlVec3f> &normals   = _shapeData->getNormals().getData();
+  std::vector<SlVec3f> &colors    = _shapeData->getColors().getData();
+  std::vector<SlVec2f> &texCoords = _shapeData->getTexCoords().getData();
+  std::vector<unsigned int> &numVertices  = _shapeData->getVertices().getIndices();
+  std::vector<unsigned int> &numNormals   = _shapeData->getNormals().getIndices();
+  std::vector<unsigned int> &numColors    = _shapeData->getColors().getIndices();
+  std::vector<unsigned int> &numTexCoords = _shapeData->getTexCoords().getIndices();
+
+  // Used in the loop.
+  int vertexCount ( -1 ), normalCount ( -1 ), colorCount ( -1 ), textureCount ( -1 );
+  bool gotVertices ( false );
+
+  // Get the number of sets.
+  int numSets ( shape->numOfSets() );
+
+  // Loop through all the sets.
+  for ( int i = 0; i < numSets; ++i )
+  {
+    // Initialize.
+    vertexCount = normalCount = colorCount = textureCount = -1;
+    gotVertices = false;
+
+    // Keep this in the loop. The destructor will delete the internal array.
+    DbJtVisApiArray<float> v, n, c, t;
+
+    // Get the arrays for this set of the shape. This function is the reason 
+    // we jump through all these hoops (storing shape data and associating it 
+    // with the handle). If we could ask for just the vertices, or just the 
+    // normals (etc.) then this methodology could be eliminated and the code 
+    // greatly simplified. Perhaps version DMDTk 5.0...
+    if ( eai_OK == shape->getInternal ( v.getReference(), vertexCount, 
+                                        n.getReference(), normalCount, 
+                                        c.getReference(), colorCount, 
+                                        t.getReference(), textureCount, 
+                                        i ) )
+    {
+      // Should be true.
+      SL_ASSERT ( vertexCount > 0 );
+      SL_ASSERT ( NULL != v.getReference() );
+
+      // If we have vertices...
+      if ( vertexCount > 0 && NULL != v.getReference() )
+      {
+        // Append the arrays to the std::vectors. If they are empty then the 
+        // append function will just return.
+        CadKit::append3D ( vertexCount,  v.getReference(), vertices );
+        CadKit::append3D ( normalCount,  n.getReference(), normals );
+        CadKit::append3D ( colorCount,   c.getReference(), colors );
+        CadKit::append2D ( textureCount, t.getReference(), texCoords );
+
+        // Save the number of elements found (which may be zero).
+        numVertices.push_back  ( vertexCount );
+        numNormals.push_back   ( normalCount );
+        numColors.push_back    ( colorCount );
+        numTexCoords.push_back ( textureCount );
+
+        // This iteration worked.
+        gotVertices = true;
+      }
+    }
+
+    // If we didn't get any vertices...
+    if ( false == gotVertices )
+    {
+      SL_ASSERT ( 0 ); // Why did this happen?
+      if ( false == ERROR ( FORMAT ( "Failed to get internal data for shape %X, set %s.", shape, i ), FAILED ) )
+        return false;
+    }
+  }
+
+  // Should be true, but isn't detrimental.
+  SL_ASSERT ( (unsigned int) numSets == numVertices.size() );
+
+  // If don't have any vertices then we failed.
+  if ( vertices.empty() )
+    return false;
+
+  // Calculate the bindings.
+  if ( false == _shapeData->calculateBindings() )
+    return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getVertices ( ShapeHandle shape, IQueryShapeVerticesVec3f::VertexSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getVertices(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &vertices         = _shapeData->getVertices().getData();
+  std::vector<unsigned int> &numVertices = _shapeData->getVertices().getIndices();
+
+  // Get the number of vertices.
+  unsigned int totalNumVertices = vertices.size();
+  if ( 0 == totalNumVertices )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumVertices ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumVertices; ++i )
+    if ( false == setter.setData ( i, vertices[i] ) )
+      return false;
+
+  // Get the number of primitives.
+  unsigned int numPrimitives = numVertices.size();
+  SL_ASSERT ( numPrimitives > 0 );
+
+  // Tell the setter the number of primitives.
+  if ( false == setter.setNumPrimitives ( numPrimitives ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int start ( 0 );
+  for ( i = 0; i < numPrimitives; ++i )
+  {
+    if ( false == setter.setPrimitiveRange ( i, start, numVertices[i] ) )
+      return false;
+    start += numVertices[i];
+  }
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the normals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getNormals ( ShapeHandle shape, IQueryShapeNormalsVec3f::NormalSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getNormals(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &normals = _shapeData->getNormals().getData();
+
+  // Get the number of normals.
+  unsigned int totalNumNormals = normals.size();
+  if ( 0 == totalNumNormals )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumNormals ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumNormals; ++i )
+    if ( false == setter.setData ( i, normals[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColors ( ShapeHandle shape, IQueryShapeColorsVec3f::ColorSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColors(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &colors = _shapeData->getColors().getData();
+
+  // Get the number of colors.
+  unsigned int totalNumColors = colors.size();
+  if ( 0 == totalNumColors )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumColors ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumColors; ++i )
+    if ( false == setter.setData ( i, colors[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the set type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, IQueryShapeVerticesVec3f::Type &type ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getVertexSetType(), this = %X, shape = %X\n", this, sh );
+
+  // Get the shape.
+  SlRefPtr<eaiShape> shape = this->_getShape ( sh );
+  if ( shape.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Determine the type of shape.
+  switch ( shape->typeID() )
+  {
+  case eaiEntity::eaiLINESTRIPSET:
+
+    type = IQueryShapeVerticesVec3f::LINE_STRIP_SET;
+    break;
+
+  case eaiEntity::eaiPOINTSET:
+
+    type = IQueryShapeVerticesVec3f::POINT_SET;
+    break;
+
+  case eaiEntity::eaiPOLYGONSET:
+
+    type = IQueryShapeVerticesVec3f::POLYGON_SET;
+    break;
+
+  case eaiEntity::eaiTRIFANSET:
+
+    type = IQueryShapeVerticesVec3f::TRI_FAN_SET;
+    break;
+
+  case eaiEntity::eaiTRISTRIPSET:
+
+    type = IQueryShapeVerticesVec3f::TRI_STRIP_SET;
+    break;
+
+  default:
+
+    type = IQueryShapeVerticesVec3f::UNKNOWN;
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the normal binding.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getNormalBinding ( ShapeHandle shape, VertexBinding &binding ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getNormalBinding(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // Set the binding.
+  binding = _shapeData->getNormalBinding();
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color binding.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColorBinding ( ShapeHandle shape, VertexBinding &binding ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColorBinding(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // Set the binding.
+  binding = _shapeData->getColorBinding();
+
+  // It worked.
+  return true;
 }

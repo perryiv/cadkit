@@ -43,7 +43,7 @@ public:
   };
 
   // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const Type &type ) const = 0;
+  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const Type &type ) = 0;
 };
 
 }; // namespace CadKit

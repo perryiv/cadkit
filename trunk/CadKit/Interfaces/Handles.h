@@ -31,8 +31,9 @@ CADKIT_DECLARE_HANDLE ( HierarchyHandle );
 CADKIT_DECLARE_HANDLE ( MaterialHandle );
 CADKIT_DECLARE_HANDLE ( TransformHandle );
 CADKIT_DECLARE_HANDLE ( TextureHandle );
-CADKIT_DECLARE_HANDLE ( LevelOfDetailHandle );
+CADKIT_DECLARE_HANDLE ( LodHandle );
 CADKIT_DECLARE_HANDLE ( ShapeHandle );
+CADKIT_DECLARE_HANDLE ( SetHandle );
 CADKIT_DECLARE_HANDLE ( GroupHandle );
 
 }; // namespace CadKit

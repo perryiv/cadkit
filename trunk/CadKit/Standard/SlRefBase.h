@@ -54,27 +54,6 @@ protected:
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  These are for class SlRefPtr. The client can overload these functions to
-//  use SlRefPtr with another kind of pointer (like IUnknown). By making 
-//  SlRefPtr call these functions instead of it's contained pointer's
-//  ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
-//  API of it's contained pointer. To use SlRefPtr with a pointer type 
-//  that does not have "ref/unref" members, make a specific (non-template) 
-//  overload of these functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
-template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
-
-
-// Safely reference/unreference the pointer. Provided as a convenience.
-template <class T> inline void safeRef   ( T *ptr ) { if ( ptr ) ptr->ref(); }
-template <class T> inline void safeUnref ( T *ptr ) { if ( ptr ) ptr->unref(); }
-
-
 }; // namespace CadKit
 
 

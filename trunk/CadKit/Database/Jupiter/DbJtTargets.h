@@ -54,8 +54,10 @@
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlBitmask.h"
 
-#include <vector>
-
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <vector>
+# include <memory>
+#endif
 
 namespace CadKit
 {

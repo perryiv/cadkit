@@ -32,21 +32,49 @@ template <class T> class SlQueryPtr : public SlRefPtr<T>
 {
 public:
 
-  SlQueryPtr ( const unsigned long &iid, CadKit::IUnknown *unknown );
+  SlQueryPtr ( CadKit::IUnknown *unknown );
+
+  // Assignment.
+  SlQueryPtr<T> &operator = ( CadKit::IUnknown *unknown );
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor. Note we call base class's default constructor.
+//  Safely query the interface. This function is used below.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class T> inline SlQueryPtr<T>::SlQueryPtr 
-  ( const unsigned long &iid, CadKit::IUnknown *unknown ) : SlRefPtr<T>()
+inline IUnknown *queryInterface ( const unsigned int &iid, IUnknown *unknown )
 {
-  if ( unknown )
-    this->setValue ( static_cast<T *> ( unknown->queryInterface ( iid ) ) );
+  return ( unknown ) ? unknown->queryInterface ( iid ) : 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor. Note what we pass to the base class's constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline SlQueryPtr<T>::SlQueryPtr ( CadKit::IUnknown *unknown ) : 
+  SlRefPtr<T> ( static_cast<T *> ( CadKit::queryInterface ( T::IID, unknown ) ) )
+{
+  // Empty.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline SlQueryPtr<T> &SlQueryPtr<T>::operator = ( CadKit::IUnknown *unknown )
+{
+  // Set this instance from the result of the safe query (which may be null).
+  this->setValue ( static_cast<T *> ( CadKit::queryInterface ( T::IID, unknown ) ) );
+  return *this;
 }
 
 

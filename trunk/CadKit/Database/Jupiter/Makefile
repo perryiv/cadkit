@@ -3,8 +3,12 @@ include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
+	DbJtDatabase.cpp \
 	DbJtDll.cpp \
+	DbJtFunctions.cpp \
 	DbJtPrecompiled.cpp \
+	DbJtTargets.cpp \
+	DbJtTraversalState.cpp \
 	DbJtTraverser.cpp
 
 # The include path.

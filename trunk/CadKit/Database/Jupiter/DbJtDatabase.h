@@ -19,32 +19,47 @@
 #include "DbJtApi.h"
 
 #include "Database/Base/DbBaseSource.h"
+#include "Database/Base/DbBaseShapeData.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlBitmask.h"
-#include "Standard/SlStack.h"
+#include "Standard/SlVec2.h"
+#include "Standard/SlVec3.h"
 
 #include "Interfaces/ILoadOptions.h"
 #include "Interfaces/IEntityQuery.h"
+#include "Interfaces/IShapeQuery.h"
 #include "Interfaces/IInstanceQuery.h"
+#include "Interfaces/IQueryVertices.h"
+#include "Interfaces/IQueryNormals.h"
+#include "Interfaces/IQueryColors.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <vector>
+# include <list>
 #endif
 
 class eaiAssembly;
 class eaiHierarchy;
 class eaiInstance;
 class eaiPart;
+class eaiShape;
 
 
 namespace CadKit
 {
+class DbJtTraversalState;
+
 class DB_JT_API DbJtDatabase : public DbBaseSource, 
                                public ILoadOptions,
                                public IAssemblyQueryFloat,
                                public IPartQueryFloat,
-                               public IInstanceQueryFloat
+                               public IInstanceQueryFloat,
+                               public ILodQuery,
+                               public IShapeQueryFloatUchar,
+                               public ISetQuery,
+                               public IQueryShapeVerticesVec3f,
+                               public IQueryShapeNormalsVec3f,
+                               public IQueryShapeColorsVec3f
 {
 public:
 
@@ -81,37 +96,43 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IAssemblyQuery interface.
+  //  IAssemblyQueryFloat interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   // Get the name.
   virtual std::string     getName ( AssemblyHandle assembly ) const;
 
-  // Get the transformation matrix.
-  virtual bool            getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix ) const;
+  // Get the material.
+  virtual bool            getMaterial ( AssemblyHandle assembly, SlMaterialf &material, bool tryParents ) const;
 
-  // Get the transformation material.
-  virtual bool            getMaterial ( AssemblyHandle assembly, SlMaterialf &material ) const;
+  // Get the parent of the entity.
+  virtual AssemblyHandle  getParent ( AssemblyHandle assembly ) const;
+
+  // Get the transformation matrix.
+  virtual bool            getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix, bool tryParents ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IPartQuery interface.
+  //  IPartQueryFloat interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   // Get the name.
   virtual std::string     getName ( PartHandle part ) const;
 
-  // Get the transformation matrix.
-  virtual bool            getTransform ( PartHandle part, SlMatrix4f &matrix ) const;
+  // Get the material.
+  virtual bool            getMaterial ( PartHandle part, SlMaterialf &material, bool tryParents ) const;
 
-  // Get the transformation material.
-  virtual bool            getMaterial ( PartHandle assembly, SlMaterialf &material ) const;
+  // Get the parent of the entity.
+  virtual AssemblyHandle  getParent ( PartHandle part ) const;
+
+  // Get the transformation matrix.
+  virtual bool            getTransform ( PartHandle part, SlMatrix4f &matrix, bool tryParents ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IInstanceQuery: Interface for querying an instance.
+  //  IInstanceQueryFloat interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -119,17 +140,90 @@ public:
   virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const;
 
   // Get the name.
-  virtual std::string     getName ( InstanceHandle Instance ) const;
+  virtual std::string     getName ( InstanceHandle instance ) const;
+
+  // Get the material.
+  virtual bool            getMaterial ( InstanceHandle instance, SlMaterialf &material, bool tryParents ) const;
+
+  // Get the parent of the entity.
+  virtual AssemblyHandle  getParent ( InstanceHandle instance ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( InstanceHandle Instance, SlMatrix4f &matrix ) const;
+  virtual bool            getTransform ( InstanceHandle instance, SlMatrix4f &matrix, bool tryParents ) const;
 
-  // Get the transformation material.
-  virtual bool            getMaterial ( InstanceHandle assembly, SlMaterialf &material ) const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  ILodQuery interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the parent of the entity.
+  virtual PartHandle      getParent ( LodHandle lod ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IShapeQueryFloatUchar interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the material.
+  virtual bool            getMaterial ( ShapeHandle shape, SlMaterialf &material, bool tryParents ) const;
+
+  // Get the parent of the entity.
+  virtual LodHandle       getParent ( ShapeHandle shape ) const;
+
+  // Get the texture.
+  virtual bool            getTexture ( ShapeHandle shape, std::vector<unsigned char> &texture, bool tryParents ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  ISetQuery interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the parent of the entity.
+  virtual ShapeHandle     getParent ( SetHandle set ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryShapeVerticesVec3f interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the set type.
+  virtual bool            getVertexSetType ( ShapeHandle shape, IQueryShapeVerticesVec3f::Type &type ) const;
+
+  // Get the vertices.
+  virtual bool            getVertices ( ShapeHandle shape, IQueryShapeVerticesVec3f::VertexSetter &setter ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryShapeNormalsVec3f interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the normal binding.
+  virtual bool            getNormalBinding ( ShapeHandle shape, VertexBinding &binding ) const;
+
+  // Get the normals.
+  virtual bool            getNormals ( ShapeHandle shape, IQueryShapeNormalsVec3f::NormalSetter &setter ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryShapeColorsVec3f interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the color binding.
+  virtual bool            getColorBinding ( ShapeHandle shape, VertexBinding &binding ) const;
+
+  // Get the normals.
+  virtual bool            getColors ( ShapeHandle shape, IQueryShapeColorsVec3f::ColorSetter &setter ) const;
 
 protected:
 
-  typedef SlStack<eaiAssembly *> Assemblies;
+  typedef std::list<eaiAssembly *> Assemblies;
+  typedef DbBaseShapeData<SlVec3f,SlVec3f,SlVec3f,SlVec2f,ShapeHandle> ShapeData;
 
   unsigned int _customerId;
   bool _initialized;
@@ -137,39 +231,46 @@ protected:
   BrepLoadOption _brepLoadOption;
   ShapeLoadOption _shapeLoadOption;
   std::auto_ptr<Assemblies> _assemblies;
-  eaiPart *_currentPart;
-  eaiInstance *_currentInstance;
+  std::auto_ptr<DbJtTraversalState> _current;
+  std::auto_ptr<ShapeData> _shapeData;
 
   virtual ~DbJtDatabase();
 
-  bool                    _endAssembly ( const unsigned int &level, eaiAssembly *assembly );
-  bool                    _endInstance ( const unsigned int &level, eaiInstance *instance );
-  bool                    _endPart     ( const unsigned int &level, eaiPart *part );
+  bool                    _endAssembly ( eaiAssembly *assembly );
+  bool                    _endInstance ( eaiInstance *instance );
+  bool                    _endPart     ( eaiPart *part );
 
-  const eaiAssembly *     _getCurrentAssembly() const;
-  eaiAssembly *           _getCurrentAssembly();
+  eaiAssembly *           _getCurrentAssembly() const;
   const unsigned int &    _getCustomerId();
+  eaiShape *              _getShape ( ShapeHandle shape ) const;
+  eaiShape *              _getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const;
+  eaiAssembly *           _getTopAssembly() const;
 
   bool                    _init();
 
-  bool                    _notifyError    ( const std::string &message, const unsigned long &id );
-  bool                    _notifyProgress ( const std::string &message );
-  bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
-
-  static int              _preActionTraversalCallback ( eaiHierarchy *hierarchy, int level );
+  static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level );
   static int              _postActionTraversalCallback ( eaiHierarchy *hierarchy, int level );
-  bool                    _preActionTraversalNotify ( eaiHierarchy *hierarchy, int level );
-  bool                    _postActionTraversalNotify ( eaiHierarchy *hierarchy, int level );
+  bool                    _preActionTraversalNotify    ( eaiHierarchy *hierarchy, int level );
+  bool                    _postActionTraversalNotify   ( eaiHierarchy *hierarchy, int level );
+
+  bool                    _processLods  ( eaiPart *part );
+  bool                    _processLod   ( eaiPart *part,   const int &whichLod );
+  bool                    _processShape ( eaiPart *part,   const int &whichLod, const int &whichShape );
+  bool                    _processSet   ( eaiShape *shape, const int &whichSet );
 
   void                    _pushAssembly ( eaiAssembly *assembly );
   void                    _popAssembly();
 
-  void                    _setCurrentPart ( eaiPart *part );
-  void                    _setCurrentInstance ( eaiInstance *instance );
+  void                    _resetStateIndices();
 
-  bool                    _startAssembly ( const unsigned int &level, eaiAssembly *assembly );
-  bool                    _startInstance ( const unsigned int &level, eaiInstance *instance );
-  bool                    _startPart     ( const unsigned int &level, eaiPart *part );
+  void                    _setCurrentPart     ( eaiPart *part );
+  void                    _setCurrentInstance ( eaiInstance *instance );
+  bool                    _setShapeData ( ShapeHandle shapeHandle );
+  bool                    _setShapeData ( eaiShape *shape );
+
+  bool                    _startAssembly ( eaiAssembly *assembly );
+  bool                    _startInstance ( eaiInstance *instance );
+  bool                    _startPart     ( eaiPart *part );
 
   bool                    _traverse ( const std::string &filename );
 

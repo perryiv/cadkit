@@ -22,7 +22,7 @@ namespace Polygons {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Polygon >
-class SharedVertex : public Usul::Base::Referenced
+class SharedVertex
 {
 public:
   typedef typename std::list< Polygon* >::iterator Iterator;
@@ -41,6 +41,7 @@ public:
 private:
   std::list< Polygon* > _polygons;
   bool _visited;
+  //TODO Should probably have it's actual Vertex value here too
 
 }; //class SharedVertex
 

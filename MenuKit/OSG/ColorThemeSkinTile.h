@@ -19,12 +19,13 @@ namespace MenuKit
   {
 
     /** ColorThemeSkinTile
-      * This class use's a policy member of type SkinType
+      * This class uses a policy member of type SkinType
       * to help it provide correct data.  A "Tile" needs
       * to supply a "Mason" with size information.  This
-      * particular tile accomplishes that with its 'skin' member.
-      * This class also uses the skin for the important job
-      * of manufacturing a graphic object for a Menu Item.
+      * particular TileFunctor accomplishes that with its
+      * 'skin' member. This class also uses the skin for
+      * the important job of manufacturing a graphic
+      * object for a Menu Item.
       */
     template<class ThemeType, class SkinType>
     class ColorThemeSkinTile : public TileFunctor

@@ -21,6 +21,14 @@ namespace MenuKit
   namespace OSG
   {
 
+     /** TileFunctor
+      *
+      * This class is an abstract base class that implements
+      * the template required functions for the TileMason
+      * Visitor class.  Along with the pure virtual functions,
+      * the DisplayMode enumeration and Box class members are
+      * both template requirements.
+      */
     class TileFunctor
     {
     public:

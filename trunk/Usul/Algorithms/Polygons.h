@@ -281,7 +281,7 @@ inline void buildAdjacencyGraph (
     ++currentPolygon;
 
     //update the progress
-    if( sharedVerts.size() % 250 == 0 )
+    if( sharedVerts.size() % 500 == 0 )
     {
       //std::ostringstream message;
       //message << "Found " << sharedVerts.size() << " shared vertices. ";

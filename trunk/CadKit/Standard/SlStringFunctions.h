@@ -85,6 +85,55 @@ namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if the given string is an unsigned integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class StringType> inline bool isUnsignedInteger ( const StringType &s )
+{
+  // Constants used below.
+  const unsigned int zero = (unsigned int) '0';
+  const unsigned int nine = (unsigned int) '9';
+
+  // Get the size of the string.
+  unsigned int size = s.size();
+
+  // Can't be an integer if the size is zero.
+  if ( 0 == size )
+    return false;
+
+  // Loop through all of the characters.
+  for ( unsigned int i = 0; i < size; ++i )
+  {
+    // Get the integer value for the character.
+    unsigned int integer = (unsigned int) s[i];
+
+    // See if it is in range.
+    if ( integer > nine || integer < zero )
+      return false;
+  }
+
+  // If we get to here then the string is an unsigned integer.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the given string to an unsigned integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class StringType> inline unsigned int toUnsignedInteger ( const StringType &s )
+{
+  SL_ASSERT ( true == CadKit::isUnsignedInteger ( s ) );
+  int integer = ::atoi ( s.c_str() );
+  return ( integer > 0 ) ? (unsigned int) integer : 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Make the string all upper/lower case.
 //
 //  The simple way is to use the current locale, found at:

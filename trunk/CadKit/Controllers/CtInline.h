@@ -77,7 +77,15 @@ inline bool translate ( CadKit::IUnknown *controller,
 
   // Parse the arguments.
   ICommandLine::Args args;
-  commandLine->parseArguments ( argc, (const char **) argv, args );
+  bool result = commandLine->parseArguments ( argc, (const char **) argv, args );
+
+  // See if it worked. If the result is true and the argument list is empty 
+  // then the user did not supply any filenames.
+  if ( false == result || args.empty() )
+  {
+    std::cout << commandLine->getUsageString ( argv[0], "jt" ).c_str() << std::endl;
+    return false;
+  }
 
   // Get the necessary interface.
   SlQueryPtr<ITranslator> translator ( controller );

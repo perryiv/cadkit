@@ -28,6 +28,7 @@
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <math.h>
 # include <list>
+# include <vector>
 # include <map>
 # include <stack>
 # include <algorithm>

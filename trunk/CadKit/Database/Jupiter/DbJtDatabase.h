@@ -34,6 +34,7 @@
 #include "Interfaces/IQueryNormals.h"
 #include "Interfaces/IQueryColors.h"
 #include "Interfaces/IQueryTexCoords.h"
+#include "Interfaces/IMessagePriority.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -62,7 +63,8 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public IQueryShapeNormalsVec3f,
                                public IQueryShapeColorsVec4f,
                                public IQueryShapeColorsVec3f,
-                               public IQueryShapeTexCoordsVec2f
+                               public IQueryShapeTexCoordsVec2f,
+                               public IMessagePriority
 {
 public:
 
@@ -235,6 +237,15 @@ public:
   // Get the texture coordinates.
   virtual bool            getTextureCoords ( ShapeHandle shape, IQueryShapeTexCoordsVec2f::TexCoordSetter &setter ) const;
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IMessagePriority interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the message priority level.
+  virtual bool            setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority );
+
 protected:
 
   typedef std::list<eaiAssembly *> Assemblies;
@@ -248,6 +259,7 @@ protected:
   std::auto_ptr<Assemblies> _assemblies;
   std::auto_ptr<DbJtTraversalState> _current;
   std::auto_ptr<ShapeData> _shapeData;
+  unsigned int _progressPriorityLevel;
 
   virtual ~DbJtDatabase();
 

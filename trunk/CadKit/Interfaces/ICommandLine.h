@@ -43,7 +43,7 @@ public:
   virtual std::string     getUsageString ( const std::string &program, const std::string &ext ) const = 0;
 
   // Parse the arguments.
-  virtual void            parseArguments ( const int &argc, const char **argv, Args &args ) = 0;
+  virtual bool            parseArguments ( const int &argc, const char **argv, Args &args ) = 0;
 };
 
 }; // namespace CadKit

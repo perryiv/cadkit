@@ -53,7 +53,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type );
+  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -68,7 +68,7 @@ public:
   virtual std::string     getUsageString ( const std::string &program, const std::string &ext ) const;
 
   // Parse the arguments.
-  virtual void            parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args );
+  virtual bool            parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -90,11 +90,22 @@ public:
 
 protected:
 
+  enum
+  {
+    _PRINT_ERRORS   = 0x00000001,
+    _PRINT_WARNINGS = 0x00000002,
+    _PRINT_INFO     = 0x00000004,
+  };
+  
   std::ostream *_out;
+  unsigned int _progressPrintLevel;
+  unsigned int _printFlags;
 
   virtual ~CtTranslation();
 
   bool                    _messageNotify ( const std::string &type, const std::string &message, const unsigned long &id ) const;
+
+  void                    _setProgressPrintLevel ( const unsigned int &level );
 
   SL_DECLARE_REFERENCE_POINTER ( CtTranslation );
   SL_DECLARE_DYNAMIC_CLASS ( CtTranslation, 1032745026 );

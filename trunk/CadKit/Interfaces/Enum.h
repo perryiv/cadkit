@@ -1,0 +1,37 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enum: Enumerations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_INTERFACE_ENUMERATIONS_H_
+#define _CADKIT_INTERFACE_ENUMERATIONS_H_
+
+
+namespace CadKit
+{
+
+// Message types.
+enum MessageType
+{
+  MESSAGE_ERROR,
+  MESSAGE_WARNING,
+  MESSAGE_QUESTION,
+  MESSAGE_INFO,
+  MESSAGE_PROGRESS
+};
+
+
+}; // namespace CadKit
+
+
+#endif // _CADKIT_INTERFACE_ENUMERATIONS_H_

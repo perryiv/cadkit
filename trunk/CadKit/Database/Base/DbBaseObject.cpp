@@ -123,7 +123,7 @@ void DbBaseObject::setController ( IUnknown *controller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbBaseObject::_notifyMessage ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type )
+bool DbBaseObject::_notifyMessage ( const std::string &message, const unsigned long &id, const MessageType &type )
 {
   SL_PRINT5 ( "In DbBaseObject::_notifyMessage(), this = %X, id = %d, type = %d, message = \n", this, id, type, message.c_str() );
 
@@ -142,9 +142,9 @@ bool DbBaseObject::_notifyMessage ( const std::string &message, const unsigned l
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbBaseObject::_notifyError    ( const std::string &message, const unsigned long &id ) { return this->_notifyMessage ( message, id, IMessageNotify::MESSAGE_ERROR ); }
-bool DbBaseObject::_notifyWarning  ( const std::string &message, const unsigned long &id ) { return this->_notifyMessage ( message, id, IMessageNotify::MESSAGE_WARNING ); }
-bool DbBaseObject::_notifyProgress ( const std::string &message )                          { return this->_notifyMessage ( message, 0,  IMessageNotify::MESSAGE_PROGRESS ); }
+bool DbBaseObject::_notifyError    ( const std::string &message, const unsigned long &id )       { return this->_notifyMessage ( message, id,       CadKit::MESSAGE_ERROR ); }
+bool DbBaseObject::_notifyWarning  ( const std::string &message, const unsigned long &id )       { return this->_notifyMessage ( message, id,       CadKit::MESSAGE_WARNING ); }
+bool DbBaseObject::_notifyProgress ( const std::string &message, const unsigned long &priority ) { return this->_notifyMessage ( message, priority, CadKit::MESSAGE_PROGRESS ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

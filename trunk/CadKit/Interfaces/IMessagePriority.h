@@ -9,34 +9,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IMessageNotify: Interface for reporting messages.
+//  IMessagePriority: Interface for setting the message priority level.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_MESSAGE_NOTIFY_H_
-#define _CADKIT_INTERFACE_MESSAGE_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_MESSAGE_PRIORITY_H_
+#define _CADKIT_INTERFACE_MESSAGE_PRIORITY_H_
 
 #include "Enum.h"
 #include "IUnknown.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-#endif
-
 
 namespace CadKit
 {
-class IMessageNotify : public IUnknown
+class IMessagePriority : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1033067270 };
+  enum { IID = 1034027225 };
 
-  // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type ) = 0;
+  // Set the message priority level.
+  virtual bool            setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_MESSAGE_NOTIFY_H_
+#endif // _CADKIT_INTERFACE_MESSAGE_PRIORITY_H_

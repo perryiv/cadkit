@@ -17,8 +17,7 @@
 #include "DbSgDatabase.h"
 #include "DbSgFunctions.h"
 #include "DbSgInline.h"
-#include "DbSgArraySetters.h"
-
+/*
 #include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/IShapeQuery.h"
 #include "Interfaces/IQueryVertices.h"
@@ -344,63 +343,7 @@ bool DbSgDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
 
-  // Get the interface we need from the caller.
-  SlQueryPtr<IInstanceQueryFloat> query ( caller );
-  if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
-
-  // Create a group (really a MatrixTransform).
-  SlRefPtr<osg::Group> mt = CadKit::createGroup ( instance, query.getValue() );
-  if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for instance.", NO_INTERFACE );
-
-  // Get the corresponding part or assembly.
-  HierarchyHandle hierarchy = query->getCorresponding ( instance );
-  if ( NULL == hierarchy )
-    return ERROR ( "Failed to get corresponding part or assembly from the instance.", FAILED );
-
-  // Call this function to handle the LODs.
-//  if ( false == CadKit::createInstanceLods() )
-//    return ERROR ( "Failed to process (and create) LOD(s) for instance.", NO_INTERFACE );
-
-/*
-  HERE
-
-  If the hierarchy is a part, then the corresponding group should hold only 
-  one child (an osg::LOD). You need to make another osg::LOD and attach all
-  the children from the part's osg::LOD, and add the same ranges. However,
-  you also have to calculate the bounding sphere's and set the new osg::LOD's
-  center's (they will be different than the corresponding part because of the
-  different transformation.
-
-  If the hierarchy is an assembly then you have to traverse that assembly's
-  osg::MatrixTransform and find all of the osg::LODs. For each one of these
-  osg::LODs you have to do something similar to what is described above for
-  a part. Probably, you'll want to make a copy of the assembly's scene down
-  to the osg::LODs. Copy the osg::LODs but set different centers. Then just
-  add the same children of the original osg::LOD to the new osg::LOD. You
-  will probably need a recursive function for this.
-*/
-  // Find the group that corresponds with this part or assembly.
-  SlRefPtr<osg::Group> original = dynamic_cast<osg::Group *> ( this->_findGroup ( hierarchy ) );
-  if ( original.isNull() )
-    return ERROR ( "Failed to find group associated with instance's corresponding part or assembly.", FAILED );
-
-  // Should be true (as of when I type this).
-  SL_ASSERT ( 1 == original->getNumChildren() );
-  SL_ASSERT ( NULL != dynamic_cast<osg::LOD *> ( original->getChild ( 0 ) ) );
-
-  // Make a new lod.
-
-  // Add all of the original group's children to the instance's group.
-  unsigned int numChildren = original->getNumChildren();
-  for ( unsigned int i = 0; i < numChildren; ++i )
-    mt->addChild ( original->getChild ( i ) );
-
-  // Add this group to the scene.
-  _groupStack->top()->addChild ( mt );
-
-  // It worked.
+  // TODO.
   return true;
 }
 
@@ -890,3 +833,4 @@ osg::Group *DbSgDatabase::_findGroup ( const void *key ) const
   // Return the result (which may be null).
   return ( i != _groupMap->end() ) ? i->second : NULL;
 }
+*/

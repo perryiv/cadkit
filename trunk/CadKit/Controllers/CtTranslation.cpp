@@ -24,16 +24,24 @@
 #include "Standard/SlPathname.h"
 #include "Standard/SlQueryPtr.h"
 #include "Standard/SlMessageIds.h"
+#include "Standard/SlStringFunctions.h"
+#include "Standard/SlBitmask.h"
 
 #include "Interfaces/IDataSource.h"
 #include "Interfaces/IDataTarget.h"
 #include "Interfaces/IControlled.h"
+#include "Interfaces/IMessagePriority.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #endif
 
 #define PRINT if ( _out ) (*_out)
 #define MIN_NUM_ARGS 2
+
+// Don't bother formatting the string if the controller won't print it.
+#define PRINT_LEVEL(priority)\
+  if ( priority <= _progressPrintLevel )\
+    (*_out)
 
 using namespace CadKit;
 
@@ -48,7 +56,9 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( CtTranslation, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 CtTranslation::CtTranslation() : SlRefBase ( 0 ),
-  _out ( NULL )
+  _out ( NULL ),
+  _progressPrintLevel ( 0 ),
+  _printFlags ( 0 )
 {
   SL_PRINT2 ( "In CtTranslation::CtTranslation(), this = %X\n", this );
 }
@@ -112,6 +122,34 @@ bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Options string, for the "usage" output.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define OPTIONS "\n\
+  -pp <priority>    Print to stdout any progress messages with a priority\n\
+                    level less than or equal to 'priority'.\n\
+  -pe               Print error messages to stdout.\n\
+  -pw               Print warning messages to stdout.\n\
+  -pi               Print general information messages to stdout.\n\
+  -v                Verbose output to stdout, same as '-pe -pw -pi -pp 1'.\n\
+  -ea <action>      What to do if an error is encountered. Possible actions:\n\
+                      exit:     Exit the program.\n\
+                      continue: Continue executing is possible.\n\
+  -wa <action>      What to do if a warning is encountered. Possible actions:\n\
+                      exit:     Exit the program.\n\
+                      continue: Continue executing is possible.\n\
+  --print-progress  Same as '-pp'.\n\
+  --print-errors    Same as '-pe'.\n\
+  --print-warnings  Same as '-pw'.\n\
+  --print-info      Same as '-pi'.\n\
+  --verbose         Same as '-v'.\n\
+  --error-action    Same as '-ea'.\n\
+  --warning-action  Same as '-wa'."
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the usage string.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,7 +165,7 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
                    CadKit::justFilename ( program ).c_str(),
                    ext.c_str(),
                    ext.c_str() );
-  usage += "\n\t-v, --verbose     Verbose output to stdout.";
+  usage += OPTIONS;
 
   // Return the usage string.
   return usage;
@@ -140,7 +178,7 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CtTranslation::parseArguments ( const int &argc, const char **argv, CtTranslation::Args &args )
+bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTranslation::Args &args )
 {
   SL_PRINT3 ( "In CtTranslation::parseArguments(), this = %X, argc = %d\n", this, argc );
   SL_ASSERT ( argc >= MIN_NUM_ARGS );
@@ -155,14 +193,61 @@ void CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     // Grab the current argument.
     std::string arg ( argv[i] );
 
-    // See if this argument is the verbose flag.
-    if ( arg == "-v" || arg == "--verbose" )
+    //
+    // See if this argument is one of our flags.
+    //
+
+    if ( arg == "-pp" || arg == "--print-progress" )
+    {
+      // Get the next argument, if there is one.
+      std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );
+
+      // See if the option string is an integer.
+      if ( true == CadKit::isUnsignedInteger ( option ) )
+      {
+        this->setOutputStream ( &(std::cout) );
+        this->_setProgressPrintLevel ( CadKit::toUnsignedInteger ( option ) );
+
+        // Increment the loop index.
+        ++i;
+      }
+
+      // Otherwise return false.
+      else
+        return false;
+    }
+
+    else if ( arg == "-pe" || arg == "--print-errors" )
+    {
       this->setOutputStream ( &(std::cout) );
+      CadKit::addBits ( _printFlags, _PRINT_ERRORS );
+    }
+
+    else if ( arg == "-pw" || arg == "--print-warnings" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      CadKit::addBits ( _printFlags, _PRINT_WARNINGS );
+    }
+
+    else if ( arg == "-pi" || arg == "--print-info" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      CadKit::addBits ( _printFlags, _PRINT_INFO );
+    }
+
+    else if ( arg == "-v" || arg == "--verbose" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      this->_setProgressPrintLevel ( 1 );
+    }
 
     // Otherwise just save the argument.
     else
       args.push_back ( argv[i] );
   }
+
+  // It worked.
+  return true;
 }
 
 
@@ -174,8 +259,18 @@ void CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
 
 bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *source, CadKit::IUnknown *target )
 {
-  SL_PRINT5 ( "In CtTranslation::parseArguments(), this = %X, filename = %s, source = %X, target = %X\n", this, filename.c_str(), source, target );
+  SL_PRINT5 ( "In CtTranslation::translate(), this = %X, filename = %s, source = %X, target = %X\n", this, filename.c_str(), source, target );
   SL_ASSERT ( false == filename.empty() );
+
+  // See if we can tell the target the priority level.
+  SlQueryPtr<IMessagePriority> targetMessagePriority ( target );
+  if ( targetMessagePriority.isValid() )
+    targetMessagePriority->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, _progressPrintLevel );
+
+  // See if we can tell the source the priority level.
+  SlQueryPtr<IMessagePriority> sourceMessagePriority ( source );
+  if ( sourceMessagePriority.isValid() )
+    sourceMessagePriority->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, _progressPrintLevel );
 
   // Make sure the source supports the interface we need.
   SlQueryPtr<IDataSource> ds ( source );
@@ -212,7 +307,7 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
     // Get the output filename.
     std::string outfile ( dt->getDefaultOutputName ( filename ) );
 
-    PRINT << "Writing: " << outfile.c_str() << std::endl;
+    PRINT_LEVEL ( 1 ) << "Writing: " << outfile.c_str() << std::endl;
 
     // Store the data.
     if ( false == dt->storeData ( outfile ) )
@@ -233,22 +328,40 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type )
+bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type )
 {
   SL_PRINT5 ( "In CtTranslation::messageNotify(), this = %X, id = %d, type = %d, message = %s\n", this, id, type, message.c_str() );
 
   // See what kind of message it is.
   switch ( type )
   {
-  case IMessageNotify::MESSAGE_ERROR:
-    return this->_messageNotify ( "Error",   message, id );
-  case IMessageNotify::MESSAGE_WARNING:
-    return this->_messageNotify ( "Warning", message, id );
-  case IMessageNotify::MESSAGE_PROGRESS:
-  case IMessageNotify::MESSAGE_INFO:
-    PRINT << message.c_str() << std::endl;
+  case CadKit::MESSAGE_ERROR:
+
+    if ( CadKit::hasBits ( _printFlags, _PRINT_ERRORS ) )
+      return this->_messageNotify ( "Error",   message, id );
     break;
+
+  case CadKit::MESSAGE_WARNING:
+
+    if ( CadKit::hasBits ( _printFlags, _PRINT_WARNINGS ) )
+      return this->_messageNotify ( "Warning",   message, id );
+    break;
+  
+  case CadKit::MESSAGE_INFO:
+
+    if ( CadKit::hasBits ( _printFlags, _PRINT_INFO ) )
+      PRINT << message.c_str() << std::endl;
+    break;
+
+  case CadKit::MESSAGE_PROGRESS:
+
+    // When it is a progress message the id is the priority level.
+    if ( id <= _progressPrintLevel )
+      PRINT << message.c_str() << std::endl;
+    break;
+
   default:
+
     SL_ASSERT ( 0 ); // What message is this?
     break;
   }
@@ -272,8 +385,14 @@ bool CtTranslation::_messageNotify ( const std::string &type, const std::string 
   switch ( id )
   {
   case CadKit::NO_INTERFACE:
+
+    // This really isn't an error. The targets and sources should routinely
+    // check for interfaces. This is just a notification that an interface was 
+    // requested and not found.
     return true;
+
   default:
+
     PRINT << type.c_str() << " " << id << ": " << message.c_str() << std::endl;
     return false;
   }
@@ -290,4 +409,17 @@ void CtTranslation::setOutputStream ( std::ostream *out )
 {
   SL_PRINT3 ( "In CtTranslation::setOutputStream(), this = %X, out = %X\n", this, out );
   _out = out;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the progress printing level.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setProgressPrintLevel ( const unsigned int &level )
+{
+  SL_PRINT3 ( "In CtTranslation::_setProgressPrintLevel(), this = %X, level = %d\n", this, level );
+  _progressPrintLevel = level;
 }

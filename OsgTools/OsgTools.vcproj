@@ -54,7 +54,7 @@
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/OsgToolsd.pdb"
-				ImportLibrary="$(OSG_TOOLS_LIB_DIR)/OsgToolsd.lib"/>
+				ImportLibrary="../bin/OsgToolsd.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -122,7 +122,7 @@
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(USUL_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
-				ImportLibrary="$(OSG_TOOLS_LIB_DIR)/OsgTools.lib"/>
+				ImportLibrary="../bin/OsgTools.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

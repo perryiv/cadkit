@@ -155,6 +155,15 @@
 			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\Functors.cpp">
+			</File>
+			<File
+				RelativePath=".\Functors.h">
+			</File>
+			<File
+				RelativePath=".\PrintVisitor.h">
+			</File>
+			<File
 				RelativePath=".\ReaderWriterSTL.cpp">
 			</File>
 			<File

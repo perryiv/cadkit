@@ -13,6 +13,9 @@
 
 #include "osg/Matrixd"
 
+using namespace osgPlugins;
+using namespace osgPlugins::pdb;
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

@@ -31,7 +31,8 @@
 #include <float.h>
 #endif
 
-
+using namespace osgPlugins;
+using namespace osgPlugins::pdb;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +40,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags ) : 
+Molecule::Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags, unsigned int numAtoms ) : 
   _atoms             (),
   _bonds             (),
   _maxDistanceFactor ( 100 ),
@@ -59,6 +60,7 @@ Molecule::Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags )
   _maxNumSegsLong    ( 50 ),
   _flags             ( flags )
 {
+  _atoms.reserve( numAtoms );
 }
 
 
@@ -81,7 +83,7 @@ Molecule::~Molecule()
 
 void Molecule::addAtom(Atom::Ptr atom)
 {
-  _atoms.insert( Map::value_type (atom->getId(), atom) );
+  _atoms.push_back( atom );
 }
 
 
@@ -93,6 +95,7 @@ void Molecule::addAtom(Atom::Ptr atom)
 
 void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 {
+#if 0
   // Find the atoms with given ids.
   Map::const_iterator i1 = _atoms.find ( id1 );
   Map::const_iterator i2 = _atoms.find ( id2 );
@@ -100,6 +103,7 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
   // Check to see if the atom ids exist, if so add bond to the list.
   if(_atoms.end() != i1 && _atoms.end() != i2)
     _bonds.push_back( new Bond ( i1->second, i2->second, _bonds.size() + 1));
+#endif
 }
 
 
@@ -141,7 +145,7 @@ osg::Group *Molecule::_build() const
     for ( Atoms::const_iterator i = _atoms.begin(); i != _atoms.end(); ++i )
     {
       // Add the node for this atom.
-      root->addChild ( this->_makeAtom ( i->second ) );
+      root->addChild ( this->_makeAtom ( *i ) );
     }
   }
 

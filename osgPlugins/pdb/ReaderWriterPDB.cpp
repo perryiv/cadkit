@@ -55,7 +55,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterPDB::ReaderWriterPDB() :
-  _molecules(),
+  _molecules( new MoleculeList ),
   _materialFactory ( new MaterialFactory ),
   _currentMolecule(NULL),
   _shapeFactory ( new ShapeFactory ),
@@ -152,7 +152,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
 
 void ReaderWriterPDB::_init()
 {
-  _molecules.clear();
+  _molecules->clear();
   _materialFactory->clear();
   _currentMolecule = NULL;
 }
@@ -184,17 +184,21 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
     return ReadResult::ERROR_IN_READING_FILE;
 
   // Create ifstream for psf file.
-  std::string psfPath = _getPsfPath( file );
-  std::ifstream psf( psfPath.c_str());
+  //std::string psfPath = _getPsfPath( file );
+  //std::ifstream psf( psfPath.c_str());
+
+  //Get the file size
+  struct STAT filebuf;
+  int result ( _stat ( file.c_str(), &filebuf ) );
   
   // Parse all the file and build internal data.
-  this->_parse ( in /*, psf*/ );
+  this->_parse ( in, filebuf.st_size );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
 
   // Initialized again to free accumulated data.
-  this->_init();
+  //this->_init();
 
   // Return the scene
   return root.release();
@@ -211,9 +215,12 @@ osg::Group *ReaderWriterPDB::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
+  root->setUserData( _molecules.get() );
+
+  Molecules molecules ( _molecules->molecules() );
 
   //Loop through the molecules
-  for (Molecules::const_iterator i = _molecules.begin(); i != _molecules.end(); ++i)
+  for (Molecules::const_iterator i = molecules.begin(); i != molecules.end(); ++i)
   {
     const MoleculePtr &molecule = *i;
     osg::ref_ptr<osg::MatrixTransform> mt ((osg::MatrixTransform *) (molecule.get())->build() );
@@ -231,7 +238,7 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in /*, std::ifstream &psf*/ )
+void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize )
 {
   clock_t start, finish; // used by clock()
 	double total_second;
@@ -242,6 +249,8 @@ void ReaderWriterPDB::_parse ( std::ifstream &in /*, std::ifstream &psf*/ )
   const unsigned int size ( 512 );
   char buf[size];
   Molecule * molecule = NULL;
+
+  unsigned int estimatedNumAtoms ( filesize / 80 );
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
@@ -265,19 +274,19 @@ void ReaderWriterPDB::_parse ( std::ifstream &in /*, std::ifstream &psf*/ )
     if ( "END" == type )
       break;
     if ( "MODEL" == type ) 
-      molecule = this->_getCurrentMolecule();
+      molecule = this->_getCurrentMolecule( estimatedNumAtoms );
     else if ( "ENDMDL" == type )
       _currentMolecule = NULL;
 
     // See if it is an atom.
     else if ( "ATOM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
-      molecule = this->_getCurrentMolecule();
+      molecule = this->_getCurrentMolecule( estimatedNumAtoms );
       molecule->addAtom( new Atom( buf, type, _periodicTable ) );
     }
 	  else if ( "HETATM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
-      molecule = this->_getCurrentMolecule();
+      molecule = this->_getCurrentMolecule( estimatedNumAtoms );
       molecule->addAtom( new Atom( buf, type, _periodicTable ) );
 	  }
     /* Turn off CONECT for now
@@ -362,13 +371,13 @@ void ReaderWriterPDB::_parsePsf( std::ifstream &in )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule* ReaderWriterPDB::_getCurrentMolecule()
+ReaderWriterPDB::Molecule* ReaderWriterPDB::_getCurrentMolecule( unsigned int numAtoms )
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule ( _materialFactory.get(), _shapeFactory.get(), _flags );
+    _currentMolecule = new Molecule ( _materialFactory.get(), _shapeFactory.get(), _flags, numAtoms );
     osg::ref_ptr< Molecule > r ( _currentMolecule );
-    _molecules.push_back(r);
+    _molecules->push_back(r);
   }
   return _currentMolecule;
 }

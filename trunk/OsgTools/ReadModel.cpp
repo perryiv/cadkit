@@ -14,6 +14,13 @@
 
 #include <sstream>
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read model using osg.  Throws if fails to read.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Node* OsgTools::readModel ( const std::string& filename, const std::string& s )
 {
   typedef osgDB::ReaderWriter::Options Options;

@@ -36,7 +36,7 @@ public:
 
   static Manager* instance();
 
-  void load  ( unsigned long iid, std::list<std::string> &plugins );
+  void load  ( unsigned long iid, const std::list<std::string> &plugins );
   void clear ();
 
   //do we have any unknowns?

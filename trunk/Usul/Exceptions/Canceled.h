@@ -34,10 +34,10 @@ public:
   typedef std::exception BaseClass;
 
   // Constructors.
-  Canceled() : BaseClass ( CANCELED_MESSAGE_STRING )
+  Canceled() : BaseClass (  ), _message ( CANCELED_MESSAGE_STRING )
   {
   }
-  Canceled ( const std::string &message ) : BaseClass ( message.empty() ? CANCELED_MESSAGE_STRING : message.c_str() )
+  Canceled ( const std::string &message ) : BaseClass (), _message ( message.empty() ? CANCELED_MESSAGE_STRING : message.c_str() )
   {
   }
   Canceled ( const Canceled &e ) : BaseClass ( e )
@@ -45,7 +45,7 @@ public:
   }
 
   // Destructor.
-  ~Canceled()
+  ~Canceled() throw()
   {
   }
 
@@ -55,6 +55,10 @@ public:
     BaseClass::operator = ( e );
     return *this;
   }
+
+  virtual const char* what() const throw() { return _message.c_str(); }
+private:
+  std::string _message;
 };
 
 

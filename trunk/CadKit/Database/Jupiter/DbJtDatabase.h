@@ -251,7 +251,6 @@ protected:
   typedef std::list<eaiAssembly *> Assemblies;
   typedef DbBaseShapeData<SlVec3f,SlVec3f,SlVec3f,SlVec2f,ShapeHandle> ShapeData;
 
-  unsigned int _customerId;
   bool _initialized;
   AssemblyLoadOption _assemblyLoadOption;
   BrepLoadOption _brepLoadOption;
@@ -268,12 +267,9 @@ protected:
   bool                    _endPart     ( eaiPart *part );
 
   eaiAssembly *           _getCurrentAssembly() const;
-  const unsigned int &    _getCustomerId();
   eaiShape *              _getShape ( ShapeHandle shape ) const;
   eaiShape *              _getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const;
   eaiAssembly *           _getTopAssembly() const;
-
-  bool                    _init();
 
   static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level );
   static int              _postActionTraversalCallback ( eaiHierarchy *hierarchy, int level );

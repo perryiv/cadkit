@@ -18,6 +18,7 @@
 #include "DbJtInline.h"
 #include "DbJtFunctions.h"
 #include "DbJtTraversalState.h"
+#include "DbJtVisApi.h"
 
 #include "Interfaces/IMessageNotify.h" // VC++ internal compiler error if
 #include "Interfaces/IEntityNotify.h"  // if these are after SlInline.h
@@ -74,7 +75,6 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
-  _customerId ( customerId ),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _brepLoadOption ( TESS_ONLY ),
@@ -89,13 +89,8 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   SL_ASSERT ( NULL != _current.get() );
   SL_ASSERT ( NULL != _shapeData.get() );
 
-#if ( DMDTK_MAJOR_VERSION >= 5 )
-
-  // Initialize DMDTk. This used to be in _init() but since it doesn't 
-  // return anything I moved it here.
-  eaiEntityFactory::init();
-
-#endif
+  // Set the VisApi's customer id.
+  DbJtVisApi::setCustomerId ( customerId );
 }
 
 
@@ -115,14 +110,6 @@ DbJtDatabase::~DbJtDatabase()
   SL_ASSERT ( NULL == _current->getPart() );
   SL_ASSERT ( NULL == _current->getInstance() );
   SL_ASSERT ( true == _assemblies->empty() );
-
-#if ( DMDTK_MAJOR_VERSION >= 5 )
-
-  // Uninitialize DMDTk. Since it doesn't return anything and, according to 
-  // eaiEntityFactory.h, has to be called, I put it here.
-  eaiEntityFactory::fini();
-
-#endif
 }
 
 
@@ -170,42 +157,6 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtDatabase::_init()
-{
-  SL_PRINT2 ( "In DbJtDatabase::_init(), this = %X\n", this );
-
-  // Just return if we are already initialized.
-  if ( true == _initialized )
-    return true;
-
-  // Get the customer number.
-  const unsigned int &customer = this->_getCustomerId();
-
-  if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", customer ) ) )
-    return false;
-
-  // Register the customer.
-  if ( eai_ERROR == eaiEntityFactory::registerCustomer ( customer ) )
-  {
-    ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", customer ), 0 );
-    return false;
-  }
-
-  if ( false == PROGRESS ( "Done registering DirectModel Data Toolkit customer." ) )
-    return false;
-
-  // We are now initialized.
-  _initialized = true;
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -215,11 +166,24 @@ bool DbJtDatabase::loadData ( const std::string &filename )
   SL_PRINT3 ( "In DbJtDatabase::loadData(), this = %X, name = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
+  // Declare an instance of the VisApi. This will initialize and 
+  // uninitialize the DMDTk.
+  DbJtVisApi visApi;
+
   // Try to traverse.
   try
   {
-    // See if we need to initialize.
-    if ( false == this->_init() )
+    if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", DbJtVisApi::getCustomerId() ) ) )
+      return false;
+
+    // Initialize (register customer).
+    if ( false == visApi.init() )
+    {
+      ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", DbJtVisApi::getCustomerId() ), 0 );
+      return false;
+    }
+
+    if ( false == PROGRESS ( "Done registering DirectModel Data Toolkit customer." ) )
       return false;
 
     // Traverse the database.
@@ -893,30 +857,6 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
 
   // If we get to here then it worked.
   return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the customer number.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const unsigned int &DbJtDatabase::_getCustomerId()
-{
-  SL_PRINT2 ( "In DbJtDatabase::_getCustomerId(), this = %X\n", this );
-
-  // Was it set by the client?
-  if ( 0 != _customerId )
-    return _customerId;
-
-  // Try to get it from the environment.
-  const char *temp = ::getenv ( "DMDTK_CUSTOMER_ID" );
-  if ( temp ) 
-    _customerId = ::atoi ( temp );
-
-  // Return what we have.
-  return _customerId;
 }
 
 

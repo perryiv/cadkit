@@ -23,19 +23,30 @@ namespace Usul
 
       LinearPlayer ( Callback cb ) : BaseClass( cb ) { }
 
-      virtual void operator() ( Sequence &frames )
+      template < class Itr > _play ( Itr first, Itr second, Itr end)
+      {
+
+        while ( second != end )
+        {
+          _callback ( *first, *second );
+          ++first;
+          ++second;
+        }
+      }
+
+      virtual void forward ( Sequence &frames )
       {
         if (frames.size() < 2 )
           return;
-        Sequence::const_iterator frameA = frames.begin();
-        Sequence::const_iterator frameB = frames.begin();
-        ++frameB;
-        while ( frameB != frames.end() )
-        {
-          _callback ( *frameA, *frameB );
-          ++frameA;
-          ++frameB;
-        }
+        _play ( frames.begin(), ++(frames.begin()), frames.end() );
+      }
+
+      virtual void reverse ( Sequence &frames )
+      {
+        if (frames.size() < 2 )
+          return;
+        
+        _play ( frames.rbegin(), ++(frames.rbegin()), frames.rend() );
       }
 
     }; // Linear Player

@@ -26,7 +26,13 @@ namespace Usul
 
       void append ( Frame &frame ) { _frames.push_back ( frame ); }
 
-      void play () { (*_player) ( _frames ); }
+      void playForward () { _player->forward ( _frames ); }
+
+      void playReverse () { _player->reverse ( _frames ); }
+
+      void clear () { _frames.clear(); }
+
+      unsigned int size() { return _frames.size(); }
 
     private:
       Sequence _frames;

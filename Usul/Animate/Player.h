@@ -21,7 +21,8 @@ namespace Usul
 
       Player ( Callback cb ) : _callback (cb) {}
 
-      virtual void operator() ( Sequence &frames ) = 0;
+      virtual void forward ( Sequence &frames ) = 0;
+      virtual void reverse ( Sequence &frames ) = 0;
 
     protected:
       Callback _callback;

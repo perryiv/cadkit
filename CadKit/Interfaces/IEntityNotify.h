@@ -29,7 +29,7 @@ public:
   // Id for this interface.
   enum { IID = id };
 
-  // End the entity. When this function returns, the handle may no longer valid.
+  // End the entity. When this function returns, the handle may no be longer valid.
   virtual bool            endEntity ( EntityHandle entity, IUnknown *caller ) = 0;
 
   // Start the entity. This handle is valid until endEntity() is called.

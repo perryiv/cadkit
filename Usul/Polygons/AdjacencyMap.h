@@ -45,11 +45,15 @@ namespace Compare
     VertexTolerance( const TolType& t ) : _tol ( t ) { }
     bool operator () ( const Vertex& v1, const Vertex& v2 ) const
     {
-      if ( v1 < v2 )
+#if 1
+      //if ( v1 < v2 )
         return ( v1 + _tol ) < v2;
-      if( v2 < v1 )
-        return ( v2 + _tol ) < v1;
-      return false;
+      //if( v2 < v1 )
+      //  return ( v2 + _tol ) < v1;
+      //return false;
+#else
+      return ( v1 < v2 );
+#endif
     }
   private:
     VertexTolerance();
@@ -80,19 +84,16 @@ public:
   typedef typename VertexSequence::const_iterator VertexIterator;
   typedef SharedVertex< Polygon > SharedVertex;
   typedef std::vector< Polygon > Polygons;
-  typedef std::map< Vertex, SharedVertex*, Compare > Map;
-  typedef std::vector< SharedVertex > SharedVertices;
+  typedef std::map< Vertex, SharedVertex, Compare > Map;
 
   AdjacencyMap() :
   _sharedVertsMap(),
-  _sharedVerts(),
   _polygons()
   {
   }
 
   AdjacencyMap( const Compare& c ) :
   _sharedVertsMap( c ),
-  _sharedVerts(),
   _polygons()
   { 
   }
@@ -132,7 +133,6 @@ public:
 
     //Reserve enough room
     _polygons.reserve( _polygons.size() + numPolygons );
-    _sharedVerts.reserve ( _sharedVerts.size() + numPolygons );
 
     //Loop through all the vertices
     for( VertexIterator i = vertices.begin(); i != vertices.end(); i += numVertsPerPoly )
@@ -157,21 +157,18 @@ public:
         //Do we have a shared vertex already?
         if( iter == _sharedVertsMap.end() )
         {
-          //Create a shared vertex
-          _sharedVerts.push_back( SharedVertex() );
-
-          //Add the shared vertex to te map
-          _sharedVertsMap.insert( Map::value_type( key, &_sharedVerts.back() ) );
+          //Add a shared vertex to te map
+          _sharedVertsMap.insert( Map::value_type( key, SharedVertex() ) );
 
           //Reset the iterator
           iter = _sharedVertsMap.find( key );
         }
 
         //add the shared vertex to the polygon
-        p.append ( iter->second );
+        p.append ( &iter->second );
 
         //add the polygon to the shared vertex
-        iter->second->append( &p );
+        iter->second.append( &p );
       }
 
       //Set the polygon's index and go to the next polygon
@@ -203,7 +200,7 @@ public:
     TodoStack todoStack;
 
     //Reserve enough room
-    todoStack.reserve( _polygons.size() + _sharedVerts.size() );
+    todoStack.reserve( _polygons.size() + _sharedVertsMap.size() );
 
     //put the functor for the selected polygon on the stack
     _polygons.at( selectedPolygon ).visited ( true );
@@ -242,18 +239,22 @@ public:
     {
       PolygonList neighbors ( iter->getNeighbors() );
 
-      PolygonList adjacent;
+      PolygonList adjacentPolygons;
 
       //Loop through all this polygon's neighbors
       for( PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
       {
-        //If these two polygons are adjacent...
-        //if( adjacent ( &*iter, *i ) )
-        //  adjacent.push_back( *i );
+        //Self check...
+        if( iter->index() != (*i)->index() )
+        {
+          //If these two polygons are adjacent...
+          if( adjacent ( &*iter, *i ) )
+            adjacentPolygons.push_back( *i );
+        }
       }
 
       //If we don't have the right number of adjacent polygons...
-      if( adjacent.size() < vertsPerPoly )
+      if( adjacentPolygons.size() < vertsPerPoly )
       {
         uncapped.push_back( iter->index() );
       }
@@ -263,7 +264,6 @@ public:
 
 private:
   Map            _sharedVertsMap;
-  SharedVertices _sharedVerts;
   Polygons       _polygons;
 
 }; //class AdjacencyMap

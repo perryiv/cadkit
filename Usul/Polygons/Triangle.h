@@ -10,7 +10,12 @@
 #ifndef __USUL_POLYGONS_TRIANGLES_H__
 #define __USUL_POLYGONS_TRIANGLES_H__
 
+#include "Usul/Polygons/Polygons.h"
 
+#if 0
+#include <sstream>
+#include <windows.h>
+#endif
 
 namespace Usul {
 namespace Polygons {
@@ -72,11 +77,25 @@ public:
   //Get all the neighbors of this triangle
   std::list< Triangle* > getNeighbors() const
   {
-    std::list< Triangle* > triangles;
+    typedef std::list< Triangle* > Triangles;
+    Triangles triangles;
 
     triangles.splice( triangles.begin(), _v1->getPolygons() );
     triangles.splice( triangles.end(),   _v2->getPolygons() );
     triangles.splice( triangles.end(),   _v3->getPolygons() );
+
+    triangles.sort ( PolyLess< Triangle >() );
+
+    triangles.unique ( PolyEqual < Triangle >() );
+
+#if 0
+    std::ostringstream os;
+    os << std::endl;
+    for( Triangles::const_iterator i = triangles.begin(); i != triangles.end(); ++i )
+      os << (*i)->index() << " ";
+    os << std::endl;
+    ::OutputDebugString( os.str().c_str() );
+#endif
 
     return triangles;
   }

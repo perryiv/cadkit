@@ -26,8 +26,11 @@ class IInstanceQuery : public IEntityQuery<id,InstanceHandle,AssemblyHandle,Real
 {
 public:
 
-  // Get the corresponding part or assembly that this instance represents.
-  virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const = 0;
+  // Get the assembly that the given instance represents, or null.
+  virtual AssemblyHandle  getCorrespondingAssembly ( InstanceHandle instance ) const = 0;
+
+  // Get the part that the given instance represents, or null.
+  virtual PartHandle      getCorrespondingPart ( InstanceHandle instance ) const = 0;
 };
 
 

@@ -220,25 +220,28 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     else if ( arg == "-pe" || arg == "--print-errors" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
     }
 
     else if ( arg == "-pw" || arg == "--print-warnings" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
     }
 
     else if ( arg == "-pi" || arg == "--print-info" )
     {
       this->setOutputStream ( &(std::cout) );
-      CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
     }
 
     else if ( arg == "-v" || arg == "--verbose" )
     {
       this->setOutputStream ( &(std::cout) );
       this->_setProgressPrintLevel ( 1 );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
     }
 
     // Otherwise just save the argument.

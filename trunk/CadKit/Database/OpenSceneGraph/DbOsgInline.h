@@ -22,24 +22,30 @@
 #include "Interfaces/IEntityQuery.h"
 
 #include "osg/MatrixTransform" // Do not pre-compile. 
+#include "osg/CopyOp"
 
 
 namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create the group.
+//  Create the group. VC++ has an internal compiler error if the GroupType
+//  is not a template argument, but just an osg::Group.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class HandleType, class InterfaceType> 
-inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *query )
+template <class HandleType, class InterfaceType, class GroupType> 
+inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *query, GroupType *cloneMe )
 {
   SL_ASSERT ( entity );
   SL_ASSERT ( query );
 
-  // Create a group.
-  SlRefPtr<osg::MatrixTransform> group = new osg::MatrixTransform;
+  // Create a group. Make a clone If we are supposed to.
+  SlRefPtr<osg::MatrixTransform> group;
+  if ( cloneMe )
+    group = dynamic_cast<osg::MatrixTransform *> ( cloneMe->clone ( osg::CopyOp::SHALLOW_COPY ) );
+  else
+    group = new osg::MatrixTransform;
   if ( group.isNull() )
     return NULL;
 

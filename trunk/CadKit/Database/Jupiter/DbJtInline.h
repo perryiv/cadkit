@@ -135,31 +135,42 @@ inline int makeSetIndex   ( SetHandle set )     { SL_ASSERT ( ((int) set)   > 0 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Check the type.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class HandleType> inline bool isOfType ( HandleType ptr, const eaiEntity::TypeID &typeId )
-{
-  return ( ptr && typeId == ((eaiEntity *) ptr)->typeID() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the handle is a hierarchy. We have to jump through these hoops
+//  See if the entity is the correct type. We have to jump through these hoops
 //  because of the way EAI decided to do runtime type checking.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class HandleType> inline bool isHierarchy ( HandleType ptr )
+inline bool isAssembly ( eaiEntity *entity ) { return ( entity && ( eaiEntity::eaiASSEMBLY == entity->typeID() ) ); }
+inline bool isPart     ( eaiEntity *entity ) { return ( entity && ( eaiEntity::eaiPART     == entity->typeID() ) ); }
+inline bool isInstance ( eaiEntity *entity ) { return ( entity && ( eaiEntity::eaiINSTANCE == entity->typeID() ) ); }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the handle is a hierarchy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline bool isHierarchy ( eaiEntity *entity )
 {
   return ( 
-    CadKit::isOfType ( ptr, eaiEntity::eaiASSEMBLY ) ||
-    CadKit::isOfType ( ptr, eaiEntity::eaiPART ) ||
-    CadKit::isOfType ( ptr, eaiEntity::eaiINSTANCE ) 
+    CadKit::isAssembly ( entity ) ||
+    CadKit::isPart     ( entity ) ||
+    CadKit::isInstance ( entity )
     );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check the handle. These are not a single template function because I don't 
+//  want to accidentally pass a LodHandle or ShapeHandle to it.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline bool isValidHandle ( AssemblyHandle ptr )  { return CadKit::isAssembly  ( (eaiEntity *) ptr ); }
+inline bool isValidHandle ( PartHandle ptr )      { return CadKit::isPart      ( (eaiEntity *) ptr ); }
+inline bool isValidHandle ( InstanceHandle ptr )  { return CadKit::isInstance  ( (eaiEntity *) ptr ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,7 +185,7 @@ template <class HandleType> inline std::string getName ( HandleType ptr )
   std::string name;
 
   // If we have a hierarchy then get its name.
-  if ( true == CadKit::isHierarchy ( ptr ) )
+  if ( true == CadKit::isHierarchy ( (eaiEntity *) ptr ) )
     name = ((eaiHierarchy *) ptr)->name();
 
   // Return the name (which may still be blank).

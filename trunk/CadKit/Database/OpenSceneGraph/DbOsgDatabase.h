@@ -21,6 +21,7 @@
 #include "Database/Base/DbBaseTarget.h"
 
 #include "Interfaces/IEntityNotify.h"
+#include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlStack.h"
 
@@ -32,6 +33,7 @@
 namespace osg 
 {
   class Group;
+  class LOD;
   class Geometry;
   class StateSet;
 };
@@ -147,10 +149,7 @@ public:
 protected:
 
   typedef SlStack<osg::Group *> GroupStack;
-  typedef std::map<const void *, osg::Group *> GroupMap;
-
   std::auto_ptr<GroupStack> _groupStack;
-  std::auto_ptr<GroupMap> _groupMap;
 
   virtual ~DbOsgDatabase();
 
@@ -163,7 +162,7 @@ protected:
 
   void                    _clearGroupStack();
 
-  osg::Group *            _findGroup ( const void *key ) const;
+  osg::Group *            _findGroup ( InstanceHandle instance, IInstanceQueryFloat *query ) const;
 
   osg::Group *            _getRoot() const;
 
@@ -171,6 +170,8 @@ protected:
 
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();
+
+  void                    _setLodParameters ( osg::LOD *lod ) const;
 
   SL_DECLARE_REFERENCE_POINTER ( DbOsgDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbOsgDatabase, 1032736074 );

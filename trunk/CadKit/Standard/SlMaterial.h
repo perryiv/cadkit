@@ -42,6 +42,8 @@ public:
   SlMaterial ( const SlVec4<T> &ambient, const SlVec4<T> &diffuse, const SlVec4<T> &emissive, const SlVec4<T> &specular, const T &shininess );
   SlMaterial ( const SlMaterial<T> &material );
 
+  void                    clamp ( const T &minColor, const T &maxColor, const T &minShininess, const T &maxShininess );
+
   const SlVec4<T> &       getAmbient()   const { return _ambient; }
   const SlVec4<T> &       getDiffuse()   const { return _diffuse; }
   const SlVec4<T> &       getSpecular()  const { return _specular; }
@@ -156,6 +158,24 @@ template<class T> inline SlMaterial<T>::SlMaterial ( const SlMaterial &m ) :
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Clamp the values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlMaterial<T>::clamp ( const T &minColor, const T &maxColor, const T &minShininess, const T &maxShininess )
+{
+  // Ignore the _valid flag and clamp all values. Doesn't matter if we 
+  // clamp invalid values, the _valid flag will still say it is invalid.
+  _ambient.clamp  ( minColor, maxColor );
+  _diffuse.clamp  ( minColor, maxColor );
+  _specular.clamp ( minColor, maxColor );
+  _emissive.clamp ( minColor, maxColor );
+  CadKit::clamp ( minShininess, maxShininess, _shininess );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the value.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,7 +201,7 @@ template<class T> inline void SlMaterial<T>::setValue (
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
+//  Set the value.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

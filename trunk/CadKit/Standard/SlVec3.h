@@ -43,6 +43,8 @@ public:
 
   void                    bisect ( const SlVec3 &pt0, const SlVec3 &pt1 );
 
+  void                    clamp ( const T &minValue, const T &maxValue );
+
   T                       dot ( const SlVec3 &vec ) const;
 
   SlVec3                  cross ( const SlVec3 &vec ) const;
@@ -566,6 +568,20 @@ template<class T> inline void SlVec3<T>::bisect ( const SlVec3<T> &pt0, const Sl
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec3<T> vec ( pt0 + pt1 );
   this->setValue ( vec / SL_VEC3_TWO );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clamp the vector's elements to the given range.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlVec3<T>::clamp ( const T &minValue, const T &maxValue )
+{
+  CadKit::clamp ( minValue, maxValue, _v[0] );
+  CadKit::clamp ( minValue, maxValue, _v[1] );
+  CadKit::clamp ( minValue, maxValue, _v[2] );
 }
 
 

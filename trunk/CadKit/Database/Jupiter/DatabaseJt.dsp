@@ -180,219 +180,219 @@ SOURCE=.\DbJtDll.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiAttrib.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiAttrib.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiBoxSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiBoxSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiBrep.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiBrep.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiBundle.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiBundle.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiCADExporter.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCADExporter.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiCADImporter.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCADImporter.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiClientData.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiClientData.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiCoedge.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCoedge.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiCurve.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCurve.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiCylinderSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiCylinderSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEdge.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEdge.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEntity.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEntity.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEntityFactory.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEntityFactory.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEntityList.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEntityList.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEntityStack.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEntityStack.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiEntityTable.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiEntityTable.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiFace.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiFace.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiGeometry.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiGeometry.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiHarness.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiHarness.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiHierarchy.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiHierarchy.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiLineStripSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiLineStripSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiLoop.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiLoop.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiMotionExporter.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiMotionExporter.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiNURBSCurve.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiNURBSCurve.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiNURBSSurface.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiNURBSSurface.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiParser.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiParser.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPartShepherd.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPartShepherd.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPartTable.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPartTable.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPMIStructs.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPMIStructs.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPoint.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPoint.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPointSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPointSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPolygonSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPolygonSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPrim.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPrim.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiProperty.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiProperty.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPropertyFilter.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPropertyFilter.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiPyramidSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiPyramidSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiRegion.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiRegion.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiSegment.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiSegment.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiShape.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiShape.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiShell.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiShell.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiSphereSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiSphereSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiStack.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiStack.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiStandard.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiStandard.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiSurface.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiSurface.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiTopology.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiTopology.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiTraverser.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiTraverser.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiTriPrismSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiTriPrismSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiTriStripSet.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiTriStripSet.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiUVCurve.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiUVCurve.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiVertex.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiVertex.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiWire.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiWire.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiWrep.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiWrep.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiWrepWire.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiWrepWire.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\programs\EDS\DMDTk\dev\include\DMDataTk\eaiXYZCurve.h
+SOURCE="$(DMDTK_DEV_PATH)\include\DMDataTk\eaiXYZCurve.h"
 # End Source File
 # End Group
 # Begin Group "Notes"

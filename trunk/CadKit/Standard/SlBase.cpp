@@ -31,7 +31,7 @@ using namespace CadKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlType SlBase::typeSlBase = { "SlBase", NULL, NULL };
+const SlType SlBase::typeSlBase = { "SlBase", 0x0, 0x0 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ const char *SlBase::getClassName() const
 
 const SlType *SlBase::getBaseClassType()
 {
-  return NULL;
+  return 0x0;
 }
 
 
@@ -168,7 +168,7 @@ bool SlType::isDerivedFrom ( const SlType *baseClass ) const
 
   const SlType *classType = this;
 
-  while ( NULL != classType )
+  while ( 0x0 != classType )
   {
     if ( classType == baseClass ) return true;
     classType = classType->_baseClass;
@@ -191,5 +191,5 @@ SlBase *SlType::createObject() const
 
   // Note: Do not assert here. The client can use this function to determine 
   // of the class is abstract or concrete.
-  return ( _createFunction ) ? (*_createFunction)() : NULL;
+  return ( _createFunction ) ? (*_createFunction)() : 0x0;
 }

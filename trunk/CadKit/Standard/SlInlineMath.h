@@ -30,6 +30,21 @@ namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Clamp the value to the range.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void clamp ( const T &minValue, const T &maxValue, T &value )
+{
+  if ( value < minValue )
+    value = minValue;
+  else if ( value > maxValue )
+    value = maxValue;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Swap the values of a and b.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -378,6 +393,7 @@ template<class VectorType, class DimensionType> inline void scaleVector (
 #define SL_POW4   CadKit::power4
 #define SL_POW5   CadKit::power5
 #define SL_EQUAL  CadKit::isEqual
+#define SL_CLAMP  CadKit::clamp
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_MATH_FUNCTIONS_H_

@@ -43,6 +43,8 @@ public:
 
   void                    bisect ( const SlVec2 &pt0, const SlVec2 &pt1 );
 
+  void                    clamp ( const T &minValue, const T &maxValue );
+
   T                       dot ( const SlVec2 &vec ) const;
 
   Real                    getAngle ( const SlVec2 &vec ) const;
@@ -555,6 +557,19 @@ template<class T> inline void SlVec2<T>::bisect ( const SlVec2<T> &pt0, const Sl
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec2<T> vec ( pt0 + pt1 );
   this->setValue ( vec / SL_VEC2_TWO );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clamp the vector's elements to the given range.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlVec2<T>::clamp ( const T &minValue, const T &maxValue )
+{
+  CadKit::clamp ( minValue, maxValue, _v[0] );
+  CadKit::clamp ( minValue, maxValue, _v[1] );
 }
 
 

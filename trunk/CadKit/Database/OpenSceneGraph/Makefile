@@ -21,7 +21,12 @@ LOCAL_LIBS = \
 	-losg 
 
 # Any flags for the compiler. 
-LOCAL_CPP_FLAGS = -woff 3303
+# Note: not sure how to do an "else if".
+ifeq ($(OS), IRIX)
+	LOCAL_CPP_FLAGS = -woff 3303
+else
+	LOCAL_CPP_FLAGS =
+endif
 
 # The name of the thing we are making.
 TARGET = CkDbOsg

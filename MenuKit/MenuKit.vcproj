@@ -183,6 +183,9 @@
 				Name="Misc"
 				Filter="">
 				<File
+					RelativePath=".\Accumulate.h">
+				</File>
+				<File
 					RelativePath=".\Algorithms.h">
 				</File>
 				<File
@@ -193,6 +196,9 @@
 				</File>
 				<File
 					RelativePath=".\Bits.h">
+				</File>
+				<File
+					RelativePath=".\Box.h">
 				</File>
 				<File
 					RelativePath=".\Callback.cpp">
@@ -220,6 +226,12 @@
 				</File>
 				<File
 					RelativePath=".\Referenced.h">
+				</File>
+				<File
+					RelativePath=".\Stack.h">
+				</File>
+				<File
+					RelativePath=".\WidestItemFinder.h">
 				</File>
 			</Filter>
 		</Filter>

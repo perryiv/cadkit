@@ -223,6 +223,12 @@
 					RelativePath="Components\Exceptions.h">
 				</File>
 				<File
+					RelativePath=".\Components\Manager.cpp">
+				</File>
+				<File
+					RelativePath=".\Components\Manager.h">
+				</File>
+				<File
 					RelativePath="Components\Object.cpp">
 				</File>
 				<File
@@ -463,6 +469,9 @@
 					Filter="">
 					<File
 						RelativePath="Interfaces\IClassFactory.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPlugin.h">
 					</File>
 					<File
 						RelativePath="Interfaces\IUnknown.h">

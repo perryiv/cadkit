@@ -67,9 +67,14 @@ CMainFrame::CMainFrame()
 
     // Now the cube.
     SgCube::Ptr cube = new SgCube;
-	  cube->size = 10.0f;
-	  cube->center.setValue ( 3.0f, 0.0f, -10.0f );
+	  cube->setSize ( 10.0f );
+	  cube->setCenter ( SlVec3f ( 3.0f, 0.0f, -10.0f ) );
 	  branch->addChild ( cube );
+
+    // A sphere.
+//    SgSphere::Ptr sphere = new SgSphere;
+//    sphere->setNumSubdivisions ( 4 );
+//    branch->addChild ( sphere );
 
     // A rotation about an axis.
     SlVec3f axis ( 1.0f, 1.0f, 1.0f );
@@ -78,7 +83,8 @@ CMainFrame::CMainFrame()
 
     // Make a translation.
     SgTranslation::Ptr trans = new SgTranslation;
-    trans->setTranslation ( SlVec3f ( cube->size * 2, 0.0f, 0.0f ) );
+//    trans->setTranslation ( SlVec3f ( sphere->getRadius() * 2, 0.0f, 0.0f ) );
+    trans->setTranslation ( SlVec3f ( cube->getSize() * 2, 0.0f, 0.0f ) );
     branch->addChild ( trans );
 
     // Add the i'th branch to the root.

@@ -154,14 +154,6 @@ SOURCE=.\SgGlState.cpp
 
 SOURCE=.\SgGlState.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\SgGlWinContext.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SgGlWinContext.h
-# End Source File
 # End Group
 # Begin Group "Dll"
 

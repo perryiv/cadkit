@@ -132,6 +132,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DemoFoxCube"=.\Demos\Cube\FOX\DemoFoxCube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GuiFox
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DemoJt2Osg"=.\Demos\Jupiter2Osg\DemoJtOsg.dsp - Package Owner=<4>
 
 Package=<5>
@@ -251,6 +266,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name Standard
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphWin32
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -351,6 +369,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "GuiFox"=.\GUI\FOX\GuiFox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Interfaces"=.\Interfaces\Interfaces.dsp - Package Owner=<4>
 
 Package=<5>
@@ -390,6 +420,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "SceneGraphFox"=.\SceneGraph\FOX\SceneGraphFox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "SceneGraphMfc"=.\SceneGraph\Mfc\SceneGraphMfc.dsp - Package Owner=<4>
 
 Package=<5>
@@ -418,6 +460,24 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphWin32"=.\SceneGraph\Win32\SceneGraphWin32.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name Standard

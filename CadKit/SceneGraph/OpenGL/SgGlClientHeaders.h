@@ -29,10 +29,4 @@
 #include "SgGlConstants.h"
 #include "SgGlContext.h"
 
-#ifdef _WIN32
-# include "SgGlWinContext.h"
-#else
-  TODO
-#endif
-
 #endif // _CADKIT_SCENEGRAPH_OPENGL_HEADERS_H_

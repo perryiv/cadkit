@@ -187,8 +187,8 @@ bool SgGetBoundingBox::visit ( SgCube &cube )
   // Calculate the local bounding box.
   // Note: g++ does not like the bbox constructor arguments to be vector 
   // constructor calls, which is why it is broken into these steps.
-  const SlVec3f &c = cube.center;
-  SlFloat32 hs = cube.size * 0.5f;
+  const SlVec3f &c = cube.getCenter();
+  SlFloat32 hs = cube.getSize() * 0.5f;
   SlVec3f bbmin ( c[0] - hs, c[1] - hs, c[2] - hs );
   SlVec3f bbmax ( c[0] + hs, c[1] + hs, c[2] + hs );
   SlBoundingBoxf bbox ( bbmin, bbmax );

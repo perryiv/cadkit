@@ -23,6 +23,7 @@
 # include "Standard/SlRefPtr.h"
 # include "Standard/SlBitmask.h"
 # include <string>
+# include <time.h>
 #endif
 
 
@@ -50,6 +51,9 @@ public:
   const void *              getClientData() const { return _clientData; }
   void                      setClientData ( const void *clientData ) { _clientData = clientData; }
 
+  // Get the time (in clock tics) to render this node.
+  const clock_t &           getRenderTime() const { return _renderTime; }
+
   // The client can set a name for the node.
   const char *              getName() const { return _name; }
   void                      setName ( const char *name );
@@ -70,10 +74,13 @@ protected:
   mutable const void *_reservedData;
   const void *_clientData;
   char *_name;
+  clock_t _renderTime;
 
   SgNode();
   SgNode ( const SgNode &node );
   virtual ~SgNode();
+
+  void                      _setRenderTime ( const clock_t &clockTics ) { _renderTime = clockTics; }
 
   SL_DECLARE_BITMASK_FUNCTIONS ( NodeFlags, unsigned int, _flags );
   SG_DECLARE_NODE ( SgNode, 1033952892 );

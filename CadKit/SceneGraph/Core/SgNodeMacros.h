@@ -61,9 +61,11 @@
 #define _SG_IMPLEMENT_ACCEPT_FUNCTION(class_name) \
   bool class_name::accept ( SgVisitor &visitor ) \
   { \
+    const clock_t startTime ( ::clock() ); \
     visitor.pushNode ( this ); \
     bool result = visitor.visit ( *this ); \
     visitor.popNode(); \
+    this->_setRenderTime ( ::clock() - startTime ); \
     return result; \
   }
 

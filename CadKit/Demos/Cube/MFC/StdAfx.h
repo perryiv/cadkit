@@ -23,6 +23,7 @@
 
 # pragma warning(disable:4786) // Truncated debug names.
 #include "SceneGraph/OpenGL/SgglClientHeaders.h"
+#include "SceneGraph/Win32/SgGlWinContext.h"
 #include "SceneGraph/MFC/SgMfcClientHeaders.h"
 
 using namespace CadKit;

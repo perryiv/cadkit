@@ -27,17 +27,25 @@ class SG_API SgCube : public SgPrimitive
 {
 public:
 
-  SlVec3f center;
-  SlFloat32 size;
-
   SgCube();
   SgCube ( const SlVec3f &center, const SlFloat32 &size );
+  SgCube ( const SgCube &cube );
+
+  const SlVec3f &             getCenter() const { return _center; }
+  void                        getCenter ( SlVec3f &center ) const { center = _center; }
+  const SlFloat32 &           getSize() const { return _size; }
+
+  void                        setCenter ( const SlVec3f &center ) { _center = center; }
+  void                        setSize ( const SlFloat32 &size ) { _size = size; }
 
 protected:
 
+  SlVec3f _center;
+  SlFloat32 _size;
+
   virtual ~SgCube();
 
-  SG_DECLARE_DYNAMIC_NODE(SgCube,0x0000100D);
+  SG_DECLARE_DYNAMIC_NODE ( SgCube, 1047081875 );
 };
 };
 

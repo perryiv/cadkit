@@ -63,7 +63,7 @@ protected:
   SlUint32 _member0; // These mean different things
   SlUint32 _member1; // depending on the tessellation.
 
-  SG_DECLARE_DYNAMIC_NODE(SgSphere,0x0000102D);
+  SG_DECLARE_DYNAMIC_NODE ( SgSphere, 1047081875 );
 };
 };
 

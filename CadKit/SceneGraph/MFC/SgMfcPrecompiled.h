@@ -62,7 +62,7 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "SceneGraph/OpenGL/SgglClientHeaders.h"
+# include "SceneGraph/OpenGL/SgGlClientHeaders.h"
 #endif
 
 // Redefine assert to be MFC's assert.

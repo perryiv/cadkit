@@ -52,6 +52,7 @@ Stack::Stack() : _s(), _m ( Mutex::create() )
 {
 }
 
+#if 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -85,6 +86,7 @@ Element::Element ( unsigned int id, const std::string &m ) : BaseClass ( id, m )
 {
 }
 
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -104,10 +106,11 @@ Stack::~Stack()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 Element::~Element()
 {
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -142,8 +145,7 @@ Stack &Stack::instance()
 void Stack::clear()
 {
   Guard guard ( *_m );
-  while ( !_s.empty() )
-    _s.pop();
+  _s.clear();
 }
 
 
@@ -183,8 +185,21 @@ Stack::size_type Stack::size() const
 
 void Stack::push ( unsigned int id, const std::string &message )
 {
+  // Ignore id, depreciating this concept...
+  this->push ( message );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Push an error.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Stack::push ( const std::string &message )
+{
   Guard guard ( *_m );
-  _s.push ( Usul::Errors::Element ( id, message ) );
+  _s.push_front ( message );
 }
 
 
@@ -197,7 +212,7 @@ void Stack::push ( unsigned int id, const std::string &message )
 void Stack::pop()
 {
   Guard guard ( *_m );
-  _s.pop();
+  _s.pop_front();
 }
 
 
@@ -207,10 +222,10 @@ void Stack::pop()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Errors::Element Stack::top() const
+std::string Stack::top() const
 {
   Guard guard ( *_m );
-  Element result ( _s.top() );
+  std::string result ( _s.front() );
   return result;
 }
 
@@ -224,10 +239,9 @@ Usul::Errors::Element Stack::top() const
 void Stack::format ( std::string &s ) const
 {
   Guard guard ( *_m );
-  typedef Elements::container_type Container;
   std::ostringstream temp;
-  for ( Container::const_iterator i = _s.begin(); i != _s.end(); ++i )
-    temp << i->id() << ": " << i->message() << '\n';
+  for ( StringList::const_iterator i = _s.begin(); i != _s.end(); ++i )
+    temp << *i << '\n';
   s = temp.str();
 }
 
@@ -245,6 +259,7 @@ std::string Stack::format() const
   return s;
 }
 
+#if 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -268,3 +283,5 @@ const std::string &Element::message() const
 {
   return this->second;
 }
+
+#endif

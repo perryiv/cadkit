@@ -19,7 +19,7 @@
 #include "Usul/Export/Export.h"
 #include "Usul/Exceptions/Canceled.h"
 
-#include <stack>
+#include <list>
 #include <string>
 #include <exception>
 
@@ -28,6 +28,9 @@ namespace Usul { namespace Threads { class Mutex; }; };
 
 namespace Usul {
 namespace Errors {
+
+
+#if 0
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,6 +57,7 @@ struct USUL_EXPORT Element : protected std::pair < unsigned int, std::string >
   const std::string &   message() const;
 };
 
+
 class USUL_EXPORT StackAdapter : public std::stack < Usul::Errors::Element >
 {
  public:
@@ -63,6 +67,9 @@ class USUL_EXPORT StackAdapter : public std::stack < Usul::Errors::Element >
   container_type::const_iterator begin() const { return c.begin(); }
   container_type::const_iterator end() const { return c.end(); }
 };
+
+
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,10 +83,9 @@ class USUL_EXPORT Stack
 public:
 
   // Useful typedefs.
-  //typedef std::stack < Usul::Errors::Element > Elements;
-  typedef StackAdapter Elements;
-  typedef Elements::size_type size_type;
-  typedef Elements::value_type value_type;
+  typedef std::list < std::string > StringList;
+  typedef StringList::size_type size_type;
+  typedef StringList::value_type value_type;
   typedef Usul::Threads::Mutex Mutex;
 
   // Clear the stack.
@@ -97,6 +103,7 @@ public:
 
   // Push an error.
   void                push ( unsigned int id, const std::string &message );
+  void                push ( const std::string &message );
 
   // Pop the top error.
   void                pop();
@@ -117,7 +124,7 @@ private:
   Stack ( const Stack & );
   Stack &operator = ( const Stack & );
 
-  Elements _s;
+  StringList _s;
   Mutex *_m;
   static Stack *_instance;
 };
@@ -129,7 +136,11 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 #define USUL_EXCEPTION_SAFE_START try {
+#else
+#define USUL_EXCEPTION_SAFE_START
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -138,6 +149,7 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 #define USUL_EXCEPTION_SAFE_END(error_id)\
 }\
 catch ( const Usul::Exceptions::Canceled & )\
@@ -152,7 +164,9 @@ catch ( ... )\
 {\
   Usul::Errors::Stack::instance().push ( error_id, "Unknown exception caught" );\
 }
-
+#else
+#define USUL_EXCEPTION_SAFE_END(error_id)
+#endif
 
 }; // namespace Errors
 }; // namespace Usul

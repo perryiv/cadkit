@@ -6,9 +6,9 @@
 #ifndef _menukit_osg_tilefunctor_h_
 #define _menukit_osg_tilefunctor_h_
 
-#include "../Box.h"
-#include "../Menu.h"
-#include "../Button.h"
+#include "Box.h"
+#include "Menu.h"
+#include "Button.h"
 
 namespace osg
 {

@@ -1,11 +1,11 @@
 #ifndef _menukit_osg_themeskin_h_
 #define _menukit_osg_themeskin_h_
 
-#include "../Menu.h"
-#include "../Button.h"
+#include "Menu.h"
+#include "Button.h"
 
 #include "osgText/Font"
-#include "../Box.h"
+#include "Box.h"
 
 namespace osg
 {
@@ -17,26 +17,23 @@ namespace MenuKit
 
   namespace OSG
   {
-    // TODO: rename this class to 'Skin'
-    // when the other skin class has been removed
-
     /** ThemeSkin
       * 
       * This is an abstract base class for implementing classes
-      * that want to take advantage of a 'Theme' member.  The
-      * Box and ThemeType members are template requirements for
+      * that want to take advantage of a "theme" member.  The
+      * Box and MapType members are template requirements for
       * the ColorThemeSkinTile class.
       *
       * Imlementing classes will need to manufacture graphic
       * objects.  Derived classes will most likey use the
-      * ThemeType member for color designation.
+      * MapType member for color designation.
       */
-    template<class ThemeType>
+    template<typename MapType>
     class ThemeSkin
     {
     public:
       ThemeSkin():
-          _box(1.0,0.0), _separator(1.0,1.0), _font(), _theme()
+          _box(1.0,0.0), _separator(0.1,1.0), _font(), _theme()
       {}
 
       ThemeSkin(const ThemeSkin& ts):
@@ -79,14 +76,14 @@ namespace MenuKit
       const Detail::Box& separator() const { return _separator; }
       Detail::Box& separator() { return _separator; }
 
-      void theme(const ThemeType& t) { _theme = t; }
-      const ThemeType& theme() const { return _theme; }
-      ThemeType& theme() { return _theme; }
+      void theme(const MapType& t) { _theme = t; }
+      const MapType& theme() const { return _theme; }
+      MapType& theme() { return _theme; }
 
     private:
       Detail::Box _box, _separator;
       osg::ref_ptr<osgText::Font> _font;
-      ThemeType _theme;
+      MapType _theme;
     };
 
   };

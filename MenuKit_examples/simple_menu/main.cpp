@@ -21,7 +21,7 @@ int main(unsigned int argc, char* argv[])
   if( argc > 1 && osgDB::fileExists(argv[1]) )
     fontfile = argv[1];
   else
-    fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\dirtydoz.ttf";
+    fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\arial.ttf";
 
   osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
 
@@ -32,26 +32,29 @@ int main(unsigned int argc, char* argv[])
 
   // make some color schemes
   osg::Vec4 white(1.0,1.0,1.0,1.0);
-  osg::Vec4 darkgrey(0.5,0.5,0.5,1.0);
+  osg::Vec4 darkgrey(0.3,0.3,0.3,1.0);
   osg::Vec4 lightgrey(0.8,0.8,0.8,1.0);
   osg::Vec4 black(0.0,0.0,0.0,1.0);
   osg::Vec4 red(1.0,0.0,0.0,1.0);
   osg::Vec4 blue(0.0,0.0,1.0,1.0);
+  osg::Vec4 green(0.0,1.0,0.0,1.0);
   osg::Vec4 lightblue(0.5,0.5,1.0,1.0);
 
   MenuKit::OSG::osg_color_theme ct;
   MenuKit::OSG::osg_color_map norm=ct.get_map();
   MenuKit::OSG::osg_color_map hi=ct.get_map();
-  hi["background"] = lightblue;
   MenuKit::OSG::osg_color_map dis=ct.get_map();
-  dis["text"] = darkgrey;
+
+  norm["text"] = blue;
+  hi["text"] = red;
+  dis["text"] = green;
 
   // give the themes to the tile
   typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
   DMTMAP dmtmap;
   dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
   dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
 
   // make a tile
   MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
@@ -149,6 +152,9 @@ MenuKit::Menu* create_menu()
   MenuKit::Button::Ptr paste = new MenuKit::Button();
   paste->text( "Pastexxxxxx" );
 
+  MenuKit::Button::Ptr spacer = new MenuKit::Button();
+  spacer->separator( true );
+
   MenuKit::Button::Ptr search = new MenuKit::Button();
   search->text( "Search" );
 
@@ -171,7 +177,8 @@ MenuKit::Menu* create_menu()
 
   MenuKit::Button::Ptr free = new MenuKit::Button();
   free->text( "Free" );
-  free->toggle( true );
+  free->enabled( false );
+  //free->toggle( true );
 
   MenuKit::Button::Ptr scale = new MenuKit::Button();
   scale->text( "Scale" );
@@ -187,6 +194,7 @@ MenuKit::Menu* create_menu()
   file->append( exit.get() );
 
   edit->append( move.get() );
+  edit->append( spacer.get() );
   edit->append( cut.get() );
   edit->append( paste.get() );
 

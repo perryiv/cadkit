@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Functions to enable or disable windows.
+//  Functions to set the window's check.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_ENABLE_DISABLE_H_
-#define _FOX_TOOLS_ENABLE_DISABLE_H_
+#ifndef _FOX_TOOLS_TOGGLE_CHECK_H_
+#define _FOX_TOOLS_TOGGLE_CHECK_H_
 
 #include "FoxTools/Export/Export.h"
 
@@ -25,12 +25,12 @@ namespace FoxTools {
 namespace Functions {
 
 
-// Enable or disable the window.
-FOX_TOOLS_EXPORT void enable ( bool state, FX::FXObject *object );
+// Set the check if possible.
+FOX_TOOLS_EXPORT void check ( bool state, FX::FXObject *object );
 
 
 }; // namespace Functions
 }; // namespace FoxTools
 
 
-#endif // _FOX_TOOLS_ENABLE_DISABLE_H_
+#endif // _FOX_TOOLS_TOGGLE_CHECK_H_

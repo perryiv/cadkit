@@ -205,6 +205,14 @@ osg::Geometry *ShapeFactory::sphere ( float radius,
   return geometry.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a cylinder. If one was already created with these inputs, then that 
+//  same cylinder is returned.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Geometry * ShapeFactory::cylinder ( float radius, 
                                          unsigned int sides, 
                                          const osg::Vec3& pointOne,

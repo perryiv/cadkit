@@ -44,7 +44,8 @@ public:
   // same sphere is returned.
   osg::Geometry *         cube ( const osg::Vec3 &size = osg::Vec3 ( 1.0f, 1.0f, 1.0f ) );
 
-  // Create a cylinder.
+  // Create a cylinder. If one was already created with these inputs, then that 
+  // same cylinder is returned.
   osg::Geometry *         cylinder ( float radius, 
                                      unsigned int sides, 
                                      const osg::Vec3& pointOne = osg::Vec3( 0.0, 0.0, 0.0 ),

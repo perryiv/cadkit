@@ -21,20 +21,44 @@
 #include "MaterialSetter.h"
 
 #include "osg/Geode"
+#include "osg/BoundingSphere"
 #include "osg/ShapeDrawable"
 
 namespace OsgTools
 {
-
   template<class ColorPolicy>
   class Sphere : public ColorPolicyFunctor<ColorPolicy>
   {
   public:
     typedef ColorPolicyFunctor<ColorPolicy> CPF;
-    Sphere(): CPF(), _radius(0.5f), _detailRatio(0.75f) {}
-    Sphere(float r, float dr=0.75f): CPF(), _radius(r), _detailRatio(dr) {}
-    Sphere(const Sphere& s): CPF(s), _radius(s._radius), _detailRatio(s._detailRatio) {}
-    virtual ~Sphere() {}
+
+    Sphere(): CPF(), 
+      _radius      ( 0.5f ),
+      _detailRatio ( 0.75f )
+    {
+    }
+
+    Sphere ( float r, float dr = 0.75f ) : CPF(),
+      _radius      ( r ),
+      _detailRatio ( dr )
+    {
+    }
+
+    Sphere ( const Sphere& s ) : CPF ( s ),
+      _radius      ( s._radius ),
+      _detailRatio ( s._detailRatio )
+    {
+    }
+
+    Sphere ( const osg::BoundingSphere &s ) : CPF(),
+      _radius      ( s.radius() ),
+      _detailRatio ( 0.5f )
+    {
+    }
+
+    virtual ~Sphere()
+    {
+    }
 
     Sphere& operator = (const Sphere& s)
     {

@@ -15,6 +15,8 @@
 
 #include "FoxTools/Functions/Enable.h"
 
+#include "Usul/Cast/Cast.h"
+
 #include <stdarg.h>
 
 #include "fxver.h"
@@ -30,8 +32,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxTools::Functions::enable ( bool state, FX::FXWindow *window )
+void FoxTools::Functions::enable ( bool state, FX::FXObject *object )
 {
+  FX::FXWindow *window = SAFE_CAST_FOX ( FX::FXWindow, object );
   if ( window )
   {
     if ( state )

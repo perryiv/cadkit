@@ -1,5 +1,5 @@
-#ifndef e65219bb_549f_4a07_9ee2_07ea8fdd56b7
-#define e65219bb_549f_4a07_9ee2_07ea8fdd56b7
+#ifndef _PF_DCS_H_
+#define _PF_DCS_H_
 
 #include "Performer/pf/pfSCS.h"
 
@@ -9,11 +9,26 @@ class pfMatrix;
 class pfDCS : public pfSCS
 {
 public:
-  pfDCS() : pfSCS(){}
-  void setMat ( const pfMatrix &matrix ){}
+
+  pfDCS() : pfSCS ( pfMatrix ( SL_MATRIX4_IDENTITY_F ) ){}
+
+  virtual const char *          className() const { return "pfDCS"; }
+
+  void                          setMat ( const pfMatrix &matrix ){}
+
+  virtual void                  write ( std::ostream &out ) const;
+
 protected:
+
   virtual ~pfDCS(){}
-  virtual pfNode *_clone() { return new pfDCS; }
+
+  virtual pfNode *              _clone() { return new pfDCS; }
 };
+
+
+inline void pfDCS::write ( std::ostream &out ) const
+{
+  pfSCS::write ( out );
+}
 
 #endif

@@ -107,11 +107,23 @@ SOURCE=.\SlVec2.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlVec2IO.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlVec3.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlVec3IO.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlVec4.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlVec4IO.h
 # End Source File
 # End Group
 # Begin Group "Misc"
@@ -265,6 +277,10 @@ SOURCE=.\SlMaterial.h
 
 SOURCE=.\SlMatrix4.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SlMatrix4IO.h
+# End Source File
 # End Group
 # Begin Group "Geometry"
 
@@ -307,23 +323,11 @@ SOURCE=.\SlTrace.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlObjectPtr.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlQueryPtr.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlRefBase.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SlRefBase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlRefPtr.h
 # End Source File
 # End Group
 # Begin Group "Containers"
@@ -364,6 +368,22 @@ SOURCE=.\SlMessage.h
 # Begin Source File
 
 SOURCE=.\SlMessageIds.h
+# End Source File
+# End Group
+# Begin Group "Pointers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlArrayPtr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlQueryPtr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlRefPtr.h
 # End Source File
 # End Group
 # End Target

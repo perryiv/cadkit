@@ -147,9 +147,6 @@ Package=<4>
     Project_Dep_Name Standard
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name TranslateJt2Pf
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name Controllers
     End Project Dependency
     Begin Project Dependency

@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SlArrayPtr.h: Like std::SlArrayPtr, but for array pointers.
+//  SlArrayPtr.h: Like std::auto_ptr, but for pointers to arrays.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -27,18 +27,44 @@ public:
   SlArrayPtr ( SlArrayPtr &p ) : _p ( p.release() ){}
   ~SlArrayPtr() { this->reset ( 0x0 ); }
 
+  /// Get the internal pointer.
   T *               get() const { return _p; }
 
-  SlArrayPtr &      operator = ( SlArrayPtr &p );
-  T &               operator  * () const { return *_p; }
-  T *               operator -> () const { return  _p; }
+  /// Check internal status.
+  bool              isNull()  const { return 0x0 == _p; }
+  bool              isValid() const { return 0x0 != _p; }
 
+  /// Typecast operators.
+  operator T *()             { return _p; }
+  operator const T *() const { return _p; }
+
+  /// Misc operators.
+  SlArrayPtr &      operator  = ( SlArrayPtr &p );
+  SlArrayPtr &      operator  = ( T *p );
+
+  const T &         operator  * () const { return *_p; }
+  T &               operator  * ()       { return *_p; }
+
+  const T **        operator  & () const { return &_p; }
+  T **              operator  & ()       { return &_p; }
+
+  const T &         operator [] ( unsigned int i ) const { return _p[i]; }
+  T &               operator [] ( unsigned int i )       { return _p[i]; }
+
+  const T &         operator [] ( int i ) const          { return _p[i]; }
+  T &               operator [] ( int i )                { return _p[i]; }
+
+  /// Release ownership of internal pointer.
   T *               release();
+
+  /// Reset the internal pointer.
   void              reset ( T *p = 0x0 );
 
 private:
-  
+
   T *_p;
+
+  static void       _safeDelete ( T *p ) { if ( p ) delete [] p; }
 };
 
 
@@ -60,14 +86,22 @@ template <class T> bool operator != ( const T *p1, const SlArrayPtr<T> &p2 ) { r
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlArrayPtr &SlArrayPtr<T>::operator = ( SlArrayPtr<T> &p )
+template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( SlArrayPtr<T> &p )
 {
-  if ( &p != this )
-  {
-    delete [] _p;
-    _p = p.release();
-  }
+  this->reset ( p._p );
+  return *this;
+}
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline SlArrayPtr<T> &SlArrayPtr<T>::operator = ( T *p )
+{
+  this->reset ( p );
   return *this;
 }
 
@@ -94,9 +128,11 @@ template<class T> inline T *SlArrayPtr<T>::release()
 
 template<class T> inline void SlArrayPtr<T>::reset ( T *p )
 {
-  if ( _p )
-    delete [] _p;
-  _p = p;
+  if ( p != _p )
+  {
+    this->_safeDelete ( _p );
+    _p = p;
+  }
 }
 
 

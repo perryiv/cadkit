@@ -26,6 +26,13 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <math.h>
+# include <string>
+# include <vector>
+# include <list>
+# include <map>
+# include <stack>
+# include <algorithm>
 # include "Performer/pf/pfDCS.h"
 # include "Performer/pf/pfLOD.h"
 # include "Performer/pf/pfGeode.h"
@@ -35,13 +42,6 @@
 # include "Performer/pr/pfGeoMath.h"
 # include "Performer/pr/pfMaterial.h"
 # include "Performer/pfdu.h"
-# include <math.h>
-# include <string>
-# include <vector>
-# include <list>
-# include <map>
-# include <stack>
-# include <algorithm>
 #endif
 
 #endif // _CADKIT_DATABASE_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

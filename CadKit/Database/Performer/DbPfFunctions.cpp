@@ -90,7 +90,7 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
     mat->setShininess ( material.getShininess() );
   }
 
-  // TODO, transparency.
+  // TODO, Am I doing transparency right?
 
   // Set the state's material.
   state->setAttr ( PFSTATE_FRONTMTL, mat );
@@ -98,6 +98,21 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
 
   // Turn on lighting. 
   state->setMode ( PFSTATE_ENLIGHTING, PF_ON );
+
+#ifdef _DEBUG
+
+  const SlVec4f &a  = material.getAmbient();
+  const SlVec4f &d  = material.getDiffuse();
+  const SlVec4f &sp = material.getSpecular();
+  const SlVec4f &e  = material.getEmissive();
+  ::printf ( "ambient   = %1.2f  %1.2f  %1.2f  %1.2f\n",  a[0],  a[1],  a[2],  a[3] );
+  ::printf ( "diffuse   = %1.2f  %1.2f  %1.2f  %1.2f\n",  d[0],  d[1],  d[2],  d[3] );
+  ::printf ( "specular  = %1.2f  %1.2f  %1.2f  %1.2f\n", sp[0], sp[1], sp[2], sp[3] );
+  ::printf ( "emissive  = %1.2f  %1.2f  %1.2f  %1.2f\n",  e[0],  e[1],  e[2],  e[3] );
+  ::printf ( "shininess = %3.2f\n\n", material.getShininess() );
+  ::fflush ( stdout );
+
+#endif
 }
 
 

@@ -100,7 +100,8 @@ osg::Group* create_scene()
 
   // load <cursor>.osg
   osg::ref_ptr<osg::MatrixTransform> mtext_cursor = new osg::MatrixTransform();
-  std::string cursor_name( "$OSGFILEPATH/cow.osg" );
+  //std::string cursor_name( "$OSGFILEPATH/cow.osg" );
+  std::string cursor_name( "/home/users/hansenp/models/Cursors/zoom_in.flt" );
   osg::Node* ext_cursor = osgDB::readNodeFile( cursor_name.c_str() );
   mtext_cursor->addChild( ext_cursor );
 

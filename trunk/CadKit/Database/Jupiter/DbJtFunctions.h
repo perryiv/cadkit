@@ -16,7 +16,7 @@
 #ifndef _CADKIT_DATABASE_JUPITER_LIBRARY_HELPER_FUNCTIONS_DATABASE_H_
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_HELPER_FUNCTIONS_DATABASE_H_
 
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 #include "Standard/SlMaterial.h"
 
 class eaiEntity;
@@ -25,7 +25,7 @@ class eaiEntity;
 namespace CadKit
 {
   // Get the transformation matrix.
-  bool getTransform ( eaiEntity *ptr, SlMatrix4f &matrix );
+  bool getTransform ( eaiEntity *ptr, SlMatrix44f &matrix );
 
   // Get the material.
   bool getMaterial ( eaiEntity *entity, SlMaterialf &mat );

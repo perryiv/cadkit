@@ -20,7 +20,7 @@
 
 #include "Standard/SlRefBase.h"
 #include "Standard/SlString.h"
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 #include "Standard/SlMaterial.h"
 #include "Standard/SlVec4.h"
 #include "Standard/SlVec3.h"
@@ -106,7 +106,7 @@ public:
   bool                    getShapeSet     ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, std::vector<SlVec3f> &vertices, std::vector<SlVec3f> &normals, std::vector<SlVec3f> &colors, std::vector<SlVec2f> &texture, unsigned int &valid ) const;
   bool                    getShapeSet     ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, std::vector<float> &vertices, std::vector<float> &normals, std::vector<float> &colors, std::vector<float> &texture, unsigned int &valid ) const;
   bool                    getShapeType    ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbJtTraverser::EntityType &type ) const;
-  bool                    getTransform    ( EntityHandle entity, SlMatrix4f &transform ) const;
+  bool                    getTransform    ( EntityHandle entity, SlMatrix44f &transform ) const;
   bool                    getType         ( EntityHandle entity, EntityType &type ) const;
 
   // Get the last error.

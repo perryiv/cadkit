@@ -521,7 +521,7 @@ bool DbJtTraverser::getName ( EntityHandle entity, std::string &name ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtTraverser::getTransform ( EntityHandle entity, SlMatrix4f &matrix ) const
+bool DbJtTraverser::getTransform ( EntityHandle entity, SlMatrix44f &matrix ) const
 {
   SL_PRINT3 ( "In DbJtTraverser::getTransform(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );

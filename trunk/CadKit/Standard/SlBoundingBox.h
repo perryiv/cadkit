@@ -16,7 +16,7 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_BOUNDING_BOX_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_BOUNDING_BOX_H_
 
-#include "SlMatrix4.h"
+#include "SlMatrix44.h"
 #include "SlAssert.h"
 
 // For convenience.
@@ -32,7 +32,7 @@ template<class T> class SlBoundingBox
 public:
 
   typedef T Type; // For the client.
-  typedef SlMatrix4<T> Matrix4;
+  typedef SlMatrix44<T> Matrix4;
   typedef SlVec3<T> Vec3;
   typedef SlBoundingBox<T> BoundingBox;
 
@@ -83,7 +83,7 @@ protected:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> SlBoundingBox<T> operator * ( const SlMatrix4<T> &M, const SlBoundingBox<T> &bbox );
+template<class T> SlBoundingBox<T> operator * ( const SlMatrix44<T> &M, const SlBoundingBox<T> &bbox );
 template<class T> SlBoundingBox<T> operator + ( const SlBoundingBox<T> &bbox1, const SlBoundingBox<T> &bbox2 );
 
 
@@ -433,7 +433,7 @@ template<class T> inline SlBoundingBox<T> &SlBoundingBox<T>::operator += ( const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlBoundingBox<T> operator * ( const SlMatrix4<T> &M, const SlBoundingBox<T> &bbox ) 
+template<class T> inline SlBoundingBox<T> operator * ( const SlMatrix44<T> &M, const SlBoundingBox<T> &bbox ) 
 {
   SlBoundingBox<T> result;
   SlBoundingBox<T>::multiply ( M, bbox, result );

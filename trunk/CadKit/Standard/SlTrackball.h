@@ -16,7 +16,7 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TRACKBALL_H_
 #define _CADKIT_STANDARD_LIBRARY_TRACKBALL_H_
 
-#include "SlMatrix4.h"
+#include "SlMatrix44.h"
 #include "SlVec4.h"
 #include "SlVec2.h"
 #include "SlVec3.h"
@@ -32,7 +32,7 @@ public:
   typedef SlVec2<T> Vec2;
   typedef SlVec3<T> Vec3;
   typedef SlVec4<T> Vec4;
-  typedef SlMatrix4<T> Matrix4;
+  typedef SlMatrix44<T> Matrix4;
 
   // Constructor.
   SlTrackball() : _size ( static_cast<T>(0.8) ){}

@@ -144,10 +144,10 @@ bool SgPerspectiveCamera::viewAll ( SgNode &scene )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlMatrix4f SgPerspectiveCamera::getProjectionMatrix() const
+SlMatrix44f SgPerspectiveCamera::getProjectionMatrix() const
 {
   SL_ASSERT ( this );
-  SlMatrix4f P;
+  SlMatrix44f P;
   this->getProjectionMatrix ( P );
   return P;
 }
@@ -173,7 +173,7 @@ SlMatrix4f SgPerspectiveCamera::getProjectionMatrix() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgPerspectiveCamera::getProjectionMatrix ( SlMatrix4f &P ) const
+void SgPerspectiveCamera::getProjectionMatrix ( SlMatrix44f &P ) const
 {
   SL_ASSERT ( this );
 

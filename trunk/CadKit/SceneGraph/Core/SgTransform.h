@@ -18,7 +18,7 @@
 
 #include "SgTransformation.h"
 
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 
 
 namespace CadKit
@@ -28,15 +28,15 @@ class SG_API SgTransform : public SgTransformation
 public:
 
   SgTransform();
-  SgTransform ( const SlMatrix4f &matrix );
+  SgTransform ( const SlMatrix44f &matrix );
   SgTransform ( const SgTransform &transform );
 
-  const SlMatrix4f &    getMatrix() const { return _matrix; }
-  void                  setMatrix ( const SlMatrix4f &matrix ) { _matrix.setValue ( matrix ); }
+  const SlMatrix44f &    getMatrix() const { return _matrix; }
+  void                  setMatrix ( const SlMatrix44f &matrix ) { _matrix.setValue ( matrix ); }
 
 protected:
 
-  SlMatrix4f _matrix;
+  SlMatrix44f _matrix;
 
   virtual ~SgTransform();
 

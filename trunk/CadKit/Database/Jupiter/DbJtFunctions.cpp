@@ -40,7 +40,7 @@ void _decrementPointerReferenceCount ( eaiEntity *p );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool getTransform ( eaiEntity *entity, SlMatrix4f &matrix )
+bool getTransform ( eaiEntity *entity, SlMatrix44f &matrix )
 {
   SL_PRINT2 ( "In CadKit::getTransform(), entity = %X\n", entity );
   SL_ASSERT ( entity );

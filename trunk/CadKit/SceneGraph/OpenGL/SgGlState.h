@@ -19,7 +19,7 @@
 #include "SgGlApi.h"
 
 #include "Standard/SlRefBase.h"
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 #include "Standard/SlStack.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
@@ -52,24 +52,24 @@ public:
   bool                  isDisabled ( const unsigned int &flag );
 
   // Modelview matrix.
-  const SlMatrix4f &    getModelviewMatrix() const;
+  const SlMatrix44f &    getModelviewMatrix() const;
   unsigned long         getModelviewMatrixStackDepth() const;
   void                  initModelviewMatrixStack();
   void                  makeModelviewMatrixIdentity();
   void                  popModelviewMatrix();
   void                  pushModelviewMatrix();
-  void                  pushModelviewMatrix ( const SlMatrix4f &M );
-  void                  setModelviewMatrix ( const SlMatrix4f &M );
+  void                  pushModelviewMatrix ( const SlMatrix44f &M );
+  void                  setModelviewMatrix ( const SlMatrix44f &M );
 
   // Projection matrix.
-  const SlMatrix4f &    getProjectionMatrix() const;
+  const SlMatrix44f &    getProjectionMatrix() const;
   unsigned long         getProjectionMatrixStackDepth() const;
   void                  initProjectionMatrixStack();
   void                  makeProjectionMatrixIdentity();
   void                  popProjectionMatrix();
   void                  pushProjectionMatrix();
-  void                  pushProjectionMatrix ( const SlMatrix4f &P );
-  void                  setProjectionMatrix ( const SlMatrix4f &P );
+  void                  pushProjectionMatrix ( const SlMatrix44f &P );
+  void                  setProjectionMatrix ( const SlMatrix44f &P );
 
   // Set the matrix mode.
   void                  setMatrixMode ( const MatrixMode &mode );
@@ -77,14 +77,14 @@ public:
 protected:
 
   typedef std::map<unsigned int,bool> StateMap;
-  typedef SlStack<SlMatrix4f> MatrixStack;
+  typedef SlStack<SlMatrix44f> MatrixStack;
 
   MatrixMode _matrixMode;
   std::auto_ptr<MatrixStack> _modelviewStack;
   std::auto_ptr<MatrixStack> _projectionStack;
   std::auto_ptr<StateMap> _stateMap;
-  mutable SlMatrix4f _modelViewMatrix;
-  mutable SlMatrix4f _projectionMatrix;
+  mutable SlMatrix44f _modelViewMatrix;
+  mutable SlMatrix44f _projectionMatrix;
 
   virtual ~SgGlState();
 

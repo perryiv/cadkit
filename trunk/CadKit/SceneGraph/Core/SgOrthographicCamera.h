@@ -32,8 +32,8 @@ public:
   const float &           getHeight() const { return _height; }
 
   // Get the projection matrix.
-  virtual SlMatrix4f      getProjectionMatrix() const;
-  virtual void            getProjectionMatrix ( SlMatrix4f &P ) const;
+  virtual SlMatrix44f      getProjectionMatrix() const;
+  virtual void            getProjectionMatrix ( SlMatrix44f &P ) const;
 
   // Move the camera so that the given scene is visible.
   virtual bool            viewAll ( SgNode &scene );

@@ -56,8 +56,8 @@ protected:
   SlVec3f _global;
   SlVec3f _local;
   SlLine3f _ray;
-  SlMatrix4f _M;
-  SlMatrix4f _IM;
+  SlMatrix44f _M;
+  SlMatrix44f _IM;
 
   SG_DECLARE_DYNAMIC_VISITOR ( SgGetRayIntersection, 0x00001015 );
 };

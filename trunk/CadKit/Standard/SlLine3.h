@@ -20,7 +20,7 @@
 #include "SlGeometry.h"
 
 #ifdef CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
-# include "SlMatrix4.h"
+# include "SlMatrix44.h"
 #endif
 
 
@@ -67,7 +67,7 @@ public:
   void            setValue ( const Vec3 &pt, const Vec3 &vec );
 
   #ifdef CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
-  void            transform ( const SlMatrix4<T> &M );
+  void            transform ( const SlMatrix44<T> &M );
   #endif
 
 protected:
@@ -360,13 +360,13 @@ template<class T> inline void SlLine3<T>::setValue ( const Line3 &line )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlLine3<T>::transform ( const SlMatrix4<T> &M )
+template<class T> inline void SlLine3<T>::transform ( const SlMatrix44<T> &M )
 {
   // Transform the point with the given matrix.
   _pt = M * _pt;
 
   // Get a matrix that doesn't have any translations.
-  SlMatrix4<T> RS;
+  SlMatrix44<T> RS;
   M.getRotationAndScale ( RS );
 
   // Transform the vector with the rotation-and-scale matrix (we don't want 

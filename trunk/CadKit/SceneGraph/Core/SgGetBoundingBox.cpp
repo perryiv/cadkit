@@ -39,7 +39,7 @@ SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetBoundingBox,SgVisitor);
 ///////////////////////////////////////////////////////////////////////////////
 
 SgGetBoundingBox::SgGetBoundingBox() : SgVisitor(),
-  _M ( SL_MATRIX4_IDENTITY_F )
+  _M ( SL_MATRIX_44_IDENTITY_F )
 {
   SL_PRINT2 ( "SgGetBoundingBox::SgGetBoundingBox(), this = %X\n", this );
 }

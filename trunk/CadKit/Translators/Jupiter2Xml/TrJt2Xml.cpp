@@ -290,7 +290,7 @@ bool TrJt2Xml::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &g
   SL_ASSERT ( entity );
 
   // Query the transformation, there may not be one.
-  SlMatrix4f transform;
+  SlMatrix44f transform;
   if ( false == _jtTraverser->getTransform ( entity, transform ) )
     return false;
 

@@ -340,7 +340,7 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
   SL_ASSERT ( entity );
 
   // Query the transformation, there may not be one.
-  SlMatrix4f T;
+  SlMatrix44f T;
   if ( false == _jtTraverser->getTransform ( entity, T ) )
     return false;
 

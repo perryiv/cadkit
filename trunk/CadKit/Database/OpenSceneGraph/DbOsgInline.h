@@ -16,7 +16,7 @@
 #ifndef _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 #define _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 #include "Standard/SlRefPtr.h"
 
 #include "Interfaces/IEntityQuery.h"
@@ -53,7 +53,7 @@ inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *quer
   group->setName ( query->getName ( entity ) );
 
   // Set the matrix if there is one.
-  SlMatrix4f matrix;
+  SlMatrix44f matrix;
   if ( true == query->getTransform ( entity, matrix, false ) )
     group->setMatrix ( osg::Matrix ( matrix.getValue() ) );
 

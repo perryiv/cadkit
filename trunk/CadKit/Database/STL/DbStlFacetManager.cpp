@@ -34,7 +34,7 @@ void DbStlFacetManager::TransMatStack::push()
   SL_ASSERT ( !empty() ); 
   if ( !empty() )
   {
-    SlMatrix4f tm( top() );
+    SlMatrix44f tm( top() );
     push( tm );
     top().multLeft( tm );
   }
@@ -52,11 +52,11 @@ void DbStlFacetManager::TransMatStack::push()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbStlFacetManager::TransMatStack::push( const SlMatrix4f &M )
+void DbStlFacetManager::TransMatStack::push( const SlMatrix44f &M )
 {
   if ( !empty() )
   {
-    SlMatrix4f tm( top() );
+    SlMatrix44f tm( top() );
     push( M );
     top().multLeft( tm );
   }

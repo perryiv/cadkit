@@ -33,7 +33,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _modelspaceStandardLibraryDebugTrace ( const char *formatString, ... )
+void _cadkitStandardLibraryDebugTrace ( const char *formatString, ... )
 {
   SL_ASSERT ( formatString );
 

@@ -15,7 +15,7 @@ LOCAL_LIBS = \
 	-lpfdu \
 	-lpfutil \
 	-lpf \
-	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
+	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk$(DMDTK_VERSION)
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = 

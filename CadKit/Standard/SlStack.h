@@ -55,8 +55,8 @@ public:
   bool                    isOnStack ( const T &val ) const;
 
   //  Return the i'th element on the stack. 0 is the bottom of the stack.
-  T &                     operator [] ( unsigned int i )       { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
-  const T &               operator [] ( unsigned int i ) const { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
+  T &                     operator [] ( unsigned int i )       { SL_ASSERT ( i < _sequence.size() ); return _sequence[i]; }
+  const T &               operator [] ( unsigned int i ) const { SL_ASSERT ( i < _sequence.size() ); return _sequence[i]; }
 
   //  Pop the top element off of the stack. This does the same thing as 
   //  std::stack::pop() with the exception of the assert.

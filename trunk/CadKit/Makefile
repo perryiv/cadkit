@@ -3,10 +3,10 @@ SUBDIRS = \
 	Standard \
 	Database/Jupiter \
 	Translators/Jupiter2Performer \
-	Demos/Jt2Pfb
-#	Database/XML \
-#	Translators/Jupiter2Xml \
-#	Demos/Jt2Xml
+	Demos/Jt2Pfb \
+	Database/XML \
+	Translators/Jupiter2Xml \
+	Demos/Jt2Xml
 #	SceneGraph/Core \
 #	SceneGraph/OpenGL \
 #	Examples/BoundingBox \

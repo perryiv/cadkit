@@ -61,6 +61,7 @@
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"
 # include "Performer/pr/pfMaterial.h"
+# include "Performer/pfdu.h"
 # include <iostream>
 # include <iomanip>
 #endif
@@ -347,10 +348,16 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
     return false;
 
   // Put the SlMatrix into a pfMatrix.
+/*
   pfMatrix M ( T(0,0), T(0,1), T(0,2), T(0,3),
                T(1,0), T(1,1), T(1,2), T(1,3),
                T(2,0), T(2,1), T(2,2), T(2,3),
                T(3,0), T(3,1), T(3,2), T(3,3) );
+*/
+  pfMatrix M ( T(0,0), T(1,0), T(2,0), T(3,0),
+               T(0,1), T(1,1), T(2,1), T(3,1),
+               T(0,2), T(1,2), T(2,2), T(3,2),
+               T(0,3), T(1,3), T(2,3), T(3,3) );
 
   // Add the transformation to the coordinate system.
   dcs.setMat ( M );
@@ -499,9 +506,8 @@ bool TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group 
   SL_PRINT3 ( "In TrJt2Pf::_createGroup(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
-  // Make a new dynamic coordinate system. We make a dynamic coordinate 
-  // system and leave it up to the client to decide to optimize (by 
-  // converting to static).
+  // We make a dynamic coordinate system and leave it up to the client to 
+  // decide to optimize (by converting to static).
   pfDCS *dcs = new pfDCS;
   if ( NULL == dcs )
     return false;
@@ -562,6 +568,13 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   Group part;
   if ( false == this->_createGroup ( entity, part ) )
     return false;
+
+  // TODO. Temporary, just simple cubes in place of the parts.
+#ifdef _DEBUG
+  //pfGeode *geode = new pfGeode;
+  //geode->addGSet ( ::pfdNewCube ( NULL ) );
+  //part.getGroup()->addChild ( geode );
+#endif
 
   // Add the LOD groups.
   this->_addLODs ( entity, part );
@@ -629,7 +642,8 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   SL_ASSERT ( numShapes > 0 );
 
   // Make a new LOD.
-  SlRefPtr<pfLOD> lod = new pfLOD;
+  //  SlRefPtr<pfLOD> lod = new pfLOD;
+  SlRefPtr<pfGroup> lod = new pfGroup;
   if ( lod.isNull() )
     return false;
 

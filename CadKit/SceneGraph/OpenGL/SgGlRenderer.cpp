@@ -18,6 +18,7 @@
 #include "SgGlConstants.h"
 #include "SgGlDefine.h"
 #include "SgGlInternalMacros.h"
+#include "SgGlErrorCheck.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "SceneGraph/Core/SgAllNodes.h"
@@ -86,6 +87,8 @@ bool SgGlRenderer::preRender ( SgNode &scene )
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
+
+  SG_GL_ERROR_CHECKER;
 
   // Reset this visitor.
   if ( false == this->reset() )
@@ -189,6 +192,8 @@ bool SgGlRenderer::init ( const SlViewporti &viewport, SgGlContext *context )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // If we are given good width and height values...
   if ( viewport.getWidth() > 0 && viewport.getHeight() > 0 )
   {
@@ -289,6 +294,8 @@ bool SgGlRenderer::setClearDepth ( const float &depth )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // Set the clear debth.
   ::glClearDepth ( depth );
 
@@ -334,6 +341,8 @@ bool SgGlRenderer::setBackgroundColor ( const SlColorf &color )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // Call the base class's function to set the data member.
   if ( !SgScreenRenderer::setBackgroundColor ( color ) ) 
     return false;
@@ -361,6 +370,8 @@ bool SgGlRenderer::enable ( const GLenum &state )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // Enable the flags.
   _state->enable ( state );
 
@@ -384,6 +395,8 @@ bool SgGlRenderer::disable ( const GLenum &state )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // Disable the flags.
   _state->disable ( state );
 
@@ -406,6 +419,8 @@ bool SgGlRenderer::isEnabled ( const GLenum &state )
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
+
+  SG_GL_ERROR_CHECKER;
 
   // See if the flag is enabled.
   return _state->isEnabled ( state );
@@ -444,6 +459,8 @@ bool SgGlRenderer::setViewport ( const SlViewporti &viewport )
   if ( false == this->_makeContextCurrent() )
     return false;
 
+  SG_GL_ERROR_CHECKER;
+
   // Set the viewport.
   ::glViewport ( viewport.getX(), viewport.getY(), viewport.getWidth(), viewport.getHeight() );
 
@@ -469,6 +486,8 @@ bool SgGlRenderer::getViewport ( SlViewporti &viewport ) const
     SL_ASSERT ( 0 );
     return false;
   }
+
+  SG_GL_ERROR_CHECKER;
 
   // Get the OpenGL viewport.
   int vp[4];

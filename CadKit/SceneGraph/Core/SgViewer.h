@@ -13,9 +13,9 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_VIEWER_H_
 #define _CADKIT_SCENEGRAPH_CORE_LIBRARY_VIEWER_H_
+
 
 #include "SgMessage.h"
 #include "SgRenderer.h"
@@ -30,6 +30,7 @@
 # include "Standard/SlCallback.h"
 # include <string>
 #endif
+
 
 namespace CadKit
 {

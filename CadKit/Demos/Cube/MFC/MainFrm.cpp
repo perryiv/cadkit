@@ -7,6 +7,7 @@
 #include "Cube.h"
 
 #include "MainFrm.h"
+#include "BuildScene.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,59 +41,8 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 {
-  // Seed the random-number generator with current time so that
-  // the numbers will be different every time we run.
-  ::srand ( (unsigned int) ::time ( NULL ) );
-
-  // For making randome numbers in the range [0,1]
-  float normalize = 1.0f / ( (float) RAND_MAX );
-  #define RANDOM_NUMBER ((float) ::rand()) * normalize
-
-  // Make a separator for our scene and attach it to the inherited _root.
-  SgSeparator::Ptr root = new SgSeparator;
-  _root->addChild ( root );
-
-  for ( int i = 0; i < 10; ++i )
-  {
-    // A separator for the i'th group of nodes.
-    SgSeparator::Ptr branch = new SgSeparator;
-    branch->removePushPopFlags ( SgSeparator::PROJECTION );
-
-    // Add some material to the scene.
-	  SgMaterial::Ptr material = new SgMaterial;
-    SlVec4f diffuse ( RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER, 1.0f );
-    material->material.setDiffuse ( diffuse );
-	  material->side = SgMaterial::FRONT;
-	  branch->addChild ( material );
-
-    // Now the cube.
-    SgCube::Ptr cube = new SgCube;
-	  cube->setSize ( 10.0f );
-	  cube->setCenter ( SlVec3f ( 3.0f, 0.0f, -10.0f ) );
-	  branch->addChild ( cube );
-
-    // A sphere.
-//    SgSphere::Ptr sphere = new SgSphere;
-//    sphere->setNumSubdivisions ( 4 );
-//    branch->addChild ( sphere );
-
-    // A rotation about an axis.
-    SlVec3f axis ( 1.0f, 1.0f, 1.0f );
-    axis.normalize();
-    branch->addChild ( new SgRotation ( axis, 10.0f ) );
-
-    // Make a translation.
-    SgTranslation::Ptr trans = new SgTranslation;
-//    trans->setTranslation ( SlVec3f ( sphere->getRadius() * 2, 0.0f, 0.0f ) );
-    trans->setTranslation ( SlVec3f ( cube->getSize() * 2, 0.0f, 0.0f ) );
-    branch->addChild ( trans );
-
-    // Add the i'th branch to the root.
-    root->addChild ( branch );
-
-    // With this line we create nested groups.
-    root = branch;
-  }
+  // Build the scene.
+  _root->addChild ( CadKit::Demos::buildScene ( 10, true ) );
 }
 
 

@@ -15,6 +15,7 @@
 
 #include "SgGlPrecompiled.h"
 #include "SgGlState.h"
+#include "SgGlErrorCheck.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
@@ -76,7 +77,7 @@ SgGlState::~SgGlState()
 bool SgGlState::enable  ( const GLenum &flag )
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // See if this state-flag is already enabled.
   if ( _ENABLED == this->_getState ( flag ) )
@@ -88,11 +89,11 @@ bool SgGlState::enable  ( const GLenum &flag )
 
   // Turn on the state.
   ::glEnable ( flag );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Should be turned on.
   SL_ASSERT ( GL_TRUE == ::glIsEnabled ( flag ) );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Save the state.
   (*_stateMap)[flag] = true;
@@ -111,7 +112,7 @@ bool SgGlState::enable  ( const GLenum &flag )
 bool SgGlState::disable  ( const GLenum &flag )
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // See if this state-flag is already enabled.
   if ( _DISABLED == this->_getState ( flag ) )
@@ -123,11 +124,11 @@ bool SgGlState::disable  ( const GLenum &flag )
 
   // Turn on the state.
   ::glDisable ( flag );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Should be turned on.
   SL_ASSERT ( GL_FALSE == ::glIsEnabled ( flag ) );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Save the state.
   (*_stateMap)[flag] = true;
@@ -146,11 +147,11 @@ bool SgGlState::disable  ( const GLenum &flag )
 bool SgGlState::isEnabled  ( const GLenum &flag )
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Ask OpenGL.
   bool result = ( GL_TRUE == ::glIsEnabled ( flag ) );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Return the result.
   return result;
@@ -222,7 +223,7 @@ void SgGlState::clear()
 void SgGlState::setMatrixMode ( const MatrixMode &mode )
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // If we are already in the state we want then just return.
   if ( mode == _matrixMode )
@@ -234,7 +235,7 @@ void SgGlState::setMatrixMode ( const MatrixMode &mode )
     // Set our flag and tell OpenGL too.
     _matrixMode = MODELVIEW;
     ::glMatrixMode ( GL_MODELVIEW );
-    SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+    SG_GL_ERROR_CHECK_NOW;
   }
 
   // Otherwise...
@@ -244,7 +245,7 @@ void SgGlState::setMatrixMode ( const MatrixMode &mode )
     SL_ASSERT ( PROJECTION == mode );
     _matrixMode = PROJECTION;
     ::glMatrixMode ( GL_PROJECTION );
-    SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+    SG_GL_ERROR_CHECK_NOW;
   }
 }
 
@@ -259,10 +260,11 @@ const SlMatrix44f &SgGlState::getModelviewMatrix() const
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
+  SG_GL_ERROR_CHECKER;
 
   // Get the current modelview matrix from OpenGL.
   ::glGetFloatv ( GL_MODELVIEW_MATRIX, _modelViewMatrix );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Return the current matrix.
   return _modelViewMatrix;
@@ -279,10 +281,11 @@ const SlMatrix44f &SgGlState::getProjectionMatrix() const
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
+  SG_GL_ERROR_CHECKER;
 
   // Get the current projection matrix from OpenGL.
   ::glGetFloatv ( GL_PROJECTION_MATRIX, _projectionMatrix );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Return the current matrix.
   return _projectionMatrix;
@@ -299,7 +302,7 @@ void SgGlState::pushModelviewMatrix()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Push OpenGL's current matrix onto our stack.
   const SlMatrix44f &M = this->getModelviewMatrix();
@@ -317,7 +320,7 @@ void SgGlState::pushProjectionMatrix()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Push OpenGL's current matrix onto our stack.
   const SlMatrix44f &P = this->getProjectionMatrix();
@@ -335,7 +338,7 @@ void SgGlState::popModelviewMatrix()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( MODELVIEW );
@@ -343,7 +346,7 @@ void SgGlState::popModelviewMatrix()
   // Load the matrix that is saved on top of the stack.
   const SlMatrix44f &M = _modelviewStack->top();
   ::glLoadMatrixf ( M );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Pop our matrix.
   _modelviewStack->pop();
@@ -360,7 +363,7 @@ void SgGlState::popProjectionMatrix()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( PROJECTION );
@@ -368,7 +371,7 @@ void SgGlState::popProjectionMatrix()
   // Load the matrix that is saved on top of the stack.
   const SlMatrix44f &P = _projectionStack->top();
   ::glLoadMatrixf ( P );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Pop our matrix.
   _projectionStack->pop();
@@ -385,14 +388,14 @@ void SgGlState::makeModelviewMatrixIdentity()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( MODELVIEW );
 
   // Make OpenGL's identity (not ours).
   ::glLoadIdentity();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Make our cached copy identity.
   _modelViewMatrix.identity();
@@ -409,14 +412,14 @@ void SgGlState::makeProjectionMatrixIdentity()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( PROJECTION );
 
   // Make OpenGL's identity (not ours).
   ::glLoadIdentity();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 
   // Make our cached copy identity.
   _projectionMatrix.identity();
@@ -433,14 +436,14 @@ void SgGlState::setModelviewMatrix ( const SlMatrix44f &M )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( MODELVIEW );
 
   // Set OpenGL's matrix (not ours).
   ::glLoadMatrixf ( M );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 }
 
 
@@ -454,14 +457,14 @@ void SgGlState::setProjectionMatrix ( const SlMatrix44f &P )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECKER;
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( PROJECTION );
 
   // Set OpenGL's matrix (not ours).
   ::glLoadMatrixf ( P );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+  SG_GL_ERROR_CHECK_NOW;
 }
 
 

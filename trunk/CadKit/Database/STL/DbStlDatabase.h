@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlDatabase: OpenSceneGraph database wrapper class.
+//  DbStlDatabase: Represents an STL database (list of facets).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,18 +17,19 @@
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
 
 #include "DbStlApi.h"
-#include "DbStlFacetManager.h"
+#include "DbStlFacet.h"
 
 #include "Database/Base/DbBaseTarget.h"
 
 #include "Interfaces/IEntityNotify.h"
 #include "Interfaces/IInstanceQuery.h"
+#include "Interfaces/ITriangleAppend.h"
 
 #include "Standard/SlStack.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
-# include <map>
+# include <list>
 #endif
 
 
@@ -40,19 +41,10 @@ class DB_STL_API DbStlDatabase : public DbBaseTarget,
                                  public IInstanceNotify,
                                  public ILodNotify,
                                  public IShapeNotify,
-                                 public ISetNotify
+                                 public ITriangleAppendFloat
 {
 public:
 
-
-  class entityData
-  {
-  public:
-    entityData( ) { }
-    entityData( const FmgrIndex &start, const FmgrIndex &end ) { _start = start; _end = end; }
-    FmgrIndex _start, _end;
-  };
-  
   DbStlDatabase();
 
   // IUnknown interface.
@@ -138,23 +130,20 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  ISetNotify interface.
+  //  ITriangleAppendFloat interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // End the set.
-  virtual bool            endEntity ( SetHandle set, IUnknown *caller );
-
-  // Start the set.
-  virtual bool            startEntity ( SetHandle set, IUnknown *caller );
-
-//****//  void addLod( ) {/*makeLodIndex*/}
-
+  // Append the triangle.
+  virtual bool            appendTriangle ( float t0v0, float t0v1, float t0v2, 
+                                           float t1v0, float t1v1, float t1v2,
+                                           float t2v0, float t2v1, float t2v2,
+                                           IUnknown *caller );
 
 protected:
 
-  DbStlFacetManager _fmgr;
-  std::set<PartHandle> _partLodCheck; //used to make sure we only proces one LOD per part as stl doesn't support LODs
+  typedef std::list<DbStlFacet> Facets;
+  Facets _facets;
 
   virtual ~DbStlDatabase();
 

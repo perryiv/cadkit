@@ -48,11 +48,13 @@ osg::Geometry* Facet::getGeometry()
   normals->push_back(_normal);
 
   // Make a new geometry.
-  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+//  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  osg::Geometry *geometry = new osg::Geometry(); 
   geometry->setVertexArray ( vertices.get() );
   geometry->setNormalArray ( normals.get() );
   geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
 
-  return geometry.get();
+  //return geometry.get();
+  return geometry;
 }

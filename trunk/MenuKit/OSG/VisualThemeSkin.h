@@ -74,7 +74,7 @@ namespace MenuKit
         MARKED    = 0x00000040,
       };
 
-      VisualThemeSkin(): base_class(), _margin(0.1), _border(0.05), _font(new osgText::Font()) {}
+      VisualThemeSkin(): base_class(), _margin(0.1), _border(0.025), _font(new osgText::Font()) {}
 
       virtual osg::Node* operator ()(const Menu& m);
       virtual osg::Node* operator ()(const Button& b);
@@ -225,7 +225,15 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   if( parent )
     pl = parent->layout();
   else
+  {
+    if( txt == "" )
+    {
+      osg::Node* notext = new osg::Node();
+      notext->setName("MK_OSG_notext");
+      return notext;
+    }
     pl = Menu::HORIZONTAL;
+  }
 
   const base_class::theme_type& scheme = this->theme();
   base_class::theme_type::const_iterator middleiter = scheme.find("middle");
@@ -286,6 +294,18 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   group->setName("MK_OSG_CTS_leaf_group");
   group->addChild( backgeode.get() );
   group->addChild( wordmt.get() );
+
+  typedef MenuKit::Bits<unsigned int> quickchecker;
+  if( pl == Menu::HORIZONTAL && quickchecker::has(itembits, MARKED) )
+  {
+    Detail::Box inner(thebox.height()-2.0*_border,thebox.width()-2.0*_border);
+    Border fence(thebox,inner,0.001);
+    if( borderiter != scheme.end() )
+      fence.color( borderiter->second );
+    osg::ref_ptr<osg::Node> noexpandborder = fence();
+    noexpandborder->setName("MK_OSG_noexpandborder");
+    group->addChild( noexpandborder.get() );
+  }
 
   // the total correction
   osg::MatrixTransform* mt = new osg::MatrixTransform();

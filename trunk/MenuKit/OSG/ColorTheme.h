@@ -39,12 +39,12 @@ namespace MenuKit
 
       ColorTheme(): _colormap()
       {
-        /// TODO: optimize initial value assigment with an algorithm
+        ///\todo TODO: optimize initial value assigment with the map's insert method, low priority
         _colormap["text"] = color_type(0.0f,0.0f,0.0f,1.0f);        // black
         _colormap["middle"] = color_type(0.5f,0.5f,0.5f,1.0f);      // gray
-        _colormap["border"] = color_type(0.0f,0.0f,0.8f,1.0f);      // blue
-        _colormap["horizontal_background"] = color_type(0.5f,0.5f,0.5f,1.0f);  // gray
-        _colormap["vertical_background"] = color_type(0.7f,0.7f,0.8f,1.0f);  // light gray
+        _colormap["border"] = color_type(0.0f,0.0f,1.0f,1.0f);      // blue
+        _colormap["horizontal_background"] = color_type(0.9f,0.9f,0.9f,1.0f);  // gray
+        _colormap["vertical_background"] = color_type(0.9f,0.9f,0.9f,1.0f);  // light gray
         _colormap["special"] = color_type(0.2f,0.2f,0.6f,1.0f);     // dark gray
       }
 

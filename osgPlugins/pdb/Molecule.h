@@ -39,11 +39,11 @@ public:
 protected:
   virtual ~Molecule();
   osg::Group*             _build() const;
-  osg::LOD *              _makeAtom ( const Atom &atom ) const;
-  osg::LOD *              _makeBond ( const Bond &bond) const;
-  osg::Geode *            _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
-  osg::Geode *            _makeSphere ( const osg::Vec3 &center, float radius, unsigned int numSubDivisions ) const;
-  osg::Geode *            _makeCube   ( const osg::Vec3 &center, float size ) const;
+  osg::Node *             _makeAtom ( const Atom &atom ) const;
+  osg::Node *             _makeBond ( const Bond &bond) const;
+  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
+  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, unsigned int numSubDivisions ) const;
+  osg::Node *             _makeCube   ( const osg::Vec3 &center, float size ) const;
   void                    _setCentersAndRanges ( osg::LOD *lod ) const;
 private:
 

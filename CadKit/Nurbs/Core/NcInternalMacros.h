@@ -74,9 +74,32 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define NCSDTA  class ParameterType, class ControlPointType, class IndexType, class BitMaskType
-#define NCSDCA ParameterType, ControlPointType, IndexType, BitMaskType
-#define NCSDTCD NCSDTA // class ParameterType = double, class ControlPointType = double, class IndexType = unsigned int, class BitMaskType = unsigned int
+#define NCSDTA \
+  class ParameterType, \
+  class ControlPointType, \
+  class IndexType, \
+  class BitMaskType, \
+  class IndexAllocatorType, \
+  class ParameterAllocatorType, \
+  class ControlPointAllocatorType
+
+#define NCSDCA \
+  ParameterType, \
+  ControlPointType, \
+  IndexType, \
+  BitMaskType, \
+  IndexAllocatorType, \
+  ParameterAllocatorType, \
+  ControlPointAllocatorType
+
+#define NCSDTCD \
+  class ParameterType = double, \
+  class ControlPointType = double, \
+  class IndexType = unsigned int, \
+  class BitMaskType = unsigned int, \
+  class IndexAllocatorType = std::allocator<IndexType>, \
+  class ParameterAllocatorType = std::allocator<ParameterType>, \
+  class ControlPointAllocatorType = std::allocator<ControlPointType>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,10 +113,10 @@
   typedef BitMaskType BitMask; \
   typedef ParameterType Parameter; \
   typedef ControlPointType ControlPoint; \
-  typedef std::vector<IndexType> IndexArray; \
-  typedef SlPartitionedVector<IndexType,ControlPointType> ControlPointArray; \
-  typedef SlPartitionedVector<IndexType,ParameterType> ParameterArray
+  typedef IndexAllocatorType IndexAllocator; \
+  typedef ParameterAllocatorType ParameterAllocator; \
+  typedef ControlPointAllocatorType ControlPointAllocator
 
 
 
-#endif // _CADKIT_NURBS_CORE_LIBRARY_SPLINE_DATA_CLASS_H_
+#endif // _CADKIT_NURBS_CORE_LIBRARY_INTERNAL_MACROS_H_

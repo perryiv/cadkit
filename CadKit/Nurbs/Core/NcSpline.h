@@ -132,16 +132,7 @@ public:
 protected:
 
   BitMaskType _flags;
-
-  IndexType _numIndepVars;
-  IndexType _numDepVars;
-
-  IndexArray _order;
-  IndexArray _numCtrPts;
-
-  ParameterArray    _knots;
-  ControlPointArray _ctrPts;
-
+  NcSplineData<NCSDCA> _sd;
   mutable NcWork<NCSDCA> _work;
 
   SL_DECLARE_BITMASK_FUNCTIONS ( Flags, BitMaskType, _flags );
@@ -155,9 +146,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline() :
-  _flags        ( 0 ),
-  _numIndepVars ( 0 ),
-  _numDepVars   ( 0 )
+  _flags ( 0 )
 {
   // Empty.
 }
@@ -170,14 +159,9 @@ template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline() :
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline ( const NcSpline<NCSDCA> &spline ) :
-  _flags        ( spline._flags ),
-  _numIndepVars ( spline._numIndepVars ),
-  _numDepVars   ( spline._numDepVars ),
-  _order        ( spline._order ),
-  _numCtrPts    ( spline._numCtrPts ),
-  _knots        ( spline._knots ),
-  _ctrPts       ( spline._ctrPts ),
-  _work         ( spline._work )
+  _flags ( spline._flags ),
+  _sd    ( spline._sd ),
+  _work  ( spline._work )
 {
   // Empty.
 }
@@ -191,14 +175,9 @@ template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline ( const NcSpline<NCSDCA> &spl
 
 template<NCSDTA> inline void NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA> &spline )
 {
-  _flags           = spline._flags;
-  _numIndepVars    = spline._numIndepVars;
-  _numDepVars      = spline._numDepVars;
-  _order           = spline._order;
-  _numCtrPts       = spline._numCtrPts;
-  _knots.setValue  ( spline._knots );
-  _ctrPts.setValue ( spline._ctrPts );
-  _work.setValue   ( spline._work );
+  _flags         = spline._flags;
+  _sd.setValue   ( spline._sd );
+  _work.setValue ( spline._work );
 }
 
 
@@ -212,7 +191,8 @@ template<NCSDTA> inline IndexType NcSpline<NCSDCA>::getNumControlPoints ( const 
 {
   SL_ASSERT ( whichIndepVar == 0 || whichIndepVar > 0 ); // Make g++ happy.
   SL_ASSERT ( whichIndepVar < _numIndepVars );
-  return _numCtrPts[whichIndepVar];
+  SL_ASSERT ( 0x0 != _sd.numCtrPts  );
+  return _sd.numCtrPts[whichIndepVar];
 }
 
 
@@ -306,8 +286,8 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::basisFunctions (
   const IndexType order ( this->getOrder ( whichIndepVar ) );
 
   // Space for the algorithm.
-  ParameterType *left  = _work.getBasisFunctionLeft  ( whichIndepVar );
-  ParameterType *right = _work.getBasisFunctionRight ( whichIndepVar );
+  ParameterType *left  = _work.getBasisFunctionsLeft  ( whichIndepVar );
+  ParameterType *right = _work.getBasisFunctionsRight ( whichIndepVar );
 
   // Call the algorithm.
   NcBasisFunctions<NCSDCA>::basis ( knots, order, span, u, left, right, N );

@@ -102,6 +102,10 @@ SOURCE=.\NcSpline.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\NcSplineData.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NcSurface.h
 # End Source File
 # End Group
@@ -132,6 +136,10 @@ SOURCE=.\NcSplineIO.h
 # Begin Group "Misc"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\NcDefine.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\NcInternalMacros.h

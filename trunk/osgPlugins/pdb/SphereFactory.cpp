@@ -9,7 +9,7 @@
 
 #include "SphereFactory.h"
 
-#include "osg/Geometry"
+//#include "osg/Geometry"
 #include "osg/Geode"
 
 #include "osgUtil/TriStripVisitor"
@@ -19,6 +19,8 @@
 #include "Usul/Containers/Vector.h"
 
 
+#include <fstream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -26,6 +28,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 SphereFactory::SphereFactory() :
+  _map(),
   _subdivided(),
   _latLongMap()
 {
@@ -157,6 +160,192 @@ osg::Geometry *SphereFactory::create ( float radius, unsigned int numLatitude, u
   return geometry.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a subdivied sphere from a pyramid.  
+//  Caches based on radius and number of divisions
+//  TODO get smart pointers working.  For some reason, they are causing exceptions
+//  to be thrown.
+//  Currently only works with numDivisions <= 1
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry *SphereFactory::create ( unsigned int numDivisions, float radius )
+{
+  std::ofstream log ("log.txt");
+  std::vector< osg::Geometry* >* spheres;
+  Map::iterator i = _map.find(radius);
+  if(i != _map.end())
+  {
+    spheres = i->second;
+  }
+  else
+  {
+    spheres = new std::vector< osg::Geometry* >(); //Spheres();
+    _map.insert( Pair(radius, spheres ));
+    i = _map.find(radius);
+  }
+
+  const float X ( 0.525731112119133606 );
+  const float Z ( 0.8506508083528655993 );
+
+  osg::Vec3 p[] = { osg::Vec3(0,1.0,0) , osg::Vec3(X, 0, Z), osg::Vec3(-Z, 0, X), osg::Vec3(-X, 0, -Z), osg::Vec3(Z, 0, -X) };
+
+  // Make sure we have room.
+  //if ( numDivisions >= spheres->size() )
+  //  spheres->resize ( numDivisions + 1, NULL );
+
+  // If we have this one already...
+  //if ( spheres->at(numDivisions) != NULL )
+  //  return spheres->at(numDivisions);
+
+  std::vector< Tristrip* > tristrips;
+  
+  tristrips.push_back( new Tristrip() );
+  
+  tristrips[0]->push_back(p[1] * radius);
+  tristrips[0]->push_back(p[0] * radius);
+  tristrips[0]->push_back(p[2] * radius);
+  tristrips[0]->push_back(p[0] * radius);
+  tristrips[0]->push_back(p[3] * radius);
+  tristrips[0]->push_back(p[0] * radius);
+  tristrips[0]->push_back(p[4] * radius);
+  tristrips[0]->push_back(p[0] * radius);
+  tristrips[0]->push_back(p[1] * radius);
+
+  log << "Orginial tristrips: " << std::endl << std::endl;
+
+  for(Tristrip::iterator i = tristrips[0]->begin(); i != tristrips[0]->end(); ++i)
+    log << *i << ",  ";
+  log << std::endl << std::endl;
+
+  //start dividing tristrips
+  for(unsigned int i = 0; i < numDivisions; ++i)
+  {
+    std::vector< Tristrip* > newTristrips;
+    newTristrips.reserve(tristrips.size() * 2);
+    unsigned int num = tristrips.size();
+    for(unsigned int j = 0; j < num; ++ j)
+    {
+      newTristrips.push_back( new Tristrip() );
+      newTristrips.push_back( new Tristrip() );
+      this->_splitTristrip(tristrips[j], newTristrips[2 * j], newTristrips[2 * j + 1]);
+      delete tristrips[j];
+    }
+    tristrips = newTristrips;
+  }
+
+  log << "New tristrips: " << std::endl << std::endl;
+
+  for(unsigned int k = 0; k < tristrips.size(); ++k)
+  {
+    for(Tristrip::iterator i = tristrips[k]->begin(); i != tristrips[k]->end(); ++i)
+      log << *i << ",  ";
+    log << std::endl << std::endl;
+  }
+
+  //reflect along the XZ plane
+  std::vector< Tristrip* > newTristrips;
+  for(std::vector< Tristrip* >::iterator i = tristrips.begin(); i != tristrips.end(); ++i)
+  {
+    Tristrip *t = *i;
+    Tristrip *ts = new Tristrip();
+    for(unsigned int j = 0; j < t->size (); ++j)
+    {
+      osg::Vec3 v = t->at(j);
+      v[1] *= -1.0f;
+      ts->push_back(v);
+    }
+    newTristrips.push_back(ts);
+  }
+
+  //append reflected tristrips to old tristrips
+  for(int i = newTristrips.size() - 1; i >=0; --i)
+    tristrips.push_back(newTristrips[i]);
+
+  unsigned int num = 0;
+  //calcualte number of vertices in tristrip array
+  for( unsigned int i = 0; i < tristrips.size(); ++i)
+  {
+    num += tristrips[i]->size();
+  }
+
+  osg::Vec3Array *vertices = new osg::Vec3Array();
+  osg::Vec3Array *normals  = new osg::Vec3Array();
+
+  // Make new vertices and normals.
+  //osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array() );
+  //osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+
+  vertices->reserve(num);
+  normals->reserve(num);
+
+  //append tristrips into vertices
+  for(unsigned int i = 0; i < tristrips.size(); ++i)
+  {
+    for(unsigned int j = 0; j < tristrips[i]->size(); ++j)
+    {
+      vertices->push_back(tristrips[i]->at(j));
+    }
+  }
+
+  //calculate normals and push into normal vector
+  for(osg::Vec3Array::iterator it = vertices->begin(); it != vertices->end(); ++it)
+  {
+    osg::Vec3 v = *it;
+    v.normalize();
+    normals->push_back(v);
+  }
+
+  // Make a new geometry.
+  //osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  osg::Geometry *geometry = new osg::Geometry ();
+  geometry->setVertexArray ( vertices /*.get()*/ );
+  geometry->setNormalArray ( normals /*.get()*/ );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
+
+  // Save this geometry in our collection and return it.
+  //spheres->at(numDivisions) = geometry;
+  return geometry;//.get();
+}
+
+void SphereFactory::_splitTristrip ( const Tristrip *old, Tristrip *newTristrip1, Tristrip *newTristrip2)
+{
+  osg::Vec3 new1, new2, new3;//, new4;
+
+  for(Tristrip::const_iterator i = old->begin(); i < old->end() - 2; i += 2)
+  {
+    const osg::Vec3 &p1 = *(i + 1), &p2 = *i, &p3 = *(i + 2);
+    new1[0] = (p2[0] + p1[0]) / 2.0;
+    new1[1] = (p2[1] + p1[1]) / 2.0;
+    new1[2] = (p2[2] + p1[2]) / 2.0;
+
+    new2[0] = (p3[0] + p1[0]) / 2.0;
+    new2[1] = (p3[1] + p1[1]) / 2.0;
+    new2[2] = (p3[2] + p1[2]) / 2.0;
+
+    new3[0] = (p2[0] + p3[0]) / 2.0;
+    new3[1] = (p2[1] + p3[1]) / 2.0;
+    new3[2] = (p2[2] + p3[2]) / 2.0;
+    
+    new1.normalize();
+    new2.normalize();
+    new3.normalize();
+    
+
+    newTristrip1->push_back(new1);
+    newTristrip1->push_back(*(i + 1));
+    newTristrip1->push_back(new2);
+
+    newTristrip2->push_back(*i);
+    newTristrip2->push_back(new1);
+    newTristrip2->push_back(new3);
+    newTristrip2->push_back(new2);
+    newTristrip2->push_back(*(i + 2));
+  }
+}
 
 #if 0
 

@@ -17,6 +17,7 @@ namespace Usul
     {
     public:
       typedef typename Sequence::value_type Frame;
+      typedef Sequence Frames;
 
       Player ( Callback cb ) : _callback (cb) {}
 

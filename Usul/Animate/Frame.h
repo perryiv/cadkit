@@ -18,8 +18,9 @@ namespace Usul
     public:
       Frame ( UserData userData, Matrix matrix ) : _userData ( userData ), _matrix ( matrix ) { }
 
-      const UserData& getUserData () { return _userData; }
-      const Matrix& getMatrix () { return _matrix; }
+      const UserData& getUserData () const { return _userData; }
+      UserData& getUserData () { return _userData; }
+      const Matrix& getMatrix ()  const { return _matrix; }
 
     protected:
       UserData _userData;

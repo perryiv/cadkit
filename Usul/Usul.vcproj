@@ -345,6 +345,9 @@
 					RelativePath=".\Interfaces\IFoxRadioButton.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxSubMenu.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxTabItem.h">
 				</File>
 				<File
@@ -373,6 +376,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IRedraw.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISaveFileDialog.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h">

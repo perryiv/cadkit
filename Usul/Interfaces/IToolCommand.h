@@ -18,6 +18,8 @@
 
 namespace FX { struct FXEvent; }
 
+#include "Usul/Interfaces/IUnknown.h"
+
 namespace Usul
 {
   namespace Interfaces

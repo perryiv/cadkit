@@ -25,7 +25,7 @@ struct IFoxToolbarDock : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 4094631524u };
 
-  virtual void                 addToolbar    ( const std::string& name, unsigned int layout ) = 0;
+  virtual void                 addToolbar    ( const std::string& name ) = 0;
   virtual void                 deleteToolbar ( const std::string& name ) = 0;
   virtual FX::FXToolBar*       toolbar       ( const std::string& name ) = 0;
   virtual const FX::FXToolBar* toolbar       ( const std::string& name ) const = 0;

@@ -62,10 +62,11 @@ void Manager::load( unsigned long iid, std::list<std::string> &plugins  )
 
   for( Iterator i = plugins.begin(); i != plugins.end(); ++ i)
   {
-    Usul::Interfaces::IUnknown::ValidQueryPtr unknown ( Usul::Components::Object::create ( iid, *i, true, true ) );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( Usul::Components::Object::create ( iid, *i, true, true ) );
 
     // Insert into set of plugins.
-    _unknowns.insert ( unknown.get() );
+    if( unknown.valid() )
+      _unknowns.insert ( unknown.get() );
    
   }
 }

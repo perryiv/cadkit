@@ -24,11 +24,15 @@ namespace Usul
 
       void setPlayer ( Player *player ) { _player = player; }
 
+      void prepend ( Frame &frame ) { _frames.push_front ( frame ); }
+
       void append ( Frame &frame ) { _frames.push_back ( frame ); }
 
-      void playForward () { _player->forward ( _frames ); }
+      void playForward () { _player->play(); _player->forward ( _frames ); }
 
-      void playReverse () { _player->reverse ( _frames ); }
+      void playReverse () { _player->play(); _player->reverse ( _frames ); }
+
+      void stop() { _player->stop(); }
 
       void clear () { _frames.clear(); }
 

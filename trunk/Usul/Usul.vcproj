@@ -534,6 +534,9 @@
 				<File
 					RelativePath=".\Animate\Player.h">
 				</File>
+				<File
+					RelativePath=".\Animate\SinglePlayer.h">
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

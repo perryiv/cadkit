@@ -336,6 +336,9 @@
 					RelativePath="Interfaces\IClassFactory.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICleanUp.h">
+				</File>
+				<File
 					RelativePath="Interfaces\ICommand.h">
 				</File>
 				<File

@@ -50,13 +50,13 @@
 #include "TrJt2Pf.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Database/Jupiter/DbJtTraverser.h"
-# include "Database/XML/DbXmlLeaf.h"
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
 # include "Standard/SlPathname.h"
 # include "Standard/SlBitmask.h"
-# include <fstream>
+# include "Performer/pf/pfGroup.h"
+# include "Performer/pr/pfGeoSet.h"
+# include "Performer/pr/pfGeoState.h"
 #endif
 
 using namespace CadKit;
@@ -72,7 +72,7 @@ TrJt2Pf::TrJt2Pf() :
   _jtTraverser ( NULL ),
   _error ( "" )
 {
-  SL_PRINT ( "In TrJt2Pf::TrJt2Pf(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Pf::TrJt2Pf(), this = %X,\n", this );
 }
 
 
@@ -84,8 +84,29 @@ TrJt2Pf::TrJt2Pf() :
 
 TrJt2Pf::~TrJt2Pf()
 {
-  SL_PRINT ( "In TrJt2Pf::~TrJt2Pf(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Pf::~TrJt2Pf(), this = %X,\n", this );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  So class SlRefPtr works with class eaiEntity.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CadKit
+{
+void _incrementPointerReferenceCount ( pfNode *p )
+{
+  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfNode * ), p = %X\n", p );
+  p->ref();
+}
+void _decrementPointerReferenceCount ( pfNode *p )
+{
+  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfNode * ), p = %X\n", p );
+  p->unref();
+}
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,13 +117,13 @@ TrJt2Pf::~TrJt2Pf()
 
 bool TrJt2Pf::init()
 {
-  SL_PRINT ( "In TrJt2Pf::init(), this = %X,\n", this );
+  SL_PRINT2 ( "In TrJt2Pf::init(), this = %X,\n", this );
 
   // Allocate.
   _jtTraverser = new DbJtTraverser;
   if ( _jtTraverser.isNull() )
   {
-    _error.format ( "Failed to allocate memory." );
+    _error = "Failed to allocate memory.";
     return false;
   }
 
@@ -128,7 +149,7 @@ bool TrJt2Pf::init()
 
 bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
 {
-  SL_PRINT ( "In TrJt2Pf::translate(), this = %X, filename = %s\n", this, filename );
+  SL_PRINT3 ( "In TrJt2Pf::translate(), this = %X, filename = %s\n", this, filename );
   SL_ASSERT ( _jtTraverser.isValid() );
 
   // Make sure we have just one group on the stack.
@@ -145,11 +166,10 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
   // The database traversal stops when the last child is parsed, which may be 
   // deep in the heiarchy.
   SL_ASSERT ( _groupStack.size() >= 1 );
-  SL_ASSERT ( root == _groupStack.front() );
+  SL_ASSERT ( &root == _groupStack.front() );
 
-  // Write the file.
-  SlAPathname out ( filename );
-  return this->_write ( out.getDrive() + out.getDirectory() + out.getFilename() + ".xml" );
+  // It worked.
+  return true;
 }
 
 
@@ -161,7 +181,7 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
 
 bool TrJt2Pf::_traverseCallback ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData )
 {
-  SL_PRINT ( "In TrJt2Pf::_traverseCallback(), message = %d, clientData = %X\n", message, clientData );
+  SL_PRINT3 ( "In TrJt2Pf::_traverseCallback(), message = %d, clientData = %X\n", message, clientData );
   SL_ASSERT ( clientData );
 
   // Call the other one.
@@ -177,7 +197,7 @@ bool TrJt2Pf::_traverseCallback ( const DbJtTraverser::Message &message, const D
 
 bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
 {
-  SL_PRINT ( "In TrJt2Pf::_traverseNotify(), message = %d, this = %X\n", message, this );
+  SL_PRINT3 ( "In TrJt2Pf::_traverseNotify(), message = %d, this = %X\n", message, this );
   SL_ASSERT ( this );
 
   // See what kind of message it is.
@@ -221,7 +241,7 @@ bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
 
 bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Pf::_processEntity(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_processEntity(), this = %X, entity = %X\n", this, entity );
 
   // Get the current entity type.
   DbJtTraverser::EntityType type;
@@ -238,12 +258,12 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
   case DbJtTraverser::PART:
 
     // Add the part to the XML tree.
-    return this->_addPart ( entity );
+    //return this->_addPart ( entity );
     
   case DbJtTraverser::INSTANCE:
 
     // Add the instance to the XML tree.
-    return this->_addInstance ( entity );
+    //return this->_addInstance ( entity );
 
   default:
 
@@ -262,9 +282,9 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
+bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, pfNode &node )
 {
-  SL_PRINT ( "In TrJt2Pf::_addName(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addName(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query name of the group, there may not be one.
@@ -273,22 +293,22 @@ bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
     return false;
 
   // Add the name.
-  group.addChild ( new DbXmlLeaf ( "name", name.c_str() ) );
+  node.setName ( name.c_str() );
 
   // It worked.
   return true;
 }
 
-
+/*
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the transformation matrix, if there is one.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
+bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfGroup &group )
 {
-  SL_PRINT ( "In TrJt2Pf::_addTransform(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addTransform(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query the transformation, there may not be one.
@@ -320,9 +340,9 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group )
+bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, pfGroup &group )
 {
-  SL_PRINT ( "In TrJt2Pf::_addMaterial(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query the material, there may not be one.
@@ -333,7 +353,7 @@ bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gro
     return false;
 
   // Make a group for the material.
-  DbXmlGroup::Ptr material = new DbXmlGroup ( "material" );
+  pfGroup::Ptr material = new pfGroup ( "material" );
   if ( material.isNull() )
     return false;
 
@@ -377,9 +397,9 @@ bool TrJt2Pf::_addColor ( const unsigned int &valid,
                            const unsigned int &which, 
                            const SlVec4f &color, 
                            const char *colorName, 
-                           DbXmlGroup &material )
+                           pfGroup &material )
 {
-  SL_PRINT ( "In TrJt2Pf::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
+  SL_PRINT5 ( "In TrJt2Pf::_addColor(), this = %X, valid = %d, which = %d, colorName = %s\n", this, valid, which, colorName );
   SL_ASSERT ( colorName );
 
   // See if the color is valid.
@@ -395,7 +415,7 @@ bool TrJt2Pf::_addColor ( const unsigned int &valid,
   // No color added.
   return false;
 }
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -403,20 +423,20 @@ bool TrJt2Pf::_addColor ( const unsigned int &valid,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbXmlGroup::Ptr TrJt2Pf::_createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity )
+pfGroup *TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Pf::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
-  SL_ASSERT ( groupName );
+  SL_PRINT4 ( "In TrJt2Pf::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
+  SL_ASSERT ( entity );
 
   // Make a new group.
-  DbXmlGroup::Ptr group = new DbXmlGroup ( groupName );
-  if ( group.isNull() )
+  pfGroup *group = new pfGroup;
+  if ( NULL == group )
     return NULL;
 
   // Add some properties to the group.
-  this->_addName      ( entity, *group );
-  this->_addTransform ( entity, *group );
-  this->_addMaterial  ( entity, *group );
+  //this->_addName      ( entity, *group );
+  //this->_addTransform ( entity, *group );
+  //this->_addMaterial  ( entity, *group );
 
   // Return the new group.
   return group;
@@ -431,10 +451,10 @@ DbXmlGroup::Ptr TrJt2Pf::_createGroup ( const char *groupName, DbJtTraverser::En
 
 bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Pf::_assemblyStart(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_assemblyStart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new assembly.
-  DbXmlGroup::Ptr assembly = this->_createGroup ( "assembly", entity );
+  SlRefPtr<pfGroup> assembly = this->_createGroup ( entity );
   if ( assembly.isNull() )
     return false;
 
@@ -448,7 +468,7 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   return true;
 }
 
-
+/*
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the part.
@@ -457,10 +477,10 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Pf::_addPart(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addPart(), this = %X, entity = %X\n", this, entity );
 
   // Make a new group for the part.
-  DbXmlGroup::Ptr part = this->_createGroup ( "part", entity );
+  pfGroup::Ptr part = this->_createGroup ( "part", entity );
   if ( part.isNull() )
     return false;
 
@@ -482,9 +502,9 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
+bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, pfGroup &part )
 {
-  SL_PRINT ( "In TrJt2Pf::_addLODs(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addLODs(), this = %X, entity = %X\n", this, entity );
 
   // Get the number of shape LODs.
   unsigned int numLODs ( 0 );
@@ -495,7 +515,7 @@ bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
   SL_ASSERT ( numLODs > 0 );
 
   // Make a new group for the LODs.
-  DbXmlGroup::Ptr lods = new DbXmlGroup ( "lods" );
+  pfGroup::Ptr lods = new pfGroup ( "lods" );
   if ( lods.isNull() )
     return false;
 
@@ -529,9 +549,9 @@ bool TrJt2Pf::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
 
 bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity, 
                          const unsigned int &whichLOD, 
-                         DbXmlGroup &lods )
+                         pfGroup &lods )
 {
-  SL_PRINT ( "In TrJt2Pf::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
+  SL_PRINT4 ( "In TrJt2Pf::_addLOD(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
 
   // Get the number of shapes for this LOD.
   unsigned int numShapes ( 0 );
@@ -542,7 +562,7 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   SL_ASSERT ( numShapes > 0 );
 
   // Make a new group for the LOD.
-  DbXmlGroup::Ptr lod = new DbXmlGroup ( "lod" ); // Notice it's not "lods".
+  pfGroup::Ptr lod = new pfGroup ( "lod" ); // Notice it's not "lods".
   if ( lod.isNull() )
     return false;
 
@@ -577,9 +597,9 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
 bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity, 
                            const unsigned int &whichLOD, 
                            const unsigned int &whichShape, 
-                           DbXmlGroup &lod )
+                           pfGroup &lod )
 {
-  SL_PRINT ( "In TrJt2Pf::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In TrJt2Pf::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 
   // Get the number of sets for this shape.
   unsigned int numSets ( 0 );
@@ -590,7 +610,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   SL_ASSERT ( numSets > 0 );
 
   // Make a new group for the shape.
-  DbXmlGroup::Ptr shape = new DbXmlGroup ( "shape" );
+  pfGroup::Ptr shape = new pfGroup ( "shape" );
   if ( shape.isNull() )
     return false;
 
@@ -612,7 +632,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   default:
     SL_ASSERT ( 0 ); // Heads up.
     _jtTraverser->getName ( entity, name );
-    _error.format ( "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
+    CadKit::format ( _error, "Unknown shape type for entity = %X, name = %s, LOD = %d, shape = %d", entity, name.c_str(), whichLOD, whichShape );
     return false;
   }
 
@@ -647,9 +667,9 @@ bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity,
                          const unsigned int &whichShape, 
                          const unsigned int &whichSet, 
                          const std::string &name,
-                         DbXmlGroup &shape )
+                         pfGroup &shape )
 {
-  SL_PRINT ( "In TrJt2Pf::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In TrJt2Pf::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( false == name.empty() );
 
   // Get the shape.
@@ -659,7 +679,7 @@ bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity,
     return false;
 
   // Make a group for the set.
-  DbXmlGroup::Ptr set = new DbXmlGroup ( name.c_str() );
+  pfGroup::Ptr set = new pfGroup ( name.c_str() );
   if ( set.isNull() )
     return false;
 
@@ -691,12 +711,12 @@ bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Pf::_addArray ( const unsigned int &valid, 
-                           const unsigned int &which, 
-                           const std::vector<float> &array, 
-                           const char *arrayName, 
-                           DbXmlGroup &set )
+                          const unsigned int &which, 
+                          const std::vector<float> &array, 
+                          const char *arrayName, 
+                          pfGroup &set )
 {
-  SL_PRINT ( "In TrJt2Pf::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
+  SL_PRINT6 ( "In TrJt2Pf::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
   SL_ASSERT ( arrayName );
 
   // See if the array is valid.
@@ -726,7 +746,7 @@ bool TrJt2Pf::_addArray ( const unsigned int &valid,
 
 void TrJt2Pf::_setArrayString ( const std::vector<float> &array, SlAString &s )
 {
-  SL_PRINT ( "In TrJt2Pf::_setArrayString(), this = %X, array.size() = %d\n", this, array.size() );
+  SL_PRINT3 ( "In TrJt2Pf::_setArrayString(), this = %X, array.size() = %d\n", this, array.size() );
   SL_ASSERT ( false == array.empty() );
 
   // Make sure it's empty.
@@ -758,10 +778,10 @@ void TrJt2Pf::_setArrayString ( const std::vector<float> &array, SlAString &s )
 
 bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 {
-  SL_PRINT ( "In TrJt2Pf::_addInstance(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_addInstance(), this = %X, entity = %X\n", this, entity );
 
   // Make a new group for the part.
-  DbXmlGroup::Ptr instance = this->_createGroup ( "instance", entity );
+  pfGroup::Ptr instance = this->_createGroup ( "instance", entity );
   if ( instance.isNull() )
     return false;
 
@@ -771,7 +791,7 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
   // It worked.
   return true;
 }
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -781,7 +801,7 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 
 bool TrJt2Pf::_endCurrentGroup()
 {
-  SL_PRINT ( "In TrJt2Pf::_endCurrentGroup(), this = %X\n", this );
+  SL_PRINT2 ( "In TrJt2Pf::_endCurrentGroup(), this = %X\n", this );
   SL_ASSERT ( _groupStack.size() >= 2 );
 
   // Pop the group.
@@ -790,12 +810,3 @@ bool TrJt2Pf::_endCurrentGroup()
   // It worked.
   return true;
 }
-
-
-/*
-TODO
-- Figure out how to delete those arrays.
-- Figure out when to return true and false. 
-  Look at TrJt2Pf::_addArray().
-- There are more properties at the LOD and shape level, add them.
-*/

@@ -47,12 +47,14 @@
 #include "TrJt2PfApi.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Database/Jupiter/DbJtTraverser.h"
 # include <list>
 # include <string>
 # include <vector>
 #endif
 
 class pfGroup;
+class pfNode;
 
 
 namespace CadKit
@@ -73,29 +75,29 @@ public:
   bool                    init();
 
   // Translate the Jupiter database to Performer.
-  bool                    translate ( const char *filename, pfNode &root );
+  bool                    translate ( const char *filename, pfGroup &root );
 
 protected:
 
-  typedef std::list<pfGroup *> XmlGroupStack;
-  SlRefPtr<DbJtTraverser> _jtTraverser;
+  typedef std::list<pfGroup *> GroupStack;
+  DbJtTraverser::Ptr _jtTraverser;
   std::string _error;
-  XmlGroupStack _groupStack;
+  GroupStack _groupStack;
 
-  bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
-  bool                    _addColor      ( const unsigned int &valid, const unsigned int &which, const SlVec4f &color, const char *colorName, DbXmlGroup &material );
-  bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
-  bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, DbXmlGroup &lods );
-  bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part );
-  bool                    _addName       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
-  bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
-  bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
-  bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, const std::string &name, DbXmlGroup &shape );
-  bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbXmlGroup &lod );
-  bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
+  //bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );
+  //bool                    _addColor      ( const unsigned int &valid, const unsigned int &which, const SlVec4f &color, const char *colorName, DbXmlGroup &material );
+  //bool                    _addInstance   ( DbJtTraverser::EntityHandle entity );
+  //bool                    _addLOD        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, DbXmlGroup &lods );
+  //bool                    _addLODs       ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part );
+  bool                    _addName       ( DbJtTraverser::EntityHandle entity, pfNode &node );
+  //bool                    _addMaterial   ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
+  //bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
+  //bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, const std::string &name, DbXmlGroup &shape );
+  //bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbXmlGroup &lod );
+  //bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
   bool                    _assemblyStart ( DbJtTraverser::EntityHandle entity );
 
-  DbXmlGroup::Ptr         _createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity );
+  pfGroup *               _createGroup ( DbJtTraverser::EntityHandle entity );
 
   bool                    _endCurrentGroup();
 
@@ -105,9 +107,13 @@ protected:
 
   static bool             _traverseCallback ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData );
   bool                    _traverseNotify   ( const DbJtTraverser::Message &message );
-
-  bool                    _write ( std::string &filename );
 };
+
+
+// So class SlRefPtr works with class pfNodes. 
+void _incrementPointerReferenceCount ( pfNode *p );
+void _decrementPointerReferenceCount ( pfNode *p );
+
 
 }; // namespace CadKit
 

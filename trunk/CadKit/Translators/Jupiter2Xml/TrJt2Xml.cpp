@@ -56,7 +56,6 @@
 # include "Standard/SlPrint.h"
 # include "Standard/SlBitmask.h"
 # include "Standard/SlStringFunctions.h"
-# include <fstream>
 #endif
 
 using namespace CadKit;

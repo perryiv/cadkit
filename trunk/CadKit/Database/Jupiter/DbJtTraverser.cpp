@@ -64,6 +64,7 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
 # include "Standard/SlStringFunctions.h"
+# include "Standard/SlInline.h"
 #endif
 
 // This is the only way to get a pointer to the traverser from inside the 
@@ -106,31 +107,6 @@ DbJtTraverser::~DbJtTraverser()
 {
   SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copy the given array to the sequence.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace CadKit
-{
-template <class T> void _copyArray ( const unsigned int &num, const T *array, std::vector<T> &vec )
-{
-  SL_PRINT3 ( "In CadKit::_copyArray(), num = %d, array = %X\n", num, array );
-  SL_ASSERT ( num > 0 );
-  SL_ASSERT ( array );
-
-  // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() return the correct number.
-  vec.resize ( num );
-
-  // Loop through the array and assign the elements to the vector.
-  for ( unsigned int i = 0; i < num; ++i )
-    vec[i] = array[i];
-}
-}; // namespace CadKit
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -776,7 +752,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
   // Vertices.
   if ( v.getReference() && vertexCount > 0 )
   {
-    CadKit::_copyArray ( vertexCount * 3, v.getReference(), vertices );
+    CadKit::copy ( vertexCount * 3, v.getReference(), vertices );
     valid |= SHAPE_ARRAY_VERTICES;
     success = true;
   }
@@ -784,7 +760,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
   // Normals.
   if ( n.getReference() && normalCount > 0 )
   {
-    CadKit::_copyArray ( normalCount * 3, n.getReference(), normals );
+    CadKit::copy ( normalCount * 3, n.getReference(), normals );
     valid |= SHAPE_ARRAY_NORMALS;
     success = true;
   }
@@ -792,7 +768,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
   // Colors.
   if ( c.getReference() && colorCount > 0 )
   {
-    CadKit::_copyArray ( colorCount * 3, c.getReference(), colors );
+    CadKit::copy ( colorCount * 3, c.getReference(), colors );
     valid |= SHAPE_ARRAY_COLORS;
     success = true;
   }
@@ -800,7 +776,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
   // Texture.
   if ( t.getReference() && textureCount > 0 )
   {
-    CadKit::_copyArray ( textureCount, t.getReference(), texture ); // Note: no "* 3" here.
+    CadKit::copy ( textureCount, t.getReference(), texture ); // Note: no "* 3" here.
     valid |= SHAPE_ARRAY_TEXTURE;
     success = true;
   }

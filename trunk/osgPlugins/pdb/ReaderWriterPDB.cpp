@@ -169,8 +169,10 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
   //std::string psfPath = _getPsfPath( file );
   //std::ifstream psf( psfPath.c_str());
 
+  std::auto_ptr< Progress::NoUpdate > progress ( new Progress::NoUpdate );
+
   // Parse all the file and build internal data.
-  this->_parse ( in, Usul::File::size ( file ) );
+  this->_parse ( in, Usul::File::size ( file ), progress.get() );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -213,7 +215,7 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize )
+void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress )
 {
   clock_t start, finish; // used by clock()
 	double total_second;
@@ -226,12 +228,15 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize )
   Molecule * molecule = NULL;
 
   unsigned int estimatedNumAtoms ( filesize / 80 );
+  unsigned int bytesReadSoFar ( 0 );
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
   {
     // Read the line.
     in.getline ( buf, size - 1 );
+
+    bytesReadSoFar += ::strlen ( buf );
 
     // For convenience, read it into a string-stream.
     std::istringstream in ( buf );
@@ -287,6 +292,10 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize )
         columnStart += columnLength;
       }
 	  }*/
+
+    float total ( ( float ) bytesReadSoFar / filesize );
+    
+    (*progress) ( total * 100 );
   }
 
 //  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )

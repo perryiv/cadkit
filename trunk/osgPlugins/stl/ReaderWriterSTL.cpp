@@ -20,6 +20,7 @@
 
 #include "OsgTools/Visitor.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/File/Stats.h"
 
 #include <sstream>
 #include <iostream>
@@ -88,7 +89,26 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 {
   try
   {
-    return this->_read ( file, options );
+     // Make sure we handle files with this extension.
+    if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
+      return ReadResult::FILE_NOT_HANDLED;
+
+    // Make sure the internal data members are initialized.
+    this->_init();
+
+    std::auto_ptr < Progress::NoUpdate > progress ( new Progress::NoUpdate );
+
+    //read the scene
+    this->_read ( file, progress.get() );
+
+    // Build the scene.
+    osg::ref_ptr<osg::Group> root ( this->_build() );
+
+    // Initialized again to free accumulated data.
+    this->_init();
+
+    // Return the scene
+    return root.release();
   }
 
   // Catch known exceptions.
@@ -228,7 +248,7 @@ bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
+void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in, Progress::NoUpdate *progress )
 {
   // Skip header.
   in.seekg ( 80 );
@@ -241,6 +261,10 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
   in.read(buf, 4);
 
   ::memcpy(&numFacets, buf, 4);
+
+  const unsigned int totalFacets ( numFacets );
+  unsigned int facetsReadSoFar ( 0 );
+  double lastTime ( ::clock() );
 
   while ( numFacets > 0 )
   {
@@ -264,6 +288,14 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
     _polygons[3].first.push_back ( v2 );
     
     --numFacets;
+
+    facetsReadSoFar++;
+
+    if ( ( ::clock() - lastTime ) > 500 )
+    {
+      (*progress ) ( ( (float ) facetsReadSoFar / totalFacets ) * 100 );
+      lastTime = ::clock();
+    }
   }
 }
   
@@ -274,16 +306,21 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
+void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress )
 {
+  unsigned int bytesReadSoFar ( 0 );
   const unsigned int size ( 512 );
   char buf[size];
   Vertices vertices;
   Normals normals;
 
+  double lastTime ( ::clock() );
+
   while( !in.eof() )
   {
     in.getline(buf, size - 1);
+
+    bytesReadSoFar += ::strlen ( buf );
 
     std::istringstream in ( buf );
 
@@ -333,6 +370,12 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
     else if (type == "endsolid")
     {
     }
+
+    if ( ( ::clock() - lastTime ) > 500 )
+    {
+      (*progress ) ( ( ( float ) bytesReadSoFar / filesize ) * 100 ); 
+      lastTime = ::clock();
+    }
   }
 }
 
@@ -343,22 +386,15 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, const Options *options )
+void ReaderWriterSTL::_read ( const std::string &filename, Progress::NoUpdate *progress )
 {
-  // Make sure we handle files with this extension.
-  if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
-    return ReadResult::FILE_NOT_HANDLED;
-
-  // Make sure the internal data members are initialized.
-  this->_init();
-
   // See if the file is ascii.
   if ( this->_isAscii ( filename ) )
   {
     std::ifstream in ( filename.c_str() );
     if ( !in.is_open() )
       throw std::runtime_error ( "Error 2346450991: Failed to open ascii file: " + filename );
-    this->_parseAsciiFile ( in );
+    this->_parseAsciiFile ( in, Usul::File::size( filename ), progress );
   }
 
   // Otherwise, read the binary file.
@@ -367,17 +403,8 @@ ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, co
     std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
     if ( !in.is_open() )
       throw std::runtime_error ( "Error 3162884175: Failed to open binary file: " + filename );
-    this->_parseBinaryFile ( in );
+    this->_parseBinaryFile ( in, progress );
   }
-
-  // Build the scene.
-  osg::ref_ptr<osg::Group> root ( this->_build() );
-
-  // Initialized again to free accumulated data.
-  this->_init();
-
-  // Return the scene
-  return root.release();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

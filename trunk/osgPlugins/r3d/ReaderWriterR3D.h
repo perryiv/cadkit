@@ -10,6 +10,10 @@
 #ifndef __READER_WRITER_R3D_H__
 #define __READER_WRITER_R3D_H__
 
+#include "Export.h"
+
+#include "Usul/Interfaces/IProgressBar.h"
+
 #include "osgDB/ReaderWriter"
 
 #include <string>
@@ -19,13 +23,14 @@
 namespace osg { class Group; };
 
 
-class ReaderWriterR3D : public osgDB::ReaderWriter
+class OSG_R3D_EXPORT ReaderWriterR3D : public osgDB::ReaderWriter
 {
 public:
 
   typedef osgDB::ReaderWriter BaseClass;
   typedef osgDB::ReaderWriter::ReadResult ReadResult;
   typedef osgDB::ReaderWriter::Options Options;
+  typedef Usul::Interfaces::IProgressBar Progress;
 
   ReaderWriterR3D();
   ~ReaderWriterR3D();
@@ -33,6 +38,10 @@ public:
   virtual bool            acceptsExtension ( const std::string &extension );
   virtual const char*     className();
   virtual ReadResult      readNode ( const std::string &filename, const Options *options );
+
+  void                    init() { this->_init(); }
+  void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_parse( filename, progress ); }
+  osg::Group*             build () const { return this->_build(); }
 
 protected:
 
@@ -42,7 +51,7 @@ protected:
 
   void                    _init();
 
-  void                    _parse ( std::istream &in );
+  void                    _parse ( const std::string& filename, Progress::NoUpdate *progress );
 
   ReadResult              _read ( const std::string &, const Options * );
 

@@ -21,6 +21,7 @@ namespace Usul
     class IModeStack : public Usul::Interfaces::IUnknown
     {
     public:
+
       /// Smart-pointer definitions.
       USUL_DECLARE_QUERY_POINTERS ( IModeStack );
 
@@ -29,6 +30,22 @@ namespace Usul
       virtual void pushMode( ModeType ) = 0;
       virtual void popMode() = 0;
 
+      /// Small struct to push/pop the stack.
+      struct PushPop
+      {
+        PushPop ( IModeStack *s, const ModeType &m ) : _s ( s )
+        {
+          if ( _s.valid() )
+            _s->pushMode ( m );
+        }
+        ~PushPop()
+        {
+          if ( _s.valid() )
+            _s->popMode();
+        }
+      protected:
+        typename IModeStack::RefPtr _s;
+      };
     }; //class IModeStack
 
     typedef IModeStack< unsigned int, 1100797533u > IModeStackUint;

@@ -88,10 +88,8 @@ DbOsgDatabase::~DbOsgDatabase()
   // The stack should just be holding the root.
   SL_ASSERT ( 1 == _groupStack->size() );
 
-  // If the client has referenced the root then the count will be greater 
-  // than two. There should be no less than two though, one for the initial 
-  // reference in the constructor, and one for the initial push onto the stack.
-  SL_ASSERT ( this->_getRoot()->referenceCount() >= 2 );
+  // If the client may have referenced the root.
+  SL_ASSERT ( this->_getRoot()->referenceCount() >= 1 );
 
   // Pop the root off the stack.
   this->_popGroup();

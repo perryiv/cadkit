@@ -20,6 +20,7 @@
 // below) includes <iostream.h>. This causes VC++ error C2874 with STLport.
 #ifdef _WIN32
 #define EAI_STANDARD_HXX // From DMDataTk/eaiStandard.h
+#define DMDTK_MAJOR_VERSION  5
 #define EAI_TOOLKIT_API __declspec(dllimport)
 enum { eai_ERROR = 0, eai_OK = 1 };
 enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, 

@@ -429,6 +429,7 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
   {
     // Then set the state's material.
     state.setAttr ( PFSTATE_FRONTMTL, mat );
+    state.setAttr ( PFSTATE_BACKMTL, mat ); // TODO, needed?
 
     // Turn on lighting. 
     state.setMode ( PFSTATE_ENLIGHTING, PF_ON );
@@ -578,13 +579,6 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   if ( false == this->_createGroup ( entity, part ) )
     return false;
 
-  // TODO. Temporary, just simple cubes in place of the parts.
-#ifdef _DEBUG
-  //pfGeode *geode = new pfGeode;
-  //geode->addGSet ( ::pfdNewCube ( NULL ) );
-  //part.getGroup()->addChild ( geode );
-#endif
-
   // Add the LOD groups.
   this->_addLODs ( entity, part );
 
@@ -650,8 +644,12 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   // Should be true.
   SL_ASSERT ( numShapes > 0 );
 
+  // The name for the nodes.
+  std::string name;
+  CadKit::format ( name, "part=%s,lod=%d", part.getGroup()->getName(), whichLOD );
+
   // Make a new LOD.
-  //  SlRefPtr<pfLOD> lod = new pfLOD;
+  // SlRefPtr<pfLOD> lod = new pfLOD;
   SlRefPtr<pfGroup> lod = new pfGroup;
   if ( lod.isNull() )
     return false;
@@ -660,6 +658,10 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   SlRefPtr<pfGeode> geode = new pfGeode;
   if ( geode.isNull() )
     return false;
+
+  // Set the names.
+  lod->setName ( name.c_str() );
+  geode->setName ( name.c_str() );
 
   // Add the geode to the LOD.
   lod->addChild ( geode );
@@ -842,6 +844,9 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
   // Tell the GeoSet the length of the primitives.
   gset->setPrimLengths ( this->_makeIntArray ( numVertices ) );
+
+  // Attach the GeoState to the GeoSet.
+  gset->setGState ( state );
 
   // Add the GeoSet to the geode.
   geode.addGSet ( gset );

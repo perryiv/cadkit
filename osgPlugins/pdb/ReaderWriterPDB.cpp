@@ -204,10 +204,8 @@ osg::Group *ReaderWriterPDB::_build() const
   for (Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i)
   {
     const Bond &bond = *i;
-
     osg::ref_ptr<osg::LOD> lod (this->_makeBond( bond ) );
-
-    //root->addChild ( lod.get() );
+    root->addChild ( lod.get() );
   }
 
   // Return the root.
@@ -318,7 +316,7 @@ osg::LOD *ReaderWriterPDB::_makeAtom ( const Atom &atom ) const
   }
 
   // Last child is a cube.
-  lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
+  //lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
 
   // Set the centers and ranges.
   this->_setCentersAndRanges ( lod.get() );
@@ -345,6 +343,9 @@ osg::Geode *ReaderWriterPDB::_makeSphere ( const osg::Vec3 &center, float radius
   osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
   hints->setDetailRatio ( detail );
   drawable->setTessellationHints ( hints.get() );
+
+  // TODO, make this an option. Display lists crash with really big files.
+  drawable->setUseDisplayList ( false );
 
   // Add the sphere to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
@@ -450,7 +451,8 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
         memset(num,0, 6*sizeof(char));
         strncpy(num, buf + columnStart, columnLength);
         connect = atoi (num);
-        _bonds.push_back( Bond (_atoms.at(id), _atoms.at(connect), _bonds.size() + 1));
+        if ( _atoms.at(id).getId() != -1 && _atoms.at(connect).getId() != -1 )
+          _bonds.push_back( Bond (_atoms.at(id), _atoms.at(connect), _bonds.size() + 1));
         columnStart += columnLength;
       }
 	  }

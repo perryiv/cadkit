@@ -47,7 +47,6 @@ public:
   typedef Usul::Interfaces::IProgressBar Progress;
 
   ReaderWriterPDB();
-  ~ReaderWriterPDB();
 
   virtual bool            acceptsExtension ( const std::string &extension );
 
@@ -78,6 +77,8 @@ public:
   void                    init() { this->_init(); }
 
 protected:
+
+  ~ReaderWriterPDB();
 
   osg::Group *            _build() const;
 

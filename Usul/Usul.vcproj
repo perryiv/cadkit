@@ -402,6 +402,9 @@
 						RelativePath=".\Interfaces\IMenuEntry.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IOsgFoxDocument.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IPreferencesManager.h">
 					</File>
 					<File

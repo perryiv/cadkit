@@ -37,7 +37,6 @@ public:
   typedef Usul::Interfaces::IProgressBar Progress;
 
   ReaderWriterSTL();
-  ~ReaderWriterSTL();
 
   virtual bool            acceptsExtension ( const std::string &extension );
   virtual const char*     className();
@@ -52,6 +51,8 @@ public:
   bool                    isAscii ( const std::string &filename ) const { return this->_isAscii ( filename ); }
 
 protected:
+
+  ~ReaderWriterSTL();
 
   osg::Group *            _build() const;
   void                    _init();

@@ -72,8 +72,11 @@ public:
   /// Destructor.
   ~Message();
 
-  // Convenience functions to set some buttons. Deletes any existing buttons.
+  /// Convenience functions to set some buttons. Deletes any existing buttons. 
+  /// In the second function, separate buttons with a '|' character. 
+  /// For example, "OK|Cancel".
   void                    button ( const std::string &b );
+  void                    buttons ( const std::string &b );
   void                    buttons ( const std::string &b1, const std::string &b2 );
   void                    buttons ( const std::string &b1, const std::string &b2, const std::string &b3 );
 
@@ -97,6 +100,13 @@ public:
   /// Return the checks.
   Checks &                checks()       { return _checks; }
   const Checks &          checks() const { return _checks; }
+
+  /// Convenience function to display an error dialog. Separate buttons 
+  /// with a '|' character. For example, "OK|Cancel".
+  static std::string      error ( FX::FXObject *owner, 
+                                  const std::string &buttons, 
+                                  const std::string &title, 
+                                  const std::string &text );
 
   /// Set/get the icon. Pass true for "destroy" if this instance should 
   /// delete the icon in the destructor. The last function creates the icon.

@@ -24,8 +24,54 @@
 
 namespace Usul {
 namespace Algorithms {
+
+  namespace Detail 
+  {
+    template < class Iterator, class VertexSequence > 
+    void makePolygon ( Iterator &iter, unsigned int numVertsPerPoly, const VertexSequence &vertices, VertexSequence &polygon )
+    {
+      for ( unsigned int i = 0; i < numVertsPerPoly; ++i)
+      {
+        polygon.push_back( *iter );
+        ++iter
+      }
+    }
+
+    template < class VertexSequence > 
+    void makePolygon ( unsigned int startIndex, unsigned int numVertsPerPoly, const VertexSequence &vertices, VertexSequence &polygon )
+    {
+      for ( unsigned int i = startIndex; i < startIndex + numVertsPerPoly; ++i)
+      {
+        polygon.push_back( vertices.at( i ) );
+      }
+    }
+  }; //namespace Detail
+
 namespace Polygons {
 
+  template < class VertexSequence >
+  struct TriangleText
+  {
+    bool operator() ( const VertexSequence &polygonOne, const VertexSequence &polygonTwo ) const
+    {
+      typedef VertexSequence::const_iterator Iterator;
+      bool foundAdjacent = false;
+      for( Iterator i = polygonOne.begin(); i != polygonOne.end(); ++i )
+      {
+        for ( Iterator j = polygonTwo.begin(); j != polygonTwo.end(); ++j )
+        {
+          if( *i == *j )
+          {
+            if( foundAdjacent )
+              return true;
+            else
+              foundAdjacent = true;
+          }
+        }
+      }
+      return false;
+    }
+  };
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -101,12 +147,16 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     throw std::runtime_error ( message.str() );
   }
 
+  //IndexSequence orginals ( vertices.size() / numVertsPerPoly );
+  //for(unsigned int i = 0; i < vertices.size() / numVertsPerPoly; ++i)
+  //  orginals.push_back( i );
+
   // Fill the sequence of indices.
-  indices.resize ( numPolyons );
+  indices.resize ( vertices.size() / numVertsPerPoly );
   {
     SizeType count ( 0 );
-    for ( IndexIterator i = indices.begin(); i < indices.end(); ++i )
-      *indices = count++;
+    for ( IndexIterator i = indices.begin(); i != indices.end(); ++i )
+      *i = count++;
   }
 
   // Put the first polygon in the list of keepers.
@@ -121,29 +171,26 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   {
     // Define current polygon.
     VertexSequence currentPolygon;
-    Detail::makePolygon ( currentItr, numVertsPerPoly, vertices, currentPolygon );
+    Detail::makePolygon ( *currentItr * numVertsPerPoly, numVertsPerPoly, vertices, currentPolygon );
 
     // Loop through all vertices.
-    VertexIterator vi = vertices.begin();
-    while ( vertices.end() != vi )
+    //VertexIterator vi = vertices.begin();
+    IndexIterator current = indices.begin();
+    while ( indices.end() != current )
     {
       // Define polygon to test against current.
       VertexSequence testMe;
-      Detail::makePolygon ( currentItr, numVertsPerPoly, vertices, testMe );
-
-      // Collect vertices for this polygon.
-      {
-        VertexIterator last ( vi );
-        std::advance ( last, numVertsPerPoly );
-        std::copy ( vi, last, testThisPolygon.begin() );
-      }
+      Detail::makePolygon ( *current * numVertsPerPoly, numVertsPerPoly, vertices, testMe );
 
       // See if the current keeper is adjacent to this polygon.
-      if ( true == adjacentTest ( currentPolygon, testThisPolygon )
+      if ( true == adjacentTest ( currentPolygon, testMe ) )
       {
         // Put the polygon into the list of keepers.
-        keepers.insert ( keepers.end(), 
+        keepers.push_back ( *current );
+        indices.erase ( current );
       }
+
+      ++current;
     }
 
     // Go to the next keeper.

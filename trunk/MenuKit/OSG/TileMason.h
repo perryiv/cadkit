@@ -15,6 +15,7 @@
 // std includes
 #include <numeric>  // for accumulate(...)
 
+#include "OsgTools/Box.h" // TODO: take this out!
 namespace MenuKit
 {
 
@@ -33,8 +34,7 @@ namespace MenuKit
     class TileMason : public Visitor
     {
     public:
-      TileMason(): Visitor(), _tile(), _hori(), _vert(), _scene(0x0) {}
-      TileMason(Visitor::Mode m): Visitor(m), _tile() {}
+      TileMason(): Visitor(Visitor::EXPANDED), _tile(), _hori(), _vert(), _scene(0x0) {}
 
       MENUKIT_DECLARE_POINTER(TileMason);
 
@@ -54,11 +54,12 @@ namespace MenuKit
       // TODO: clean up all these overloaded functions
       // TODO: once the Item class has been rewritten
       // TODO: and the Menu and Button classes have been removed
-      osg::Vec3 displacement(const Menu&);
-      osg::Vec3 displacement(const Button&);
-      void determine_push(const Menu&);
-      void determine_push(const Button&);
-      void pop_children(const Menu&);
+      osg::Vec3 displacement(const Menu& item);
+      osg::Vec3 displacement(const Button& item);
+      void determine_push(const Menu& parent,const Menu& item);
+      void determine_push(const Menu& parent,const Button& item);
+      void pop_children(const Menu& menu);
+      void determine_pop(const Menu& menu);
 
     private:
       TileType _tile;
@@ -77,218 +78,159 @@ using namespace MenuKit;
 using namespace OSG;
 
 template<class TileType>
-void TileMason<TileType>::determine_push(const Menu& m)
+void TileMason<TileType>::determine_push(const Menu& parent, const Menu& item)
 {
-  const Menu* parent = m.parent();
-
-  // TODO: make sure 'displacement' is done properly for this case
-  osg::Vec3 del = displacement( m );
-  if( parent )
-  {
-    // add to the stack
-    if( parent->layout() == Menu::HORIZONTAL )
-      _hori.push( del[0] );
-    else
-      _vert.push( del[1] );
-  }
+  osg::Vec3 del = displacement( item );
+  if( parent.layout() == Menu::HORIZONTAL )
+    _hori.push( del[0] );
 
   else
-  {
-    _hori.push( del[0] );
     _vert.push( del[1] );
+}
+
+template<class TileType>
+void TileMason<TileType>::determine_push(const Menu& parent, const Button& item)
+{
+  osg::Vec3 del = displacement( item );
+  if( parent.layout() == Menu::HORIZONTAL )
+    _hori.push( del[0] );
+
+  else
+    _vert.push( del[1] );
+}
+
+template<class TileType>
+void TileMason<TileType>::pop_children(const Menu& parent)
+{
+  Menu::Layout lo = parent.layout();
+  // clear the stack spots for children of the menu
+  for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
+  {
+    if(lo == Menu::HORIZONTAL)
+      _hori.pop();
+    else
+      _vert.pop();
   }
 }
 
 template<class TileType>
-void TileMason<TileType>::determine_push(const Button& b)
+void TileMason<TileType>::determine_pop(const Menu& menu)
 {
-  // TODO: make sure 'displacement' watches for correct column width
-  osg::Vec3 del = displacement( b );
-  const Menu* parent = b.parent();
-  if( parent )
-  {
-    // add to the stack
-    if( parent->layout() == Menu::HORIZONTAL )
-      _hori.push( del[0] );
-    else
-      _vert.push( del[1] );
-  }
+  if( menu.layout() == Menu::HORIZONTAL )
+    _hori.pop();
 
   else
-  {
-    // TODO: does this make sense?
-    _hori.push( del[0] );
-    _vert.push( del[1] );
-  }
-}
-
-template<class TileType>
-void TileMason<TileType>::pop_children(const Menu& m)
-{
-  // TODO: fix this now!!!
-//  // clear the current stack spots
-//  for(Menu::const_iterator iter=m.begin(); iter!=m.end(); ++iter)
-//  {
-//    if( m.layout() == Menu::HORIZONTAL )
-//      _hori.pop();
-//    else
-//      _vert.pop();
-//  }
-//}
+    _vert.pop();
 }
 
 template<class TileType>
 osg::Vec3 TileMason<TileType>::displacement(const Menu& m)
 {
-  osg::Vec3 dv;
-
-  if( m.parent() )
-  {
-    const Menu* parent = m.parent();
-    Menu::Layout pl = parent->layout();
-    Menu::Layout ml = m.layout();
-
-    if( pl==Menu::VERTICAL && ml==Menu::VERTICAL )
-    {
-      dv[0] = 0.5*_tile.width( m );
-      dv[1] = 0.0;
-    }
-
-    if( pl==Menu::VERTICAL && ml==Menu::HORIZONTAL )
-    {
-      dv[0] = 0.5*_tile.width( m );
-      dv[1] = 0.0;
-    }
-
-    if( pl==Menu::HORIZONTAL && ml==Menu::VERTICAL )
-    {
-      dv[0] = 0.5*_tile.width( m ); //TODO: - 0.5*_tile(parent);
-      dv[1] = -0.5*_tile.box().height();
-    }
-
-    if( pl==Menu::HORIZONTAL && ml==Menu::HORIZONTAL )
-    {
-      dv[0] = 0.5*_tile.width( m );
-      dv[1] = 0.0;
-    }
-  }
-
-  else  // parent not valid
-  {
-    dv[0] = 0.5*_tile.width( m );
-    dv[1] = -0.5*_tile.box().height();
-  }
-
-  dv[2] = 0.0;
+  // TODO: check if item is a SEPARATOR
+  osg::Vec3 dv( _tile.width(m), _tile.box().height(), 0.0 );  // TODO: y=_tile.height(m)
   return dv;
 }
 
 template<class TileType>
 osg::Vec3 TileMason<TileType>::displacement(const Button& b)
 {
-  osg::Vec3 dv;
-
-  const Menu* parent = b.parent();
-  if( parent )
-  {
-    Menu::Layout pl = parent->layout();
-
-    if( pl==Menu::VERTICAL )
-    {
-      dv[0] = 0.5*_tile.width( b );
-      dv[1] = 0.0;
-    }
-
-    if( pl==Menu::HORIZONTAL )
-    {
-      dv[0] = 0.5*_tile.width( b ); //TODO: - 0.5*_tile(parent);
-      dv[1] = -0.5*_tile.box().height();
-    }
-  }
-
-  else  // parent not valid
-  {
-    dv[0] = 0.5*_tile.width( b );
-    dv[1] = -0.5*_tile.box().height();
-  }
-
-  dv[2] = 0.0;
+  // TODO: check if item is a SEPARATOR
+  osg::Vec3 dv( _tile.width(b), _tile.box().height(), 0.0 );  // TODO: y=_tile.height(m)
   return dv;
 }
 
 template<class TileType>
 void OSG::TileMason<TileType>::apply(Menu& m)
 {
+  // manage the width of the item
   Menu* parent = m.parent();
-  if( parent )
-  {
-    Menu::Layout pl = parent->layout();
-
-    if( pl == Menu::HORIZONTAL )
-    {
-      float width = _tile.width( m );
-      _tile.box().width( width );
-    }
-
-    else  // parent menu is VERTICAL
-    {
-      // TODO: determine if this can be pulled out
-      // TODO: so that the WIF test is only needed once
-      // find the widest possible graphic
-      Detail::WidestItemFinder<TileType> wif;
-      std::for_each( parent->begin(), parent->end(), wif);
-      float width = wif.widest();
-      _tile.box().width( width );
-    }
-  }
-
-  else  // no parent
+  if( !parent )  // no parent
   {
     _scene = new osg::Group();
+    OsgTools::ColorBox cb(0.2,0.2,0.2);  // TODO: take this out
+    cb.color_policy().color( osg::Vec4(1.0,0.0,0.0,1.0) );  // TODO: take this out
+    _scene->addChild( cb() );  // TODO: take this out
 
+    // escape when no parent and no text
     if( m.text().empty() )  // do not generate a graphic
-    {
-      traverse( m );
+    {                       // do not waste time with the remainder of this method
+      traverse( m );        // just move onto traversal
+      if( m.expanded() )    // this pop is not really necessary, just overly cautious
+        pop_children( m );
       return;
     }
 
+    // no parent means assume a horizontal style for the item's graphic
+    _tile.box().width( _tile.width( m ) );
+  }
+
+  Menu::Layout pl = parent->layout();
+  if( pl == Menu::HORIZONTAL )
+  {
     float width = _tile.width( m );
     _tile.box().width( width );
+  }
+
+  else  // parent menu is VERTICAL
+  {
+    // TODO: determine if this can be pulled out
+    // find the widest possible graphic
+    float widest(0.0);
+    for(Menu::const_iterator iter=parent->begin(); iter!=parent->end(); ++iter)
+    {
+      float tempwidth = _tile.width( (*iter).get() );
+      if( tempwidth > widest )
+        widest = tempwidth;
+    }
+    _tile.box().width( widest );
   }
 
   // TODO: configure the tile if necessary for different themes
   // TODO: by telling the tile what mode to be in.
   // TODO: change this default command:
-  _tile.mode( TileType::NORMAL );
+  if( m.expanded() )
+    _tile.mode( TileType::HIGHLIGHT );
+
+  else
+    _tile.mode( TileType::NORMAL );
+
+  //if( m.disabled() )   // TODO: shouldn't there be a disabled flag in the Item class??
+  //  _tile.mode( TileType::DISABLED );
 
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( m );
 
   // calculate the position of the graphic
-  osg::Vec3 sum( std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f),
-                 std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f),
-                 0.0f);
-  osg::Vec3 del = displacement( m );
-  osg::Vec3 all = sum + del;
+  osg::Vec3 sum(std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f),
+               -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f),
+                0.0f);
 
   // add the graphic to the scene, with the correct position
   osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
   mt->addChild( node.get() );
-  mt->setMatrix( osg::Matrix::translate(all) );
+  mt->setMatrix( osg::Matrix::translate(sum) );
   _scene->addChild( mt.get() );
 
-  // make the child graphics
-  determine_push( m );
-  traverse( m );  // traverse the children of menu
-  pop_children( m );
+  // manage placement of items
+  if( m.expanded() )
+    determine_push( m , m );
+
+  traverse( m );
+
+  if( m.expanded() )
+  {
+    pop_children( m );
+    determine_pop( m  );
+  }
+
+  if( parent )
+    determine_push( *parent , m );
 }
 
 template<class TileType>
 void TileMason<TileType>::apply(Button& b)
 {
-  // TODO: is the tile a good place to put this code?
-  // TODO: thus simplifying the code here??
-  // determine the width of the graphic
+  // manage the width of the item
   Menu* parent = b.parent();
 
   if( parent )
@@ -304,26 +246,31 @@ void TileMason<TileType>::apply(Button& b)
     else  // parent menu is VERTICAL
     {
       // TODO: determine if this can be pulled out
-      // TODO: so that the WIF test is only needed once
       // find the widest possible graphic
-      Detail::WidestItemFinder<TileType> wif;
-      std::for_each( parent->begin(), parent->end(), wif);
-      float width = wif.widest();
-      _tile.box().width( width );
+      float widest(0.0);
+      for(Menu::const_iterator iter=parent->begin(); iter!=parent->end(); ++iter)
+      {
+        float tempwidth = _tile.width( (*iter).get() );
+        if( tempwidth > widest )
+          widest = tempwidth;
+      }
+      _tile.box().width( widest );
     }
   }
 
-  else
+  else // no parent
   {
     _scene = new osg::Group();
-    float width = _tile.width( b );
-    _tile.box().width( width );
+    OsgTools::ColorBox cb(0.3,0.3,0.3);  // TODO: take this out
+    cb.color_policy().color( osg::Vec4(0.0,1.0,0.0,1.0) );  // TODO: take this out
+    _scene->addChild( cb() );  // TODO: take this out
+    _tile.box().width( _tile.width( b ) );
   }
 
   // TODO: configure the tile if necessary for different themes
   // TODO: by telling the tile what mode to be in.
   // TODO: change this default command:
-  _tile.mode( osgTile::NORMAL );
+  _tile.mode( TileType::NORMAL );
 
   // create the graphic
   osg::ref_ptr<osg::Node> node = _tile( b );
@@ -331,17 +278,16 @@ void TileMason<TileType>::apply(Button& b)
   // calculate the position of the graphic
   float xsum = std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f);
   float ysum = std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f);
-  osg::Vec3 sum( xsum, ysum, 0.0f);
-  osg::Vec3 del = displacement( b );
-  osg::Vec3 all = sum + del;
+  osg::Vec3 sum( xsum, -ysum, 0.0f);
 
   // add the graphic to the scene, with the correct position
   osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
   mt->addChild( node.get() );
-  mt->setMatrix( osg::Matrix::translate(all) );
+  mt->setMatrix( osg::Matrix::translate(sum) );
   _scene->addChild( mt.get() );
 
-  determine_push( b );
+  if( parent )
+    determine_push( *parent, b );
 }
 
 #endif

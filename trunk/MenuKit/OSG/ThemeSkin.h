@@ -1,6 +1,9 @@
 #ifndef _menukit_osg_themeskin_h_
 #define _menukit_osg_themeskin_h_
 
+#include "../Menu.h"
+#include "../Button.h"
+
 #include "osgText/Font"
 #include "../Box.h"
 
@@ -14,11 +17,15 @@ namespace MenuKit
 
   namespace OSG
   {
+    // TODO: rename this class to 'Skin'
+    // when the other skin class has been removed
 
     /** ThemeSkin
       * 
       * This is an abstract base class for implementing classes
-      * that want to take advantage of a 'Theme' member.
+      * that want to take advantage of a 'Theme' member.  The
+      * Box and ThemeType members are template requirements for
+      * the ColorThemeSkinTile class.
       *
       * Imlementing classes will need to manufacture graphic
       * objects.  Derived classes will most likey use the
@@ -29,7 +36,7 @@ namespace MenuKit
     {
     public:
       ThemeSkin():
-        _box(1.0,0.0), _font(0x0), _theme()
+          _box(1.0,0.0), _font(), _theme()
       {}
 
       ThemeSkin(const ThemeSkin& ts):
@@ -53,6 +60,7 @@ namespace MenuKit
 
       virtual float width(const Menu& menu)=0;
       virtual float width(const Button& butn)=0;
+      virtual float width(const Item* item)=0;
       // TODO: virtual float width(const Item& menu);
 
       void font(osgText::Font* f) { _font = f; }

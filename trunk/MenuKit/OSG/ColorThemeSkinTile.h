@@ -59,6 +59,7 @@ namespace MenuKit
       // of the resulting graphic
       virtual float width(const Menu&);
       virtual float width(const Button&);
+      virtual float width(const Item* itm);
       // TODO: virtual float width(const Item&);
 
       // asks the skin to generate the graphic
@@ -148,6 +149,13 @@ float ColorThemeSkinTile<ThemeType,SkinType>::width(const Button& b)
 {
   _skin.box().height( this->box().height() );
   return( _skin.width(b) );
+}
+
+template<class ThemeType, class SkinType>
+float ColorThemeSkinTile<ThemeType,SkinType>::width(const Item* i)
+{
+  _skin.box().height( this->box().height() );
+  return( _skin.width(i) );
 }
 
 #endif

@@ -34,5 +34,6 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 #include "DMDataTk/eaiPointSet.h"
 #include "DMDataTk/eaiPolygonSet.h"
 #include "DMDataTk/eaiTriStripSet.h"
+#include "DMDataTk/eaiClientData.h"
 
 #endif // _CADKIT_DATABASE_JUPITER_VIS_API_HEADERS_H_

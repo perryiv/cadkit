@@ -378,7 +378,7 @@ bool DbJtTraverser::_sendMessage ( const Message &message )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtTraverser::_traverseCallback ( eaiHierarchy *node, int level )
+int DbJtTraverser::_traverseCallback ( eaiHierarchy *node, int level, eaiClientData * )
 {
   SL_PRINT3 ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", node, level );
   SL_ASSERT ( DbJtTraverser::_getCurrent() );

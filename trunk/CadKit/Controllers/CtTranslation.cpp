@@ -377,7 +377,7 @@ bool CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown
   SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp2 ( _source, source );
 
   // Make sure we have the necessary interfaces.
-  SlQueryPtr<IDataSource,IUnknown,Private::DoNothing> ds ( source );
+  SlQueryPtr<IDataSource> ds ( source );
   if ( ds.isNull() )
   {
     PRINT << "Failed to get IDataSource interface from the data source." << std::endl;

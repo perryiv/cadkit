@@ -18,46 +18,9 @@
 
 #include "SlRefPtr.h"
 
-// I do not like to putting this here, as I view Standard and Interfaces to 
-// be equally low-level. However, when I forget to include IUnknown.h before 
-// this header, I get a VC++ internal compiler error (which it doesn't print 
-// any kind of clue as to the source of the problem). Since IUnknown.h is 
-// entirely inline this should not create a dependency problem.
-// TODO, figure out a better solution.
-//#include "Interfaces/IUnknown.h"
-
 
 namespace CadKit{
 namespace Private {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Safely query for the interface. The template parameter NoInterfacePolicy
-//  defines what happens when the interface is not found.
-//
-//  Note: gcc does not like NoInterfacePolicy to be passed by reference
-//  when declared like this "NoInterfacePolicy()" when called.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template
-<
-  typename InterfaceID, 
-  class InterfaceType, 
-  class NoInterfacePolicy
->
-inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, NoInterfacePolicy policy )
-{
-  // Overload this for specific types.
-  InterfaceType *answer = CadKit::queryInterface ( iid, unknown );
-
-  // Check the policy.
-  policy ( answer );
-
-  // Return the answer.
-  return answer;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,10 +29,10 @@ inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-struct DoNothing
+struct QueryPtrDefaultPolicy
 {
-  DoNothing(){}
-  void operator() ( const void * ){}
+  QueryPtrDefaultPolicy(){}
+  template < class Argument > void operator() ( bool state, const Argument &argument ){}
 };
 
 
@@ -86,7 +49,7 @@ template
 <
   class NewInterfaceType, 
   class OldInterfaceType = CadKit::IUnknown,
-  class NoInterfacePolicy = CadKit::Private::DoNothing
+  class NoInterfacePolicy = CadKit::Private::QueryPtrDefaultPolicy
 >
 class SlQueryPtr : public SlRefPtr<NewInterfaceType>
 {
@@ -99,9 +62,10 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   SlQueryPtr ( OldInterfaceType *ptr ) : 
-    SlRefPtr<NewInterfaceType> ( static_cast<NewInterfaceType *> ( Private::queryInterface ( NewInterfaceType::IID, ptr, NoInterfacePolicy() ) ) )
+    SlRefPtr<NewInterfaceType> ( static_cast<NewInterfaceType *> ( CadKit::queryInterface ( NewInterfaceType::IID, ptr ) ) )
   {
-    // Empty.
+    // Check the policy.
+    NoInterfacePolicy() ( this->isValid(), "Interface not found" );
   }
 
 
@@ -114,7 +78,11 @@ public:
   SlQueryPtr &operator = ( OldInterfaceType *ptr )
   {
     // Set this instance from the result of the safe query (which may be null).
-    this->setValue ( static_cast<NewInterfaceType *> ( Private::queryInterface ( NewInterfaceType::IID, ptr, NoInterfacePolicy() ) ) );
+    this->setValue ( static_cast<NewInterfaceType *> ( CadKit::queryInterface ( NewInterfaceType::IID, ptr ) ) );
+
+    // Check the policy.
+    NoInterfacePolicy() ( this->isValid(), "Interface not found" );
+
     return *this;
   }
 };

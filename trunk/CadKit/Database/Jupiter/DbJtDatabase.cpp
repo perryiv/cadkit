@@ -51,6 +51,13 @@ namespace CadKit { DbJtDatabase *_traverser = NULL; }
 #define UNKNOWN(ptr)  SlRefPtr<CadKit::IUnknown> ( ptr ? ptr->queryInterface ( CadKit::IUnknown::IID ) : NULL )
 #define THIS_UNKNOWN  UNKNOWN ( this )
 
+// The arguments have changed from DMDTk 5.0 to 5.2.
+#if ( DMDTK_MAJOR_VERSION == 5 && DMDTK_MINOR_VERSION >= 2 )
+#define TRAVERSER_ARGUMENTS root, 0x0
+#else
+#define TRAVERSER_ARGUMENTS root
+#endif
+
 // Don't bother formatting the string if the controller won't print it.
 #define PROGRESS_LEVEL(priority)\
   if ( priority <= _progressPriorityLevel )\
@@ -298,7 +305,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   _traverser = this;
 
   // Traverse the database.
-  if ( eai_OK != traverser->traverseGraph ( root ) )
+  if ( eai_OK != traverser->traverseGraph ( TRAVERSER_ARGUMENTS ) )
   {
     ERROR ( "Failed to traverse database.", 0 );
     return false;
@@ -332,7 +339,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
+int DbJtDatabase::_preActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS )
 {
   SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );
@@ -348,7 +355,7 @@ int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *hierarchy, int lev
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
+int DbJtDatabase::_postActionTraversalCallback ( TRAVERSER_CALLBACK_ARGUMENTS )
 {
   SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );

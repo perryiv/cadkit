@@ -128,6 +128,14 @@ SOURCE=.\SgGlDefine.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SgGlErrorCheck.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SgGlErrorCheck.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SgGlFeedback.cpp
 # End Source File
 # Begin Source File

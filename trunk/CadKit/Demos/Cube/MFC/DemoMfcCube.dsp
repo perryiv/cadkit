@@ -42,8 +42,9 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../../" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../../" /I "../" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX"stdafx.h" /FD /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -69,8 +70,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../" /I "../" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX"stdafx.h" /FD /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -89,16 +91,33 @@ LINK32=link.exe
 
 # Name "DemoMfcCube - Win32 Release"
 # Name "DemoMfcCube - Win32 Debug"
-# Begin Group "Source Files"
+# Begin Group "Precompiled"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\StdAfx.cpp
+# ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.h
+# End Source File
+# End Group
+# Begin Group "Source"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\BuildScene.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\Cube.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Cube.rc
+SOURCE=.\Cube.h
 # End Source File
 # Begin Source File
 
@@ -106,28 +125,11 @@ SOURCE=.\CubeDoc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\CubeView.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MainFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\StdAfx.cpp
-# ADD CPP /Yc"stdafx.h"
-# End Source File
-# End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=.\Cube.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\CubeDoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CubeView.cpp
 # End Source File
 # Begin Source File
 
@@ -135,15 +137,11 @@ SOURCE=.\CubeView.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\MainFrm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MainFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Resource.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\StdAfx.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -155,11 +153,19 @@ SOURCE=.\res\Cube.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\Cube.rc
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\Cube.rc2
 # End Source File
 # Begin Source File
 
 SOURCE=.\res\CubeDoc.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resource.h
 # End Source File
 # Begin Source File
 

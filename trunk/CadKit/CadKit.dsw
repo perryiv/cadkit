@@ -143,6 +143,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name GuiFox
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphFox
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -428,6 +440,12 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
 }}}
 
 ###############################################################################

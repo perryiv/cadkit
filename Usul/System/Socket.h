@@ -30,7 +30,6 @@ namespace Usul {
 namespace System {
 
 
-
 struct Buffer
 {
   Buffer ( unsigned int size ) :

@@ -165,12 +165,12 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "normals/normalize/models", setNormModels     );
   Helper::add ( reader, start, "menu/translate",           translateMenu     );
   Helper::add ( reader, start, "menu/scale",               scaleMenu         );
-  Helper::add ( reader, start, "menu_color/bg_norm",       setMenuBgColorNorm   );
-  Helper::add ( reader, start, "menu_color/bg_highlight",  setMenuBgColorHLght  );
-  Helper::add ( reader, start, "menu_color/bg_disabled",   setMenuBgColorDsabl  );
-  Helper::add ( reader, start, "menu_color/txt_norm",      setMenuTxtColorNorm  );
-  Helper::add ( reader, start, "menu_color/txt_highlight", setMenuTxtColorHLght );
-  Helper::add ( reader, start, "menu_color/txt_disabled",  setMenuTxtColorDsabl );
+  Helper::add ( reader, start, "menu/color/bg_norm",       setMenuBgColorNorm   );
+  Helper::add ( reader, start, "menu/color/bg_highlight",  setMenuBgColorHLght  );
+  Helper::add ( reader, start, "menu/color/bg_disabled",   setMenuBgColorDsabl  );
+  Helper::add ( reader, start, "menu/color/txt_norm",      setMenuTxtColorNorm  );
+  Helper::add ( reader, start, "menu/color/txt_highlight", setMenuTxtColorHLght );
+  Helper::add ( reader, start, "menu/color/txt_disabled",  setMenuTxtColorDsabl );
   Helper::add ( reader, start, "status_bar/translate",     translateStatus   );
   Helper::add ( reader, start, "status_bar/scale",         scaleStatus       );
   Helper::add ( reader, start, "status_bar/visible",       setStatusVisible  );

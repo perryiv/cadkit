@@ -21,6 +21,7 @@
 namespace Usul {
 namespace Interfaces {
 
+
 struct ICancelButton : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
@@ -29,10 +30,27 @@ struct ICancelButton : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1103221577u };
 
+  /// Show/hide.
   virtual void showCancelButton() = 0;
   virtual void hideCancelButton() = 0;
 
-}; //  ICancelButton
+  /// Helper struct to make sure we show/hide.
+  struct ShowHide
+  {
+    template < class T > ShowHide ( T *t ) : _cancel ( t )
+    {
+      if ( _cancel.valid() )
+        _cancel->showCancelButton();
+    }
+    ~ShowHide()
+    {
+      if ( _cancel.valid() )
+        _cancel->hideCancelButton();
+    }
+  private:
+    ICancelButton::QueryPtr _cancel;
+  };
+};
 
 
 }; // namespace Interfaces

@@ -29,17 +29,20 @@ template < class Polygon, class ValueType_ >
 class SharedVertex : public Usul::Base::Referenced
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
 
+  // Typedefs.
+  typedef Usul::Base::Referenced BaseClass;
   typedef typename std::list < Polygon * > PolygonList;
   typedef typename PolygonList::iterator Iterator;
   typedef typename ValueType_ ValueType;
 
-  USUL_DECLARE_REF_POINTERS( SharedVertex );
+  // Smart pointers.
+  USUL_DECLARE_REF_POINTERS ( SharedVertex );
 
-  typedef typename SharedVertex< Polygon, ValueType >::RefPtr Ptr;
-
-  SharedVertex ( const ValueType &v ) : _polygons(), _value ( v ), _visited ( false )
+  SharedVertex ( const ValueType &v ) : BaseClass(),
+    _polygons(), 
+    _value ( v ), 
+    _visited ( false )
   {
   }
 
@@ -93,14 +96,18 @@ public:
   }
 
 protected:
-  SharedVertex( ) : _polygons(), _value(), _visited( false ) { }
 
-  //Use Ref Counting
-  ~SharedVertex() {} 
+  // No default construction.
+  SharedVertex();
 
   // No copying.
   SharedVertex ( const SharedVertex & );
   SharedVertex &operator = ( const SharedVertex & );
+
+  // Use reference counting
+  virtual ~SharedVertex()
+  {
+  } 
 
 private:
   PolygonList _polygons;

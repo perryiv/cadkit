@@ -43,7 +43,27 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   // Hide the progress bar
   virtual void hideProgressBar() = 0;
 
-}; // struct IProgressBar
+  // Helper struct to make sure we show/hide.
+  struct ShowHide
+  {
+    template < class T > ShowHide ( T *t, unsigned int maximum = 100 ) : _progress ( t )
+    {
+      if ( _progress.valid() )
+      {
+        _progress->updateProgressBar ( 0 );
+        _progress->setTotalProgressBar ( maximum );
+        _progress->showProgressBar();
+      }
+    }
+    ~ShowHide()
+    {
+      if ( _progress.valid() )
+        _progress->hideProgressBar();
+    }
+  private:
+    IProgressBar::QueryPtr _progress;
+  };
+};
 
 
 }; // namespace Interfaces

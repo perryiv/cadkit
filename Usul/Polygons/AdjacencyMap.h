@@ -12,6 +12,8 @@
 
 #include "Usul/Polygons/SharedVertex.h"
 #include "Usul/MPL/SameType.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
 
 #include <functional>
 #include <map>
@@ -77,18 +79,24 @@ template
   class VertexSequence,
   class Compare = std::less< VertexSequence::value_type >
 >
-class AdjacencyMap
+class AdjacencyMap : public Usul::Base::Referenced
 {
 public:
 
-  //Useful typedefs
+  // Useful typedefs
+  typedef Usul::Base::Referenced BaseClass;
   typedef typename VertexSequence::value_type VertexType;
   typedef typename VertexSequence::size_type SizeType;
   typedef typename VertexSequence::const_iterator VertexIterator;
   typedef SharedVertex < Polygon, VertexType > SharedVertex;
-  typedef typename SharedVertex::Ptr SharedVertexPtr;
-  typedef std::vector < Polygon > Polygons;
+  typedef VertexType NormalType;
+  typedef typename SharedVertex::RefPtr SharedVertexPtr;
+  typedef typename Polygon::ValidRefPtr PolygonPtr;
+  typedef std::vector < PolygonPtr > Polygons;
   typedef std::map < VertexType, SharedVertexPtr, Compare > Map;
+
+  // Smart pointers.
+  USUL_DECLARE_REF_POINTERS ( AdjacencyMap );
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -97,7 +105,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  AdjacencyMap() :
+  AdjacencyMap() : BaseClass(),
     _sharedVertsMap(),
     _polygons()
   {
@@ -111,7 +119,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  AdjacencyMap( const Compare& c ) :
+  AdjacencyMap ( const Compare& c ) : BaseClass()
     _sharedVertsMap( c ),
     _polygons()
   { 
@@ -162,6 +170,60 @@ public:
     return _polygons;
   }
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return shared vertex for given value. Make ones if needed.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  SharedVertex *sharedVertex ( const VertexType &v )
+  {
+    Map::iterator i ( _sharedVertsMap.find ( v ) );
+    if ( _sharedVertsMap.end() == i )
+    {
+      typedef std::pair < Map::iterator, bool > InsertResult;
+      InsertResult result (  _sharedVertsMap.insert ( Map::value_type ( v, new SharedVertex ( v ) ) ) );
+      return result.first->second.get();
+    }
+    else
+    {
+      return i->second.get();
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Add single triangle. Note: if Polygon does not have triangle-like API, 
+  //  then this won't compile.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void add ( const VertexType &v0, const VertexType &v1, const VertexType &v2, const NormalType &n )
+  {
+    // Add a new polygon.
+    _polygons.push_back ( new Polygon );
+    PolygonPtr p ( _polygons.back() );
+    p->normal ( n );
+
+    // Get shared vertices and hook things up.
+    SharedVertex *v = this->sharedVertex ( v0 );
+    v->append ( p );
+    p->append ( v );
+
+    // Same for second vertex.
+    v = this->sharedVertex ( v1 );
+    v->append ( p );
+    p->append ( v );
+
+    // And third vertex.
+    v = this->sharedVertex ( v2 );
+    v->append ( p );
+    p->append ( v );
+
+    // Set polygon's index.
+    p->index ( _polygons.size() - 1 );
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -327,12 +389,35 @@ public:
     return _polygons.size() + _sharedVertsMap.size();
   }
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Flip the normals.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  void flipNormals()
+  {
+    for ( Polygons::iterator i = _polygons.begin(); i != _polygons.end(); ++i )
+      (*i)->flipNormal();
+  }
+
+private:
+
+  // No copying.
+  AdjacencyMap ( const AdjacencyMap & );
+  AdjacencyMap &operator = ( const AdjacencyMap & );
+
+  // Use reference counting
+  virtual ~AdjacencyMap()
+  {
+  }
+
 private:
 
   Map            _sharedVertsMap;
   Polygons       _polygons;
-
-}; //class AdjacencyMap
+};
 
 
 } //namespace Polygons

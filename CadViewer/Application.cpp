@@ -673,10 +673,17 @@ void Application::_initMenu()
   // set the stateset
   _menuBranch->setStateSet( ss.get() );
 
+
+  #define CV_REGISTER(member_function,name) \
+  _buttonMap[name] = MenuKit::memFunCB2 \
+    ( this, &Application::member_function )
   // Fill the callback map.
-  CV_REGISTER ( _quitCallback,     "exit" );
-  CV_REGISTER ( _quitCallback,     "quit" );
-  CV_REGISTER ( _hideSelected,     "hide_selected" );
+  CV_REGISTER ( _quitCallback,     "exit" );    // macro expands to ...
+      // _buttonmap["exit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback ) 
+  CV_REGISTER ( _quitCallback,     "quit" );    // macro expands to ...
+      // _buttonmap["quit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback )
+  CV_REGISTER ( _hideSelected,     "hide_selected" );    // macro expands to ...
+      // _buttonmap["hide_selected"] = MenuKit::memFunCB2 ( this, &Application::_hideSelected )
   CV_REGISTER ( _showAll,          "show_all" );
   CV_REGISTER ( _unselectVisible,  "unselect_visible" );
   CV_REGISTER ( _exportSelected,   "export_selected" );

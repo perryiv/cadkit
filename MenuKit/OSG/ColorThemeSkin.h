@@ -198,10 +198,16 @@ private:
 class Arrow: public DrawableFunctor
 {
 public:
-  Arrow(float h): DrawableFunctor(h) {}
+  Arrow(float h, float d): DrawableFunctor(h), _depth(d) {}
   ~Arrow() {}
 
   virtual osg::Drawable* operator() ();
+
+  void depth(float d) { _depth = d; }
+  float depth() const { return _depth; }
+
+private:
+  float _depth;
 };
 
 class Disk: public DrawableFunctor
@@ -274,9 +280,9 @@ osg::Drawable* Arrow::operator () ()
 {
   osg::Vec3Array* vertices = new osg::Vec3Array();
   float h_2 = 0.5f * height();
-  vertices->push_back( osg::Vec3(0.0, h_2 , 0.0) );
-  vertices->push_back( osg::Vec3(0.0,-h_2 , 0.0) );
-  vertices->push_back( osg::Vec3(h_2, 0.0 , 0.0) );
+  vertices->push_back( osg::Vec3(0.0, h_2 , _depth) );
+  vertices->push_back( osg::Vec3(0.0,-h_2 , _depth) );
+  vertices->push_back( osg::Vec3(h_2, 0.0 , _depth) );
 
   osg::Vec3Array* normals = new osg::Vec3Array();
   normals->push_back( osg::Vec3(0.0,0.0,1.0) );
@@ -420,7 +426,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   word.text( txt );
   word.font( font() );
   word.color( scheme.front() );
-  word.draw_mode( osgText::Text::TEXT|osgText::Text::BOUNDINGBOX );
+  word.draw_mode( osgText::Text::TEXT );
 
   // use the functor to make the graphics
   osg::ref_ptr<osg::Drawable> drawable = word();
@@ -428,7 +434,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   // make a box for convenience, used below to move the word
   osg::BoundingBox bb = drawable->getBound();
   float wordheight = bb.yMax() - bb.yMin();
-  osg::Vec3 move(-_picture.width()-0.5*_margin, -0.5*wordheight, 0.0);
+  osg::Vec3 wordmove(-_picture.width()-0.5*_margin, -0.5*wordheight, 0.0);
 
   // add the drawable to a node, for movement
   osg::ref_ptr<osg::Geode> wordgeode = new osg::Geode();
@@ -437,7 +443,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   // move the word's node
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->addChild( wordgeode.get() );
-  wordmt->setMatrix( osg::Matrix::translate(move) );
+  wordmt->setMatrix( osg::Matrix::translate(wordmove) );
 
   // make the background box
   Detail::FlatBox backbox(this->box().height(),this->box().width(),-0.002);
@@ -449,6 +455,8 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
 
   // TODO: make other graphic boxes
   Detail::FlatBox sidebox(_picture.height(),_picture.width(),-0.001);
+
+  // right side
   sidebox.color( scheme.back() );
   osg::ref_ptr<osg::Drawable> rd = sidebox();
   osg::ref_ptr<osg::Geode> rg = new osg::Geode();
@@ -458,6 +466,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
   float rxmov = 0.5*backbox.width() - 0.5*sidebox.width();
   rgmt->setMatrix( osg::Matrix::translate( osg::Vec3(rxmov,0.0,0.0) ) );
 
+  // left side
   sidebox.color( scheme.middle() );
   osg::ref_ptr<osg::Drawable> ld = sidebox();
   osg::ref_ptr<osg::Geode> lg = new osg::Geode();
@@ -527,15 +536,15 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
 
   if( checker::has(this->bits(), MENU) )
   {
-    Detail::Arrow mark(_text*this->box().height());
+    Detail::Arrow mark(_text*this->box().height(),0.0);
     mark.color( this->theme().front() );
     osg::ref_ptr<osg::Drawable> md = mark();
     osg::ref_ptr<osg::Geode> mgeo = new osg::Geode();
     mgeo->addDrawable( md.get() );
 
-    if( checker::has(this->bits(), EXPANDED) )
+    if( !checker::has(this->bits(), EXPANDED) )
     {
-      Detail::Arrow expander(_text*mark.height());
+      Detail::Arrow expander(_text*mark.height(),0.001);
       expander.color( this->theme().back() );
       osg::ref_ptr<osg::Drawable> exdraw = expander();
       mgeo->addDrawable( exdraw.get() );

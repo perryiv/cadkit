@@ -55,6 +55,7 @@
 # include "Standard/SlVec3.h"
 # include "Standard/SlVec2.h"
 # include "Standard/SlBitmask.h"
+# include "Interfaces/IError.h"
 # include <vector>
 #endif
 
@@ -65,7 +66,7 @@ class eaiShape;
 
 namespace CadKit
 {
-class DB_JT_API DbJtTraverser : public SlRefBase
+class DB_JT_API DbJtTraverser : public SlRefBase, public IError
 {
 public:
 
@@ -116,8 +117,14 @@ public:
   // Handle to an entity.
   typedef void * EntityHandle;
 
+  // Report an error.
+  virtual bool            errorNotify ( const std::string &error ) const;
+
   // Get the current entity.
   EntityHandle            getCurrentEntity() const { return _currentNode; }
+
+  // Get the DMDTk customer number (needed for versions >= 5).
+  const unsigned int &    getCustomerNumber();
 
   // Get the current entity's property.
   bool                    getMaterial     ( EntityHandle entity, SlMaterialf &material ) const;
@@ -137,22 +144,27 @@ public:
   // Get the last error.
   const std::string &     getLastError() const { return _error; }
 
+  // Get the reference count.
+  virtual unsigned long   getRefCount() const { return SlRefBase::getRefCount(); }
+
   // Initialize.
   bool                    init();
+
+  // See if the interface is supported.
+  virtual IUnknown *      queryInterface ( const unsigned long &iid );
 
   // Set the client's callback.
   void                    setCallback ( DbJtTraverserCB *callback, const void *clientData );
 
-  // Set/get the DMDTk customer number (needed for versions >= 5).
-  const unsigned int &    getCustomerNumber();
+  // Set the DMDTk customer number (needed for versions >= 5).
   void                    setCustomerNumber ( const unsigned int &customerNumber ) { _customerNumber = customerNumber; }
 
   // Traverse the database.
   bool                    traverse ( const char *filename );
 
   // Reference/unreference this instance.
-  void                    ref()   { this->_incrementReferenceCount(); }
-  void                    unref() { this->_decrementReferenceCount(); }
+  virtual void            ref()   { this->_incrementReferenceCount(); }
+  virtual void            unref() { this->_decrementReferenceCount(); }
 
 protected:
 

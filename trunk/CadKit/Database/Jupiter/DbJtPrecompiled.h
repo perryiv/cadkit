@@ -55,6 +55,7 @@
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlClientHeaders.h"
+# include "Interfaces/IError.h"
 # include <iostream>
 #endif
 

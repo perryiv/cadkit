@@ -272,6 +272,16 @@
 					RelativePath=".\Menu\Button.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Adaptors"
+				Filter="">
+				<File
+					RelativePath=".\Adaptors\Wait.cpp">
+				</File>
+				<File
+					RelativePath=".\Adaptors\Wait.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

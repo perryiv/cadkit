@@ -378,6 +378,9 @@
 					RelativePath=".\Interfaces\IFoxToolbar.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxToolbarDock.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxTreeList.h">
 				</File>
 				<File

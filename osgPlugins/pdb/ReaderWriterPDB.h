@@ -48,6 +48,7 @@ public:
     typedef Molecules::iterator Iterator;
 
     MoleculeList() : _molecules() { }
+    MoleculeList( const Molecules& m ) : _molecules( m ) { }
 
     void clear() { _molecules.clear(); }
     void push_back( MoleculePtr m ) { _molecules.push_back( m ); }

@@ -9,30 +9,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbBaseTarget: Base class for other target database classes.
+//  DbBaseSource: Base class for other source database classes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
-#define _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
+#ifndef _CADKIT_DATABASE_BASE_LIBRARY_SOURCE_DATABASE_CLASS_H_
+#define _CADKIT_DATABASE_BASE_LIBRARY_SOURCE_DATABASE_CLASS_H_
 
 #include "DbBaseObject.h"
 
-#include "Interfaces/IDataTarget.h"
+#include "Interfaces/IDataSource.h"
 
 #include "Standard/SlRefPtr.h"
 
-#include "Interfaces/IMessageNotify.h"
-
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
 #endif
 
 
 namespace CadKit
 {
-class DB_BASE_API DbBaseTarget : public DbBaseObject, 
-                                 public IDataTarget
+class DB_BASE_API DbBaseSource : public DbBaseObject, 
+                                 public IDataSource
 {
 public:
 
@@ -47,22 +44,24 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IDataTarget interface.
+  //  IDataSource interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Get the default output filename, based on the given filename.
-  virtual std::string     getDefaultOutputName ( const std::string &filename );
+  // Set the data target.
+  virtual void            setDataTarget ( IUnknown *target );
 
 protected:
 
-  DbBaseTarget();
-  virtual ~DbBaseTarget();
+  SlRefPtr<IUnknown> _target;
 
-  SL_DECLARE_REFERENCE_POINTER ( DbBaseTarget );
-  SL_DECLARE_CLASS ( DbBaseTarget, 1033073318 );
+  DbBaseSource();
+  virtual ~DbBaseSource();
+
+  SL_DECLARE_REFERENCE_POINTER ( DbBaseSource );
+  SL_DECLARE_CLASS ( DbBaseSource, 1033073996 );
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
+#endif // _CADKIT_DATABASE_BASE_LIBRARY_SOURCE_DATABASE_CLASS_H_

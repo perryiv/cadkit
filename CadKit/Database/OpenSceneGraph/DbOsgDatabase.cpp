@@ -16,20 +16,20 @@
 #include "DbOsgPrecompiled.h"
 #include "DbOsgDatabase.h"
 
-#include "Interfaces/IAssemblyQuery.h"
+#include "Interfaces/IEntityQuery.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
-#include "Standard/SlStringFunctions.h"
 #include "Standard/SlQueryPtr.h"
+#include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
-#include "Standard/SlPathname.h"
+
+#include "osg/MatrixTransform" // Keep these in here because they bring in 
+#include "osg/Geode"           // <cmath> which fauls up <math.h> in 
+#include "osg/Geometry"        // "Standard/SlTemplateSupport.h"
+#include "osgDB/WriteFile"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "osg/MatrixTransform"
-# include "osg/Geode"
-# include "osg/Geometry"
-# include "osgDB/WriteFile"
 #endif
 
 // To help shorted up the lines.
@@ -163,7 +163,7 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   group->setName ( query->getName ( assembly ) );
 
   // Set the matrix if there is one.
-  float matrix[16];
+  SlMatrix4f matrix;
   if ( true == query->getTransform ( assembly, matrix ) )
     group->setMatrix ( osg::Matrix ( matrix ) );
 

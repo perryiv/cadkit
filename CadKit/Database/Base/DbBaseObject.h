@@ -9,17 +9,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbBaseTarget: Base class for other target database classes.
+//  DbBaseObject: Base class for other target database classes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
-#define _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
+#ifndef _CADKIT_DATABASE_BASE_LIBRARY_BASE_OBJECT_CLASS_H_
+#define _CADKIT_DATABASE_BASE_LIBRARY_BASE_OBJECT_CLASS_H_
 
-#include "DbBaseObject.h"
+#include "DbBaseApi.h"
 
-#include "Interfaces/IDataTarget.h"
+#include "Interfaces/IControlled.h"
 
+#include "Standard/SlRefBase.h"
 #include "Standard/SlRefPtr.h"
 
 #include "Interfaces/IMessageNotify.h"
@@ -31,8 +32,8 @@
 
 namespace CadKit
 {
-class DB_BASE_API DbBaseTarget : public DbBaseObject, 
-                                 public IDataTarget
+class DB_BASE_API DbBaseObject : public SlRefBase, 
+                                 public IControlled
 {
 public:
 
@@ -47,22 +48,29 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IDataTarget interface.
+  //  IControlled interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Get the default output filename, based on the given filename.
-  virtual std::string     getDefaultOutputName ( const std::string &filename );
+  // Set the controller.
+  virtual void            setController ( IUnknown *controller );
 
 protected:
 
-  DbBaseTarget();
-  virtual ~DbBaseTarget();
+  SlRefPtr<IUnknown> _controller;
 
-  SL_DECLARE_REFERENCE_POINTER ( DbBaseTarget );
-  SL_DECLARE_CLASS ( DbBaseTarget, 1033073318 );
+  DbBaseObject();
+  virtual ~DbBaseObject();
+
+  bool                    _notifyError    ( const std::string &message, const unsigned long &id );
+  bool                    _notifyMessage  ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type );
+  bool                    _notifyProgress ( const std::string &message );
+  bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
+
+  SL_DECLARE_REFERENCE_POINTER ( DbBaseObject );
+  SL_DECLARE_CLASS ( DbBaseObject, 1032736074 );
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_DATABASE_BASE_LIBRARY_TARGET_DATABASE_CLASS_H_
+#endif // _CADKIT_DATABASE_BASE_LIBRARY_BASE_OBJECT_CLASS_H_

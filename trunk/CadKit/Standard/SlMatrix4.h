@@ -84,10 +84,10 @@ public:
                             T &a2, T &a6, T &a10, T &a14,
                             T &a3, T &a7, T &a11, T &a15 ) const;
 
-  bool                    isEqualTo ( const SlMatrix4 &M ) const;
-  bool                    isEqualTo ( const SlMatrix4 &M, const T &tolerance ) const;
-  bool                    isNotEqualTo ( const SlMatrix4 &M ) const;
-  bool                    isNotEqualTo ( const SlMatrix4 &M, const T &tolerance ) const;
+  bool                    isEqual ( const SlMatrix4 &M ) const;
+  bool                    isEqual ( const SlMatrix4 &M, const T &tolerance ) const;
+  bool                    isNotEqual ( const SlMatrix4 &M ) const;
+  bool                    isNotEqual ( const SlMatrix4 &M, const T &tolerance ) const;
 
   void                    identity();
   bool                    invert();
@@ -716,7 +716,7 @@ template<class T> inline void SlMatrix4<T>::getValue (
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrix4<T>::isEqualTo ( const Matrix4 &M, const Real &tolerance ) const
+template<class T> inline bool SlMatrix4<T>::isEqual ( const Matrix4 &M, const Real &tolerance ) const
 {
   return 
     ( SL_ABS ( _m[0]  - M._m[0] )  <= tolerance &&
@@ -747,7 +747,7 @@ template<class T> inline bool SlMatrix4<T>::isEqualTo ( const Matrix4 &M, const 
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrix4<T>::isEqualTo ( const Matrix4 &M ) const
+template<class T> inline bool SlMatrix4<T>::isEqual ( const Matrix4 &M ) const
 {
   return ( 
     _m[0] == M[0] && _m[4] == M[4] && _m[8]  == M[8]  && _m[12] == M[12] && 
@@ -763,9 +763,9 @@ template<class T> inline bool SlMatrix4<T>::isEqualTo ( const Matrix4 &M ) const
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrix4<T>::isNotEqualTo ( const Matrix4 &M, const Real &tolerance ) const
+template<class T> inline bool SlMatrix4<T>::isNotEqual ( const Matrix4 &M, const Real &tolerance ) const
 {
-  return ( false == this->isEqualTo ( M, tolerance ) );
+  return ( false == this->isEqual ( M, tolerance ) );
 }
 
 
@@ -775,9 +775,9 @@ template<class T> inline bool SlMatrix4<T>::isNotEqualTo ( const Matrix4 &M, con
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlMatrix4<T>::isNotEqualTo ( const Matrix4 &M ) const
+template<class T> inline bool SlMatrix4<T>::isNotEqual ( const Matrix4 &M ) const
 {
-  return ( false == this->isEqualTo ( M ) );
+  return ( false == this->isEqual ( M ) );
 }
 
 
@@ -1599,7 +1599,7 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &v, const SlMatr
 
 template<class T> inline bool operator == ( const SlMatrix4<T> &A, const SlMatrix4<T> &B )
 {
-  return A.isEqualTo ( B );
+  return A.isEqual ( B );
 }
 
 
@@ -1611,7 +1611,7 @@ template<class T> inline bool operator == ( const SlMatrix4<T> &A, const SlMatri
 
 template<class T> inline bool operator != ( const SlMatrix4<T> &A, const SlMatrix4<T> &B )
 {
-  return A.isNotEqualTo ( B );
+  return A.isNotEqual ( B );
 }
 
 

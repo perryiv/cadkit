@@ -191,6 +191,10 @@ SOURCE=.\SlTemplateSupport.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlTestEquality.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlTrackball.h
 # End Source File
 # Begin Source File
@@ -204,6 +208,10 @@ SOURCE=.\SlTypedefs.h
 # Begin Source File
 
 SOURCE=.\SlViewport.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlZero.h
 # End Source File
 # End Group
 # Begin Group "Base Class"
@@ -244,6 +252,10 @@ SOURCE=.\SlStringFunctions.h
 # Begin Source File
 
 SOURCE=.\SlStringIO.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlStringReplace.h
 # End Source File
 # Begin Source File
 

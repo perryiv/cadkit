@@ -19,6 +19,7 @@
 #include "SlInlineMath.h"
 #include "SlAssert.h"
 #include "SlTemplateSupport.h"
+#include "SlZero.h"
 
 // For convenience.
 #define SL_VEC3_ZERO ( static_cast<T>(0) )
@@ -50,7 +51,7 @@ public:
   SlVec3                  cross ( const SlVec3 &vec ) const;
 
   Real                    getAngle ( const SlVec3 &vec ) const;
-  static short            getDimension() { return 3; }
+  static unsigned short   getDimension() { return 3; }
   Real                    getDistance ( const SlVec3 &vec ) const;
   Real                    getDistanceSquared ( const SlVec3 &vec ) const;
   Real                    getLength() const;
@@ -60,10 +61,10 @@ public:
   void                    getValue ( T &v0, T &v1, T &v2 ) const;
 
   void                    interpolate ( const SlVec3 &pt0, const SlVec3 &pt1, const Real &u );
-  bool                    isEqualTo ( const SlVec3 &vec ) const;
-  bool                    isEqualTo ( const SlVec3 &vec, const T &tolerance ) const;
-  bool                    isNotEqualTo ( const SlVec3 &vec ) const;
-  bool                    isNotEqualTo ( const SlVec3 &vec, const T &tolerance ) const;
+  bool                    isEqual ( const SlVec3 &vec ) const;
+  bool                    isEqual ( const SlVec3 &vec, const T &tolerance ) const;
+  bool                    isNotEqual ( const SlVec3 &vec ) const;
+  bool                    isNotEqual ( const SlVec3 &vec, const T &tolerance ) const;
 
   Real                    normalize();
 
@@ -186,16 +187,29 @@ template<class T> inline void SlVec3<T>::getValue ( T &v0, T &v1, T &v2 ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if the vectors are equal within the given tolerance. Deliberately not 
+//  a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline bool isEqual ( const SlVec3<T> &v1, const SlVec3<T> &v2, const T &tolerance )
+{
+  return (
+    ( SL_ABS ( v1[0] - v2[0] ) ) <= tolerance &&
+    ( SL_ABS ( v1[1] - v2[1] ) ) <= tolerance &&
+    ( SL_ABS ( v1[2] - v2[2] ) ) <= tolerance );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  See if the vectors are equal within the given tolerance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec, const T &tolerance ) const
 {
-  return (
-    ( SL_ABS ( _v[0] - vec._v[0] ) ) <= tolerance &&
-    ( SL_ABS ( _v[1] - vec._v[1] ) ) <= tolerance &&
-    ( SL_ABS ( _v[2] - vec._v[2] ) ) <= tolerance );
+  return CadKit::isEqual ( *this, vec, tolerance );
 }
 
 
@@ -205,9 +219,9 @@ template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isNotEqualTo ( const SlVec3<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec, const T &tolerance ) const
 {
-  return ( false == this->isEqualTo ( vec, tolerance ) );
+  return ( false == this->isEqual ( vec, tolerance ) );
 }
 
 
@@ -217,7 +231,7 @@ template<class T> inline bool SlVec3<T>::isNotEqualTo ( const SlVec3<T> &vec, co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec ) const
+template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec ) const
 {
   return (
     _v[0] == vec._v[0] && 
@@ -232,9 +246,9 @@ template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec ) cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isNotEqualTo ( const SlVec3<T> &vec ) const
+template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec ) const
 {
-  return ( false == this->isEqualTo ( vec ) );
+  return ( false == this->isEqual ( vec ) );
 }
 
 
@@ -416,7 +430,7 @@ template<class T> inline SlVec3<T> operator - ( const SlVec3<T> &vecA, const SlV
 
 template<class T> inline bool operator == ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
-  return vecA.isEqualTo ( vecB );
+  return vecA.isEqual ( vecB );
 }
 
 
@@ -428,7 +442,7 @@ template<class T> inline bool operator == ( const SlVec3<T> &vecA, const SlVec3<
 
 template<class T> inline bool operator != ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
-  return vecA.isNotEqualTo ( vecB );
+  return vecA.isNotEqual ( vecB );
 }
 
 
@@ -554,6 +568,34 @@ template<class T> inline T SlVec3<T>::getDistance ( const SlVec3<T> &vec ) const
 template<class T> inline T SlVec3<T>::getLength() const
 {
   return SL_SQRT ( this->dot ( *this ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a zero-vector. Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void getZero ( SlVec3<T> &vec )
+{
+  T zero;
+  CadKit::getZero ( zero );
+  vec.setValue ( zero, zero, zero );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number zero? Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline bool isZero ( const SlVec3<T> &vec )
+{
+  SlVec3<T> zero;
+  CadKit::getZero ( zero );
+  return vec.isEqual ( zero );
 }
 
 

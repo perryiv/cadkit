@@ -19,6 +19,7 @@
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_STRING_CLASS_
 
 #include "SlAssert.h"
+#include "SlStringReplace.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>    // For std::basic_string
@@ -124,8 +125,9 @@ public:
   void                          push_back  ( const CharType &c ) { _s.insert ( _s.end(),   c ); }
   void                          push_front ( const CharType &c ) { _s.insert ( _s.begin(), c ); }
 
-  // Replace all occurances of the one character with the other.
+  // Replace all occurances of the one character (or substring) with the other.
   void                          replace ( const CharType &oldChar, const CharType &newChar );
+  void                          replace ( const SlString &oldSubString, const SlString &newSubString );
 
   // Reverse the order of the string.
   void                          reverse();
@@ -179,14 +181,20 @@ template<class CharType> inline CharType &SlString<CharType>::getChar
 template<class CharType> inline void SlString<CharType>::replace 
   ( const CharType &oldChar, const CharType &newChar )
 {
-  // Loop through all the characters.
-  unsigned int length = this->getLength();
-  for ( unsigned int i = 0; i < length; ++i )
-  {
-    // If the current character is the right one then replace it.
-    if ( oldChar == (*this)[i] ) 
-      (*this)[i] = newChar;
-  }
+  CadKit::replaceChars ( oldChar, newChar, _s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace the substring.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class CharType> inline void SlString<CharType>::replace 
+  ( const SlString<CharType> &oldSubString, const SlString<CharType> &newSubString )
+{
+  CadKit::replaceSubStrings ( oldSubString._s, newSubString._s, _s );
 }
 
 

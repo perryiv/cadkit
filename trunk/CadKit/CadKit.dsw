@@ -249,6 +249,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "ExampleNurbs"=.\Examples\Nurbs\ExampleNurbs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "ExamplePathname"=.\Examples\Pathname\ExamplePathname.dsp - Package Owner=<4>
 
 Package=<5>
@@ -286,6 +298,18 @@ Package=<4>
 ###############################################################################
 
 Project: "Interfaces"=.\Interfaces\Interfaces.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "NurbsCore"=.\Nurbs\Core\NurbsCore.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

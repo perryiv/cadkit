@@ -49,6 +49,7 @@
 #include "Translators/Jupiter2Performer/TrJt2Pf.h"
 #include "Standard/SlPathname.h"
 #include "Performer/pf.h"
+#include "Performer/pr.h"
 #include "Performer/pfdu.h"
 #include "Performer/pfutil.h"
 #include "Performer/pf/pfGroup.h"
@@ -73,7 +74,7 @@ bool _translate ( std::string &filename, TrJt2Pf &jt2pf )
   SlRefPtr<pfGroup> root = new pfGroup;
 
   // Set the node's name to be the input file.
-  SL_VERIFY ( root->setName ( CadKit::justFilename ( filename ).c_str() ) );
+  root->setName ( CadKit::justFilename ( filename ).c_str() );
 
   // Translate.
   if ( false == jt2pf.translate ( filename.c_str(), *root ) )

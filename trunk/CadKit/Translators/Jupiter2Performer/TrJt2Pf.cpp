@@ -60,6 +60,7 @@
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"
+# include "Performer/pr/pfMaterial.h"
 #endif
 
 using namespace CadKit;
@@ -155,9 +156,9 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
   SL_PRINT3 ( "In TrJt2Pf::translate(), this = %X, filename = %s\n", this, filename );
   SL_ASSERT ( _jtTraverser.isValid() );
 
-  // Make sure we have just one group on the stack.
-  _groupStack.clear();
-  _groupStack.push_back ( Group ( &root, SlMaterialf() ) );
+  // Make sure we have just one group on the stack, with a default material.
+  _assemblies.clear();
+  _assemblies.push_back ( Group ( &root, SlMaterialf() ) );
 
   // Tell the traverser to traverse the database.
   if ( false == _jtTraverser->traverse ( filename ) )
@@ -168,8 +169,8 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
 
   // The database traversal stops when the last child is parsed, which may be 
   // deep in the heiarchy.
-  SL_ASSERT ( _groupStack.size() >= 1 );
-  SL_ASSERT ( &root == _groupStack.front().getGroup() );
+  SL_ASSERT ( _assemblies.size() >= 1 );
+  SL_ASSERT ( &root == _assemblies.front().getGroup() );
 
   // It worked.
   return true;
@@ -335,6 +336,105 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the GeoState's material from the given SlMaterialf.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) const
+{
+  SL_PRINT2 ( "In TrJt2Pf::_setMaterial(), this = %X\n", this );
+
+  // Don't even bother with completely invalid materials.
+  if ( 0 == material.getValid() )
+    return false;
+
+  // We still have to make sure the right bits are set in the 
+  // material's "valid" flag.
+  bool success ( false );
+
+  // Make a pfMaterial.
+  pfMaterial *mat = new pfMaterial;
+  if ( NULL == mat )
+    return false;
+
+  // Set the properties that are valid.
+  if ( material.isValid ( SlMaterialf::AMBIENT ) )
+  {
+    const SlVec4f &color = material.getAmbient();
+    mat->setColor ( PFMTL_AMBIENT, color[0], color[1], color[2] );
+    success = true;
+  }
+
+  if ( material.isValid ( SlMaterialf::DIFFUSE ) )
+  {
+    const SlVec4f &color = material.getAmbient();
+    mat->setColor ( PFMTL_DIFFUSE, color[0], color[1], color[2] );
+    success = true;
+  }
+
+  if ( material.isValid ( SlMaterialf::SPECULAR ) )
+  {
+    const SlVec4f &color = material.getAmbient();
+    mat->setColor ( PFMTL_SPECULAR, color[0], color[1], color[2] );
+    success = true;
+  }
+
+  if ( material.isValid ( SlMaterialf::EMISSIVE ) )
+  {
+    const SlVec4f &color = material.getAmbient();
+    mat->setColor ( PFMTL_EMISSION, color[0], color[1], color[2] );
+    success = true;
+  }
+
+  if ( material.isValid ( SlMaterialf::SHININESS ) )
+  {
+    mat->setShininess ( material.getShininess() );
+    success = true;
+  }
+
+  // Did it work?
+  return success;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Look for (and add) the material. It could either belong to this shape, 
+//  the parent part or to one of its parent assemblies.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle part, 
+                             const unsigned int &whichLOD,
+                             const unsigned int &whichShape,
+                             const TrJt2Pf::Group &partGroup,
+                             pfGeoState &state )
+{
+  SL_PRINT5 ( "In TrJt2Pf::_addMaterial(), this = %X, part = %X, whichLOD = %d, whichShape = %d\n", this, part, whichLOD, whichShape );
+  SL_ASSERT ( part );
+
+  // See if the shape has a material.
+  SlMaterialf material;
+  if ( _jtTraverser->getMaterial ( part, whichLOD, whichShape, material ) )
+    if ( this->_setMaterial ( material, state ) )
+      return true;
+
+  // Now try the part.
+  if ( this->_setMaterial ( partGroup.getMaterial(), state ) )
+    return true;
+
+  // Now try all the parent assemblies.
+  for ( Assemblies::reverse_iterator i = _assemblies.rbegin(); i != _assemblies.rend(); ++i )
+    if ( this->_setMaterial ( i->getMaterial(), state ) )
+      return true;
+
+  // If we get to here then it didn't work.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add the material, if there is one.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -409,10 +509,10 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
     return false;
 
   // Add the new assembly group to the Performer scene.
-  _groupStack.back().getGroup()->addChild ( assembly.getGroup() );
+  _assemblies.back().getGroup()->addChild ( assembly.getGroup() );
 
   // Make the new assembly the current one.
-  _groupStack.push_back ( assembly );
+  _assemblies.push_back ( assembly );
 
   // It worked.
   return true;
@@ -437,8 +537,8 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   // Add the LOD groups.
   this->_addLODs ( entity, part );
 
-  // Add the new part to the tree.
-  _groupStack.back().getGroup()->addChild ( part.getGroup() );
+  // Add the new part to the Performer scene.
+  _assemblies.back().getGroup()->addChild ( part.getGroup() );
 
   // It worked.
   return true;
@@ -563,9 +663,10 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
   // Make a GeoState to hold this GeoSet's state.
   SlRefPtr<pfGeoState> state = new pfGeoState;
+  if ( state.isNull() )
+    return false;
 
-  // Look for (and add) the material. It could either belong to this shape, 
-  // the parent part or to one of its parent assemblies.
+  // Add the material.
   this->_addMaterial ( entity, whichLOD, whichShape, part, *state );
 
   // TODO. Make this work.
@@ -592,75 +693,106 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   }
 
   // Declare the vectors here and keep appending to them.
-  std::vector<float> vertices, normals, colors, texture;
+  typedef std::vector<float> FloatVector;
+  FloatVector vertices, normals, colors, textureCoords;
 
-  You might want to think making a pfGeoSet for each set, because, is there any guarantee that each set in the shaps will have the same arrays? For example, will set 1 have colors, and set 2 not? I don't think you can jam that into one pfGeoSet.
+  // The vectors of the lengths of each set. Initialize to zero.
+  typedef std::vector<unsigned int> IntVector;
+  IntVector numVertices ( numSets, 0 );
+  IntVector numNormals ( numSets, 0 );
+  IntVector numColors ( numSets, 0 );
+  IntVector numTextureCoords ( numSets, 0 );
+
+  // Used in the loop.
+  unsigned int currentSizeVertices, currentSizeNormals, currentSizeColors, currentSizeTextureCoords, valid, i;
 
   // Loop through the sets.
-  for ( unsigned int i = 0; i < numSets; ++i )
+  for ( i = 0; i < numSets; ++i )
   {
-    // Add the shape.
-    this->_addSet ( entity, whichLOD, whichShape, i, *gset );
+    // Save the current sizes.
+    currentSizeVertices = vertices.size();
+    currentSizeNormals = normals.size();
+    currentSizeColors = colors.size();
+    currentSizeTextureCoords = textureCoords.size();
+
+    // Get the shape.
+    if ( false == _jtTraverser->getShapeSet ( entity, whichLOD, whichShape, i, vertices, normals, colors, textureCoords, valid ) )
+      return false;
+
+    // Set the length of this most recent set of vertices.
+    // Note: We by 3 divide because 3 elements in the vector is one vertex.
+    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
+    {
+      SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
+      numVertices[i] =  ( vertices.size() - currentSizeVertices ) / 3;
+    }
+
+    // Set the length of the normals.
+    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
+    {
+      SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
+      numNormals[i] = ( normals.size() - currentSizeNormals ) / 3;
+    }
+
+    // Set the length of the colors.
+    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_COLORS ) )
+    {
+      SL_ASSERT ( 0 == ( vertices.size() % 4 ) );
+      numColors[i] = ( colors.size() - currentSizeColors ) / 4;
+    }
+
+    // Set the length of the texture coordinates.
+    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
+    {
+      SL_ASSERT ( 0 == ( vertices.size() % 2 ) );
+      numTextureCoords[i] = ( textureCoords.size() - currentSizeTextureCoords ) / 2;
+    }
   }
 
-  SL_ASSERT ( 0 ); // TODO, Need to call pfGeoSet::setPrimLengths().
+  // We have to deduce the bindings of the normals and colors based on their 
+  // number, because the VisApi does not have a way (that I can see) to 
+  // extract this (just a way specify it when creating the primitives).
 
-  // Add the GeoSet to the group.
-  group.addChild ( gset );
+  // If there are no vertices then return.
+  if ( 0 == vertices.size() )
+  {
+    SL_ASSERT ( 0 ); // Should never happen.
+    return false;
+  }
+
+  // The size of the vector should be a multiple of 3.
+  if ( 0 != ( vertices.size() % 3 ) )
+  {
+    SL_ASSERT ( 0 ); // Should never happen.
+    return false;
+  }
+
+  // Make sure there are no zero-length vertex sets.
+  // TODO: Handle this case, perhaps purge the bad set.
+  for ( i = 0; i < numSets; ++i )
+    if ( 0 == numVertices[i] )
+      return false;
+
+  // For now, just per-vertex normal bindings.
+  if ( vertices.size() != normals.size() )
+  {
+    //SL_ASSERT ( 0 ); 
+    return false; // TODO, handle per-prim, etc.
+  }
+
+  // TODO: Ignoring colors and texture coordinates. Put this in.
+
+  // Set the vertex attributes.
+  gset->setAttr ( PFGS_COORD3,  PFGS_PER_VERTEX, this->_makeVec3Array ( vertices ), NULL );
+  gset->setAttr ( PFGS_NORMAL3, PFGS_PER_VERTEX, this->_makeVec3Array ( normals ),  NULL );
+
+  // Tell the GeoSet the length of the primitives.
+  gset->setPrimLengths ( this->_makeIntArray ( numVertices ) );
+
+  // Add the GeoSet to the geode.
+  geode.addGSet ( gset );
 
   // It work ed.
-  return true;
-}
-
-
-//TODO
-//1. Call pfGeoSet::setPrimLengths() above.
-//2. Have to make one big array to pass to pfGeoSet::setAttr(), not many 
-//   small ones like you are now. Use the same vector over and over and just 
-//   append to the end of it.
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the shape's array set.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity, 
-                        const unsigned int &whichLOD, 
-                        const unsigned int &whichShape, 
-                        const unsigned int &whichSet, 
-                        std::vector<float> vertices, 
-                        std::vector<float> normals, 
-                        std::vector<float> colors,
-                        std::vector<float> texture )
-{
-  SL_PRINT5 ( "In TrJt2Pf::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
-
-  // Get the shape.
-  std::vector<float> vertices, normals, colors, texture;
-  unsigned int valid ( 0 );
-  if ( false == _jtTraverser->getShape ( entity, whichLOD, whichShape, whichSet, vertices, normals, colors, texture, valid ) )
-    return false;
-
-  // Add the vertices.
-  if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
-    gset->setAttr ( PFGS_COORD3, PFGS_PER_VERTEX, this->_getVec3Array ( vertices ), NULL );
-
-  // Add the normals.
-  if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
-    gset->setAttr ( PFGS_NORMAL3, PFGS_PER_VERTEX, this->_getVec3Array ( normals ), NULL );
-
-  // TODO.
-  // Add the colors.
-  //if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_COLORS ) )
-  //  gset->setAttr ( PFGS_COLOR4, PFGS_PER_VERTEX, this->_getVec4Array ( colors ), NULL );
-
-  // Add the texture coordinates.
-  //if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
-  //  gset->setAttr ( PFGS_TEXCOORD2, PFGS_PER_VERTEX, this->_getVec2Array ( texture ), NULL );
-
-  // It worked.
   return true;
 }
 
@@ -681,7 +813,7 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
     return false;
 
   // Add the new part to the tree.
-  _groupStack.back()->addChild ( instance );
+  _assemblies.back()->addChild ( instance );
 
   // It worked.
   return true;
@@ -697,11 +829,92 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 bool TrJt2Pf::_endCurrentGroup()
 {
   SL_PRINT2 ( "In TrJt2Pf::_endCurrentGroup(), this = %X\n", this );
-  SL_ASSERT ( _groupStack.size() >= 2 );
+  SL_ASSERT ( _assemblies.size() >= 2 );
 
   // Pop the group.
-  _groupStack.pop_back();
+  _assemblies.pop_back();
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an array from the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<float> &vec ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+  SL_ASSERT ( 0 == ( vec.size() % 3 ) );
+
+  // Handle trivial case.
+  if ( vec.empty() )
+    return NULL;
+
+  // Allocate an array.
+  unsigned int size = vec.size() / 3;
+  pfVec3 *array = new pfVec3[size];
+
+  // Check allocation.
+  if ( NULL == array )
+  {
+    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
+    return NULL;
+  }
+
+  // Fill up the array.
+  unsigned int count ( 0 ), i ( 0 );
+  for ( i = 0; i < size; ++i )
+  {
+    // Set this element of the array.
+    array[count].set ( vec[i], vec[i+1], vec[i+2] );
+
+    // Increment the counters.
+    i += 2;
+    ++count;
+  }
+
+  // Should be true.
+  SL_ASSERT ( i == count * 3 );
+  SL_ASSERT ( i == size );
+
+  // Return the new array.
+  return array;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an array from the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int *TrJt2Pf::_makeIntArray ( const std::vector<unsigned int> &vec ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+
+  // Handle trivial case.
+  if ( vec.empty() )
+    return NULL;
+
+  // Allocate an array.
+  unsigned int size = vec.size();
+  int *array = new int[size];
+
+  // Check allocation.
+  if ( NULL == array )
+  {
+    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
+    return NULL;
+  }
+
+  // Fill up the array.
+  for ( unsigned int i = 0; i < size; ++i )
+    array[i] = vec[i];
+
+  // Return the new array.
+  return array;
 }

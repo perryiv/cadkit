@@ -61,6 +61,7 @@
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"
+# include "Performer/pr/pfMaterial.h"
 # include <fstream> 
 #endif
 

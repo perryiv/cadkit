@@ -390,11 +390,14 @@ ReaderWriterSTL::WriteResult ReaderWriterSTL::writeNode(const osg::Node& node, c
   std::string ext = osgDB::getFileExtension(fileName);
   if (!acceptsExtension(ext)) return WriteResult::FILE_NOT_HANDLED;
 
-  std::string chunk ( options->getOptionString() );
+  std::string chunk ( ( options ) ? options->getOptionString() : "ascii" );
 
-  if(chunk == "Binary")
+  // Make it lower case.
+  std::transform ( chunk.begin(), chunk.end(), chunk.begin(), ::tolower );
+
+  if ( chunk == "binary" )
     return _writeBinary( node, fileName );
-  else if(chunk == "Ascii")
+  else if ( chunk == "ascii" )
     return _writeAscii( node, fileName );
   return WriteResult::ERROR_IN_WRITING_FILE;
 }

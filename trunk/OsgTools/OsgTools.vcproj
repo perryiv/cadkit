@@ -246,6 +246,9 @@
 					RelativePath="Group.h">
 				</File>
 				<File
+					RelativePath=".\KeepFirst.h">
+				</File>
+				<File
 					RelativePath=".\Lod.cpp">
 				</File>
 				<File

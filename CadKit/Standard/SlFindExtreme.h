@@ -17,6 +17,7 @@
 #define _CADKIT_STANDARD_LIBRARY_FIND_EXTREME_H_
 
 #include <functional>
+#include <limits>
 
 
 namespace CadKit {

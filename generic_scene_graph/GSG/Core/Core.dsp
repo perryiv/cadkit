@@ -95,10 +95,6 @@ LINK32=link.exe
 # PROP Default_Filter "*.cpp;*.h"
 # Begin Source File
 
-SOURCE=.\Assert.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Precompiled.cpp
 # End Source File
 # Begin Source File
@@ -250,11 +246,19 @@ SOURCE=.\Visitor.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Attributes.cpp
+SOURCE=.\Attribute.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Attributes.h
+SOURCE=.\Attribute.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AttributeSet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AttributeSet.h
 # End Source File
 # Begin Source File
 
@@ -271,6 +275,14 @@ SOURCE=.\Material.cpp
 # Begin Source File
 
 SOURCE=.\Material.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PolygonMode.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PolygonMode.h
 # End Source File
 # End Group
 # Begin Group "Pools"
@@ -312,6 +324,10 @@ SOURCE=.\Vec4Pool.h
 # Begin Group "Misc"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Assert.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\Base.h

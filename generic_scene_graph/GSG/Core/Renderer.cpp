@@ -24,7 +24,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Renderer );
+GSG_IMPLEMENT_REFERENCED ( Renderer );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -189,4 +189,22 @@ void Renderer::viewport ( const Viewport &vp )
   BaseClass::viewport ( vp );
   for ( iterator i = _visitors.begin(); i != _visitors.end(); ++i )
     (*i)->viewport ( vp );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Renderer::setFrom ( const Renderer &r )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _visitors = r._visitors;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( r );
 }

@@ -21,7 +21,7 @@
 using namespace GSG;
 
 GSG_IMPLEMENT_ACCEPT_NODE ( Group );
-GSG_IMPLEMENT_CLONE  ( Group );
+GSG_IMPLEMENT_REFERENCED  ( Group );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -207,4 +207,22 @@ void Group::clear()
 void Group::erase ( Group::iterator first, Group::iterator last )
 {
   _nodes.erase ( first, last );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Group::setFrom ( const Group &g )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _nodes = g._nodes;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( g );
 }

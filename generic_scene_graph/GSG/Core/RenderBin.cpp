@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( RenderBin );
+GSG_IMPLEMENT_REFERENCED ( RenderBin );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -130,4 +130,22 @@ void RenderBin::clear()
 {
   Lock lock ( this );
   _elements.erase ( _elements.begin(), _elements.end() );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void RenderBin::setFrom ( const RenderBin &b )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _elements = b._elements;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( b );
 }

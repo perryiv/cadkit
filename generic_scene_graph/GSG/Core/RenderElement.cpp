@@ -29,11 +29,11 @@ GSG_IMPLEMENT_ACCEPT_ELEMENT ( MatrixModeElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( MaterialElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( ColorElement );
 
-GSG_IMPLEMENT_CLONE ( PrimitiveSetElement );
-GSG_IMPLEMENT_CLONE ( MatrixLoadElement );
-GSG_IMPLEMENT_CLONE ( MatrixModeElement );
-GSG_IMPLEMENT_CLONE ( MaterialElement );
-GSG_IMPLEMENT_CLONE ( ColorElement );
+GSG_IMPLEMENT_REFERENCED ( PrimitiveSetElement );
+GSG_IMPLEMENT_REFERENCED ( MatrixLoadElement );
+GSG_IMPLEMENT_REFERENCED ( MatrixModeElement );
+GSG_IMPLEMENT_REFERENCED ( MaterialElement );
+GSG_IMPLEMENT_REFERENCED ( ColorElement );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ MatrixLoadElement::MatrixLoadElement ( const Matrix &m ) : RenderElement(), _mat
 MatrixModeElement::MatrixModeElement ( Mode m ) : RenderElement(), _mode ( m )
 {
 }
-MaterialElement::MaterialElement ( Material *m, Mode mode ) : RenderElement(), _material ( m ), _mode ( mode )
+MaterialElement::MaterialElement ( Material *m ) : RenderElement(), _material ( m )
 {
   ErrorChecker ( 0x0 != _material );
   _material->ref();
@@ -90,8 +90,7 @@ MatrixModeElement::MatrixModeElement ( const MatrixModeElement &e ) : RenderElem
 {
 }
 MaterialElement::MaterialElement ( const MaterialElement &e ) : RenderElement ( e ), 
-  _material ( Material::safeCloneMaterial ( e._material ) ),
-  _mode ( e._mode )
+  _material ( Material::safeCloneMaterial ( e._material ) )
 {
   ErrorChecker ( 0x0 != _material );
   _material->ref();
@@ -129,4 +128,36 @@ MaterialElement::~MaterialElement()
 }
 ColorElement::~ColorElement()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SetFrom()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSetElement::setFrom ( const PrimitiveSetElement &p )
+{
+  safeUnref ( _set );
+  _set = p._set;
+  safeRef ( _set );
+}
+void MatrixLoadElement::setFrom ( const MatrixLoadElement &m )
+{
+  _matrix = m._matrix;
+}
+void MatrixModeElement::setFrom ( const MatrixModeElement &m )
+{
+  _mode = m._mode;
+}
+void MaterialElement::setFrom ( const MaterialElement &m )
+{
+  safeUnref ( _material );
+  _material = m._material;
+  safeRef ( _material );
+}
+void ColorElement::setFrom ( const ColorElement &c )
+{
+  _color = c._color;
 }

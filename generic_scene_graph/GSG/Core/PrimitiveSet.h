@@ -29,7 +29,7 @@ class GSG_CORE_EXPORT PrimitiveSet : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( PrimitiveSet );
+  GSG_DECLARE_REFERENCED ( PrimitiveSet );
   GSG_DECLARE_LOCAL_TYPEDEFS ( PrimitiveSet, Referenced );
   typedef GSG_BIDIRECTIONAL_CONTAINER < Primitive::ValidPtr > Primitives;
   typedef Primitives::size_type size_type;
@@ -76,9 +76,9 @@ public:
   iterator                end()         { return _prims.end(); }
 
   // Add a primitive.
-  void                    append ( Primitive *p );
+  void                    append  ( Primitive *p );
   void                    prepend ( Primitive *p );
-  void                    insert ( iterator beforeMe, Primitive *p );
+  void                    insert  ( iterator beforeMe, Primitive *p );
 
   // The primitive type.
   Type                    type() const { return _type; }

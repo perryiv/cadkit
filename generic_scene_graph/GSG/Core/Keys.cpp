@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Keys );
+GSG_IMPLEMENT_REFERENCED ( Keys );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,4 +93,22 @@ Keys::State Keys::state ( UnsignedInteger c ) const
 {
   States::const_iterator i = _s.find ( c );
   return ( ( _s.end() == i ) ? Keys::UNKNOWN : i->second );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Keys::setFrom ( const Keys &k )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _s = k._s;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( k );
 }

@@ -22,7 +22,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Sort );
+GSG_IMPLEMENT_REFERENCED ( Sort );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,4 +58,17 @@ Sort::Sort ( const Sort &s ) : BinBuilder ( s )
 Sort::~Sort()
 {
   // Empty.
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Sort::setFrom ( const Sort &s )
+{
+  // Call the base class's function.
+  BaseClass::setFrom ( s );
 }

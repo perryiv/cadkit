@@ -23,7 +23,7 @@ namespace Detail {
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Unfortunately, std::mem_fun and boost::mem_fun both reply on partial 
+//  Unfortunately, std::mem_fun and boost::mem_fun both rely on partial 
 //  template specialization to accomodate member functions that return void. 
 //  This is a work-around.
 //

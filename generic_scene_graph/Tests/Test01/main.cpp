@@ -36,7 +36,7 @@ using namespace GSG;
 
 struct MyUpdateCallback : public GSG::Visitor::Callback
 {
-  GSG_DECLARE_CLONE ( MyUpdateCallback );
+  GSG_DECLARE_REFERENCED ( MyUpdateCallback );
   GSG_DECLARE_LOCAL_TYPEDEFS ( MyUpdateCallback, GSG::Visitor::Callback );
   virtual void operator () ( Visitor &v, Node &n );
 };

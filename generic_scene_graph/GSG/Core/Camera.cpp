@@ -22,7 +22,7 @@
 using namespace GSG;
 
 GSG_IMPLEMENT_ACCEPT_NODE ( Camera );
-GSG_IMPLEMENT_CLONE  ( Camera );
+GSG_IMPLEMENT_REFERENCED  ( Camera );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -282,4 +282,34 @@ const Matrix &Camera::projection() const
 
   // Return the matrix.
   return _projection;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Camera::setFrom ( const Camera &c )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _valid      = c._valid;
+  _projection = c._projection;
+  _modelview  = c._modelview;
+  _fov        = c._fov;
+  _aspect     = c._aspect;
+  _nearZ      = c._nearZ;
+  _farZ       = c._farZ;
+  _scale      = c._scale;
+  _origin     = c._origin;
+  _center     = c._center;
+  _distance   = c._distance;
+  _rotation   = c._rotation;
+  _vaFactor   = c._vaFactor;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( c );
 }

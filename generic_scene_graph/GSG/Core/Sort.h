@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT Sort : public BinBuilder
 {
 public:
 
-  GSG_DECLARE_CLONE ( Sort );
+  GSG_DECLARE_REFERENCED ( Sort );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Sort, BinBuilder );
 
   explicit Sort ( RenderBin *bin = 0x0 );

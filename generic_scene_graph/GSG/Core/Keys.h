@@ -30,7 +30,7 @@ class GSG_CORE_EXPORT Keys : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( Keys );
+  GSG_DECLARE_REFERENCED ( Keys );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Keys, Referenced );
 
   enum State { UP, DOWN, UNKNOWN };

@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( InterleavedPool );
+GSG_IMPLEMENT_REFERENCED ( InterleavedPool );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -317,4 +317,26 @@ void InterleavedPool::color ( InterleavedPool::size_type row, Real &c0, Real &c1
   c1 = static_cast < Real > ( _values[index++] );
   c2 = static_cast < Real > ( _values[index++] );
   c3 = static_cast < Real > ( _values[index  ] );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void InterleavedPool::setFrom ( const InterleavedPool &p )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _values       = p._values;
+  _contains     = p._contains;
+  _vertexOffset = p._vertexOffset;
+  _normalOffset = p._normalOffset;
+  _colorOffset  = p._colorOffset;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( p );
 }

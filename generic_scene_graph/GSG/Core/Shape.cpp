@@ -15,14 +15,14 @@
 
 #include "GSG/Core/Precompiled.h"
 #include "GSG/Core/Shape.h"
-#include "GSG/Core/Attributes.h"
+#include "GSG/Core/AttributeSet.h"
 #include "GSG/Core/Visitor.h"
 #include "GSG/Core/PushPop.h"
 
 using namespace GSG;
 
 GSG_IMPLEMENT_ACCEPT_NODE ( Shape );
-GSG_IMPLEMENT_CLONE  ( Shape );
+GSG_IMPLEMENT_REFERENCED  ( Shape );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,6 @@ Shape::Shape() : Node(),
   _sets(),
   _attributes ( 0x0 )
 {
-  // Empty.
 }
 
 
@@ -49,7 +48,6 @@ Shape::Shape ( const Shape &s ) : Node ( s ),
   _sets ( s._sets ),
   _attributes ( s._attributes )
 {
-  // Empty.
 }
 
 
@@ -61,7 +59,6 @@ Shape::Shape ( const Shape &s ) : Node ( s ),
 
 Shape::~Shape()
 {
-  // Empty.
 }
 
 
@@ -97,7 +94,7 @@ void Shape::prepend ( PrimitiveSet *ps )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Shape::insert ( Sets::iterator beforeMe, PrimitiveSet *ps )
+void Shape::insert ( PrimitiveSets::iterator beforeMe, PrimitiveSet *ps )
 {
   Lock lock ( this );
   _sets.insert ( beforeMe, PrimitiveSet::ValidPtr ( ps ) );
@@ -110,7 +107,7 @@ void Shape::insert ( Sets::iterator beforeMe, PrimitiveSet *ps )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Shape::attributes ( Attributes *a )
+void Shape::attributes ( AttributeSet *a )
 {
   Lock lock ( this );
   _attributes = a;
@@ -144,7 +141,7 @@ void Shape::calculateBoundingSphere()
 
   // Loop through the primitive sets and grow the bounding sphere.
   BoundingSphere bound;
-  for ( Sets::iterator i = _sets.begin(); i != _sets.end(); ++i )
+  for ( PrimitiveSets::iterator i = _sets.begin(); i != _sets.end(); ++i )
   {
     PrimitiveSet::ValidPtr ps ( *i );
     ps->calculateBoundingSphere();
@@ -153,4 +150,23 @@ void Shape::calculateBoundingSphere()
 
   // Set this instance's sphere.
   this->boundingSphere ( bound );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Shape::setFrom ( const Shape &s )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _sets       = s._sets;
+  _attributes = s._attributes;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( s );
 }

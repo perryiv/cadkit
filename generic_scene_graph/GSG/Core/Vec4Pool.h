@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT Vec4Pool : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( Vec4Pool );
+  GSG_DECLARE_REFERENCED ( Vec4Pool );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Vec4Pool, Referenced );
   typedef SeqVec4::size_type size_type;
   typedef SeqVec4::iterator iterator;

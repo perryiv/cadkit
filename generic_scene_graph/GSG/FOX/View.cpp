@@ -133,7 +133,7 @@ namespace GSG
     // Callback class.
     struct ViewerCB : public Viewer::Callback
     {
-      GSG_DECLARE_CLONE ( ViewerCB );
+      GSG_DECLARE_REFERENCED ( ViewerCB );
       ViewerCB ( View *v ) : Viewer::Callback(), _v ( v ){}
       ViewerCB ( const ViewerCB &cb ) : Viewer::Callback ( cb ), _v ( cb._v ){}
       virtual void operator () ( Viewer::Message id, Path *, Viewer & );
@@ -141,13 +141,19 @@ namespace GSG
       GSG::FOX::View *_v;
       virtual ~ViewerCB();
     };
-    GSG_IMPLEMENT_CLONE ( ViewerCB );
+    GSG_IMPLEMENT_REFERENCED ( ViewerCB );
     void ViewerCB::operator () ( Viewer::Message id, Path *path, Viewer &viewer )
     {
       if ( _v )
         _v->notify ( id, path, viewer );
     }
     ViewerCB::~ViewerCB(){}
+    void ViewerCB::setFrom ( const ViewerCB &v )
+    {
+      Lock lock ( this );
+      _v = v._v;
+      BaseClass::setFrom ( v );
+    }
   };
 };
 

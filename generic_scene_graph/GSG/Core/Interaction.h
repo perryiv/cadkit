@@ -51,7 +51,7 @@ protected:
 
 struct GSG_CORE_EXPORT Trackball : public Interaction
 {
-  GSG_DECLARE_CLONE ( Trackball );
+  GSG_DECLARE_REFERENCED ( Trackball );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Trackball, Interaction );
 
   explicit Trackball();
@@ -72,7 +72,7 @@ protected:
 
 struct GSG_CORE_EXPORT Translate : public Interaction
 {
-  GSG_DECLARE_CLONE ( Translate );
+  GSG_DECLARE_REFERENCED ( Translate );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Translate, Interaction );
 
   explicit Translate();
@@ -93,7 +93,7 @@ protected:
 
 struct GSG_CORE_EXPORT Scale : public Interaction
 {
-  GSG_DECLARE_CLONE ( Scale );
+  GSG_DECLARE_REFERENCED ( Scale );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Scale, Interaction );
 
   explicit Scale();

@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT Renderer : public Visitor
 {
 public:
 
-  GSG_DECLARE_CLONE ( Renderer );
+  GSG_DECLARE_REFERENCED ( Renderer );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Renderer, Visitor );
   typedef GSG_BIDIRECTIONAL_CONTAINER < Visitor::ValidPtr > Visitors;
   typedef Visitors::size_type size_type;

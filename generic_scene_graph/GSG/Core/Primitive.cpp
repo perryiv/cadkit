@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Primitive );
+GSG_IMPLEMENT_REFERENCED ( Primitive );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -95,4 +95,23 @@ void Primitive::size ( Index s )
 {
   Lock lock ( this );
   _size = s;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Primitive::setFrom ( const Primitive &p )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _start = p._start;
+  _size  = p._size;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( p );
 }

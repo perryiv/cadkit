@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( PrimitiveSet );
+GSG_IMPLEMENT_REFERENCED ( PrimitiveSet );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -246,4 +246,29 @@ void PrimitiveSet::_grow ( const Primitive *prim, BoundingSphere &bound ) const
     // Vector-type may not be the same.
     bound.grow ( BoundingSphere::VectorType ( v0, v1, v2 ) );
   }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::setFrom ( const PrimitiveSet &p )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _pool   = p._pool;
+  _ppn    = p._ppn;
+  _ppc    = p._ppc;
+  _type   = p._type;
+  _nb     = p._nb;
+  _cb     = p._cb;
+  _prims  = p._prims;
+  _bound  = p._bound;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( p );
 }

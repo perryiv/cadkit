@@ -37,10 +37,11 @@ Interaction::~Interaction(){}
 //
 /////////////////////////////////////////////////////////////////////////////
 
-GSG_IMPLEMENT_CLONE ( Trackball );
+GSG_IMPLEMENT_REFERENCED ( Trackball );
 Trackball::Trackball() : Interaction(){}
 Trackball::Trackball ( const Trackball &tb ) : Interaction ( tb ){}
 Trackball::~Trackball(){}
+void Trackball::setFrom ( const Trackball &t ) { BaseClass::setFrom ( t ); }
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,10 +62,11 @@ void Trackball::operator () ( Viewer &v )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-GSG_IMPLEMENT_CLONE ( Translate );
+GSG_IMPLEMENT_REFERENCED ( Translate );
 Translate::Translate() : Interaction(){}
 Translate::Translate ( const Translate &tr ) : Interaction ( tr ){}
 Translate::~Translate(){}
+void Translate::setFrom ( const Translate &t ) { BaseClass::setFrom ( t ); }
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -85,10 +87,11 @@ void Translate::operator () ( Viewer &v )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-GSG_IMPLEMENT_CLONE ( Scale );
+GSG_IMPLEMENT_REFERENCED ( Scale );
 Scale::Scale() : Interaction(){}
 Scale::Scale ( const Scale &s ) : Interaction ( s ){}
 Scale::~Scale(){}
+void Scale::setFrom ( const Scale &s ) { BaseClass::setFrom ( s ); }
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -34,7 +34,7 @@ class GSG_CORE_EXPORT FrustumCull : public BinBuilder
 {
 public:
 
-  GSG_DECLARE_CLONE ( FrustumCull );
+  GSG_DECLARE_REFERENCED ( FrustumCull );
   GSG_DECLARE_LOCAL_TYPEDEFS ( FrustumCull, BinBuilder );
 
   explicit FrustumCull ( RenderBin *bin = 0x0 );

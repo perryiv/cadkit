@@ -28,11 +28,18 @@ public:
 
   GSG_DECLARE_LOCAL_TYPEDEFS ( Referenced, RootClass );
 
-  virtual Referenced *  clone() const = 0;
-  static Referenced *   safeClone ( const Referenced *cloneMe );
+  virtual Referenced *        clone() const = 0;
+  static Referenced *         safeClone ( const Referenced *cloneMe );
 
-  void                  ref();
-  void                  unref ( bool allowDeletion = true );
+  virtual void                setFrom ( const Referenced & ) = 0;
+
+  virtual const type_info &   typeId() const = 0;
+
+  void                        ref();
+  void                        unref ( bool allowDeletion = true );
+
+  static void                 safeRef   ( Referenced * );
+  static void                 safeUnref ( Referenced *, bool allowDeletion = true );
 
 protected:
 
@@ -71,6 +78,60 @@ protected:
   { \
     return dynamic_cast < class_name * > ( Referenced::safeClone ( cloneMe ) ); \
   }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience macros so that classes can easily implement setFrom().
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define GSG_DECLARE_SET_FROM(class_name) \
+  virtual void  setFrom ( const Referenced & ); \
+  void          setFrom ( const class_name & )
+
+#define GSG_IMPLEMENT_SET_FROM(class_name) \
+  void class_name::setFrom ( const Referenced &r ) \
+  { \
+    const class_name *c = dynamic_cast < const class_name * > ( &r ); \
+    if ( c ) \
+      this->setFrom ( *c ); \
+    else \
+      BaseClass::setFrom ( r ); \
+  }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience macros so that classes can easily implement typeId().
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define GSG_DECLARE_TYPE_ID(class_name) \
+  virtual const type_info &typeId() const
+
+#define GSG_IMPLEMENT_TYPE_ID(class_name) \
+  const type_info &class_name::typeId() const \
+  { \
+    return typeid ( *this ); \
+  }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Put in classes derived from Referenced.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define GSG_DECLARE_REFERENCED(class_name) \
+  GSG_DECLARE_CLONE(class_name);\
+  GSG_DECLARE_SET_FROM(class_name);\
+  GSG_DECLARE_TYPE_ID(class_name)
+
+#define GSG_IMPLEMENT_REFERENCED(class_name) \
+  GSG_IMPLEMENT_CLONE(class_name);\
+  GSG_IMPLEMENT_SET_FROM(class_name);\
+  GSG_IMPLEMENT_TYPE_ID(class_name)
 
 
 ///////////////////////////////////////////////////////////////////////////////

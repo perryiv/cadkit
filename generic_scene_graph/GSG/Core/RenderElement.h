@@ -60,7 +60,7 @@ class GSG_CORE_EXPORT PrimitiveSetElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( PrimitiveSetElement );
+  GSG_DECLARE_REFERENCED ( PrimitiveSetElement );
   GSG_DECLARE_LOCAL_TYPEDEFS ( PrimitiveSetElement, RenderElement );
 
   PrimitiveSetElement ( PrimitiveSet * );
@@ -91,7 +91,7 @@ class GSG_CORE_EXPORT MatrixLoadElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( MatrixLoadElement );
+  GSG_DECLARE_REFERENCED ( MatrixLoadElement );
   GSG_DECLARE_LOCAL_TYPEDEFS ( MatrixLoadElement, RenderElement );
 
   MatrixLoadElement ( const Matrix & );
@@ -122,7 +122,7 @@ class GSG_CORE_EXPORT MatrixModeElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( MatrixModeElement );
+  GSG_DECLARE_REFERENCED ( MatrixModeElement );
   GSG_DECLARE_LOCAL_TYPEDEFS ( MatrixModeElement, RenderElement );
 
   enum Mode { MODELVIEW, PROJECTION, TEXTURE };
@@ -155,15 +155,12 @@ class GSG_CORE_EXPORT MaterialElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( MaterialElement );
+  GSG_DECLARE_REFERENCED ( MaterialElement );
   GSG_DECLARE_LOCAL_TYPEDEFS ( MaterialElement, RenderElement );
 
-  enum Mode { FRONT, BACK, BOTH };
-
-  MaterialElement ( Material *, Mode );
+  MaterialElement ( Material * );
   MaterialElement ( const MaterialElement & );
 
-  Mode mode() const { return _mode; }
   const Material *material() const { return _material; }
 
   GSG_DECLARE_ACCEPT ( MaterialElement );
@@ -176,7 +173,6 @@ protected:
 private:
 
   Material *_material;
-  Mode _mode;
 };
 
 
@@ -190,7 +186,7 @@ class GSG_CORE_EXPORT ColorElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( ColorElement );
+  GSG_DECLARE_REFERENCED ( ColorElement );
   GSG_DECLARE_LOCAL_TYPEDEFS ( ColorElement, RenderElement );
 
   ColorElement ( const Color & );

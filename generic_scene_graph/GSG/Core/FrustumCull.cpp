@@ -22,7 +22,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( FrustumCull );
+GSG_IMPLEMENT_REFERENCED ( FrustumCull );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,4 +162,17 @@ void FrustumCull::_cull ( Camera &c )
 
   // Delegate.
   this->_cull ( (Camera::BaseClass &) c );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void FrustumCull::setFrom ( const FrustumCull &f )
+{
+  // Call the base class's function.
+  BaseClass::setFrom ( f );
 }

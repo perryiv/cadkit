@@ -21,7 +21,7 @@
 using namespace GSG;
 
 GSG_IMPLEMENT_ACCEPT_NODE ( Transform );
-GSG_IMPLEMENT_CLONE  ( Transform );
+GSG_IMPLEMENT_REFERENCED  ( Transform );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,4 +59,22 @@ Transform::Transform ( const Transform &t ) : Group ( t ),
 Transform::~Transform()
 {
   // Empty.
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Transform::setFrom ( const Transform &t )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _matrix = t._matrix;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( t );
 }

@@ -429,7 +429,7 @@ void CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown
     return;
 
   // Attach the modules to each other.
-  _attachModules();
+  this->_attachModules();
 
   // Print the current time.
   time_t now = ::time ( NULL );

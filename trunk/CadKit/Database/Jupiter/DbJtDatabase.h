@@ -35,6 +35,7 @@
 #include "Interfaces/IQueryColors.h"
 #include "Interfaces/IQueryTexCoords.h"
 #include "Interfaces/IMessagePriority.h"
+#include "Interfaces/ILodOption.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -64,7 +65,8 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public IQueryShapeColorsVec4f,
                                public IQueryShapeColorsVec3f,
                                public IQueryShapeTexCoordsVec2f,
-                               public IMessagePriority
+                               public IMessagePriority,
+                               public ILodOption
 {
 public:
 
@@ -100,7 +102,7 @@ public:
   virtual bool            setPartLoadOption ( const PartLoadOption &option );
 
   // Set the shape load option. Returns false if not supported.
-  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option );
+//  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -252,6 +254,15 @@ public:
   // Set the message priority level.
   virtual bool            setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  ILodOption interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set option for processing the LODs.
+  virtual void            setLodProcessOption ( LodProcessOption &option );
+
 protected:
 
   typedef std::list<eaiAssembly *> Assemblies;
@@ -261,12 +272,13 @@ protected:
   AssemblyLoadOption _assemblyLoadOption;
   PartLoadOption _partLoadOption;
   BrepLoadOption _brepLoadOption;
-  ShapeLoadOption _shapeLoadOption;
+//  ShapeLoadOption _shapeLoadOption;
   std::auto_ptr<Assemblies> _assemblies;
   std::auto_ptr<DbJtTraversalState> _current;
   std::auto_ptr<ShapeData> _shapeData;
   unsigned int _progressPriorityLevel;
   bool _result;
+  LodProcessOption _lodOption;
 
   virtual ~DbJtDatabase();
 

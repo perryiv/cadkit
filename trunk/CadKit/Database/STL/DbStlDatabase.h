@@ -44,6 +44,15 @@ class DB_STL_API DbStlDatabase : public DbBaseTarget,
 {
 public:
 
+
+  class entityData
+  {
+  public:
+    entityData( ) { }
+    entityData( const FmgrIndex &start, const FmgrIndex &end ) { _start = start; _end = end; }
+    FmgrIndex _start, _end;
+  };
+  
   DbStlDatabase();
 
   // IUnknown interface.

@@ -18,6 +18,10 @@
 
 #include "DbStlApi.h"
 
+// when i put this after the SlPartitionedVector header, I got an internal compiler error
+// C1001 in the IEntityNotify.h header file... so moved it up here
+#include "Standard/SlQueryPtr.h" 
+
 #include "Standard/SlVec3.h"
 #include "Standard/SlStack.h"
 #include "Standard/SlMatrix44.h"
@@ -54,12 +58,12 @@ typedef SlPartitionedVector<unsigned int, SlVec3f> Normals;
 /////////////////////////////////////////////////////////////////////////////
 // class "TransformStack"
 //
-// This is a stack which stores the "current" transformation matrix
-// for the points.  This class is basically the same as SlStack with
-// one exception - the "push" function is modified to multiply the 
-// new matrix by the one on top of the stack.  That way the top matrix
-// always contains the cumulative transformations for the points we are
-// operating on.
+// This is a stack of 4x4 transforms.  A call to the collapse function will
+// return a single matrix which is the multiplication product from bottom to
+// top.  For instance, we have a stack like this:
+//      top->[C][B][A]<-bottom
+// collapse() would return the product [C]*[B]*[A].
+//
 /////////////////////////////////////////////////////////////////////////////
 
 class TransformStack
@@ -69,25 +73,77 @@ public:
 	
   TransformStack( );
 
-  //  Override the default push function so that the new matrix is multiplied
-	//  by the matrix on top of the stack.
   void init( ) { _stack.clear(); pushIdentity(); } // clear and push identity
   void push( );
-  void pop( ) { if ( !_stack.empty() ) _stack.pop(); } // pop the stack
-  void pushIdentity( ) { SlMatrix44f id; id.identity(); _stack.push( id ); } // push identity
-  void clear( ) { _stack.clear(); }
-  bool empty( ) const { return _stack.empty(); }
 	void push ( const SlMatrix44f &val );
+  void pop( ) { if ( !_stack.empty() ) { _stack.pop(); _recalcProduct(); } } // pop the stack
+  void pushIdentity( ) { SlMatrix44f id( true ); _stack.push( id ); } // push identity - don't need to recalc
+  void clear( ) { _stack.clear(); _product.identity(); }
+  bool empty( ) const { return _stack.empty(); }
   bool applyTransforms( const SlVec3f &input, SlVec3f &output ); // apply top transforms to input vector and return in output
+
+  // "output" is set to the stack product, identity if stack is empty.
+  // Return true if stack is not empty, false if empty ("output" will be valid either way)
+  // Example:
+  //      top->[C][B][A]<-bottom
+  // getProduct() would return the product [A]*[B]*[C] through "output"
+  bool getProduct( SlMatrix44f &output ) { output = _product; return !_stack.empty(); }
+
+  // collapses the stack into one matrix which is the product of all the matrices on the stack
+  // see description of getProduct() for multiplicatoin sequence 
+  void collapse( ) { SlMatrix44f temp(_product); _stack.clear(); _stack.push( temp ); }
+
   SlStack<SlMatrix44f> &getStack( ) { return _stack; } // get the stack
-  SlMatrix44f &top( ) { return _stack.top(); } // get the stack
+  SlMatrix44f &top( ) { return _stack.top(); } // get the top of the stack
 protected:
   SlStack<SlMatrix44f> _stack;
+  SlMatrix44f _product; // cached copy of matrix stack product... for efficiency.  Set to identity if stack empty
+  void _recalcProduct(); // recalculate product and store in _product
+};
+
+/////////////////////////////////////////////////////////////////////////////
+// DbStlFacetManager member class "facet"
+// This class organizes geometry data into triangular facets w/ normals
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// class "facet"
+//
+// This class organizes geometry data into triangular facets w/ normals
+// Pointer is provided to transformation stack if needed (may be NULL)
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class facet
+{
+public:
+  facet( );
+  facet( const SlVec3f vertices[3], const SlVec3f &normal, TransformStack *tsp = NULL );
+  facet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal, TransformStack *tsp = NULL );
+  void setTransformStack( TransformStack *tsp ) { _tsp = tsp; } // may be NULL
+  void setNormal( const SlVec3f &normal );
+  void setVertices( const SlVec3f vertices[3] );
+  void setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 );
+  void setValue( const SlVec3f vertices[3], const SlVec3f &normal );
+  void setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
+  void getNormal( SlVec3f &normal );
+  void getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 );
+  void getVertices( SlVec3f vertices[3] );
+  TransformStack *getTransformStack( ) { return _tsp; }
+
+protected:
+	SlVec3f _vertices[3];
+	SlVec3f _normal;
+  TransformStack *_tsp;
 };
 
 
+// For convenience
+typedef std::list<facet> Facets;
+typedef Facets::iterator FmgrIndex;
+
 ///////////////////////////////////////////////////////////////////////////////
-//  DbStlFacetManager member class "DbStlVertexSetter"
+//  class "DbStlVertexSetter"
 //
 //  We are using this class exclusively as an interface
 //  to data source IQueryShapeVerticesVec3f... it has no data members of its
@@ -187,36 +243,7 @@ public:
   DbStlFacetManager ( );
   ~DbStlFacetManager ( );
 
-
-  /////////////////////////////////////////////////////////////////////////////
-	// DbStlFacetManager member class "facet"
-	// This class organizes geometry data into triangular facets w/ normals
-  /////////////////////////////////////////////////////////////////////////////
-
-  class facet
-  {
-  public:
-    facet( );
-    facet( const SlVec3f vertices[3], const SlVec3f &normal );
-    facet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
-    void setNormal( const SlVec3f &normal );
-    void setVertices( const SlVec3f vertices[3] );
-    void setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 );
-    void setValue( const SlVec3f vertices[3], const SlVec3f &normal );
-    void setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
-    void getNormal( SlVec3f &normal );
-    void getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 );
-    void getVertices( SlVec3f vertices[3] );
-  
-  protected:
-		SlVec3f _vertices[3];
-		SlVec3f _normal;
-  };
-
-
-  // For convenience
-  typedef std::list<facet> Facets;
-
+ 
   /////////////////////////////////////////////////////////////////////////////
 	// DbStlFacetManager member functions
   /////////////////////////////////////////////////////////////////////////////
@@ -231,12 +258,12 @@ public:
   void init( );
 
   // Fetch all vertices for a given shape and use to populate _facets list
-  bool fetchVerticesPerShape( IUnknown *caller, IUnknown *controller, ShapeHandle shape );
+  bool fetchVerticesPerShape( SlQueryPtr<IQueryShapeVerticesVec3f> query, ShapeHandle shape );
 
   // Add a facet - pick your flavor
-  void addFacet ( SlVec3f vertices[3], const SlVec3f &normal );
-  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 );
-  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
+  void addFacet ( SlVec3f vertices[3], const SlVec3f &normal, TransformStack *tsp = NULL );
+  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, TransformStack *tsp = NULL );
+  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal, TransformStack *tsp = NULL );
 
   // Clear facets
   void clearFacets ( ) { _facets.clear(); };
@@ -253,14 +280,38 @@ public:
   // Pop a transform onto the stack.
   void popTransform ( ) { _transforms.pop(); }
 
+  // Return  current endpoint of _facets list as an opaque index
+  //TODO - should rework to have return a bool true/false depending on empty() condition.
+  bool getIndex( FmgrIndex &i ) { i = _facets.end(); if( _facets.empty() ) return false; else i--; return true; }
 
+  // Increment FmgrIndex type in a safe manner and flag if not successful
+  bool incrementIndex( FmgrIndex &index ) { if ( _facets.empty() || index == _facets.end() ) return false; else index++; return ( index == _facets.end() );  }
 
+  // Process instances
+  bool processInstance( const FmgrIndex &start, const FmgrIndex &end, const SlMatrix44f &matrix );
+
+  // Apply transforms
+  void applyTransforms( );
+
+  int indexPos( const FmgrIndex &index ) 
+  { 
+    if ( _facets.empty() || index == _facets.end() ) 
+      return -1; 
+    else 
+    { 
+      int i(0); 
+      FmgrIndex fi( _facets.begin() ); 
+      while ( (fi != index) && (fi != _facets.end()) )
+      {
+        fi++;
+        i++;
+      }
+      return i; 
+    }
+  }
 
 
 protected:
-
-
-
   Facets _facets;
 	TransformStack _transforms;
 /*DEBUG*/int _tnv, _tns;

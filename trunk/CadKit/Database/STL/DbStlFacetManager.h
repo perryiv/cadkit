@@ -71,10 +71,8 @@ public:
 	//  by the matrix on top of the stack.
   void init( ) { _stack.clear(); pushIdentity(); } // clear and push identity
   void push( );
-/*DEBUG*/  void pop( );  // pop the stack
-// /*RESTORE*/  void pop( ) { if ( !_stack.empty() ) _stack.pop(); } // pop the stack
-// /*RESTORE*/  void pushIdentity( ) { SlMatrix44f id; id.identity(); _stack.push( id ); } // push identity
-/*DEBUG*/  void pushIdentity( ) { SlMatrix44f id; id.identity(); push( id ); } // push identity
+  void pop( ) { if ( !_stack.empty() ) _stack.pop(); } // pop the stack
+  void pushIdentity( ) { SlMatrix44f id; id.identity(); _stack.push( id ); } // push identity
   void clear( ) { _stack.clear(); }
   bool empty( ) const { return _stack.empty(); }
 	void push ( const SlMatrix44f &val );

@@ -21,6 +21,7 @@ Jupiter Database
       LOD
         Shape
         Shape
+          Material (optional)
           TriStrip
           TriStrip
             Vertices

@@ -100,12 +100,12 @@ namespace CadKit
 {
 void _incrementPointerReferenceCount ( pfMemory *p )
 {
-  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
+  SL_PRINT3 ( "In _incrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->ref();
 }
 void _decrementPointerReferenceCount ( pfMemory *p )
 {
-  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
+  SL_PRINT3 ( "In _decrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->unref();
 }
 };
@@ -369,7 +369,7 @@ bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group 
 
 bool TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group )
 {
-  SL_PRINT4 ( "In TrJt2Pf::_createGroup(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In TrJt2Pf::_createGroup(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Make a new dynamic coordinate system. We make a dynamic coordinate 
@@ -495,16 +495,24 @@ bool TrJt2Pf::_addLOD ( DbJtTraverser::EntityHandle entity,
   // Should be true.
   SL_ASSERT ( numShapes > 0 );
 
-  // Make a new pfLOD.
+  // Make a new LOD.
   SlRefPtr<pfLOD> lod = new pfLOD;
   if ( lod.isNull() )
     return false;
+
+  // Make a new Geode.
+  SlRefPtr<pfGeode> geode = new pfGeode;
+  if ( geode.isNull() )
+    return false;
+
+  // Add the geode to the LOD.
+  lod->addChild ( geode );
 
   // Loop through the shapes.
   for ( unsigned int i = 0; i < numShapes; ++i )
   {
     // Add the shape.
-    this->_addShape ( entity, whichLOD, i, part, *lod );
+    this->_addShape ( entity, whichLOD, i, part, *geode );
   }
 
   // If we added any children...
@@ -532,13 +540,13 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
                           const unsigned int &whichLOD, 
                           const unsigned int &whichShape, 
                           const TrJt2Pf::Group &part,
-                          pfGroup &group )
+                          pfGeode &geode )
 {
   SL_PRINT5 ( "In TrJt2Pf::_addShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 
   // Get the number of sets for this shape.
   unsigned int numSets ( 0 );
-  if ( false == _jtTraverser->getNumSets ( entity, whichLOD, whichShape, numSets ) )
+  if ( false == _jtTraverser->getNumShapeSets ( entity, whichLOD, whichShape, numSets ) )
     return false;
 
   // Should be true.

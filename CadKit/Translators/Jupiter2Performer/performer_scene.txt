@@ -10,17 +10,19 @@ PfScene (Database)
       pfLOD
       pfLOD
         pfGeode (just one)
-          pfGeoSet (just one)
+          pfGeoSet (eaiShape)
             pfGeoState
               pfMaterial
               pfTexture
-            TriStrip (one for each set of each Shape).
+            TriStrip (one for each set of the eaiShape).
               Vertices
               Normals
               Colors (optional)
               Texture Coordinates (optional)
             TriStrip
             TriStrip
+          pfGeoSet
+          pfGeoSet
       pfLOD
       pfLOD
       pfLOD

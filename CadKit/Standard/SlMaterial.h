@@ -91,7 +91,7 @@ public:
   T &                     getShininess() { return _shininess; }
   unsigned int &          getValid()     { return _valid; }
 
-  bool                    isValid ( const unsigned int &flags ) { return ( ( _valid & flags ) == flags ); }
+  bool                    isValid ( const unsigned int &flags ) const { return ( ( _valid & flags ) == flags ); }
 
   SlMaterial<T> &         operator = ( const SlMaterial<T> &m ) { this->setValue ( m ); return *this; }
 

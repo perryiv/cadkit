@@ -167,9 +167,6 @@
 					RelativePath="Axes.h">
 				</File>
 				<File
-					RelativePath="Box.cpp">
-				</File>
-				<File
 					RelativePath="Box.h">
 				</File>
 				<File
@@ -198,9 +195,6 @@
 				</File>
 				<File
 					RelativePath="Ray.h">
-				</File>
-				<File
-					RelativePath=".\Sphere.cpp">
 				</File>
 				<File
 					RelativePath=".\Sphere.h">
@@ -241,6 +235,12 @@
 				</File>
 				<File
 					RelativePath="Group.h">
+				</File>
+				<File
+					RelativePath=".\MaterialSetter.cpp">
+				</File>
+				<File
+					RelativePath=".\MaterialSetter.h">
 				</File>
 				<File
 					RelativePath=".\State.cpp">

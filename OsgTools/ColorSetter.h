@@ -35,11 +35,7 @@ namespace OsgTools
     ColorSetter(const ColorSetter& cs): _color(cs._color) {}
     ~ColorSetter() {}
 
-    ColorSetter& operator =(const ColorSetter& cs)
-    {
-      _color = cs._color;
-      return *this;
-    }
+    ColorSetter& operator =(const ColorSetter& cs);
 
     void operator ()(osg::ShapeDrawable* sd);
     void operator ()(osg::Geometry* g);

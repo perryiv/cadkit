@@ -12,7 +12,10 @@
 
 #include "osgDB/ReaderWriter"
 
+#include "facet.h"
+
 #include <string>
+#include <vector>
 
 namespace osg { class Group; class Geode; };
 
@@ -38,6 +41,9 @@ protected:
   void                    _parse ( std::ifstream &in );
   Result                  _read ( const std::string &, const Options * );
 
+private:
+  std::vector< Facet* > _facets;
+  Facet *_currentFacet;
 };
 
 

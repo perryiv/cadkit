@@ -86,7 +86,7 @@ protected:
   typedef std::map<DbJtTraverser::EntityHandle, pfGroup *> GroupMap;
   bool _verbose;
   DbJtTraverser::Ptr _jtTraverser;
-  std::string _error;
+  mutable std::string _error;
   std::auto_ptr<GroupMap> _groupMap;
   Assemblies _assemblies;
 

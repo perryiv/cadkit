@@ -35,6 +35,7 @@ public:
 
   typedef ContainerType_                                ContainerType;
   typedef ErrorChecker_                                 ErrorCheckerType;
+  typedef typename ContainerType::value_type            value_type;
   typedef typename ContainerType::size_type             size_type;
   typedef typename ContainerType::difference_type       difference_type;
   typedef typename ContainerType::reference             reference;

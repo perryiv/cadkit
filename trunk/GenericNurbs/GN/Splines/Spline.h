@@ -52,6 +52,7 @@ public:
   typedef typename ConfigType::IndependentContainer               IndependentContainer;
   typedef typename IndependentContainer::value_type               IndependentSequence;
   typedef typename ConfigType::DependentContainer                 DependentContainer;
+  typedef typename DependentContainer::value_type                 DependentSequence;
   typedef typename ConfigType::ErrorCheckerType                   ErrorCheckerType;
   typedef typename ConfigType::Vec2                               Vec2;
   typedef typename ConfigType::Vec3                               Vec3;
@@ -312,11 +313,17 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   ///
-  /// Read-only access to the knot vector.
+  /// Access to the knot vector. Be carful with this!
   ///
   /////////////////////////////////////////////////////////////////////////////
 
   const IndependentSequence &knotVector ( SizeType whichIndepVar ) const
+  {
+    GN_ERROR_CHECK ( whichIndepVar < _knots.size() );
+    return _knots[whichIndepVar];
+  }
+
+  IndependentSequence &knotVector ( SizeType whichIndepVar )
   {
     GN_ERROR_CHECK ( whichIndepVar < _knots.size() );
     return _knots[whichIndepVar];
@@ -488,6 +495,25 @@ public:
     GN_ERROR_CHECK ( whichDepVar < _ctrPts.size() );
     GN_ERROR_CHECK ( whichControlPoint < _ctrPts[whichDepVar].size() );
     return _ctrPts[whichDepVar][whichControlPoint];
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Access to the control point container. Be careful!
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  const DependentSequence &controlPoints ( SizeType whichDepVar ) const
+  {
+    GN_ERROR_CHECK ( whichDepVar < _ctrPts.size() );
+    return _ctrPts[whichDepVar];
+  }
+
+  DependentSequence &controlPoints ( SizeType whichDepVar )
+  {
+    GN_ERROR_CHECK ( whichDepVar < _ctrPts.size() );
+    return _ctrPts[whichDepVar];
   }
 
 
@@ -804,8 +830,8 @@ public:
 
   bool equal ( const ThisType &s ) const
   {
-    typedef std::equal_to<IndependentType>          KnotsPred;
-    typedef std::equal_to<DependentType>  ControlPointPred;
+    typedef std::equal_to<IndependentType> KnotsPred;
+    typedef std::equal_to<DependentType> ControlPointPred;
 
     return ( 
       this->_equalIntegerData ( s ) &&
@@ -962,8 +988,8 @@ private:
   SizeContainer         _order;
   SizeContainer         _numCtrPts;
   bool                  _rational;
-  IndependentContainer         _knots;
-  DependentContainer _ctrPts;
+  IndependentContainer  _knots;
+  DependentContainer    _ctrPts;
   mutable Work          _work;
 };
 

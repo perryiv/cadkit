@@ -21,6 +21,7 @@
 
 #include <stdexcept>
 #include <limits>
+#include <sstream>
 
 
 namespace GN {
@@ -223,7 +224,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class T > void set ( const T &value )
+  void set ( const ValueType &value )
   {
     // Get the existing size.
     SizeType r ( this->rows() );
@@ -305,10 +306,10 @@ public:
         temp = GN::Math::absolute ( (*this)(i,j,1) );
         if ( temp > big )
           big = temp;
-        if ( zero == big )
-          throw std::runtime_error ( "Error 1268204037: trying to LU-decompose a singular matrix" );
-        vv[i] = one / big;
       }
+      if ( zero == big )
+        throw std::runtime_error ( "Error 1268204037: trying to LU-decompose a singular matrix" );
+      vv[i] = one / big;
     }
 
     // Loop over columns of Crout’s method.
@@ -422,6 +423,37 @@ public:
     {
       // Apply to every element in this row.
       std::for_each ( _m[i].begin(), _m[i].end(), f );
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //	Print to the stream.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class OutputStream > void print ( const std::string &format, OutputStream &out )
+  {
+    // Shortcuts.
+    SizeType r ( this->rows() );
+    SizeType c ( this->columns() );
+
+    // Should be big enough...
+    char buf[1024];
+
+    // Loop through the rows.
+    for ( SizeType i = 0; i < r; ++i )
+    {
+      // Loop through the columns.
+      for ( SizeType j = 0; j < c; ++j )
+      {
+        ::sprintf ( buf, format.c_str(), _m[i][j] );
+        out << buf;
+      }
+
+      // Next line.
+      out << '\n';
     }
   }
 

@@ -375,6 +375,23 @@ public:
   }
 
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assign this vector.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void assign ( size_type count, const value_type &value )
+  {
+    return _v.assign ( count, value );
+  }
+
+  template < class II > void assign ( II first, II last )
+  {
+    return _v.assign ( first, last );
+  }
+
+
 private:
 
   Sequence _v;

@@ -46,8 +46,8 @@
 
 extern "C"
 {
-#ifdef _WIN32
-  int _finite  ( double ) _USUL_THROW;
+#ifdef _MSC_VER
+  _CRTIMP int __cdecl _finite ( double );
 #else
   int  finite  ( double ) _USUL_THROW;
 #endif

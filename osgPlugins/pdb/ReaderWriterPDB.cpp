@@ -230,7 +230,7 @@ osg::LOD *ReaderWriterPDB::_makeAtom (const Atom &atom ) const
 
   // Not so many triangles.
   osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
-  hints->setDetailRatio ( 0.25f ); // TODO, remove hard-coded value.
+  hints->setDetailRatio ( 1.0f ); // TODO, remove hard-coded value.
   drawable->setTessellationHints ( hints.get() );
 
   // Add the sphere to a geode.

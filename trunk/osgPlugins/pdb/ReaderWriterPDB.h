@@ -43,21 +43,6 @@ public:
   typedef Molecule::Atom Atom;
   typedef Molecule::Bond Bond;
 
-  struct MoleculeList : public osg::Referenced
-  {
-    typedef Molecules::iterator Iterator;
-
-    MoleculeList() : _molecules() { }
-    MoleculeList( const Molecules& m ) : _molecules( m ) { }
-
-    void clear() { _molecules.clear(); }
-    void push_back( MoleculePtr m ) { _molecules.push_back( m ); }
-
-    Molecules& molecules() { return _molecules; }
-  private:
-    Molecules _molecules;
-  };
-
   ReaderWriterPDB();
   ~ReaderWriterPDB();
 
@@ -66,8 +51,6 @@ public:
   virtual const char*     className();
 
   virtual ReadResult      readNode ( const std::string &filename, const Options * );
-
-  virtual WriteResult     writeNode ( const osg::Node& node, const std::string& fileName, const Options* options );
 
   // Show/hide the item.
   void                    showAtoms ( bool );
@@ -86,9 +69,9 @@ public:
   std::string             getPsfPath( const std::string &file ) { return _getPsfPath( file ); }
   osg::Group*             build() const { return _build(); }
 
-  MoleculeList*           getMolecules() { return _molecules.get(); }
+  Molecules               getMolecules() { return _molecules; }
 
-  void init() { this->_init(); }
+  void                    init() { this->_init(); }
 
 protected:
 
@@ -108,11 +91,9 @@ protected:
 
   ReadResult              _read ( const std::string &, const Options * );
 
-  WriteResult             _write ( const osg::Node &, const std::string &, const Options * );
-
 private:
   
-  mutable osg::ref_ptr< MoleculeList > _molecules;
+  mutable Molecules _molecules;
   MaterialFactory::Ptr _materialFactory;
   Molecule *_currentMolecule;
   ShapeFactory::Ptr _shapeFactory;

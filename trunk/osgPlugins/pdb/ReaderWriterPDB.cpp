@@ -47,7 +47,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterPDB::ReaderWriterPDB() : BaseClass(),
-  _molecules       ( new MoleculeList ),
+  _molecules       ( ),
   _materialFactory ( new MaterialFactory ),
   _currentMolecule ( 0x0 ),
   _shapeFactory    ( new ShapeFactory ),
@@ -128,47 +128,13 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::readNode ( const std::string &file,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the atoms.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode ( const osg::Node& node, const std::string &file, const osgDB::ReaderWriter::Options *options )
-{
-  // Safely...
-  try
-  {
-    return this->_write ( node, file, options );
-  }
-
-  // Catch known exceptions.
-  catch ( const ReaderWriterPDB::WriteResult &r )
-  {
-    return r;
-  }
-
-  // Catch standard exceptions.
-  catch ( const std::exception &e )
-  {
-    return ReaderWriterPDB::WriteResult ( e.what() );
-  }
-
-  // Catch all other exceptions.
-  catch ( ... )
-  {
-    return ReaderWriterPDB::WriteResult ( "Unknown exception caught" );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Initialize the internal data members.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReaderWriterPDB::_init()
 {
-  _molecules->clear();
+  _molecules.clear();
   //_materialFactory->clear();
   _currentMolecule = NULL;
 }
@@ -228,13 +194,9 @@ osg::Group *ReaderWriterPDB::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
-  //make a copy
-  root->setUserData( new MoleculeList ( _molecules->molecules() ) );
-
-  Molecules molecules ( _molecules->molecules() );
 
   //Loop through the molecules
-  for (Molecules::const_iterator i = molecules.begin(); i != molecules.end(); ++i)
+  for (Molecules::const_iterator i = _molecules.begin(); i != _molecules.end(); ++i)
   {
     const MoleculePtr &molecule = *i;
     osg::ref_ptr<osg::MatrixTransform> mt ((osg::MatrixTransform *) (molecule.get())->build() );
@@ -391,7 +353,7 @@ ReaderWriterPDB::Molecule* ReaderWriterPDB::_getCurrentMolecule( unsigned int nu
   {
     _currentMolecule = new Molecule ( _materialFactory.get(), _shapeFactory.get(), _flags, numAtoms );
     osg::ref_ptr< Molecule > r ( _currentMolecule );
-    _molecules->push_back(r);
+    _molecules.push_back(r);
   }
   return _currentMolecule;
 }
@@ -538,36 +500,6 @@ bool ReaderWriterPDB::hasFlags ( unsigned int flags ) const
   return Usul::Bits::has ( _flags, flags );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ReaderWriterPDB::WriteResult ReaderWriterPDB::_write ( const osg::Node& node, const std::string& filename, const Options* options )
-{
-  std::string ext = osgDB::getFileExtension(filename);
-  if (!acceptsExtension(ext)) 
-    return WriteResult::FILE_NOT_HANDLED;
-
-  std::ofstream fout ( filename.c_str() );
-  if ( !fout.is_open() )
-    return WriteResult::ERROR_IN_WRITING_FILE;
-
-  Molecules molecules ( _molecules->molecules() );
-
-  for (Molecules::const_iterator i = molecules.begin(); i != molecules.end(); ++i)
-  {
-    const MoleculePtr &molecule = *i;
-    const Molecule::Atoms &atoms ( molecule->atoms() );
-
-    for( unsigned int i = 0; i < atoms.size(); ++i )
-      fout << *atoms.at(i) << std::endl;
-  }
-
-  return WriteResult::ERROR_IN_WRITING_FILE;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

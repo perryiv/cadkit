@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IAssemblyNotify: Interface for reporting an assembly.
+//  IAssemblyQuery: Interface for querying an assembly.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_ASSEMBLY_NOTIFY_H_
-#define _CADKIT_INTERFACE_ASSEMBLY_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_ASSEMBLY_QUERY_H_
+#define _CADKIT_INTERFACE_ASSEMBLY_QUERY_H_
 
 #include "IUnknown.h"
 #include "Handles.h"
@@ -26,20 +26,26 @@
 
 namespace CadKit
 {
-class IAssemblyNotify : public IUnknown
+template <const unsigned int id, class Real> class IAssemblyQuery : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032724907 };
+  enum { IID = id };
 
-  // End the assembly.
-  virtual bool            endAssembly ( AssemblyHandle assembly, IUnknown *caller ) = 0;
+  // Get the name.
+  virtual std::string     getName ( AssemblyHandle assembly ) const = 0;
 
-  // Start the assembly.
-  virtual bool            startAssembly ( AssemblyHandle assembly, IUnknown *caller ) = 0;
+  // Get the transformation matrix.
+  virtual bool            getTransform ( AssemblyHandle assembly, Real matrix[16] ) const = 0;
 };
+
+
+// Common types.
+typedef IAssemblyQuery<1032844642,float>  IAssemblyQueryFloat;
+typedef IAssemblyQuery<1032844873,double> IAssemblyQueryDouble;
+
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_ASSEMBLY_NOTIFY_H_
+#endif // _CADKIT_INTERFACE_ASSEMBLY_QUERY_H_

@@ -15,6 +15,7 @@
 
 #include "DbJtPrecompiled.h"
 #include "DbJtDatabase.h"
+#include "DbJtInline.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
@@ -102,6 +103,8 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
 
   switch ( iid )
   {
+  case IAssemblyQueryFloat::IID:
+    return static_cast<IAssemblyQueryFloat *>(this);
   case IDataSource::IID:
     return static_cast<IDataSource *>(this);
   case IControlled::IID:
@@ -518,7 +521,7 @@ bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *enti
   if ( assembly.isValid() )
   {
     // Let the target know we have a new assembly.
-    if ( false == assembly->startAssembly ( thisUnknown ) )
+    if ( false == assembly->startAssembly ( (AssemblyHandle) entity, thisUnknown ) )
       return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d\n\tCall to IAssemblyNotify::startAssembly() returned false", entity->name(), level ), 0 );
 
     // It worked.
@@ -561,7 +564,7 @@ bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity
   if ( assembly.isValid() )
   {
     // Let the target know we have a new assembly.
-    if ( false == assembly->endAssembly ( thisUnknown ) )
+    if ( false == assembly->endAssembly ( (AssemblyHandle) entity, thisUnknown ) )
       return ERROR ( FORMAT ( "Failed to end assembly '%s' at level %d\n\tCall to IAssemblyNotify::endAssembly() returned false", entity->name(), level ), 0 );
 
     // It worked.
@@ -895,4 +898,36 @@ void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
   // Reference the new one if valid.
   if ( _currentInstance )
     _currentInstance->ref();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, assembly = %X\n", this, assembly );
+  SL_ASSERT ( assembly );
+
+  // Call the template function.
+  return CadKit::getName ( assembly );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( AssemblyHandle assembly, float matrix[16] ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, assembly = %X\n", this, assembly );
+  SL_ASSERT ( assembly );
+
+  // Call the template function.
+  return CadKit::getTransform ( assembly, matrix );
 }

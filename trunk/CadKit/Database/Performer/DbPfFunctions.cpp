@@ -15,24 +15,21 @@
 
 #include "DbPfPrecompiled.h"
 #include "DbPfFunctions.h"
+#include "DbPfPerformer.h"
 
 #include "Standard/SlMaterial.h"
 #include "Standard/SlRefPtr.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pr/pfGeoState.h"
-# include "Performer/pr/pfMaterial.h"
-# include "Performer/pr/pfGeoSet.h"
-#endif
+#include "Interfaces/IQueryVertices.h"
 
-
+#if 0
 #ifdef _DEBUG
   FILE *out = ::fopen ( "material.out", "w" );
 #endif
+#endif
 
 
-namespace CadKit
-{
+namespace CadKit {
 
 
 ///////////////////////////////////////////////////////////////////////////////

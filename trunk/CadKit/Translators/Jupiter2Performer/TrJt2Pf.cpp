@@ -20,30 +20,17 @@
 
 #include "TrJt2PfPrecompiled.h"
 #include "TrJt2Pf.h"
+#include "TrJt2PfPerformer.h"
 
 #include "Standard/SlAssert.h"
 #include "Standard/SlPrint.h"
 #include "Standard/SlPathname.h"
 #include "Standard/SlBitmask.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pf/pfDCS.h"
-# include "Performer/pf/pfLOD.h"
-# include "Performer/pf/pfGeode.h"
-# include "Performer/pr/pfGeoSet.h"
-# include "Performer/pr/pfGeoState.h"
-# include "Performer/pr/pfLinMath.h"
-# include "Performer/pr/pfMaterial.h"
-# include "Performer/pfdu.h"
-# include <iostream>
-# include <iomanip>
-#endif
+#include <iostream>
+#include <iomanip>
 
 #define PRINT if ( _verbose ) std::cout
-
-#ifdef _WIN32
-  std::string pfMemory::_indent;
-#endif
 
 using namespace CadKit;
 

@@ -20,7 +20,8 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # ifdef _WIN32 // PC
-#  include "windows.h"
+#  define NOMINMAX // Do not define min and max as macros.
+#  include <windows.h>
 # else // unix
 #  include <pthread.h>
 # endif // PC/unix

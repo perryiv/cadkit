@@ -30,7 +30,12 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 #define EAI_ENTITY_LIST_HXX
 class eaiEntityList;
 
+#pragma warning ( disable: 4251 )
+
 #endif // _WIN32
+
+#include <stdlib.h> // For "NULL", used in eaiStandard.h, 
+                    // indirectly included by eaiEntityFactory.h
 
 #include "DMDataTk/eaiEntityFactory.h" // Doesn't compile in DbJtPrecompiled.h
 #include "DMDataTk/eaiCADImporter.h"

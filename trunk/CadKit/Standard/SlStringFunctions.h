@@ -24,7 +24,8 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # ifdef _WIN32
-#  include "windows.h"
+#  define NOMINMAX
+#  include <windows.h>
 # endif
 # include <stdarg.h>
 # include <stdlib.h>

@@ -31,8 +31,13 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
+  // The modules we use.
+  SlRefPtr<CtTranslation> trans ( new CtTranslation );
+  SlRefPtr<DbJtDatabase>  jt    ( new DbJtDatabase );
+  SlRefPtr<DbOsgDatabase> osg   ( new DbOsgDatabase );
+
   // Translate.
-  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbOsgDatabase, argc, argv );
+  bool result = CadKit::translate ( trans.getValue(), jt.getValue(), osg.getValue(), argc, argv );
 
   // Return the result.
   return ( result ) ? 1 : 0;

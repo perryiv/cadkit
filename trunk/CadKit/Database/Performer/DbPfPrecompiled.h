@@ -16,6 +16,10 @@
 #ifndef _CADKIT_DATABASE_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_
 #define _CADKIT_DATABASE_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_
 
+#ifndef _CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY
+# error "This header file is intended for internal Database/Performer code only."
+#endif
+
 #ifdef _WIN32
 # pragma warning(disable:4251) // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
 # pragma warning(disable:4786) // Truncated debug names.
@@ -33,15 +37,7 @@
 # include <map>
 # include <stack>
 # include <algorithm>
-# include "Performer/pf/pfDCS.h"
-# include "Performer/pf/pfLOD.h"
-# include "Performer/pf/pfGeode.h"
-# include "Performer/pr/pfGeoSet.h"
-# include "Performer/pr/pfGeoState.h"
-# include "Performer/pr/pfLinMath.h"
-# include "Performer/pr/pfGeoMath.h"
-# include "Performer/pr/pfMaterial.h"
-# include "Performer/pfdu.h"
+# include "DbPfPerformer.h"
 #endif
 
 #endif // _CADKIT_DATABASE_PERFORMER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

@@ -17,7 +17,11 @@
 
 #include "Standard/SlAssert.h"
 
-#include "windows.h"
+#ifdef _WIN32
+# define NOMINMAX // Do not define min and max as macros.
+# include <windows.h>
+#endif
+
 #include <GL/gl.h>
 
 using namespace CadKit;

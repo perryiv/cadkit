@@ -16,6 +16,10 @@
 #ifndef _CADKIT_GUI_FOX_MAIN_WINDOW_H_
 #define _CADKIT_GUI_FOX_MAIN_WINDOW_H_
 
+#ifdef _WIN32
+# define NOMINMAX // Fox includes <windows.h>
+#endif
+
 #include "fox/fx.h"
 
 #include "FoxApi.h"

@@ -18,6 +18,7 @@
 #include "DbPfFunctions.h"
 #include "DbPfInline.h"
 #include "DbPfArraySetters.h"
+#include "DbPfPerformer.h"
 
 #include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/IShapeQuery.h"
@@ -32,16 +33,6 @@
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Performer/pf/pfGroup.h"
-# include "Performer/pf/pfLOD.h"
-# include "Performer/pf/pfGeode.h"
-# include "Performer/pr/pfGeoSet.h"
-# include "Performer/pr/pfGeoState.h"
-# include "Performer/pr/pfGeoMath.h"
-# include "Performer/pfdu.h"
-#endif
-
 // To help shorten up the lines.
 #undef  ERROR
 #define ERROR    this->_notifyError
@@ -51,10 +42,6 @@
 
 #define LAST_LOD_RANGE            1e7
 #define MAX_LOD_DISTANCE_FACTOR   30
-
-#ifdef _WIN32
-  std::string pfMemory::_indent;
-#endif
 
 using namespace CadKit;
 

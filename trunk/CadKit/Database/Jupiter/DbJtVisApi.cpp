@@ -14,11 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "DbJtVisApi.h"
-
-#include <stdlib.h> // For "NULL", used in eaiStandard.h, 
-                    // indirectly included by eaiEntityFactory.h
-
-#include "DMDataTk/eaiEntityFactory.h"
+#include "DbJtVisApiHeaders.h"
 
 #include "Standard/SlAssert.h"
 

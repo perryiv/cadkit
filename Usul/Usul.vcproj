@@ -324,9 +324,6 @@
 					RelativePath=".\Interfaces\IActiveView.h">
 				</File>
 				<File
-					RelativePath=".\Interfaces\IAnimate.h">
-				</File>
-				<File
 					RelativePath=".\Interfaces\ICancelButton.h">
 				</File>
 				<File
@@ -367,6 +364,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFoxToolbar.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IGetAnimationTime.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IGetHeight.h">

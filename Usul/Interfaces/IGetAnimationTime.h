@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_ANIMATE_H_
-#define _USUL_INTERFACE_ANIMATE_H_
+#ifndef _USUL_INTERFACE_GET_ANIMATION_TIME_H_
+#define _USUL_INTERFACE_GET_ANIMATION_TIME_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -16,22 +16,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IAnimate : public Usul::Interfaces::IUnknown
+struct IGetAnimationTime : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IAnimate );
+  USUL_DECLARE_QUERY_POINTERS ( IGetAnimationTime );
 
   /// Id for this interface.
   enum { IID = 1102087119u };
 
-  virtual void startAnimation() = 0;
-  virtual void stopAnimation() = 0;
+  virtual double getAnimationTime() = 0;
   
-}; // class IAnimate
+}; // class IGetAnimationTime
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_ANIMATE_H_
+#endif // _USUL_INTERFACE_GET_ANIMATION_TIME_H_

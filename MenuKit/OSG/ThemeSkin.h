@@ -30,13 +30,24 @@ namespace MenuKit
     template<typename MapType>
     class ThemeSkin : public Referenced
     {
+      /**\todo TODO: have skins support their own theme maps.
+        * thus taking the pressure off of a Tile to maintain
+        * a theme and making the Mason configure such a theme.
+        * Also, it just makes more sense to have themes be a
+        * feature of a skin.
+        * The Mode concept found in Tiles should be inherit
+        * to the Skin's base class which will define an
+        * interface with which the Tile will operate.
+        * Therefore, this class should inherit from a Skin class.
+        * This is a medium priority TODO.
+        */
     public:
       typedef Referenced base_class;
       typedef MapType theme_type;
       typedef ThemeSkin<theme_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 
-      ThemeSkin(): base_class(), _theme(), _letter_height(0.7f), _separator_height(0.2f), _graphic_width(0.0f) {}
+      ThemeSkin(): base_class(), _theme(), _letter_height(0.75f), _separator_height(0.2f), _graphic_width(0.0f) {}
 
       virtual osg::Node* operator ()(const Menu& menu)=0;
       virtual osg::Node* operator ()(const Button& butn)=0;

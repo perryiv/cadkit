@@ -1,5 +1,5 @@
 # C++ source files.
-CPPFILES = \
+CPP_FILES = \
 SgGlContext.cpp \
 SgGlDll.cpp \
 SgGlFeedback.cpp \

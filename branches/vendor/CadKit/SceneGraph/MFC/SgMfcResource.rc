@@ -1,0 +1,315 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "SgMfcResource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "SgMfcResource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SG_MFC_SCENEGRAPHBAR DIALOGEX 0, 0, 402, 86
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_CHILD
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "Tree1",IDD_SG_MFC_SCENETREE,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | 
+                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,15,0,385,85,
+                    WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
+END
+
+IDD_SG_MFC_MATERIAL_EDITOR DIALOG DISCARDABLE  0, 0, 321, 287
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK",IDOK,258,239,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,258,260,50,14
+    PUSHBUTTON      "Reset",ID_SG_MFC_MATERIAL_RESET,256,10,50,14
+    PUSHBUTTON      "Default",ID_SG_MFC_MATERIAL_DEFAULT,256,32,50,14
+    PUSHBUTTON      "Copy",ID_SG_MFC_MATERIAL_COPY,256,54,50,14
+    PUSHBUTTON      "Paste",ID_SG_MFC_MATERIAL_PASTE,256,76,50,14
+    COMBOBOX        IDC_SG_MFC_SHAPE_COMBO_BOX,257,98,48,102,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Slider1",IDC_SG_MFC_RED_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,125,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_GREEN_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,141,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_BLUE_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,157,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_ALPHA_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,173,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_HUE_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,198,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_SATURATION_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,214,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_VALUE_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,230,159,15
+    CONTROL         "Slider1",IDC_SG_MFC_SHININESS_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,260,159,15
+    EDITTEXT        IDC_SG_MFC_RED_EDIT_BOX,206,125,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_GREEN_EDIT_BOX,206,141,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_BLUE_EDIT_BOX,206,157,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_ALPHA_EDIT_BOX,206,173,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_HUE_EDIT_BOX,206,198,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_SATURATION_EDIT_BOX,206,214,35,14,
+                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_VALUE_EDIT_BOX,206,230,35,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SG_MFC_SHININESS_EDIT_BOX,206,260,35,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "",IDC_SG_MFC_AMBIENT_RADIO_BUTTON,"Button",
+                    BS_AUTORADIOBUTTON,256,127,8,8
+    CONTROL         "",IDC_SG_MFC_DIFFUSE_RADIO_BUTTON,"Button",
+                    BS_AUTORADIOBUTTON,256,144,8,8
+    CONTROL         "",IDC_SG_MFC_SPECULAR_RADIO_BUTTON,"Button",
+                    BS_AUTORADIOBUTTON,256,161,8,8
+    CONTROL         "",IDC_SG_MFC_EMISSIVE_RADIO_BUTTON,"Button",
+                    BS_AUTORADIOBUTTON,256,178,8,8
+    CONTROL         "Ambient",IDC_SG_MFC_AMBIENT_TOGGLE_BUTTON,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | WS_TABSTOP,269,126,43,10
+    CONTROL         "Diffuse",IDC_SG_MFC_DIFFUSE_TOGGLE_BUTTON,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | WS_TABSTOP,269,143,43,10
+    CONTROL         "Specular",IDC_SG_MFC_SPECULAR_TOGGLE_BUTTON,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | WS_TABSTOP,269,160,43,10
+    CONTROL         "Emissive",IDC_SG_MFC_EMISSIVE_TOGGLE_BUTTON,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | WS_TABSTOP,269,177,43,10
+    RTEXT           "Red",IDC_SG_MFC_RED_LABEL,29,128,14,8
+    RTEXT           "Green",IDC_SG_MFC_GREEN_LABEL,23,144,20,8
+    RTEXT           "Blue",IDC_SG_MFC_BLUE_LABEL,28,160,15,8
+    RTEXT           "Alpha",IDC_SG_MFC_ALPHA_LABEL,24,176,19,8
+    RTEXT           "Hue",IDC_SG_MFC_HUE_LABEL,29,201,14,8
+    RTEXT           "Saturation",IDC_SG_MFC_SATURATION_LABEL,10,217,33,8
+    RTEXT           "Value",IDC_SG_MFC_VALUE_LABEL,24,233,19,8
+    RTEXT           "Shininess",IDC_SG_MFC_SHININESS_LABEL,12,263,31,8
+    GROUPBOX        "",IDC_STATIC,6,116,241,77
+    GROUPBOX        "",IDC_STATIC,251,116,63,77
+    PUSHBUTTON      "Apply",ID_SG_MFC_MATERIAL_APPLY,258,216,50,14
+    GROUPBOX        "",IDC_STATIC,6,188,241,62
+    GROUPBOX        "",IDC_STATIC,6,251,241,29
+    CONTROL         "Continuous",IDC_SG_MFC_CONTINUOUS_TOGGLE_BUTTON,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | WS_TABSTOP,258,199,51,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_SG_MFC_SCALE_CURSOR     CURSOR  DISCARDABLE     "res\\point.cur"
+IDC_SG_MFC_TRANSLATE_CURSOR CURSOR  DISCARDABLE     "res\\hand.cur"
+IDC_SG_MFC_SEEK_CURSOR      CURSOR  DISCARDABLE     "res\\seek.cur"
+IDC_SG_MFC_ROTATE_CURSOR    CURSOR  DISCARDABLE     "res\\rotate.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_SG_MFC_VIEWER_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Viewer Menu"
+    BEGIN
+        POPUP "Camera"
+        BEGIN
+            MENUITEM "Home",                        ID_SG_MFC_HOME
+            MENUITEM "Set Home",                    ID_SG_MFC_SET_HOME
+            MENUITEM "View All",                    ID_SG_MFC_VIEW_ALL
+            MENUITEM SEPARATOR
+            MENUITEM "Copy View",                   ID_SG_MFC_COPY_VIEW
+            MENUITEM "Paste View",                  ID_SG_MFC_PASTE_VIEW
+        END
+        POPUP "Rendering"
+        BEGIN
+            MENUITEM "Solid",                       ID_SG_MFC_SOLID
+            MENUITEM "Wireframe",                   ID_SG_MFC_WIREFRAME
+            MENUITEM "Points",                      ID_SG_MFC_POINTS
+        END
+        MENUITEM "Viewing",                     ID_SG_MFC_TOGGLE_VIEWING
+        MENUITEM "Lights",                      ID_SG_MFC_LIGHTS
+        MENUITEM "Rotations",                   ID_SG_MFC_ROTATIONS
+        MENUITEM SEPARATOR
+        POPUP "Background"
+        BEGIN
+            MENUITEM "Edit Color . . .",            ID_SG_MFC_EDIT_BACKGROUND_COLOR
+
+            MENUITEM SEPARATOR
+            MENUITEM "Use Gradient Fill",           ID_SG_MFC_VIEWERMENU_BACKGROUND_GRADIENT
+
+            MENUITEM "Use Solid Fill",              ID_SG_MFC_VIEWERMENU_BACKGROUND_SOLID
+
+            MENUITEM SEPARATOR
+            MENUITEM "Copy Background",             ID_SG_MFC_COPY_BACKGROUND
+
+            MENUITEM "Paste Background",            ID_SG_MFC_PASTE_BACKGROUND
+
+            MENUITEM "Default Background",          ID_SG_MFC_DEFAULT_BACKGROUND
+
+        END
+        MENUITEM SEPARATOR
+        POPUP "Antialiasing"
+        BEGIN
+            MENUITEM "1 Pass (off)",                ID_SG_MFC_ANTIALIAS_1_PASS
+
+            MENUITEM "3 Passes",                    ID_SG_MFC_ANTIALIAS_3_PASSES
+
+            MENUITEM "5 Passes",                    ID_SG_MFC_ANTIALIAS_5_PASSES
+
+            MENUITEM "9 Passes",                    ID_SG_MFC_ANTIALIAS_9_PASSES
+
+            MENUITEM "15 Passes",                   ID_SG_MFC_ANTIALIAS_15_PASSES
+
+            MENUITEM SEPARATOR
+            MENUITEM "While Moving",                ID_SG_MFC_ANTIALIAS_WHILE_MOVING
+
+        END
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_SG_MFC_CONTEXT_MENU_TOOLBAR TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_SG_MFC_HOME
+    BUTTON      ID_SG_MFC_SET_HOME
+    BUTTON      ID_SG_MFC_VIEW_ALL
+    SEPARATOR
+    BUTTON      ID_SG_MFC_SOLID
+    BUTTON      ID_SG_MFC_WIREFRAME
+    BUTTON      ID_SG_MFC_POINTS
+    SEPARATOR
+    BUTTON      ID_SG_MFC_VIEWING
+    BUTTON      ID_SG_MFC_PICKING
+    BUTTON      ID_SG_MFC_SEEKING
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_SG_MFC_CONTEXT_MENU_TOOLBAR BITMAP  DISCARDABLE     "res\\contextMenuToolBar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SG_MFC_VIEW_ALL      "Scale the view so that the entire scene is visible.\nView All"
+    ID_SG_MFC_COPY_VIEW     "Copy the camera's position and orientation to the buffer."
+    ID_SG_MFC_PASTE_VIEW    "Paste the camera's position and orientation from the buffer."
+    ID_SG_MFC_SOLID         "Polygons are drawn filled.\nSolid"
+    ID_SG_MFC_WIREFRAME     "Polygons are drawn wireframe.\nWireframe"
+    ID_SG_MFC_POINTS        "Polygons and Lines are drawn with just points at the vertices.\nPoints"
+    ID_SG_MFC_VIEWING       "Turn on viewing mode.\nViewing"
+    ID_SG_MFC_EDIT_BACKGROUND_COLOR "Change the background color."
+    ID_SG_MFC_COPY_BACKGROUND "Copy the background color"
+    ID_SG_MFC_PASTE_BACKGROUND "Paste the background color"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SG_MFC_DEFAULT_BACKGROUND "Reset the background to the default color"
+    ID_SG_MFC_VIEWERMENU_BACKGROUND_GRADIENT "Use a gradient background."
+    ID_SG_MFC_VIEWERMENU_BACKGROUND_SOLID "Use a solid background."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SG_MFC_SET_HOME      "Set the camera's home position.\nSet Home"
+    ID_SG_MFC_HOME          "Reset the camera to its home position.\nHome"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SG_MFC_PICKING       "Turn on picking mode.\nPicking"
+    ID_SG_MFC_SEEKING       "Turn on seeking mode.\nSeeking"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -10,14 +10,16 @@ SUBDIRS = \
 	Database/Performer \
 	Database/XML \
 	Database/STL \
+	Database/ITRI \
 	Translators/Jupiter2Performer \
 	Translators/Jupiter2Xml \
 	Demos/Jupiter2Osg \
 	Demos/Jupiter2Performer \
 	Demos/Jupiter2Xml \
 	Demos/Jupiter2Stl \
+	Demos/Jupiter2Itri \
 	Examples/BoundingBox \
-	Examples/Matrix4 \
+	Examples/Matrix44 \
 	Examples/Pathname \
 	Examples/String \
 	Examples/Vector \

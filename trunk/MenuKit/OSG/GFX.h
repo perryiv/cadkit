@@ -1,10 +1,10 @@
 #ifndef _menukit_osg_gfx_functor_
 #define _menukit_osg_gfx_functor_
 
-#include "MenuKit/Referenced.h"
+#include "../Referenced.h"
 
-#include "MenuKit/OSG/Export.h"
-#include "MenuKit/OSG/Skin.h"
+#include "Export.h"
+#include "Skin.h"
 
 #include "osg/Vec4"
 #include "osgText/Font"

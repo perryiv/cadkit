@@ -326,22 +326,23 @@ bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, pfNode &node )
   SL_ASSERT ( entity );
 
   // Query name of the entity, there may not be one.
-  SlAString name;
-  if ( false == _jtTraverser->getName ( entity, name.getString() ) )
+  std::string name;
+  if ( false == _jtTraverser->getName ( entity, name ) )
     return false;
 
-  // Truncate at the first newline character. Performer doesn't like them.
-//  std::string::size_type pos = name.getString().find ( '\n' );
-//  if ( std::string::npos != pos )
-//    name.resize ( pos );
-
-  // Replace the newline characters. Performer doesn't like them.
-  name.replace ( '\n', ' ' );
-  name.replace ( '\r', ' ' );
+  // See if there are any newline character. Performer doesn't like them.
+  std::string::size_type pos = name.find ( '\n' );
+  if ( std::string::npos != pos )
+  {
+    static unsigned int count ( 0 );
+    PRINT << "Warning: replacing name:\n" << name << std::endl;
+    CadKit::format ( name, "Replaced_name_%d", count++ );
+    PRINT << "with: " << name << std::endl;
+  }
 
   // Should be true.
-  SL_ASSERT ( std::string::npos == name.getString().find ( '\n' ) );
-  SL_ASSERT ( std::string::npos == name.getString().find ( '\r' ) );
+  SL_ASSERT ( std::string::npos == name.find ( '\n' ) );
+  SL_ASSERT ( std::string::npos == name.find ( '\r' ) );
 
   // Add the name.
   node.setName ( name.c_str() );

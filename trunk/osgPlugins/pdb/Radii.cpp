@@ -23,7 +23,7 @@ Radii::Radii ( double scale ) : _scale ( scale )
 {
   // Populate the map. Source of data:
   // http://www.monroecc.edu/wusers/flanzafame/PerRadii.pdf
-  _map["H"] = 1; // TODO...
+  _map["H"] = 1;
 }
 
 

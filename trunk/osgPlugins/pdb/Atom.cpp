@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -9,7 +10,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "atom.h"
+#include "Atom.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -17,7 +19,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Atom::Atom(char *atomString, std::string type) {
+Atom::Atom ( const char *atomString, std::string type )
+{
 	char num[9];
 	//get id number
 	memset(num, 0, 9 * sizeof(char));
@@ -46,6 +49,7 @@ Atom::Atom(char *atomString, std::string type) {
   _symbol = num;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copy Constructor.
@@ -54,13 +58,25 @@ Atom::Atom(char *atomString, std::string type) {
 
 Atom::Atom(const Atom& atom) :
   _id(atom.getId()),
-  _name(atom.getName()),
   _point(atom.getVec3()),
   _r(atom.getR()),
+  _name(atom.getName()),
   _type(atom.getType()),
   _symbol(atom.getSymbol())
-  {
-  }
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Atom::~Atom()
+{
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -74,6 +90,7 @@ std::string Atom::toString() const
 	out << _type <<" " << _id << " " << _name << " " << _point[0] << " " <<  _point[1] << " " <<  _point[2];
 	return std::string(out.str());
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

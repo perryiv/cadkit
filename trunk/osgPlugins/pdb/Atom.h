@@ -20,9 +20,9 @@ class Atom
 public:
   typedef unsigned int ID;
 
-  Atom() { _id = 0; }
-	Atom(char*, std::string);
+	Atom(const char*, std::string);
   Atom(const Atom&);
+  ~Atom();
 	const float getX() const { return _point[0]; }
 	const float getY() const { return _point[1]; }
 	const float getZ() const { return _point[2]; }
@@ -37,10 +37,15 @@ public:
 
   Atom& operator=(const Atom&);
 private:
+
+  Atom();
+
 	ID _id;
   osg::Vec3 _point;
 	float _r;
-	std::string _name, _type, _symbol;
+	std::string _name;
+  std::string _type;
+  std::string _symbol;
 };
 
 #endif

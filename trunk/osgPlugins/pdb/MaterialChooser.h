@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -23,8 +24,9 @@ public:
 	typedef std::pair< std::string, osg::ref_ptr<osg::Material> > pair;
 	typedef std::map< std::string, Material> Map;
 
-	MaterialChooser() { srand(0); }
-	MaterialChooser(unsigned int seed) { srand(seed); }
+	MaterialChooser();
+	MaterialChooser(unsigned int seed);
+  ~MaterialChooser();
 	osg::ref_ptr<osg::Material> getMaterial (const std::string) const;
   void clear() { _materialMap.clear(); }
 	//bool addColor(std::string, Color) { return false; }

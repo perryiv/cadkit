@@ -22,10 +22,17 @@
 
 #include <limits>
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Molecule::Molecule(MaterialChooser* mc) : 
   _atoms(),
   _bonds(),
-  _maxDistanceFactor ( 50 ),
+  _maxDistanceFactor ( 75 ),
   _lastRangeMax ( std::numeric_limits<float>::max() ),
   _numLodChildren ( 5 ),
   _lodDistancePower ( 2 )
@@ -34,10 +41,22 @@ Molecule::Molecule(MaterialChooser* mc) :
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Molecule::~Molecule()
+{
+}
+
+
 void Molecule::addAtom(const Atom& atom)
 {
-  _atoms.insert( atom_pair (atom.getId(), atom) );
+  _atoms.insert( Map::value_type (atom.getId(), atom) );
 }
+
 
 void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 {
@@ -169,7 +188,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
   // The lod holding the various representations.
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
-   // Set the lod's material. This will effect all the children.
+  // Set the lod's material. This will effect all the children.
   osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
   osg::ref_ptr<osg::Material> m ( _materialChooser->getMaterial ( atom.getSymbol() ) );
   ss->setAttribute ( m.get() );
@@ -184,7 +203,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
   // Add several spheres.
   for ( unsigned int i = 0; i < _numLodChildren - 1; ++i )
   {
-    float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 1 ), _lodDistancePower ) );
+    float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 2 ), _lodDistancePower ) );
     lod->addChild ( this->_makeSphere ( center, radius, detail ) );
   }
 

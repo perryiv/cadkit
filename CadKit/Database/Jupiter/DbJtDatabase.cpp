@@ -930,8 +930,6 @@ const unsigned int &DbJtDatabase::_getCustomerId()
 void DbJtDatabase::setAssemblyLoadOption ( const AssemblyLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setAssemblyLoadOption(), this = %X, option = %d\n", this, option );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiINSTANCE_ASSEMBLY == (unsigned int) INSTANCE_ASSEMBLY );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiEXPLODE_ASSEMBLY == (unsigned int) EXPLODE_ASSEMBLY );
 
   // Set the option.
   _assemblyLoadOption = option;
@@ -947,9 +945,6 @@ void DbJtDatabase::setAssemblyLoadOption ( const AssemblyLoadOption &option )
 void DbJtDatabase::setBrepLoadOption ( const BrepLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setBrepLoadOption(), this = %X, option = %d\n", this, option );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiTESS_ONLY == (unsigned int) TESS_ONLY );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiBREP_ONLY == (unsigned int) BREP_ONLY );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiTESS_AND_BREP == (unsigned int) ALL );
 
   // Set the option.
   _brepLoadOption = option;
@@ -965,8 +960,6 @@ void DbJtDatabase::setBrepLoadOption ( const BrepLoadOption &option )
 void DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiALL_LODS == (unsigned int) ALL_LODS );
-  SL_ASSERT ( (unsigned int) eaiCADImporter::eaiHIGH_LOD == (unsigned int) HIGH_LOD );
 
   // Set the option.
   _shapeLoadOption = option;
@@ -1468,7 +1461,7 @@ HierarchyHandle DbJtDatabase::getCorresponding ( InstanceHandle instance ) const
   SL_ASSERT ( instance );
 
   // It has to be an instance.
-  if ( eaiEntity::eaiINSTANCE != ((eaiEntity *) instance)->typeID() )
+  if ( false == CadKit::isOfType ( instance, eaiEntity::eaiINSTANCE ) )
     return NULL;
 
   // Return a pointer to the original part or assembly (which may be null).
@@ -1949,10 +1942,10 @@ bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, IQueryShapeVerticesVec3f::
     type = IQueryShapeVerticesVec3f::POLYGON_SET;
     break;
 
-  case eaiEntity::eaiTRIFANSET:
-
-    type = IQueryShapeVerticesVec3f::TRI_FAN_SET;
-    break;
+//  case eaiEntity::eaiTRIFANSET:
+//
+//    type = IQueryShapeVerticesVec3f::TRI_FAN_SET;
+//    break;
 
   case eaiEntity::eaiTRISTRIPSET:
 

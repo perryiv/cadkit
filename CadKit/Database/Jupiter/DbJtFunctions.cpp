@@ -118,10 +118,10 @@ eaiMaterial *_getMaterial ( eaiEntity *entity )
     ((eaiPolygonSet *) entity)->getMaterial ( material );
     break;
 
-  case eaiEntity::eaiTRIFANSET:
-
-    ((eaiTriFanSet *) entity)->getMaterial ( material );
-    break;
+//  case eaiEntity::eaiTRIFANSET:
+//
+//    ((eaiTriFanSet *) entity)->getMaterial ( material );
+//    break;
 
   case eaiEntity::eaiTRISTRIPSET:
 

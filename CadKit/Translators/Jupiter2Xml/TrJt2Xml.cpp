@@ -645,8 +645,8 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
     name = "line_strip";
   else if ( DbJtTraverser::POINT_SET == type )
     name = "point_set";
-  else if ( DbJtTraverser::TRI_FAN_SET == type )
-    name = "tri_fan";
+//  else if ( DbJtTraverser::TRI_FAN_SET == type )
+//    name = "tri_fan";
   else
   {
     SL_ASSERT ( 0 ); // Heads up.

@@ -47,13 +47,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Usuld.dll"
+				OutputFile="$(USUL_LIB_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
-				ImportLibrary="../bin/Usuld.lib"/>
+				ImportLibrary="$(USUL_LIB_DIR)/Usuld.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -115,12 +115,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Usul.dll"
+				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Usul.pdb"
-				ImportLibrary="../bin/Usul.lib"/>
+				ImportLibrary="$(USUL_LIB_DIR)/Usul.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

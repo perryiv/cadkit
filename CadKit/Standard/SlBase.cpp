@@ -71,7 +71,7 @@ const SlType SlBase::typeSlBase = { "SlBase", 0x0, 0x0 };
 
 SlBase::SlBase()
 {
-  SL_PRINT3 ( "SlBase::SlBase(), this = %X\n", this );
+  SL_PRINT2 ( "In SlBase::SlBase(), this = %X\n", this );
 }
 
 #endif

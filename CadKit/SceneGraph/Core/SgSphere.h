@@ -46,6 +46,10 @@
 
 #include "SgPrimitive.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlVec3.h"
+#endif
+
 namespace CadKit
 {
 class SG_API SgSphere : public SgPrimitive

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgDrawStyle.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgDrawStyle,SgAttribute);
@@ -63,7 +67,7 @@ SgDrawStyle::SgDrawStyle() : SgAttribute(),
   lineStippleFactor ( 1 ),
   lineStipplePattern ( 0xffff )
 {
-  SL_PRINT ( "SgDrawStyle::SgDrawStyle(), this = %X\n", this );
+  SL_PRINT2 ( "SgDrawStyle::SgDrawStyle(), this = %X\n", this );
 }
 
 
@@ -75,5 +79,5 @@ SgDrawStyle::SgDrawStyle() : SgAttribute(),
 
 SgDrawStyle::~SgDrawStyle()
 {
-  SL_PRINT ( "SgDrawStyle::SgDrawStyle(), this = %X\n", this );
+  SL_PRINT2 ( "SgDrawStyle::SgDrawStyle(), this = %X\n", this );
 }

@@ -44,6 +44,11 @@
 #include "SgPrecompiled.h"
 #include "SgQuadMesh.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgQuadMesh,SgVertexSet);
@@ -59,7 +64,7 @@ SgQuadMesh::SgQuadMesh() : SgVertexSet(),
   _numRows ( 0 ),
   _numColumns  ( 0 )
 {
-  SL_PRINT ( "SgQuadMesh::SgQuadMesh(), this = %X\n", this );
+  SL_PRINT2 ( "SgQuadMesh::SgQuadMesh(), this = %X\n", this );
 }
 
 
@@ -71,7 +76,7 @@ SgQuadMesh::SgQuadMesh() : SgVertexSet(),
 
 SgQuadMesh::~SgQuadMesh()
 {
-  SL_PRINT ( "SgQuadMesh::~SgQuadMesh(), this = %X\n", this );
+  SL_PRINT2 ( "SgQuadMesh::~SgQuadMesh(), this = %X\n", this );
 }
 
 

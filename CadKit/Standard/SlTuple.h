@@ -89,7 +89,7 @@ public:
 
   void          getValue ( T1 &t1, T2 &t2, T3 &t3 ) { t1 = first.first; t2 = first.second; t2 = second; }
   void          setValue ( const T1 &t1, const T2 &t2, const T3 &t3 ) { first.first = t1; first.second = t2; second = t3; }
-  void          setValue ( const SlTriplet &triplet ) { this->setValue ( pair.getFirst(), pair.getSecond(), pair.getThird() ); }
+  void          setValue ( const SlTriplet &triplet ) { this->setValue ( triplet.getFirst(), triplet.getSecond(), triplet.getThird() ); }
 };
 
 

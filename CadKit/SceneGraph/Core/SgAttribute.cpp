@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgAttribute.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgAttribute,SgNode);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgAttribute,SgNode);
 
 SgAttribute::SgAttribute() : SgNode()
 {
-  SL_PRINT ( "SgAttribute::SgAttribute(), this = %X\n", this );
+  SL_PRINT2 ( "SgAttribute::SgAttribute(), this = %X\n", this );
 }
 
 
@@ -69,7 +73,7 @@ SgAttribute::SgAttribute() : SgNode()
 
 SgAttribute::SgAttribute ( const SgAttribute &attribute ) : SgNode ( attribute )
 {
-  SL_PRINT ( "SgAttribute::SgAttribute(), this = %X\n", this );
+  SL_PRINT2 ( "SgAttribute::SgAttribute(), this = %X\n", this );
 }
 
 
@@ -81,5 +85,5 @@ SgAttribute::SgAttribute ( const SgAttribute &attribute ) : SgNode ( attribute )
 
 SgAttribute::~SgAttribute()
 {
-  SL_PRINT ( "SgAttribute::~SgAttribute(), this = %X\n", this );
+  SL_PRINT2 ( "SgAttribute::~SgAttribute(), this = %X\n", this );
 }

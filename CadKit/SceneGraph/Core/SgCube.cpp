@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgCube.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgCube,SgPrimitive);
@@ -59,7 +63,7 @@ SgCube::SgCube() : SgPrimitive(),
   center ( 0.0, 0.0, 0.0 ),
   size ( 1.0f )
 {
-  SL_PRINT ( "SgCube::SgCube(), this = %X\n", this );
+  SL_PRINT2 ( "SgCube::SgCube(), this = %X\n", this );
 }
 
 
@@ -73,7 +77,7 @@ SgCube::SgCube ( const SlVec3f &c, const SlFloat32 &s ) : SgPrimitive(),
   center ( c ),
   size ( s )
 {
-  SL_PRINT ( "SgCube::SgCube(), this = %X\n", this );
+  SL_PRINT2 ( "SgCube::SgCube(), this = %X\n", this );
 }
 
 
@@ -85,5 +89,5 @@ SgCube::SgCube ( const SlVec3f &c, const SlFloat32 &s ) : SgPrimitive(),
 
 SgCube::~SgCube()
 {
-  SL_PRINT ( "SgCube::~SgCube(), this = %X\n", this );
+  SL_PRINT2 ( "SgCube::~SgCube(), this = %X\n", this );
 }

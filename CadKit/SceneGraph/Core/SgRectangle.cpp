@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgRectangle.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgRectangle,SgPrimitive);
@@ -61,7 +65,7 @@ SgRectangle::SgRectangle() : SgPrimitive(),
   z ( 0.0f ), 
   style ( POLYGON )
 {
-  SL_PRINT ( "SgRectangle::SgRectangle(), this = %X\n", this );
+  SL_PRINT2 ( "SgRectangle::SgRectangle(), this = %X\n", this );
 }
 
 
@@ -73,5 +77,5 @@ SgRectangle::SgRectangle() : SgPrimitive(),
 
 SgRectangle::~SgRectangle()
 {
-  SL_PRINT ( "SgRectangle::SgRectangle(), this = %X\n", this );
+  SL_PRINT2 ( "SgRectangle::SgRectangle(), this = %X\n", this );
 }

@@ -47,6 +47,11 @@
 #include "SgMessage.h"
 #include "SgMessageIds.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlAssert.h"
+# include <string>
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgSelection,SgSeparator);
@@ -66,7 +71,7 @@ SgSelection::SgSelection() : SgSeparator(),
   _selectionPolicy ( 0 ),
   _isSelected ( false )
 {
-  SL_PRINT ( "SgSelection::SgSelection(), this = %X\n", this );
+  SL_PRINT2 ( "SgSelection::SgSelection(), this = %X\n", this );
 }
 
 
@@ -78,7 +83,7 @@ SgSelection::SgSelection() : SgSeparator(),
 
 SgSelection::~SgSelection()
 {
-  SL_PRINT ( "SgSelection::~SgSelection(), this = %X\n", this );
+  SL_PRINT2 ( "SgSelection::~SgSelection(), this = %X\n", this );
 }
 
 

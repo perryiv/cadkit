@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgTriStrip.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgTriStrip,SgVertexSet);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgTriStrip,SgVertexSet);
 
 SgTriStrip::SgTriStrip() : SgVertexSet()
 {
-  SL_PRINT ( "SgTriStrip::SgTriStrip(), this = %X\n", this );
+  SL_PRINT2 ( "SgTriStrip::SgTriStrip(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgTriStrip::SgTriStrip() : SgVertexSet()
 
 SgTriStrip::~SgTriStrip()
 {
-  SL_PRINT ( "SgTriStrip::~SgTriStrip(), this = %X\n", this );
+  SL_PRINT2 ( "SgTriStrip::~SgTriStrip(), this = %X\n", this );
 }

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgCone.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgCone,SgPrimitive);
@@ -60,7 +64,7 @@ SgCone::SgCone() : SgPrimitive(),
   radius ( 1.0f ),
   height ( 1.0f )
 {
-  SL_PRINT ( "SgCone::SgCone(), this = %X\n", this );
+  SL_PRINT2 ( "SgCone::SgCone(), this = %X\n", this );
 }
 
 
@@ -75,7 +79,7 @@ SgCone::SgCone ( const SlVec3f &bc, const SlFloat32 &r, const SlFloat32 &h ) : S
   radius ( r ),
   height ( h )
 {
-  SL_PRINT ( "SgCone::SgCone(), this = %X\n", this );
+  SL_PRINT2 ( "SgCone::SgCone(), this = %X\n", this );
 }
 
 
@@ -87,5 +91,5 @@ SgCone::SgCone ( const SlVec3f &bc, const SlFloat32 &r, const SlFloat32 &h ) : S
 
 SgCone::~SgCone()
 {
-  SL_PRINT ( "SgCone::SgCone(), this = %X\n", this );
+  SL_PRINT2 ( "SgCone::SgCone(), this = %X\n", this );
 }

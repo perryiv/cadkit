@@ -44,6 +44,15 @@
 #include "SgPrecompiled.h"
 #include "SgNode.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlThread.h"
+# ifndef _WIN32 // unix
+#  define __USE_GNU  // For wcsdup().
+#  include <wchar.h> // For wcsdup().
+# endif
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgNode,SlRefBase);
@@ -87,7 +96,7 @@ SgNode::SgNode() : SlRefBase ( INITIAL_REF_COUNT ),
   _clientData ( 0 ),
   _name ( NULL )
 {
-  SL_PRINT ( "SgNode::SgNode(), this = %X\n", this );
+  SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeIncrement ( _numNodes );
   #endif
@@ -106,7 +115,7 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
   _clientData ( node._clientData ),
   _name ( NULL )
 {
-  SL_PRINT ( "SgNode::SgNode(), this = %X\n", this );
+  SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeIncrement ( _numNodes );
   #endif
@@ -124,7 +133,7 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
 
 SgNode::~SgNode()
 {
-  SL_PRINT ( "SgNode::~SgNode(), this = %X\n", this );
+  SL_PRINT2 ( "SgNode::~SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeDecrement ( _numNodes );
   #endif

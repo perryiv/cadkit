@@ -47,9 +47,11 @@
 #include "SlAssert.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# ifdef _WIN32
+# ifdef _WIN32 // PC
 #  include "windows.h"
-# endif // _WIN32
+# else // unix
+#  include <pthread.h>
+# endif // PC/unix
 #endif // _CADKIT_USE_PRECOMPILED_HEADERS
 
 
@@ -66,7 +68,7 @@ template<class T> inline T getCurrentThreadId()
 #ifdef _WIN32
   return ( static_cast<T> ( ::GetCurrentThreadId() ) );
 #else
-  TODO
+  return ( static_cast<T> ( ::pthread_self() ) );
 #endif
 }
 
@@ -83,7 +85,7 @@ template<class T> inline void threadSafeIncrement ( T &num )
   SL_ASSERT ( sizeof ( long ) == sizeof ( T ) );
   ::InterlockedIncrement ( (long *) (&num) );
 #elif _LINUX
-  Make this static so that we only have one that gets reused.
+  // TODO, is this the correct way to do this?
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock ( &mutex );
   ++num;
@@ -106,7 +108,7 @@ template<class T> inline void threadSafeDecrement ( T &num )
   SL_ASSERT ( sizeof ( long ) == sizeof ( T ) );
   ::InterlockedDecrement ( (long *) (&num) );
 #elif _LINUX
-  Make this static so that we only have one that gets reused.
+  // TODO, is this the correct way to do this?
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock ( &mutex );
   --num;

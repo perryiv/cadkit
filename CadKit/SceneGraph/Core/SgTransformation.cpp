@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgTransformation.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgTransformation,SgNode);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgTransformation,SgNode);
 
 SgTransformation::SgTransformation() : SgNode()
 {
-  SL_PRINT ( "SgTransformation::SgTransformation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTransformation::SgTransformation(), this = %X\n", this );
 }
 
 
@@ -69,5 +73,5 @@ SgTransformation::SgTransformation() : SgNode()
 
 SgTransformation::~SgTransformation()
 {
-  SL_PRINT ( "SgTransformation::~SgTransformation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTransformation::~SgTransformation(), this = %X\n", this );
 }

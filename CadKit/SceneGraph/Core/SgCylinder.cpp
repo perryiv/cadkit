@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgCylinder.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgCylinder,SgPrimitive);
@@ -61,7 +65,7 @@ SgCylinder::SgCylinder() : SgPrimitive(),
   topRadius ( 1.0f ),
   height ( 1.0f )
 {
-  SL_PRINT ( "SgCylinder::SgCylinder(), this = %X\n", this );
+  SL_PRINT2 ( "SgCylinder::SgCylinder(), this = %X\n", this );
 }
 
 
@@ -77,7 +81,7 @@ SgCylinder::SgCylinder ( const SlVec3f &bc, const SlFloat32 &br, const SlFloat32
   topRadius ( tr ),
   height ( h )
 {
-  SL_PRINT ( "SgCylinder::SgCylinder(), this = %X\n", this );
+  SL_PRINT2 ( "SgCylinder::SgCylinder(), this = %X\n", this );
 }
 
 
@@ -89,5 +93,5 @@ SgCylinder::SgCylinder ( const SlVec3f &bc, const SlFloat32 &br, const SlFloat32
 
 SgCylinder::~SgCylinder()
 {
-  SL_PRINT ( "SgCylinder::SgCylinder(), this = %X\n", this );
+  SL_PRINT2 ( "SgCylinder::SgCylinder(), this = %X\n", this );
 }

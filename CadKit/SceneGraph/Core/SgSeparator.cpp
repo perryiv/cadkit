@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgSeparator.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgSeparator,SgGroup);
@@ -58,7 +62,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgSeparator,SgGroup);
 SgSeparator::SgSeparator() : SgGroup(),
   _pushPopFlags ( SgSeparator::ALL )
 {
-  SL_PRINT ( "SgSeparator::SgSeparator(), this = %X\n", this );
+  SL_PRINT2 ( "SgSeparator::SgSeparator(), this = %X\n", this );
 }
 
 
@@ -70,5 +74,5 @@ SgSeparator::SgSeparator() : SgGroup(),
 
 SgSeparator::~SgSeparator()
 {
-  SL_PRINT ( "SgSeparator::~SgSeparator(), this = %X\n", this );
+  SL_PRINT2 ( "SgSeparator::~SgSeparator(), this = %X\n", this );
 }

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgCoordinate.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE(SgCoordinate,SgNode);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_NODE(SgCoordinate,SgNode);
 
 SgCoordinate::SgCoordinate() : SgNode()
 {
-  SL_PRINT ( "SgCoordinate::SgCoordinate(), this = %X\n", this );
+  SL_PRINT2 ( "SgCoordinate::SgCoordinate(), this = %X\n", this );
 } 
 
 
@@ -69,5 +73,5 @@ SgCoordinate::SgCoordinate() : SgNode()
 
 SgCoordinate::~SgCoordinate()
 {
-  SL_PRINT ( "SgCoordinate::~SgCoordinate(), this = %X\n", this );
+  SL_PRINT2 ( "SgCoordinate::~SgCoordinate(), this = %X\n", this );
 } 

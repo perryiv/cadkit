@@ -320,12 +320,12 @@ bool SgDraw::drawPointsAsPixels (
   SgCoordinate3 *coords = new SgCoordinate3;
   SL_ASSERT ( coords );
   if ( !coords ) 
-    return NULL;
+    return false;
 
   SgPointSet *pointSet = new SgPointSet;
   SL_ASSERT ( pointSet );
   if ( !pointSet ) 
-    return NULL;
+    return false;
 
   coords->setNumPoints ( numPts );
   const double *x = points;

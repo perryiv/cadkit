@@ -52,9 +52,10 @@
 #include "SgMessageIds.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlTrace.h"
 # include "Standard/SlTrackball.h"
-# include "Standard/SlFunctions.h"
-# include "Standard/SlVariables.h"
+# include <map>
 #endif
 
 using namespace CadKit;
@@ -121,7 +122,7 @@ SgViewer::SgViewer() : SlRefBase ( 0 ),
   _spinTimerInterval ( 1 ), // 10
   _dR ( SL_MATRIX4_IDENTITY_F )
 {
-  SL_PRINT ( "SgViewer::SgViewer(), this = %X\n", this );
+  SL_PRINT2 ( "SgViewer::SgViewer(), this = %X\n", this );
 }
 
 
@@ -133,7 +134,7 @@ SgViewer::SgViewer() : SlRefBase ( 0 ),
 
 SgViewer::~SgViewer()
 {
-  SL_PRINT ( "SgViewer::~SgViewer(), this = %X\n", this );
+  SL_PRINT2 ( "SgViewer::~SgViewer(), this = %X\n", this );
 }
 
 
@@ -193,7 +194,8 @@ unsigned long SgViewer::mapMouseEventBitFlags ( const unsigned long &wmSpecificB
       viewerBits |= SgViewer::KEY_SHIFT;
 
   #else
-  TODO
+    // TODO
+    SL_ASSERT ( 0 );
   #endif
 
   // Return the flags.
@@ -1032,7 +1034,7 @@ bool SgViewer::getRay ( long x, long y, SlLine3f &line ) const
 bool SgViewer::getRay2 ( const long &winX, const long &winY, SlLine3f &line ) const
 {
   SL_ASSERT ( this );
-  SL_PRINT ( "In SgViewer::getRay2(), winX = %4d, winY = %4d\n", winX, winY );
+  SL_PRINT3 ( "In SgViewer::getRay2(), winX = %4d, winY = %4d\n", winX, winY );
   SL_ASSERT ( _renderer );
   SL_ASSERT ( _camera );
 

@@ -90,7 +90,7 @@ template<SL_MCA> inline SgMessage<SL_MFA>::SgMessage() : SlMessage<SL_MFA>(),
   _node ( 0x0 ), 
   _parent ( 0x0 )
 {
-  SL_PRINT ( "SgMessage::SgMessage(), this = %X\n", this );
+  SL_PRINT2 ( "SgMessage::SgMessage(), this = %X\n", this );
 }
 
 
@@ -104,7 +104,7 @@ template<SL_MCA> inline SgMessage<SL_MFA>::SgMessage ( const SgMessage<SL_MFA> &
   _node ( message._node ),
   _parent ( message._parent )
 {
-  SL_PRINT ( "SgMessage::SgMessage(), this = %X\n", this );
+  SL_PRINT2 ( "SgMessage::SgMessage(), this = %X\n", this );
 }
 
 

@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgTranslation.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgTranslation,SgTransformation);
@@ -58,7 +62,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgTranslation,SgTransformation);
 SgTranslation::SgTranslation() : SgTransformation(), 
   _translation ( 0.0f, 0.0f, 0.0f )
 {
-  SL_PRINT ( "SgTranslation::SgTranslation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTranslation::SgTranslation(), this = %X\n", this );
 }
 
 
@@ -71,7 +75,7 @@ SgTranslation::SgTranslation() : SgTransformation(),
 SgTranslation::SgTranslation ( const SgTranslation &translation ) : SgTransformation(),
   _translation ( translation._translation )
 {
-  SL_PRINT ( "SgTranslation::SgTranslation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTranslation::SgTranslation(), this = %X\n", this );
 }
 
 
@@ -84,7 +88,7 @@ SgTranslation::SgTranslation ( const SgTranslation &translation ) : SgTransforma
 SgTranslation::SgTranslation ( const SlVec3f &translation ) : SgTransformation(),
   _translation ( translation )
 {
-  SL_PRINT ( "SgTranslation::SgTranslation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTranslation::SgTranslation(), this = %X\n", this );
 }
 
 
@@ -96,5 +100,5 @@ SgTranslation::SgTranslation ( const SlVec3f &translation ) : SgTransformation()
 
 SgTranslation::~SgTranslation()
 {
-  SL_PRINT ( "SgTranslation::~SgTranslation(), this = %X\n", this );
+  SL_PRINT2 ( "SgTranslation::~SgTranslation(), this = %X\n", this );
 }

@@ -1,5 +1,5 @@
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 //  BSD License
 //  http://www.opensource.org/licenses/bsd-license.html
@@ -33,27 +33,38 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 //  SlTrace: Trace definitions.
 //
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 #include "SlPrecompiled.h"
 #include "SlTrace.h"
 #include "SlAssert.h"
 #include "SlFunctionDefines.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <stdio.h>
+# ifdef _WIN32
+#  include <stdarg.h>
+# else
+#  include <streambuf.h> // For va_list, is there a better header? Can't
+                         // find where it is actually defined, but this 
+                         // makes it compile.
+# endif
+#endif // _CADKIT_USE_PRECOMPILED_HEADERS
+
 
 namespace CadKit
 {
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 //  This will dump to the Output window on VC++, and to stdout on unix.
 //
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void CadKit::_modelspaceStandardLibraryDebugTrace ( const char *formatString, ... )
 {
@@ -62,7 +73,7 @@ void CadKit::_modelspaceStandardLibraryDebugTrace ( const char *formatString, ..
   // The string we write to. Do not make these static because I want it 
   // to be thread-safe.
   const unsigned int stringLength = 32767;
-  char string[stringLength + 1];
+  char theString[stringLength + 1];
 
   // Argument pointer.
   va_list ap;
@@ -71,19 +82,19 @@ void CadKit::_modelspaceStandardLibraryDebugTrace ( const char *formatString, ..
   va_start ( ap, formatString );
 
   // Format the text into the string.
-  SL_VSNPRINTF ( string, stringLength, formatString, ap );
+  SL_VSNPRINTF ( theString, stringLength, formatString, ap );
 
   // End variable argument processing.
   va_end ( ap );
 
   // Check for memory problems.
-  SL_ASSERT ( ::strlen ( string ) <= stringLength );
+  SL_ASSERT ( ::strlen ( theString ) <= stringLength );
 
   // Print the string.
 #ifdef _WIN32
-  ::OutputDebugString ( string );
+  ::OutputDebugString ( theString );
 #else
-  ::printf ( string );
+  ::printf ( theString );
   ::fflush ( stdout ); 
 #endif
 }

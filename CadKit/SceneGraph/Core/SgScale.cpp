@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgScale.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgScale,SgTransformation);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgScale,SgTransformation);
 
 SgScale::SgScale() : SgTransformation(), scale ( 1.0f, 1.0f, 1.0f )
 {
-  SL_PRINT ( "SgScale::SgScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgScale::SgScale(), this = %X\n", this );
 }
 
 
@@ -71,7 +75,7 @@ SgScale::SgScale ( const float &sx, const float &sy, const float &sz ) :
   SgTransformation(), 
   scale ( sx, sy, sz )
 {
-  SL_PRINT ( "SgScale::SgScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgScale::SgScale(), this = %X\n", this );
 }
 
 
@@ -83,7 +87,7 @@ SgScale::SgScale ( const float &sx, const float &sy, const float &sz ) :
 
 SgScale::SgScale ( const SlVec3f &s ) : SgTransformation(), scale ( s )
 {
-  SL_PRINT ( "SgScale::SgScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgScale::SgScale(), this = %X\n", this );
 }
 
 
@@ -95,5 +99,5 @@ SgScale::SgScale ( const SlVec3f &s ) : SgTransformation(), scale ( s )
 
 SgScale::~SgScale()
 {
-  SL_PRINT ( "SgScale::~SgScale(), this = %X\n", this );
+  SL_PRINT2 ( "SgScale::~SgScale(), this = %X\n", this );
 }

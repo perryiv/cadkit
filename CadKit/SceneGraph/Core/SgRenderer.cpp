@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgRenderer.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_VISITOR(SgRenderer,SgVisitor);
@@ -57,7 +61,7 @@ SG_IMPLEMENT_VISITOR(SgRenderer,SgVisitor);
 
 SgRenderer::SgRenderer() : SgVisitor(), _backgroundColor ( 0.0f, 0.0f, 0.0f, 1.0f )
 {
-  SL_PRINT ( "SgRenderer::SgRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgRenderer::SgRenderer(), this = %X\n", this );
 }
 
 
@@ -69,7 +73,7 @@ SgRenderer::SgRenderer() : SgVisitor(), _backgroundColor ( 0.0f, 0.0f, 0.0f, 1.0
 
 SgRenderer::~SgRenderer()
 {
-  SL_PRINT ( "SgRenderer::~SgRenderer(), this = %X\n", this );
+  SL_PRINT2 ( "SgRenderer::~SgRenderer(), this = %X\n", this );
 }
 
 

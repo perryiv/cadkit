@@ -44,6 +44,11 @@
 #include "SgPrecompiled.h"
 #include "SgColorWheel.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgColorWheel,SgShape);
@@ -60,7 +65,7 @@ SgColorWheel::SgColorWheel() : SgShape(),
   intersectRadius ( 1.0f ),
   numSlices ( 100 )
 {
-  SL_PRINT ( "SgColorWheel::SgColorWheel(), this = %X\n", this );
+  SL_PRINT2 ( "SgColorWheel::SgColorWheel(), this = %X\n", this );
 }
 
 
@@ -75,7 +80,7 @@ SgColorWheel::SgColorWheel ( const SlFloat32 &r, const SlFloat32 &i, const SlInt
   intersectRadius ( i ),
   numSlices ( n )
 {
-  SL_PRINT ( "SgColorWheel::SgColorWheel(), this = %X\n", this );
+  SL_PRINT2 ( "SgColorWheel::SgColorWheel(), this = %X\n", this );
   SL_ASSERT ( r > 0.0f );
   SL_ASSERT ( i > 0.0f );
   SL_ASSERT ( n > 2 );
@@ -90,5 +95,5 @@ SgColorWheel::SgColorWheel ( const SlFloat32 &r, const SlFloat32 &i, const SlInt
 
 SgColorWheel::~SgColorWheel()
 {
-  SL_PRINT ( "SgColorWheel::~SgColorWheel(), this = %X\n", this );
+  SL_PRINT2 ( "SgColorWheel::~SgColorWheel(), this = %X\n", this );
 }

@@ -43,7 +43,6 @@
 
 #include "SgPrecompiled.h"
 #include "SgGetCount.h"
-
 #include "SgBackground.h"
 #include "SgBaseColor.h"
 #include "SgBillboard.h"
@@ -87,6 +86,10 @@
 #include "SgVertexSet.h"
 #include "SgPrimitive.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetCount,SgVisitor);
@@ -101,7 +104,7 @@ SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetCount,SgVisitor);
 SgGetCount::SgGetCount() : SgVisitor(),
   _countMap ( new CountMap )
 {
-  SL_PRINT ( "SgGetCount::SgGetCount(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetCount::SgGetCount(), this = %X\n", this );
 
   // Keep this a pointer so you don't get VC++ 4786 warnings.
   SL_ASSERT ( _countMap );
@@ -116,7 +119,7 @@ SgGetCount::SgGetCount() : SgVisitor(),
 
 SgGetCount::~SgGetCount()
 {
-  SL_PRINT ( "SgGetCount::~SgGetCount(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetCount::~SgGetCount(), this = %X\n", this );
 
   // Delete the map.
   if ( _countMap )
@@ -132,7 +135,7 @@ SgGetCount::~SgGetCount()
 
 bool SgGetCount::count ( SgNode &scene )
 {
-  SL_PRINT ( "SgGetCount::count()" );
+  SL_PRINT2 ( "SgGetCount::count(), this = %X", this );
   SL_ASSERT ( this );
 
   // Visit the node.

@@ -49,6 +49,11 @@
 #include "SgCube.h"
 #include "SgPerspectiveCamera.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlBoundingBox.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetRayIntersection,SgVisitor);
@@ -68,7 +73,7 @@ SgGetRayIntersection::SgGetRayIntersection() : SgVisitor(),
   _M ( SL_MATRIX4_IDENTITY_F ),
   _IM ( SL_MATRIX4_IDENTITY_F )
 {
-  SL_PRINT ( "SgGetRayIntersection::SgGetRayIntersection(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetRayIntersection::SgGetRayIntersection(), this = %X\n", this );
 }
 
 
@@ -80,7 +85,7 @@ SgGetRayIntersection::SgGetRayIntersection() : SgVisitor(),
 
 SgGetRayIntersection::~SgGetRayIntersection()
 {
-  SL_PRINT ( "SgGetRayIntersection::~SgGetRayIntersection(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetRayIntersection::~SgGetRayIntersection(), this = %X\n", this );
   // Nothing to delete.
 }
 
@@ -94,7 +99,7 @@ SgGetRayIntersection::~SgGetRayIntersection()
 void SgGetRayIntersection::setRay ( const SlLine3f &ray )
 {
   SL_ASSERT ( this );
-  SL_PRINT ( "SgGetRayIntersection::setRay(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetRayIntersection::setRay(), this = %X\n", this );
   _ray.setValue ( ray );
 }
 

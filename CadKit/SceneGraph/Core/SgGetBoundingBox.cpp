@@ -52,8 +52,9 @@
 #include "SgCube.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlString.h"
-# include "Standard/SlFunctions.h"
+# include "Standard/SlPrint.h"
+# include "Standard/SlTrace.h"
+# include "Standard/SlConstants.h"
 #endif
 
 using namespace CadKit;
@@ -70,7 +71,7 @@ SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetBoundingBox,SgVisitor);
 SgGetBoundingBox::SgGetBoundingBox() : SgVisitor(),
   _M ( SL_MATRIX4_IDENTITY_F )
 {
-  SL_PRINT ( "SgGetBoundingBox::SgGetBoundingBox(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetBoundingBox::SgGetBoundingBox(), this = %X\n", this );
 }
 
 
@@ -82,7 +83,7 @@ SgGetBoundingBox::SgGetBoundingBox() : SgVisitor(),
 
 SgGetBoundingBox::~SgGetBoundingBox()
 {
-  SL_PRINT ( "SgGetBoundingBox::~SgGetBoundingBox(), this = %X\n", this );
+  SL_PRINT2 ( "SgGetBoundingBox::~SgGetBoundingBox(), this = %X\n", this );
 }
 
 

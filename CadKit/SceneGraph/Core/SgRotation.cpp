@@ -44,6 +44,10 @@
 #include "SgPrecompiled.h"
 #include "SgRotation.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
 using namespace CadKit;
 
 SG_IMPLEMENT_DYNAMIC_NODE(SgRotation,SgTransformation);
@@ -59,7 +63,7 @@ SgRotation::SgRotation() : SgTransformation(),
   _axis ( 0.0f, 0.0f, 1.0f ),
   _degrees ( 0.0f )
 {
-  SL_PRINT ( "SgRotation::SgRotation(), this = %X\n", this );
+  SL_PRINT2 ( "SgRotation::SgRotation(), this = %X\n", this );
 }
 
 
@@ -73,7 +77,7 @@ SgRotation::SgRotation ( const SgRotation &rotation ) : SgTransformation(),
   _axis ( rotation._axis ),
   _degrees ( rotation._degrees )
 {
-  SL_PRINT ( "SgRotation::SgRotation(), this = %X\n", this );
+  SL_PRINT2 ( "SgRotation::SgRotation(), this = %X\n", this );
 }
 
 
@@ -87,7 +91,7 @@ SgRotation::SgRotation ( const SlVec3f &axis, const SlFloat32 &degrees ) : SgTra
   _axis ( axis ),
   _degrees ( degrees )
 {
-  SL_PRINT ( "SgRotation::SgRotation(), this = %X\n", this );
+  SL_PRINT2 ( "SgRotation::SgRotation(), this = %X\n", this );
 }
 
 
@@ -99,5 +103,5 @@ SgRotation::SgRotation ( const SlVec3f &axis, const SlFloat32 &degrees ) : SgTra
 
 SgRotation::~SgRotation()
 {
-  SL_PRINT ( "SgRotation::~SgRotation(), this = %X\n", this );
+  SL_PRINT2 ( "SgRotation::~SgRotation(), this = %X\n", this );
 }

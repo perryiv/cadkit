@@ -105,6 +105,10 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, FORWARD_ARROW_BAR  );
   POPULATE ( gif, GIF, BACKWARD_ARROW     );
   POPULATE ( gif, GIF, BACKWARD_ARROW_BAR );
+  POPULATE ( gif, GIF, RED_CIRCLE );
+  POPULATE ( gif, GIF, RED_X );
+  POPULATE ( gif, GIF, WRITING );
+  POPULATE ( gif, GIF, XYZ );
   POPULATE ( bmp, BMP, SET_HOME );
 }
 

@@ -16,6 +16,7 @@
 #include "FXString.h"
 #include "FXHash.h"
 #include "FXStream.h"
+#include "FXButton.h"
 #include "FXToggleButton.h"
 
 

@@ -1,49 +1,52 @@
 SOURCE = \
-	Functors.cpp \
-	ReaderWriterSTL.cpp 
+	Adaptors/Wait.cpp \
+	Cursors/Factory.cpp \
+	Dialogs/FileSelection.cpp \
+	Dialogs/Message.cpp \
+	Functions/App.cpp \
+	Functions/Check.cpp \
+	Functions/Delete.cpp \
+	Functions/Enable.cpp \
+	Functions/Files.cpp \
+	Functions/GLVisual.cpp \
+	Functions/MainWindow.cpp \
+	Functions/Mouse.cpp \
+	Icons/Factory.cpp \
+	Menu/Button.cpp
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
 OS_LINK_FLAGS =
 COMPILER = c++
 
+
+
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = CC
-OS_COMP_FLAGS = -LANG:std
-OS_LINK_FLAGS = -LANG:std -v
+OS_COMP_FLAGS = -n32 -LANG:std
+OS_LINK_FLAGS = -n32 -LANG:std -v
 endif
 
-COMMON_FLAGS   = -g
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
+COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_FOX_TOOLS
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
 LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
-	-I../../ \
-	-I${OSG_INC_DIR} \
-	-I${USUL_INC_DIR} \
-	-I${OPENTHREADS_INC_DIR} \
-	-I${PRODUCER_INC_DIR}
+	-I../ \
+	-I${FOX_INC_DIR}
 
-OSG_LIBS = \
-	-L${OSG_LIB_DIR} \
-	-L${OPENTHREADS_LIB_DIR} \
-	-L${PRODUCER_LIB_DIR} \
-	-losgDB -losg -lProducer -lOpenThreads
 
-USUL_LIBS = \
-	-L${USUL_LIB_DIR} \
-	-lUsul_s
+LIBS = \
+	-L${FOX_LIB_DIR}
 
-LIBS = $(USUL_LIBS) $(OSG_LIBS)
-
-TARGET      = osgdb_stl
+TARGET      = FoxTools
 ARCHIVE_LIB = lib$(TARGET)_a.a
-SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}
+SHARED_LIB  = lib$(TARGET)_s.so
+BIN_DIR     = ../bin
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
@@ -64,7 +67,17 @@ $(TARGET) : $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -rf ii_files/
+	cd Icons ; $(CLEAN)
+	cd Cursors ; $(CLEAN)
+	cd Functions ; $(CLEAN)
+	cd Dialogs ; $(CLEAN)
+	cd Menu ; $(CLEAN)
 
 clobber:
 	rm -f $(OBJECTS) $(ARCHIVE_LIB) $(SHARED_LIB)
 	rm -rf ii_files/
+	cd Icons ; $(CLEAN)
+	cd Cursors ; $(CLEAN)
+	cd Functions ; $(CLEAN)
+	cd Dialogs ; $(CLEAN)
+	cd Menu ; $(CLEAN)

@@ -33,3 +33,4 @@ private:
 }
 
 #endif // __USUL_PROGRESS_BAR_UPDATE_H__
+

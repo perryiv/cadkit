@@ -1,6 +1,5 @@
 SOURCE = \
-	Functors.cpp \
-	ReaderWriterSTL.cpp 
+	ReaderWriterCRSS.cpp 
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
@@ -40,7 +39,7 @@ USUL_LIBS = \
 
 LIBS = $(USUL_LIBS) $(OSG_LIBS)
 
-TARGET      = osgdb_stl
+TARGET      = osgdb_crss
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = $(TARGET).so
 BIN_DIR     = ${OSG_LIB_DIR}

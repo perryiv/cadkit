@@ -21,7 +21,7 @@
 #if defined(_MSC_VER) 
 #include <winsock2.h>
 #else
-//TODO
+#include <sys/socket.h>
 #endif
 
 #include <string>

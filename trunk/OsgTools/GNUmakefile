@@ -44,10 +44,16 @@ OBJS=\
 	$(BUILD)/Font.o \
 	$(BUILD)/Grid.o \
 	$(BUILD)/Group.o \
+	$(BUILD)/Lod.o \
+	$(BUILD)/MaterialFactory.o \
 	$(BUILD)/MaterialSetter.o \
 	$(BUILD)/Mesh.o \
 	$(BUILD)/Ray.o \
+	$(BUILD)/ReadModel.o\
+	$(BUILD)/Sample.o \
+	$(BUILD)/ShapeFactory.o \
 	$(BUILD)/State.o \
+	$(BUILD)/Statistics.o \
 	$(BUILD)/Text.o \
 	$(BUILD)/Torus.o
 

@@ -107,6 +107,7 @@ public:
   // Get the current entity's property.
   bool                    getMaterial  ( EntityHandle entity, SlMaterialf &material ) const;
   bool                    getName      ( EntityHandle entity, std::string &name ) const;
+  std::string             getName      ( EntityHandle entity ) const;
   bool                    getNumLODs   ( EntityHandle entity, unsigned int &numLODs ) const;
   bool                    getNumShapes ( EntityHandle entity, const unsigned int &whichLOD, unsigned int &numShapes ) const;
   bool                    getNumSets   ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, unsigned int &numSets ) const;

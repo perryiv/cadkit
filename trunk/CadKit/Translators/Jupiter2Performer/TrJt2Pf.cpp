@@ -58,6 +58,7 @@
 # include "Performer/pf/pfLOD.h"
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
+# include "Performer/pr/pfLinMath.h"
 #endif
 
 using namespace CadKit;
@@ -91,20 +92,20 @@ TrJt2Pf::~TrJt2Pf()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  So class SlRefPtr works with class pfObject.
+//  So class SlRefPtr works with class pfMemory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace CadKit
 {
-void _incrementPointerReferenceCount ( pfObject *p )
+void _incrementPointerReferenceCount ( pfMemory *p )
 {
-  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfObject * ), p = %X, ref-count = %d\n", p, p->getRef() );
+  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->ref();
 }
-void _decrementPointerReferenceCount ( pfObject *p )
+void _decrementPointerReferenceCount ( pfMemory *p )
 {
-  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfObject * ), p = %X, ref-count = %d\n", p, p->getRef() );
+  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfMemory * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->unref();
 }
 };
@@ -598,9 +599,11 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 }
 
 
-TODO
-1. Call pfGeoSet::setPrimLengths() above.
-2. Have to make one big array to pass to pfGeoSet::setAttr(), not many small ones like you are now. Use the same vector over and over and just append to the end of it.
+//TODO
+//1. Call pfGeoSet::setPrimLengths() above.
+//2. Have to make one big array to pass to pfGeoSet::setAttr(), not many 
+//   small ones like you are now. Use the same vector over and over and just 
+//   append to the end of it.
 
 
 ///////////////////////////////////////////////////////////////////////////////

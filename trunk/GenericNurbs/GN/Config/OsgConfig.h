@@ -16,8 +16,6 @@
 #ifndef _GENERIC_NURBS_LIBRARY_OSG_CONFIGURATIONS_H_
 #define _GENERIC_NURBS_LIBRARY_OSG_CONFIGURATIONS_H_
 
-#include "GN/Config/BaseClass.h"
-
 #include "osg/Vec4"
 #include "osg/Vec3"
 #include "osg/Vec2"
@@ -65,6 +63,21 @@ template < class T > struct FloatTester
     #else
     return ( 0 != ::finite ( double ( v ) ) );
     #endif
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class for calculating the square root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > struct SquareRoot
+{
+  static T calculate ( const T &v )
+  {
+    return ::sqrt ( v );
   }
 };
 
@@ -213,6 +226,7 @@ public:
   typedef Detail::Translation<Matrix44,Vec3>      Translation;
   typedef Detail::Scale<Matrix44,Vec3>            Scale;
   typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
+  typedef Detail::SquareRoot<ControlPointType>    SquareRoot;
 };
 
 

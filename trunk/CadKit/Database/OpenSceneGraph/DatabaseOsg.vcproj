@@ -2,8 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Database OSG"
-	ProjectGUID="{CE8A01C9-B369-43BA-B909-216D90122BCD}"
+	Name="DatabaseOsg"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

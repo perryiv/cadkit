@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Perry L. Miller IV
@@ -14,7 +15,6 @@
 
 #ifndef _GENERIC_NURBS_LIBRARY_GLOBAL_INTERPOLATION_H_
 #define _GENERIC_NURBS_LIBRARY_GLOBAL_INTERPOLATION_H_
-
 
 #include "GN/Macros/ErrorCheck.h"
 

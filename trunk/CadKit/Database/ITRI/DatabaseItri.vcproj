@@ -2,8 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Database ITRI"
-	ProjectGUID="{692484DE-9141-4177-912D-B79499313491}"
+	Name="DatabaseItri"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

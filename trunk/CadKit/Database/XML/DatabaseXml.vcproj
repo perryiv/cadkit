@@ -2,8 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Database XML"
-	ProjectGUID="{54E7C314-01F9-4D7B-9F7B-AA1D32861EFE}"
+	Name="DatabaseXml"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

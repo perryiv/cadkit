@@ -170,7 +170,7 @@ template < class SplineType > void inline testSphere ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testBasisFunctions ( SplineType &s )
+template < class SplineType > void inline testBasisFunctions ( const SplineType &s )
 {
   typedef typename SplineType::UIntType UIntType;
   typedef typename SplineType::KnotType Parameter;
@@ -211,7 +211,7 @@ template < class SplineType > void inline testBasisFunctions ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testCurvePoint ( SplineType &s )
+template < class SplineType > void inline testCurvePoint ( const SplineType &s )
 {
   typedef typename SplineType::UIntType UIntType;
   typedef typename SplineType::KnotType Parameter;
@@ -249,15 +249,16 @@ template < class SplineType > void inline testCurvePoint ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testTessellation ( SplineType &s )
+template < class SplineType > void inline testTessellation ( const SplineType &s )
 {
   typedef typename SplineType::KnotType Parameter;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testTessellation>\n";
 
-  //std::list<Parameter> u;
-  //GN::Tessellate::bisect ( s, 0.001f, u );
+  ::confirm ( s );
+  std::list<Parameter> u;
+  GN::Tessellate::bisect ( s, 0.001f, u );
 
   OUTPUT << "</testTessellation>\n";
 }
@@ -269,7 +270,7 @@ template < class SplineType > void inline testTessellation ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testSurfacePoint ( SplineType &s )
+template < class SplineType > void inline testSurfacePoint ( const SplineType &s )
 {
 }
 
@@ -304,7 +305,7 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testCopying ( SplineType &s )
+template < class SplineType > void inline testCopying ( const SplineType &s )
 {
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
 
@@ -387,7 +388,7 @@ template < class SplineType > void inline testDtNurbsCarray ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testFindingKnotSpan ( SplineType &s )
+template < class SplineType > void inline testFindingKnotSpan ( const SplineType &s )
 {
   typedef typename SplineType::UIntType UIntType;
   typedef typename SplineType::KnotType KnotType;
@@ -430,7 +431,7 @@ template < class SplineType > void inline testFindingKnotSpan ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline printKnotMultiplicity ( SplineType &s, typename SplineType::KnotType u )
+template < class SplineType > void inline printKnotMultiplicity ( const SplineType &s, typename SplineType::KnotType u )
 {
   char buffer[1024];
   ::sprintf ( buffer, "<multiplicity_test> u = %6.4f  multiplicity = %d </multiplicity_test>\n", u, s.knotMultiplicity ( 0, u ) );
@@ -444,12 +445,12 @@ template < class SplineType > void inline printKnotMultiplicity ( SplineType &s,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testKnotMultiplicity ( SplineType &spline )
+template < class SplineType > void inline testKnotMultiplicity ( const SplineType &spline )
 {
   typedef typename SplineType::SplineClass SplineClass;
   typedef typename SplineClass::KnotType KnotType;
   
-  SplineClass &s = spline;
+  const SplineClass &s = spline;
 
   OUTPUT << "<testKnotMultiplicity>\n";
   ::printKnotMultiplicity ( s, 0.00f );
@@ -470,7 +471,7 @@ template < class SplineType > void inline testKnotMultiplicity ( SplineType &spl
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class SplineType > void inline printQueryKnotInsertion ( 
-  SplineType &s, 
+  const SplineType &s, 
   typename SplineType::UIntType whichIndepVar,
   typename SplineType::KnotType knot,
   typename SplineType::UIntType numTimes )
@@ -493,7 +494,7 @@ template < class SplineType > void inline printQueryKnotInsertion (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testQueryKnotInsertion ( SplineType &spline )
+template < class SplineType > void inline testQueryKnotInsertion ( const SplineType &spline )
 {
   typedef typename SplineType::SplineClass SplineClass;
   typedef typename SplineClass::KnotType KnotType;

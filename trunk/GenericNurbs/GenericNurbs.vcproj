@@ -264,6 +264,9 @@
 				<File
 					RelativePath=".\Gn\Algorithms\InsertKnot.h">
 				</File>
+				<File
+					RelativePath=".\Gn\Algorithms\Sort.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Work"
@@ -291,6 +294,26 @@
 				Filter="">
 				<File
 					RelativePath=".\Gn\Interpolate\Global.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Predicates"
+				Filter="">
+				<File
+					RelativePath=".\Gn\Predicates\Finite.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Math"
+				Filter="">
+				<File
+					RelativePath=".\Gn\Math\Absolute.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Math\Distance.h">
+				</File>
+				<File
+					RelativePath=".\Gn\Math\LinearBlend.h">
 				</File>
 			</Filter>
 		</Filter>

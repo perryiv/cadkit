@@ -43,7 +43,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdll-1.1.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="fox-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkGuiFox.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -111,7 +111,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdlld-1.1.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="foxd-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkGuiFoxd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

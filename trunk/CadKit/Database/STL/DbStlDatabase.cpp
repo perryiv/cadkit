@@ -16,9 +16,6 @@
 #include "DbStlPrecompiled.h"
 #include "DbStlDatabase.h"
 
-#include "Interfaces/IQueryVertices.h"
-#include "Interfaces/IQueryNormals.h"
-
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlQueryPtr.h"
@@ -113,16 +110,6 @@ IUnknown *DbStlDatabase::queryInterface ( const unsigned long &iid )
 
   switch ( iid )
   {
-  case IAssemblyNotify::IID:
-    return static_cast<IAssemblyNotify *>(this);
-  case IPartNotify::IID:
-    return static_cast<IPartNotify *>(this);
-  case IInstanceNotify::IID:
-    return static_cast<IInstanceNotify *>(this);
-  case ILodNotify::IID:
-    return static_cast<ILodNotify *>(this);
-  case IShapeNotify::IID:
-    return static_cast<IShapeNotify *>(this);
   case ITriangleAppendFloat::IID:
     return static_cast<ITriangleAppendFloat *>(this);
   default:
@@ -181,166 +168,6 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   out << "endsolid\n";
 
   // It worked.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the assembly.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End the assembly.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::endEntity ( AssemblyHandle assembly, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the part.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End the part.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::endEntity ( PartHandle part, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End the instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::endEntity ( InstanceHandle instance, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the lod.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::startEntity ( LodHandle lod, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End the lod.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::endEntity ( LodHandle lod, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the shape.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End the shape.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbStlDatabase::endEntity ( ShapeHandle shape, IUnknown *caller )
-{
-  SL_PRINT4 ( "In DbStlDatabase::endEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
-  SL_ASSERT ( caller );
-
-  // Nothing to do.
   return true;
 }
 

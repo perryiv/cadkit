@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"DbStlPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /I "$(STL_INCLUDE_DIR)" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_STEREO_LITHOGRAPHY_LIBRARY" /YX"DbStlPrecompiled.h" /FD /GZ /Zm200 /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /I "$(OSG_INCLUDE_DIR)" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_DATABASE_STEREO_LITHOGRAPHY_LIBRARY" /YX"DbStlPrecompiled.h" /FD /GZ /Zm200 /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32

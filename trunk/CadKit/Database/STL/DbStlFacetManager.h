@@ -80,10 +80,29 @@ public:
 
 
   // For convenience
-  typedef std::vector<facet> Facets;
+  typedef std::list<facet> Facets;
+  SlRefPtr<SlVec3f> _vertices;
+  
+  // using this as a passthrough so we can use existing IQueryShapeVerticesVec3f interface
+  // the functions operate on parent class's data
+  class DbStlVertexSetter : public IQueryShapeVerticesVec3f::VertexSetter
+  {
+  public:
 
-  
-  
+    DbStlVertexSetter ( const VertexSetType &type ) : _type ( type ) { }
+
+    virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
+    virtual bool          setSize ( const unsigned int &size );
+
+    // don't need primitives... these are just here to satisfy the interface requirements
+    virtual bool          setNumPrimitives  ( const unsigned int &num ) { return true }
+    virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { return true }
+
+  protected:
+    VertexSetType _type;
+  };
+
+
   /////////////////////////////////////////////////////////////////////////////
 	// TransMatStack
 	//

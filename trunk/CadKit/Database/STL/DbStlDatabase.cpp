@@ -67,9 +67,11 @@ DbStlDatabase::DbStlDatabase() : DbBaseTarget(),
 {
   SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
-
+/*
   // Push a new group onto stack.
   this->_pushGroup ( new osg::Group );
+  */
+//TODO need to init transmat
 }
 
 
@@ -83,14 +85,15 @@ DbStlDatabase::~DbStlDatabase()
 {
   SL_PRINT2 ( "In DbStlDatabase::~DbStlDatabase(), this = %X\n", this );
 
-  // The stack should just be holding the root.
+ /* // The stack should just be holding the root.
   SL_ASSERT ( 1 == _groupStack->size() );
 
   // The client may have referenced the root.
   SL_ASSERT ( this->_getRoot()->referenceCount() >= 1 );
 
   // Pop the root off the stack.
-  this->_popGroup();
+  this->_popGroup();*/
+//TODO make sure we clean up
 }
 
 
@@ -103,7 +106,7 @@ DbStlDatabase::~DbStlDatabase()
 bool DbStlDatabase::dataTransferStart ( IUnknown *caller )
 {
   SL_PRINT3 ( "In DbStlDatabase::dataTransferStart(), this = %X, caller = %X\n", this, caller );
-
+/*
   // Should be true.
   SL_ASSERT ( 1 == _groupStack->size() );
 
@@ -118,6 +121,8 @@ bool DbStlDatabase::dataTransferStart ( IUnknown *caller )
 
   // It worked.
   return true;
+*/
+// TODO - ????
 }
 
 
@@ -131,12 +136,14 @@ bool DbStlDatabase::dataTransferEnd ( IUnknown *caller )
 {
   SL_PRINT3 ( "In DbStlDatabase::dataTransferEnd(), this = %X, caller = %X\n", this, caller );
 
-  // Should be true.
+ /* // Should be true.
   SL_ASSERT ( 1 == _groupStack->size() );
   SL_ASSERT ( this->_getRoot()->referenceCount() >= 1 );
 
   // It worked.
   return true;
+*/
+//TODO 
 }
 
 

@@ -148,25 +148,14 @@ public:
 
 protected:
 
-  typedef SlStack<osg::Group *> GroupStack;
-  std::auto_ptr<GroupStack> _groupStack;
+//  typedef SlStack<osg::Group *> GroupStack;
+//  std::auto_ptr<GroupStack> _groupStack;
 
   virtual ~DbStlDatabase();
 
-  bool                    _addAttributes ( IUnknown *caller, ShapeHandle shape, osg::StateSet *state );
   bool                    _addDataSets   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addVertices   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addNormals    ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-  bool                    _addColors     ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-  bool                    _addTexCoords  ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
-
-  void                    _clearGroupStack();
-
-  osg::Group *            _findGroup ( InstanceHandle instance, IInstanceQueryFloat *query ) const;
-
-  osg::Group *            _getRoot() const;
-
-  bool                    _hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) const;
 
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();

@@ -28,7 +28,8 @@ public:
 	std::string getType() const { return _type; }
 	const int getId() const { return _id; }
 	const osg::Vec3& getVec3() const { return _point; }
-	std::string toString()const;
+	std::string toString() const;
+  bool valid() { return _id != -1; }
 private:
 	int _id;
   osg::Vec3 _point;

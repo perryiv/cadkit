@@ -19,15 +19,15 @@ namespace MenuKit
     {
     public:
       ColorTheme():
-        _text(), _middle(), _back(), _special()
+        _text(), _middle(), _back(), _border()
       {}
 
       ColorTheme(const ColorTheme& bt):
-        _text(bt._text), _middle(bt._middle), _back(bt._back), _special(bt._special)
+        _text(bt._text), _middle(bt._middle), _back(bt._back), _border(bt._border)
       {}
 
-      ColorTheme(const ColorType& f, const ColorType& m, const ColorType& b, const ColorType& s):
-        _text(f), _middle(m), _back(b), _special(s)
+      ColorTheme(const ColorType& t, const ColorType& m, const ColorType& bak, const ColorType& bor):
+        _text(t), _middle(m), _back(bak), _border(bor)
       {}
 
       virtual ~ColorTheme()
@@ -38,7 +38,7 @@ namespace MenuKit
         _text = bt._text;
         _middle = bt._middle;
         _back = bt._back;
-        _special = bt._special;
+        _border = bt._border;
         return( *this );
       }
 
@@ -51,11 +51,11 @@ namespace MenuKit
       void middle(const ColorType& c) { _middle = c; }
       const ColorType& middle() const { return _middle; }
 
-      void special(const ColorType& c) { _special = c; }
-      const ColorType& special() const { return _special; }
+      void border(const ColorType& c) { _border = c; }
+      const ColorType& border() const { return _border; }
 
     private:
-      ColorType _text, _middle, _back, _special;
+      ColorType _text, _middle, _back, _border;
     };
 
     typedef ColorTheme<osg::Vec4> osgColor;

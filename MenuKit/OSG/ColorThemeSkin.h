@@ -4,9 +4,9 @@
 #include "ThemeSkin.h"   // base class
 #include "ColorTheme.h"  // for tyepdef
 
+#include "../Bits.h"
 #include "../Menu.h"
 #include "../Button.h"
-#include "../Bits.h"
 // TODO: #include "../Item.h"
 
 #include "osgText/Text"
@@ -34,19 +34,19 @@ namespace MenuKit
       typedef ThemeSkin<ThemeType> BaseClass;
 
       ColorThemeSkin(): BaseClass(),
-        _picture(1.0,1.0), _margin(0.2), _text(0.8), _bits(0x0)
+        _margin(0.2), _text(0.8), _border(0.1), _bits(0x0)
       {}
 
       ColorThemeSkin(const ColorThemeSkin& s): BaseClass(s),
-        _picture(s._picture), _margin(s._margin), _text(s._text), _bits(s._bits)
+        _margin(s._margin), _text(s._text), _border(s._border), _bits(s._bits)
       {}
 
       ColorThemeSkin& operator= (const ColorThemeSkin& ct)
       {
         BaseClass::operator =(ct);
-        _picture = ct._picture;
         _margin = ct._margin;
         _text = ct._text;
+        _border = ct._border;
         _bits = ct._bits;
         return( *this );
       }
@@ -57,20 +57,22 @@ namespace MenuKit
 
       virtual float width(const Menu& m);
       virtual float width(const Button& b);
+      virtual float width(const Item* i);
       // TODO: virtual float width(const Button& b);
+
+      void border(float m) { _border=m; }
+      float border() const { return _border; }
 
       void margin(float m) { _margin=m; }
       float margin() const { return _margin; }
-
-      void picture_box(const Detail::Box& b) { _picture=b; }
-      const Detail::Box& picture_box() const { return _picture; }
 
       void text_ratio(float t) { _text=t; }
       float text_ratio() const { return _text; }
 
     protected:
-      float width(const std::string& word);
-      osg::Node* item_graphic(const std::string& txt);
+      float word_width(const std::string& word);
+      float item_width(const std::string& w,const Menu* m);
+      osg::Node* item_graphic(const std::string& txt, const Menu* parent);
       osg::Node* separator_graphic();
 
       enum BITS
@@ -83,15 +85,14 @@ namespace MenuKit
         EXPANDED  = 0x00000020,
       };
 
-      void setup_bits(unsigned int menubits);
+      void add_bits(unsigned int menubits);
 
       void bits(unsigned int b) { _bits = b; }
       unsigned int bits() const { return _bits; }
 
     private:
-      Detail::Box _picture;  // graphic object size
       float _margin;         // distances
-      float _text;           // percentages
+      float _text, _border;  // percentages
       unsigned int _bits;    // add-on graphic characteristics
     };
 
@@ -368,8 +369,8 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Menu& m)
 
   else
   {
-    this->setup_bits( m.flags() );
-    node = item_graphic( m.text() );
+    this->add_bits( m.flags() );
+    node = item_graphic( m.text(), m.parent() );
   }
 
   return( node.release() );
@@ -388,15 +389,15 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Button& b)
 
   else
   {
-    this->setup_bits( b.flags() );
-    node = item_graphic( b.text() );
+    this->add_bits( b.flags() );
+    node = item_graphic( b.text(), b.parent() );
   }
 
   return( node.release() );
 }
 
 template<class ThemeType>
-void ColorThemeSkin<ThemeType>::setup_bits(unsigned int itembits)
+void ColorThemeSkin<ThemeType>::add_bits(unsigned int itembits)
 {
   // TODO: set up any bits necessary
   typedef MenuKit::Bits<unsigned int> cause;
@@ -415,82 +416,120 @@ void ColorThemeSkin<ThemeType>::setup_bits(unsigned int itembits)
 }
 
 template<class ThemeType>
-osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
+osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const Menu* parent)
 {
   const ThemeType& scheme = this->theme();
+  Detail::Box thebox = this->box();
 
-  // make the word graphic functor
+  // make the background box(es)
+  Detail::FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
+  borderbox.color( scheme.border() );
+
+  Detail::FlatBox midbox(borderbox.height()-_border,borderbox.width()-_border,-0.002);
+  midbox.color( scheme.back() );
+
+  osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
+  backgeode->addDrawable( borderbox() );
+  backgeode->addDrawable( midbox() );
+
+  // make the text graphic functor
   Detail::Word word;
-  word.height( _text*(this->box().height()) );
+  word.height( _text*(midbox.height()) );
   word.text( txt );
   word.font( font() );
   word.color( scheme.text() );
-  word.draw_mode( osgText::Text::TEXT );
+  word.draw_mode( osgText::Text::ALIGNMENT|osgText::Text::BOUNDINGBOX|osgText::Text::TEXT );
+  osg::ref_ptr<osg::Drawable> worddrawable = word();
 
-  // use the functor to make the graphics
-  osg::ref_ptr<osg::Drawable> drawable = word();
-
-  // make a box for convenience, used below to move the word
-  osg::BoundingBox bb = drawable->getBound();
+  // make a boundingbox for convenience, used below, to move the word
+  osg::BoundingBox bb = worddrawable->getBound();
   float wordheight = bb.yMax() - bb.yMin();
-  osg::Vec3 wordmove(-_picture.width()-0.5*_margin, -0.5*wordheight, 0.0);
+  float wordwidth = bb.xMax() - bb.xMin();
 
-  // add the drawable to a node, for movement
+  // make the word geode
   osg::ref_ptr<osg::Geode> wordgeode = new osg::Geode();
-  wordgeode->addDrawable( drawable.get() );
+  wordgeode->addDrawable( worddrawable.get() );
 
   // move the word's node
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->addChild( wordgeode.get() );
-  wordmt->setMatrix( osg::Matrix::translate(wordmove) );
+  osg::Vec3 wordcorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
+  wordmt->setMatrix( osg::Matrix::translate(wordcorrection) );
 
-  // make the background box
-  Detail::FlatBox backbox(this->box().height(),this->box().width(),-0.002);
-  backbox.color( scheme.back() );
-  osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
-  backgeode->addDrawable( backbox() );
-  osg::ref_ptr<osg::MatrixTransform> backmt = new osg::MatrixTransform();
-  backmt->addChild( backgeode.get() );
+  osg::ref_ptr<osg::Group> group = new osg::Group();
+  group->addChild( backgeode.get() );
+  group->addChild( wordmt.get() );
+
+  // the total correction
+  osg::MatrixTransform* mt = new osg::MatrixTransform();
+  mt->addChild( group.get() );
+  mt->setMatrix( osg::Matrix::translate(0.5*thebox.width(),-0.5*thebox.height(),0.0) );
+
+  osg::Group* top = new osg::Group();  // TODO: take this out
+  top->addChild( mt );  // TODO: take this out
+
+  OsgTools::ColorBox tcb(0.2,0.2,0.2);  // TODO: take this out
+  tcb.color_policy().color( osg::Vec4(1.0,1.0,1.0,1.0) );  // TODO: take this out
+  top->addChild( tcb() ); // TODO: take this out
+
+  // escape if  null parent
+  if( !parent )  // valid parent  TODO: implement
+  {
+    // TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
+    // TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
+    //return mt;  // TODO: put this back
+    return top; // TODO: take this out
+  }
+
+  // escape if horizontal parent
+  if( parent->layout() == MenuKit::Menu::HORIZONTAL )
+  {
+    // TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
+    // TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
+    //return mt;  // TODO: put this back
+    return top; // TODO: take this out
+  }
+
+  return top; // TODO: do not escape here!
 
   // TODO: make other graphic boxes
-  Detail::FlatBox sidebox(_picture.height(),_picture.width(),-0.001);
+  float val = midbox.height() - 2.0*_margin;
+  Detail::FlatBox sidebox(val,val,-0.001);
 
   // right side
-  sidebox.color( scheme.back() );
+  //sidebox.color( scheme.back() );  // TODO: put this back
+  sidebox.color( osg::Vec4(0.0,1.0,0.0,1.0) );
   osg::ref_ptr<osg::Drawable> rd = sidebox();
   osg::ref_ptr<osg::Geode> rg = new osg::Geode();
   rg->addDrawable( rd.get() );
   osg::ref_ptr<osg::MatrixTransform> rgmt = new osg::MatrixTransform();
   rgmt->addChild( rg.get() );
-  float rxmov = 0.5*backbox.width() - 0.5*sidebox.width();
+  float rxmov = 0.5*thebox.width() - 0.5*sidebox.width() - _margin;
   rgmt->setMatrix( osg::Matrix::translate( osg::Vec3(rxmov,0.0,0.0) ) );
+  group->addChild( rgmt.get() );
 
   // left side
-  sidebox.color( scheme.middle() );
+  //sidebox.color( scheme.middle() );  // TODO: put this back
+  sidebox.color( osg::Vec4(0.0,1.0,1.0,1.0) );
   osg::ref_ptr<osg::Drawable> ld = sidebox();
   osg::ref_ptr<osg::Geode> lg = new osg::Geode();
   lg->addDrawable( ld.get() );
   osg::ref_ptr<osg::MatrixTransform> lgmt = new osg::MatrixTransform();
   lgmt->addChild( lg.get() );
-  float lxmov = -0.5*backbox.width() + 0.5*sidebox.width();
+  float lxmov = -0.5*thebox.width() + 0.5*sidebox.width() + _margin;
   lgmt->setMatrix( osg::Matrix::translate( osg::Vec3(lxmov,0.0,0.0) ) );
-
-  osg::Group* group = new osg::Group();
-  group->addChild( backmt.get() );
-  group->addChild( wordmt.get() );
-  group->addChild( rgmt.get() );
   group->addChild( lgmt.get() );
 
   // TODO: add graphics for each supported bit!!!
   typedef MenuKit::Bits<unsigned int> checker;
   if( checker::has(this->bits(), TOGGLE) )
   {
-    Detail::FlatBox markbox(_text*_picture.height(),_text*_picture.width(),0.0);
-    markbox.color( this->theme().text() );
+    Detail::FlatBox markbox(word.height(),word.height(),0.0);
+    markbox.color( scheme.text() );
     osg::ref_ptr<osg::Drawable> mbdraw = markbox();
 
     Detail::FlatBox markopen(_text*markbox.height(),_text*markbox.width(),0.001);
-    markopen.color( this->theme().middle() );
+    markopen.color( scheme.middle() );
     osg::ref_ptr<osg::Drawable> modraw = markopen();
 
     osg::ref_ptr<osg::Geode> mbgeo = new osg::Geode();
@@ -500,7 +539,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     if( checker::has(this->bits(), CHECKED) )
     {
       Detail::FlatBox markclosed(_text*markopen.height(),_text*markopen.width(),0.002);
-      markclosed.color( this->theme().text() );
+      markclosed.color( scheme.text() );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       mbgeo->addDrawable( mcdraw.get() );
     }
@@ -510,12 +549,12 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
 
   if( checker::has(this->bits(), RADIO) )
   {
-    Detail::Disk markdisc(_text*this->box().height(),0.0);
-    markdisc.color( this->theme().text() );
+    Detail::Disk markdisc(word.height(),0.0);
+    markdisc.color( scheme.text() );
     osg::ref_ptr<osg::Drawable> mddraw = markdisc();
 
     Detail::Disk markopen(_text*markdisc.height(),0.001);
-    markopen.color( this->theme().middle() );
+    markopen.color( scheme.middle() );
     osg::ref_ptr<osg::Drawable> modraw = markopen();
 
     osg::ref_ptr<osg::Geode> mdgeo = new osg::Geode();
@@ -525,7 +564,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     if( checker::has(this->bits(), CHECKED) )
     {
       Detail::Disk markclosed(_text*markopen.height(),0.002);
-      markclosed.color( this->theme().text() );
+      markclosed.color( scheme.text() );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       mdgeo->addDrawable( mcdraw.get() );
     }
@@ -535,8 +574,8 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
 
   if( checker::has(this->bits(), MENU) )
   {
-    Detail::Arrow mark(_text*this->box().height(),0.0);
-    mark.color( this->theme().text() );
+    Detail::Arrow mark(word.height(),0.0);
+    mark.color( scheme.text() );
     osg::ref_ptr<osg::Drawable> md = mark();
     osg::ref_ptr<osg::Geode> mgeo = new osg::Geode();
     mgeo->addDrawable( md.get() );
@@ -544,7 +583,7 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     if( !checker::has(this->bits(), EXPANDED) )
     {
       Detail::Arrow expander(_text*mark.height(),0.001);
-      expander.color( this->theme().back() );
+      expander.color( scheme.back() );
       osg::ref_ptr<osg::Drawable> exdraw = expander();
       mgeo->addDrawable( exdraw.get() );
     }
@@ -552,7 +591,8 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt)
     rgmt->addChild( mgeo.get() );
   }
 
-  return( group );
+      //return mt;  // TODO: put this back
+      return top; // TODO: take this out
 }
 
 template<class ThemeType>
@@ -567,9 +607,7 @@ osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()
   osg::ref_ptr<osg::Geode> bggeo = new osg::Geode();
   bggeo->addDrawable( bgdraw.get() );
 
-  Detail::FlatBox stripe(_text*(this->box().height()),
-                          this->box().width()-_picture.width()-_margin,
-                          -0.001);
+  Detail::FlatBox stripe(_text*(this->box().height()),this->box().width()-_margin,-0.001);
   stripe.color( this->theme().text() );
   osg::ref_ptr<osg::Drawable> fgdraw = stripe();
 
@@ -583,33 +621,52 @@ osg::Node* ColorThemeSkin<ThemeType>::separator_graphic()
 template<class ThemeType>
 float ColorThemeSkin<ThemeType>::width(const Menu& m)
 {
-  // equation for graphic width:
-  // 2 graphic boxes, 2 x _box's width
-  // 1 text box,      1 x  boundingbox's width
-  // 2 margins,       2 x _margin
-  float wordwidth = this->width( m.text() );
-
-  // the equation, implemented
-  float w = 2.0*_picture.width() + wordwidth + 2.0*_margin;
-  return( w );
+  return( item_width( m.text() , m.parent() ) );
 }
 
 template<class ThemeType>
 float ColorThemeSkin<ThemeType>::width(const Button& b)
 {
-  // equation for graphic width:
-  // 2 graphic boxes, 2 x _box's width
-  // 1 text box,      1 x  boundingbox's width
-  // 2 margins,       2 x _margin
-  float wordwidth = this->width( b.text() );
-
-  // the equation, implemented
-  float w = 2.0*_picture.width() + wordwidth + 2.0*_margin;
-  return( w );
+  return( item_width(b.text(), b.parent()) );
 }
 
 template<class ThemeType>
-float ColorThemeSkin<ThemeType>::width(const std::string& s)
+float ColorThemeSkin<ThemeType>::width(const Item* i)
+{
+  return( item_width(i->text(), i->parent()) );
+}
+
+template<class ThemeType>
+float ColorThemeSkin<ThemeType>::item_width(const std::string& s,const Menu* parent)
+{
+  // check for text content
+  if( s.empty() )
+    return( 0.0 );
+
+  // use graphics engine to calculate width of displayed text
+  float wordwidth = this->word_width( s );
+
+  // check for top-level item
+  if( !parent )
+    return( wordwidth + 2.0*_margin );
+
+  // --- LAYOUT correctioning --- //
+  // the eqation for the width of a horizontal graphic
+  // 2 margins,   2 x _margin
+  // 1 text box,  1 x graphic text width
+  if( parent->layout() == Menu::HORIZONTAL )
+    return( wordwidth + 2.0*_margin );
+
+  // equation for the width of a vertical graphic:
+  // 2 side boxes, 2 x _box's width (which is the height of the box - 2 x margin)
+  // 1 text box,      1 x  graphic text width
+  // 2 margins,       2 x _margin
+  else
+    return( 2.0*(this->box().height()-2.0*_margin) + wordwidth + 2.0*_margin );
+}
+
+template<class ThemeType>
+float ColorThemeSkin<ThemeType>::word_width(const std::string& s)
 {
   Detail::Word word;
   word.height( _text*(this->box().height()) );

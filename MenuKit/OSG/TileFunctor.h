@@ -52,6 +52,7 @@ namespace MenuKit
 
       virtual float width(const Menu&)=0;
       virtual float width(const Button&)=0;
+      virtual float width(const Item*)=0;
       // TODO: virtual static float width(Item&)=0;
 
       virtual osg::Node* operator() (const Menu&)=0;

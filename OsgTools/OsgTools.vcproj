@@ -197,6 +197,12 @@
 					RelativePath="Ray.h">
 				</File>
 				<File
+					RelativePath=".\ShapeFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\ShapeFactory.h">
+				</File>
+				<File
 					RelativePath=".\Sphere.h">
 				</File>
 				<File

@@ -18,11 +18,11 @@
 #include <vector>
 #include <iosfwd>
 
+#include "Export.h"
 #include "MaterialChooser.h"
 #include "Molecule.h"
 #include "PeriodicTable.h"
 
-#include "Export.h"
 
 namespace osg { class Group; class LOD; class Geode; };
 
@@ -35,6 +35,7 @@ public:
   typedef std::vector< MoleculePtr > Molecules;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
+  typedef Molecule::SphereFactory SphereFactory;
 
   ReaderWriterPDB();
   ~ReaderWriterPDB();
@@ -83,7 +84,7 @@ private:
   Molecules _molecules; 
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
-  SphereFactory::Ptr _sphereFactory;
+  SphereFactory::RefPtr _sphereFactory;
   CylinderFactory::Ptr _cylinderFactory;
   PeriodicTable _periodicTable;
   unsigned int _flags;

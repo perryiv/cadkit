@@ -13,8 +13,9 @@
 #include "Atom.h"
 #include "Bond.h"
 #include "MaterialChooser.h"
-#include "SphereFactory.h"
 #include "CylinderFactory.h"
+
+#include "OsgTools/ShapeFactory.h"
 
 #include "osg/Referenced"
 
@@ -28,9 +29,11 @@ namespace osg { class Group; class LOD; class Geode; }
 class Molecule : public osg::Referenced
 {
 public:
+
   typedef std::map<Atom::ID, Atom> Map;
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
+  typedef OsgTools::ShapeFactory SphereFactory;
 
   Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags );
   osg::Group* build() const { return _build(); }
@@ -44,7 +47,6 @@ protected:
   osg::Node *             _makeBond ( const Bond &bond) const;
   osg::Node *             _makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const;
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
-  osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, unsigned int divisions ) const;
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const;
   osg::Node *             _makeCube   ( const osg::Vec3 &center, float size ) const;
   void                    _setCentersAndRanges ( osg::LOD *lod ) const;
@@ -61,7 +63,7 @@ private:
   unsigned int _stepFactor;
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
-  mutable SphereFactory::Ptr _sphereFactory;
+  mutable SphereFactory::RefPtr _sphereFactory;
   mutable CylinderFactory::Ptr _cylinderFactory;
   unsigned int _minNumSegsLat;
   unsigned int _maxNumSegsLat;

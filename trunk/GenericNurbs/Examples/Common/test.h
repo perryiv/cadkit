@@ -20,6 +20,7 @@
 #include "GN/Algorithms/InsertKnot.h"
 #include "GN/Algorithms/BasisFunctions.h"
 #include "GN/Algorithms/Parameterize.h"
+#include "GN/Algorithms/KnotVector.h"
 #include "GN/Algorithms/Copy.h"
 #include "GN/Evaluate/Point.h"
 #include "GN/Tessellate/Bisect.h"
@@ -302,9 +303,13 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 {
   typedef typename SplineType::UIntType UIntType;
   typedef typename SplineType::KnotType Parameter;
-  typedef typename SplineType::ControlPointType DataPointType;
-  typedef typename SplineType::ControlPointContainer DataContainer;
-  typedef typename SplineType::KnotContainer::value_type ParamContainer;
+  typedef typename SplineType::KnotContainer::value_type IndependentContainer;
+  typedef typename SplineType::ControlPointType DependentType;
+  typedef typename SplineType::ControlPointContainer DependentContainer;
+  typedef typename SplineType::Power PowerFunctor;
+  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
+  typedef GN::Algorithms::Parameterize < IndependentContainer, DependentContainer, PowerFunctor, ErrorCheckerType > Parameterize;
+  typedef GN::Algorithms::KnotVector < IndependentContainer, ErrorCheckerType > KnotVectorBuilder;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testInterpolation>\n";
@@ -316,36 +321,29 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
   const Parameter power ( GN::Algorithms::Constants::CENTRIPETAL_FIT );
 
   // Data points.
-  const DataPointType data[ dimension * numDataPts ] =
+  const DependentType data[dimension][numDataPts] =
   {
-    0, 1, 2, 3, 4, 5, // x
-    1, 2, 1, 2, 1, 2, // y
-    0, 0, 0, 0, 0, 0  // z
+    { 0, 1, 2, 3, 4, 5 }, // x
+    { 1, 2, 1, 2, 1, 2 }, // y
+    { 0, 0, 0, 0, 0, 0 }  // z
   };
-#if 0
+
   // Copy to a container.
-  Revisit this function. Don't use ** in the function signature and the 
-  2D array may work. Might have to rename to copy2dTo2d(), etc.
-  DataContainer points;
-  GN::Algorithms::copy ( data, dimension, numDataPts, points );
+  DependentContainer points;
+  GN::Algorithms::copy2dTo2d ( data, dimension, numDataPts, points );
 
   // Make the parameters.
-  Redo in a way that does not need the spline. You may want to parameterize in
-  a portion of your program that does not have a spline instance. This design
-  will not permit that.
-  ParamContainer params;
-  GN::Algorithms::parameterize ( s, points, order, power, params );
+  IndependentContainer params;
+  Parameterize::fit ( points, order, power, params );
 
-  // Size knot vector for interpolation.
-  UIntType numKnots ( numDataPts + order );
-
-  // Make the knot vector.
-  Put the new knots directly in the spline.
-  GN::Algorithms::knotVector ( s, params, order, numKnots );
+  // Make the knot vector. Size it for interpolation.
+  IndependentContainer knots;
+  knots.resize ( numDataPts + order );
+  KnotVectorBuilder::build ( params, order, knots );
 
   // Interpolate.
-  GN::Interpolate::global ( s, points, params, knots, order );
-#endif
+  GN::Interpolate::global ( s, order, params, knots, points );
+
   // Check.
   ::confirm ( s );
 

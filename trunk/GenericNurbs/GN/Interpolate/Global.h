@@ -26,19 +26,22 @@ namespace Interpolate {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Start of namespace Detail.
+//  Global interpolation.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail {
+namespace Detail
+{
+  template
+  <
+    class CurveType, 
+    class IndependentContainer, 
+    class DependentContainer
+  >
+  struct Global
+  {
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  End of namespace Detail.
-//
-///////////////////////////////////////////////////////////////////////////////
-
+  };
 };
 
 
@@ -48,12 +51,17 @@ namespace Detail {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class DataContainer, class ParamContainer >
+template
+<
+  class CurveType, 
+  class IndependentContainer, 
+  class DependentContainer
+>
 void global ( const CurveType &curve,
-              const DataContainer &points,
-              const ParamContainer &params,
-              const typename CurveType::UIntType &dimension,
-              const typename CurveType::UIntType &order )
+              const typename CurveType::UIntType &order,
+              const IndependentContainer &params,
+              const IndependentContainer &knots,
+              const DependentContainer &points )
 {
   GN_CAN_BE_CURVE ( CurveType );
   // TODO

@@ -16,6 +16,8 @@
 #ifndef _GENERIC_NURBS_LIBRARY_EQUALITY_ALGORITHMS_CLASS_H_
 #define _GENERIC_NURBS_LIBRARY_EQUALITY_ALGORITHMS_CLASS_H_
 
+#include <algorithm>
+
 
 namespace GN {
 namespace Algorithms {

@@ -226,7 +226,7 @@ void Stack::format ( std::string &s ) const
   Guard guard ( *_m );
   typedef Elements::container_type Container;
   std::ostringstream temp;
-  for ( Container::const_iterator i = _s.c.begin(); i != _s.c.end(); ++i )
+  for ( Container::const_iterator i = _s.begin(); i != _s.end(); ++i )
     temp << i->id() << ": " << i->message();
   s = temp.str();
 }

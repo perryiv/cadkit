@@ -11,6 +11,12 @@
 
 #include "atom.h"
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Atom::Atom(char *atomString, std::string type) {
 	char num[9];
 	//get id number
@@ -34,16 +40,33 @@ Atom::Atom(char *atomString, std::string type) {
 	//set radius
 	_r = 0.5f;
 	_type = type;
+  //get symbol
+  memset(num, 0, 9 * sizeof(char));
+  strncpy(num, atomString + 76, 2);
+  _symbol = num;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 Atom::Atom(const Atom& atom) :
   _id(atom.getId()),
   _name(atom.getName()),
   _point(atom.getVec3()),
   _r(atom.getR()),
-  _type(atom.getType())
+  _type(atom.getType()),
+  _symbol(atom.getSymbol())
   {
   }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns data members as a string
+//
+///////////////////////////////////////////////////////////////////////////////
 
 std::string Atom::toString() const
 {
@@ -52,6 +75,12 @@ std::string Atom::toString() const
 	return std::string(out.str());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment operator
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Atom& Atom::operator =(const Atom& atom)
 {
   this->_id = atom.getId();
@@ -59,5 +88,6 @@ Atom& Atom::operator =(const Atom& atom)
   this->_point = atom.getVec3();
   this->_r = atom.getR();
   this->_type = atom.getType();
+  this->_symbol = atom.getSymbol();
   return *this;
 }

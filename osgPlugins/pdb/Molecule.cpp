@@ -1,4 +1,12 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2004, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "Molecule.h"
 
 #include "osg/MatrixTransform"
@@ -33,8 +41,10 @@ void Molecule::addAtom(const Atom& atom)
 
 void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 {
+  //find the atoms with given ids
   Map::const_iterator i1 = _atoms.find ( id1 );
   Map::const_iterator i2 = _atoms.find ( id2 );
+  //check to see if the atom ids exist, if so add bond to the list
   if(_atoms.end() != i1 && _atoms.end() != i2)
     _bonds.push_back( Bond ( i1->second, i2->second, _bonds.size() + 1));
 }
@@ -63,10 +73,13 @@ osg::Group *Molecule::_build() const
  
   }
 
+  //loop through the bonds
   for (Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i)
   {
     const Bond &bond = *i;
+    //make the geometry
     osg::ref_ptr<osg::LOD> lod (this->_makeBond( bond ) );
+    //add the lod to the root
     root->addChild ( lod.get() );
   }
 
@@ -86,6 +99,7 @@ osg::LOD *Molecule::_makeBond (const Bond &bond ) const
 {
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
+  //get data for bond
   const osg::Vec3 center (bond.getX(), bond.getY(), bond.getZ());
   const float height = bond.getH();
   const float radius = bond.getR();
@@ -157,8 +171,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
 
    // Set the lod's material. This will effect all the children.
   osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
-  const std::string type ( atom.getName() );
-  osg::ref_ptr<osg::Material> m ( _materialChooser->getMaterial ( type ) );
+  osg::ref_ptr<osg::Material> m ( _materialChooser->getMaterial ( atom.getSymbol() ) );
   ss->setAttribute ( m.get() );
 
   // Get the atom's numbers.

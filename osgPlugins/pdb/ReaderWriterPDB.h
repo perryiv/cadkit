@@ -47,7 +47,7 @@ protected:
   void                    _init();
 
   Result                  _read ( const std::string &, const Options * );
-  void                    _parse ( std::ifstream &in, int size );
+  void                    _parse ( std::ifstream &in );
 
   Molecule*               _getCurrentMolecule();
 

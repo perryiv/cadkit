@@ -6,49 +6,41 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Bond.h"
-#include "Atom.h"
-
-#include <sstream>
+#include "Element.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-Bond::Bond(const Atom& lhs, const Atom& rhs, int id)
+Element::Element(int en, std::string e, float r) : 
+  _elementNumber(en) ,  
+  _element(e),
+  _radius(r)
 {
-  _id = id;
-  _r = 0.15f;
-  _h = this->_getHeight(lhs.getVec3(), rhs.getVec3());
-  _point1 = lhs.getVec3();
-  _point2 = rhs.getVec3();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Returns data members as a string.
+//  Copy Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-const std::string Bond::toString() const
+Element::Element(const Element &element) :
+  _elementNumber(element.getElementNumber()),
+  _element(element.getElement()),
+  _radius(element.getRadius())
 {
-  std::ostringstream out;
-	out << _id <<" " << _h << " " << _r << " " << _point1[0] << " " <<  _point1[1] << " " <<  _point1[2];
-	return std::string(out.str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Gets distance between two vectors.
+//  Assignment operator.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-float Bond::_getHeight(const osg::Vec3& v1, const osg::Vec3& v0)
+Element& Element::operator =(const Element& element)
 {
-  float deltaX = v1[0] - v0[0];
-  float deltaY = v1[1] - v0[1];
-  float deltaZ = v1[2] - v0[2];
-  return (float) sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+  this->_elementNumber = element.getElementNumber();
+  this->_element = element.getElement();
+  this->_radius = element.getRadius();
+  return *this;
 }

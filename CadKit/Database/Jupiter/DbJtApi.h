@@ -53,6 +53,7 @@
 
 #ifdef _WIN32
 # pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
+# pragma warning(disable: 4251) // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
 # ifdef _CADKIT_COMPILING_DATABASE_JUPITER_LIBRARY
 #   define DB_JT_API __declspec(dllexport) // We are compiling this library so the classes are exported.
 # else

@@ -3,6 +3,36 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "Controllers"=.\Controllers\Controllers.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseBase"=.\Database\Base\DatabaseBase.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
 
 Package=<5>
@@ -13,6 +43,24 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseOsg"=.\Database\OpenSceneGraph\DatabaseOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
     End Project Dependency
 }}}
 
@@ -33,6 +81,27 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DemoJt2Osg"=.\Demos\Jupiter2Osg\DemoJtOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseOsg
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DemoJt2Pfb"=.\Demos\Jupiter2Performer\DemoJt2Pfb.dsp - Package Owner=<4>
 
 Package=<5>
@@ -46,6 +115,27 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name TranslateJt2Pf
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Stl"=.\Demos\Jupiter2Stl\DemoJtStl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
     End Project Dependency
 }}}
 

@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CkSl.lib"
+# ADD LIB32 /nologo
 
 !ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CkSld.lib"
+# ADD LIB32 /nologo
 
 !ENDIF 
 
@@ -84,7 +84,33 @@ LIB32=link.exe -lib
 # Name "Interfaces - Win32 Debug"
 # Begin Source File
 
-SOURCE=.\IController.h
+SOURCE=.\IAssemblyNotify.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ICommandLine.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IControlled.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -110,7 +136,33 @@ SOURCE=.\IDataSource.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IDataTarget.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IErrorNotify.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IGroupNotify.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -149,7 +201,33 @@ SOURCE=.\ILoadOptions.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IOutputStream.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IProgressNotify.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ITranslator.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

@@ -35,41 +35,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  SlDeclareConst: For declaring constant numbers on different platforms.
+//  CtPrecompiled.h: The precompiled header file.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
-#define _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#ifndef _CADKIT_CONTROLLER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_
+#define _CADKIT_CONTROLLER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_
 
+#ifdef _WIN32
+# pragma warning(disable:4251) // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
+# pragma warning(disable:4786) // Truncated debug names.
+# define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers.
+# define NOMINMAX              // Do not define min and max as macros.
+# include <windows.h>          // Base Windows header file.
+#endif // _WIN32
 
-//////////////////////////////////////////////////////////////////////////
-//
-// Macros used for declaring integer constants.
-//
-//////////////////////////////////////////////////////////////////////////
-
-#if _WIN32 || _SGI_NATIVE_COMPILER
-# define SL_CONST_INT64(n)  n
-# define SL_CONST_UINT64(n) n
-# define SL_CONST_INT32(n)  n
-# define SL_CONST_UINT32(n) n
-#elif __GNUC__
-# ifdef _64_BIT_MACHINE
-#  define SL_CONST_INT64(n)  n##L
-#  define SL_CONST_UINT64(n) n##UL
-# else // 32 bit machines.
-#  define SL_CONST_INT64(n)  n##LL
-#  define SL_CONST_UINT64(n) n##ULL
-# endif // 64/32 bit linux.
-# define SL_CONST_UINT32(n) n##U
-# define SL_CONST_UINT16(n) n##U
-# define SL_CONST_UINT8(n)  n##U
-#else
-TODO
+// Needed headers.
+#ifdef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <iostream>
+# include <list>
+# include <string>
+# include <algorithm> // For std::transform
 #endif
 
-
-#endif // _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#endif // _CADKIT_CONTROLLER_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

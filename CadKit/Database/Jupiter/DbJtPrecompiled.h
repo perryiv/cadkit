@@ -58,6 +58,7 @@
 # include <iostream>
 # include <vector>
 # include <list>
+# include <stack>
 # include <algorithm> // For std::transform
 # include <math.h>
 #endif

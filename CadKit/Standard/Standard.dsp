@@ -167,6 +167,10 @@ SOURCE=.\SlMessage.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlMessageIds.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlPathname.h
 # End Source File
 # Begin Source File
@@ -309,6 +313,10 @@ SOURCE=.\SlTrace.h
 # Begin Group "Reference Counting"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlQueryPtr.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\SlRefBase.cpp

@@ -71,6 +71,25 @@ SL_IMPLEMENT_DYNAMIC_CLASS(DbJtTraverser,SlRefBase);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  It appears that version 5.0 of DMDTk has renumbered the enumerations
+//  for the entity types. So instead of typecasting I will assign the 
+//  values that I use.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const DbJtTraverser::EntityType DbJtTraverser::ASSEMBLY       ( eaiEntity::eaiASSEMBLY );
+const DbJtTraverser::EntityType DbJtTraverser::PART           ( eaiEntity::eaiPART );
+const DbJtTraverser::EntityType DbJtTraverser::INSTANCE       ( eaiEntity::eaiINSTANCE );
+const DbJtTraverser::EntityType DbJtTraverser::LINE_STRIP_SET ( eaiEntity::eaiLINESTRIPSET );
+const DbJtTraverser::EntityType DbJtTraverser::POINT_SET      ( eaiEntity::eaiPOINTSET );
+const DbJtTraverser::EntityType DbJtTraverser::POLYGON_SET    ( eaiEntity::eaiPOLYGONSET );
+const DbJtTraverser::EntityType DbJtTraverser::TRI_STRIP_SET  ( eaiEntity::eaiTRISTRIPSET );
+const DbJtTraverser::EntityType DbJtTraverser::TRI_FAN_SET    ( eaiEntity::eaiTRIFANSET );
+const DbJtTraverser::EntityType DbJtTraverser::UNKNOWN        ( eaiEntity::eaiNONE );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,10 +104,6 @@ DbJtTraverser::DbJtTraverser ( const unsigned int &flags ) : SlRefBase ( 0 ),
   _customerNumber ( UNSET_CUSTOMER_NUMBER )
 {
   SL_PRINT2 ( "In DbJtTraverser::DbJtTraverser(), this = %X\n", this );
-
-  // Should be true for a one-to-one mapping between the entity types.
-  SL_ASSERT ( (unsigned int) eaiEntity::eaiNONE == (unsigned int) NONE );
-  SL_ASSERT ( (unsigned int) eaiEntity::eaiTRIPRISMSET == (unsigned int) TRI_PRISM_SET );
 }
 
 
@@ -116,7 +131,7 @@ bool DbJtTraverser::init()
 
 #if ( _DMDTK_VERSION > 4 )
 
-  NOTIFY << "Initializing DirectModel Data Toolkit... " << std::flush;
+  NOTIFY << "Initializing DirectModel Data Toolkit." << std::endl;
 
   // Initialize DMDTk.
   if ( eai_ERROR == eaiEntityFactory::init() )
@@ -126,14 +141,14 @@ bool DbJtTraverser::init()
     return false;
   }
 
-  NOTIFY << "done" << std::endl;
+  NOTIFY << "Done initializing DirectModel Data Toolkit." << std::endl;
 
 #endif // _DMDTK_VERSION
 
   // Get the customer number.
   unsigned int customerNumber = this->getCustomerNumber();
 
-  NOTIFY << "Attempting to register customer number " << customerNumber << "... " << std::flush;
+  NOTIFY << "Attempting to register customer number " << customerNumber << "." << std::endl;
 
   // Register the customer.
   if ( eai_ERROR == eaiEntityFactory::registerCustomer ( customerNumber ) )
@@ -143,7 +158,7 @@ bool DbJtTraverser::init()
     return false;
   }
 
-  NOTIFY << "done" << std::endl;
+  NOTIFY << "Done registering customer number " << customerNumber << "." << std::endl;
 
   // We are now initialized.
   this->addFlags ( _INITIALIZED );
@@ -252,7 +267,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   _currentNode = NULL;
   _currentLevel = 0;
 
-  NOTIFY << "Creating CAD importer... " << std::flush;
+  NOTIFY << "Creating CAD importer." << std::endl;
 
   // Declare a CAD importer. The returned instance has a zero reference count.
   // Assigning it to the SlRefPtr will increment it to one. When the SlRefPtr 
@@ -266,7 +281,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
     return false;
   }
 
-  NOTIFY << "done" << std::endl;
+  NOTIFY << "Done creating CAD importer." << std::endl;
 
   // We want all the levels of detail.
   //  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
@@ -278,7 +293,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
   // We want to use instances (rather than explode and make separate parts).
   importer->setAssemblyOption ( eaiCADImporter::eaiINSTANCE_ASSEMBLY );
 
-  NOTIFY << "Creating traverser... " << std::flush;
+  NOTIFY << "Creating traverser." << std::endl;
 
   // Declare the traverser. Note: returned pointer has ref-count of one.
   SlRefPtr<eaiTraverser> traverser = eaiEntityFactory::createTraverser();
@@ -289,7 +304,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
     return false;
   }
 
-  NOTIFY << "done" << std::endl;
+  NOTIFY << "Done creating traverser." << std::endl;
 
   // Hook up the callback function.
   SL_VERIFY ( eai_OK == traverser->setupPreActionCallback ( &DbJtTraverser::_traverseCallback ) );
@@ -302,7 +317,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
     return false;
   }
 
-  NOTIFY << "Importing '" << filename << "'... " << std::flush;
+  NOTIFY << "Importing '" << filename << "'." << std::endl;
 
   // Import the database. Note: returned pointer has ref-count of one.
   SlRefPtr<eaiHierarchy> root = importer->import ( filename );
@@ -313,7 +328,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
     return false;
   }
 
-  NOTIFY << "done" << std::endl;
+  NOTIFY << "Done importing." << std::endl;
 
   // Notify the client.
   if ( false == this->_sendMessage ( IMPORT_FINISH ) )
@@ -1003,7 +1018,7 @@ bool DbJtTraverser::getShapeType ( EntityHandle entity,
   SL_ASSERT ( entity );
 
   // Initialize.
-  type = NONE;
+  type = UNKNOWN;
 
   // Ask for the shape (there may not be one). Catching with SlRefPtr will 
   // increment it from 0 -> 1.

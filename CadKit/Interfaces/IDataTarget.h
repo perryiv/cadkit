@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IProgressNotify: Interface for reporting progress.
+//  IDataTarget: Interface for a data target.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
-#define _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_DATA_TARGET_H_
+#define _CADKIT_INTERFACE_DATA_TARGET_H_
 
 #include "IUnknown.h"
 
@@ -25,17 +25,23 @@
 
 namespace CadKit
 {
-class IProgressNotify : public IUnknown
+class IDataTarget : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032645618 };
+  enum { IID = 1032674768 };
 
-  // Report progress. Return true if the caller should continue.
-  virtual bool            progressNotify ( const std::string &message ) const = 0;
+  // Get the file extension.
+  virtual std::string     getFileExtension() const = 0;
+
+  // Get the default output name, based on the given source name.
+  virtual std::string     getDefaultOutputName ( const std::string &inputName ) = 0;
+
+  // Store the data.
+  virtual bool            storeData ( const std::string &name ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_WARNING_H_
+#endif // _CADKIT_INTERFACE_DATA_TARGET_H_

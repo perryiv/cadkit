@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IProgressNotify: Interface for reporting progress.
+//  IGroupNotify: Interface for reporting a group.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
-#define _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_GROUP_NOTIFY_H_
+#define _CADKIT_INTERFACE_GROUP_NOTIFY_H_
 
 #include "IUnknown.h"
 
@@ -25,17 +25,20 @@
 
 namespace CadKit
 {
-class IProgressNotify : public IUnknown
+class IGroupNotify : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032645618 };
+  enum { IID = 1032725316 };
 
-  // Report progress. Return true if the caller should continue.
-  virtual bool            progressNotify ( const std::string &message ) const = 0;
+  // End the assembly.
+  virtual bool            startGroup ( IUnknown *caller ) = 0;
+
+  // Start the assembly.
+  virtual bool            endGroup ( IUnknown *caller ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_WARNING_H_
+#endif // _CADKIT_INTERFACE_GROUP_NOTIFY_H_

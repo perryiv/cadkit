@@ -35,41 +35,47 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  SlDeclareConst: For declaring constant numbers on different platforms.
+//  SlQueryPtr.h: Works like CComQIPtr.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
-#define _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#ifndef _CADKIT_STANDARD_LIBRARY_QUERY_INTERFACE_POINTER_CLASS_H_
+#define _CADKIT_STANDARD_LIBRARY_QUERY_INTERFACE_POINTER_CLASS_H_
+
+#include "SlRefPtr.h"
 
 
-//////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+template <class T> class SlQueryPtr : public SlRefPtr<T>
+{
+public:
+
+  SlQueryPtr ( const unsigned long &iid, CadKit::IUnknown *unknown );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
 //
-// Macros used for declaring integer constants.
+//  Constructor. Note we call base class's default constructor.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
-# define SL_CONST_INT64(n)  n
-# define SL_CONST_UINT64(n) n
-# define SL_CONST_INT32(n)  n
-# define SL_CONST_UINT32(n) n
-#elif __GNUC__
-# ifdef _64_BIT_MACHINE
-#  define SL_CONST_INT64(n)  n##L
-#  define SL_CONST_UINT64(n) n##UL
-# else // 32 bit machines.
-#  define SL_CONST_INT64(n)  n##LL
-#  define SL_CONST_UINT64(n) n##ULL
-# endif // 64/32 bit linux.
-# define SL_CONST_UINT32(n) n##U
-# define SL_CONST_UINT16(n) n##U
-# define SL_CONST_UINT8(n)  n##U
-#else
-TODO
-#endif
+template <class T> inline SlQueryPtr<T>::SlQueryPtr 
+  ( const unsigned long &iid, CadKit::IUnknown *unknown ) : SlRefPtr<T>()
+{
+  if ( unknown )
+    this->setValue ( static_cast<T *> ( unknown->queryInterface ( iid ) ) );
+}
 
 
-#endif // _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+// So that SlRefPtr works with type T.
+template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
+template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
+
+
+}; // namespace CadKit
+
+#endif // _CADKIT_STANDARD_LIBRARY_QUERY_INTERFACE_POINTER_CLASS_H_

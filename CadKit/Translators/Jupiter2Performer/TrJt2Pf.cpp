@@ -66,6 +66,8 @@
 # include <iomanip>
 #endif
 
+#define PRINT if ( _verbose ) std::cout
+
 using namespace CadKit;
 
 
@@ -222,26 +224,22 @@ bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
   {
   case DbJtTraverser::IMPORT_START:
 
-    if ( _verbose )
-      std::cout << "Importing... " << std::flush;
+    PRINT << "Importing..." << std::endl;
     break;
 
   case DbJtTraverser::IMPORT_FINISH:
 
-    if ( _verbose )
-      std::cout << "done" << std::endl;
+    PRINT << "Done importing." << std::endl;
     break;
 
   case DbJtTraverser::TRAVERSAL_START:
 
-    if ( _verbose )
-      std::cout << "Starting the traversal" << std::endl;
+    PRINT << "Starting the traversal..." << std::endl;
     break;
 
   case DbJtTraverser::TRAVERSAL_FINISH:
 
-    if ( _verbose )
-      std::cout << "Done traversing" << std::endl;
+    PRINT << "Done traversing." << std::endl;
     break;
 
   case DbJtTraverser::LEVEL_PUSH:
@@ -251,8 +249,7 @@ bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
 
   case DbJtTraverser::LEVEL_POP:
 
-    if ( _verbose )
-      std::cout << "Done with assembly" << std::endl;
+    PRINT << "Done with assembly." << std::endl;
 
     // Pop the Performer scene tree level.
     return this->_endCurrentGroup();
@@ -288,27 +285,27 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
   SL_VERIFY ( _jtTraverser->getType ( entity, type ) );
 
   // Process the entity types that we are interested in.
-  switch ( type )
+  if ( DbJtTraverser::PART == type )
   {
-  case DbJtTraverser::ASSEMBLY:
-
-    // Add the part to the Performer scene.
-    return this->_assemblyStart ( entity );
-    
-  case DbJtTraverser::PART:
-
     // Add the part to the Performer tree.
     return this->_addPart ( entity );
-    
-  case DbJtTraverser::INSTANCE:
-
+  }
+  
+  else if ( DbJtTraverser::INSTANCE == type )
+  {
     // Add the instance to the XML tree.
     return this->_addInstance ( entity );
+  }
 
-  default:
+  else if ( DbJtTraverser::ASSEMBLY == type )
+  {
+    // Add the part to the Performer scene.
+    return this->_assemblyStart ( entity );
+  }
 
-    // Do nothing.
-    break;
+  else
+  {
+    PRINT << "Starting the traversal..." << std::endl;
   }
 
   // It worked.
@@ -568,8 +565,7 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   // Make the new assembly the current one.
   _assemblies.push_back ( assembly );
 
-  if ( _verbose )
-    std::cout << std::setw ( 10 ) << "assembly: " << assembly.getGroup()->getName() << std::endl;
+  PRINT << std::setw ( 10 ) << "assembly: " << assembly.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;
@@ -600,8 +596,7 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
   // Put the group into our map.
   (*_groupMap)[entity] = part.getGroup();
 
-  if ( _verbose )
-    std::cout << std::setw ( 10 ) << "part: " << part.getGroup()->getName() << std::endl;
+  PRINT << std::setw ( 10 ) << "part: " << part.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;
@@ -654,8 +649,7 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
   // Add the new instance to the Performer scene.
   _assemblies.back().getGroup()->addChild ( instance.getGroup() );
 
-  if ( _verbose )
-    std::cout << std::setw ( 10 ) << "instance: " << instance.getGroup()->getName() << std::endl;
+  PRINT << std::setw ( 10 ) << "instance: " << instance.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;
@@ -811,16 +805,21 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   }
 
   // Set the GeoSet's primitive type.
-  switch ( type )
+  if ( DbJtTraverser::TRI_STRIP_SET == type )
+    gset->setPrimType ( PFGS_TRISTRIPS );
+  else if ( DbJtTraverser::POLYGON_SET == type )
+    gset->setPrimType ( PFGS_POLYS ); 
+  else if ( DbJtTraverser::LINE_STRIP_SET == type )
+    gset->setPrimType ( PFGS_LINESTRIPS );
+  else if ( DbJtTraverser::POINT_SET == type )
+    gset->setPrimType ( PFGS_POINTS );
+  else if ( DbJtTraverser::TRI_FAN_SET == type )
+    gset->setPrimType ( PFGS_TRIFANS );
+  else
   {
-  case DbJtTraverser::LINE_STRIP_SET: gset->setPrimType ( PFGS_LINESTRIPS ); break;
-  case DbJtTraverser::POINT_SET:      gset->setPrimType ( PFGS_POINTS );     break;
-  case DbJtTraverser::POLYGON_SET:    gset->setPrimType ( PFGS_POLYS );      break;
-  case DbJtTraverser::TRI_FAN_SET:    gset->setPrimType ( PFGS_TRIFANS );    break;
-  case DbJtTraverser::TRI_STRIP_SET:  gset->setPrimType ( PFGS_TRISTRIPS );  break;
-  default:
     SL_ASSERT ( 0 ); // Heads up.
     CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, _jtTraverser->getName ( entity ).c_str(), whichLOD, whichShape );
+    PRINT << _error.c_str() << std::endl;
     return false;
   }
 

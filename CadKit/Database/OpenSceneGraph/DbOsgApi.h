@@ -35,41 +35,32 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  SlDeclareConst: For declaring constant numbers on different platforms.
+//  DbOsgApi.h: Defines what DB_OSG_API means.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
-#define _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#ifndef _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_API_H_
+#define _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_API_H_
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-// Macros used for declaring integer constants.
+//  Here we define what DB_OSG_API means.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
-# define SL_CONST_INT64(n)  n
-# define SL_CONST_UINT64(n) n
-# define SL_CONST_INT32(n)  n
-# define SL_CONST_UINT32(n) n
-#elif __GNUC__
-# ifdef _64_BIT_MACHINE
-#  define SL_CONST_INT64(n)  n##L
-#  define SL_CONST_UINT64(n) n##UL
-# else // 32 bit machines.
-#  define SL_CONST_INT64(n)  n##LL
-#  define SL_CONST_UINT64(n) n##ULL
-# endif // 64/32 bit linux.
-# define SL_CONST_UINT32(n) n##U
-# define SL_CONST_UINT16(n) n##U
-# define SL_CONST_UINT8(n)  n##U
-#else
-TODO
+#ifdef _WIN32
+# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
+# ifdef _CADKIT_COMPILING_DATABASE_OPEN_SCENE_GRAPH_LIBRARY
+#   define DB_OSG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
+# else
+#   define DB_OSG_API __declspec(dllimport) // The classes will be imported into the client's code.
+# endif
+#else // _WIN32
+# define DB_OSG_API
 #endif
 
 
-#endif // _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#endif // _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_API_H_

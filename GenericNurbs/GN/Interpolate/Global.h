@@ -207,8 +207,6 @@ void global ( const typename CurveType::SizeType &order,
     // Solve for the control points (Ax=b).
     matrix.luSolve ( pivots, ctrPts );
   }
-
-  // TODO. Looks good so far, but need to confirm with pictures and perhaps against Mn and/or Nl.
 }
 
 

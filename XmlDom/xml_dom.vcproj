@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="lib: XmlDom"
-	ProjectGUID="{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}"
+	ProjectGUID="{2e5da3bc-7700-43de-acd5-375eec360066}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

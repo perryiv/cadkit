@@ -74,6 +74,7 @@ public:
     ICON_TRIANGLE,
     ICON_DELETE_CONNECTED,
     ICON_KEEP_CONNECTED,
+    ICON_CAMERA,
     LAST
   };
 

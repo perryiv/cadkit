@@ -89,6 +89,7 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, SAVE_AS  );
   POPULATE ( gif, GIF, TUX      );
   POPULATE ( gif, GIF, WARNING  );
+  POPULATE ( gif, GIF, CAMERA   );
   POPULATE ( bmp, BMP, ARROW    );
   POPULATE ( bmp, BMP, EYE      );
   POPULATE ( bmp, BMP, HAND     );

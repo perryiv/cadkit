@@ -21,54 +21,62 @@ namespace CadKit
 {
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is a equal to (within tolerance of) b?
+//  Macro for declaring explicit functions. If these are templated with <T>
+//  then VC++ gets confused and uses these when it should be using the 
+//  equivalent functions in SlVecX.h.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool isEqual ( const T &a, const T &b, const T &tol )
-{
-  return ( a < b ) ? ( b - a ) < tol : ( a - b ) < tol;
+#define CADKIT_DECLARE_EQUALITY(T) \
+inline bool isEqual ( const T &a, const T &b ) \
+{ \
+  return ( a == b ); \
+} \
+template<class I> inline bool isEqualArray ( const T *a, const T *b, const I &size ) \
+{ \
+  for ( I i = 0; i < size; ++i ) \
+    if ( a[i] != b[i] ) \
+      return false; \
+  return true; \
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is a equal to (within tolerance of) b?
+//  Similar to above but for floats.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T, class I> inline bool isEqualArray ( const T *a, const T *b, const I &size, const T &tol )
-{
-  for ( I i = 0; i < size; ++i )
-    if ( false == CadKit::isEqual ( a[i], b[i], tol ) )
-      return false;
-  return true;
+#define CADKIT_DECLARE_EQUALITY_WITHIN_TOLERANCE(T) \
+CADKIT_DECLARE_EQUALITY(T) \
+inline bool isEqual ( const T &a, const T &b, const T &tol ) \
+{ \
+  return ( a < b ) ? ( b - a ) < tol : ( a - b ) < tol; \
+} \
+template<class I> inline bool isEqualArray ( const T *a, const T *b, const I &size, const T &tol ) \
+{ \
+  for ( I i = 0; i < size; ++i ) \
+    if ( false == CadKit::isEqual ( a[i], b[i], tol ) ) \
+      return false; \
+  return true; \
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is a equal to (within tolerance of) b?
+//  Explicit declarations.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T, class I> inline bool isEqualArray ( const T *a, const T *b, const I &size )
-{
-  for ( I i = 0; i < size; ++i )
-    if ( a[i] != b[i] )
-      return false;
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// For convenience and backward compatability.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SL_EQUAL  CadKit::isEqual
-
+CADKIT_DECLARE_EQUALITY ( unsigned int );
+CADKIT_DECLARE_EQUALITY ( unsigned short );
+CADKIT_DECLARE_EQUALITY ( unsigned long );
+CADKIT_DECLARE_EQUALITY ( int );
+CADKIT_DECLARE_EQUALITY ( short );
+CADKIT_DECLARE_EQUALITY ( long );
+CADKIT_DECLARE_EQUALITY_WITHIN_TOLERANCE ( long double );
+CADKIT_DECLARE_EQUALITY_WITHIN_TOLERANCE ( double );
+CADKIT_DECLARE_EQUALITY_WITHIN_TOLERANCE ( float );
 
 
 }; // namespace CadKit.

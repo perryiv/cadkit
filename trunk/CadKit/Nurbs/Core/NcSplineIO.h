@@ -39,8 +39,8 @@ template<NCSDTA> inline void write ( const CadKit::NcSpline<NCSDCA> &spline, std
   const char *rational = ( spline.isRational() ) ? "yes" : "no";
 
   out << "Size of IndexType ..................... " << spline.getNumBytesIndexType()        << std::endl;
-  out << "Size of ParameterType ................. " << spline.getNumBytesParameterType()    << std::endl;
-  out << "Size of ControlPointType .............. " << spline.getNumBytesControlPointType() << std::endl;
+  out << "Size of ParamType ................. " << spline.getNumBytesParamType()    << std::endl;
+  out << "Size of CtrPtType .............. " << spline.getNumBytesCtrPtType() << std::endl;
   out << "Number of independent variables ....... " << spline.getNumIndepVars()             << std::endl;
   out << "Number of dependent variables ......... " << spline.getNumDepVars()               << std::endl;
   out << "Dimension ............................. " << spline.getDimension()                << std::endl;

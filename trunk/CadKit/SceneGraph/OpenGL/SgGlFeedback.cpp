@@ -89,14 +89,14 @@ bool SgGlFeedback::_calculateBufferSize ( GLint &size, SgNode &scene ) const
   // Otherwise, we double it. We stop if the GLint will overflow.
   GLuint temp = ( 0 == _bufferSize ) ? DEFAULT_BUFFER_SIZE : _bufferSize * 2;
 
-  // Check for overflow if GLint. We assume that a GLuint will always safely 
+  // Check for overflow of GLint. We assume that a GLuint will always safely 
   // hold the maximum value of a GLint.
   bool newSizeOk = false;
   switch ( sizeof ( GLint ) )
   {
-  case 2: newSizeOk = ( temp <= SL_MAX_SIGNED_16_BIT_INT ); break;
-  case 4: newSizeOk = ( temp <= SL_MAX_SIGNED_32_BIT_INT ); break;
-  case 8: newSizeOk = ( temp <= SL_MAX_SIGNED_64_BIT_INT ); break;
+  case 2: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt16>::max() ) ); break;
+  case 4: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt32>::max() ) ); break;
+  case 8: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt64>::max() ) ); break;
   default:
 
     SL_ASSERT ( 0 ); // What kind of an OS is this?

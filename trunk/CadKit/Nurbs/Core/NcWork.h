@@ -36,9 +36,9 @@ public:
   ~NcWork(){}
 
   /// Get the basis function work space.
-  ParameterType *               getBasisFunctionsLeft  ( const IndexType &whichIndepVar );
-  ParameterType *               getBasisFunctionsRight ( const IndexType &whichIndepVar );
-  ParameterType *               getBasisFunctions      ( const IndexType &whichIndepVar );
+  ParamType *               getBasisFunctionsLeft  ( const IndexType &whichIndepVar );
+  ParamType *               getBasisFunctionsRight ( const IndexType &whichIndepVar );
+  ParamType *               getBasisFunctions      ( const IndexType &whichIndepVar );
 
   /// Assignment operator.
   NcWork &                      operator = ( const NcWork &work ) { SL_VERIFY ( this->setValue ( work ) ); return *this; }
@@ -52,9 +52,9 @@ public:
 protected:
 
   IndexType _maxOrder;
-  std::vector<ParameterType> _left;  // Use when calculating blending functions.
-  std::vector<ParameterType> _right; // Use when calculating blending functions.
-  std::vector<ParameterType> _basis; // Blending functions.
+  std::vector<ParamType> _left;  // Use when calculating blending functions.
+  std::vector<ParamType> _right; // Use when calculating blending functions.
+  std::vector<ParamType> _basis; // Blending functions.
 };
 
 
@@ -111,10 +111,10 @@ template<NCSDTA> inline bool NcWork<NCSDCA>::setValue ( const NcWork<NCSDCA> &wo
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctionsLeft ( const IndexType &whichIndepVar )
+template<NCSDTA> inline ParamType *NcWork<NCSDCA>::getBasisFunctionsLeft ( const IndexType &whichIndepVar )
 {
   SL_ASSERT ( 0 == whichIndepVar || 0 < whichIndepVar );
-  SL_ASSERT ( static_cast<std::vector<ParameterType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _left.size() );
+  SL_ASSERT ( static_cast<std::vector<ParamType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _left.size() );
 
   return &(_left[whichIndepVar * _maxOrder]);
 }
@@ -126,10 +126,10 @@ template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctionsLeft ( c
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctionsRight ( const IndexType &whichIndepVar )
+template<NCSDTA> inline ParamType *NcWork<NCSDCA>::getBasisFunctionsRight ( const IndexType &whichIndepVar )
 {
   SL_ASSERT ( 0 == whichIndepVar || 0 < whichIndepVar );
-  SL_ASSERT ( static_cast<std::vector<ParameterType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _right.size() );
+  SL_ASSERT ( static_cast<std::vector<ParamType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _right.size() );
 
   return &(_right[whichIndepVar * _maxOrder]);
 }
@@ -141,10 +141,10 @@ template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctionsRight ( 
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline ParameterType *NcWork<NCSDCA>::getBasisFunctions ( const IndexType &whichIndepVar )
+template<NCSDTA> inline ParamType *NcWork<NCSDCA>::getBasisFunctions ( const IndexType &whichIndepVar )
 {
   SL_ASSERT ( 0 == whichIndepVar || 0 < whichIndepVar );
-  SL_ASSERT ( static_cast<std::vector<ParameterType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _basis.size() );
+  SL_ASSERT ( static_cast<std::vector<ParamType>::size_type> ( whichIndepVar * _maxOrder + _maxOrder ) <= _basis.size() );
 
   return &(_basis[whichIndepVar * _maxOrder]);
 }

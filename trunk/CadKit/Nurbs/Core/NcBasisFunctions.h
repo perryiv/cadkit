@@ -32,27 +32,27 @@ public:
   /// Calculate the basis functions.
   static void                   basis ( 
                                   const NcCurve<NCSDCA> &curve,
-                                  const ParameterType &u, 
+                                  const ParamType &u, 
                                   const IndexType &span, 
-                                  ParameterType *N );
+                                  ParamType *N );
 
   /// Calculate the basis functions.
   static void                   basis ( 
                                   const NcSpline<NCSDCA> &spline,
                                   const IndexType &whichIndepVar, 
-                                  const ParameterType &u, 
+                                  const ParamType &u, 
                                   const IndexType &span, 
-                                  ParameterType *N );
+                                  ParamType *N );
 
   /// Calculate the basis functions.
   static void                   basis ( 
-                                  const ParameterType *knots, 
+                                  const ParamType *knots, 
                                   const IndexType &order, 
                                   const IndexType &span, 
-                                  const ParameterType &u, 
-                                  ParameterType *left,
-                                  ParameterType *right,
-                                  ParameterType *N );
+                                  const ParamType &u, 
+                                  ParamType *left,
+                                  ParamType *right,
+                                  ParamType *N );
 };
 
 
@@ -73,13 +73,13 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis ( 
-  const ParameterType *knots, 
+  const ParamType *knots, 
   const IndexType &order, 
   const IndexType &span, 
-  const ParameterType &u, 
-  ParameterType *left,
-  ParameterType *right,
-  ParameterType *N )
+  const ParamType &u, 
+  ParamType *left,
+  ParamType *right,
+  ParamType *N )
 {
   SL_ASSERT ( NULL != knots );
   SL_ASSERT ( NULL != left );
@@ -89,7 +89,7 @@ template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis (
   SL_ASSERT ( span == order - 1 || span > order - 1 ); // Bypass g++ warning.
 
   IndexType rPlus1, jMinusR, j, r;
-  ParameterType saved, temp;
+  ParamType saved, temp;
 
   N[0] = 1.0f;
 
@@ -122,23 +122,23 @@ template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis (
 template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis ( 
   const NcSpline<NCSDCA> &spline,
   const IndexType &whichIndepVar, 
-  const ParameterType &u, 
+  const ParamType &u, 
   const IndexType &span, 
-  ParameterType *N )
+  ParamType *N )
 {
   SL_ASSERT ( true == spline.isInRange ( whichIndepVar, u ) );
   SL_ASSERT ( span >= spline.getDegree ( whichIndepVar ) );
   SL_ASSERT ( span <= spline.getNumCtrPts ( whichIndepVar ) );
 
   // Get the start of the knot vector.
-  const ParameterType *knots = spline.getKnots ( whichIndepVar );
+  const ParamType *knots = spline.getKnots ( whichIndepVar );
 
   // Get the order.
   const IndexType order ( spline.getOrder ( whichIndepVar ) );
 
   // Space for the algorithm.
-  ParameterType *left  = spline.getWork().getBasisFunctionsLeft  ( whichIndepVar );
-  ParameterType *right = spline.getWork().getBasisFunctionsRight ( whichIndepVar );
+  ParamType *left  = spline.getWork().getBasisFunctionsLeft  ( whichIndepVar );
+  ParamType *right = spline.getWork().getBasisFunctionsRight ( whichIndepVar );
 
   // Call the algorithm.
   NcBasisFunctions<NCSDCA>::basis ( knots, order, span, u, left, right, N );
@@ -153,9 +153,9 @@ template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis (
 
 template<NCSDTA> inline void NcBasisFunctions<NCSDCA>::basis ( 
   const NcCurve<NCSDCA> &curve,
-  const ParameterType &u, 
+  const ParamType &u, 
   const IndexType &span, 
-  ParameterType *N )
+  ParamType *N )
 {
   // Call the other one.
   NcBasisFunctions<NCSDCA>::basis ( curve, 0, u, span, N );

@@ -35,19 +35,19 @@ public:
   const IndexType &             getDegree() const { return NcSpline<NCSDCA>::getDegree ( 0 ); }
 
   /// Get the first knot.
-  const ParameterType &         getFirstKnot() const { return NcSpline<NCSDCA>::getFirstKnot ( 0 ); }
+  const ParamType &             getFirstKnot() const { return NcSpline<NCSDCA>::getFirstKnot ( 0 ); }
 
   /// Get the knots.
-  const ParameterType *         getKnots() const { return NcSpline<NCSDCA>::getKnots ( 0 ); }
+  const ParamType *             getKnots() const { return NcSpline<NCSDCA>::getKnots ( 0 ); }
 
   /// Get the last knot.
-  const ParameterType &         getLastKnot() const { return NcSpline<NCSDCA>::getLastKnot ( 0 ); }
+  const ParamType &             getLastKnot() const { return NcSpline<NCSDCA>::getLastKnot ( 0 ); }
 
   /// Get the order.
   const IndexType &             getOrder() const { return NcSpline<NCSDCA>::getOrder ( 0 ); }
 
   // See if the parameter is in range.
-  bool                          isInRange ( const ParameterType &u ) const { return NcSpline<NCSDCA>::isInRange ( 0, u ); }
+  bool                          isInRange ( const ParamType &u ) const { return NcSpline<NCSDCA>::isInRange ( 0, u ); }
 
   /// Assignment operator.
   NcCurve &                     operator = ( const NcCurve &curve ) { SL_VERIFY ( this->setValue ( curve ) ); return *this; }
@@ -59,7 +59,7 @@ public:
   bool                          resize ( const IndexType &numIndepVars, const IndexType &numDepVars, const IndexType &order, const IndexType &numCtrPts, const bool &rational ) { return NcSpline<NCSDCA>::resize ( numIndepVars, numDepVars, &order, &numCtrPts, rational ); }
 
   /// Set the knot.
-  void                          setKnot   ( const IndexType &whichKnot, const ParameterType &knot ) { NcSpline<NCSDCA>::setKnot ( 0, whichKnot, knot ); }
+  void                          setKnot   ( const IndexType &whichKnot, const ParamType &knot ) { NcSpline<NCSDCA>::setKnot ( 0, whichKnot, knot ); }
 };
 
 

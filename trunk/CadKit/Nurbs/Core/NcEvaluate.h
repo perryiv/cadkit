@@ -22,6 +22,7 @@
 #include "NcDefine.h"
 
 #include "Standard/SlAssert.h"
+#include "Standard/SlConstants.h"
 
 
 namespace CadKit
@@ -33,19 +34,19 @@ public:
   /// Evaluate a point on the curve.
   static void                   evaluate ( 
                                   const NcCurve<NCSDCA> &curve, 
-                                  const ParameterType &u, 
-                                  ControlPointType *point );
+                                  const ParamType &u, 
+                                  CtrPtType *point );
 
   /// Evaluate a point on the curve.
   static void                   evaluate ( 
                                   const IndexType &degree, 
                                   const IndexType &span, 
                                   const IndexType &dimension,
-                                  const ParameterType &u, 
-                                  const ParameterType *N,
-                                  const ControlPointType **ctrPts,
-                                  const ControlPointType *weights,
-                                  ControlPointType *point );
+                                  const ParamType &u, 
+                                  const ParamType *N,
+                                  const CtrPtType **ctrPts,
+                                  const CtrPtType *weights,
+                                  CtrPtType *point );
 };
 
 
@@ -68,11 +69,11 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
   const IndexType &degree, 
   const IndexType &span, 
   const IndexType &dimension,
-  const ParameterType &u, 
-  const ParameterType *N,
-  const ControlPointType **ctrPts,
-  const ControlPointType *weights,
-  ControlPointType *point )
+  const ParamType &u, 
+  const ParamType *N,
+  const CtrPtType **ctrPts,
+  const CtrPtType *weights,
+  CtrPtType *point )
 {
   SL_ASSERT ( span == degree || span > degree ); // Bypass g++ warning.
   SL_ASSERT ( CADKIT_NURBS_MINIMUM_DEGREE == degree || CADKIT_NURBS_MINIMUM_DEGREE < degree );
@@ -85,7 +86,7 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
 
   // Initialize the point.
   for ( i = 0; i < dimension; ++i ) 
-    point[i] = 0;
+    point[i] = SlConstants<CtrPtType>::zero();
 
   //
   // Nonrational.
@@ -113,7 +114,7 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
   //
 
   // Initialize.
-  ControlPointType weight ( 0 );
+  CtrPtType weight ( SlConstants<CtrPtType>::zero() );
 
   for ( i = 0; i < order; ++i )
   {
@@ -131,7 +132,7 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
   }
 
   // Invert the weight.
-  weight = 1 / weight;
+  weight = SlConstants<CtrPtType>::one() / weight;
 
   // Divide out the weight for each dimension.
   for ( j = 0; j < dimension; ++j )
@@ -149,8 +150,8 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
 
 template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate ( 
   const NcCurve<NCSDCA> &curve, 
-  const ParameterType &u, 
-  ControlPointType *point )
+  const ParamType &u, 
+  CtrPtType *point )
 {
   SL_ASSERT ( NULL != point );
   SL_ASSERT ( curve.isInRange ( u ) );
@@ -159,20 +160,20 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
   const IndexType degree ( curve.getDegree() );
 
   // Get the span.
-  IndexType span = NcFindSpan<NCSDCA>::find ( curve, u );
+  const IndexType span ( NcFindSpan<NCSDCA>::find ( curve, u ) );
 
   // Get the dimension.
   const IndexType dimension ( curve.getDimension() );
 
   // Get the basis functions.
-  ParameterType *N = curve.getWork().getBasisFunctions ( 0 );
+  ParamType *N = curve.getWork().getBasisFunctions ( 0 );
   NcBasisFunctions<NCSDCA>::basis ( curve, u, span, N );
 
   // Get the control points.
-  const ControlPointType **ctrPts = curve.getCtrPts();
+  const CtrPtType **ctrPts = curve.getCtrPts();
 
   // Get the weights.
-  const ControlPointType *weights = curve.getWeights();
+  const CtrPtType *weights = curve.getWeights();
 
   // Call the function to evaluate a point.
   NcEvaluate<NCSDCA>::evaluate ( degree, span, dimension, u, N, ctrPts, weights, point );

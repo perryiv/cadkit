@@ -27,8 +27,8 @@ void ColorSetter::operator ()(osg::ShapeDrawable* sd)
 
 void ColorSetter::operator ()(osg::Geometry* g)
 {
-  //osg::Vec4Array* color_array = new osg::Vec4Array();
-  //color_array->push_back( _color );
-  //g->setColorArray( color_array );
+  osg::Vec4Array* color_array = new osg::Vec4Array();
+  color_array->push_back( _color );
+  g->setColorArray( color_array );
   g->setColorBinding( osg::Geometry::BIND_OVERALL );
 }

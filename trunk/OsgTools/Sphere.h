@@ -16,7 +16,7 @@
 #define _osg_tools_builder_sphere_
 
 #include "Export.h"
-//#include "ColorPolicyFunctor.h"
+#include "ColorPolicyFunctor.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
@@ -25,21 +25,24 @@ namespace OsgTools
 {
 
   template<class ColorPolicy>
-  class Sphere// : public ColorPolicyFunctor
+  class Sphere : public ColorPolicyFunctor<ColorPolicy>
   {
   public:
-    typedef ColorPolicy CP;
-    Sphere(): _radius(0.5), _cp() {}
-    Sphere(float r): _radius(r), _cp() {}
-    Sphere(const Sphere& s): _radius(s._radius), _cp() {}
+    typedef ColorPolicyFunctor<ColorPolicy> CPF;
+    Sphere(): CPF(), _radius(0.5){}
+    Sphere(float r): CPF(), _radius(r) {}
+    Sphere(const Sphere& s): CPF(s), _radius(s._radius) {}
     virtual ~Sphere() {}
 
-    Sphere& operator = (const Sphere& s) { _radius = s._radius; }
+    Sphere& operator = (const Sphere& s)
+    {
+      CPF::operator =(s);
+      _radius = s._radius;
+    }
 
     virtual osg::Node* operator()()
     {
-      osg::ref_ptr<osg::Sphere> s = new osg::Sphere(osg::Vec3(0.0,0.0,0.0),
-                                                    _radius);
+      osg::ref_ptr<osg::Sphere> s = new osg::Sphere(osg::Vec3(0.0,0.0,0.0),_radius);
       osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable( s.get() );
 
       _cp( sd.get() );  // apply the color policy adjustments
@@ -48,16 +51,11 @@ namespace OsgTools
       return node.release();
     }
 
-    void color_policy(const ColorPolicy& c) { _cp = c; }
-    const ColorPolicy& color_policy() const { return _cp; }
-    ColorPolicy& color_policy()             { return _cp; }
-
     void radius(float r) { _radius = r; }
     float radius() const { return _radius; }
 
   private:
     float _radius;
-    ColorPolicy _cp;
   };
 
 };

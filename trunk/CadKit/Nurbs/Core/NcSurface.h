@@ -25,6 +25,8 @@ template<NCSDTCD> class NcSurface : public NcSpline<NCSDCA>
 {
 public:
 
+  DECLATE_TYPEDEFS;
+
   NcSurface(){}
   NcSurface ( const NcSurface<NCSDCA> &sd ) : NcSpline<NCSDCA> ( sd ){}
   ~NcSurface(){}

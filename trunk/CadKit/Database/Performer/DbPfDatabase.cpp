@@ -221,6 +221,15 @@ bool DbPfDatabase::storeData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
   SL_ASSERT ( NULL != this->_getRoot() );
 
+#if 0 // _DEBUG
+  std::string dump ( filename );
+  dump.append ( ".out" );
+  FILE *out = ::fopen ( dump.c_str(), "w" );
+  ::printf ( "Dumping debug file: %s\n", dump.c_str() );
+  ::pfPrint ( this->_getRoot(), PFTRAV_SELF | PFTRAV_DESCEND, PFPRINT_VB_DEBUG, out );
+  ::fclose ( out );
+#endif
+
   // Write the root to file.
   return ( 0 != pfdStoreFile ( this->_getRoot(), filename.c_str() ) );
 }

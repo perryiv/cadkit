@@ -29,8 +29,7 @@ template<NCSDTCD> class NcCurve : public NcSpline<NCSDCA>
 {
 public:
 
-  typedef std::vector<C> ControlPoints;
-  typedef std::vector<I> KnotVector;
+  DECLATE_TYPEDEFS;
 
   NcCurve(){}
   NcCurve ( const NcCurve<NCSDCA> &sd ) : NcSpline<NCSDCA> ( sd ){}

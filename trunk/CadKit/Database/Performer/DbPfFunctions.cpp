@@ -26,6 +26,11 @@
 #endif
 
 
+#ifdef _DEBUG
+  FILE *out = ::fopen ( "material.out", "w" );
+#endif
+
+
 namespace CadKit
 {
 
@@ -96,10 +101,15 @@ void setMaterial ( const SlMaterialf &material, pfGeoState *state )
   state->setAttr ( PFSTATE_FRONTMTL, mat );
   //state->setAttr ( PFSTATE_BACKMTL, mat ); // TODO, needed?
 
+#if 0 // _DEBUG
+  ::pfPrint ( mat, PFTRAV_SELF, PFPRINT_VB_DEBUG, out );
+  ::fflush ( out );
+#endif
+
   // Turn on lighting. 
   state->setMode ( PFSTATE_ENLIGHTING, PF_ON );
 
-#ifdef _DEBUG
+#if 0 // _DEBUG
 
   const SlVec4f &a  = material.getAmbient();
   const SlVec4f &d  = material.getDiffuse();

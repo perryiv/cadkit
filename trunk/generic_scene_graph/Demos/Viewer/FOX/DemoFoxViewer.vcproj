@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../,$(BOOST_ROOT_DIR),$(FOX_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="../../../,$(BOOST_ROOT_DIR),$(FOX_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS,WIN32,_DEBUG,FOXDLL,HAVE_OPENGL"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxd-1.1.lib comctl32.lib wsock32.lib ws2_32.lib"
+				AdditionalDependencies="foxdlld-1.3.lib comctl32.lib wsock32.lib ws2_32.lib"
 				OutputFile="../../../bin/gsg_demo_fox_viewer_d.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -86,7 +86,7 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../,$(BOOST_ROOT_DIR),$(FOX_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="../../../,$(BOOST_ROOT_DIR),$(FOX_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS,WIN32,NDEBUG,FOXDLL,HAVE_OPENGL"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="fox-1.1.lib comctl32.lib wsock32.lib"
+				AdditionalDependencies="foxdll-1.3.lib comctl32.lib wsock32.lib"
 				OutputFile="../../../bin/gsg_demo_fox_viewer.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

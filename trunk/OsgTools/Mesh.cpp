@@ -183,30 +183,9 @@ void Mesh::read ( const std::string &filename )
         "\n\tColumns: ", columns );
   }
 
-  // Read the points.
-  Vectors points;
-  points.resize ( rows * columns );
-  for ( Vectors::size_type i = 0; i < points.size(); ++i )
-  {
-    // Make sure there are more.
-    if ( in.fail() || in.eof() )
-    {
-      Usul::Exceptions::Thrower<std::runtime_error>
-        ( "Error 3418646572, there should be ", points.size(), " data points.",
-          "\n\tFile: ", filename );
-    }
-
-    // Set this element.
-    in >> points[i][0] >> points[i][1] >> points[i][2];
-  }
-
-  // Read the number of normals.
-  unsigned int numNormals ( 0 );
-  in >> numNormals;
-
   // Read the normals.
   Vectors normals;
-  normals.resize ( numNormals );
+  normals.resize ( rows * columns );
   for ( Vectors::size_type j = 0; j < normals.size(); ++j )
   {
     // Make sure there are more.
@@ -217,8 +196,34 @@ void Mesh::read ( const std::string &filename )
           "\n\tFile: ", filename );
     }
 
+    // Discard for now...
+    unsigned int row, column;
+    in >> row >> column;
+
     // Set this element.
     in >> normals[j][0] >> normals[j][1] >> normals[j][2];
+  }
+
+  // Read the points.
+  Vectors points;
+  points.resize ( rows * columns );
+
+  for ( Vectors::size_type i = 0; i < points.size(); ++i )
+  {
+    // Make sure there are more.
+    if ( in.fail() || in.eof() )
+    {
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 3418646572, there should be ", points.size(), " data points.",
+          "\n\tFile: ", filename );
+    }
+
+    // Discard for now...
+    unsigned int row, column;
+    in >> row >> column;
+
+    // Set this element.
+    in >> points[i][0] >> points[i][1] >> points[i][2];
   }
 
   // Assign the members.

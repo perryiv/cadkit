@@ -53,6 +53,7 @@ private:
   Molecules _molecules; 
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
+  SphereFactory::Ptr _sphereFactory;
   PeriodicTable _periodicTable;
 };
 

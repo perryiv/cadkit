@@ -168,6 +168,9 @@
 				<File
 					RelativePath="Algorithms\Extract.h">
 				</File>
+				<File
+					RelativePath=".\Algorithms\Sphere.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Base"

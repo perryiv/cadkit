@@ -271,10 +271,16 @@
 				Name="Attributes"
 				Filter="">
 				<File
-					RelativePath=".\Attributes.cpp">
+					RelativePath=".\Attribute.cpp">
 				</File>
 				<File
-					RelativePath=".\Attributes.h">
+					RelativePath=".\Attribute.h">
+				</File>
+				<File
+					RelativePath=".\AttributeSet.cpp">
+				</File>
+				<File
+					RelativePath=".\AttributeSet.h">
 				</File>
 				<File
 					RelativePath=".\Color.h">
@@ -287,6 +293,12 @@
 				</File>
 				<File
 					RelativePath=".\Material.h">
+				</File>
+				<File
+					RelativePath=".\PolygonMode.cpp">
+				</File>
+				<File
+					RelativePath=".\PolygonMode.h">
 				</File>
 			</Filter>
 			<Filter

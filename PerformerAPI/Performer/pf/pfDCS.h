@@ -10,7 +10,7 @@ class pfDCS : public pfSCS
 {
 public:
 
-  pfDCS() : pfSCS ( pfMatrix ( SL_MATRIX4_IDENTITY_F ) ){}
+  pfDCS() : pfSCS ( pfMatrix ( SL_MATRIX_44_IDENTITY_F ) ){}
 
   virtual const char *          className() const { return "pfDCS"; }
 

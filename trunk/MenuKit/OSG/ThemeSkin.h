@@ -4,7 +4,6 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 
-#include "osgText/Font"
 #include "MenuKit/Box.h"
 
 namespace osg
@@ -35,30 +34,31 @@ namespace MenuKit
       typedef Referenced base_class;
       typedef MapType theme_type;
       typedef ThemeSkin<theme_type> thisclass;
-      MENUKIT_DECLARE_POINTER ( thisclass );  ///\todo TODO: correct syntax?  needs 'typename' in front?
+      MENUKIT_DECLARE_POINTER ( thisclass );
 
-      ThemeSkin(): base_class(), _box(1.0,1.0), _separator(0.1,1.0), _theme() {}
+      ThemeSkin(): base_class(), _theme(), _letter_height(0.7f), _separator_height(0.2f), _graphic_width(0.0f) {}
 
       virtual osg::Node* operator ()(const Menu& menu)=0;
       virtual osg::Node* operator ()(const Button& butn)=0;
       // TODO: virtual osg::Node* operator ()(const Item& item)=0;
 
-      virtual float height(const Menu& menu)=0;
-      virtual float height(const Button& butn)=0;
-      virtual float height(const Item* item)=0;
+      virtual float height(const Menu& menu) const=0;
+      virtual float height(const Button& butn) const=0;
+      virtual float height(const Item* item) const=0;
 
-      virtual float width(const Menu& menu)=0;
-      virtual float width(const Button& butn)=0;
-      virtual float width(const Item* item)=0;
+      virtual float width(const Menu& menu) const=0;
+      virtual float width(const Button& butn) const=0;
+      virtual float width(const Item* item) const=0;
       // TODO: virtual float width(const Item& menu);
 
-      void box(const Detail::Box& b) { _box = b; }
-      const Detail::Box& box() const { return _box; }
-      Detail::Box& box() { return _box; }
+      void graphic_width(float w) { _graphic_width = w; }
+      float graphic_width() const { return _graphic_width; }
 
-      void separator(const Detail::Box& b) { _separator = b; }
-      const Detail::Box& separator() const { return _separator; }
-      Detail::Box& separator() { return _separator; }
+      void letter_height(float h) { _letter_height = h; }
+      float letter_height() const { return _letter_height; }
+
+      void separator_height(float w) { _separator_height = w; }
+      float separator_height() const { return _separator_height; }
 
       void theme(const theme_type& t) { _theme = t; }
       const theme_type& theme() const { return _theme; }
@@ -83,8 +83,11 @@ namespace MenuKit
       //  return( *this );
       //}
 
-      Detail::Box _box, _separator;  // 2 boxes that define the size of the total graphic
+      //Detail::Box _box, _separator;  // 2 boxes that define the size of the total graphic
       theme_type _theme;
+      float _letter_height,     // height of the printed-type
+            _separator_height,  // height of the separator
+            _graphic_width;     // horizontal distance to be honored when rendering
     };
 
   };

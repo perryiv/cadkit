@@ -80,37 +80,19 @@ namespace MenuKit
       enum Direction { HORIZONTAL, VERTICAL };
       Direction _determine_pushpop_direction(Menu::Layout menus,Menu::Layout parents);
 
+      Detail::Box _determine_tile_size(const Menu& m,Menu::Layout parent_layout);
+      Detail::Box _determine_tile_size(const Button& b,Menu::Layout parent_layout);
+
       template<typename ItemType>
-      inline void _configure_tile_color(tile_type* t,const ItemType& m)
+      inline typename tile_type::display_mode _determine_tile_display_mode(const ItemType& m)
       {
-        t->display_mode( tile_type::NORMAL );
+        tile_type::display_mode dm( tile_type::NORMAL );
         if( m.marked() || m.expanded() )
-          t->display_mode( tile_type::HIGHLIGHT );
+          dm = tile_type::HIGHLIGHT;
         if( !m.enabled() )
-          t->display_mode( tile_type::DISABLED );
-      }
+          dm = tile_type::DISABLED;
 
-      template<typename ItemType>
-      inline void _configure_tile_size(tile_type* t,const ItemType& m,Menu::Layout parent_layout)
-      {
-        Detail::Box box;
-        if( parent_layout == Menu::HORIZONTAL )
-        {
-          ///\todo TODO: could be 'tallest' child height
-          box.height( t->height(m) );
-          box.width( t->width(m) );
-        }
-
-        else  // parent's layout is VERTICAL
-        {
-          box.height( t->height(m) );
-          if( m.parent() )
-            box.width( _determine_greatest( m.parent()->items(), parent_layout ) );
-          else
-            box.width( t->width(m) );
-        }
-
-        t->box( box );
+        return dm;
       }
 
     private:
@@ -137,14 +119,14 @@ namespace MenuKit
       else
       {
         ///\todo TODO: implement a 'switch' to be the initialization event
-        _scene = new osg::Group();  // catch initialization event
+        _scene = new osg::Group();  // NULL parent is the initialization event
         _scene->setName( _scene_name );
         pl = Menu::HORIZONTAL;  // designates as horizontal layout
       }
 
       // configure the tile
-      _configure_tile_color( _tile.get() , m );
-      _configure_tile_size( _tile.get() , m , pl );
+      _tile->mode( _determine_tile_display_mode(m) );
+      _tile->box( _determine_tile_size(m, pl) );
 
       // save the tile's box state
       Detail::Box mbox( _tile->box() );
@@ -163,7 +145,7 @@ namespace MenuKit
         Direction pushpop = _determine_pushpop_direction(ml,pl);
 
         // do initial push so that children start in the correct place
-        if( VERTICAL == pushpop )
+        if( Direction::VERTICAL == pushpop )
           _vert.push(mbox.height());
         else
           _hori.push(mbox.width());
@@ -184,7 +166,7 @@ namespace MenuKit
         }
 
         // pop off the initial move before traversing childen
-        if( pushpop == VERTICAL )
+        if( pushpop == Direction::VERTICAL )
           _vert.pop();
         else
           _hori.pop();
@@ -212,13 +194,13 @@ namespace MenuKit
       }
 
       // configure tile
-      _configure_tile_color( _tile.get() , b );
-      _configure_tile_size( _tile.get() , b , pl );
+      _tile->mode( _determine_tile_display_mode(b) );
+      _tile->box( _determine_tile_size( b, pl) );
 
       // generate the graphic
       _make_graphic(b,
-        std::accumulate(_hori.data().begin(),_hori.data().end(),0.0),
-       -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0) );
+        std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f),
+       -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f) );
 
       // push for this graphic so the next menu item will accumulate correctly
       if( pl == Menu::VERTICAL )
@@ -232,21 +214,21 @@ namespace MenuKit
     {
       if( pl == Menu::HORIZONTAL )
       {
-        if( ml == Menu::VERTICAL )
-          return VERTICAL;
-        else
-          return HORIZONTAL;
+        //if( ml == Menu::VERTICAL )
+        //  return Mason<T>::VERTICAL;
+        //else
+          return Mason<T>::VERTICAL;   // always need to push vertically
       }
 
       else  // parent's layout is vertical
-          return HORIZONTAL;
+          return Mason<T>::HORIZONTAL;  // always need to push horizontally
     }
 
     template<typename T>
     void Mason<T>::_make_graphic(const Button& b, float dx, float dy)
     {
       // this method uses the state of the _tile for correctness
-      osg::ref_ptr<osg::Node> node = (*_tile)( b );
+      osg::ref_ptr<osg::Node> node = _tile->operator()( b );
 
       // make a xform node and attach it to the scene.
       osg::MatrixTransform* xform = new osg::MatrixTransform();
@@ -254,7 +236,7 @@ namespace MenuKit
       xform->setMatrix( osg::Matrix::translate(dx,dy,0.0) );
 
       // make the graphic via the tile and add it to the xform
-      xform->addChild( (*_tile)(b) );
+      xform->addChild( node.get() );
       _scene->addChild( xform );
     }
 
@@ -262,7 +244,7 @@ namespace MenuKit
     void Mason<T>::_make_graphic(const Menu& m, float dx, float dy)
     {
       // this method uses the state of the _tile for correctness
-      osg::ref_ptr<osg::Node> node = (*_tile)( m );
+      osg::ref_ptr<osg::Node> node = _tile->operator()( m );
 
       // make a xform node and attach it to the scene.
       osg::MatrixTransform* xform = new osg::MatrixTransform();
@@ -270,7 +252,7 @@ namespace MenuKit
       xform->setMatrix( osg::Matrix::translate(dx,dy,0.0) );
 
       // make the graphic via the tile and add it to the xform
-      xform->addChild( (*_tile)(m) );
+      xform->addChild( node.get() );
       _scene->addChild( xform );
     }
 
@@ -299,6 +281,51 @@ namespace MenuKit
       }
 
       return max_value;
+    }
+
+    template<typename T>
+    Detail::Box Mason<T>::_determine_tile_size(const Menu& m,Menu::Layout parent_layout)
+    {
+      Detail::Box box;
+      if( parent_layout == Menu::HORIZONTAL )
+      {
+        box.height( _tile->height(m) ); ///\todo TODO: could be 'tallest' child height
+        box.width( _tile->width(m) );
+      }
+
+      else  // parent's layout is VERTICAL
+      {
+        box.height( _tile->height(m) );
+        if( m.parent() )
+          box.width( _determine_greatest( m.parent()->items(), parent_layout ) );
+        else
+          box.width( _tile->width(m) );
+      }
+
+      return box;
+    }
+
+    template<typename T>
+    Detail::Box Mason<T>::_determine_tile_size(const Button& b,Menu::Layout parent_layout)
+    {
+      Detail::Box box;
+      if( parent_layout == Menu::HORIZONTAL )
+      {
+        ///\todo TODO: could be 'tallest' child height
+        box.height( _tile->height(b) );
+        box.width( _tile->width(b) );
+      }
+
+      else  // parent's layout is VERTICAL
+      {
+        box.height( _tile->height(b) );
+        if( b.parent() )
+          box.width( _determine_greatest( b.parent()->items(), parent_layout ) );
+        else
+          box.width( _tile->width(b) );
+      }
+
+      return box;
     }
 
   };

@@ -30,7 +30,7 @@ namespace MenuKit
       typedef ThemeTile<theme_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 
-      typedef std::map<typename base_class::DisplayMode,theme_type> DisplayModeThemeMap;
+      typedef std::map<typename base_class::display_mode,theme_type> DisplayModeThemeMap;
 
       ThemeTile(): base_class(), _thememap()
       {

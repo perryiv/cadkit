@@ -1,6 +1,9 @@
 #ifndef _menukit_osg_drawablefunctor_h_
 #define _menukit_osg_drawablefunctor_h_
 
+#include "osg/Vec4"
+#include "osg/Drawable"
+
 namespace MenuKit
 {
 

@@ -35,16 +35,16 @@ namespace MenuKit
     public:
       typedef Referenced base_class;
       MENUKIT_DECLARE_POINTER( TileFunctor );
-      enum DisplayMode { DISABLED, HIGHLIGHT, NORMAL };
+      enum display_mode { DISABLED, NORMAL, HIGHLIGHT };
 
-      TileFunctor(): _box(1.0,0.0), _mode(NORMAL) {}
+      TileFunctor(): _box(1.0,1.0), _mode(display_mode::NORMAL) {}
 
-      virtual float height(const Menu&)=0;
-      virtual float height(const Button&)=0;
+      virtual float height(const Menu&) const=0;
+      virtual float height(const Button&) const=0;
 
-      virtual float width(const Menu&)=0;
-      virtual float width(const Button&)=0;
-      virtual float width(const Item*)=0;
+      virtual float width(const Menu&) const=0;
+      virtual float width(const Button&) const=0;
+      virtual float width(const Item*) const=0;
       // TODO: virtual static float width(Item&)=0;
 
       virtual osg::Node* operator() (const Menu&)=0;
@@ -55,8 +55,8 @@ namespace MenuKit
       const Detail::Box& box() const { return _box; }
       Detail::Box& box() { return _box; }
 
-      void display_mode(DisplayMode d) { _mode = d; }
-      DisplayMode display_mode() const { return _mode; }
+      void mode(display_mode d) { _mode = d; }
+      display_mode mode() const { return _mode; }
 
     protected:
       virtual ~TileFunctor() {}
@@ -74,7 +74,7 @@ namespace MenuKit
       //}
 
       Detail::Box _box;
-      DisplayMode _mode;
+      display_mode _mode;
     };
 
   };

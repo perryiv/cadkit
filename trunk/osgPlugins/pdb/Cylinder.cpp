@@ -87,7 +87,22 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
     *i = scale.preMult(*i);
   }
   */
-  
+
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+
+  osg::Vec3 v1, v2, v3;
+
+  for(unsigned int i = 2; i < vertices->size(); ++ i)
+  {
+    osg::Vec3 normal;
+    v1 = vertices->at(i-2);
+    v2 = vertices->at(i-1);
+    v3 = vertices->at(i);
+    normal = (v3-v1)^(v2-v1);
+    normal.normalize();
+    normals->push_back(normal);
+  }
+   
   geometry->setVertexArray ( vertices.get() );
   geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
   // TODO, make this an option. Display lists crash with really big files.
@@ -99,6 +114,10 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
   osg::ref_ptr<osg::StateSet> state = geometry->getOrCreateStateSet();
   state->setAttribute ( lw.get() );
   state->setAttribute ( m );
+
+  //causing run-time error for some reason
+  geometry->setNormalArray(normals.get());
+  geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
 
   return geometry.release();
 }

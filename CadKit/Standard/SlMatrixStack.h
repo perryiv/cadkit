@@ -124,7 +124,7 @@ public:
   void multiply ( Matrix &answer ) const
   {
     // Loop through all of the matrices.
-    for ( StackType::const_iterator i = _matrices.begin(); i != _matrices.end(); ++i )
+    for ( typename StackType::const_iterator i = _matrices.begin(); i != _matrices.end(); ++i )
     {
       // There must be a "*=" operator for Matrix.
       answer *= *i;

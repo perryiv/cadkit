@@ -19,13 +19,6 @@
 #include "Standard/SlPrint.h"
 #include "Standard/SlThread.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# ifndef _WIN32 // unix
-#  define __USE_GNU  // For wcsdup().
-#  include <wchar.h> // For wcsdup().
-# endif
-#endif
-
 using namespace CadKit;
 
 SG_IMPLEMENT_NODE ( SgNode, SlRefBase );
@@ -159,7 +152,7 @@ void SgNode::setValue ( const SgNode &node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the name the node.
+//  Set the name of the node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="utilities"
-	ProjectGUID="{2CE18CA8-A2B0-431E-BC68-FFE19DC35474}"
+	Name="sample"
+	ProjectGUID="{7E18025E-419A-423C-AD0B-67A5EAC813B4}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -33,12 +33,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32d.lib Producerd.lib osgUtild.lib osgProducerd.lib osgGAd.lib osgd.lib OsgToolsd.lib"
-				OutputFile="$(OutDir)/utilities.exe"
+				AdditionalDependencies="OsgToolsd.lib OpenThreadsWin32d.lib Producerd.lib osgUtild.lib osgTextd.lib osgProducerd.lib osgGAd.lib osgd.lib"
+				OutputFile="$(OutDir)/sample.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/utilities.pdb"
+				ProgramDatabaseFile="$(OutDir)/sample.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -82,8 +82,8 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib Producer.lib osgUtil.lib osgProducer.lib osgGA.lib osg.lib OsgTools.lib"
-				OutputFile="$(OutDir)/utilities.exe"
+				AdditionalDependencies="OsgTools.lib OpenThreadsWin32.lib Producer.lib osgUtil.lib osgText.lib osgProducer.lib osgGA.lib osg.lib"
+				OutputFile="$(OutDir)/sample.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
@@ -120,15 +120,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
-			<File
-				RelativePath=".\Display.cpp">
-			</File>
-			<File
-				RelativePath=".\Display.h">
-			</File>
-			<File
-				RelativePath=".\FindGeodeVisitor.h">
-			</File>
 			<File
 				RelativePath=".\main.cpp">
 			</File>

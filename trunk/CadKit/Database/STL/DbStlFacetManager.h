@@ -18,19 +18,27 @@
 //???????????
 // I need this up here or else I get this VC++ error (and many others):
 // SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
-#include <math.h>
+//#include <math.h>
 //????????????
-//#include "DbStlApi.h"
+#include "DbStlApi.h"
 #include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <set>
+#include <stack>
 //#include "Standard/SlVec2.h"
 #include "Standard/SlVec3.h"
 //#include "Standard/SlVec4.h"
 #include "Standard/SlStack.h"
 #include "Standard/SlMatrix44.h"
 #include "Standard/SlMatrix44IO.h"
+#include "Standard/SlPartitionedVector.h"
+
+#include "Interfaces/IEntityNotify.h"
+#include "Interfaces/IInstanceQuery.h"
+#include "Interfaces/IQueryVertices.h"
+#include "Interfaces/IQueryNormals.h"
+
 
 
 namespace CadKit
@@ -89,6 +97,7 @@ public:
 
   // For convenience
   typedef std::list<facet> Facets;
+//  typedef SlStack<SlMatrix44f> DbStlStackM44f
   
 
   /////////////////////////////////////////////////////////////////////////////
@@ -102,15 +111,17 @@ public:
 	// operating on.
   /////////////////////////////////////////////////////////////////////////////
 
-	class TransformStack : public SlStack<SlMatrix44f>
+//	class TransformStack : public SlStack<SlMatrix44f>
+  class TransformStack : public std::stack<SlMatrix44f>
 	{
 	public:
 		
-    TransformStack( ) : SlStack<SlMatrix44f>::SlStack() { } // constructor
+//    TransformStack( ) : SlStack<SlMatrix44f>::SlStack() { } // constructor
+    TransformStack( ) : std::stack<SlMatrix44f>::stack() { } // constructor
 
     //  Override the default push function so that the new matrix is multiplied
 		//  by the matrix on top of the stack.
-    void init( ) { clear(); push( SlMatrix44f id( bool identity( true ) ) ); } // clear and push identity
+    void init( ) { SlMatrix44f id; id.identity(); clear(); push( id ); } // clear and push identity
     void push( );
 		void push ( const SlMatrix44f &val );
   };
@@ -189,7 +200,7 @@ protected:
   {
   public:
 
-    DbStlNormalSetter ( const VertexBinding &binding ) : _binding ( CadKit::getBinding ( binding ) ) { /* TODO */ }
+    DbStlNormalSetter ( const VertexBinding &binding )/* : _binding ( CadKit::getBinding ( binding ) )*/ { /* TODO */ }
 
     bool setData ( const unsigned int &index, const SlVec3f &vec ) { /* TODO */ }
     bool setSize ( const unsigned int &size ) { /* TODO */ }
@@ -207,7 +218,7 @@ protected:
   DbStlNormalSetter _nSetter;
   Vertices _vbuf;
   Normals _nbuf;
-  Binding _binding; //TODO
+//  Binding _binding; //TODO
 };
 
 

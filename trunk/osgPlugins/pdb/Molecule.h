@@ -14,6 +14,7 @@
 #include "Bond.h"
 #include "MaterialChooser.h"
 #include "SphereFactory.h"
+#include "CylinderFactory.h"
 
 #include "osg/Referenced"
 
@@ -31,7 +32,7 @@ public:
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
 
-  Molecule ( MaterialChooser *mc, SphereFactory *sf );
+  Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf );
   osg::Group* build() const { return _build(); }
   void addAtom(const Atom&);
   void addBond(Atom::ID, Atom::ID);
@@ -41,6 +42,7 @@ protected:
   osg::Group*             _build() const;
   osg::Node *             _makeAtom ( const Atom &atom ) const;
   osg::Node *             _makeBond ( const Bond &bond) const;
+  osg::Node *             _makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const;
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, unsigned int numSubDivisions ) const;
   osg::Node *             _makeCube   ( const osg::Vec3 &center, float size ) const;
@@ -58,6 +60,7 @@ private:
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
   mutable SphereFactory::Ptr _sphereFactory;
+  mutable CylinderFactory::Ptr _cylinderFactory;
 };
 
 

@@ -17,8 +17,6 @@
 #include "Atom.h"
 #include "Bond.h"
 
-
-
 class BondFinder
 {
 public:
@@ -37,39 +35,23 @@ public:
 
   BondFinder() {}
   
-  Bonds findBonds(const Atoms& atoms)
+  void findBonds(const Atoms& atoms, Bonds &bonds)
   {
     float maxRadius = 3.0f;  // TODO get max radius from periodic table
-    Bonds bonds;
     Atoms sorted = atoms;
     //sort atoms by distance^2 from the origin
     std::sort(sorted.begin(), sorted.end(), SortAtom());
 
     for(Atoms::iterator i = sorted.begin(); i != sorted.end(); ++i)
     {
-      Atom atom = *i;
+      const Atom &atom = *i;
       float radius = atom.getRadius();
       float delta = distanceFunc(radius, maxRadius);
       float distance = atom.length2();
-      //float minDistance = distance - delta;
+      //TODO fix MaxDistance so don't have to check atoms beyond it
       float maxDistance = distance + (delta + radius + maxRadius) * (delta + radius + maxRadius);
-      //start walking backwards
       Atoms::iterator walking = i;
-      /*while(walking->length2() > minDistance)
-      {
-        if(walking != i)
-        {
-          float check = .6 * walking->getRadius() * radius * .6 * walking->getRadius() * radius;
-          float d = (i->getVec3() - walking->getVec3()).length2();
-          if(d <= check)
-            bonds.push_back ( Bond(*i, *walking, bonds.size() + 1));         
-        }
-        walking--;
-        if(walking < sorted.begin())
-          break;
-      }*/
       //start walking forwards
-      //walking = i;
       while(1)//walking->length2() < maxDistance)
       {
         if(walking != i)
@@ -80,19 +62,17 @@ public:
           if(d <= check)
             bonds.push_back( Bond(atom, *walking, bonds.size() + 1));
         }
-        walking++;
+        ++walking;
         if(walking >= sorted.end())
           break;
       }
     }
-    
-    return bonds;
   }
 
   Atoms mapToVector(const Map& m )
   {
     Atoms atoms;
-    atoms.reserve(m.size() + 1);
+    atoms.reserve(m.size());
     for(Map::const_iterator i = m.begin(); i != m.end(); ++i)
     { 
       atoms.push_back(i->second);

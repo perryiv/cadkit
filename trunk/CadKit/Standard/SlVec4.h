@@ -123,14 +123,25 @@ public:
   SlVec4 &                operator -= ( const SlVec4 &vec );
   SlVec4                  operator - () const;
 
-  // Friend operators. See http://gcc.gnu.org/faq.html#friend
-  template<class P> friend SlVec4<P> operator * ( const SlVec4<P> &vec, const P &value );
-  friend SlVec4           operator * ( const T &value, const SlVec4 &vec );
-  friend SlVec4           operator / ( const SlVec4 &vec, const T &value );
-  friend SlVec4           operator + ( const SlVec4 &vecA, const SlVec4 &vecB );
-  friend SlVec4           operator - ( const SlVec4 &vecA, const SlVec4 &vecB );
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend SlVec4<P> operator *  ( const SlVec4<P> &vec,  const P &value );
+  template<class P> friend SlVec4<P> operator *  ( const P &value,        const SlVec4<P> &vec );
+  template<class P> friend SlVec4<P> operator /  ( const SlVec4<P> &vec,  const P &value );
+  template<class P> friend SlVec4<P> operator +  ( const SlVec4<P> &vecA, const SlVec4<P> &vecB );
+  template<class P> friend SlVec4<P> operator -  ( const SlVec4<P> &vecA, const SlVec4<P> &vecB );
+  template<class P> friend bool      operator == ( const SlVec4<P> &vecA, const SlVec4<P> &vecB );
+  template<class P> friend bool      operator != ( const SlVec4<P> &vecA, const SlVec4<P> &vecB );
+#else
+  friend SlVec4           operator *  ( const SlVec4 &vec,  const T &value );
+  friend SlVec4           operator *  ( const T &value,     const SlVec4 &vec );
+  friend SlVec4           operator /  ( const SlVec4 &vec,  const T &value );
+  friend SlVec4           operator +  ( const SlVec4 &vecA, const SlVec4 &vecB );
+  friend SlVec4           operator -  ( const SlVec4 &vecA, const SlVec4 &vecB );
   friend bool             operator == ( const SlVec4 &vecA, const SlVec4 &vecB );
   friend bool             operator != ( const SlVec4 &vecA, const SlVec4 &vecB );
+#endif
 
   // I/O.
   #ifdef CADKIT_DEFINE_SL_VECTOR_4_OSTREAM_OPERATOR

@@ -86,8 +86,16 @@ public:
   const bool &                isValid() const { return _valid; }
 
   SlBoundingBox &             operator += ( const SlBoundingBox &bbox );
-  friend SlBoundingBox        operator *  ( const Matrix4 &M, const SlBoundingBox &bbox );
-  friend SlBoundingBox        operator +  ( const SlBoundingBox &bbox1, const SlBoundingBox &bbox2 );
+
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend SlBoundingBox<P> operator * ( const SlMatrix4<P> &M, const SlBoundingBox<P> &bbox );
+  template<class P> friend SlBoundingBox<P> operator + ( const SlBoundingBox<P> &bbox1, const SlBoundingBox<P> &bbox2 );
+#else
+  friend SlBoundingBox        operator * ( const Matrix4 &M, const SlBoundingBox &bbox );
+  friend SlBoundingBox        operator + ( const SlBoundingBox &bbox1, const SlBoundingBox &bbox2 );
+#endif
 
   void                        setValue ( const Vec3 &min, const Vec3 &max );
   void                        setValue ( const SlBoundingBox &bbox );

@@ -118,6 +118,10 @@ public:
   #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
   void                      split ( const char &delimiter, std::list<SlAString> &components ) const;
   #endif
+  
+  // Convert all characters to upper/lower case.
+  void                      toLower();
+  void                      toUpper();
 };
 
 
@@ -378,6 +382,34 @@ SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, int,          "%d", SL_SNP
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, unsigned int, "%u", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, float,        "%f", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlAString, char, double,       "%f", SL_SNPRINTF, SL_STRING_FUNCTION_BUFFER_SIZE );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the string to upper case.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlAString::toUpper()
+{
+  size_type length = this->length();
+  for ( size_type i = 0; i < length; ++i )
+    (*this)[i] = (char) ::toupper ( (*this)[i] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the string to lower case.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlAString::toLower()
+{
+  size_type length = this->length();
+  for ( size_type i = 0; i < length; ++i )
+    (*this)[i] = (char) ::tolower ( (*this)[i] );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

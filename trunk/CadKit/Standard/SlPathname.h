@@ -47,7 +47,9 @@
 #include "SlAssert.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
+# define CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
+# include "SlAString.h"
+# include "SlWString.h"
 #endif
 
 #define SL_PATHNAME_SAFE_BUFFER_SIZE 1024
@@ -92,70 +94,6 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the strings are equal.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline bool _isSameString ( const std::string &a, const std::string &b )
-{
-  return ( a == b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the strings are equal.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline bool _isSameString ( const std::wstring &a, const std::wstring &b )
-{
-  return ( a == b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert the string to upper case.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _convertStringToUpperCase ( std::string &theString )
-{
-  // Handle trivial case.
-  if ( theString.empty() )
-    return;
-
-  // Convert to upper case.
-  char *upper = ::_strlwr ( ::strdup ( theString.c_str() ) );
-
-  // Assign back to the given string.
-  theString = upper;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert the string to upper case.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _convertStringToUpperCase ( std::wstring &theString )
-{
-  // Handle trivial case.
-  if ( theString.empty() )
-    return;
-
-  // Convert to upper case.
-  wchar_t *upper = ::_wcsupr ( ::_wcsdup ( theString.c_str() ) );
-
-  // Assign back to the given string.
-  theString = upper;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Function to split a full path name into its components.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,6 +104,8 @@ inline void _splitFullPathName ( const std::string &fullpath,
                                        std::string &filename, 
                                        std::string &extension )
 {
+#ifdef _WIN32
+
   // Temporary storage.
   char tempDrive    [SL_PATHNAME_SAFE_BUFFER_SIZE];
   char tempDirectory[SL_PATHNAME_SAFE_BUFFER_SIZE];
@@ -183,6 +123,25 @@ inline void _splitFullPathName ( const std::string &fullpath,
   directory = tempDirectory;
   filename  = tempFilename;
   extension = ext;
+
+#else
+
+  // Split the path into its components.
+  SlAString tempPath ( fullpath );
+  std::list<SlAString> components;
+  tempPath.split ( '/', components );
+
+  // Split the last component again to get the extension.
+  SlAString lastComponent;
+  std::list<SlAString> filenameAndExtension;
+  lastComponent.split ( '.', filenameAndExtension );
+
+  // Assign the components.
+  drive = "";
+  //  directory = 
+
+
+#endif
 }
 
 
@@ -252,30 +211,6 @@ inline void _getFullPathName ( const std::wstring &pathname, std::wstring &fullp
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Assign the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _stringAssignment ( const std::string &copyMe, std::string &changeMe )
-{
-  changeMe = copyMe;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assign the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void _stringAssignment ( const std::wstring &copyMe, std::wstring &changeMe )
-{
-  changeMe = copyMe;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -331,7 +266,7 @@ template<class S> inline void SlPathname<S>::setPathname ( const SlPathname<S> &
 
 template<class S> inline void SlPathname<S>::setPathname ( const S &pathname )
 {
-  CadKit::_stringAssignment ( pathname, _pathname );
+  _pathname = pathname;
 }
 
 
@@ -343,7 +278,7 @@ template<class S> inline void SlPathname<S>::setPathname ( const S &pathname )
 
 template<class S> inline void SlPathname<S>::getPathname ( S &pathname ) const
 {
-  CadKit::_stringAssignment ( _pathname, pathname );
+  pathname = _pathname;
 }
 
 
@@ -449,7 +384,7 @@ template<class S> inline bool SlPathname<S>::isSamePath ( const SlPathname<S> &p
 #endif
 
   // Compare the strings.
-  return CadKit::_isSameString ( fullpath1, fullpath2 );
+  return ( fullpath1 == fullpath2 );
 }
 
 

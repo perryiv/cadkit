@@ -99,7 +99,11 @@ TODO
 #ifdef _WIN32
 # define SL_VSNWPRINTF ::_vsnwprintf
 #elif _LINUX
-# define SL_VSNWPRINTF ::vsnwprintf
+# ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+#  define __USE_ISOC99
+#  include <wchar.h>
+#  define SL_VSNWPRINTF ::vswprintf
+# endif
 #else // ?
 TODO
 #endif // Platforms

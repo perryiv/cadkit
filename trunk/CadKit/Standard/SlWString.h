@@ -51,6 +51,9 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdio.h>
 # include <stdarg.h>
+# ifdef _LINUX
+#  include <wctype.h>
+# endif
 #endif
 
 
@@ -118,6 +121,10 @@ public:
   #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
   void                      split ( const wchar_t &delimiter, std::list<SlWString> &components ) const;
   #endif
+
+  // Convert all characters to upper/lower case.
+  void                      toLower();
+  void                      toUpper();
 };
 
 
@@ -387,10 +394,40 @@ inline SlWString &SlWString::append ( const_iterator first, const_iterator last 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32 // TODO, other platforms. Redo in a platform independent way.
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, int,           L"%d", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, unsigned int,  L"%u", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, float,         L"%f", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
 SL_TEMPLATE_STRING_APPEND_FUNCTION ( SlWString, wchar_t, double,        L"%f", ::_snwprintf, SL_STRING_FUNCTION_BUFFER_SIZE );
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the string to upper case.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlWString::toUpper()
+{
+  size_type length = this->length();
+  for ( size_type i = 0; i < length; ++i )
+    (*this)[i] = (wchar_t) ::towupper ( (*this)[i] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the string to upper case.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlWString::toLower()
+{
+  size_type length = this->length();
+  for ( size_type i = 0; i < length; ++i )
+    (*this)[i] = (wchar_t) ::towlower ( (*this)[i] );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -20,6 +20,8 @@
 #include "Export.h"
 
 #include <string>
+#include <iostream>
+#include <iomanip>
 
 class PeriodicTable;
 
@@ -41,14 +43,17 @@ public:
   const std::string& getType() const { return _type; }
   const ID getId() const { return _id; }
   const std::string& getName() const { return _name; }
+  const char getAlternateLocation() const { return _altLocation; }
   const std::string& getResidueName() const { return _residueName; } 
   const ID getChainId() const { return _chainId; }
   const ID getResidueId() const { return _residueId; }
+  const char getInsertion() const { return _insertion; }
   const osg::Vec3& getCenter() const { return _point; }
   const float getOccupancy() const { return _occupancy; }
   const float getTempFactor() const { return _tempFactor; }
   const std::string& getSegmentId() const { return _segmentId; }
   const std::string& getSymbol() const { return _element->getElementSymbol(); }
+  const std::string& getCharge() const { return _charge; }
 
   //set/get fixed atom
   bool fixed();
@@ -64,7 +69,42 @@ public:
   //Get/Set the matrix transform
   osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
   void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
-  
+
+  //friend std::ostream& operator<<( std::ostream& os, const Atom& );
+ //friend std::ostream& operator<<( std::ostream& os, const Atom::Ptr );
+  friend std::ostream& operator<<( std::ostream& os, const Atom& atom )
+  {
+    osg::Vec3 center ( atom.getMatrix()->getMatrix().getTrans() );
+    
+    os.setf( std::ios::left );
+    os << std::setw(6) << atom.getType();
+    os.unsetf ( std::ios::left );
+    os << std::setw(5) << atom.getId();
+    os.setf ( std::ios::left );
+    os << " "
+      << std::setw(4) << atom.getName()
+      << atom.getAlternateLocation()
+      << std::setw(3) << atom.getResidueName()
+      << " "
+      << atom.getChainId()
+      << std::setw(4) << atom.getResidueId()
+      << atom.getInsertion()
+      << "   "
+      << std::setw(8) << center[0]
+      << std::setw(8) << center[1]
+      << std::setw(8) << center[2]
+      << std::setw(6) << atom.getOccupancy()
+      << std::setw(6) << atom.getTempFactor()
+      << "      "
+      << std::setw(4) << atom.getSegmentId();
+    os.unsetf( std::ios::left );
+    os << std::setw(2) << atom.getSymbol();
+    os.setf( std::ios::left );
+    os << std::setw(2) << atom.getCharge();
+
+    return os;
+  }
+
 protected:
   Atom();
   virtual ~Atom();
@@ -75,8 +115,9 @@ private:
   Element::Ptr _element;
   ID _id, _residueId, _chainId;
   osg::Vec3 _point;
-  std::string _type, _name, _residueName, _segmentId;
+  std::string _type, _name, _residueName, _segmentId, _charge;
   float _occupancy, _tempFactor;
+  char _insertion, _altLocation;
   mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
 };
 

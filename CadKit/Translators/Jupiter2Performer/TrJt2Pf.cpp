@@ -725,8 +725,9 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   }
 
   // Declare the vectors here and keep appending to them.
-  typedef std::vector<float> FloatVector;
-  FloatVector vertices, normals, colors, textureCoords;
+  std::vector<SlVec3f> vertices, normals;
+  std::vector<SlVec4f> colors;
+  std::vector<SlVec2f> textureCoords;
 
   // The vectors of the lengths of each set. Initialize to zero.
   typedef std::vector<unsigned int> IntVector;
@@ -736,16 +737,17 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   IntVector numTextureCoords ( numSets, 0 );
 
   // Used in the loop.
-  unsigned int currentSizeVertices, currentSizeNormals, currentSizeColors, currentSizeTextureCoords, valid, i;
+  unsigned int oldSizeVertices, oldSizeNormals, oldSizeColors, oldSizeTextureCoords;
+  unsigned int valid, i, numVectors, currentSize;
 
   // Loop through the sets.
   for ( i = 0; i < numSets; ++i )
   {
     // Save the current sizes.
-    currentSizeVertices = vertices.size();
-    currentSizeNormals = normals.size();
-    currentSizeColors = colors.size();
-    currentSizeTextureCoords = textureCoords.size();
+    oldSizeVertices = vertices.size();
+    oldSizeNormals = normals.size();
+    oldSizeColors = colors.size();
+    oldSizeTextureCoords = textureCoords.size();
 
     // Get the shape.
     if ( false == _jtTraverser->getShapeSet ( entity, whichLOD, whichShape, i, vertices, normals, colors, textureCoords, valid ) )
@@ -755,29 +757,33 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
     // Note: We by 3 divide because 3 elements in the vector is one vertex.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
     {
-      SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
-      numVertices[i] =  ( vertices.size() - currentSizeVertices ) / 3;
+      currentSize = vertices.size();
+      numVectors = currentSize - oldSizeVertices;
+      numVertices[i] =  numVectors;
     }
 
     // Set the length of the normals.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
     {
-      SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
-      numNormals[i] = ( normals.size() - currentSizeNormals ) / 3;
+      currentSize = normals.size();
+      numVectors = currentSize - oldSizeNormals;
+      numNormals[i] = numVectors;
     }
 
     // Set the length of the colors.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_COLORS ) )
     {
-      SL_ASSERT ( 0 == ( vertices.size() % 4 ) );
-      numColors[i] = ( colors.size() - currentSizeColors ) / 4;
+      currentSize = colors.size();
+      numVectors = currentSize - oldSizeColors;
+      numColors[i] = numVectors;
     }
 
     // Set the length of the texture coordinates.
     if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
     {
-      SL_ASSERT ( 0 == ( vertices.size() % 2 ) );
-      numTextureCoords[i] = ( textureCoords.size() - currentSizeTextureCoords ) / 2;
+      currentSize = textureCoords.size();
+      numVectors = currentSize - oldSizeTextureCoords;
+      numTextureCoords[i] = numVectors;
     }
   }
 
@@ -880,53 +886,6 @@ bool TrJt2Pf::_endCurrentGroup()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<float> &vec ) const
-{
-  SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
-  SL_ASSERT ( 0 == ( vec.size() % 3 ) );
-
-  // Handle trivial case.
-  if ( vec.empty() )
-    return NULL;
-
-  // Allocate an array.
-  unsigned int size = vec.size() / 3;
-  pfVec3 *array = new pfVec3[size];
-
-  // Check allocation.
-  if ( NULL == array )
-  {
-    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
-    return NULL;
-  }
-
-  // Fill up the array.
-  unsigned int count ( 0 ), i ( 0 );
-  for ( i = 0; i < size; ++i )
-  {
-    // Set this element of the array.
-    array[count].set ( vec[i], vec[i+1], vec[i+2] );
-
-    // Increment the counters.
-    i += 2;
-    ++count;
-  }
-
-  // Should be true.
-  SL_ASSERT ( i == count * 3 );
-  SL_ASSERT ( i == size );
-
-  // Return the new array.
-  return array;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create an array from the vector.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 int *TrJt2Pf::_makeIntArray ( const std::vector<unsigned int> &vec ) const
 {
   SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
@@ -949,6 +908,40 @@ int *TrJt2Pf::_makeIntArray ( const std::vector<unsigned int> &vec ) const
   // Fill up the array.
   for ( unsigned int i = 0; i < size; ++i )
     array[i] = vec[i];
+
+  // Return the new array.
+  return array;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an array from the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<SlVec3f> &vec ) const
+{
+  SL_PRINT3 ( "In TrJt2Pf::_makeVec3Array(), this = %X, vec.size() = %d\n", this, vec.size() );
+
+  // Handle trivial case.
+  if ( vec.empty() )
+    return NULL;
+
+  // Allocate an array.
+  unsigned int size = vec.size();
+  pfVec3 *array = new pfVec3[size];
+
+  // Check allocation.
+  if ( NULL == array )
+  {
+    CadKit::format ( _error, "Failed to allocate new array of size %d.\n", size );
+    return NULL;
+  }
+
+  // Fill up the array.
+  for ( unsigned int i = 0; i < size; ++i )
+    array[i].set ( vec[i][0], vec[i][1], vec[i][2] );
 
   // Return the new array.
   return array;

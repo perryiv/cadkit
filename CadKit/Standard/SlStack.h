@@ -48,6 +48,14 @@
 # include <stack>
 #endif
 
+#ifdef _WIN32
+# define _sequence c
+#elif _LINUX
+# define _sequence _M_c
+#else
+TODO
+#endif
+
 
 namespace CadKit
 {
@@ -59,35 +67,35 @@ public:
   ~SlStack();
 
   //  Return the bottom of the stack.
-  T &                     bottom()        { SL_ASSERT ( c.size() > 0 ); return ( c.front() ); }
-  const T &               bottom() const  { SL_ASSERT ( c.size() > 0 ); return ( c.front() ); }
+  T &                     bottom()        { SL_ASSERT ( _sequence.size() > 0 ); return ( _sequence.front() ); }
+  const T &               bottom() const  { SL_ASSERT ( _sequence.size() > 0 ); return ( _sequence.front() ); }
 
   //  Clear the stack.
-  void                    clear() { c.clear(); }
+  void                    clear() { _sequence.clear(); }
 
   //  Access to the internal deque.
-  const std::deque<T> &   deque() const { return c; }
-  std::deque<T> &         deque()       { return c; }
+  const std::deque<T> &   deque() const { return _sequence; }
+  std::deque<T> &         deque()       { return _sequence; }
 
   //  Is "val" anywhere on the stack?
   bool                    isOnStack ( const T &val ) const;
 
   //  Return the i'th element on the stack. 0 is the bottom of the stack.
-  T &                     operator [] ( SlInt32 i )       { SL_ASSERT ( i >= 0 && i < c.size() ); return c[i]; }
-  const T &               operator [] ( SlInt32 i ) const { SL_ASSERT ( i >= 0 && i < c.size() ); return c[i]; }
+  T &                     operator [] ( SlInt32 i )       { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
+  const T &               operator [] ( SlInt32 i ) const { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
 
   //  Pop the top element off of the stack. This does the same thing as 
   //  std::stack::pop() with the exception of the assert.
-  void                    pop() { SL_ASSERT ( c.size() > 0 ); c.pop_back(); }
+  void                    pop() { SL_ASSERT ( _sequence.size() > 0 ); _sequence.pop_back(); }
 
   //  Push the top element onto the stack one more time. There has to be at 
   //  least one element already on the stack.
-  void                    push() { SL_ASSERT ( c.size() > 0 ); c.push_back ( c.back() ); }
+  void                    push() { SL_ASSERT ( _sequence.size() > 0 ); _sequence.push_back ( _sequence.back() ); }
 
   //  Push the given element onto the stack. This does the same 
   //  thing as std::push ( const T &val ) but the above CadKit::SlStack::push() 
-  //  hides the base class's function. This is here to please the compiler.
-  void                    push ( const T &val ) { c.push_back ( val ); }
+  //  hides the base class's function. This is here to please VC++.
+  void                    push ( const T &val );
 
   //  Remove the first occurance of "val" from the stack, no matter where it 
   //  is. Return true if "val" was found and removed.
@@ -99,8 +107,8 @@ public:
 
   //  Return the top of the stack. These do the same thing as std::stack::top() 
   //  with the exception of the assert.
-  T &                     top()       { SL_ASSERT ( c.size() > 0 ); return ( c.back() ); }
-  const T &               top() const { SL_ASSERT ( c.size() > 0 ); return ( c.back() ); }
+  T &                     top();
+  const T &               top() const;
 };
 
 
@@ -131,6 +139,24 @@ template<class T> inline SlStack<T>::~SlStack()
 
 //////////////////////////////////////////////////////////////////////////
 //
+//  Push the given element onto the stack. This does the same 
+//  thing as std::push ( const T &val ) but the above CadKit::SlStack::push() 
+//  hides the base class's function. This is here to please VC++.
+//
+//////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlStack<T>::push ( const T &val )
+{
+#ifdef _WIN32
+  _sequence.push_back ( val );
+#else
+  std::stack<T>::push ( val ); // Can't you do this VC++?
+#endif
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
 //  Remove "val" from the stack, no matter where it is. Return true if 
 //  "val" was found and removed.
 //
@@ -138,11 +164,11 @@ template<class T> inline SlStack<T>::~SlStack()
 
 template<class T> inline bool SlStack<T>::remove ( const T &val )
 {
-  for ( std::deque<T>::iterator i = c.begin(); i < c.end(); ++i )
+  for ( std::deque<T>::iterator i = _sequence.begin(); i < _sequence.end(); ++i )
   {
     if ( *i == val )
     {
-      c.erase ( i );
+      _sequence.erase ( i );
       return true;
     }
   }
@@ -161,15 +187,15 @@ template<class T> inline bool SlStack<T>::remove ( const T &val )
 template<class T> inline SlInt32 SlStack<T>::removeAll ( const T &val )
 {
   SlInt32 count = 0;
-  std::deque<T>::iterator i = c.begin();
+  std::deque<T>::iterator i = _sequence.begin();
 
   // See note 3813d8e0-8836-11d3-9843-0040054c86c7.
 
-  while ( i != c.end() )
+  while ( i != _sequence.end() )
   {
     if ( *i == val )
     {
-      i = c.erase ( i );
+      i = _sequence.erase ( i );
       ++count;
     }
 
@@ -188,13 +214,42 @@ template<class T> inline SlInt32 SlStack<T>::removeAll ( const T &val )
 
 template<class T> inline bool SlStack<T>::isOnStack ( const T &val ) const
 {
-  for ( std::deque<T>::const_iterator i = c.begin(); i < c.end(); ++i )
+  for ( std::deque<T>::const_iterator i = _sequence.begin(); i < _sequence.end(); ++i )
   {
     if ( *i == val ) return true;
   }
 
   return false;
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Return the top of the stack. These do the same thing as std::stack::top() 
+//  with the exception of the assert.
+//
+//////////////////////////////////////////////////////////////////////////
+
+template<class T> inline T &SlStack<T>::top()
+{
+  SL_ASSERT ( _sequence.size() > 0 ); 
+  return ( _sequence.back() );
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Return the top of the stack. These do the same thing as std::stack::top() 
+//  with the exception of the assert.
+//
+//////////////////////////////////////////////////////////////////////////
+
+template<class T> inline const T &SlStack<T>::top() const
+{
+  SL_ASSERT ( _sequence.size() > 0 );
+  return ( _sequence.back() );
+}
+
 
 }; // namespace CadKit
 

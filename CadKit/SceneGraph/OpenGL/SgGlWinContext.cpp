@@ -37,7 +37,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  SgGlWinContext: The renderer class.
+//  SgGlWinContext: The Win32 context class.
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ SL_IMPLEMENT_DYNAMIC_CLASS(SgGlWinContext,SgGlContext);
 
 SgGlWinContext::SgGlWinContext() : SgGlContext(), SG_GL_INITIALIZE_DATA_MEMBERS
 {
-  SL_PRINT ( "SgGlWinContext::SgGlWinContext(), this = %X\n", this );
+  SL_PRINT2 ( "SgGlWinContext::SgGlWinContext(), this = %X\n", this );
 }
 
 
@@ -86,7 +86,7 @@ SgGlWinContext::SgGlWinContext() : SgGlContext(), SG_GL_INITIALIZE_DATA_MEMBERS
 
 SgGlWinContext::~SgGlWinContext()
 {
-  SL_PRINT ( "SgGlWinContext::~SgGlWinContext(), this = %X\n", this );
+  SL_PRINT2 ( "SgGlWinContext::~SgGlWinContext(), this = %X\n", this );
 
   // Delete the context if we have one.
   if ( _window ) SL_VERIFY ( this->_deleteContext() );

@@ -767,13 +767,15 @@ bool SgGlRenderer::visit ( SgCube &cube )
   // Draw the bounding box in global space.
   const SlVec3f &c = cube.center;
   float hs = halfSize;
-  SlBoundingBoxf lbbox ( SlVec3f ( c[0] - hs, c[1] - hs, c[2] - hs ), SlVec3f ( c[0] + hs, c[1] + hs, c[2] + hs ) );
+  SlVec3f min ( c[0] - hs, c[1] - hs, c[2] - hs );
+  SlVec3f max ( c[0] + hs, c[1] + hs, c[2] + hs );
+  SlBoundingBoxf lbbox ( min, max );
 
   // Put it in global space.
   const SlMatrix4f &M = _state->getModelviewMatrix();
   SlBoundingBoxf gbbox = M * lbbox;
-  const SlVec3f &min = gbbox.getMin();
-  const SlVec3f &max = gbbox.getMax();
+  min = gbbox.getMin();
+  max = gbbox.getMax();
   //SL_TRACE ( "      gbbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", min[0], min[1], min[2], max[0], max[1], max[2] );
 
   _state->pushModelviewMatrix();

@@ -45,8 +45,10 @@ protected:
   osg::Group *            _build() const;
   void                    _init();
   Result                  _read ( const std::string &, const Options * );
-  void                    _parse ( std::ifstream &in );
+  void                    _parse ( std::ifstream &in, std::ifstream &psf );
+  void                    _parsePsf ( std::ifstream &in );
   Molecule*               _getCurrentMolecule();
+  std::string             _getPsfPath( const std::string &file);
 
 private:
   

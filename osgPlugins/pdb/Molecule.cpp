@@ -21,6 +21,7 @@
 
 #include <limits>
 #include <vector>
+#include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,6 +36,7 @@ Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf ) :
   _maxDistanceFactor ( 10 ),
   _lastRangeMax ( std::numeric_limits<float>::max() ),
   _numLodChildren ( 5 ),
+  _stepFactor( 10 ),
   _lodDistancePower ( 2 ),
   _materialChooser ( mc ),
   _sphereFactory ( sf )
@@ -91,8 +93,10 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 osg::Group *Molecule::_build() const
 {
   BondFinder bf;
-  Bonds b = bf.findBonds(bf.mapToVector(_atoms));
-
+  //if no bonds exist use nearest neighbor to guess where they are
+  if(_bonds.empty())
+    _bonds = bf.findBonds(bf.mapToVector(_atoms));
+  
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
@@ -110,13 +114,8 @@ osg::Group *Molecule::_build() const
     root->addChild ( this->_makeBond ( *i ) );
   }
 
-  // Loop through the bonds.
-  for ( Bonds::const_iterator i = b.begin(); i != b.end(); ++i )
-  {
-    // Add the node for this bond
-    root->addChild ( this->_makeBond( *i ) );
-  }
-
+  std::cout << "Number of Atoms: " << _atoms.size() << std::endl;
+  std::cout << "Number of Bonds: " << _bonds.size() << std::endl;
 
   // Return the root.
   return root.release();
@@ -136,14 +135,12 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
 
   Cylinder c(bond.getPoint1(), bond.getPoint2());
 
-  float detail[] = { 10.0, 20.0, 45.0, 60.0, 90.0 };
-
   //add several cylinders
   for(unsigned int i = 0; i < _numLodChildren; ++i)
   {
-    //float detail = 10.0 + (10 * i);
+    unsigned int steps = 4 + (_numLodChildren - i) * _stepFactor;
     osg::ref_ptr< osg::Geode > geode (new osg::Geode);
-    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), detail[i]) ));
+    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), steps) ));
     lod->addChild(geode.release());
   }
 

@@ -45,10 +45,8 @@ public:
     //sort atoms by distance^2 from the origin
     std::sort(sorted.begin(), sorted.end(), SortAtom());
 
-    //for(Map::iterator i = sorted.begin(); i != sorted.end(); ++i)
-    while(sorted.size() > 1)
+    for(Atoms::iterator i = sorted.begin(); i != sorted.end(); ++i)
     {
-      Atoms::iterator i = sorted.begin();
       Atom atom = *i;
       float radius = atom.getRadius();
       float delta = distanceFunc(radius, maxRadius);
@@ -72,13 +70,13 @@ public:
       }*/
       //start walking forwards
       //walking = i;
-      while(walking->length2() < maxDistance)
+      while(1)//walking->length2() < maxDistance)
       {
         if(walking != i)
         {
           float check = distanceFunc(walking->getRadius(), radius) + radius + walking->getRadius();
-          //check *= check;
-          float d = (walking->getVec3() - atom.getVec3()).length();
+          check *= check;
+          float d = (walking->getVec3() - atom.getVec3()).length2();
           if(d <= check)
             bonds.push_back( Bond(atom, *walking, bonds.size() + 1));
         }
@@ -86,7 +84,6 @@ public:
         if(walking >= sorted.end())
           break;
       }
-      sorted.erase(i);
     }
     
     return bonds;
@@ -106,7 +103,7 @@ public:
 private:
   float distanceFunc(float r1, float r2)
   {
-    return .6 * r1 * r2;
+    return 0.6 * r1 * r2;
   }
 };
 

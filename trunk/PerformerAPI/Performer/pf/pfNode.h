@@ -3,15 +3,22 @@
 
 #include "Performer/pr/pfObject.h"
 
+#include <string>
+
+class pfSphere;
+
 class pfNode : public pfObject
 {
 public:
-  pfNode() : pfObject(){}
+  pfNode *clone ( int mode ) { return this->_clone(); }
+  int getBound ( pfSphere *bsph ) { return 1; }
   const char *getName() const { return _name.c_str(); }
   void setName ( const char *name ) { _name = name; }
 protected:
   std::string _name;
+  pfNode() : pfObject(){}
   virtual ~pfNode(){}
+  virtual pfNode *_clone() = 0;
 };
 
 #endif

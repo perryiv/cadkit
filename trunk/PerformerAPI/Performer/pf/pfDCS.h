@@ -13,6 +13,7 @@ public:
   void setMat ( const pfMatrix &matrix ){}
 protected:
   virtual ~pfDCS(){}
+  virtual pfNode *_clone() { return new pfDCS; }
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "Performer/pf/pfNode.h"
 #include "Standard/SlRefPtr.h"
 
+#include <vector>
 
 class pfGroup : public pfNode
 {
@@ -15,6 +16,7 @@ public:
 protected:
   std::vector<CadKit::SlRefPtr<pfNode> > _kids;
   virtual ~pfGroup(){}
+  virtual pfNode *_clone() { return new pfGroup; }
 };
 
 #endif

@@ -180,7 +180,13 @@
 				Name="Algorithms"
 				Filter="">
 				<File
+					RelativePath=".\Algorithms\CapPolygons.h">
+				</File>
+				<File
 					RelativePath="Algorithms\Extract.h">
+				</File>
+				<File
+					RelativePath=".\Algorithms\FindAllConnected.h">
 				</File>
 				<File
 					RelativePath=".\Algorithms\Sphere.h">

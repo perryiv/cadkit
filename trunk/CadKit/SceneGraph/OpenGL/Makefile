@@ -13,13 +13,14 @@ INCLUDE = \
 # The libraries to link to.
 LIBS = \
 	-L$(CADKIT_ROOT_DIR)/bin \
+	-lCkSg_s \
 	-lCkSl_s
 
 # Any flags for the compiler.
 CPPFLAGS = -D_LINUX -D_DEBUG -w
 
 # The name of the thing we are making.
-TARGET = CkSg
+TARGET = CkSgGl
 
 # By default we compile a library.
 default: lib

@@ -13,10 +13,15 @@ LIB_OS = lib32
 endif
 
 libs = \
+       -L$(OPENTHREADS_LIB_DIR) -lOpenThreads \
+       -L$(OSG_LIB_DIR) -losg -losgText -losgProducer \
        -L$(MENUKIT_LIB_DIR) -lMenuKit
 
 includes = \
-			  -I$(BOOST_ROOT_DIR) \
+           -I$(OPENTHREADS_INC_DIR) \
+           -I$(PRODUCER_INC_DIR) \
+           -I$(OSG_INC_DIR) \
+           -I$(BOOST_ROOT_DIR) \
            -I$(MENUKIT_INC_DIR)
 
 flags = -g

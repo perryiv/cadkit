@@ -249,8 +249,8 @@ struct LatLongSphere
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Points, class Normals, class Strips >
-  void operator () ( Points &points, Normals &normals, Strips &strips )
+  template < class Points, class Normals2, class Strips >
+  void operator () ( Points &points, Normals &normals2, Strips &strips )
   {
     // Handle bad state.
     if ( _numLatitude < 2 )

@@ -818,8 +818,7 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   }
 
   // Declare the vectors here and keep appending to them.
-  std::vector<SlVec3f> vertices, normals;
-  std::vector<SlVec4f> colors;
+  std::vector<SlVec3f> vertices, normals, colors;
   std::vector<SlVec2f> textureCoords;
 
   // The vectors of the lengths of each set. Initialize to zero.
@@ -1104,11 +1103,12 @@ pfVec3 *TrJt2Pf::_makeVec3Array ( const std::vector<SlVec3f> &vec ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create an array from the vector.
+//  Create an array of pfVec4 from the vector of SlVec3. Note the difference 
+//  from the other "make array" functions.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-pfVec4 *TrJt2Pf::_makeVec4Array ( const std::vector<SlVec4f> &vec ) const
+pfVec4 *TrJt2Pf::_makeVec4Array ( const std::vector<SlVec3f> &vec ) const
 {
   SL_PRINT3 ( "In TrJt2Pf::_makeVec4Array(), this = %X, vec.size() = %d\n", this, vec.size() );
 
@@ -1129,7 +1129,7 @@ pfVec4 *TrJt2Pf::_makeVec4Array ( const std::vector<SlVec4f> &vec ) const
 
   // Fill up the array.
   for ( unsigned int i = 0; i < size; ++i )
-    array[i].set ( vec[i][0], vec[i][1], vec[i][2], vec[i][3] );
+    array[i].set ( vec[i][0], vec[i][1], vec[i][2], 1.0f );
 
   // Return the new array.
   return array;

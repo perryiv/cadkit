@@ -826,7 +826,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
 
   // Call the other one.
   std::vector<SlVec3f> v, n;
-  std::vector<SlVec4f> c;
+  std::vector<SlVec3f> c;
   std::vector<SlVec2f> t;
   if ( false == this->getShapeSet ( entity, whichLOD, whichShape, whichSet, v, n, c, t, valid ) )
     return false;
@@ -834,7 +834,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   // Append to the given vectors. We can ignore the "valid" flag for this.
   CadKit::append3D ( v, vertices );
   CadKit::append3D ( n, normals );
-  CadKit::append4D ( c, colors );
+  CadKit::append3D ( c, colors );
   CadKit::append2D ( t, texture );
 
   // It worked.
@@ -854,7 +854,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
                                   const unsigned int &whichSet, 
                                   std::vector<SlVec3f> &vertices, 
                                   std::vector<SlVec3f> &normals, 
-                                  std::vector<SlVec4f> &colors, 
+                                  std::vector<SlVec3f> &colors, 
                                   std::vector<SlVec2f> &texture, 
                                   unsigned int &valid ) const
 {
@@ -902,10 +902,10 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
     success = true;
   }
 
-  // Colors.
+  // Colors. Note: they are just rgb, not rgba.
   if ( c.getReference() && colorCount > 0 )
   {
-    CadKit::append4D ( colorCount, c.getReference(), colors );
+    CadKit::append3D ( colorCount, c.getReference(), colors );
     valid |= SHAPE_ARRAY_COLORS;
     success = true;
   }

@@ -11,7 +11,7 @@ namespace Detail
     Box(float h, float w): _height(h), _width(w) {}
     Box(const Box& b): _height(b._height), _width(b._width) {}
     ~Box() {}
-    Box& operator =(const Box& b) { _height=b._height; _width=b._width; }
+    Box& operator =(const Box& b) { _height=b._height; _width=b._width; return(*this); }
 
     void height(float h) { _height=h; }
     float height() const { return _height; }

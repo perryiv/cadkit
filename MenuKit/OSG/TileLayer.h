@@ -1,21 +1,19 @@
-#ifndef _menukit_osg_tilelayer_
-#define _menukit_osg_tilelayer_
+#ifndef _menukit_osg_tilelayer_h_
+#define _menukit_osg_tilelayer_h_
 
 // menukit includes
 #include "../Visitor.h"           // the base class
-#include "ColorThemeTile.h"       // included for the typedef
 #include "../WidestItemFinder.h"  // uses the graphics to find the widest menu Item
 #include "../Stack.h"
-#include "../Accumulate.h"
+
+#include "ColorThemeSkinTile.h"   // included for the typedef
 
 // osg includes
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
 // std includes
-//#include <stack>
-//#include <algorithm>
-#include <numeric>
+#include <numeric>  // for accumulate(...)
 
 namespace MenuKit
 {
@@ -56,15 +54,15 @@ namespace MenuKit
       osg::Vec3 displacement(const Button&);
       void determine_push(const Menu&);
       void determine_push(const Button&);
-      void determine_pop(const Menu&);
+      void pop_children(const Menu&);
 
     private:
       TileType _tile;
-      Detail::Stacker<float> _hori, _vert;
+      Detail::Stack<float> _hori, _vert;
       osg::ref_ptr<osg::Group> _scene;
     };
 
-  typedef TileLayer<ColorTile> ColorTileLayer;
+  typedef TileLayer<BasicTile> BasicLayer;
   };
 
 };
@@ -72,9 +70,10 @@ namespace MenuKit
 // ---- implementation ---- //
 
 using namespace MenuKit;
+using namespace OSG;
 
 template<class TileType>
-void OSG::TileLayer<TileType>::determine_push(const Menu& m)
+void TileLayer<TileType>::determine_push(const Menu& m)
 {
   const Menu* parent = m.parent();
 
@@ -94,11 +93,10 @@ void OSG::TileLayer<TileType>::determine_push(const Menu& m)
     _hori.push( del[0] );
     _vert.push( del[1] );
   }
-
 }
 
 template<class TileType>
-void OSG::TileLayer<TileType>::determine_push(const Button& b)
+void TileLayer<TileType>::determine_push(const Button& b)
 {
   // TODO: make sure 'displacement' watches for correct column width
   osg::Vec3 del = displacement( b );
@@ -121,22 +119,21 @@ void OSG::TileLayer<TileType>::determine_push(const Button& b)
 }
 
 template<class TileType>
-void OSG::TileLayer<TileType>::determine_pop(const Menu& m)
+void TileLayer<TileType>::pop_children(const Menu& m)
 {
-  // TODO: clear more than just one pop?
-  // TODO: clear all the children?
-  // clear the current stack spot
-  for(Menu::const_iterator iter=m.begin(); iter!=m.end(); ++iter)
-  {
-    if( m.layout() == Menu::HORIZONTAL )
-      _hori.pop();
-    else
-      _vert.pop();
-  }
+//  // clear the current stack spots
+//  for(Menu::const_iterator iter=m.begin(); iter!=m.end(); ++iter)
+//  {
+//    if( m.layout() == Menu::HORIZONTAL )
+//      _hori.pop();
+//    else
+//      _vert.pop();
+//  }
+//}
 }
 
 template<class TileType>
-osg::Vec3 OSG::TileLayer<TileType>::displacement(const Menu& m)
+osg::Vec3 TileLayer<TileType>::displacement(const Menu& m)
 {
   Menu::Layout ml = m.layout();
   osg::Vec3 dv;
@@ -182,7 +179,7 @@ osg::Vec3 OSG::TileLayer<TileType>::displacement(const Menu& m)
 }
 
 template<class TileType>
-osg::Vec3 OSG::TileLayer<TileType>::displacement(const Button& b)
+osg::Vec3 TileLayer<TileType>::displacement(const Button& b)
 {
   osg::Vec3 dv;
 
@@ -217,15 +214,41 @@ osg::Vec3 OSG::TileLayer<TileType>::displacement(const Button& b)
 template<class TileType>
 void OSG::TileLayer<TileType>::apply(Menu& m)
 {
-  if( !m.parent() )
+  Menu* parent = m.parent();
+  if( parent )
   {
-    _scene = new osg::Group();
+    Menu::Layout pl = parent->layout();
+
+    if( pl == Menu::HORIZONTAL )
+    {
+      float width = _tile.width( m );
+      _tile.box().width( width );
+    }
+
+    else  // parent menu is VERTICAL
+    {
+      // TODO: determine if this can be pulled out
+      // TODO: so that the WIF test is only needed once
+      // find the widest possible graphic
+      Detail::WidestItemFinder<TileType> wif;
+      std::for_each( parent->begin(), parent->end(), wif);
+      float width = wif.widest();
+      _tile.box().width( width );
+    }
   }
 
-  if( m.text().empty() )
+  else  // no parent
   {
-    traverse( m );
-    return;
+    _scene = new osg::Group();
+
+    if( m.text().empty() )  // do not generate a graphic
+    {
+      traverse( m );
+      return;
+    }
+
+    float width = _tile.width( m );
+    _tile.box().width( width );
   }
 
   // create the graphic
@@ -246,38 +269,43 @@ void OSG::TileLayer<TileType>::apply(Menu& m)
 
   // make the child graphics
   determine_push( m );
-  traverse( m );            // traverse the children of menu
-  determine_pop( m );
+  traverse( m );  // traverse the children of menu
+  pop_children( m );
 }
 
 template<class TileType>
-void OSG::TileLayer<TileType>::apply(Button& b)
+void TileLayer<TileType>::apply(Button& b)
 {
   // TODO: is the tile a good place to put this code?
   // TODO: thus simplifying the code here??
   // determine the width of the graphic
   Menu* parent = b.parent();
-  Menu::Layout pl = parent->layout();
 
-  if( pl == Menu::HORIZONTAL )
+  if( parent )
   {
-    float width = _tile.width( b );
-    _tile.box().width( width );
+    Menu::Layout pl = parent->layout();
+
+    if( pl == Menu::HORIZONTAL )
+    {
+      float width = _tile.width( b );
+      _tile.box().width( width );
+    }
+
+    else  // parent menu is VERTICAL
+    {
+      // TODO: determine if this can be pulled out
+      // TODO: so that the WIF test is only needed once
+      // find the widest possible graphic
+      Detail::WidestItemFinder<TileType> wif;
+      std::for_each( parent->begin(), parent->end(), wif);
+      float width = wif.widest();
+      _tile.box().width( width );
+    }
   }
 
-  else  // parent menu is VERTICAL
+  else
   {
-    // TODO: determine if this can be pulled out
-    // TODO: so that the WIF test is only needed once
-    // find the widest possible graphic
-    Detail::WidestItemFinder<ColorTile> wif;
-    std::for_each( parent->begin(), parent->end(), wif);
-    float width = wif.widest();
-    _tile.box().width( width );
-  }
-
-  if( !b.parent() )
-  {
+    _scene = new osg::Group();
     float width = _tile.width( b );
     _tile.box().width( width );
   }
@@ -286,9 +314,6 @@ void OSG::TileLayer<TileType>::apply(Button& b)
   osg::ref_ptr<osg::Node> node = _tile( b );
 
   // calculate the position of the graphic
-  //Detail::Accumulator<float> xsum(0.0f), ysum(0.0f);
-  //std::for_each<(_hori.begin(),_hori.end(),xsum);
-  //std::for_each(_vert.begin(),_vert.end(),ysum);
   float xsum = std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f);
   float ysum = std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f);
   osg::Vec3 sum( xsum, ysum, 0.0f);

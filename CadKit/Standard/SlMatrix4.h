@@ -52,26 +52,6 @@
 #include "SlVec4.h"
 #include "SlVec3.h"
 
-#ifdef CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
-#include <iostream>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
-#include <iostream>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
-#include <stdio.h>
-#endif
-
 // For convenience.
 #define SL_MATRIX4_ZERO ( static_cast<T> ( 0 ) )
 #define SL_MATRIX4_ONE  ( static_cast<T> ( 1 ) )
@@ -150,6 +130,7 @@ public:
 
   void                    lookAt ( const Vec3 &eye, const Vec3 &center, const Vec3 &up );
 
+  static void             multiply ( const SlMatrix4<T> &A, const SlMatrix4<T> &B, SlMatrix4<T> &C );
   void                    multLeft ( const SlMatrix4 &M );
   void                    multRight ( const SlMatrix4 &M );
   void                    multByUpper3x3 ( const Vec3 &input, Vec3 &output ) const;
@@ -167,71 +148,9 @@ public:
   SlMatrix4 &             operator *= ( const SlMatrix4 &M );
   SlMatrix4 &             operator /= ( const T &value );
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template<class P> friend SlMatrix4<P> operator *  ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
-  template<class P> friend SlVec4<P>    operator *  ( const SlMatrix4<P> &M, const SlVec4<P> &v );
-  template<class P> friend SlVec3<P>    operator *  ( const SlMatrix4<P> &M, const SlVec3<P> &v );
-  template<class P> friend SlVec4<P>    operator /  ( const SlVec4<P> &v,    const SlMatrix4<P> &M );
-  template<class P> friend SlVec3<P>    operator /  ( const SlVec3<P> &v,    const SlMatrix4<P> &M );
-  template<class P> friend bool         operator == ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
-  template<class P> friend bool         operator != ( const SlMatrix4<P> &A, const SlMatrix4<P> &B );
-#else
-  friend SlMatrix4        operator *  ( const SlMatrix4 &A, const SlMatrix4 &B );
-  friend Vec4             operator *  ( const SlMatrix4 &M, const Vec4 &v );
-  friend Vec3             operator *  ( const SlMatrix4 &M, const Vec3 &v );
-  friend Vec4             operator /  ( const Vec4 &v,      const SlMatrix4 &M );
-  friend Vec3             operator /  ( const Vec3 &v,      const SlMatrix4 &M );
-  friend bool             operator == ( const SlMatrix4 &A, const SlMatrix4 &B );
-  friend bool             operator != ( const SlMatrix4 &A, const SlMatrix4 &B );
-#endif
-
   // Access the i'th row and j'th column of the matrix (as if it were a 2D array), like matrix(i,j).
   const T &               operator () ( const int &i, const int &j ) const;
   T &                     operator () ( const int &i, const int &j );
-
-  // I/O.
-#ifdef CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
-#if __GNUC__ >= 2
-  template<class P> friend ::ostream &operator << ( ::ostream &out, const SlMatrix4<P> &M );
-#else
-  friend ::ostream &      operator << ( ::ostream &out, const SlMatrix4 &M );
-#endif
-  void                    write ( ::ostream &out ) const;
-#endif
-  
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
-#if __GNUC__ >= 2
-  template<class P> friend std::ostream &operator << ( std::ostream &out, const SlMatrix4<P> &M );
-#else
-  friend std::ostream &   operator << ( std::ostream &out, const SlMatrix4 &M );
-#endif
-  void                    write ( std::ostream &out ) const;
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
-#if __GNUC__ >= 2
-  template<class P> friend ::istream &operator >> ( ::istream &in, SlMatrix4<P> &M );
-#else
-  friend ::istream &      operator >> ( ::istream &in, SlMatrix4 &M );
-#endif
-  void                    read ( ::istream &in );
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
-#if __GNUC__ >= 2
-  template<class P> friend std::istream &operator >> ( std::istream &in, SlMatrix4<P> &M );
-#else
-  friend std::istream &   operator >> ( std::istream &in, SlMatrix4 &M );
-#endif
-  void                    read ( std::istream &in );
-#endif
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
-  void                    read  ( FILE *fp, const char *format = "%f" );
-  void                    write ( FILE *fp, const char *format = "%f" ) const;
-#endif
 
   // Transform by "a twist about an arbitrary axis". Make sure "axis" is normalized.
   void                    rotate ( const T &radians, const Vec3 &axis );
@@ -295,6 +214,23 @@ protected:
 
   static void             _multiply ( const T a[16], const T b[16], T c[16] );
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> SlMatrix4<T> operator *  ( const SlMatrix4<T> &A, const SlMatrix4<T> &B );
+template<class T> SlVec4<T>    operator *  ( const SlMatrix4<T> &M, const SlVec4<T> &v );
+template<class T> SlVec3<T>    operator *  ( const SlMatrix4<T> &M, const SlVec3<T> &v );
+template<class T> SlVec4<T>    operator /  ( const SlVec4<T> &v,    const SlMatrix4<T> &M );
+template<class T> SlVec3<T>    operator /  ( const SlVec3<T> &v,    const SlMatrix4<T> &M );
+template<class T> bool         operator == ( const SlMatrix4<T> &A, const SlMatrix4<T> &B );
+template<class T> bool         operator != ( const SlMatrix4<T> &A, const SlMatrix4<T> &B );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -502,7 +438,8 @@ template<class T> inline SlMatrix4<T> SlMatrix4<T>::absolute ( const Matrix4 &M 
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlMatrix4<T>::_multiply ( const T a[16], const T b[16], T c[16] )
+template<class T> inline void SlMatrix4<T>::_multiply 
+  ( const T a[16], const T b[16], T c[16] )
 {
   c[0]  = a[0] * b[0]  + a[4] * b[1]  + a[8]  * b[2]  + a[12] * b[3];
   c[1]  = a[1] * b[0]  + a[5] * b[1]  + a[9]  * b[2]  + a[13] * b[3];
@@ -1592,6 +1529,21 @@ template<class T> inline SlMatrix4<T> &SlMatrix4<T>::operator *= ( const Matrix4
 
 //////////////////////////////////////////////////////////////////////////
 //
+//  Multiply, C = A * B. Public wrapper around _multiply(), provided for
+//  "operator * ()" below.
+//
+//////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlMatrix4<T>::multiply 
+  ( const SlMatrix4<T> &A, const SlMatrix4<T> &B, SlMatrix4<T> &C )
+{
+  // Call the other one.
+  SlMatrix4<T>::_multiply ( A._m, B._m, C._m );
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
 //  Return the product.
 //
 //////////////////////////////////////////////////////////////////////////
@@ -1599,7 +1551,7 @@ template<class T> inline SlMatrix4<T> &SlMatrix4<T>::operator *= ( const Matrix4
 template<class T> inline SlMatrix4<T> operator * ( const SlMatrix4<T> &A, const SlMatrix4<T> &B )
 {
   SlMatrix4<T> C;
-  SlMatrix4<T>::_multiply ( A._m, B._m, C._m );
+  SlMatrix4<T>::multiply ( A, B, C );
   return C;
 }
 
@@ -1717,235 +1669,6 @@ template<class T> inline const T &SlMatrix4<T>::operator () ( const int &i, cons
   SL_ASSERT ( i >= 0 && j >= 0 && i < 4 && j < 4 && j * 4 + i < 16 );
   return _m[j * 4 + i]; // This was backwards in the old (non-template) classes.
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output helper function. This way we only need one for both the std and 
-//  global ostreams.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class Stream, class T> inline void _writeMatrix4 ( const SlMatrix4<T> &M, Stream &out )
-{
-  out << M[0] << " " << M[4] << " " << M[8]  << " " << M[12] << "\n";
-  out << M[1] << " " << M[5] << " " << M[9]  << " " << M[13] << "\n";
-  out << M[2] << " " << M[6] << " " << M[10] << " " << M[14] << "\n";
-  out << M[3] << " " << M[7] << " " << M[11] << " " << M[15];
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input helper function. This way we only need one for both the std and 
-//  global istreams.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class Stream, class T> inline void _readMatrix4 ( const SlMatrix4<T> &M, Stream &in )
-{
-  in >> M[0] >> M[4] >> M[8]  >> M[12];
-  in >> M[1] >> M[5] >> M[9]  >> M[13];
-  in >> M[2] >> M[6] >> M[10] >> M[14];
-  in >> M[3] >> M[7] >> M[11] >> M[15];
-}
-
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::ostream &operator << ( ::ostream &out, const SlMatrix4<T> &M )
-{
-  M.write ( out );
-  return out;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::write ( ::ostream &out ) const
-{
-  CadKit::_writeMatrix4 ( *this, out );
-}
-
-
-#endif // CADKIT_DEFINE_SL_MATRIX_OSTREAM_FUNCTIONS
-
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::ostream &operator << ( std::ostream &out, const SlMatrix4<T> &M )
-{
-  M.write ( out );
-  return out;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::write ( std::ostream &out ) const
-{
-  CadKit::_writeMatrix4 ( *this, out );
-}
-
-
-#endif // CADKIT_DEFINE_SL_MATRIX_STD_OSTREAM_FUNCTIONS
-
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::istream &operator >> ( ::istream &in, const SlMatrix4<T> &M )
-{
-  M.read ( in );
-  return in;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::read ( ::istream &in )
-{
-  CadKit::_readMatrix4 ( *this, in );
-}
-
-
-#endif // CADKIT_DEFINE_SL_MATRIX_ISTREAM_FUNCTIONS
-
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::istream &operator >> ( std::istream &in, const SlMatrix4<T> &M )
-{
-  this->read ( in );
-  return in;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::read ( std::istream &in )
-{
-  CadKit::_readMatrix4 ( *this, in );
-}
-
-
-#endif // CADKIT_DEFINE_SL_MATRIX_STD_ISTREAM_FUNCTIONS
-
-
-#ifdef CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Output.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::write ( FILE *fp, const char *format ) const
-{
-  SL_ASSERT ( fp );
-
-  fprintf ( fp, format, _m[0] );
-  fprintf ( fp, format, _m[4] );
-  fprintf ( fp, format, _m[8] );
-  fprintf ( fp, format, _m[12] );
-  fprintf ( fp, "\n" );
-
-  fprintf ( fp, format, _m[1] );
-  fprintf ( fp, format, _m[5] );
-  fprintf ( fp, format, _m[9] );
-  fprintf ( fp, format, _m[13] );
-  fprintf ( fp, "\n" );
-  
-  fprintf ( fp, format, _m[2] );
-  fprintf ( fp, format, _m[6] );
-  fprintf ( fp, format, _m[10] );
-  fprintf ( fp, format, _m[14] );
-  fprintf ( fp, "\n" );
-  
-  fprintf ( fp, format, _m[3] );
-  fprintf ( fp, format, _m[7] );
-  fprintf ( fp, format, _m[11] );
-  fprintf ( fp, format, _m[15] );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlMatrix4<T>::read ( FILE *fp, const char *format )
-{
-  SL_ASSERT ( fp );
-
-  fscanf ( fp, format, &(_m[0]) );
-  fscanf ( fp, format, &(_m[4]) );
-  fscanf ( fp, format, &(_m[8]) );
-  fscanf ( fp, format, &(_m[12]) );
-
-  fscanf ( fp, format, &(_m[1]) );
-  fscanf ( fp, format, &(_m[5]) );
-  fscanf ( fp, format, &(_m[9]) );
-  fscanf ( fp, format, &(_m[13]) );
-
-  fscanf ( fp, format, &(_m[2]) );
-  fscanf ( fp, format, &(_m[6]) );
-  fscanf ( fp, format, &(_m[10]) );
-  fscanf ( fp, format, &(_m[14]) );
-
-  fscanf ( fp, format, &(_m[3]) );
-  fscanf ( fp, format, &(_m[7]) );
-  fscanf ( fp, format, &(_m[11]) );
-  fscanf ( fp, format, &(_m[15]) );
-}
-
-
-#endif // CADKIT_DEFINE_SL_MATRIX_FILE_POINTER_FUNCTIONS
 
 
 //////////////////////////////////////////////////////////////////////////

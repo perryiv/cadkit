@@ -94,17 +94,6 @@ public:
   bool              operator != ( const SlRefPtr<T> &p ) const { return _p != p._p; }
   bool              operator != ( const T *p ) const           { return _p != p; }
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template <class P> friend bool operator == ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
-  template <class P> friend bool operator != ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
-  template <class P> friend bool operator != ( const SlRefPtr<P> &p1, const SlRefPtr<P> &p2 ) { return p1._p != p2._p; }
-#else
-  friend bool       operator == ( const T *p1, const SlRefPtr &p2 ) { return p1 == p2._p; }
-  friend bool       operator != ( const T *p1, const SlRefPtr &p2 ) { return p1 != p2._p; }
-#endif
-
   /// Set the internal pointer.
   void              setValue ( const SlRefPtr<T> &p );
   void              setValue ( T *p );
@@ -113,6 +102,18 @@ protected:
 
   T *_p;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class P> bool operator == ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
+template <class P> bool operator != ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
 
 
 ///////////////////////////////////////////////////////////////////////////////

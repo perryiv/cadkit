@@ -60,6 +60,9 @@
 # include <string>
 # include <list>
 # include <algorithm> // For std::transform
+# ifdef __linux__
+#  include <wctype.h> // For towupper()
+# endif
 #endif
 
 #define SL_STRING_FUNCTION_BUFFER_SIZE 32768 // 2^15

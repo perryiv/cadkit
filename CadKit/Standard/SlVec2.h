@@ -48,22 +48,6 @@
 #include "SlAssert.h"
 #include "SlTemplateSupport.h"
 
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_OSTREAM_OPERATOR
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
-#include <iostream>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_ISTREAM_OPERATOR
-#include <iostream.h>
-#endif
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_ISTREAM_OPERATOR
-#include <iostream>
-#endif
-
 // For convenience.
 #define SL_VEC2_ZERO ( static_cast<T>(0) )
 #define SL_VEC2_HALF ( static_cast<T>(0.5) )
@@ -125,40 +109,6 @@ public:
   SlVec2 &                operator -= ( const SlVec2 &vec );
   SlVec2                  operator - () const;
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template<class P> friend SlVec2<P> operator *  ( const SlVec2<P> &vec,  const T &value );
-  template<class P> friend SlVec2<P> operator *  ( const T &value,        const SlVec2<P> &vec );
-  template<class P> friend SlVec2<P> operator /  ( const SlVec2<P> &vec,  const T &value );
-  template<class P> friend SlVec2<P> operator +  ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
-  template<class P> friend SlVec2<P> operator -  ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
-  template<class P> friend bool      operator == ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
-  template<class P> friend bool      operator != ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
-#else
-  friend SlVec2           operator *  ( const SlVec2 &vec,  const T &value );
-  friend SlVec2           operator *  ( const T &value,     const SlVec2 &vec );
-  friend SlVec2           operator /  ( const SlVec2 &vec,  const T &value );
-  friend SlVec2           operator +  ( const SlVec2 &vecA, const SlVec2 &vecB );
-  friend SlVec2           operator -  ( const SlVec2 &vecA, const SlVec2 &vecB );
-  friend bool             operator == ( const SlVec2 &vecA, const SlVec2 &vecB );
-  friend bool             operator != ( const SlVec2 &vecA, const SlVec2 &vecB );
-#endif
-
-  // I/O.
-  #ifdef CADKIT_DEFINE_SL_VECTOR_2_OSTREAM_OPERATOR
-  friend ::ostream &      operator << ( ::ostream &out, const SlVec2 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
-  friend std::ostream &   operator << ( std::ostream &out, const SlVec2 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_2_ISTREAM_OPERATOR
-  friend ::istream &      operator >> ( ::istream &in, SlVec2 &vec );
-  #endif
-  #ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_ISTREAM_OPERATOR
-  friend std::istream &   operator >> ( std::istream &in, SlVec2 &vec );
-  #endif
-
   void                    orthogonal ( const SlVec2 &n );
 
   void                    setLength ( const Real &length );
@@ -169,6 +119,23 @@ protected:
 
   T _v[2];
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> SlVec2<T> operator *  ( const SlVec2<T> &vec,  const T &value );
+template<class T> SlVec2<T> operator *  ( const T &value,        const SlVec2<T> &vec );
+template<class T> SlVec2<T> operator /  ( const SlVec2<T> &vec,  const T &value );
+template<class T> SlVec2<T> operator +  ( const SlVec2<T> &vecA, const SlVec2<T> &vecB );
+template<class T> SlVec2<T> operator -  ( const SlVec2<T> &vecA, const SlVec2<T> &vecB );
+template<class T> bool      operator == ( const SlVec2<T> &vecA, const SlVec2<T> &vecB );
+template<class T> bool      operator != ( const SlVec2<T> &vecA, const SlVec2<T> &vecB );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,8 +352,8 @@ template<class T> inline SlVec2<T> SlVec2<T>::operator - () const
 template<class T> inline SlVec2<T> operator * ( const SlVec2<T> &vec, const T &value )
 {
   return SlVec2<T> ( 
-    vec._v[0] * value, 
-    vec._v[1] * value );
+    vec[0] * value, 
+    vec[1] * value );
 }
 
 
@@ -414,8 +381,8 @@ template<class T> inline SlVec2<T> operator / ( const SlVec2<T> &vec, const T &v
 {
   // Do not multiply by inverse because that fauls up integer vectors.
   return SlVec2<T> ( 
-    vec._v[0] / value, 
-    vec._v[1] / value );
+    vec[0] / value, 
+    vec[1] / value );
 }
 
 
@@ -428,8 +395,8 @@ template<class T> inline SlVec2<T> operator / ( const SlVec2<T> &vec, const T &v
 template<class T> inline SlVec2<T> operator + ( const SlVec2<T> &vecA, const SlVec2<T> &vecB )
 {
   return SlVec2<T> ( 
-    vecA._v[0] + vecB._v[0], 
-    vecA._v[1] + vecB._v[1] );
+    vecA[0] + vecB[0], 
+    vecA[1] + vecB[1] );
 }
 
 
@@ -442,8 +409,8 @@ template<class T> inline SlVec2<T> operator + ( const SlVec2<T> &vecA, const SlV
 template<class T> inline SlVec2<T> operator - ( const SlVec2<T> &vecA, const SlVec2<T> &vecB )
 {
   return SlVec2<T> ( 
-    vecA._v[0] - vecB._v[0], 
-    vecA._v[1] - vecB._v[1] );
+    vecA[0] - vecB[0], 
+    vecA[1] - vecB[1] );
 }
 
 
@@ -495,82 +462,6 @@ template<class T> inline const T &SlVec2<T>::operator [] ( int i ) const
   SL_ASSERT ( this && i >= 0 && i <= 1 );
   return _v[i];
 }
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_OSTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::ostream &operator << ( ::ostream &out, const SlVec2<T> &vec )
-{
-  out << vec[0] << " " << vec[1];
-  return out;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_2_OSTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::ostream &operator << ( std::ostream &out, const SlVec2<T> &vec )
-{
-  out << vec[0] << " " << vec[1];
-  return out;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_ISTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline ::istream &operator >> ( ::istream &in, SlVec2<T> &vec )
-{
-  in >> vec[0] >> vec[1];
-  return in;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_2_ISTREAM_OPERATOR
-
-
-#ifdef CADKIT_DEFINE_SL_VECTOR_2_STD_ISTREAM_OPERATOR
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream operator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline std::istream &operator >> ( std::istream &in, SlVec2<T> &vec )
-{
-  in >> vec[0] >> vec[1];
-  return in;
-}
-
-
-#endif // CADKIT_DEFINE_SL_VECTOR_2_STD_ISTREAM_OPERATOR
 
 
 ///////////////////////////////////////////////////////////////////////////////

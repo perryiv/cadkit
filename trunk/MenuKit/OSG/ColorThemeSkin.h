@@ -5,6 +5,7 @@
 #include "ColorTheme.h"  // for tyepdef
 
 #include "../Bits.h"
+#include "../Box.h"
 #include "../Menu.h"
 #include "../Button.h"
 // TODO: #include "../Item.h"
@@ -34,7 +35,7 @@ namespace MenuKit
       typedef ThemeSkin<ThemeType> BaseClass;
 
       ColorThemeSkin(): BaseClass(),
-        _margin(0.2), _text(0.8), _border(0.1), _bits(0x0)
+        _margin(0.2), _text(0.8), _border(0.02), _bits(0x0)
       {}
 
       ColorThemeSkin(const ColorThemeSkin& s): BaseClass(s),
@@ -86,17 +87,18 @@ namespace MenuKit
         RADIO     = 0x00000008,
         DISABLED  = 0x00000010,
         EXPANDED  = 0x00000020,
+        MARKED    = 0x00000040,
       };
 
-      void add_bits(unsigned int menubits);
+      void gather_bits(unsigned int menubits);
 
       void bits(unsigned int b) { _bits = b; }
       unsigned int bits() const { return _bits; }
 
     private:
-      float _margin;         // distances
-      float _text, _border;  // percentages
-      unsigned int _bits;    // add-on graphic characteristics
+      float _margin,_border;  // distances
+      float _text;            // percentages
+      unsigned int _bits;     // add-on graphic characteristics
     };
 
     typedef ColorThemeSkin<osgColor> osgSkin;
@@ -113,7 +115,7 @@ class DrawableFunctor
 {
 public:
   DrawableFunctor(float h=1.0): _color(1.0,0.0,0.0,1.0), _height(h) {}
-  ~DrawableFunctor() {}
+  virtual ~DrawableFunctor() {}
 
   void color(const osg::Vec4& c) { _color = c; }
   const osg::Vec4& color() const { return _color; }
@@ -125,6 +127,49 @@ public:
 
 private:
   float _height;
+  osg::Vec4 _color;
+};
+
+class Border
+{
+public:
+  Border(const Box& out,const Box& in,float d):
+    _outer(out), _inner(in), _depth(d), _color(osg::Vec4(0.0,0.0,0.0,1.0))
+  {}
+
+  Border(const Border& b):
+    _outer(b._outer), _inner(b._inner), _depth(b._depth), _color(b._color)
+  {}
+
+  Border& operator =(const Border& b)
+  {
+    _outer = b._outer;
+    _inner = b._inner;
+    _depth = b._depth;
+    _color = b._color;
+    return *this;
+  }
+  virtual ~Border() {}
+
+  osg::Node* operator ()();
+
+  void outer(const Box& b) { _outer = b; }
+  const Box& outer() const { return _outer; }
+  Box& outer() { return _outer; }
+
+  void inner(const Box& b) { _inner = b; }
+  const Box& inner() const { return _inner; }
+  Box& inner() { return _inner; }
+
+  void depth(float d) { _depth  = d; }
+  float depth() const { return _depth; }
+
+  void color(const osg::Vec4& c) { _color = c; }
+  const osg::Vec4& color() const { return _color; }
+
+private:
+  Box _outer, _inner;
+  float _depth;
   osg::Vec4 _color;
 };
 
@@ -143,7 +188,7 @@ public:
     DrawableFunctor(b), _depth(b._depth), _width(b._width), _mode(b._mode)
   {}
 
-  ~FlatBox()
+  virtual ~FlatBox()
   {}
 
   void depth(float w) { _depth = w; }
@@ -173,7 +218,7 @@ public:
     DrawableFunctor(w), _text(w._text), _font(w._font), _ar(w._ar), _dm(w._dm)
   {}
 
-  ~Word()
+  virtual ~Word()
   {}
 
   virtual osg::Drawable* operator() ();
@@ -202,7 +247,7 @@ class Arrow: public DrawableFunctor
 {
 public:
   Arrow(float h, float d): DrawableFunctor(h), _depth(d) {}
-  ~Arrow() {}
+  virtual ~Arrow() {}
 
   virtual osg::Drawable* operator() ();
 
@@ -218,7 +263,7 @@ class Disk: public DrawableFunctor
 public:
   Disk(float h,float d=0.0,unsigned int p=80):
     DrawableFunctor(h),_depth(d),_points(p) {}
-  ~Disk() {}
+  virtual ~Disk() {}
 
   virtual osg::Drawable* operator() ();
 
@@ -237,6 +282,51 @@ private:
 //  HELPER IMPLEMENTATION
 // ------------------------ //
 // TODO: ?make these classes templated for ThemeType?
+
+osg::Node* Border::operator ()()
+{
+  // need to make 4 FlatBoxes, but not have them overlap
+  float vert = _outer.height()-_inner.height();
+  FlatBox topbottom(vert,_outer.width(),_depth);
+  topbottom.color( _color );
+
+  osg::ref_ptr<osg::Geode> topgeode = new osg::Geode();
+  topgeode->addDrawable( topbottom() );
+  osg::ref_ptr<osg::MatrixTransform> top = new osg::MatrixTransform();
+  top->addChild( topgeode.get() );
+  top->setMatrix( osg::Matrix::translate( osg::Vec3(0.0,0.5*_outer.height()-0.5*vert,0.0) ) );
+
+  osg::ref_ptr<osg::Geode> botgeode = new osg::Geode();
+  botgeode->addDrawable( topbottom() );
+  osg::ref_ptr<osg::MatrixTransform> bot = new osg::MatrixTransform();
+  bot->addChild( botgeode.get() );
+  bot->setMatrix( osg::Matrix::translate( osg::Vec3(0.0,-0.5*_outer.height()+0.5*vert,0.0) ) );
+
+  float hori = _outer.width() - _inner.width();
+  FlatBox rightleft(_inner.height(),hori,_depth);
+  rightleft.color( _color );
+
+  osg::ref_ptr<osg::Geode> rightgeode = new osg::Geode();
+  rightgeode->addDrawable( rightleft() );
+  osg::ref_ptr<osg::MatrixTransform> right = new osg::MatrixTransform();
+  right->addChild( rightgeode.get() );
+  right->setMatrix( osg::Matrix::translate( osg::Vec3(0.5*_outer.width()-0.5*hori,0.0,0.0) ) );
+
+  osg::ref_ptr<osg::Geode> leftgeode = new osg::Geode();
+  leftgeode->addDrawable( rightleft() );
+  osg::ref_ptr<osg::MatrixTransform> left = new osg::MatrixTransform();
+  left->addChild( leftgeode.get() );
+  left->setMatrix( osg::Matrix::translate( osg::Vec3(-0.5*_outer.width()+0.5*hori,0.0,0.0) ) );
+
+  osg::Group* group = new osg::Group();
+  group->addChild( top.get() );
+  group->addChild( bot.get() );
+  group->addChild( right.get() );
+  group->addChild( left.get() );
+
+  return group;
+}
+
 osg::Drawable* Word::operator() ()
 {
   osgText::Text* text = new osgText::Text();
@@ -283,9 +373,10 @@ osg::Drawable* Arrow::operator () ()
 {
   osg::Vec3Array* vertices = new osg::Vec3Array();
   float h_2 = 0.5f * height();
-  vertices->push_back( osg::Vec3(0.0, h_2 , _depth) );
-  vertices->push_back( osg::Vec3(0.0,-h_2 , _depth) );
-  vertices->push_back( osg::Vec3(h_2, 0.0 , _depth) );
+  float h_4 = 0.5f * h_2;
+  vertices->push_back( osg::Vec3(-h_4, h_2 , _depth) ); // top
+  vertices->push_back( osg::Vec3(-h_4,-h_2 , _depth) ); // botton
+  vertices->push_back( osg::Vec3(h_2, 0.0 , _depth) );  // pointing dir
 
   osg::Vec3Array* normals = new osg::Vec3Array();
   normals->push_back( osg::Vec3(0.0,0.0,1.0) );
@@ -372,7 +463,7 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Menu& m)
 
   else
   {
-    this->add_bits( m.flags() );
+    this->gather_bits( m.flags() );
     node = item_graphic( m.text(), m.parent() );
   }
 
@@ -392,7 +483,7 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Button& b)
 
   else
   {
-    this->add_bits( b.flags() );
+    this->gather_bits( b.flags() );
     node = item_graphic( b.text(), b.parent() );
   }
 
@@ -400,7 +491,7 @@ osg::Node* ColorThemeSkin<ThemeType>::operator ()(const Button& b)
 }
 
 template<class ThemeType>
-void ColorThemeSkin<ThemeType>::add_bits(unsigned int itembits)
+void ColorThemeSkin<ThemeType>::gather_bits(unsigned int itembits)
 {
   // TODO: set up any bits necessary
   typedef MenuKit::Bits<unsigned int> cause;
@@ -416,6 +507,8 @@ void ColorThemeSkin<ThemeType>::add_bits(unsigned int itembits)
     _bits = effect::add( _bits , RADIO );
   if( cause::has(itembits, MenuKit::Item::CHECKED) )
     _bits = effect::add( _bits , CHECKED );
+  if( cause::has(itembits, MenuKit::Item::MARKED) )
+    _bits = effect::add( _bits , MARKED );
 }
 
 template<class ThemeType>
@@ -426,29 +519,27 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
 
   // make the background box(es)
   Detail::FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
-  Detail::FlatBox midbox(borderbox.height()-_border,borderbox.width()-_border,-0.002);
+  //TODO: make a real border, not use this: Detail::FlatBox midbox(borderbox.height()-_border,borderbox.width()-_border,-0.002);
   if( !parent || parent->layout()==Menu::HORIZONTAL )
   {
     borderbox.color( scheme.middle() );
-    midbox.color( scheme.middle() );
   }
   else
   {
-    borderbox.color( scheme.border() );
-    midbox.color( scheme.back() );
+    borderbox.color( scheme.back() );
   }
 
   osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
   backgeode->addDrawable( borderbox() );
-  backgeode->addDrawable( midbox() );
+  //TODO: make a real border, not: backgeode->addDrawable( midbox() );
 
   // make the text graphic functor
   Detail::Word word;
-  word.height( _text*(midbox.height()) );
+  word.height( _text*(thebox.height()-2.0*_border) );
   word.text( txt );
   word.font( font() );
   word.color( scheme.text() );
-  word.draw_mode( osgText::Text::ALIGNMENT|osgText::Text::BOUNDINGBOX|osgText::Text::TEXT );
+  word.draw_mode( osgText::Text::TEXT );
   osg::ref_ptr<osg::Drawable> worddrawable = word();
 
   // make a boundingbox for convenience, used below, to move the word
@@ -463,7 +554,9 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
   // move the word's node
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->addChild( wordgeode.get() );
-  osg::Vec3 wordcorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
+  osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin,-0.5*wordheight,0.0);
+  if( !parent || parent->layout()==Menu::HORIZONTAL )
+    wordcorrection[0] = -0.5*wordwidth;
   wordmt->setMatrix( osg::Matrix::translate(wordcorrection) );
 
   osg::ref_ptr<osg::Group> group = new osg::Group();
@@ -477,10 +570,6 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
 
   osg::Group* top = new osg::Group();  // TODO: take this out
   top->addChild( mt );  // TODO: take this out
-
-  OsgTools::ColorBox tcb(0.2,0.2,0.2);  // TODO: take this out
-  tcb.color_policy().color( osg::Vec4(1.0,1.0,1.0,1.0) );  // TODO: take this out
-  top->addChild( tcb() ); // TODO: take this out
 
   // escape if  null parent
   if( !parent )  // valid parent  TODO: implement
@@ -501,63 +590,50 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
   }
 
   // TODO: make other graphic boxes
-  Detail::FlatBox sidebox(borderbox.height(),borderbox.height(),-0.001);
-  sidebox.depth(-0.001);
-
-  // right side
-  //sidebox.color( scheme.back() );  // TODO: put this back
-  sidebox.color( osg::Vec4(0.0,1.0,0.0,1.0) );
-  osg::ref_ptr<osg::Drawable> rd = sidebox();
-  osg::ref_ptr<osg::Geode> rg = new osg::Geode();
-  rg->addDrawable( rd.get() );
-  osg::ref_ptr<osg::MatrixTransform> rgmt = new osg::MatrixTransform();
-  rgmt->addChild( rg.get() );
-  float rxmov = 0.5*thebox.width() - 0.5*sidebox.width() - _margin;
-  rgmt->setMatrix( osg::Matrix::translate( osg::Vec3(rxmov,0.0,0.0) ) );
-  group->addChild( rgmt.get() );
 
   // left side
-  //sidebox.color( scheme.middle() );  // TODO: put this back
-  sidebox.color( osg::Vec4(0.0,1.0,1.0,1.0) );
+  Detail::FlatBox sidebox(borderbox.height(),borderbox.height()+_border,-0.001);
+  sidebox.color( scheme.middle() );
   osg::ref_ptr<osg::Drawable> ld = sidebox();
   osg::ref_ptr<osg::Geode> lg = new osg::Geode();
   lg->addDrawable( ld.get() );
   osg::ref_ptr<osg::MatrixTransform> lgmt = new osg::MatrixTransform();
   lgmt->addChild( lg.get() );
-  float lxmov = -0.5*thebox.width() + 0.5*sidebox.width() + _margin;
+  float lxmov = -0.5*thebox.width() + 0.5*sidebox.width();
   lgmt->setMatrix( osg::Matrix::translate( osg::Vec3(lxmov,0.0,0.0) ) );
   group->addChild( lgmt.get() );
+
+  // right side
+  osg::ref_ptr<osg::MatrixTransform> rgmt = new osg::MatrixTransform();
+  float rxmov = 0.5*thebox.width() - 0.5*sidebox.width() - _border;
+  rgmt->setMatrix( osg::Matrix::translate( osg::Vec3(rxmov,0.0,0.0) ) );
+  group->addChild( rgmt.get() );
 
   // TODO: add graphics for each supported bit!!!
   typedef MenuKit::Bits<unsigned int> checker;
   if( checker::has(this->bits(), TOGGLE) )
   {
-    Detail::FlatBox markbox(word.height(),word.height(),0.0);
-    markbox.color( scheme.text() );
-    osg::ref_ptr<osg::Drawable> mbdraw = markbox();
-
-    Detail::FlatBox markopen(_text*markbox.height(),_text*markbox.width(),0.001);
-    markopen.color( scheme.middle() );
-    osg::ref_ptr<osg::Drawable> modraw = markopen();
-
-    osg::ref_ptr<osg::Geode> mbgeo = new osg::Geode();
-    mbgeo->addDrawable( mbdraw.get() );
-    mbgeo->addDrawable( modraw.get() );
-
     if( checker::has(this->bits(), CHECKED) )
     {
-      Detail::FlatBox markclosed(_text*markopen.height(),_text*markopen.width(),0.002);
-      markclosed.color( scheme.text() );
-      osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
-      mbgeo->addDrawable( mcdraw.get() );
-    }
+      // the border
+      Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);
+      Detail::Box inny(outy.height()-2.0*_border,outy.height()-2.0*_border);
+      Detail::Border brdr(outy,inny,0.001);
+      brdr.color( scheme.special() );
+      lgmt->addChild( brdr() );
 
-    lgmt->addChild( mbgeo.get() );
+      Detail::FlatBox markclosed(0.5*inny.height(),0.5*inny.width(),0.002);
+      markclosed.color( scheme.special() );
+      osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
+      osg::ref_ptr<osg::Geode> mbgeo = new osg::Geode();
+      mbgeo->addDrawable( mcdraw.get() );
+      lgmt->addChild( mbgeo.get() );
+    }
   }  // end of TOGGLE add-on
 
   if( checker::has(this->bits(), RADIO) )
   {
-    Detail::Disk markdisc(word.height(),0.0);
+    Detail::Disk markdisc(_text*word.height(),0.0);
     markdisc.color( scheme.text() );
     osg::ref_ptr<osg::Drawable> mddraw = markdisc();
 
@@ -578,11 +654,11 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
     }
 
     lgmt->addChild( mdgeo.get() );
-  }
+  }  // end of CHECKED add-on
 
   if( checker::has(this->bits(), MENU) )
   {
-    Detail::Arrow mark(word.height(),0.0);
+    Detail::Arrow mark(0.5*word.height(),0.0);
     mark.color( scheme.text() );
     osg::ref_ptr<osg::Drawable> md = mark();
     osg::ref_ptr<osg::Geode> mgeo = new osg::Geode();
@@ -590,17 +666,40 @@ osg::Node* ColorThemeSkin<ThemeType>::item_graphic(const std::string& txt,const 
 
     if( !checker::has(this->bits(), EXPANDED) )
     {
-      Detail::Arrow expander(_text*mark.height(),0.001);
+      Detail::Arrow expander(0.5*mark.height(),0.001);
       expander.color( scheme.back() );
       osg::ref_ptr<osg::Drawable> exdraw = expander();
       mgeo->addDrawable( exdraw.get() );
     }
 
-    rgmt->addChild( mgeo.get() );
-  }
+    else  // it is expanded and children are shown
+    {
+      if( parent->layout()==Menu::VERTICAL )  // only for vertical parents
+      {
+        Detail::Box inner(thebox.height()-2.0*_border,thebox.width()-2.0*_border);
+        Detail::Border fence(thebox,inner,0.001);
+        fence.color( scheme.border() );
+        osg::ref_ptr<osg::Node> fencenode = fence();
+        mt->addChild( fencenode.get() );
+      }
+    }
 
-      //return mt;  // TODO: put this back
-      return top; // TODO: take this out
+    // TODO: if expanded and parent is vertical, draw border
+
+    rgmt->addChild( mgeo.get() );
+  }  // end of MENU add-on
+
+  if( checker::has(this->bits() , MARKED) )
+  {
+    Detail::Box inner(thebox.height()-2.0*_border,thebox.width()-2.0*_border);
+    Detail::Border fence(thebox,inner,0.001);
+    fence.color( scheme.border() );
+    osg::ref_ptr<osg::Node> fencenode = fence();
+    mt->addChild( fencenode.get() );
+  }  // end of MARKED add-on
+
+  //return mt;  // TODO: put this back
+  return top; // TODO: take this out
 }
 
 template<class ThemeType>
@@ -674,21 +773,21 @@ float ColorThemeSkin<ThemeType>::item_width(const std::string& s,const Menu* par
 
   // check for top-level item
   if( !parent )
-    return( wordwidth + 2.0*_margin );
+    return( wordwidth + 2.0*(_margin+_border) );
 
   // --- LAYOUT correctioning --- //
   // the eqation for the width of a horizontal graphic
   // 2 margins,   2 x _margin
   // 1 text box,  1 x graphic text width
   if( parent->layout() == Menu::HORIZONTAL )
-    return( wordwidth + 2.0*_margin );
+    return( wordwidth + 2.0*(_margin+_border) );
 
   // equation for the width of a vertical graphic:
   // 2 side boxes, 2 x _box's width (which is the height of the box - 2 x margin)
   // 1 text box,      1 x  graphic text width
   // 2 margins,       2 x _margin
   else
-    return( 2.0*(this->box().height()-2.0*_margin) + wordwidth + 2.0*_margin );
+    return( 2.0*(this->box().height()+_border+_margin) + wordwidth );
 }
 
 template<class ThemeType>

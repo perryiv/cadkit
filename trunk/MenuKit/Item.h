@@ -45,6 +45,7 @@ public:
     RADIO       = 0x00000008, // button may be turned on/off but only one should be 'on'
     SEPARATOR   = 0x00000010, // could be used to draw separation lines
     EXPANDED    = 0x00000020, // flag for Menus, here for ease, opens/closes the menu
+    MARKED      = 0x00000040, // flag shows an item is 'current' or should be 'highlighted'
   };
 
   // Construction.
@@ -107,6 +108,10 @@ public:
   // Set/get the separator flag.
   bool                  separator() const;
   void                  separator ( bool e );
+
+  // Set/get the current flag.
+  bool                  marked() const;
+  void                  marked ( bool e );
 
   // Send a message to the client.
   void                  sendMessage ( MenuKit::Message m );

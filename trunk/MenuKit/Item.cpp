@@ -412,3 +412,31 @@ void Item::expanded ( bool e )
   else
     this->flags ( Bits::remove ( this->flags(), Item::EXPANDED ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the marked state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Item::marked() const
+{
+  return Bits<unsigned int>::has ( this->flags(), Item::MARKED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the marked state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Item::marked ( bool e )
+{
+  typedef MenuKit::Bits<unsigned int> Bits;
+  if ( e )
+    this->flags ( Bits::add    ( this->flags(), Item::MARKED ) );
+  else
+    this->flags ( Bits::remove ( this->flags(), Item::MARKED ) );
+}

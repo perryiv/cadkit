@@ -231,12 +231,12 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IAssemblyQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Create a group (really a MatrixTransform).
   SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue(), (osg::Group *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", FAILED );
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", CadKit::FAILED );
 
   // Add this group to the scene.
   _groupStack->top()->addChild ( mt );
@@ -286,17 +286,17 @@ bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IPartQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Create a group (really a MatrixTransform).
   SlRefPtr<osg::Group> mt = CadKit::createGroup ( part, query.getValue(), (osg::Group *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", FAILED );
+    return ERROR ( "Failed to create osg::MatrixTransform for assembly.", CadKit::FAILED );
 
   // Create a LOD.
   SlRefPtr<osg::LOD> lod ( new osg::LOD );
   if ( lod.isNull() )
-    return ERROR ( "Failed to create osg::LOD for given lod handle.", FAILED );
+    return ERROR ( "Failed to create osg::LOD for given lod handle.", CadKit::FAILED );
 
   // Add this MatrixTransform to the scene.
   _groupStack->top()->addChild ( mt );
@@ -327,7 +327,7 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
   SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( part ) ) );
   SlRefPtr<osg::Group> group ( dynamic_cast<osg::Group *> ( object.getValue() ) );
   if ( group.isNull() )
-    return ERROR ( "Failed to find group for part.", FAILED );
+    return ERROR ( "Failed to find group for part.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( 1 == group->getNumChildren() );
@@ -335,7 +335,7 @@ bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
   // Get the lod from the group.
   SlRefPtr<osg::LOD> lod ( dynamic_cast<osg::LOD *> ( group->getChild ( 0 ) ) );
   if ( lod.isNull() )
-    return ERROR ( "Failed to find lod to set ranges for.", FAILED );
+    return ERROR ( "Failed to find lod to set ranges for.", CadKit::FAILED );
 
   // Set the lod center and ranges.
   this->_setLodParameters ( lod );
@@ -415,18 +415,18 @@ bool DbOsgDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IInstanceQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Find the group associated with the corresponding part or assembly.
   osg::Group *group = this->_findGroup ( instance, query );
   if ( NULL == group )
-    return ERROR ( "Failed to find group associated with the corresponding part or assembly.", FAILED );
+    return ERROR ( "Failed to find group associated with the corresponding part or assembly.", CadKit::FAILED );
 
   // Create a group (really a MatrixTransform) by making a shallow copy of 
   // the given group. The new group contains all the same children as the given group.
   SlRefPtr<osg::Group> mt = CadKit::createGroup ( instance, query.getValue(), group );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create osg::MatrixTransform for instance.", FAILED );
+    return ERROR ( "Failed to create osg::MatrixTransform for instance.", CadKit::FAILED );
 
   // Add this MatrixTransform to the scene.
   _groupStack->top()->addChild ( mt );
@@ -466,18 +466,18 @@ bool DbOsgDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<ILodQuery> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Create a Geode.
   SlRefPtr<osg::Geode> geode ( new osg::Geode );
   if ( geode.isNull() )
-    return ERROR ( "Failed to create osg::Geode for given lod handle.", FAILED );
+    return ERROR ( "Failed to create osg::Geode for given lod handle.", CadKit::FAILED );
 
   // Get the osg::Group associated with the lod's parent part.
   SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( query->getParent ( lod ) ) ) );
   SlRefPtr<osg::Group> group ( dynamic_cast<osg::Group *> ( object.getValue() ) );
   if ( group.isNull() )
-    return ERROR ( "Failed to find lod to add geode to.", FAILED );
+    return ERROR ( "Failed to find lod to add geode to.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( 1 == group->getNumChildren() );
@@ -485,7 +485,7 @@ bool DbOsgDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   // The lod should be the only child of the group.
   SlRefPtr<osg::LOD> osgLod ( dynamic_cast<osg::LOD *> ( group->getChild ( 0 ) ) );
   if ( osgLod.isNull() )
-    return ERROR ( "Failed to find lod to add geode to.", FAILED );
+    return ERROR ( "Failed to find lod to add geode to.", CadKit::FAILED );
 
   // Add this Geode to the LOD.
   osgLod->addChild ( geode );
@@ -528,32 +528,32 @@ bool DbOsgDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IShapeQueryFloatUchar> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the osg::Geode we need.
   SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( query->getParent ( shape ) ) ) );
   SlRefPtr<osg::Geode> geode ( dynamic_cast<osg::Geode *> ( object.getValue() ) );
   if ( geode.isNull() )
-    return ERROR ( "Failed to find geode to add shape geometry to.", FAILED );
+    return ERROR ( "Failed to find geode to add shape geometry to.", CadKit::FAILED );
 
   // Create a Geometry drawable.
   SlRefPtr<osg::Geometry> geometry ( new osg::Geometry );
   if ( geometry.isNull() )
-    return ERROR ( "Failed to create osg::Geometry for given shape handle.", FAILED );
+    return ERROR ( "Failed to create osg::Geometry for given shape handle.", CadKit::FAILED );
 
   // Create a StateSet.
   SlRefPtr<osg::StateSet> state ( new osg::StateSet );
   if ( state.isNull() )
-    return ERROR ( "Failed to create osg::StateSet for given shape handle.", FAILED );
+    return ERROR ( "Failed to create osg::StateSet for given shape handle.", CadKit::FAILED );
 
   // Add the vertices, normals, etc. We have to call this before we add the 
   // attributes (like material) because in OSG, materials take precedence.
   if ( false == this->_addDataSets ( caller, shape, geometry ) )
-    return ERROR ( "Failed to add shape sets for given shape.", FAILED );
+    return ERROR ( "Failed to add shape sets for given shape.", CadKit::FAILED );
 
   // Add the material, texture, etc.
   if ( false == this->_addAttributes ( caller, shape, state ) )
-    return ERROR ( "Failed to add shape sets for given shape.", FAILED );
+    return ERROR ( "Failed to add shape sets for given shape.", CadKit::FAILED );
 
   // Set the state of the geometry.
   geometry->setStateSet ( state );
@@ -581,7 +581,7 @@ bool DbOsgDatabase::_addAttributes ( IUnknown *caller, ShapeHandle shape, osg::S
   // Get the interface we need from the caller.
   SlQueryPtr<IShapeQueryFloatUchar> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // If there are no color attributes then look for a material. We do this 
   // because OSG will use the material first.
@@ -612,7 +612,7 @@ bool DbOsgDatabase::_addDataSets ( IUnknown *caller, ShapeHandle shape, osg::Geo
   
   // Add the vertices. If we don't add any then we failed.
   if ( false == this->_addVertices ( caller, shape, geometry ) )
-    return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+    return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 
   // Add the normals, colors, and texture coordinates, if there are any.
   // It is ok if these fail.
@@ -640,12 +640,12 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeVerticesVec3f> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the primitive type.
   VertexSetType type;
   if ( false == query->getVertexSetType ( shape, type ) )
-    return ERROR ( "Failed to obtain primitive type.", FAILED );
+    return ERROR ( "Failed to obtain primitive type.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( CadKit::UNKNOWN != type );
@@ -663,7 +663,7 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
   }
 
   // It didn't work.
-  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 }
 
 
@@ -682,12 +682,12 @@ bool DbOsgDatabase::_addNormals ( IUnknown *caller, ShapeHandle shape, osg::Geom
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeNormalsVec3f> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the normal binding.
   VertexBinding binding;
   if ( false == query->getNormalBinding ( shape, binding ) )
-    return ERROR ( "Failed to obtain normal binding.", FAILED );
+    return ERROR ( "Failed to obtain normal binding.", CadKit::FAILED );
 
   // Get the normals.
   DbOsgNormalSetter setter ( binding );
@@ -721,12 +721,12 @@ bool DbOsgDatabase::_addColors ( IUnknown *caller, ShapeHandle shape, osg::Geome
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeColorsVec4f> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the color binding.
   VertexBinding binding;
   if ( false == query->getColorBinding ( shape, binding ) )
-    return ERROR ( "Failed to obtain color binding.", FAILED );
+    return ERROR ( "Failed to obtain color binding.", CadKit::FAILED );
 
   // Get the colors.
   DbOsgColorSetter setter ( binding );
@@ -760,7 +760,7 @@ bool DbOsgDatabase::_addTexCoords ( IUnknown *caller, ShapeHandle shape, osg::Ge
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeTexCoordsVec2f> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the texture coordinates.
   DbOsgTextureCoordSetter texCoords;

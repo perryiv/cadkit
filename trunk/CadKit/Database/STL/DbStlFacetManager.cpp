@@ -31,9 +31,7 @@
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 
-// To help shorten up the lines.
-#undef  ERROR
-#define ERROR    this->_notifyError
+#include "Interfaces/IMessageNotify.h"
 
 using namespace CadKit;
 
@@ -217,19 +215,19 @@ bool DbStlFacetManager::storeData ( const std::string &filename, const StlFileMo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle shape )
+bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, IUnknown *controller, ShapeHandle shape )
 {
 //  SL_PRINT5 ( "In DbStlFacetManager::fetchVerticesPerShape{}, this = %X, caller = %X, shape = %d\n", this, caller, shape );
   SL_ASSERT ( caller );
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeVerticesVec3f> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return this->_notifyError ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE, controller );
 
   // Get the primitive type.
   VertexSetType type;
   if ( false == query->getVertexSetType ( shape, type ) )
-    return ERROR ( "Failed to obtain primitive type.", FAILED );
+    return this->_notifyError ( "Failed to obtain primitive type.", CadKit::FAILED, controller );
 
   // Should be true.
   SL_ASSERT ( CadKit::UNKNOWN != type );
@@ -310,7 +308,7 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
   }
 
   // It didn't work.
-  return false; // TODO - get this working... ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+  return false; // TODO - get this working... this->_notifyError ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 }
 
 
@@ -569,6 +567,25 @@ void DbStlFacetManager::facet::getVertices( SlVec3f &vertex1, SlVec3f &vertex2, 
   vertex1.setValue( _vertices[0] );
   vertex2.setValue( _vertices[1] );
   vertex3.setValue( _vertices[2] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Similar to DbBaseObject::_notifyError(), but since this class doesn't 
+//  inherit from DbBaseObject we have to do this.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlFacetManager::_notifyError ( const std::string &message, const unsigned long &id, IUnknown *controller )
+{
+  // Try to get the interface.
+  SlQueryPtr<IMessageNotify> notify ( controller );
+  if ( notify.isNull() )
+    return false;
+
+  // Call the message notification function.
+  return notify->messageNotify ( message, id, CadKit::MESSAGE_ERROR );
 }
 
 

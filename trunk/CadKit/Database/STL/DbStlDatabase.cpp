@@ -296,7 +296,7 @@ bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IAssemblyQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Push the matrix if there is one, else the identity
   SlMatrix44f matrix;
@@ -342,7 +342,7 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IPartQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Push the matrix if there is one, else identity
   SlMatrix44f matrix;
@@ -388,7 +388,7 @@ bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IInstanceQueryFloat> query ( caller );
   if ( query.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Push the matrix if there is one, else identity
   SlMatrix44f matrix;
@@ -472,12 +472,12 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   // Get the interface we need from the caller.
   SlQueryPtr<IShapeQueryFloatUchar> shapeQuery ( caller );
   if ( shapeQuery.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the interface we need from the caller.
   SlQueryPtr<ILodQuery> lodQuery ( caller );
   if ( lodQuery.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
 /*DEBUG*/LodHandle lod( shapeQuery->getParent( shape ) );
 //  PartHandle p( lodQuery->getParent( shapeQuery->getParent( shape ) ) );
@@ -488,8 +488,8 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
       //_partLodCheck.insert( p ); // create entry so we don't process another lod for this part
 
       // Add the vertices and normals. 
-      if ( false == _fmgr.fetchVerticesPerShape( caller, shape ) )
-        return ERROR ( "Failed to add shape sets for given shape.", FAILED );
+      if ( false == _fmgr.fetchVerticesPerShape( caller, _controller, shape ) )
+        return ERROR ( "Failed to add shape sets for given shape.", CadKit::FAILED );
     }
 
   // It worked.

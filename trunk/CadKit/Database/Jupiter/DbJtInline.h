@@ -53,7 +53,7 @@ inline eaiCADImporter::ShapeLoadOption convert ( const ILoadOptions::ShapeLoadOp
   default:
     SL_ASSERT ( 0 );
     if ( notify )
-      notify->messageNotify ( CadKit::getString ( "DMDTk does not support shape load option '%d', using eaiCADImporter::eaiALL_LODS instead.", option ), UNSUPPORTED, CadKit::MESSAGE_WARNING );
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support shape load option '%d', using eaiCADImporter::eaiALL_LODS instead.", option ), CadKit::UNSUPPORTED, CadKit::MESSAGE_WARNING );
     return eaiCADImporter::eaiALL_LODS;
   }
 }
@@ -80,7 +80,7 @@ inline eaiCADImporter::BrepLoadOption convert ( const ILoadOptions::BrepLoadOpti
   default:
     SL_ASSERT ( 0 );
     if ( notify )
-      notify->messageNotify ( CadKit::getString ( "DMDTk does not support B-rep load option '%d', using eaiCADImporter::eaiTESS_AND_BREP instead.", option ), UNSUPPORTED, CadKit::MESSAGE_WARNING );
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support B-rep load option '%d', using eaiCADImporter::eaiTESS_AND_BREP instead.", option ), CadKit::UNSUPPORTED, CadKit::MESSAGE_WARNING );
     return eaiCADImporter::eaiTESS_AND_BREP;
   }
 }
@@ -105,7 +105,7 @@ inline eaiCADImporter::AssemblyOption convert ( const ILoadOptions::AssemblyLoad
   default:
     SL_ASSERT ( 0 );
     if ( notify )
-      notify->messageNotify ( CadKit::getString ( "DMDTk does not support assembly load option '%d', using eaiCADImporter::eaiINSTANCE_ASSEMBLY instead.", option ), UNSUPPORTED, CadKit::MESSAGE_WARNING );
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support assembly load option '%d', using eaiCADImporter::eaiINSTANCE_ASSEMBLY instead.", option ), CadKit::UNSUPPORTED, CadKit::MESSAGE_WARNING );
     return eaiCADImporter::eaiINSTANCE_ASSEMBLY;
   }
 }
@@ -214,7 +214,7 @@ template <class NotifyType, class HandleType> inline bool handleEntityStart
       return false;
 
     // Otherwise, ask the messageNotify interface.
-    return messageNotify->messageNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED, CadKit::MESSAGE_ERROR );
+    return messageNotify->messageNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), CadKit::FAILED, CadKit::MESSAGE_ERROR );
   }
 
   // It worked.
@@ -243,7 +243,7 @@ template <class NotifyType, class HandleType> inline bool handleEntityEnd
       return false;
 
     // Otherwise, ask the messageNotify interface.
-    return messageNotify->messageNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED, CadKit::MESSAGE_ERROR );
+    return messageNotify->messageNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), CadKit::FAILED, CadKit::MESSAGE_ERROR );
   }
 
   // It worked.

@@ -231,7 +231,7 @@ public:
   void init( );
 
   // Fetch all vertices for a given shape and use to populate _facets list
-  bool fetchVerticesPerShape( IUnknown *caller, ShapeHandle shape );
+  bool fetchVerticesPerShape( IUnknown *caller, IUnknown *controller, ShapeHandle shape );
 
   // Add a facet - pick your flavor
   void addFacet ( SlVec3f vertices[3], const SlVec3f &normal );
@@ -271,6 +271,8 @@ protected:
   DbStlVertexSetter _vSetter; 
   DbStlNormalSetter _nSetter; // Eric, does this need to be a member? It needs a default constructor if that is the case. Otherwise, make it a pointer and pass in the argument(s) to the constructor in the constructor's initializer list (that I commented out).
 //  Binding _binding; //TODO
+
+  bool _notifyError ( const std::string &message, const unsigned long &id, IUnknown *caller );
 };
 
 

@@ -492,7 +492,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   default:
 
     SL_ASSERT ( 0 ); // What entity type is this?
-    _result = WARNING ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), UNKNOWN_ENTITY );
+    _result = WARNING ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), CadKit::UNKNOWN_ENTITY );
     break;
   }
 
@@ -530,7 +530,7 @@ bool DbJtDatabase::_startAssembly ( eaiAssembly *assembly )
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d.\n\tNo known interface available from target.", assembly->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -603,7 +603,7 @@ bool DbJtDatabase::_startPart ( eaiPart *part )
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to start part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -630,7 +630,7 @@ bool DbJtDatabase::_endPart ( eaiPart *part )
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to end part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to end part '%s' at level %d.\n\tNo known interface available from target.", part->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -660,7 +660,7 @@ bool DbJtDatabase::_startInstance ( eaiInstance *instance )
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to start instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to start instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -687,7 +687,7 @@ bool DbJtDatabase::_endInstance ( eaiInstance *instance )
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
-  return ERROR ( FORMAT ( "Failed to end instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), NO_INTERFACE );
+  return ERROR ( FORMAT ( "Failed to end instance '%s' at level %d.\n\tNo known interface available from target.", instance->name(), _current->getLevel() ), CadKit::NO_INTERFACE );
 }
 
 
@@ -723,7 +723,7 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
 
     // Process the shapes.
     if ( false == this->_processLod ( part, i ) )
-      if ( false == ERROR ( FORMAT ( "Failed to process LOD %d in part '%s'", i, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process LOD %d in part '%s'", i, part->name() ), CadKit::FAILED ) )
         return false;
   }
 
@@ -754,7 +754,7 @@ bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
   SlQueryPtr<ILodNotify> notify ( _target );
   if ( notify.isValid() )
     if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
         return false;
 
   // Get the number of shapes for this LOD.
@@ -771,14 +771,14 @@ bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
 
     // Process the shape.
     if ( false == this->_processShape ( part, whichLod, i ) )
-      if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   }
 
   // Try this interface.
   if ( notify.isValid() )
     if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
         return false;
 
   // If we get to here then it worked.
@@ -806,13 +806,13 @@ bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int
   SlQueryPtr<IShapeNotify> notify ( _target );
   if ( notify.isValid() )
     if ( false == notify->startEntity ( CadKit::makeShapeHandle ( whichShape ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   
   // Get the shape.
   SlRefPtr<eaiShape> shape = this->_getShape ( part, whichLod, whichShape );
   if ( shape.isNull() )
-    return ERROR ( FORMAT ( "Failed to get shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED );
+    return ERROR ( FORMAT ( "Failed to get shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), CadKit::FAILED );
 
   // Get the number of sets for this shape.
   int numSets = shape->numOfSets();
@@ -825,14 +825,14 @@ bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int
 
     // Process the set.
     if ( false == this->_processSet ( shape, i ) )
-      if ( false == ERROR ( FORMAT ( "Failed to process vertices for set %d, shape %d, LOD %d, part '%s'", i, whichShape, whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process vertices for set %d, shape %d, LOD %d, part '%s'", i, whichShape, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   }
 
   // Try this interface.
   if ( notify.isValid() )
     if ( false == notify->endEntity ( CadKit::makeShapeHandle ( whichShape ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to end shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end shape %d, LOD %d, part '%s'", whichShape, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
 
   // If we get to here then it worked.
@@ -867,13 +867,13 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
   SlQueryPtr<ISetNotify> notify ( _target );
   if ( notify.isValid() )
     if ( false == notify->startEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
 
   // Try this interface.
   if ( notify.isValid() )
     if ( false == notify->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
 
   // If we get to here then it worked.
@@ -1673,7 +1673,7 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
     if ( false == gotVertices )
     {
       SL_ASSERT ( 0 ); // Why did this happen?
-      if ( false == ERROR ( FORMAT ( "Failed to get internal data for shape %X, set %s.", shape, i ), FAILED ) )
+      if ( false == ERROR ( FORMAT ( "Failed to get internal data for shape %X, set %s.", shape, i ), CadKit::FAILED ) )
         return false;
     }
   }

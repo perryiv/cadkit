@@ -1,0 +1,44 @@
+# The compiler.
+CPP = g++
+
+# Tell it to make the .cpp files.
+OBJECTS = $(CPPFILES:.cpp=.o)
+
+# The operating system. Have to have the environment variable "OS_TYPE" set.
+OS = $(OS_TYPE)
+
+# The output directory (for the object files).
+OUTPUT_DIR = $(OS)_objects
+
+#.cpp.o:
+#	@[ -d $(OUTPUT_DIR) ] || mkdir $(OUTPUT_DIR)
+#	$(CPP) -c $(INCLUDE) $(CPPFLAGS) $< -o $(OUTPUT_DIR)/$@
+
+# Compile the source files.
+.cpp.o:
+	$(CPP) -c $(INCLUDE) $(CPPFLAGS) $< -o $@
+
+# Clean the generated files.
+clean:
+	rm -f $(OBJECTS)
+
+# Clobber the generated files (libraries too).
+clobber:
+	rm -f $(OBJECTS) *~ core 
+	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_s.so
+	rm -f $(CADKIT_ROOT_DIR)/bin/lib$(TARGET)_a.a
+
+# Automatically generated dependencies.
+depend:
+	rm -f Makedepend;
+	touch Makedepend;
+	makedepend -f Makedepend -- $(INCLUDE) $(CPPFLAGS) -- $(CPPFILES);
+
+# Link the object files into the library.
+lib: $(OBJECTS)
+	rm -rf lib$(TARGET)_a.a
+	ar -cr lib$(TARGET)_a.a $(OBJECTS)
+	$(CPP) -shared -Wl,-soname,lib$(TARGET)_s.so -o lib$(TARGET)_s.so $(OBJECTS) $(LIBS)
+	mkdir -p $(CADKIT_ROOT_DIR)/bin
+	mv lib$(TARGET)_s.so $(CADKIT_ROOT_DIR)/bin/.
+	mv lib$(TARGET)_a.a $(CADKIT_ROOT_DIR)/bin/.

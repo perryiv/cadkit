@@ -1,0 +1,7 @@
+# C++ source files.
+CPPFILES = \
+  SlBase.cpp \
+  SlPrecompiled.cpp \
+  SlPreComputedArrays.cpp \
+  SlRefBase.cpp \
+  SlTrace.cpp

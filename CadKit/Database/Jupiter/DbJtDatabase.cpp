@@ -857,7 +857,7 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
 //  ISetNotify *temp = _target->queryInterface ( ISetNotify::IID );
 //  SL_ASSERT ( temp );
 //  temp->ref();
-  // do something here.
+//  // do something here.
 //  temp->unref();
 //#endif
 

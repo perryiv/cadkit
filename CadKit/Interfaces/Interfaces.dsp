@@ -84,7 +84,33 @@ LIB32=link.exe -lib
 # Name "Interfaces - Win32 Debug"
 # Begin Source File
 
+SOURCE=.\Handles.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IAssemblyNotify.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IAssemblyQuery.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

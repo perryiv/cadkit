@@ -21,6 +21,7 @@
 #include "Interfaces/IDataSource.h"
 #include "Interfaces/IControlled.h"
 #include "Interfaces/ILoadOptions.h"
+#include "Interfaces/IAssemblyQuery.h"
 
 #include "Standard/SlRefBase.h"
 #include "Standard/SlRefPtr.h"
@@ -40,7 +41,8 @@ namespace CadKit
 class DB_JT_API DbJtDatabase : public SlRefBase, 
                                public IDataSource,
                                public IControlled,
-                               public ILoadOptions
+                               public ILoadOptions,
+                               public IAssemblyQueryFloat
 {
 public:
 
@@ -100,6 +102,19 @@ public:
   // Set the shape load option.
   virtual void            setShapeLoadOption ( const ShapeLoadOption &option );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IAssemblyQuery interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the name.
+  virtual std::string     getName ( AssemblyHandle assembly ) const;
+
+  // Get the transformation matrix.
+  virtual bool            getTransform ( AssemblyHandle assembly, float matrix[16] ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
 protected:
 
   typedef SlStack<eaiAssembly *> Assemblies;

@@ -38,8 +38,8 @@ public:
 };
 
 // So that SlRefPtr works with IUnknown.
-inline void _incrementPointerReferenceCount ( IUnknown *p ) { p->ref(); }
-inline void _decrementPointerReferenceCount ( IUnknown *p ) { p->unref(); }
+//inline void _incrementPointerReferenceCount ( IUnknown *p ) { p->ref(); }
+//inline void _decrementPointerReferenceCount ( IUnknown *p ) { p->unref(); }
 
 }; // namespace CadKit
 

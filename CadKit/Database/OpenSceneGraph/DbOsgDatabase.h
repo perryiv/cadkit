@@ -22,9 +22,13 @@
 
 #include "Interfaces/IAssemblyNotify.h"
 
+#include "Standard/SlStack.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
 #endif
+
+namespace osg { class Group; };
 
 
 namespace CadKit
@@ -71,14 +75,22 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // End the assembly.
-  virtual bool            endAssembly ( IUnknown *caller );
+  virtual bool            endAssembly ( AssemblyHandle assembly, IUnknown *caller );
 
   // Start the assembly.
-  virtual bool            startAssembly ( IUnknown *caller );
+  virtual bool            startAssembly ( AssemblyHandle assembly, IUnknown *caller );
 
 protected:
 
+  typedef SlStack<osg::Group *> GroupStack;
+
+  osg::Group *_root;
+  std::auto_ptr<GroupStack> _groups;
+
   virtual ~DbOsgDatabase();
+
+  void                    _pushGroup ( osg::Group *group );
+  void                    _popGroup();
 
   SL_DECLARE_REFCOUNT_TYPE ( DbOsgDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbOsgDatabase, 1032736074 );

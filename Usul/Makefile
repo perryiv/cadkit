@@ -1,15 +1,19 @@
 SOURCE = \
+	Adaptors/ProgressBarUpdate.cpp \
 	Base/Referenced.cpp \
 	Base/Typed.cpp \
 	Components/Object.cpp \
 	Components/Registry.cpp \
+	Components/Manager.cpp \
 	DLL/Library.cpp \
 	DLL/Loader.cpp \
 	Errors/Stack.cpp \
+	File/Temp.cpp \
 	ID/GUID.cpp \
 	System/LastError.cpp \
 	System/Host.cpp \
 	System/Screen.cpp \
+	System/Socket.cpp \
 	Types/Types.cpp \
 	Threads/Mutex.cpp
 
@@ -18,14 +22,17 @@ OS_COMP_FLAGS =
 OS_LINK_FLAGS =
 COMPILER = c++
 
+COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
+
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = CC
 OS_COMP_FLAGS = -n32 -LANG:std
 OS_LINK_FLAGS = -n32 -LANG:std -v
+COMMON_FLAGS  = -g -D_DEBUG -D_COMPILING_USUL -D__SGI
 endif
 
-COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
+
 COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
@@ -34,6 +41,7 @@ LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
 	-I../ 
+
 
 LIBS = 
 
@@ -61,9 +69,11 @@ $(TARGET) : $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -rf ii_files/
+	cd Adaptors ; $(CLEAN)
 	cd Base ; $(CLEAN)
 	cd Components ; $(CLEAN)
 	cd DLL ; $(CLEAN)
+	cd File ; $(CLEAN)
 	cd ID ; $(CLEAN)
 	cd System ; $(CLEAN)
 	cd Types ; $(CLEAN)
@@ -72,9 +82,11 @@ clean:
 clobber:
 	rm -f $(OBJECTS) $(ARCHIVE_LIB) $(SHARED_LIB)
 	rm -rf ii_files/
+	cd Adaptors ; $(CLEAN)
 	cd Base ; $(CLEAN)
 	cd Components ; $(CLEAN)
 	cd DLL ; $(CLEAN)
+	cd File ; $(CLEAN)
 	cd ID ; $(CLEAN)
 	cd System ; $(CLEAN)
 	cd Types ; $(CLEAN)

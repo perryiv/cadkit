@@ -16,6 +16,9 @@
 #include "FXString.h"
 #include "FXHash.h"
 #include "FXStream.h"
+#include "FXSize.h"
+#include "FXPoint.h"
+#include "FXRectangle.h"
 #include "FXToolBar.h"
 
 

@@ -228,7 +228,7 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
     _filterIndex = dialog.getCurrentPattern();
 
     // Get the filenames.
-    FXString *path = dialog.getFilenames();
+    FX::FXString *path = dialog.getFilenames();
     while ( path && !path->empty() )
     {
       std::string temp ( path->text() );

@@ -1,21 +1,23 @@
 SOURCE = \
-	Functors.cpp \
-	ReaderWriterSTL.cpp 
+	Mutex.cpp
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
 OS_LINK_FLAGS =
 COMPILER = c++
 
+COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_OPEN_THREADS_EXTENSIONS
+
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = CC
-OS_COMP_FLAGS = -LANG:std
-OS_LINK_FLAGS = -LANG:std -v
+OS_COMP_FLAGS = -n32 -LANG:std
+OS_LINK_FLAGS = -n32 -LANG:std -v
+COMMON_FLAGS  = -g -D_DEBUG -D_COMPILING_OPEN_THREADS_EXTENSIONS
 endif
 
-COMMON_FLAGS   = -g
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
+
+COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMPbb_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
@@ -23,27 +25,18 @@ LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
 	-I../../ \
-	-I${OSG_INC_DIR} \
-	-I${USUL_INC_DIR} \
-	-I${OPENTHREADS_INC_DIR} \
-	-I${PRODUCER_INC_DIR}
+	-I$(OPENTHREADS_INC_DIR) \
+	-I$(USUL_INC_DIR) 
 
-OSG_LIBS = \
-	-L${OSG_LIB_DIR} \
-	-L${OPENTHREADS_LIB_DIR} \
-	-L${PRODUCER_LIB_DIR} \
-	-losgDB -losg -lProducer -lOpenThreads
 
-USUL_LIBS = \
-	-L${USUL_LIB_DIR} \
-	-lUsul_s
+LIBS = \
+	-L$(OSG_FOX_BIN_DIR) -lUsul_s \
+	-L$(OPENTHREADS_LIB_DIR) -lOpenThreads
 
-LIBS = $(USUL_LIBS) $(OSG_LIBS)
-
-TARGET      = osgdb_stl
+TARGET      = OpenThreadsEx
 ARCHIVE_LIB = lib$(TARGET)_a.a
-SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}
+SHARED_LIB  = lib$(TARGET)_s.so
+BIN_DIR     = $(OSG_FOX_BIN_DIR)/bin
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)

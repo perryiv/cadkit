@@ -40,7 +40,7 @@ namespace File {
 inline unsigned int size ( const std::string &filename )
 {
   struct STAT filebuf;
-  int result ( _stat ( filename.c_str(), &filebuf ) );
+  int result ( STAT ( filename.c_str(), &filebuf ) );
   return ( ( 0 == result ) ? filebuf.st_size : 0 );
 }
 

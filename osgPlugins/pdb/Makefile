@@ -1,12 +1,8 @@
 SOURCE = \
-	Cylinder.cpp \
-	CylinderFactory.cpp \
 	Atom.cpp \
 	Bond.cpp \
-	SphereFactory.cpp \
 	Element.cpp \
 	PeriodicTable.cpp \
-	MaterialChooser.cpp \
 	Molecule.cpp \
 	ReaderWriterPDB.cpp 
 
@@ -44,7 +40,7 @@ OSG_LIBS = \
 
 USUL_LIBS = \
 	-L${USUL_LIB_DIR} \
-	-lUsul_s
+	-lUsul_s -lOsgTools_s
 
 LIBS = $(USUL_LIBS) $(OSG_LIBS)
 

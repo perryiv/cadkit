@@ -34,7 +34,7 @@ public:
   typedef std::exception BaseClass;
 
   // Constructors.
-  Canceled() : BaseClass (  ), _message ( CANCELED_MESSAGE_STRING )
+  Canceled() : BaseClass ( ), _message ( CANCELED_MESSAGE_STRING )
   {
   }
   Canceled ( const std::string &message ) : BaseClass (), _message ( message.empty() ? CANCELED_MESSAGE_STRING : message.c_str() )
@@ -57,6 +57,7 @@ public:
   }
 
   virtual const char* what() const throw() { return _message.c_str(); }
+  
 private:
   std::string _message;
 };

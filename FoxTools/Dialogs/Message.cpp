@@ -726,7 +726,7 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
       for ( Buttons::const_iterator i = _buttons.begin(); i != _buttons.end(); ++i )
       {
         flags = FX::BUTTON_INITIAL | FX::BUTTON_DEFAULT | FX::FRAME_RAISED | FX::FRAME_THICK | FX::LAYOUT_TOP | FX::LAYOUT_LEFT | FX::LAYOUT_CENTER_X;
-        FXButton *button ( new FX::FXButton ( frame, i->c_str(), 0x0, this, Message::ID_CLOSE, flags, 0, 0, 0, 0, 30, 30, 2, 2 ) );
+        FX::FXButton *button ( new FX::FXButton ( frame, i->c_str(), 0x0, this, Message::ID_CLOSE, flags, 0, 0, 0, 0, 30, 30, 2, 2 ) );
       }
     }
   }

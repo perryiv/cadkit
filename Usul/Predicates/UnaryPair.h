@@ -18,6 +18,8 @@
 
 #include "Usul/MPL/SameType.h"
 
+#include <functional>
+
 
 namespace Usul {
 namespace Predicates {

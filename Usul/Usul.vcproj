@@ -613,6 +613,9 @@
 				Name="Containers"
 				Filter="">
 				<File
+					RelativePath=".\Containers\Array.h">
+				</File>
+				<File
 					RelativePath=".\Containers\OctTree.h">
 				</File>
 				<File

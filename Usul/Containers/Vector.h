@@ -45,7 +45,6 @@ public:
   typedef Vector<Sequence,ErrorChecker> this_type;
 
 
-
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Constructor/destructor

@@ -47,6 +47,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="Ws2_32.lib"
 				OutputFile="$(USUL_LIB_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -115,6 +116,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="Ws2_32.lib"
 				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -613,6 +615,12 @@
 				<File
 					RelativePath=".\System\Screen.h">
 				</File>
+				<File
+					RelativePath=".\System\Socket.cpp">
+				</File>
+				<File
+					RelativePath=".\System\Socket.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Types"
@@ -717,9 +725,6 @@
 				</File>
 				<File
 					RelativePath=".\File\Stats.h">
-				</File>
-				<File
-					RelativePath=".\File\Size.h">
 				</File>
 			</Filter>
 			<Filter

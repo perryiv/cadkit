@@ -228,7 +228,7 @@ inline void _getFullPathName ( const std::string &pathname, std::string &fullpat
 {
   char temp [SL_PATHNAME_SAFE_BUFFER_SIZE];
 
-  SL_ASSERT ( 0x0 != ::_fullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
+  SL_VERIFY ( 0x0 != ::_fullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
 
   fullpath = temp;
 }
@@ -244,7 +244,7 @@ inline void _getFullPathName ( const std::wstring &pathname, std::wstring &fullp
 {
   wchar_t temp [SL_PATHNAME_SAFE_BUFFER_SIZE];
 
-  SL_ASSERT ( 0x0 != ::_wfullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
+  SL_VERIFY ( 0x0 != ::_wfullpath ( temp, pathname.c_str(), SL_PATHNAME_SAFE_BUFFER_SIZE ) );
 
   fullpath = temp;
 }

@@ -326,25 +326,5 @@ SOURCE=.\SlList.h
 SOURCE=.\SlStack.h
 # End Source File
 # End Group
-# Begin Group "XML"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlXmlGroup.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlXmlLeaf.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlXmlNode.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlXmlWrite.h
-# End Source File
-# End Group
 # End Target
 # End Project

@@ -9,35 +9,46 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for executing a command.
+//  Interface for notifying.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_COMMAND_H_
-#define _USUL_INTERFACE_COMMAND_H_
+#ifndef _USUL_INTERFACE_NOTIFY_H_
+#define _USUL_INTERFACE_NOTIFY_H_
 
 #include "Usul/Interfaces/IUnknown.h"
+
+#include <string>
 
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct ICommand : public Usul::Interfaces::IUnknown
+template
+<
+  class MessageType, 
+  unsigned long iid
+>
+struct INotify : public Usul::Interfaces::IUnknown
 {
   // Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ICommand );
+  USUL_DECLARE_QUERY_POINTERS ( INotify );
 
   // Id for this interface.
-  enum { IID = 3572469257u };
+  enum { IID = iid };
 
-  // Execute the command.
-  virtual void execute ( Usul::Interfaces::IUnknown *caller ) = 0;
+  // Notify the component.
+  virtual void          notify ( Usul::Interfaces::IUnknown *caller, const MessageType &message ) = 0;
 };
+
+
+typedef INotify < std::string,   1099894744u > INotifyString;
+typedef INotify < unsigned long, 1099894745u > INotifyULong;
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_COMMAND_H_
+#endif // _USUL_INTERFACE_NOTIFY_H_

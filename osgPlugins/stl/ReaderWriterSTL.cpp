@@ -7,9 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #include "ReaderWriterSTL.h"
-
 
 #include "osgDB/ReadFile"
 #include "osgDB/Registry"
@@ -23,29 +21,62 @@
 #include <sstream>
 #include <iostream>
 #include <cassert>
+#include <stdexcept>
+#include <locale>
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterSTL::ReaderWriterSTL() :
-  _facets(),
-  _currentFacet(NULL),
   _polygons()
 {
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 ReaderWriterSTL::~ReaderWriterSTL()
 {
-  // This will delete the facets.
-  this->_init();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does this plugin handle files with the given extension?
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool ReaderWriterSTL::acceptsExtension ( const std::string &ext )
 {
   return osgDB::equalCaseInsensitive ( ext, "stl" );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the class name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 const char* ReaderWriterSTL::className()
 {
   return "STL Reader";
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the node.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, const Options *options )
 {
@@ -74,24 +105,19 @@ ReaderWriterSTL::Result ReaderWriterSTL::readNode ( const std::string &file, con
 
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Group * ReaderWriterSTL::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-#if 0
-
-  for(unsigned int i = 0; i < _facets.size(); ++i)
-  {
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    Facet *facet = _facets.at(i);
-    osg::ref_ptr< osg::Geometry > geometry ( facet->getGeometry() );
-    geode->addDrawable ( geometry.get() );
-    root->addChild ( geode.get() );
-  }
-
-#else
-
+  // A single geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   root->addChild ( geode.get() );
 
@@ -99,64 +125,105 @@ osg::Group * ReaderWriterSTL::_build() const
   Polygons::const_iterator i = _polygons.find ( 3 );
   if ( _polygons.end() != i )
   {
+    // Shortcuts to the vertices and normals.
     const Vertices &v = i->second.first;
     const Normals  &n = i->second.second;
     assert ( n.size() * 3 == v.size() );
 
+    // Make vertices and normals for the geometry.
     osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( v.begin(), v.end() ) );
     osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( n.begin(), n.end() ) );
 
+    // Make geometry and add to geode.
     osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
     geode->addDrawable ( geom.get() );
 
+    // Set vertices and normals.
     geom->setVertexArray ( vertices.get() );
     geom->setNormalArray ( normals.get() );
     geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+    // Interpret every three osg::Vec3 as a triangle.
     geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
   }
 
-#endif
-
+  // Return the root.
   return root.release();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize internal data structures.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void  ReaderWriterSTL::_init()
 {
-  for(unsigned int i = 0; i < _facets.size(); ++i)
-    delete _facets[i];
-  _facets.clear();
-  _currentFacet = NULL;
   _polygons.clear();
 }
 
-//TODO detect if stl is binary or ascii format
-void ReaderWriterSTL::_parse ( std::ifstream &in )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the file is ascii.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ReaderWriterSTL::_isAscii ( const std::string &filename ) const
 {
-  const unsigned int size ( 512 );
-  char buf[size];
+  // Open the file in binary.
+  std::ifstream in ( filename.c_str(), std::ios::binary );
+  if ( !in.is_open() )
+    throw std::runtime_error ( "Error 3535270798: Failed to open file: " + filename );
 
-  in.read(buf, 80);
-  buf[80] = 0;
+  // Skip the header.
+  in.seekg ( 80 );
 
-  bool binaryFlag = false;
-  for(unsigned int i = 0; i < 80; ++i)
+  // Default locale.
+  std::locale loc;
+
+  // Keep count.
+  unsigned long count ( 0 );
+
+  // Loop through the file.
+  while ( EOF != in.peek() )
   {
-    if(buf[i] == 0x0)
-      binaryFlag = true;
+    // See if the character is not ascii.
+    const char c ( in.get() );
+    if ( false == std::isalnum<char> ( c, loc ) &&
+         false == std::isdigit<char> ( c, loc ) &&
+         false == std::isspace<char> ( c, loc ) &&
+         '.' != c &&
+         '-' != c &&
+         '+' != c &&
+         'E' != c &&
+         'e' != c )
+    {
+      // Binary character found.
+      return false;
+    }
+
+    // Count the characters processed (for debugging).
+    ++count;
   }
-  if( binaryFlag )
-  {
-    _parseBinaryFile ( in );
-  }
-  else
-  {
-    in.seekg(0, std::ios_base::beg );
-    _parseAsciiFile( in );
-  }
+
+  // If we get this far then we did not find any binary characters.
+  return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the binary file.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
 {
+  // Skip header.
+  in.seekg ( 80 );
+
   const unsigned int size ( 512 );
   char buf[size];
 
@@ -164,40 +231,40 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
   
   in.read(buf, 4);
 
-  memcpy(&numFacets, buf, 4);
+  ::memcpy(&numFacets, buf, 4);
 
   while ( numFacets > 0 )
   {
     float f[3];
 
-    _currentFacet = new Facet();
     in.read(buf, 50);
-    memcpy(f, buf, 12); // copy first 12 bytes for normal
+    ::memcpy(f, buf, 12); // copy first 12 bytes for normal
     osg::Vec3 n ( f[0], f[1], f[2] );
-    _currentFacet->setNormal ( n );
     _polygons[3].second.push_back ( n );
 
-    memcpy(f, buf+12, 12);  // copy first vertex
+    ::memcpy(f, buf+12, 12);  // copy first vertex
     osg::Vec3 v0 ( f[0], f[1], f[2] );
-    _currentFacet->setVertex ( v0 );
     _polygons[3].first.push_back ( v0 );
 
-    memcpy(f, buf+24, 12);  // copy second vertex
+    ::memcpy(f, buf+24, 12);  // copy second vertex
     osg::Vec3 v1 ( f[0], f[1], f[2] );
-    _currentFacet->setVertex ( v1 );
     _polygons[3].first.push_back ( v1 );
 
-    memcpy(f, buf+36, 12);  // copy third vertex
+    ::memcpy(f, buf+36, 12);  // copy third vertex
     osg::Vec3 v2 ( f[0], f[1], f[2] );
-    _currentFacet->setVertex ( v2 );
     _polygons[3].first.push_back ( v2 );
     
-    _facets.push_back(_currentFacet);
-    _currentFacet = NULL;
-    numFacets--;
+    --numFacets;
   }
 }
   
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the ascii file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
 {
   const unsigned int size ( 512 );
@@ -219,12 +286,10 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
     }
     else if (type == "facet")
     {
-      _currentFacet = new Facet();
       std::string normal;
       in >> normal;
       osg::Vec3 n;
       in >> n[0] >> n[1] >> n[2];
-      _currentFacet->setNormal ( n );
       normals.push_back ( n );
     }
     else if (type == "outer")
@@ -234,7 +299,6 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
     {
       osg::Vec3 v;
       in >> v[0] >> v[1] >> v[2];
-      _currentFacet->setVertex ( v );
       vertices.push_back ( v );
     }
     else if (type == "endloop")
@@ -256,8 +320,6 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
     }
     else if (type == "endfacet")
     {
-      _facets.push_back(_currentFacet);
-      _currentFacet = NULL;
     }
     else if (type == "endsolid")
     {
@@ -265,27 +327,42 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
   }
 }
 
-ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &file, const Options *options )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &filename, const Options *options )
 {
   // Make sure the internal data members are initialized.
   this->_init();
 
   // Make sure we handle files with this extension.
-  if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
+  if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
     return ReadResult::FILE_NOT_HANDLED;
 
-  // Open the file.
-  std::ifstream in ( file.c_str() );
+  // See if the file is ascii.
+  if ( this->_isAscii ( filename ) )
+  {
+    std::ifstream in ( filename.c_str() );
+    if ( !in.is_open() )
+      throw std::runtime_error ( "Error 2346450991: Failed to open ascii file: " + filename );
+    this->_parseAsciiFile ( in );
+  }
 
-  // Make sure it opened.
-  if ( !in.is_open() )
-    return ReadResult::ERROR_IN_READING_FILE;
-  
-  // Parse all the file and build internal data.
-  this->_parse ( in );
+  // Otherwise, read the binary file.
+  else
+  {
+    std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
+    if ( !in.is_open() )
+      throw std::runtime_error ( "Error 3162884175: Failed to open binary file: " + filename );
+    this->_parseBinaryFile ( in );
+  }
 
   // Build the scene.
-  osg::ref_ptr<osg::Group> root ( _build() );
+  osg::ref_ptr<osg::Group> root ( this->_build() );
 
   // Initialized again to free accumulated data.
   this->_init();
@@ -293,5 +370,12 @@ ReaderWriterSTL::Result ReaderWriterSTL::_read ( const std::string &file, const 
   // Return the scene
   return root.release();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register this class as an OSG plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 osgDB::RegisterReaderWriterProxy<ReaderWriterSTL> g_ReaderWriter_STL_proxy;

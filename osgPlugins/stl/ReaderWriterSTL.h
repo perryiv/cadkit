@@ -12,8 +12,6 @@
 
 #include "osgDB/ReaderWriter"
 
-#include "facet.h"
-
 #include <string>
 #include <list>
 #include <map>
@@ -44,6 +42,7 @@ protected:
 
 private:
 
+  bool                    _isAscii ( const std::string &filename ) const;
   void                    _parseBinaryFile( std::ifstream &in );
   void                    _parseAsciiFile( std::ifstream &in );
 
@@ -52,8 +51,6 @@ private:
   typedef std::pair < Vertices, Normals > PolygonList;
   typedef std::map < unsigned int, PolygonList > Polygons;
 
-  std::vector < Facet* > _facets;
-  Facet *_currentFacet;
   Polygons _polygons;
 };
 

@@ -29,7 +29,7 @@
 # include <map>
 #endif
 
-
+/*
 namespace CadKit
 {
 class DB_SG_API DbSgDatabase : public DbBaseTarget,
@@ -150,5 +150,5 @@ protected:
 };
 
 }; // namespace CadKit
-
+*/
 #endif // _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_DATABASE_H_

@@ -48,6 +48,11 @@ namespace CadKit { DbJtDatabase *_traverser = NULL; }
 #define UNKNOWN(ptr)  SlRefPtr<CadKit::IUnknown> ( ptr ? ptr->queryInterface ( CadKit::IUnknown::IID ) : NULL )
 #define THIS_UNKNOWN  UNKNOWN ( this )
 
+// Don't bother formatting the string if the controller won't print it.
+#define PROGRESS_LEVEL(priority)\
+  if ( priority <= _progressPriorityLevel )\
+    this->_notifyProgress
+
 using namespace CadKit;
 
 // These live in DbJtTraverser for now.
@@ -75,7 +80,8 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
-  _shapeData ( new ShapeData ( NULL ) )
+  _shapeData ( new ShapeData ( NULL ) ),
+  _progressPriorityLevel ( 0 ) // Send everything.
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _assemblies.get() );
@@ -137,6 +143,8 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
     return static_cast<IQueryShapeColorsVec4f *>(this);
   case IQueryShapeTexCoordsVec2f::IID:
     return static_cast<IQueryShapeTexCoordsVec2f *>(this);
+  case IMessagePriority::IID:
+    return static_cast<IMessagePriority *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -519,7 +527,7 @@ bool DbJtDatabase::_startAssembly ( eaiAssembly *assembly )
   SL_PRINT3 ( "In DbJtDatabase::_startAssembly(), assembly = %X, level = %d\n", assembly, _current->getLevel() );
   SL_ASSERT ( assembly );
 
-  if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", _current->getLevel(), assembly->name() ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Assembly, level %2d, name: %s", _current->getLevel(), assembly->name() ) ) )
     return false;
 
   // Try this interface.
@@ -576,7 +584,7 @@ bool DbJtDatabase::_startPart ( eaiPart *part )
   SL_PRINT3 ( "In DbJtDatabase::_startPart(), part = %X, level = %d\n", part, _current->getLevel() );
   SL_ASSERT ( part );
 
-  if ( false == PROGRESS ( FORMAT ( "    part, level %2d, name: %s", _current->getLevel(), part->name() ) ) )
+  if ( false == PROGRESS ( FORMAT ( "    Part, level %2d, name: %s", _current->getLevel(), part->name() ) ) )
     return false;
 
   // Initialize.
@@ -649,7 +657,7 @@ bool DbJtDatabase::_startInstance ( eaiInstance *instance )
   SL_PRINT3 ( "In DbJtDatabase::_startInstance(), instance = %X, level = %d\n", instance, _current->getLevel() );
   SL_ASSERT ( instance );
 
-  if ( false == PROGRESS ( FORMAT ( "instance, level %2d, name: %s", _current->getLevel(), instance->name() ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Instance, level %2d, name: %s", _current->getLevel(), instance->name() ) ) )
     return false;
 
   // Try this interface.
@@ -715,6 +723,8 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
   // Get the number of LODs.
   int numLods = part->numPolyLODs();
 
+  PROGRESS_LEVEL ( 2 ) ( FORMAT ( "\tLODs: %d", numLods ) );
+
   // Loop through the LODs.
   for ( int i = 0; i < numLods; ++i )
   {
@@ -761,6 +771,8 @@ bool DbJtDatabase::_processLod ( eaiPart *part, const int &whichLod )
 
   // Get the number of shapes for this LOD.
   int numShapes = part->numPolyShapes ( whichLod );
+
+  PROGRESS_LEVEL ( 3 ) ( FORMAT ( "\t\tShapes: %d", numShapes ) );
 
   // Loop through the shapes.
   for ( int i = 0; i < numShapes; ++i )
@@ -1578,6 +1590,8 @@ bool DbJtDatabase::_setShapeData ( ShapeHandle sh )
 bool DbJtDatabase::_setShapeData ( eaiShape *shape )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setShapeData(), this = %X, shape = %X\n", this, shape );
+  SL_ASSERT ( NULL != _current.get() );
+  SL_ASSERT ( NULL != _current->getPart() );
 
   // Handle trivial case.
   if ( NULL == shape )
@@ -1606,11 +1620,13 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
   // Get the number of sets.
   int numSets ( shape->numOfSets() );
 
+  PROGRESS_LEVEL ( 4 ) ( FORMAT ( "\t\t\tSets: %d", numSets ) );
+
   // Loop through all the sets.
   for ( int i = 0; i < numSets; ++i )
   {
     // Initialize.
-    vertexCount = normalCount = colorCount = textureCount = -1;
+    vertexCount = normalCount = colorCount = textureCount = 0;
     gotVertices = false;
 
     // Keep this in the loop. The destructor will delete the internal array.
@@ -1650,6 +1666,8 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
         // This iteration worked.
         gotVertices = true;
       }
+
+      PROGRESS_LEVEL ( 5 ) ( FORMAT ( "\t\t\t\tVertices: %4d, Normals: %4d, Colors: %4d, Texture Coordinates: %4d", i + 1, numSets, vertexCount, normalCount, colorCount, textureCount ) );
     }
 
     // If we didn't get any vertices...
@@ -1979,6 +1997,28 @@ bool DbJtDatabase::getColorBinding ( ShapeHandle shape, VertexBinding &binding )
 
   // Set the binding.
   binding = _shapeData->getColorBinding();
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the message priority level.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, const unsigned int &priority )
+{
+  SL_PRINT4 ( "In DbJtDatabase::setMessagePriorityLevel(), this = %X, type = %d, priority = %d\n", this, type, priority );
+
+  // We only handle progress priority levels.
+  if ( MESSAGE_PROGRESS != type )
+    return false;
+
+  // Set the level.
+  _progressPriorityLevel = priority;
 
   // It worked.
   return true;

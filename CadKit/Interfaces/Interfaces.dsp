@@ -84,6 +84,19 @@ LIB32=link.exe -lib
 # Name "Interfaces - Win32 Debug"
 # Begin Source File
 
+SOURCE=.\Enum.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\Handles.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -241,6 +254,19 @@ SOURCE=.\ILoadOptions.h
 # Begin Source File
 
 SOURCE=.\IMessageNotify.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IMessagePriority.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

@@ -116,8 +116,8 @@ protected:
   void                    _clearClientDataMaps();
 
   bool                    _notifyError    ( const std::string &message, const unsigned long &id );
-  bool                    _notifyMessage  ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type );
-  bool                    _notifyProgress ( const std::string &message );
+  bool                    _notifyMessage  ( const std::string &message, const unsigned long &id, const MessageType &type );
+  bool                    _notifyProgress ( const std::string &message, const unsigned long &priority = 1 );
   bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
 
   SL_DECLARE_REFERENCE_POINTER ( DbBaseObject );

@@ -33,6 +33,7 @@
 #include "Interfaces/IQueryVertices.h"
 #include "Interfaces/IQueryNormals.h"
 #include "Interfaces/IQueryColors.h"
+#include "Interfaces/IQueryTexCoords.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -59,7 +60,9 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public ISetQuery,
                                public IQueryShapeVerticesVec3f,
                                public IQueryShapeNormalsVec3f,
-                               public IQueryShapeColorsVec3f
+                               public IQueryShapeColorsVec4f,
+                               public IQueryShapeColorsVec3f,
+                               public IQueryShapeTexCoordsVec2f
 {
 public:
 
@@ -210,7 +213,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IQueryShapeColorsVec3f interface.
+  //  IQueryShapeColorsVec3f and IQueryShapeColorsVec4f interfaces.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -219,6 +222,18 @@ public:
 
   // Get the normals.
   virtual bool            getColors ( ShapeHandle shape, IQueryShapeColorsVec3f::ColorSetter &setter ) const;
+
+  // Get the normals.
+  virtual bool            getColors ( ShapeHandle shape, IQueryShapeColorsVec4f::ColorSetter &setter ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryShapeTexCoordsVec2f interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the texture coordinates.
+  virtual bool            getTextureCoords ( ShapeHandle shape, IQueryShapeTexCoordsVec2f::TexCoordSetter &setter ) const;
 
 protected:
 

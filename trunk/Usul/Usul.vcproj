@@ -169,6 +169,9 @@
 					RelativePath="Algorithms\Extract.h">
 				</File>
 				<File
+					RelativePath=".\Algorithms\Polygons.h">
+				</File>
+				<File
 					RelativePath=".\Algorithms\Sphere.h">
 				</File>
 				<File

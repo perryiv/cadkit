@@ -45,31 +45,13 @@
 #include "DbJtTraverser.h"
 #include "DbJtVisApiArray.h"
 
-// This hack is because DMDataTk/eaiStandard.h (which is indirectly included 
-// below) includes <iostream.h>. This causes VC++ error C2874 with STLport.
-#ifdef _WIN32
-#define EAI_STANDARD_HXX // From DMDataTk/eaiStandard.h
-#define EAI_TOOLKIT_API __declspec(dllimport)
-enum { eai_ERROR = 0, eai_OK = 1 };
-enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, 
-             METERS, KILOMETERS, INCHES, FEET, YARDS, MILES, MILS };
-#endif // _WIN32
-
-#include "DMDataTk/eaiEntityFactory.h" // Doesn't compile in DbJtPrecompiled.h
-#include "DMDataTk/eaiCADImporter.h"
-#include "DMDataTk/eaiTraverser.h"
-#include "DMDataTk/eaiAttrib.h"
-#include "DMDataTk/eaiLineStripSet.h"
-#include "DMDataTk/eaiPointSet.h"
-#include "DMDataTk/eaiPolygonSet.h"
-#include "DMDataTk/eaiTriFanSet.h"
-#include "DMDataTk/eaiTriStripSet.h"
+#include "Standard/SlAssert.h"
+#include "Standard/SlPrint.h"
+#include "Standard/SlStringFunctions.h"
+#include "Standard/SlInline.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlAssert.h"
-# include "Standard/SlPrint.h"
-# include "Standard/SlStringFunctions.h"
-# include "Standard/SlInline.h"
+# include "DbJtVisApiHeaders.h"
 # include <iostream>
 #endif
 
@@ -166,40 +148,6 @@ bool DbJtTraverser::init()
   // We are now initialized.
   this->addFlags ( _INITIALIZED );
   return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-IUnknown *DbJtTraverser::queryInterface ( const unsigned long &iid )
-{
-  SL_PRINT2 ( "In DbJtTraverser::queryInterface(), this = %X\n", this );
-
-  switch ( iid )
-  {
-  case IID_IError:
-    return static_cast<IError *>(this);
-  default:
-    return NULL;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Report an error.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbJtTraverser::errorNotify ( const std::string &error ) const
-{
-  SL_PRINT2 ( "In DbJtTraverser::errorNotify(), this = %X\n", this );
-
-  return true; // TODO.
 }
 
 
@@ -1106,7 +1054,7 @@ const unsigned int &DbJtTraverser::getCustomerNumber()
     return _customerNumber;
 
   // Try to get it from the environment.
-  const char *temp = ::getenv ( "DMDTK_CUSTOMER_NUMBER" );
+  const char *temp = ::getenv ( "DMDTK_CUSTOMER_ID" );
   if ( temp ) 
     _customerNumber = ::atoi ( temp );
 

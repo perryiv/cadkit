@@ -51,6 +51,9 @@ class IUnknown
 {
 public:
 
+  // Id for this interface.
+  enum { IID = 1032561430 };
+
   // See if the interface is supported.
   virtual IUnknown *      queryInterface ( const unsigned long &iid ) = 0;
 
@@ -62,7 +65,9 @@ public:
   virtual unsigned long   getRefCount() const = 0;
 };
 
-const unsigned long IID_IUnknown ( 1032561430 );
+// So that SlRefPtr works with IUnknown.
+inline void _incrementPointerReferenceCount ( IUnknown *p ) { p->ref(); }
+inline void _decrementPointerReferenceCount ( IUnknown *p ) { p->unref(); }
 
 }; // namespace CadKit
 

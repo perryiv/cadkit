@@ -37,30 +37,29 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SgApi.h: Defines what SG_API means.
+//  IWarningNotify: Interface for reporting warnings.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
-#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#ifndef _CADKIT_INTERFACE_WARNING_NOTIFY_H_
+#define _CADKIT_INTERFACE_WARNING_NOTIFY_H_
+
+#include "IUnknown.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Here we define what SG_API means.
-//
-///////////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+class IWarningNotify : public IUnknown
+{
+public:
 
-#ifdef _WIN32
-# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY
-#   define SG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
-# else
-#   define SG_API __declspec(dllimport) // The classes will be imported into the client's code.
-# endif
-#else // _WIN32
-# define SG_API
-#endif
+  // Id for this interface.
+  enum { IID = 1032644947 };
 
+  // Report a warning. Return true if the caller should continue.
+  virtual bool            warningNotify ( const std::string &Warning, const unsigned long &id ) const = 0;
+};
 
-#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+}; // namespace CadKit
+
+#endif // _CADKIT_INTERFACE_WARNING_NOTIFY_H_

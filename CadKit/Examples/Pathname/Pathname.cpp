@@ -12,10 +12,9 @@
 using namespace CadKit;
 
 #include <iostream>
-using namespace std;
 
-// Works with either, take your pick.
-#if 0
+// Works with either, take your pick (except VC++ using STLport).
+#if 1
 typedef std::basic_string<char>    StringA;
 typedef std::basic_string<wchar_t> StringW;
 #else

@@ -45,17 +45,17 @@
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_TRAVERSER_H_
 
 #include "DbJtApi.h"
-#include "Interfaces/IError.h"
+
+#include "Standard/SlRefBase.h"
+#include "Standard/SlString.h"
+#include "Standard/SlMatrix4.h"
+#include "Standard/SlMaterial.h"
+#include "Standard/SlVec4.h"
+#include "Standard/SlVec3.h"
+#include "Standard/SlVec2.h"
+#include "Standard/SlBitmask.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlRefBase.h"
-# include "Standard/SlString.h"
-# include "Standard/SlMatrix4.h"
-# include "Standard/SlMaterial.h"
-# include "Standard/SlVec4.h"
-# include "Standard/SlVec3.h"
-# include "Standard/SlVec2.h"
-# include "Standard/SlBitmask.h"
 # include <vector>
 #endif
 
@@ -66,7 +66,7 @@ class eaiShape;
 
 namespace CadKit
 {
-class DB_JT_API DbJtTraverser : public SlRefBase, public IError
+class DB_JT_API DbJtTraverser : public SlRefBase
 {
 public:
 
@@ -117,9 +117,6 @@ public:
   // Handle to an entity.
   typedef void * EntityHandle;
 
-  // Report an error.
-  virtual bool            errorNotify ( const std::string &error ) const;
-
   // Get the current entity.
   EntityHandle            getCurrentEntity() const { return _currentNode; }
 
@@ -144,14 +141,8 @@ public:
   // Get the last error.
   const std::string &     getLastError() const { return _error; }
 
-  // Get the reference count.
-  virtual unsigned long   getRefCount() const { return SlRefBase::getRefCount(); }
-
   // Initialize.
   bool                    init();
-
-  // See if the interface is supported.
-  virtual IUnknown *      queryInterface ( const unsigned long &iid );
 
   // Set the client's callback.
   void                    setCallback ( DbJtTraverserCB *callback, const void *clientData );
@@ -163,23 +154,10 @@ public:
   bool                    traverse ( const char *filename );
 
   // Reference/unreference this instance.
-  virtual void            ref()   { this->_incrementReferenceCount(); }
-  virtual void            unref() { this->_decrementReferenceCount(); }
+  void                    ref()   { this->_incrementReferenceCount(); }
+  void                    unref() { this->_decrementReferenceCount(); }
 
 protected:
-
-  virtual ~DbJtTraverser();
-
-  static DbJtTraverser *  _getCurrent();
-  eaiMaterial *           _getMaterial ( EntityHandle entity ) const;
-  eaiShape *              _getShape ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape ) const;
-
-  bool                    _sendMessage ( const Message &message );
-  static void             _setCurrent ( DbJtTraverser *traverser );
-
-  bool                    _traverse ( const char *filename );
-  static int              _traverseCallback ( eaiHierarchy *node, int level );
-  int                     _traverseNotify ( eaiHierarchy *node, int level );
 
   // Internal flags.
   enum
@@ -194,6 +172,19 @@ protected:
   const void *_clientData;
   int _currentLevel;
   unsigned int _customerNumber;
+
+  virtual ~DbJtTraverser();
+
+  static DbJtTraverser *  _getCurrent();
+  eaiMaterial *           _getMaterial ( EntityHandle entity ) const;
+  eaiShape *              _getShape ( EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape ) const;
+
+  bool                    _sendMessage ( const Message &message );
+  static void             _setCurrent ( DbJtTraverser *traverser );
+
+  bool                    _traverse ( const char *filename );
+  static int              _traverseCallback ( eaiHierarchy *node, int level );
+  int                     _traverseNotify ( eaiHierarchy *node, int level );
 
   SL_DECLARE_REFCOUNT_TYPE ( DbJtTraverser );
   SL_DECLARE_DYNAMIC_CLASS ( DbJtTraverser, 0x00001054 );

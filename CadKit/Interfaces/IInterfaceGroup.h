@@ -37,30 +37,38 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SgApi.h: Defines what SG_API means.
+//  IInterfaceGroup: A collection of IUnknown interfaces.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
-#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#ifndef _CADKIT_INTERFACE_INTERFACE_GROUP_H_
+#define _CADKIT_INTERFACE_INTERFACE_GROUP_H_
+
+#include "IUnknown.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Here we define what SG_API means.
-//
-///////////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+class IInterfaceGroup : public IUnknown
+{
+public:
 
-#ifdef _WIN32
-# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY
-#   define SG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
-# else
-#   define SG_API __declspec(dllimport) // The classes will be imported into the client's code.
-# endif
-#else // _WIN32
-# define SG_API
-#endif
+  // Id for this interface.
+  enum { IID = 1032636764 };
 
+  // Add the interface.
+  virtual void            addInterface ( IUnknown *unknown ) = 0;
 
-#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+  // Get the number of unknowns.
+  virtual unsigned int    getNumInterfaces() const = 0;
+
+  // Remove the interface. Returns the number of occurances removed.
+  virtual unsigned int    removeInterface ( IUnknown *unknown ) = 0;
+
+  // Remove all interfaces.
+  virtual void            removeAllInterfaces() = 0;
+};
+
+}; // namespace CadKit
+
+#endif // _CADKIT_INTERFACE_INTERFACE_GROUP_H_

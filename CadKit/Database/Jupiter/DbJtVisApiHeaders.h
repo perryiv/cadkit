@@ -37,30 +37,31 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SgApi.h: Defines what SG_API means.
+//  DbJtVisApiHeaders: Include this to get the VisAPI headers.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
-#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#ifndef _CADKIT_DATABASE_JUPITER_VIS_API_HEADERS_H_
+#define _CADKIT_DATABASE_JUPITER_VIS_API_HEADERS_H_
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Here we define what SG_API means.
-//
-///////////////////////////////////////////////////////////////////////////////
-
+// This hack is because DMDataTk/eaiStandard.h (which is indirectly included 
+// below) includes <iostream.h>. This causes VC++ error C2874 with STLport.
 #ifdef _WIN32
-# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY
-#   define SG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
-# else
-#   define SG_API __declspec(dllimport) // The classes will be imported into the client's code.
-# endif
-#else // _WIN32
-# define SG_API
-#endif
+#define EAI_STANDARD_HXX // From DMDataTk/eaiStandard.h
+#define EAI_TOOLKIT_API __declspec(dllimport)
+enum { eai_ERROR = 0, eai_OK = 1 };
+enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, 
+             METERS, KILOMETERS, INCHES, FEET, YARDS, MILES, MILS };
+#endif // _WIN32
 
+#include "DMDataTk/eaiEntityFactory.h" // Doesn't compile in DbJtPrecompiled.h
+#include "DMDataTk/eaiCADImporter.h"
+#include "DMDataTk/eaiTraverser.h"
+#include "DMDataTk/eaiAttrib.h"
+#include "DMDataTk/eaiLineStripSet.h"
+#include "DMDataTk/eaiPointSet.h"
+#include "DMDataTk/eaiPolygonSet.h"
+#include "DMDataTk/eaiTriFanSet.h"
+#include "DMDataTk/eaiTriStripSet.h"
 
-#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#endif // _CADKIT_DATABASE_JUPITER_VIS_API_HEADERS_H_

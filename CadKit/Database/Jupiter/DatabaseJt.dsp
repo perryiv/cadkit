@@ -112,6 +112,22 @@ SOURCE=.\DbJtPrecompiled.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\DbJtDatabase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtDatabase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtTargets.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtTargets.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbJtTraverser.cpp
 # End Source File
 # Begin Source File
@@ -121,6 +137,10 @@ SOURCE=.\DbJtTraverser.h
 # Begin Source File
 
 SOURCE=.\DbJtVisApiArray.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtVisApiHeaders.h
 # End Source File
 # End Group
 # Begin Group "DLL"

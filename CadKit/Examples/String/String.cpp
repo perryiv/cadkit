@@ -53,10 +53,10 @@ void testSplit()
   CadKit::toLower ( s2 );
   std::wcout << s2 << std::endl;
 
-  SlAString s3 (  CadKit::format ( "int = %d, double = %f, string = %s", 2, 2.0,  "hi" ) );
+  SlAString s3 (  CadKit::getString ( "int = %d, double = %f, string = %s", 2, 2.0,  "hi" ) );
   std::cout << s3 << std::endl;
 
-  SlWString s4 ( CadKit::format ( L"int = %d, double = %f, string = %s", 2, 2.0, L"hi" ) );
+  SlWString s4 ( CadKit::getString ( L"int = %d, double = %f, string = %s", 2, 2.0, L"hi" ) );
   std::wcout << s4 << std::endl;
 
   SlAString s5 (  "To be or not to be, that is the question" );

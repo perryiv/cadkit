@@ -414,11 +414,11 @@ template<class Char, class String> inline void format ( String &str, const Char 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Format the string.
+//  Return a formated string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class Char> inline std::basic_string<Char> format ( const Char *f, ... )
+template<class Char> inline std::basic_string<Char> getString ( const Char *f, ... )
 {
    SL_ASSERT ( f );
 

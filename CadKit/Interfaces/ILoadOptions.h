@@ -37,30 +37,57 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SgApi.h: Defines what SG_API means.
+//  ILoadOptions: Interface for setting load options.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
-#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+#ifndef _CADKIT_INTERFACE_LOAD_OPTIONS_H_
+#define _CADKIT_INTERFACE_LOAD_OPTIONS_H_
+
+#include "IUnknown.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Here we define what SG_API means.
-//
-///////////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+class ILoadOptions : public IUnknown
+{
+public:
 
-#ifdef _WIN32
-# pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY
-#   define SG_API __declspec(dllexport) // We are compiling this library so the classes are exported.
-# else
-#   define SG_API __declspec(dllimport) // The classes will be imported into the client's code.
-# endif
-#else // _WIN32
-# define SG_API
-#endif
+  // Id for this interface.
+  enum { IID = 1032647722 };
 
+  // Possible assembly load options (haven't played with this yet...)
+  enum AssemblyLoadOption
+  {
+    INSTANCE_ASSEMBLY, // Load instances?
+    EXPLODE_ASSEMBLY   // Explode instances into parts?
+  };
 
-#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_API_H_
+  // Possible brep load options.
+  enum BrepLoadOption
+  {
+    TESS_ONLY, // Tessellation only.
+    BREP_ONLY, // Boundary-Representation data (NURBS curves, surfaces, etc).
+    ALL
+  };
+
+  // Possible shape load options.
+  enum ShapeLoadOption
+  {
+    ALL_LODS,
+    HIGH_LOD
+  };
+
+  // Set the assembly load option.
+  virtual void            setAssemblyLoadOption ( const AssemblyLoadOption &option ) = 0;
+
+  // Set the brep load option.
+  virtual void            setBrepLoadOption ( const BrepLoadOption &option ) = 0;
+
+  // Set the shape load option.
+  virtual void            setShapeLoadOption ( const ShapeLoadOption &option ) = 0;
+};
+
+}; // namespace CadKit
+
+#endif // _CADKIT_INTERFACE_LOAD_OPTIONS_H_

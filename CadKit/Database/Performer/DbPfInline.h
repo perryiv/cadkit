@@ -50,12 +50,25 @@ inline SlRefPtr<pfGroup> createGroup ( HandleType entity, InterfaceType *query, 
   {
     // Note: docs say argument has to be zero. Also, unlike OSG, this will 
     // copy down to (but not including) the leaf nodes.
-    group = dynamic_cast<pfDCS *> ( cloneMe->clone ( 0 ) );
+    pfNode *node = cloneMe->clone ( 0 );
+
+    // Should be true.
+    SL_ASSERT ( node->isOfType ( pfDCS::getClassType() ) );
+
+    // Assign the group.
+    group = reinterpret_cast<pfDCS *> ( node );
   }
+
+  // Otherwise, just make a new one.
   else
+  {
     group = new pfDCS;
+  }
+
   if ( group.isNull() )
+  {
     return NULL;
+  }
 
   // Set the name.
   group->setName ( query->getName ( entity ).c_str() );

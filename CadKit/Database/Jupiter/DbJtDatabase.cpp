@@ -225,8 +225,8 @@ bool DbJtDatabase::readData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
 
   // Try to traverse.
-  try
-  {
+//  try
+//  {
     if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", _globalVisApi.getCustomerId() ) ) )
       return false;
 
@@ -242,24 +242,24 @@ bool DbJtDatabase::readData ( const std::string &filename )
 
     // Traverse the database.
     return this->_traverse ( filename );
-  }
-
-  // Catch any exceptions.
-  catch ( const std::exception &e )
-  {
-    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e.what() ), 0 );
-    return false;
-  }
-  catch ( const char *e )
-  {
-    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e ), 0 );
-    return false;
-  }
-  catch ( ... )
-  {
-    ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename.c_str() ), 0 );
-    return false;
-  }
+//  }
+//
+//  // Catch any exceptions.
+//  catch ( const std::exception &e )
+//  {
+//    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e.what() ), 0 );
+//    return false;
+//  }
+//  catch ( const char *e )
+//  {
+//    ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e ), 0 );
+//    return false;
+//  }
+//  catch ( ... )
+//  {
+//    ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename.c_str() ), 0 );
+//    return false;
+//  }
 }
 
 

@@ -26,6 +26,8 @@ using namespace CadKit;
 
 template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 {
+  typedef typename Vec::Type Type;
+
   // Print them to stdout using vector's "<<" operator.
   std::cout << "A01: v1 = " << v1 << std::endl;
   std::cout << "A02: v2 = " << v2 << std::endl;
@@ -79,13 +81,13 @@ template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 
   // Interpolate.
   Vec v9;
-  Vec::Type u = static_cast<Vec::Type>(0.25);
+  Type u = static_cast<Type>(0.25);
   v9.interpolate ( v1, v2, u );
   std::cout << "A19: v9.interpolate ( v1, v2, " << u << " ), v9 = " << v9 << std::endl;
 
   // Equality test.
   std::cout << "A20: v1.isEqual ( v2 ) = " << v1.isEqual ( v2 ) << std::endl;
-  Vec::Type tol = static_cast<Vec::Type>(0.0001);
+  Type tol = static_cast<Type>(0.0001);
   std::cout << "A21: v1.isEqual ( v2, " << tol << " ) = " << v1.isEqual ( v2, tol ) << std::endl;
 
   // Inequality test.
@@ -94,13 +96,13 @@ template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 
   // Normalize, catch the old length.
   Vec v10 = v1;
-  Vec::Type oldLength1 = v10.getLength();
+  Type oldLength1 = v10.getLength();
   std::cout << "A24: before normalizing, v10 = " << v10 << ", length = " << oldLength1 << std::endl;
-  Vec::Type oldLength2 = v10.normalize();
+  Type oldLength2 = v10.normalize();
   SL_ASSERT ( oldLength1 == oldLength2 );
-  Vec::Type newLength = v10.getLength();
+  Type newLength = v10.getLength();
   std::cout << "A25: after normalizing, v10 = " << v10 << ", length = " << newLength << std::endl;
-  std::cout << "A26: 1 - length = " << static_cast<Vec::Type>(1) - newLength << std::endl;
+  std::cout << "A26: 1 - length = " << static_cast<Type>(1) - newLength << std::endl;
 
   // Print the dimension.
   std::cout << "A27: Vec::getDimension() = " << Vec::getDimension() << std::endl;
@@ -109,8 +111,10 @@ template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 
 template<class Vec> void testVector4 ( Vec &v1, Vec &v2 )
 {
+  typedef typename Vec::Type Type;
+
   // Print the vector's elements.
-  Vec::Type x, y, z, w;
+  Type x, y, z, w;
   v1.getValue ( x, y, z, w );
   std::cout << "B01: v1's (x,y,z,w) = " << x << " " << y << " " << z << " " << w << std::endl;
   v2.getValue ( x, y, z, w );
@@ -123,8 +127,10 @@ template<class Vec> void testVector4 ( Vec &v1, Vec &v2 )
 
 template<class Vec> void testVector3 ( Vec &v1, Vec &v2 )
 {
+  typedef typename Vec::Type Type;
+
   // Print the vector's elements.
-  Vec::Type x, y, z;
+  Type x, y, z;
   v1.getValue ( x, y, z );
   std::cout << "C01: v1's (x,y,z) = " << x << " " << y << " " << z << std::endl;
   v2.getValue ( x, y, z );
@@ -137,8 +143,10 @@ template<class Vec> void testVector3 ( Vec &v1, Vec &v2 )
 
 template<class Vec> void testVector2 ( Vec &v1, Vec &v2 )
 {
+  typedef typename Vec::Type Type;
+
   // Print the vector's elements.
-  Vec::Type x, y;
+  Type x, y;
   v1.getValue ( x, y );
   std::cout << "D01: v1's (x,y) = " << x << " " << y << std::endl;
   v2.getValue ( x, y );

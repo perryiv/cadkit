@@ -259,6 +259,10 @@ SOURCE=.\SlStringReplace.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlStringTrim.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlUnicode.h
 # End Source File
 # End Group

@@ -88,4 +88,4 @@ template<class StringType> inline void replaceSubStrings (
 }; // namespace CadKit.
 
 
-#endif // _CADKIT_STANDARD_LIBRARY_TEMPLATE_STRING_CLASS_
+#endif // _CADKIT_STANDARD_LIBRARY_TEMPLATE_STRING_REPLACE_CLASS_

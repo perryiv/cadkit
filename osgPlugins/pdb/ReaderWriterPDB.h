@@ -22,14 +22,13 @@
 #include "Atom.h"
 #include "MaterialChooser.h"
 
-namespace osg { class Group; class LOD; };
+namespace osg { class Group; class LOD; class Geode; };
 
 
 class ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
 
-  //typedef std::pair<std::string,osg::Vec4> Atom;
   typedef std::list<Atom> Atoms;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
@@ -44,16 +43,26 @@ public:
 protected:
 
   osg::Group *            _build() const;
+
   void                    _init();
-  osg::LOD *              _makeAtom ( const Atom &atom ) const;
+
+  osg::LOD *              _makeAtom   ( const Atom &atom ) const;
+  osg::Geode *            _makeSphere ( const osg::Vec3 &center, float radius, float detail ) const;
+  osg::Geode *            _makeCube   ( const osg::Vec3 &center, float size ) const;
+
   Result                  _read ( const std::string &, const Options * );
+
   void                    _parse ( std::ifstream &in );
+
+  void                    _setCentersAndRanges ( osg::LOD *lod ) const;
 
 private:
 
   Atoms _atoms;
   osg::BoundingBox _bbox;
   MaterialChooser materialChooser;
+  float _maxDistanceFactor;
+  float _lastRangeMax;
 };
 
 

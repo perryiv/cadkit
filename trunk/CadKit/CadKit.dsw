@@ -33,7 +33,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "DemoJt2Pfb"=.\Demos\Jt2Pfb\DemoJt2Pfb.dsp - Package Owner=<4>
+Project: "DemoJt2Pfb"=.\Demos\Jupiter2Performer\DemoJt2Pfb.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -51,7 +51,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "DemoJt2Xml"=.\Demos\Jt2Xml\DemoJt2Xml.dsp - Package Owner=<4>
+Project: "DemoJt2Xml"=.\Demos\Jupiter2Xml\DemoJt2Xml.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

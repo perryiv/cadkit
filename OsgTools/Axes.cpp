@@ -42,7 +42,7 @@ Axes::Axes() :
   _colorBox ( 1, 1, 1, 1 ),
   _length ( 0.5f ),
   _width ( 0.05f ),
-  _state( 0 )
+  _state ( POSITIVE_X | POSITIVE_Y | POSITIVE_Z )
 {
 }
 

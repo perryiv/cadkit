@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  DbStlArraySetters: Implementations of the abstract array-setting class.
+//  DbStlArraySetters: Implementations of the abstract array-setting class. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -118,5 +118,45 @@ bool DbStlNormalSetter::setSize ( const unsigned int &size )
   _normals->resize ( size );
   return size == _normals->size();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive length.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlVertexSetter::setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length )
+{
+  // If we're out of range then resize.
+  if ( index >= _primitives.size() )
+    if ( false == this->setNumPrimitives ( index + 1 ) )
+      return false;
+
+  // Map our type to osg's mode.
+  osg::Primitive::Mode mode = this->_getPrimitiveMode();
+
+  // Set the primitive.
+  _primitives[index] = new osg::DrawArrays ( mode, start, length );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of primitives.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlVertexSetter::setNumPrimitives ( const unsigned int &num )
+{
+  SL_ASSERT ( num > 0 );
+  _primitives.resize ( num );
+  return num == _primitives.size();
+}
+
+
 
 

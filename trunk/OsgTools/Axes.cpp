@@ -63,7 +63,6 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,POSITIVE_Y) )
@@ -72,14 +71,12 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,POSITIVE_Z) )
   {
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorZ);
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: Z" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_X) )
@@ -88,7 +85,6 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));           // -90.0 degrees
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: -X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_Y) )
@@ -97,7 +93,6 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: -Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_Z) )
@@ -106,7 +101,6 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(180.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorZ,osg::Quat(amount,about));
     group->addChild( axis.get() );
-    //std::cout << "Axes: added: -Z" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_X) )
@@ -115,7 +109,6 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));         // 90.0 degrees
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( torus.get() );
-    //std::cout << "Axes: added: rotate along X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_Y) )
@@ -124,14 +117,12 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));        // -90.0 degrees
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( torus.get() );
-    //std::cout << "Axes: added: rotate along Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_Z) )
   {
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorZ);
     group->addChild( torus.get() );
-    //std::cout << "Axes: added: rotate along Z" << std::endl;
   }
 
   // Create a box at the origin

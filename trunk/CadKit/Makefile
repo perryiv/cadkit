@@ -1,23 +1,23 @@
 # List these in the order that they need to be compiled.
 SUBDIRS = \
 	Standard \
+	SceneGraph/Core \
+	SceneGraph/OpenGL \
 	Controllers \
 	Database/Base \
 	Database/Jupiter \
 	Database/OpenSceneGraph \
-	Demos/Jupiter2Osg
-#	Translators/Jupiter2Performer \
-#	Demos/Jupiter2Performer \
-#	Database/XML \
-#	Translators/Jupiter2Xml \
-#	Demos/Jupiter2Xml \
-#	SceneGraph/Core \
-#	SceneGraph/OpenGL \
-#	Examples/BoundingBox \
-#	Examples/Matrix4 \
-#	Examples/Pathname \
-#	Examples/String \
-#	Examples/Vector
+	Database/XML \
+	Translators/Jupiter2Performer \
+	Translators/Jupiter2Xml \
+	Demos/Jupiter2Osg \
+	Demos/Jupiter2Performer \
+	Demos/Jupiter2Xml \
+	Examples/BoundingBox \
+	Examples/Matrix4 \
+	Examples/Pathname \
+	Examples/String \
+	Examples/Vector
 
 # This says to make in all the subdirs. We use $(MAKE) instead of
 # "make" because it could be "gmake".

@@ -261,11 +261,11 @@ const SlMatrix4f &SgGlState::getModelviewMatrix() const
   SL_ASSERT ( false == _modelviewStack->empty() );
 
   // Get the current modelview matrix from OpenGL.
-  ::glGetFloatv ( GL_MODELVIEW_MATRIX, _M );
+  ::glGetFloatv ( GL_MODELVIEW_MATRIX, _modelViewMatrix );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Return the current matrix.
-  return _M;
+  return _modelViewMatrix;
 }
 
 
@@ -281,11 +281,11 @@ const SlMatrix4f &SgGlState::getProjectionMatrix() const
   SL_ASSERT ( false == _projectionStack->empty() );
 
   // Get the current projection matrix from OpenGL.
-  ::glGetFloatv ( GL_PROJECTION_MATRIX, _P );
+  ::glGetFloatv ( GL_PROJECTION_MATRIX, _projectionMatrix );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Return the current matrix.
-  return _P;
+  return _projectionMatrix;
 }
 
 
@@ -395,7 +395,7 @@ void SgGlState::makeModelviewMatrixIdentity()
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Make our cached copy identity.
-  _M.identity();
+  _modelViewMatrix.identity();
 }
 
 
@@ -419,7 +419,7 @@ void SgGlState::makeProjectionMatrixIdentity()
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Make our cached copy identity.
-  _P.identity();
+  _projectionMatrix.identity();
 }
 
 

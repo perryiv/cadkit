@@ -15,7 +15,7 @@ CPP_FILES = \
 LOCAL_INCLUDE = -I$(DMDTK_DEV_PATH)/include/
 
 # The libraries to link to.
-LOCAL_LIBS = -lCkSl_s -L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
+LOCAL_LIBS = -lCkDbBase_s -lCkSl_s -L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 
 # EAI's header files create these warnings.

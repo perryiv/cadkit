@@ -282,7 +282,7 @@ bool SgGlFeedback::postRender ( SgNode &scene )
   // Return to rendering mode. This will return the number of values in 
   // the feedback buffer.
   _numValuesInBuffer = ::glRenderMode ( GL_RENDER );
-  SL_TRACE ( "_numValuesInBuffer = %d\n", _numValuesInBuffer );
+  SL_TRACE2 ( "_numValuesInBuffer = %d\n", _numValuesInBuffer );
 
   // Should be true.
   SL_ASSERT ( _numValuesInBuffer <= _bufferSize );

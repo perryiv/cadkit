@@ -17,6 +17,7 @@
 #include "SgShading.h"
 
 #include "Standard/SlPrint.h"
+#include "Standard/SlAssert.h"
 
 using namespace CadKit;
 

@@ -21,6 +21,49 @@ namespace Containers {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Policy functor to test the inclusion of a triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct TriangleInside
+  {
+    template < class OctTreeType, class Triangle > void operator () ( const OctTreeType &tree, Triangle &t )
+    {
+      typedef typename OctTreeType::Vec3 Vec3;
+      const Vec3 mn ( tree.minimum() );
+      const Vec3 mx ( tree.maximum() );
+
+      // Determine place of first vertex (in or out).
+      bool x0 ( t[0][0] > mn[0] && t[[0][0] <= mx[0] );
+      bool y0 ( t[0][1] > mn[1] && t[[0][1] <= mx[1] );
+      bool z0 ( t[0][2] > mn[2] && t[[0][2] <= mx[2] );
+
+      // Determine place of second vertex (in or out.
+      bool x1 ( t[1][0] > mn[0] && t[[1][0] <= mx[0] );
+      bool y1 ( t[1][1] > mn[1] && t[[1][1] <= mx[1] );
+      bool z1 ( t[1][2] > mn[2] && t[[1][2] <= mx[2] );
+
+      // Determine place of third vertex (in or out.
+      bool x2 ( t[2][0] > mn[0] && t[[2][0] <= mx[0] );
+      bool y2 ( t[2][1] > mn[1] && t[[2][1] <= mx[1] );
+      bool z2 ( t[2][2] > mn[2] && t[[2][2] <= mx[2] );
+
+      // A point is in if all three of its coordinates are in.
+      bool p0 ( x0 && y0 && z0 );
+      bool p1 ( x1 && y1 && z1 );
+      bool p2 ( x2 && y2 && z2 );
+
+      // We need to have at least two points in.
+      return ( ( p0 && p1 ) || ( p0 && p2 ) || ( p1 && p2 ) );
+    }
+  };
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Policy functor to make children adjacent.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,9 +80,9 @@ namespace Detail
       typedef typename OctTreeType::Vec3 Vec3;
 
       // Determine new size.
-      Real s ( tree.size() * 0.5f );
-      Vec3 mn ( tree.minimum() );
-      Vec3 mx ( tree.maximum() );
+      const Real s ( tree.size() * 0.5f );
+      const Vec3 mn ( tree.minimum() );
+      const Vec3 mx ( tree.maximum() );
 
       // Clear and reserve because this works with a list as well as a vector.
       // TODO: add error-checking for existing children?
@@ -69,9 +112,9 @@ namespace Detail
 
 template
 <
-  class Tester_,
   class ObjectContainer_, 
   class ChildMaker_ = Usul::Containers::Detail::AdjacentChildren,
+  class Tester_ = Usul::Containers::Detail::TriangleInside,
   class Real_ = double,
   class Vec3_ = Usul::Math::Vector3<RealType_>
 >
@@ -87,7 +130,7 @@ public:
   typedef typename Children::iterator ChildItr;
   typedef Real_ Real;
   typedef Vec3_ Vec3;
-  typedef OctTree<Tester,Objects,ChildMaker,Real,Vec3> ThisType;
+  typedef OctTree<Objects,ChildMaker,Tester,Real,Vec3> ThisType;
 
 
   /////////////////////////////////////////////////////////////////////////////

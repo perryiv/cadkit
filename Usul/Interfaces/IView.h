@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,41 +9,33 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for reading from a source.
+//  Interface for getting the view
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_READ_H_
-#define _USUL_INTERFACE_READ_H_
+#ifndef _USUL_INTERFACE_VIEW_H_
+#define _USUL_INTERFACE_VIEW_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-#include <string>
-
-namespace OsgFox { namespace Documents { class Document; } }
-
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IRead : public Usul::Interfaces::IUnknown
+struct IView : public Usul::Interfaces::IUnknown
 {
-  typedef Usul::Interfaces::IUnknown Unknown;
-
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IRead );
+  USUL_DECLARE_QUERY_POINTERS ( IView );
 
   /// Id for this interface.
-  enum { IID = 2584851569u };
+  enum { IID = 2923712104u };
 
-  /// Read the data from the named source.
-  virtual OsgFox::Documents::Document* read ( const std::string &source, Unknown *caller ) = 0;
-};
+  virtual Usul::Interfaces::IUnknown* getView() = 0;
+}; // class IView
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_READ_H_
+#endif // _USUL_INTERFACE_VIEW_H_

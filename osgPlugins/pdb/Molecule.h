@@ -48,6 +48,7 @@ protected:
   osg::Node *             _makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const;
   osg::Node *             _makeCube   ( const osg::Vec3 &center, float size ) const;
   void                    _setCentersAndRanges ( osg::LOD *lod ) const;
+  void                    _setCentersAndRanges ( osg::LOD *lod, const osg::Vec3 &center ) const;
 private:
 
   Molecule();

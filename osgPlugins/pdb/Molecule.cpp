@@ -8,7 +8,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Molecule.h"
-#include "Cylinder.h"
 #include "BondFinder.h"
 
 #include "osg/Geometry"
@@ -36,7 +35,7 @@
 Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf ) : 
   _atoms             (),
   _bonds             (),
-  _maxDistanceFactor ( 200 ),
+  _maxDistanceFactor ( 50 ),
   _lastRangeMax      ( std::numeric_limits<float>::max() ),
   _numLodChildren    ( 10 ),
   _stepFactor        ( 10 ),
@@ -119,9 +118,9 @@ osg::Group *Molecule::_build() const
   for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
   {
     // Add the node for this bond.
-#ifdef COMPILE_FOR_SCREEN_SHOT
+//#ifdef COMPILE_FOR_SCREEN_SHOT
     root->addChild ( this->_makeBond ( *i ) );
-#endif
+//#endif
   }
 
   std::cout << "Number of Atoms: " << _atoms.size() << std::endl;
@@ -135,7 +134,6 @@ osg::Group *Molecule::_build() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Make an bond.
-//  TODO make radius based on radii of connecting atoms
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -149,17 +147,37 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   ss->setAttribute ( m.get() );
 
   //add several cylinders
-  for(unsigned int i = 0; i < _numLodChildren; ++i)
+  for(unsigned int i = 0; i < _numLodChildren - 1; ++i)
   {
-    unsigned int sides = 4 + (_numLodChildren - i) * _stepFactor;
+    unsigned int sides = 5 + (_numLodChildren - i - 2) * _stepFactor;
     lod->addChild(this->_makeCylinder( bond.getPoint1(), bond.getPoint2(), 0.25f, sides));
   }
 
+  osg::Vec3 center, point1 = bond.getPoint1(), point2 = bond.getPoint2();
+  
+  //Make last LOD a line
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+  osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
+
+  p->resize ( 2 );
+  (*p)[0] = point1;
+  (*p)[1] = point2;
+
+  geom->setVertexArray ( p.get() );
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
+  geode->addDrawable ( geom.get() );
+
+  lod->addChild(geode.get());
+
   lod->setName( bond.toString());
 
+  center[0] = (point1[0] + point2[0])/2.0;
+  center[1] = (point1[1] + point2[1])/2.0;
+  center[2] = (point1[2] + point2[2])/2.0;
+
   // Set the range.
-  lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
-  //this->_setCentersAndRanges ( lod.get() );
+  this->_setCentersAndRanges ( lod.get(), center );
 
   return lod.release();
 }
@@ -195,7 +213,7 @@ osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &
   osg::ref_ptr<osg::Geometry> geometry ( _cylinderFactory->create ( radius, sides ) );
 
   // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( false );
+  geometry->setUseDisplayList ( true );
 
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
@@ -226,7 +244,7 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
   ss->setAttribute ( m.get() );
 
   // Get the atom's numbers.
-  const osg::Vec3 center ( atom.getX(), atom.getY(), atom.getZ() );
+  const osg::Vec3 center ( atom.getVec3() );
   const float radius ( atom.getRadius() );
 
   // Name the lod with the data from the atom.
@@ -236,10 +254,11 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
   float denominator ( _numLodChildren - 1 );
   for ( unsigned int i = 0; i < _numLodChildren; ++i )
   {
+    //unsigned int detail = 3;//(_numLodChildren - i );
+    //lod->addChild ( this->_makeSphere ( center, radius, detail ) );
+
     float loop ( i );
     float detail ( ::pow ( 1.0f - loop / denominator, _lodDistancePower ) );
-    //lod->addChild ( this->_makeSphere ( center, radius, detail ) );
-    //lod->addChild ( this->_makeSphere ( center, radius, _numLodChildren - i - 1 ) );
     lod->addChild ( this->_makeSphere ( center, radius, osg::Vec2 ( detail, detail ) ) );
   }
 
@@ -341,8 +360,8 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsign
   T.makeTranslate ( center );
 
   // Make a scale.
-  osg::Matrixd S;
-  S.makeScale ( radius, radius, radius );
+  //osg::Matrixd S;
+  //S.makeScale ( radius, radius, radius );
 
   // Make a matrix-transform.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -350,7 +369,7 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsign
   mt->setMatrix ( T );
 
   // Make a sphere.
-  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div ) );
+  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div, radius ) );
 
   // TODO, make this an option. Display lists crash with really big files.
   geometry->setUseDisplayList ( false );
@@ -430,6 +449,46 @@ void Molecule::_setCentersAndRanges ( osg::LOD *lod ) const
 
   // Get the center of the bounding sphere.
   const osg::Vec3 &center = boundingSphere.center();
+
+  // Set the center of this lod to be the center of the bounding sphere.
+  lod->setCenter ( center );
+
+  // The minimum of the range we set.
+  float rangeMin ( 0 );
+
+  // Loop through all of the children except the last one.
+  // Note: Unlike previous versions of OSG, there is one LOD "range" for 
+  // each LOD "child". Each "range" has a min and max value.
+  unsigned int numChildren ( lod->getNumChildren() );
+  for ( unsigned int i = 0; i < numChildren - 1; ++i )
+  {
+    // Set the range.
+    float rangeMax = ( ( (float) i + 1 ) * maxDist ) / ( (float) ( numChildren - 1 ) );
+    lod->setRange ( i, rangeMin, rangeMax );
+    rangeMin = rangeMax;
+  }
+
+  // Set the range for the last child.
+  lod->setRange ( numChildren - 1, rangeMin, _lastRangeMax );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the lod center and ranges for cylinder.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Molecule::_setCentersAndRanges ( osg::LOD *lod, const osg::Vec3 &center ) const
+{
+  // If there are no children then just return.
+  if ( 0 == lod->getNumChildren() )
+    return;
+
+  // Get the first child.
+  osg::Node *child = lod->getChild ( 0 );
+
+  // The maximum distance for the lod ranges.
+  float maxDist ( _maxDistanceFactor * 0.50f );
 
   // Set the center of this lod to be the center of the bounding sphere.
   lod->setCenter ( center );

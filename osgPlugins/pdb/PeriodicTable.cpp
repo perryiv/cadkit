@@ -18,6 +18,11 @@ PeriodicTable::PeriodicTable() :
   _vectorElements(),
   _mapElements()
 {
+  //Test molecule with r = 1
+  osg::ref_ptr< Element > AD (new Element(1, "AD", 1.0f));
+  _vectorElements.push_back(AD);
+  _mapElements.insert( Element_pair("AD", AD));
+  //Helium
   //Element data from http://www.ktf-split.hr/periodni/en/
   //Hydrogen
   osg::ref_ptr< Element > H (new Element(1, "H", 0.373f));

@@ -33,6 +33,9 @@
 #include <sys/stat.h>
 #include <cassert>
 
+#include <ctime>
+#include <iostream>
+
 #include "Atom.h"
 #include "Bond.h"
 
@@ -231,6 +234,11 @@ osg::Group *ReaderWriterPDB::_build() const
 
 void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
 {
+  clock_t start, finish; // used by clock()
+	double total_second;
+
+  start = clock(); // start to record the time
+
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
   char buf[size];
@@ -302,6 +310,12 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
 
   if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )
     this->_parsePsf ( psf );
+
+  
+	finish = clock();   // end of the computation; record the time
+	total_second = (double)(finish - start) / CLOCKS_PER_SEC;
+
+  std::cout << "Time to parse: " << total_second << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

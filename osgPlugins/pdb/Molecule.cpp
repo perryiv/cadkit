@@ -154,9 +154,9 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   ss->setAttribute ( m.get() );
 
   //add several cylinders
-  for(unsigned int i = 0; i < _numLodChildren - 1; ++i)
+  for(unsigned int i = 0; i < _numLodChildren  - 1; ++i)
   {
-    unsigned int sides = 5 + (_numLodChildren - i - 2) * _stepFactor;
+    unsigned int sides = 5 + ( _numLodChildren - i - 2) * (_stepFactor / 2);
     osg::ref_ptr<osg::MatrixTransform> mt ( bond.getMatrix() );
     mt->addChild (this->_makeCylinder( bond.getPoint1(), bond.getPoint2(), 0.25f, sides));
     lod->addChild( mt.get() );

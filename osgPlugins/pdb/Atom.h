@@ -28,9 +28,6 @@ public:
   Atom(const char*, std::string, const PeriodicTable &);
   Atom(const Atom&);
   ~Atom();
-  const float getX() const { return _point[0]; }
-  const float getY() const { return _point[1]; }
-  const float getZ() const { return _point[2]; }
   const std::string getName() const { return _name; }
   const std::string getType() const { return _type; }
   const std::string getSymbol() const { return _element->getElementSymbol(); }
@@ -45,12 +42,22 @@ public:
   const Element* getElement() const { return _element; }
   osg::MatrixTransform* getMatrix () const { return _matrix.get(); }
   void setMatrix(osg::MatrixTransform *m) { _matrix = m; }
+  const ID getResidueId() const { return _residueId; }
+  const std::string getResidueName() const { return _residueName; }
+  const std::string getSegmentId() const { return _segmentId; }
+  const float getOccupancy() const { return _occupancy; }
+  const float getTempFactor() const { return _tempFactor; }
 private:
   Atom();
+
+  void _setMatrix();
+  void _getData(char* temp, const char* string, unsigned int offset, unsigned int length);
+
   const Element * _element;
-  ID _id;
+  ID _id, _residueId;
   osg::Vec3 _point;
-  std::string _type, _name;
+  std::string _type, _name, _residueName, _segmentId;
+  float _occupancy, _tempFactor;
   mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
 };
 

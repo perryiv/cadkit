@@ -38,14 +38,14 @@ void runApplication ( int argc, char **argv )
 
   // Instantiate the registry. The sooner the better.
   CV::Registry::instance();
-
+#if 0
   // Check arguments.
   if ( argc < 2 )
   {
     CV::Application::usage ( argv[0], std::cout );
     return;
   }
-
+#endif
   // Populate the registry.
   CV::Registry::instance().read();
 

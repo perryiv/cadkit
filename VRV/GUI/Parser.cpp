@@ -289,7 +289,7 @@ void Parser::_finishButton ( const std::string & )
   setter->setCallback ( _callback, _button.get() );
 
   // Set the callback.
-  setter->setCallback ( _callback, _button.get() );
+  //setter->setCallback ( _callback, _button.get() );
 
   // Reset.
   _button = 0x0;

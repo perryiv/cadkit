@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../,$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
+				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -78,7 +78,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="../,$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
+				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"

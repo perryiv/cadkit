@@ -76,6 +76,14 @@ DbJtTraverser::DbJtTraverser ( const unsigned int &flags ) : SlRefBase ( 0 ),
   _customerNumber ( UNSET_CUSTOMER_NUMBER )
 {
   SL_PRINT2 ( "In DbJtTraverser::DbJtTraverser(), this = %X\n", this );
+
+#if ( DMDTK_MAJOR_VERSION >= 5 )
+
+  // Initialize DMDTk. This used to be in _init() but since it doesn't 
+  // return anything I moved it here.
+  eaiEntityFactory::init();
+
+#endif
 }
 
 
@@ -88,6 +96,14 @@ DbJtTraverser::DbJtTraverser ( const unsigned int &flags ) : SlRefBase ( 0 ),
 DbJtTraverser::~DbJtTraverser()
 {
   SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
+
+#if ( DMDTK_MAJOR_VERSION >= 5 )
+
+  // Uninitialize DMDTk. Since it doesn't return anything and, according to 
+  // eaiEntityFactory.h, has to be called, I put it here.
+  eaiEntityFactory::fini();
+
+#endif
 }
 
 
@@ -100,22 +116,6 @@ DbJtTraverser::~DbJtTraverser()
 bool DbJtTraverser::init()
 {
   SL_PRINT2 ( "In DbJtTraverser::init(), this = %X\n", this );
-
-#if ( _DMDTK_VERSION > 4 )
-
-  NOTIFY << "Initializing DirectModel Data Toolkit." << std::endl;
-
-  // Initialize DMDTk.
-  if ( eai_ERROR == eaiEntityFactory::init() )
-  {
-    CadKit::format ( _error, "Failed to initialize the DirectModel Data Toolkit." ); 
-    NOTIFY << _error.c_str();
-    return false;
-  }
-
-  NOTIFY << "Done initializing DirectModel Data Toolkit." << std::endl;
-
-#endif // _DMDTK_VERSION
 
   // Get the customer number.
   unsigned int customerNumber = this->getCustomerNumber();

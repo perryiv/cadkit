@@ -88,6 +88,14 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   SL_ASSERT ( NULL != _assemblies.get() );
   SL_ASSERT ( NULL != _current.get() );
   SL_ASSERT ( NULL != _shapeData.get() );
+
+#if ( DMDTK_MAJOR_VERSION >= 5 )
+
+  // Initialize DMDTk. This used to be in _init() but since it doesn't 
+  // return anything I moved it here.
+  eaiEntityFactory::init();
+
+#endif
 }
 
 
@@ -107,6 +115,14 @@ DbJtDatabase::~DbJtDatabase()
   SL_ASSERT ( NULL == _current->getPart() );
   SL_ASSERT ( NULL == _current->getInstance() );
   SL_ASSERT ( true == _assemblies->empty() );
+
+#if ( DMDTK_MAJOR_VERSION >= 5 )
+
+  // Uninitialize DMDTk. Since it doesn't return anything and, according to 
+  // eaiEntityFactory.h, has to be called, I put it here.
+  eaiEntityFactory::fini();
+
+#endif
 }
 
 
@@ -165,23 +181,6 @@ bool DbJtDatabase::_init()
   // Just return if we are already initialized.
   if ( true == _initialized )
     return true;
-
-#if ( _DMDTK_VERSION > 4 )
-
-  if ( false == PROGRESS ( "Initializing DirectModel Data Toolkit." ) )
-    return false;
-
-  // Initialize DMDTk.
-  if ( eai_ERROR == eaiEntityFactory::init() )
-  {
-    ERROR ( FORMAT ( "Failed to initialize the DirectModel Data Toolkit." ) );
-    return false;
-  }
-
-  if ( false == PROGRESS ( "Done initializing DirectModel Data Toolkit." ) )
-    return false;
-
-#endif // _DMDTK_VERSION
 
   // Get the customer number.
   const unsigned int &customer = this->_getCustomerId();
@@ -1672,7 +1671,7 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
         gotVertices = true;
       }
 
-      PROGRESS_LEVEL ( 5 ) ( FORMAT ( "\t\t\t\tVertices: %4d, Normals: %4d, Colors: %4d, Texture Coordinates: %4d", i + 1, numSets, vertexCount, normalCount, colorCount, textureCount ) );
+      PROGRESS_LEVEL ( 5 ) ( FORMAT ( "\t\t\t\t%4d:   Vertices: %4d, Normals: %4d, Colors: %4d, Texture Coordinates: %4d", i + 1, vertexCount, normalCount, colorCount, textureCount ) );
     }
 
     // If we didn't get any vertices...

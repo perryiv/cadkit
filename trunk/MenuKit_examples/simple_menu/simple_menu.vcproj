@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OsgToolsd.lib Producerd.lib osgProducerd.lib MenuKitd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib osgTextd.lib"
+				AdditionalDependencies="Producerd.lib osgProducerd.lib MenuKitd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib osgTextd.lib"
 				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OsgTools.lib Producer.lib osgProducer.lib MenuKit.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
+				AdditionalDependencies="Producer.lib osgProducer.lib MenuKit.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
 				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"

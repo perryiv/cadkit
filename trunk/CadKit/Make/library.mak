@@ -1,14 +1,3 @@
-# Set these variables based on the operating system.
-ifeq ($(OS_TYPE), Irix)
-	CPP = CC
-	OS = IRIX
-	os = irix
-	Os = Irix
-	GLOBAL_CPP_FLAGS = -LANG:std -D_SGI_NATIVE_COMPILER -D_DEBUG
-else
-	CPP = g++
-endif
-
 # The C++ compiler's flags.
 CPP_FLAGS = $(GLOBAL_CPP_FLAGS) $(LOCAL_CPP_FLAGS)
 

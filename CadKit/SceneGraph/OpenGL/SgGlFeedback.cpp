@@ -18,12 +18,16 @@
 #include "SgGlConstants.h"
 #include "SgGlInternalMacros.h"
 
+#include "Standard/SlPrint.h"
+#include "Standard/SlConstants.h"
+#include "Standard/SlTrace.h"
+#include "Standard/SlVec3.h"
+#include "Standard/SlMinMax.h"
+
+#include "SceneGraph/Core/SgAllNodes.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlPrint.h"
-# include "Standard/SlConstants.h"
-# include "Standard/SlTrace.h"
-# include "Standard/SlVec3.h"
-# include "SceneGraph/Core/SgAllNodes.h"
+# include <limits>
 #endif
 
 using namespace CadKit;

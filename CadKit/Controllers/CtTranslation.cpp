@@ -32,6 +32,7 @@
 #include "Interfaces/IControlled.h"
 #include "Interfaces/IMessagePriority.h"
 #include "Interfaces/ILodOption.h"
+#include "Interfaces/IZeroRange.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <time.h>
@@ -288,11 +289,6 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
         _zeroRange[NEGATIVE_ZERO_INDEX] = ::atof ( negative.c_str() );
         _zeroRange[POSITIVE_ZERO_INDEX] = ::atof ( positive.c_str() );
 
-#ifdef _DEBUG
-        std::cout << _zeroRange[NEGATIVE_ZERO_INDEX] << " " << _zeroRange[POSITIVE_ZERO_INDEX] << std::endl;
-        ::exit ( 0 );
-#endif
-
         // Increment the loop index.
         i += 2;
       }
@@ -342,6 +338,16 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   SlQueryPtr<ILodOption> sourceLodOption ( source );
   if ( sourceLodOption.isValid() )
     sourceLodOption->setLodProcessOption ( _lodOption );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeFloat> sourceZeroRange ( source );
+  if ( sourceZeroRange.isValid() )
+    sourceZeroRange->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeFloat> targetZeroRange ( target );
+  if ( targetZeroRange.isValid() )
+    targetZeroRange->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
 
   // Make sure the source supports the interface we need.
   SlQueryPtr<IDataSource> ds ( source );

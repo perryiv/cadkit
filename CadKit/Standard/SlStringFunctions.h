@@ -89,8 +89,8 @@ template <class StringType> inline bool isNumber ( const StringType &s )
 
   // Used below.
   unsigned char c;
-  bool foundPeriod, foundExponent;
-  unsigned int numDigitsFound = 0;
+  bool foundPeriod ( false ), foundExponent ( false );
+  unsigned int numDigitsFound ( 0 );
 
   // Initialize the start of the string.
   StringType::const_iterator start = s.begin();
@@ -103,7 +103,7 @@ template <class StringType> inline bool isNumber ( const StringType &s )
   for ( StringType::const_iterator i = start; i != s.end(); ++i )
   {
     // Get the character.
-    c = static_cast<unsigned char>(*i);
+    c = static_cast<unsigned char> ( *i );
 
     // See if it is a period.
     if ( '.' == c )
@@ -125,6 +125,18 @@ template <class StringType> inline bool isNumber ( const StringType &s )
 
       // Otherwise, set the flag.
       foundExponent = true;
+
+      // Get the next character.
+      c = static_cast<unsigned char> ( *( i + 1 ) );
+
+      // If the next character is a sign then increment the iterator.
+      if ( '-' == c || '+' == c )
+        ++i;
+
+      // There should be another character. This will catch "123.4e" or 123.4e-"
+      if ( ( i + 1 ) == s.end() )
+        return false;
+
     }
 
     // Otherwise, see if it is a digit.

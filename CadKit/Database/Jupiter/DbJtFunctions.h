@@ -30,13 +30,13 @@ namespace CadKit
   eaiTransform *getTransform ( eaiEntity *entity );
 
   // Get the transformation matrix.
-  bool getTransform ( eaiEntity *ptr, SlMatrix44f &matrix );
+  bool getTransform ( const float &negativeZero, const float &positiveZero, eaiEntity *ptr, SlMatrix44f &matrix );
 
   // Get the material.
   eaiMaterial *getMaterial ( eaiEntity *entity );
 
   // Get the material.
-  bool getMaterial ( eaiEntity *entity, SlMaterialf &mat );
+  bool getMaterial ( const float &negativeZero, const float &positiveZero, eaiEntity *entity, SlMaterialf &mat );
 };
 
 

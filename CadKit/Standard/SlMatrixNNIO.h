@@ -32,9 +32,9 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void write ( const SlMatrixNN<T> &M, std::ostream &out )
+template<class T, class I> inline void write ( const SlMatrixNN<T,I> &M, std::ostream &out )
 {
-  unsigned int size ( M.getSize() ), i, j;
+  I size ( M.getSize() ), i, j;
 
   for ( i = 0; i < size; ++i )
   {
@@ -56,9 +56,9 @@ template<class T> inline void write ( const SlMatrixNN<T> &M, std::ostream &out 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void read ( SlMatrixNN<T> &M, std::istream &in )
+template<class T, class I> inline void read ( SlMatrixNN<T,I> &M, std::istream &in )
 {
-  unsigned int size ( M.getSize() ), i, j;
+  I size ( M.getSize() ), i, j;
 
   for ( i = 0; i < size; ++i )
   {
@@ -76,11 +76,11 @@ template<class T> inline void read ( SlMatrixNN<T> &M, std::istream &in )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void write ( const SlMatrixNN<T> &M, FILE *fp, const char *format )
+template<class T, class I> inline void write ( const SlMatrixNN<T,I> &M, FILE *fp, const char *format )
 {
   SL_ASSERT ( fp );
 
-  unsigned int size ( M.getSize() ), i, j;
+  I size ( M.getSize() ), i, j;
 
   for ( i = 0; i < size; ++i )
   {
@@ -100,12 +100,12 @@ template<class T> inline void write ( const SlMatrixNN<T> &M, FILE *fp, const ch
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void read ( SlMatrixNN<T> &M, FILE *fp, const char *format )
+template<class T, class I> inline void read ( SlMatrixNN<T,I> &M, FILE *fp, const char *format )
 {
   SL_ASSERT ( fp );
   SL_ASSERT ( 0 ); // Untested. If it works then take this assert out.
 
-  unsigned int size ( M.getSize() ), i, j;
+  I size ( M.getSize() ), i, j;
   T temp;
 
   for ( i = 0; i < size; ++i )
@@ -128,7 +128,7 @@ template<class T> inline void read ( SlMatrixNN<T> &M, FILE *fp, const char *for
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::ostream &operator << ( std::ostream &out, const CadKit::SlMatrixNN<T> &M )
+template<class T, class I> inline std::ostream &operator << ( std::ostream &out, const CadKit::SlMatrixNN<T,I> &M )
 {
   CadKit::write ( M, out );
   return out;
@@ -141,7 +141,7 @@ template<class T> inline std::ostream &operator << ( std::ostream &out, const Ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline std::istream &operator >> ( std::istream &in, const CadKit::SlMatrixNN<T> &M )
+template<class T, class I> inline std::istream &operator >> ( std::istream &in, const CadKit::SlMatrixNN<T,I> &M )
 {
   CadKit::read ( M, in );
   return in;

@@ -33,7 +33,7 @@ public:
   enum { IID = 1032754104 };
 
   // Translate the database.
-  virtual bool            translate ( const std::string &mane, IUnknown *source, IUnknown *target ) = 0;
+  virtual bool            translate ( const std::string &name, IUnknown *source, IUnknown *target ) = 0;
 };
 
 }; // namespace CadKit

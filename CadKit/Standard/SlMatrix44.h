@@ -23,12 +23,10 @@
 
 #include "SlVec4.h"
 #include "SlVec3.h"
+#include "SlSwap.h"
+#include "SlTruncate.h"
 
 // For convenience.
-#define SL_MATRIX_44_ZERO ( static_cast<T> ( 0 ) )
-#define SL_MATRIX_44_ONE  ( static_cast<T> ( 1 ) )
-#define SL_MATRIX_44_HALF ( static_cast<T> ( 0.5 ) )
-#define SL_MATRIX_44_TWO  ( static_cast<T> ( 2 ) )
 #define SL_MATRIX_44_IDENTITY_D 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0
 #define SL_MATRIX_44_IDENTITY_F 1.0f,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,1.0f
 #define SL_MATRIX_44_IDENTITY_I 1,   0,   0,   0,   0,   1,   0,   0,   0,   0,   1,   0,   0,   0,   0,   1
@@ -175,6 +173,9 @@ public:
   void                    translate ( const Vec3 &t );
 
   void                    transpose();
+
+  // Truncate to zero the values in the range [negativeZero,positiveZero].
+  void                    truncate ( const T &negativeZero, const T &positiveZero );
 
 protected:
 
@@ -487,7 +488,7 @@ template<class T> inline void SlMatrix44<T>::multByUpper3x3 ( const Vec3 &b, Vec
 
 template<class T> inline SlMatrix44<T> &SlMatrix44<T>::operator /= ( const T &value )
 {
-  T inv = SL_MATRIX_44_ONE / value;
+  T inv = CadKit::SlConstants<T>::one() / value;
 
   _m[0] *= inv; _m[4] *= inv; _m[8]  *= inv; _m[12] *= inv;
   _m[1] *= inv; _m[5] *= inv; _m[9]  *= inv; _m[13] *= inv;
@@ -836,7 +837,7 @@ template<class T> inline bool SlMatrix44<T>::isIdentity() const
 
 template<class T> inline bool SlMatrix44<T>::isIdentity ( const Real &tol ) const
 {
-  const Real CONST_1 ( SL_MATRIX_44_ONE );
+  const Real CONST_1 ( CadKit::SlConstants<T>::one() );
   return ( 
     SL_ABS ( _m[0]  - CONST_1 ) < tol && 
     SL_ABS ( _m[1]  )           < tol && 
@@ -964,8 +965,8 @@ template<class T> inline void SlMatrix44<T>::setRotation ( const T &cosine, cons
   SL_ASSERT ( cosine >= -1 && cosine <= 1 );
   SL_ASSERT ( sine >= -1 && sine <= 1 );
 
-  const Real CONST_1 ( SL_MATRIX_44_ONE );
-  const Real CONST_0 ( SL_MATRIX_44_ZERO );
+  const Real CONST_1 ( CadKit::SlConstants<T>::one() );
+  const Real CONST_0 ( CadKit::SlConstants<T>::zero() );
   const Real &x = axis[0];
   const Real &y = axis[1];
   const Real &z = axis[2];
@@ -1395,7 +1396,7 @@ template<class T> inline void SlMatrix44<T>::getLookAt ( const Vec3 &eye, const 
 template<class T> inline void SlMatrix44<T>::getFrustum 
   ( const T &left, const T &right, const T &bottom, const T &top, const T &zNear, const T &zFar, Matrix4 &M )
 {
-  const Real CONST_2 ( SL_MATRIX_44_TWO );
+  const Real CONST_2 ( CadKit::SlConstants<T>::two() );
 
   M[0]  = ( CONST_2 * zNear ) / ( right - left );
   M[1]  = 0;
@@ -1428,7 +1429,7 @@ template<class T> inline void SlMatrix44<T>::getFrustum
 template<class T> inline void SlMatrix44<T>::getPerspective
   ( const T &fovyInRadians, const T &aspect, const T &zNear, const T &zFar, Matrix4 &M )
 {
-  Real ymax ( zNear * SL_TANGENT ( fovyInRadians * SL_MATRIX_44_HALF ) );
+  Real ymax ( zNear * SL_TANGENT ( fovyInRadians * CadKit::SlConstants<T>::half() ) );
   Real ymin ( -ymax );
   Real xmin ( ymin * aspect );
   Real xmax ( ymax * aspect );
@@ -1538,10 +1539,11 @@ template<class T> inline SlVec3<T> operator * ( const SlMatrix44<T> &M, const Sl
 {
   T a[4];
 
-  a[3] = SL_MATRIX_44_ONE / ( M[3] * b[0] + M[7] * b[1] + M[11] * b[2] + M[15] );
-  a[2] =           a[3] * ( M[2] * b[0] + M[6] * b[1] + M[10] * b[2] + M[14] );
-  a[1] =           a[3] * ( M[1] * b[0] + M[5] * b[1] + M[9]  * b[2] + M[13] );
-  a[0] =           a[3] * ( M[0] * b[0] + M[4] * b[1] + M[8]  * b[2] + M[12] );
+  a[3] = CadKit::SlConstants<T>::one()
+              / ( M[3] * b[0] + M[7] * b[1] + M[11] * b[2] + M[15] );
+  a[2] = a[3] * ( M[2] * b[0] + M[6] * b[1] + M[10] * b[2] + M[14] );
+  a[1] = a[3] * ( M[1] * b[0] + M[5] * b[1] + M[9]  * b[2] + M[13] );
+  a[0] = a[3] * ( M[0] * b[0] + M[4] * b[1] + M[8]  * b[2] + M[12] );
 
   return SlVec3<T> ( a[0], a[1], a[2] );
 }
@@ -1651,8 +1653,8 @@ template<class T> inline const T &SlMatrix44<T>::operator () ( const int &i, con
 
 template<class T> inline void SlMatrix44<T>::setFromQuaternion ( const Vec4 &quat )
 {
-  const Real CONST_1 ( SL_MATRIX_44_ONE );
-  const Real CONST_2 ( SL_MATRIX_44_TWO );
+  const Real CONST_1 ( CadKit::SlConstants<T>::one() );
+  const Real CONST_2 ( CadKit::SlConstants<T>::two() );
 
   _m[0]  = CONST_1 - CONST_2 * ( quat[1] * quat[1] + quat[2] * quat[2] );
   _m[1]  = CONST_2           * ( quat[0] * quat[1] - quat[2] * quat[3] );
@@ -1673,6 +1675,38 @@ template<class T> inline void SlMatrix44<T>::setFromQuaternion ( const Vec4 &qua
   _m[13] = 0;
   _m[14] = 0;
   _m[15] = 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Truncate to zero the values in the range [negativeZero,positiveZero].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlMatrix44<T>::truncate ( const T &negativeZero, const T &positiveZero )
+{
+  const Real CONST_0 ( CadKit::SlConstants<T>::zero() );
+
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[0] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[1] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[2] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[3] );
+
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[4] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[5] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[6] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[7] );
+
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[8] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[9] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[10] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[11] );
+
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[12] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[13] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[14] );
+  CadKit::truncate ( negativeZero, CONST_0, positiveZero, _m[15] );
 }
 
 

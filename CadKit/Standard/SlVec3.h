@@ -16,17 +16,10 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_
 
-#include "SlInlineMath.h"
 #include "SlAssert.h"
+#include "SlAbsolute.h"
 #include "SlTemplateSupport.h"
 #include "SlConstants.h"
-#include "SlTestEquality.h"
-
-// For convenience.
-#define SL_VEC3_ZERO SlConstants<T>::zero()
-#define SL_VEC3_HALF SlConstants<T>::half()
-#define SL_VEC3_ONE  SlConstants<T>::one()
-#define SL_VEC3_TWO  SlConstants<T>::two()
 
 
 namespace CadKit
@@ -66,6 +59,9 @@ public:
   bool                    isEqual ( const SlVec3 &vec, const T &tolerance ) const;
   bool                    isNotEqual ( const SlVec3 &vec ) const;
   bool                    isNotEqual ( const SlVec3 &vec, const T &tolerance ) const;
+
+  const Real &            maximum() const;
+  const Real &            minimum() const;
 
   Real                    normalize();
 
@@ -130,7 +126,7 @@ template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vecA, const SlVec3<T>
 
 template<class T> inline SlVec3<T>::SlVec3()
 {
-  _v[0] = _v[1] = _v[2] = SL_VEC3_ZERO;
+  _v[0] = _v[1] = _v[2] = CadKit::SlConstants<T>::zero();
 }
 
 
@@ -333,7 +329,7 @@ template<class T> inline SlVec3<T> &SlVec3<T>::operator *= ( const SlVec3<T> &ve
 
 template<class T> inline SlVec3<T> &SlVec3<T>::operator /= ( const T &value )
 {
-  T invValue = SL_VEC3_ONE / value;
+  T invValue = CadKit::SlConstants<T>::one() / value;
 
   _v[0] *= invValue;
   _v[1] *= invValue;
@@ -644,7 +640,7 @@ template<class T> inline void SlVec3<T>::bisect ( const SlVec3<T> &pt0, const Sl
 {
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec3<T> vec ( pt0 + pt1 );
-  this->setValue ( vec / SL_VEC3_TWO );
+  this->setValue ( vec / CadKit::SlConstants<T>::two() );
 }
 
 
@@ -670,7 +666,7 @@ template<class T> inline void SlVec3<T>::clamp ( const T &minValue, const T &max
 
 template<class T> inline void SlVec3<T>::getRealPart ( T &v0, T &v1 ) const
 {
-  T invW = SL_VEC3_ONE / _v[2];
+  T invW = CadKit::SlConstants<T>::one() / _v[2];
   v0 = _v[0] * invW;
   v1 = _v[1] * invW;
 }
@@ -698,7 +694,7 @@ template<class T> inline void SlVec3<T>::interpolate ( const SlVec3<T> &pt0, con
 template<class T> inline T SlVec3<T>::normalize()
 {
   T length = this->getLength();
-  T invLength = SL_VEC3_ONE / length;
+  T invLength = CadKit::SlConstants<T>::one() / length;
 
   _v[0] *= invLength;
   _v[1] *= invLength;
@@ -716,25 +712,28 @@ template<class T> inline T SlVec3<T>::normalize()
 
 template<class T> inline void SlVec3<T>::orthogonal ( const SlVec3<T> &vec )
 {
+  const T CONST_0 ( CadKit::SlConstants<T>::zero() );
+  const T CONST_1 ( CadKit::SlConstants<T>::one() );
+
   // Check impossible case.
-  SL_ASSERT ( !( SL_VEC3_ZERO == vec._v[0] && SL_VEC3_ZERO == vec._v[1] && SL_VEC3_ZERO == vec._v[2] ) );
+  SL_ASSERT ( !( CONST_0 == vec._v[0] && CONST_0 == vec._v[1] && CONST_0 == vec._v[2] ) );
 
   // Check degenerate cases.
   if ( _v[0] == 0 )
   {
-    this->setValue ( SL_VEC3_ONE, SL_VEC3_ZERO, SL_VEC3_ZERO );
+    this->setValue ( CONST_1, CONST_0, CONST_0 );
     return;
   }
 
   if ( _v[1] == 0 )
   {
-    this->setValue ( SL_VEC3_ZERO, SL_VEC3_ONE, SL_VEC3_ZERO );
+    this->setValue ( CONST_0, CONST_1, CONST_0 );
     return;
   }
 
   if ( _v[2] == 0 )
   {
-    this->setValue ( SL_VEC3_ZERO, SL_VEC3_ZERO, SL_VEC3_ONE );
+    this->setValue ( CONST_0, CONST_0, CONST_1 );
     return;
   }
 

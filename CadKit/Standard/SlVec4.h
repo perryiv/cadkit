@@ -16,17 +16,10 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_4_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_4_CLASS_H_
 
-#include "SlInlineMath.h"
 #include "SlAssert.h"
+#include "SlAbsolute.h"
 #include "SlTemplateSupport.h"
 #include "SlConstants.h"
-#include "SlTestEquality.h"
-
-// For convenience.
-#define SL_VEC4_ZERO SlConstants<T>::zero()
-#define SL_VEC4_HALF SlConstants<T>::half()
-#define SL_VEC4_ONE  SlConstants<T>::one()
-#define SL_VEC4_TWO  SlConstants<T>::two()
 
 
 namespace CadKit
@@ -64,6 +57,9 @@ public:
   bool                    isNotEqual ( const SlVec4 &vec ) const;
   bool                    isNotEqual ( const SlVec4 &vec, const T &tolerance ) const;
 
+  const Real &            maximum() const;
+  const Real &            minimum() const;
+
   Real                    normalize();
 
   // Typecast operators.
@@ -87,6 +83,8 @@ public:
 
   void                    setValue ( const SlVec4 &vec );
   void                    setValue ( const T &v0, const T &v1, const T &v2, const T &v3 );
+
+  void                    truncate ( const T &negativeZero, const T &positiveZero );
 
 protected:
 
@@ -119,7 +117,7 @@ template<class T> bool      operator != ( const SlVec4<T> &vecA, const SlVec4<T>
 
 template<class T> inline SlVec4<T>::SlVec4()
 {
-  _v[0] = _v[1] = _v[2] = _v[3] = SL_VEC4_ZERO;
+  _v[0] = _v[1] = _v[2] = _v[3] = CadKit::SlConstants<T>::zero();
 }
 
 
@@ -330,7 +328,7 @@ template<class T> inline SlVec4<T> &SlVec4<T>::operator *= ( const SlVec4<T> &ve
 
 template<class T> inline SlVec4<T> &SlVec4<T>::operator /= ( const T &value )
 {
-  T invValue = SL_VEC4_ONE / value;
+  T invValue = CadKit::SlConstants<T>::one() / value;
 
   _v[0] *= invValue;
   _v[1] *= invValue;
@@ -599,7 +597,7 @@ template<class T> inline void SlVec4<T>::bisect ( const SlVec4<T> &pt0, const Sl
 {
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec4<T> vec ( pt0 + pt1 );
-  this->setValue ( vec / SL_VEC4_TWO );
+  this->setValue ( vec / CadKit::SlConstants<T>::two() );
 }
 
 
@@ -620,13 +618,28 @@ template<class T> inline void SlVec4<T>::clamp ( const T &minValue, const T &max
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Truncate the vector's elements.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline void SlVec4<T>::truncate ( const T &negativeZero, const T &positiveZero )
+{
+  CadKit::truncate ( negativeZero, CadKit::SlConstants<T>::zero(), positiveZero, _v[0] );
+  CadKit::truncate ( negativeZero, CadKit::SlConstants<T>::zero(), positiveZero, _v[1] );
+  CadKit::truncate ( negativeZero, CadKit::SlConstants<T>::zero(), positiveZero, _v[2] );
+  CadKit::truncate ( negativeZero, CadKit::SlConstants<T>::zero(), positiveZero, _v[3] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the real part of this homogeneous vector.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class T> inline void SlVec4<T>::getRealPart ( T &v0, T &v1, T &v2 ) const
 {
-  T invW = SL_VEC4_ONE / _v[3];
+  T invW = CadKit::SlConstants<T>::one() / _v[3];
   v0 = _v[0] * invW;
   v1 = _v[1] * invW;
   v2 = _v[2] * invW;
@@ -655,7 +668,7 @@ template<class T> inline void SlVec4<T>::interpolate ( const SlVec4<T> &pt0, con
 template<class T> inline T SlVec4<T>::normalize()
 {
   T length = this->getLength();
-  T invLength = SL_VEC4_ONE / length;
+  T invLength = CadKit::SlConstants<T>::one() / length;
 
   _v[0] *= invLength;
   _v[1] *= invLength;

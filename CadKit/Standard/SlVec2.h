@@ -16,17 +16,10 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_2_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_2_CLASS_H_
 
-#include "SlInlineMath.h"
 #include "SlAssert.h"
+#include "SlAbsolute.h"
 #include "SlTemplateSupport.h"
 #include "SlConstants.h"
-#include "SlTestEquality.h"
-
-// For convenience.
-#define SL_VEC2_ZERO SlConstants<T>::zero()
-#define SL_VEC2_HALF SlConstants<T>::half()
-#define SL_VEC2_ONE  SlConstants<T>::one()
-#define SL_VEC2_TWO  SlConstants<T>::two()
 
 
 namespace CadKit
@@ -65,6 +58,9 @@ public:
   bool                    isEqual ( const SlVec2 &vec, const T &tolerance ) const;
   bool                    isNotEqual ( const SlVec2 &vec ) const;
   bool                    isNotEqual ( const SlVec2 &vec, const T &tolerance ) const;
+
+  const Real &            maximum() const;
+  const Real &            minimum() const;
 
   Real                    normalize();
 
@@ -122,7 +118,7 @@ template<class T> bool      operator != ( const SlVec2<T> &vecA, const SlVec2<T>
 
 template<class T> inline SlVec2<T>::SlVec2()
 {
-  _v[0] = _v[1] = SL_VEC2_ZERO;
+  _v[0] = _v[1] = CadKit::SlConstants<T>::zero();
 }
 
 
@@ -317,7 +313,7 @@ template<class T> inline SlVec2<T> &SlVec2<T>::operator *= ( const SlVec2<T> &ve
 
 template<class T> inline SlVec2<T> &SlVec2<T>::operator /= ( const T &value )
 {
-  T invValue = SL_VEC2_ONE / value;
+  T invValue = CadKit::SlConstants<T>::one() / value;
 
   _v[0] *= invValue;
   _v[1] *= invValue;
@@ -607,7 +603,7 @@ template<class T> inline void SlVec2<T>::bisect ( const SlVec2<T> &pt0, const Sl
 {
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec2<T> vec ( pt0 + pt1 );
-  this->setValue ( vec / SL_VEC2_TWO );
+  this->setValue ( vec / CadKit::SlConstants<T>::two() );
 }
 
 
@@ -646,7 +642,7 @@ template<class T> inline void SlVec2<T>::interpolate ( const SlVec2<T> &pt0, con
 template<class T> inline T SlVec2<T>::normalize()
 {
   T length = this->getLength();
-  T invLength = SL_VEC2_ONE / length;
+  T invLength = CadKit::SlConstants<T>::one() / length;
 
   _v[0] *= invLength;
   _v[1] *= invLength;

@@ -131,6 +131,10 @@ SOURCE=.\SlVec4IO.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\SlAbsolute.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlAssert.h
 # End Source File
 # Begin Source File
@@ -152,6 +156,10 @@ SOURCE=.\SlCallbackList.h
 # Begin Source File
 
 SOURCE=.\SlCharacters.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlClamp.h
 # End Source File
 # Begin Source File
 
@@ -179,11 +187,19 @@ SOURCE=.\SlInlineMath.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlMinMax.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlPreComputedArrays.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SlPreComputedArrays.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlSwap.h
 # End Source File
 # Begin Source File
 
@@ -196,6 +212,10 @@ SOURCE=.\SlTestEquality.h
 # Begin Source File
 
 SOURCE=.\SlTrackball.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlTruncate.h
 # End Source File
 # Begin Source File
 
@@ -432,6 +452,14 @@ SOURCE=.\SlFileVerify.h
 # Begin Source File
 
 SOURCE=.\SlPathname.h
+# End Source File
+# End Group
+# Begin Group "Functors"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlTruncateFunctor.h
 # End Source File
 # End Group
 # End Target

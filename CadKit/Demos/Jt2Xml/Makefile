@@ -9,10 +9,10 @@ LOCAL_INCLUDE =
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-lCkTrJt2Xml_a \
-	-lCkDbJt_a \
-	-lCkDbXml_a \
-	-lCkSl_a \
+	-lCkTrJt2Xml_s \
+	-lCkDbJt_s \
+	-lCkDbXml_s \
+	-lCkSl_s \
 	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 

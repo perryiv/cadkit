@@ -37,7 +37,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A Jupiter to XML translator.
+//  A Jupiter to Performer translator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -46,10 +46,12 @@
 # pragma warning(disable:4786) // Truncated debug names.
 #endif
 
-#include "Translators/Jupiter2Xml/TrJt2Xml.h"
-#include "Database/XML/DbXmlWrite.h"
-#include "Database/XML/DbXmlGroup.h"
+#include "Translators/Jupiter2Performer/TrJt2Pf.h"
 #include "Standard/SlPathname.h"
+#include "Performer/pf.h"
+#include "Performer/pfdu.h"
+#include "Performer/pfutil.h"
+#include "Performer/pf/pfGroup.h"
 #include <string>
 #include <iostream>
 
@@ -62,18 +64,21 @@ using namespace CadKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool _translate ( std::string &filename, TrJt2Xml &jt2xml )
+bool _translate ( std::string &filename, TrJt2Pf &jt2pf )
 {
   SL_ASSERT ( false == filename.empty() );
   std::cout << "Translating: " << filename << std::endl;
 
-  // Declare an XML group.
-  DbXmlGroup::Ptr root = new DbXmlGroup ( "jt2xml" );
+  // Declare a Performer group node.
+  SlRefPtr<pfGroup> root = new pfGroup;
+
+  // Set the node's name to be the input file.
+  SL_VERIFY ( root->setName ( CadKit::justFilename ( filename ).c_str() ) );
 
   // Translate.
-  if ( false == jt2xml.translate ( filename.c_str(), *root ) )
+  if ( false == jt2pf.translate ( filename.c_str(), *root ) )
   {
-    std::cout << jt2xml.getLastError() << std::endl;
+    std::cout << jt2pf.getLastError() << std::endl;
     std::cout << "Failed to translate: " << filename << std::endl;
     return false;
   }
@@ -82,20 +87,12 @@ bool _translate ( std::string &filename, TrJt2Xml &jt2xml )
   // except with a different extension.
   SL_ASSERT ( filename.size() - 3 == filename.find ( ".jt" ) );
   filename.resize ( filename.size() - 2 );
-  filename += "xml";
+  filename += "pfb";
 
   std::cout << "Writing:     " << filename << std::endl;
 
-  // Declare an XML writer.
-  DbXmlWrite::Ptr out = new DbXmlWrite;
-
-//#ifdef _DEBUG
-//  // Write only the names (no values) to the file.
-//  out->setMode ( DbXmlWrite::WRITE_NAME_ONLY );
-//#endif
-
-  // Write the XML tree to file.
-  if ( false == out->write ( *root, filename.c_str() ) )
+  // Write the Performer scene file.
+  if ( 0 == ::pfdStoreFile ( root, filename.c_str() ) )
   {
     std::cout << "Failed to write: " << filename << std::endl;
     return false;
@@ -122,11 +119,16 @@ int main ( int argc, char **argv )
     return 0;
   }
 
-  // Declare an instance of the Jupiter to XML translator.
-  TrJt2Xml jt2xml;
+  // Initialize Performer.
+  ::pfInit();
+  ::pfInitArenas();
+  ::pfNotifyLevel ( PFNFY_ALWAYS );
+
+  // Declare an instance of the Jupiter to Performer translator.
+  TrJt2Pf jt2pf;
 
   // Initialize.
-  if ( false == jt2xml.init() )
+  if ( false == jt2pf.init() )
   {
     std::cout << "Failed to initialize translator" << std::endl;
     return 0;
@@ -137,8 +139,11 @@ int main ( int argc, char **argv )
   {
     // Translate the jupiter database.
     std::string filename ( argv[i] );
-    ::_translate ( filename, jt2xml );
+    ::_translate ( filename, jt2pf );
   }
+
+  // Done with Performer.
+  ::pfExit();
 
   // It worked.
   return 1;

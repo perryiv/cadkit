@@ -5,7 +5,8 @@ SUBDIRS = \
 	Database/XML \
 	Translators/Jupiter2Xml \
 	Demos/Jt2Xml \
-	Translators/Jupiter2Performer
+	Translators/Jupiter2Performer \
+	Demos/Jt2Pf
 #	SceneGraph/Core \
 #	SceneGraph/OpenGL \
 #	Examples/BoundingBox \

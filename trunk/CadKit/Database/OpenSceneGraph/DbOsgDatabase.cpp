@@ -49,7 +49,6 @@
 
 #define LAST_LOD_RANGE            1e7
 #define MAX_LOD_DISTANCE_FACTOR   30
-#define SIMPLE_LOD_ALGORITHM
 
 using namespace CadKit;
 

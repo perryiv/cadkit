@@ -51,7 +51,10 @@
 
 #define LAST_LOD_RANGE            1e7
 #define MAX_LOD_DISTANCE_FACTOR   30
-#define SIMPLE_LOD_ALGORITHM
+
+#ifdef _WIN32
+  std::string pfMemory::_indent;
+#endif
 
 using namespace CadKit;
 
@@ -72,7 +75,9 @@ DbPfDatabase::DbPfDatabase() : DbBaseTarget(),
   SL_ASSERT ( NULL != _groupStack.get() );
 
   // Push a new group onto stack.
-  this->_pushGroup ( new pfGroup );
+  SlRefPtr<pfGroup> root ( new pfGroup );
+  root->setName ( "root" );
+  this->_pushGroup ( root );
 }
 
 
@@ -114,7 +119,9 @@ bool DbPfDatabase::dataTransferStart ( IUnknown *caller )
   this->_clearGroupStack();
 
   // Push a group onto the stack.
-  this->_pushGroup ( new pfGroup );
+  SlRefPtr<pfGroup> root ( new pfGroup );
+  root->setName ( "root" );
+  this->_pushGroup ( root );
 
   // Clear the client-data maps.
   this->_clearClientDataMaps();
@@ -301,6 +308,9 @@ bool DbPfDatabase::startEntity ( PartHandle part, IUnknown *caller )
   if ( lod.isNull() )
     return ERROR ( "Failed to create pfLOD for given lod handle.", FAILED );
 
+  // Give it a name.
+  lod->setName ( mt->getName() );
+
   // Add this DCS to the scene.
   _groupStack->top()->addChild ( mt );
 
@@ -368,7 +378,7 @@ void DbPfDatabase::_setLodParameters ( pfLOD *lod ) const
 
   // Get the bounding sphere for the first child.
   pfSphere boundingSphere;
-  SL_VERIFY ( TRUE == child->getBound ( &boundingSphere ) );
+  child->getBound ( &boundingSphere ); // Returns mode, not error.
   SL_VERIFY ( boundingSphere.radius > 0.0f );
 
   // The maximum distance for the lod ranges.
@@ -486,13 +496,16 @@ bool DbPfDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   // Should be true.
   SL_ASSERT ( 1 == group->getNumChildren() );
 
+  // Give the geode a name.
+  geode->setName ( FORMAT ( "Part '%s', LOD %d", group->getName(), lod ).c_str() );
+
   // The lod should be the only child of the group.
-  SlRefPtr<pfLOD> PerformerLod ( dynamic_cast<pfLOD *> ( group->getChild ( 0 ) ) );
-  if ( PerformerLod.isNull() )
+  SlRefPtr<pfLOD> pfLod ( dynamic_cast<pfLOD *> ( group->getChild ( 0 ) ) );
+  if ( pfLod.isNull() )
     return ERROR ( "Failed to find lod to add geode to.", FAILED );
 
   // Add this Geode to the LOD.
-  PerformerLod->addChild ( geode );
+  pfLod->addChild ( geode );
 
   // Set the client data for this lod.
   this->setClientData ( lod, geode.getValue() );

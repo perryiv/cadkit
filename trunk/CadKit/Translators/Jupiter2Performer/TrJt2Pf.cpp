@@ -41,6 +41,10 @@
 
 #define PRINT if ( _verbose ) std::cout
 
+#ifdef _WIN32
+  std::string pfMemory::_indent;
+#endif
+
 using namespace CadKit;
 
 

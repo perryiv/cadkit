@@ -92,7 +92,7 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlStack<T>::SlStack()
+template<class T> inline SlStack<T>::SlStack() : std::stack<T>()
 {
   // Empty.
 }

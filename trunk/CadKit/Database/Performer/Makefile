@@ -10,7 +10,9 @@ CPP_FILES = \
 	DbPfPrecompiled.cpp
 
 # The include path.
-LOCAL_INCLUDE = -I$(OSGHOME)/include
+ifeq ($(CPP), g++)
+	LOCAL_INCLUDE = -I$(PERFORMER_INCLUDE_PATH)
+endif
 
 # The libraries to link to.
 LOCAL_LIBS = \

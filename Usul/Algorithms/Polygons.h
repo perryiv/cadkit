@@ -47,7 +47,7 @@ public:
   Iterator begin() { return _polygons.begin(); }
   Iterator end() { return _polygons.end(); }
 
-  bool visited() { return _visited; }
+  bool visited() const { return _visited; }
   void visited( bool v ) { _visited = v; }
   
 private:

@@ -43,7 +43,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdlld-1.3.lib"
+				AdditionalDependencies="foxdlld-1.4.lib"
 				OutputFile="$(OSG_FOX_LIB_DIR)/FoxToolsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -113,7 +113,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdll-1.3.lib"
+				AdditionalDependencies="foxdll-1.4.lib"
 				OutputFile="$(OSG_FOX_LIB_DIR)/FoxTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

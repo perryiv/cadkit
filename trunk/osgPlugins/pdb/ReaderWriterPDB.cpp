@@ -27,7 +27,7 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Predicates/FileExists.h"
-#include "Usul/File/Size.h"
+#include "Usul/File/Stats.h"
 
 #include <fstream>
 #include <sstream>
@@ -171,7 +171,7 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
 
   
   // Parse all the file and build internal data.
-  this->_parse ( in, Usul::File::filesize( file ) );
+  this->_parse ( in, Usul::File::size( file ) );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );

@@ -23,7 +23,7 @@
 #include "DbStlFileIO.h"
 #include "DbStlFacetManager.h"
 
-
+/*DEBUG*/ #include <iostream>
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlQueryPtr.h"
@@ -32,13 +32,13 @@
 
 using namespace CadKit;
 
-
+/*DEBUG*/extern std::ofstream stl_out;
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  DbStlFacetManager::DbStlFacetManager() constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
-DbStlFacetManager::DbStlFacetManager( )
+DbStlFacetManager::DbStlFacetManager( ) : /*DEBUG*/_tnv(0), _tns(0)
 /*
  :
   _facets( new Facets ),
@@ -169,6 +169,7 @@ bool DbStlFacetManager::storeData ( const char *filename, const StlFileMode &mod
         i->getNormal( normal );
         asciiOut.writeFacet( vertices[0], vertices[1], vertices[2], normal );
       }
+      /*DEBUG*/std::cout << "_tnv = " << _tnv << ", _tns = " << _tns << ", num facets = " << _facets.size() << std::endl;
       asciiOut.close();
       return( true );
     }
@@ -215,7 +216,6 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
 {
 //  SL_PRINT5 ( "In DbStlFacetManager::fetchVerticesPerShape{}, this = %X, caller = %X, shape = %d\n", this, caller, shape );
   SL_ASSERT ( caller );
-
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeVerticesVec3f> query ( caller );
   if ( query.isNull() )
@@ -235,12 +235,14 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
   {
   case CadKit::TRI_STRIP_SET:
     {
+    /*DEBUG*/stl_out << "CadKit::TRI_STRIP_SET\n" << std::endl;
       _vbuf.clear(); // clear out previous set if it exists
       if ( query->getVertices ( shape, this->_vSetter ) )
       {
         int numVertices( _vbuf.getData().size() ); // number of points in all sets
         int numSets( _vbuf.getIndices().size() ); // number of sets
-
+/*DEBUG*/_tnv+=numVertices;
+/*DEBUG*/_tns+=numSets;
         if ( !_transforms.empty() ) // if there are transforms on the stack
         {
           SlVec3f vIn, vOut; // need nonmutable copy of vector for transform op
@@ -286,15 +288,19 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
     } // case CadKit::TRI_STRIP_SET
     
   case CadKit::LINE_STRIP_SET:
+    /*DEBUG*/stl_out << "CadKit::LINE_STRIP_SET\n" << std::endl;
     break;
 
   case CadKit::POINT_SET:
+    /*DEBUG*/stl_out << "CadKit::POINT_SET\n" << std::endl;
     break;
 
   case CadKit::POLYGON_SET:
+    /*DEBUG*/stl_out << "CadKit::POLYGON_SET\n" << std::endl;
     break;
 
   default:
+    /*DEBUG*/stl_out << "Unknown set type\n" << std::endl;
     break;
   }
 

@@ -56,10 +56,10 @@ struct Visitor : public osg::NodeVisitor
   {
   }
 
-  virtual void apply ( node_type &mt )
+  virtual void apply ( node_type &node )
   {
-    _op ( &mt );
-    BaseClass::apply ( mt );
+    _op ( &node );
+    BaseClass::apply ( node );
   }
 
   const operation_type &  op() const { return _op; }

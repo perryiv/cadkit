@@ -29,6 +29,7 @@ public:
 
   typedef osgDB::ReaderWriter BaseClass;
   typedef osgDB::ReaderWriter::ReadResult ReadResult;
+  typedef osgDB::ReaderWriter::WriteResult WriteResult;
   typedef osgDB::ReaderWriter::Options Options;
   typedef Usul::Interfaces::IProgressBar Progress;
 
@@ -38,6 +39,7 @@ public:
   virtual bool            acceptsExtension ( const std::string &extension );
   virtual const char*     className();
   virtual ReadResult      readNode ( const std::string &filename, const Options *options );
+  virtual WriteResult     writeNode ( const osg::Node &node, const std::string &filename, const Options *options );
 
   void                    init() { this->_init(); }
   void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_parse( filename, progress ); }
@@ -51,12 +53,15 @@ protected:
 
   void                    _init();
 
-  void                    _parse ( const std::string& filename, Progress::NoUpdate *progress );
+  void                    _parse ( const std::string &filename, Progress::NoUpdate *progress );
 
   ReadResult              _read ( const std::string &, const Options * );
 
   void                    _skipLine ( std::istream &in ) const;
   void                    _skipWord ( std::istream &in ) const;
+
+  WriteResult             _write ( const osg::Node &node, const std::string &filename, const Options *options );
+  WriteResult             _write ( const std::string &temp, const osg::Node &node, const Options *options );
 
 private:
 

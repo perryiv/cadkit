@@ -15,11 +15,7 @@
 #include "OsgTools/Mesh.h"
 
 #include <string>
-#include <list>
-#include <map>
-
-#include <iostream>
-#include <fstream>
+#include <iosfwd>
 
 namespace osg { class Group; class Geode; };
 
@@ -27,6 +23,7 @@ namespace osg { class Group; class Geode; };
 class ReaderWriterYARN : public osgDB::ReaderWriter
 {
 public:
+
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
@@ -38,21 +35,21 @@ public:
   virtual const char*     className();
   virtual Result          readNode ( const std::string &filename, const Options *options );
 
-
-
 protected:
 
   osg::Group *            _build() const;
   void                    _init();
-  void                    _parse ( std::ifstream& );
+  void                    _parseYarns     ( std::ifstream &in );
+  void                    _parseNumStacks ( std::ifstream& fin, unsigned int numYarns, unsigned int numSlices );
+  void                    _parseStack     ( std::ifstream& fin, unsigned int numSlices, const osg::Vec3 &center );
   Result                  _read ( const std::string &, const Options * );
 
-
 private:
-  typedef OsgTools::Mesh::value_type Vertex;
-  typedef std::vector< OsgTools::Mesh > Meshes;
-  Meshes _meshes;
 
+  typedef OsgTools::Mesh::value_type Vertex;
+  typedef OsgTools::Mesh::value_type Normal;
+  typedef std::vector<OsgTools::Mesh> Meshes;
+  Meshes _meshes;
 };
 
 

@@ -38,6 +38,18 @@ namespace Usul
 
       unsigned int size() { return _frames.size(); }
 
+      Frame remove ( unsigned int index )
+      {
+        if(index < 0 || index >= _frames.size())
+        {
+          //TODO throw an exception
+        }
+        for( Sequence::iterator i = _frames.begin(), unsigned int j = 0; j != index; ++i, ++j);
+        Frame frame = *i;
+        _frames.erase(i);
+        return frame;
+      }
+
     private:
       Sequence _frames;
       Player *_player;

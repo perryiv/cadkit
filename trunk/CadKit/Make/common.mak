@@ -15,4 +15,4 @@ OBJECTS = $(CPP_FILES:.cpp=.o)
 
 # Compile the source files.
 .cpp.o:
-  $(CPP) -c $(INCLUDE) $(CPP_FLAGS) $< -o $@
+	$(CPP) -c $(INCLUDE) $(CPP_FLAGS) $< -o $@

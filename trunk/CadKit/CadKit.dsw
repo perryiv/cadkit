@@ -261,7 +261,19 @@ Package=<4>
 
 ###############################################################################
 
-Project: "ExampleMatrix4"=.\Examples\Matrix4\ExampleMatrix4.dsp - Package Owner=<4>
+Project: "ExampleMatrix44"=.\Examples\Matrix44\ExampleMatrix44.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleMatrixNN"=.\Examples\MatrixNN\ExampleMatrixNN.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

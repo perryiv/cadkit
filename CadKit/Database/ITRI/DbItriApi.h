@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_API_H_
-#define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_API_H_
+#ifndef _CADKIT_DATABASE_ITRI_LIBRARY_API_H_
+#define _CADKIT_DATABASE_ITRI_LIBRARY_API_H_
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@
 
 #ifdef _WIN32
 # pragma warning(disable: 4275) // Turn off this warning, it doesn't apply.
-# ifdef _CADKIT_COMPILING_DATABASE_STEREO_LITHOGRAPHY_LIBRARY
+# ifdef _CADKIT_COMPILING_DATABASE_ITRI_LIBRARY
 #   define DB_ITRI_API __declspec(dllexport) // We are compiling this library so the classes are exported.
 # else
 #   define DB_ITRI_API __declspec(dllimport) // The classes will be imported into the client's code.
@@ -35,4 +35,4 @@
 #endif
 
 
-#endif // _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_API_H_
+#endif // _CADKIT_DATABASE_ITRI_LIBRARY_API_H_

@@ -97,7 +97,7 @@ bool DbStlDatabase::dataTransferEnd ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbStlDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbStlDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbStlDatabase::queryInterface(), this = %X\n", this );
 

@@ -33,6 +33,24 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DatabaseItri"=.\Database\ITRI\DatabaseItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
 
 Package=<5>
@@ -154,6 +172,30 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Itri"=.\Demos\Jupiter2Itri\DemoJtItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseItri
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
     End Project Dependency
 }}}
 

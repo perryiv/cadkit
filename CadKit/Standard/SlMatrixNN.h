@@ -21,6 +21,8 @@
 #include "SlConstants.h"
 #include "SlSwap.h"
 
+#include <algorithm>
+
 
 namespace CadKit
 {
@@ -60,6 +62,9 @@ public:
 
   // Make the matrix identity.
   void                    identity();
+
+  // Invert the matrix.
+  bool                    invert();
 
   // Perform an in-place LU decomposition.
   void                    ludecomp();
@@ -224,6 +229,19 @@ template<class T, class I> inline void SlMatrixNN<T,I>::identity()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Invert the matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool SlMatrixNN<T,I>::invert()
+{
+  SL_ASSERT ( 0 ); // TODO.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Initialize the matrix to zero.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,20 +282,24 @@ template<class T, class I> inline bool SlMatrixNN<T,I>::setSize ( const I &size,
   I length ( size * size );
 
   // Allocate.
-  T *m = new T[length];
+  SlArrayPtr<T> m ( new T[length] );
 
   // Check allocation.
-  if ( NULL == m )
+  if ( m.isNull() )
     return false;
 
   // Copy what we can into the new array if we are supposed to.
   if ( true == preserve )
-    this->_copy ( _m, _length, m, length );
+  {
+    I min ( std::min ( _length, length ) );
+    SL_ASSERT ( 0 ); // Just added, is this right?
+    std::copy ( _m.get(), _m.get() + min, m.get() );
+  }
 
   // Assign the members.
   _length = length;
   _size = size;
-  _m = m;
+  _m = m; // Smart-pointer assignment, not a leak.
 
   // It worked.
   return true;
@@ -293,7 +315,7 @@ template<class T, class I> inline bool SlMatrixNN<T,I>::setSize ( const I &size,
 template<class T, class I> inline bool SlMatrixNN<T,I>::setValue ( const SlMatrixNN &copyMe )
 {
   // Call the other one.
-  return this->setValue ( copyMe.getSize(), copyMe.getValue(), true );
+  return this->setValue ( copyMe.getSize(), copyMe.getValue() );
 }
 
 
@@ -344,8 +366,13 @@ template<class T, class I> inline bool SlMatrixNN<T,I>::setValue ( const I &size
   if ( false == this->setSize ( size, false ) )
     return false;
 
+  // Should be true.
+  SL_ASSERT ( size * size == _length );
+  SL_ASSERT ( size == _size );
+
   // Copy the values.
-  this->_copy ( m, _length, _m, _length );
+  SL_ASSERT ( 0 ); // Just added, is this right?
+  std::copy ( m, m + _length, _m.get() );
 
   // It worked.
   return true;

@@ -78,6 +78,10 @@ const char *getLong()
   \n\
       If possible, the output should be in ASCII.\n\
   \n\
+  --output-precision <decimals>, -op\n\
+  \n\
+      For ASCII output formats, specify the number of decimals.\n\
+  \n\
   --center, -c\n\
   \n\
       Translate the geometry such that the center of its bounding box is\n\

@@ -199,6 +199,10 @@ SOURCE=.\SlPreComputedArrays.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlScopedSet.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlSwap.h
 # End Source File
 # Begin Source File

@@ -27,6 +27,7 @@
 #include "Standard/SlMessageIds.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlBitmask.h"
+#include "Standard/SlScopedSet.h"
 
 #include "Interfaces/IDataSource.h"
 #include "Interfaces/IDataTarget.h"
@@ -66,7 +67,9 @@ CtTranslation::CtTranslation() : SlRefBase ( 0 ),
   _progressPrintLevel ( 0 ),
   _printFlags ( 0 ),
   _lodOption ( CadKit::PROCESS_ALL_LODS ),
-  _zeroRange ( 0.0, 0.0 )
+  _zeroRange ( 0.0, 0.0 ),
+  _target ( 0x0 ),
+  _source ( 0x0 )
 {
   SL_PRINT2 ( "In CtTranslation::CtTranslation(), this = %X\n", this );
 }
@@ -90,7 +93,7 @@ CtTranslation::~CtTranslation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CadKit::IUnknown *CtTranslation::queryInterface ( const unsigned long &iid )
+CadKit::IUnknown *CtTranslation::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In CtTranslation::queryInterface(), this = %X\n", this );
 
@@ -158,7 +161,7 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTranslation::Args &args )
+bool CtTranslation::parseArguments ( const int &argc, const char **argv, ICommandLine::Args &args )
 {
   SL_PRINT3 ( "In CtTranslation::parseArguments(), this = %X, argc = %d\n", this, argc );
   SL_ASSERT ( argc >= MIN_NUM_ARGS );
@@ -306,7 +309,12 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
     {
 
     }
-      
+
+    else if ( arg == "-op" || arg == "--output-precision" )
+    {
+
+    }
+
     // Otherwise just save the argument.
     else
     {
@@ -316,6 +324,72 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line arguments and execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown *target )
+{
+  SL_PRINT5 ( "In CtTranslation::execute(), this = %X, argc = %d, source = %X, target = %X\n", this, argc, source, target );
+
+  // Set this instance's target and source. The destructor will reset them 
+  // to their original value (which should be null).
+  SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp1 ( _target, target );
+  SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp2 ( _source, source );
+
+  // Make sure we have the necessary interfaces.
+  SlQueryPtr<IDataSource> ds ( source );
+  if ( ds.isNull() )
+  {
+    PRINT << "Failed to get IDataSource interface from the data source." << std::endl;
+    return false;
+  }
+/*
+  // Check the number of arguments.
+  if ( argc < MIN_NUM_ARGS )
+  {
+    std << this
+  }
+
+  // It's ok to have a null target.
+  if ( NULL == source )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // Make sure these don't get deleted.
+  SlRefPtr<IUnknown> dummy2 ( source );
+  SlRefPtr<IUnknown> dummy3 ( target );
+
+  // Loop through the arguments.
+  for ( int i = 1; i < argc; ++i )
+  {
+    // Grab the current argument.
+    std::string arg ( argv[i] );
+
+    //
+    // See if this argument is one of our flags.
+    //
+
+    if ( arg == "-h" || arg == "--help" )
+    {
+      // Print the usage string now.
+      // TODO, this is a hack, should not be jt-specific.
+      std::cout << this->getUsageString ( argv[0], "jt", true ).c_str() << std::endl;
+      
+      // Hack! TODO, this is a temporary fix. Without it the shord help 
+      // message prints after this long one. Need a redesign of the controller.
+      ::exit ( 0 );
+    }
+  }
+*/
+  return false;
 }
 
 

@@ -162,7 +162,7 @@ void DbOsgDatabase::_clearGroupStack()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbOsgDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbOsgDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbOsgDatabase::queryInterface(), this = %X\n", this );
 

@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  SlQueryPtr.h: Works like CComQIPtr.
+//  SlQueryPtr: Works like CComQIPtr.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -24,61 +24,99 @@
 // any kind of clue as to the source of the problem). Since IUnknown.h is 
 // entirely inline this should not create a dependency problem.
 // TODO, figure out a better solution.
-#include "Interfaces/IUnknown.h"
+//#include "Interfaces/IUnknown.h"
 
 
-namespace CadKit
+namespace CadKit{
+namespace Private {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Safely query for the interface. The template parameter NoInterfacePolicy
+//  defines what happens when the interface is not found.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  typename InterfaceID, 
+  class InterfaceType, 
+  class NoInterfacePolicy
+>
+inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, NoInterfacePolicy &policy )
 {
-template <class T> class SlQueryPtr : public SlRefPtr<T>
+  // Overload this for specific types.
+  InterfaceType *answer = CadKit::queryInterface ( iid, unknown );
+
+  // Check the policy.
+  policy ( answer );
+
+  // Return the answer.
+  return answer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Policy class that does nothing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct DoNothing
 {
-public:
-
-  SlQueryPtr ( CadKit::IUnknown *unknown );
-
-  // Assignment.
-  SlQueryPtr<T> &operator = ( CadKit::IUnknown *unknown );
+  void operator() ( const void * ){}
 };
 
 
+}; // namespace Private
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Safely query the interface. This function is used below.
+//  SlQueryPtr class declaration.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline IUnknown *queryInterface ( const unsigned int &iid, IUnknown *unknown )
+template
+<
+  class NewInterfaceType, 
+  class OldInterfaceType = CadKit::IUnknown,
+  class NoInterfacePolicy = Private::DoNothing
+>
+class SlQueryPtr : public SlRefPtr<NewInterfaceType>
 {
-  return ( unknown ) ? unknown->queryInterface ( iid ) : 0x0;
-}
+public:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor. Note what we pass to the base class's constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  SlQueryPtr ( OldInterfaceType *ptr ) : 
+    SlRefPtr<NewInterfaceType> ( static_cast<NewInterfaceType *> ( Private::queryInterface ( NewInterfaceType::IID, ptr, NoInterfacePolicy() ) ) )
+  {
+    // Empty.
+  }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor. Note what we pass to the base class's constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assignment.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-template <class T> inline SlQueryPtr<T>::SlQueryPtr ( CadKit::IUnknown *unknown ) : 
-  SlRefPtr<T> ( static_cast<T *> ( CadKit::queryInterface ( T::IID, unknown ) ) )
-{
-  // Empty.
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assignment.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline SlQueryPtr<T> &SlQueryPtr<T>::operator = ( CadKit::IUnknown *unknown )
-{
-  // Set this instance from the result of the safe query (which may be null).
-  this->setValue ( static_cast<T *> ( CadKit::queryInterface ( T::IID, unknown ) ) );
-  return *this;
-}
+  SlQueryPtr &operator = ( OldInterfaceType *ptr )
+  {
+    // Set this instance from the result of the safe query (which may be null).
+    this->setValue ( static_cast<NewInterfaceType *> ( Private::queryInterface ( NewInterfaceType::IID, ptr, NoInterfacePolicy() ) ) );
+    return *this;
+  }
+};
 
 
 }; // namespace CadKit
+
 
 #endif // _CADKIT_STANDARD_LIBRARY_QUERY_INTERFACE_POINTER_CLASS_H_

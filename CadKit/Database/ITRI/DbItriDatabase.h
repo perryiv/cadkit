@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
-#define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
+#ifndef _CADKIT_DATABASE_ITRI_LIBRARY_DATABASE_H_
+#define _CADKIT_DATABASE_ITRI_LIBRARY_DATABASE_H_
 
 #include "DbItriApi.h"
 #include "DbItriTriangle.h"
@@ -86,4 +86,4 @@ protected:
 
 }; // namespace CadKit
 
-#endif // _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
+#endif // _CADKIT_DATABASE_ITRI_LIBRARY_DATABASE_H_

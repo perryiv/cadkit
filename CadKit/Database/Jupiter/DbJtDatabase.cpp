@@ -129,7 +129,7 @@ DbJtDatabase::~DbJtDatabase()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbJtDatabase::queryInterface(), this = %X\n", this );
 

@@ -68,7 +68,7 @@ DbBaseObject::~DbBaseObject()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbBaseObject::queryInterface ( const unsigned long &iid )
+IUnknown *DbBaseObject::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbBaseObject::queryInterface(), this = %X\n", this );
 

@@ -65,6 +65,9 @@ public:
   // Check the arguments.
   virtual bool            checkArguments ( const int &argc, const char **argv ) const;
 
+  // Parse the command-line arguments and execute.
+  virtual bool            execute ( int argc, char **argv, IUnknown *source, IUnknown *target );
+
   // Get the usage string.
   virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const;
 
@@ -103,6 +106,8 @@ protected:
   unsigned int _printFlags;
   LodProcessOption _lodOption;
   SlVec2d _zeroRange;
+  SlRefPtr<IUnknown> _target;
+  SlRefPtr<IUnknown> _source;
 
   virtual ~CtTranslation();
 

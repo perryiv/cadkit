@@ -3,44 +3,47 @@
 
 #include <list>
 
-namespace Detail
+namespace MenuKit
 {
-
-  template<class TypeName>
-  class Stack
+  namespace Detail
   {
-  public:
-    typedef std::list<TypeName> DataVec;
-    Stack(): _data() {}
-    Stack(const Stack& s): _data(s._data) {}
-    ~Stack() {}
-
-    Stack& operator =(const Stack& s)
+    template<class TypeName>
+    class Stack
     {
-      _data = s._data;
-      return (*this);
-    }
+    public:
+      typedef TypeName value_type;
+      typedef std::list<value_type> DataVec;
 
-    void push(const TypeName& data)
-    {
-      _data.push_back(data);
-    }
+      Stack(): _data() {}
+      Stack(const Stack& s): _data(s._data) {}
+      ~Stack() {}
 
-    void pop()
-    {
-      if( !_data.empty() )
-        _data.remove( *(--_data.end()) );  // .remove only valid for list<>
-    }
+      Stack& operator =(const Stack& s)
+      {
+        _data = s._data;
+        return (*this);
+      }
 
-    const TypeName& top() { return *(--_data.end()); }  // TODO: test
+      void push(const TypeName& data)
+      {
+        _data.push_back(data);
+      }
 
-    void data(const DataVec& d) { _data = d; }
-    const DataVec& data() const { return _data; }
+      void pop()
+      {
+        if( !_data.empty() )
+          _data.remove( *(--_data.end()) );  // .remove only valid for list<>
+      }
 
-  private:
-    DataVec _data;
+      const TypeName& top() { return *(--_data.end()); }  // TODO: test
+
+      void data(const DataVec& d) { _data = d; }
+      const DataVec& data() const { return _data; }
+
+    private:
+      DataVec _data;
+    };
   };
-
 };
 
 #endif

@@ -257,7 +257,13 @@
 				RelativePath=".\Osg\FlatBox.h">
 			</File>
 			<File
+				RelativePath=".\Osg\osg_types.h">
+			</File>
+			<File
 				RelativePath=".\Osg\ThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\Osg\ThemeSkinTile.h">
 			</File>
 			<File
 				RelativePath=".\Osg\ThemeTile.h">

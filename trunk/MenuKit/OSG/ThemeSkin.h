@@ -29,28 +29,15 @@ namespace MenuKit
       * MapType member for color designation.
       */
     template<typename MapType>
-    class ThemeSkin
+    class ThemeSkin : public Referenced
     {
     public:
-      ThemeSkin():
-          _box(1.0,0.0), _separator(0.1,1.0), _font(), _theme()
-      {}
+      typedef Referenced base_class;
+      typedef MapType theme_type;
+      typedef ThemeSkin<theme_type> thisclass;
+      MENUKIT_DECLARE_POINTER ( thisclass );  ///\todo TODO: correct syntax?  needs 'typename' in front?
 
-      ThemeSkin(const ThemeSkin& ts):
-        _box(ts._box), _separator(ts._separator), _font(ts._font), _theme(ts._theme)
-      {}
-
-      ThemeSkin& operator =(const ThemeSkin& ts)
-      {
-        _box = ts._box;
-        _separator = ts._separator;
-        _font = ts._font;
-        _theme = ts._theme;
-        return( *this );
-      }
-
-      ~ThemeSkin()
-      {}
+      ThemeSkin(): base_class(), _box(1.0,1.0), _separator(0.1,1.0), _theme() {}
 
       virtual osg::Node* operator ()(const Menu& menu)=0;
       virtual osg::Node* operator ()(const Button& butn)=0;
@@ -58,15 +45,12 @@ namespace MenuKit
 
       virtual float height(const Menu& menu)=0;
       virtual float height(const Button& butn)=0;
+      virtual float height(const Item* item)=0;
 
       virtual float width(const Menu& menu)=0;
       virtual float width(const Button& butn)=0;
       virtual float width(const Item* item)=0;
       // TODO: virtual float width(const Item& menu);
-
-      void font(osgText::Font* f) { _font = f; }
-      const osgText::Font* font() const { return _font.get(); }
-      osgText::Font* font() { return _font.get(); }
 
       void box(const Detail::Box& b) { _box = b; }
       const Detail::Box& box() const { return _box; }
@@ -76,14 +60,31 @@ namespace MenuKit
       const Detail::Box& separator() const { return _separator; }
       Detail::Box& separator() { return _separator; }
 
-      void theme(const MapType& t) { _theme = t; }
-      const MapType& theme() const { return _theme; }
-      MapType& theme() { return _theme; }
+      void theme(const theme_type& t) { _theme = t; }
+      const theme_type& theme() const { return _theme; }
+      theme_type& theme() { return _theme; }
+
+    protected:
+      virtual ~ThemeSkin() {}
 
     private:
-      Detail::Box _box, _separator;
-      osg::ref_ptr<osgText::Font> _font;
-      MapType _theme;
+      ///\todo TODO: evaluate if this class is copyable
+      // not implemented by design
+      ThemeSkin(const ThemeSkin& ts);//: base_class(ts)
+      //  _box(ts._box), _separator(ts._separator), _theme(ts._theme)
+      //{}
+
+      ThemeSkin& operator =(const ThemeSkin& ts);
+      //{
+      //  base_class::operator =(ts);
+      //  _box = ts._box;
+      //  _separator = ts._separator;
+      //  _theme = ts._theme;
+      //  return( *this );
+      //}
+
+      Detail::Box _box, _separator;  // 2 boxes that define the size of the total graphic
+      theme_type _theme;
     };
 
   };

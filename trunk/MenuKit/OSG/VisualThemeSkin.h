@@ -2,7 +2,6 @@
 #define _menukit_osg_colorthemeskin_h_
 
 #include "MenuKit/OSG/ThemeSkin.h"   // the base class
-#include "MenuKit/OSG/ColorTheme.h"  // to get a tyepdef
 #include "MenuKit/OSG/Border.h"      // graphics helpers
 #include "MenuKit/OSG/FlatBox.h"
 #include "MenuKit/OSG/Word.h"
@@ -13,7 +12,7 @@
 #include "MenuKit/Box.h"
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
-// TODO: #include "Item.h"
+///\todo TODO: #include "Item.h"
 
 #include "osgText/Text"
 #include "osg/PrimitiveSet"
@@ -23,6 +22,21 @@
 #include "osg/BoundingBox"
 
 #include <string>
+
+#include "MenuKit/OSG/osg_types.h"
+
+/*
+-----------------------------------------------|
+|                                              |
+| ----------              ----------           |
+| |        |              |        |           |
+| | middle |   T E X T    | middle |           |
+| |        |              |        |           |
+| ----------              ----------           |
+|             background                       |
+|----------------------------------------------|
+               border
+*/
 
 namespace MenuKit
 {
@@ -35,14 +49,18 @@ namespace MenuKit
       * of the ThemeSkin base class.  Its goal is to provide
       * Menu Items with a similar appearance to the Menu Items
       * in Microsoft's Visual Studio IDE.
+      * 
+      * This class is done with only an OSG implementation.
+      * It is intended to be a leaf class, which has many
+      * OSG specific methods.
       */
-    template<typename ThemeMap>
-    class VisualThemeSkin : public ThemeSkin<ThemeMap>
+    class VisualThemeSkin : public ThemeSkin<osg_color_map>
     {
     public:
-      typedef ThemeSkin<ThemeMap> BaseClass;
+      typedef ThemeSkin<osg_color_map> base_class;
+      MENUKIT_DECLARE_POINTER ( VisualThemeSkin );
 
-      enum BITS
+      enum ItemBits
       {
         NONE      = 0x00000000,
         MENU      = 0x00000001,
@@ -54,23 +72,7 @@ namespace MenuKit
         MARKED    = 0x00000040,
       };
 
-      VisualThemeSkin(): BaseClass(),
-        _margin(0.2), _text(0.8), _border(0.02), _bits(NONE)
-      {}
-
-      VisualThemeSkin(const VisualThemeSkin& s): BaseClass(s),
-        _margin(s._margin), _text(s._text), _border(s._border), _bits(s._bits)
-      {}
-
-      VisualThemeSkin& operator= (const VisualThemeSkin& ct)
-      {
-        BaseClass::operator =(ct);
-        _margin = ct._margin;
-        _text = ct._text;
-        _border = ct._border;
-        _bits = ct._bits;
-        return( *this );
-      }
+      VisualThemeSkin(): base_class(), _margin(0.2), _text(0.8), _border(0.02), _font(new osgText::Font()) {}
 
       virtual osg::Node* operator ()(const Menu& m);
       virtual osg::Node* operator ()(const Button& b);
@@ -78,11 +80,16 @@ namespace MenuKit
 
       virtual float height(const Menu& m);
       virtual float height(const Button& b);
+      virtual float height(const Item* i);
 
       virtual float width(const Menu& m);
       virtual float width(const Button& b);
       virtual float width(const Item* i);
       // TODO: virtual float width(const Button& b);
+
+      void font(osgText::Font* f) { _font = f; }
+      const osgText::Font* font() const { return _font.get(); }
+      osgText::Font* font() { return _font.get(); }
 
       void border(float m) { _border=m; }
       float border() const { return _border; }
@@ -94,24 +101,38 @@ namespace MenuKit
       float text_ratio() const { return _text; }
 
     protected:
-      float word_width(const std::string& word);
-      float item_width(const std::string& w,const Menu* m);
-      osg::Node* item_graphic(const std::string& txt, const Menu* parent);
-      osg::Node* separator_graphic();
+      virtual ~VisualThemeSkin() {}
 
-      void gather_bits(unsigned int menubits);
+      float _word_width(const std::string& word);
+      float _item_width(const std::string& w,const Menu* m);
+      osg::Node* _item_graphic(const std::string& txt, const Menu* parent, ItemBits b);
+      osg::Node* _separator_graphic();
 
-      void bits(BITS b) { _bits = b; }
-      BITS bits() const { return _bits; }
+      ItemBits _gather_bits(unsigned int menubits);
 
     private:
+      ///\todo TODO: evaluate if this class is copyable
+      // not implemented by design
+      VisualThemeSkin(const VisualThemeSkin& s);//: base_class(s),
+      //  _margin(s._margin), _text(s._text), _border(s._border), _font(ts._font)
+      //{}
+
+      VisualThemeSkin& operator= (const VisualThemeSkin& ct);
+      //{
+      //  base_class::operator =(ct);
+      //  _margin = ct._margin;
+      //  _text = ct._text;
+      //  _border = ct._border;
+      //  _font = ts._font;
+      //  return( *this );
+      //}
+
       float _margin,  // distance between box's edge to an add-on
-            _border;  /// TODO: rename this // must be an extra width parameter, don't remember
+            _border;  ///\todo TODO: rename this // must be an extra width parameter, don't remember
       float _text;    // percentage of box height
-      BITS _bits;     // add-on graphic characteristics
+      osg::ref_ptr<osgText::Font> _font;
     };
 
-    typedef VisualThemeSkin<osgColorTheme> osgVisualSkin;
   };
 
 };
@@ -123,84 +144,99 @@ namespace MenuKit
 using namespace MenuKit;
 using namespace OSG;
 
-template<typename ThemeMap>
-osg::Node* VisualThemeSkin<ThemeMap>::operator ()(const Menu& m)
+osg::Node* VisualThemeSkin::operator ()(const Menu& m)
 {
-  _bits = NONE;    // reset bits to nothing
-  typedef MenuKit::Bits<BITS> setter;
-  _bits = setter::add( _bits , MENU );
+  typedef MenuKit::Bits<ItemBits> setter;
 
-  osg::ref_ptr<osg::Node> node;
+  ItemBits bits = NONE;    // set bits to nothing
+  bits = setter::add( bits , MENU );
+
+  osg::Node* node = 0x0;
 
   // check for a 'SEPARATOR'  >:-/
   if( m.separator() )
-    node = separator_graphic();
+    node = _separator_graphic();
 
   else
   {
-    this->gather_bits( m.flags() );
-    node = item_graphic( m.text(), m.parent() );
+    ItemBits b = this->_gather_bits( m.flags() );
+    bits = setter::add( b , bits );
+    node = _item_graphic( m.text(), m.parent(), bits );
   }
 
-  return( node.release() );
+  return( node );
 }
 
-template<typename ThemeMap>
-osg::Node* VisualThemeSkin<ThemeMap>::operator ()(const Button& b)
+osg::Node* VisualThemeSkin::operator ()(const Button& b)
 {
-  _bits = NONE;    // reset bits to nothing
-
-  osg::ref_ptr<osg::Node> node;
+  osg::Node* node = 0x0;
 
   // check for a 'SEPARATOR'  >:-/
   if( b.separator() )
-    node = separator_graphic();
+    node = _separator_graphic();
 
   else
   {
-    this->gather_bits( b.flags() );
-    node = item_graphic( b.text(), b.parent() );
+    ItemBits bits = this->_gather_bits( b.flags() );
+    node = _item_graphic( b.text(), b.parent(), bits );
   }
 
-  return( node.release() );
+  return( node );
 }
 
-template<typename ThemeMap>
-void VisualThemeSkin<ThemeMap>::gather_bits(unsigned int itembits)
+VisualThemeSkin::ItemBits VisualThemeSkin::_gather_bits(unsigned int itembits)
 {
   // TODO: set up any bits necessary
   typedef MenuKit::Bits<unsigned int> cause;
-  typedef MenuKit::Bits<BITS> effect;
+  typedef MenuKit::Bits<ItemBits> effect;
+  ItemBits bits = NONE;
 
   if( cause::has(itembits, MenuKit::Item::EXPANDED) )
-    _bits = effect::add( _bits , EXPANDED );
+    bits = effect::add( bits , EXPANDED );
   if( cause::has(itembits, MenuKit::Item::TOGGLE) )
-    _bits = effect::add( _bits , TOGGLE );
+    bits = effect::add( bits , TOGGLE );
   if( !cause::has(itembits, MenuKit::Item::ENABLED) )
-    _bits = effect::add( _bits , DISABLED );
+    bits = effect::add( bits , DISABLED );
   if( cause::has(itembits, MenuKit::Item::RADIO) )
-    _bits = effect::add( _bits , RADIO );
+    bits = effect::add( bits , RADIO );
   if( cause::has(itembits, MenuKit::Item::CHECKED) )
-    _bits = effect::add( _bits , CHECKED );
+    bits = effect::add( bits , CHECKED );
   if( cause::has(itembits, MenuKit::Item::MARKED) )
-    _bits = effect::add( _bits , MARKED );
+    bits = effect::add( bits , MARKED );
+
+  return bits;
 }
 
-template<typename ThemeMap>
-osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const Menu* parent)
+///\todo TODO: this needs a lot of clean up
+osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* parent, ItemBits itembits)
 {
-  const ThemeMap& scheme = this->theme();
   Detail::Box thebox = this->box();
 
+  Menu::Layout pl;
+  if( parent )
+    pl = parent->layout();
+  else
+    pl = Menu::HORIZONTAL;
+
+  const base_class::theme_type& scheme = this->theme();
+  base_class::theme_type::const_iterator middleiter = scheme.find("middle");
+  base_class::theme_type::const_iterator backgrounditer = scheme.find("background");
+  base_class::theme_type::const_iterator textiter = scheme.find("text");
+  base_class::theme_type::const_iterator specialiter = scheme.find("special");
+  base_class::theme_type::const_iterator borderiter = scheme.find("border");
+
   // make the background box(es)
-  Detail::FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
-  if( !parent || parent->layout()==Menu::HORIZONTAL )
+  FlatBox borderbox( thebox.height(),thebox.width(),-0.003);
+  if( pl==Menu::HORIZONTAL )
   {
-    borderbox.color( scheme["middle"] );
+    if( middleiter != scheme.end() )
+      borderbox.color( middleiter->second );
   }
+
   else
   {
-    borderbox.color( scheme["background"] );
+    if( backgrounditer != scheme.end() )
+      borderbox.color( backgrounditer->second );
   }
 
   osg::ref_ptr<osg::Geode> backgeode = new osg::Geode();
@@ -208,11 +244,12 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
   backgeode->addDrawable( borderbox() );
 
   // make the text graphic functor
-  Detail::Word word;
+  Word word;
   word.height( _text*(thebox.height()-2.0*_border) );
   word.text( txt );
   word.font( font() );
-  word.color( scheme["text"] );
+  if( textiter != scheme.end() )
+    word.color( textiter->second );
   word.draw_mode( osgText::Text::TEXT );
   osg::ref_ptr<osg::Drawable> worddrawable = word();
 
@@ -231,7 +268,7 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
   wordmt->setName("MK_OSG_CTS_word_xform");
   wordmt->addChild( wordgeode.get() );
   osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin,-0.5*wordheight,0.0);
-  if( !parent || parent->layout()==Menu::HORIZONTAL )
+  if( pl==Menu::HORIZONTAL )
     wordcorrection[0] = -0.5*wordwidth;
   wordmt->setMatrix( osg::Matrix::translate(wordcorrection) );
 
@@ -247,26 +284,18 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
   mt->setMatrix( osg::Matrix::translate(0.5*thebox.width(),-0.5*thebox.height(),0.0) );
 
   // escape if  null parent
-  if( !parent )  // valid parent  TODO: implement
+  if( !parent || pl==Menu::HORIZONTAL )  // valid parent  TODO: implement
   {
-    // TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
-    // TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
+    ///\todo TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
+    ///\todo TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
     return mt;
   }
 
-  // escape if horizontal parent
-  if( parent->layout() == MenuKit::Menu::HORIZONTAL )
-  {
-    // TODO: what is this? : osg::Vec3 nosidecorrection(-0.5*wordwidth,-0.5*wordheight,0.0);
-    // TODO: what is this? : wordmt->setMatrix( osg::Matrix::translate( nosidecorrection ) );
-    return mt;
-  }
-
-  /// TODO: make other graphic boxes.  completed?
-
+  ///\todo TODO: make other graphic boxes.  completed?
   // left side
-  Detail::FlatBox sidebox(borderbox.height(),borderbox.height()+_border,-0.001);
-  sidebox.color( scheme["middle"] );
+  FlatBox sidebox(borderbox.height(),borderbox.height()+_border,-0.001);
+  if( middleiter != scheme.end() )
+    sidebox.color( middleiter->second );
   osg::ref_ptr<osg::Drawable> ld = sidebox();
   osg::ref_ptr<osg::Geode> lg = new osg::Geode();
   lg->setName("MK_OSG_CTS_leftleaf");
@@ -285,21 +314,24 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
   rgmt->setMatrix( osg::Matrix::translate( osg::Vec3(rxmov,0.0,0.0) ) );
   group->addChild( rgmt.get() );
 
-  // TODO: add graphics for each supported bit!!!
+  ///\todo TODO: add graphics for each supported bit! , Feb 20, 2005: finished now?
   typedef MenuKit::Bits<unsigned int> checker;
-  if( checker::has(this->bits(), TOGGLE) )
+  if( checker::has(itembits, TOGGLE) )
   {
-    if( checker::has(this->bits(), CHECKED) )
+    if( checker::has(itembits, CHECKED) )
     {
       // the border
       Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);
       Detail::Box inny(outy.height()-2.0*_border,outy.height()-2.0*_border);
-      Detail::Border brdr(outy,inny,0.001);
-      brdr.color( scheme["special"] );
+      Border brdr(outy,inny,0.001);
+      if( specialiter != scheme.end() )
+        brdr.color( specialiter->second );
+
       lgmt->addChild( brdr() );
 
-      Detail::FlatBox markclosed(0.5*inny.height(),0.5*inny.width(),0.002);
-      markclosed.color( scheme["special"] );
+      FlatBox markclosed(0.5*inny.height(),0.5*inny.width(),0.002);
+      if( specialiter != scheme.end() )
+        markclosed.color( specialiter->second );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       osg::ref_ptr<osg::Geode> mbgeo = new osg::Geode();
       mbgeo->setName("MK_OSG_CTS_markbox");
@@ -308,14 +340,16 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
     }
   }  // end of TOGGLE add-on
 
-  if( checker::has(this->bits(), RADIO) )
+  if( checker::has(itembits, RADIO) )
   {
-    Detail::Disk markdisc(_text*word.height(),0.0);
-    markdisc.color( scheme["text"] );
+    Disk markdisc(_text*word.height(),0.0);
+    if( textiter != scheme.end() )
+      markdisc.color( textiter->second );
     osg::ref_ptr<osg::Drawable> mddraw = markdisc();
 
-    Detail::Disk markopen(_text*markdisc.height(),0.001);
-    markopen.color( scheme["middle"] );
+    Disk markopen(_text*markdisc.height(),0.001);
+    if( middleiter != scheme.end() )
+      markopen.color( middleiter->second );
     osg::ref_ptr<osg::Drawable> modraw = markopen();
 
     osg::ref_ptr<osg::Geode> mdgeo = new osg::Geode();
@@ -323,10 +357,11 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
     mdgeo->addDrawable( mddraw.get() );
     mdgeo->addDrawable( modraw.get() );
 
-    if( checker::has(this->bits(), CHECKED) )
+    if( checker::has(itembits, CHECKED) )
     {
-      Detail::Disk markclosed(_text*markopen.height(),0.002);
-      markclosed.color( scheme["text"] );
+      Disk markclosed(_text*markopen.height(),0.002);
+      if( textiter != scheme.end() )
+        markclosed.color( textiter->second );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       mdgeo->addDrawable( mcdraw.get() );
     }
@@ -334,19 +369,22 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
     lgmt->addChild( mdgeo.get() );
   }  // end of CHECKED add-on
 
-  if( checker::has(this->bits(), MENU) )
+  if( checker::has(itembits, MENU) )
   {
-    Detail::Arrow mark(0.5*word.height(),0.0);
-    mark.color( scheme["text"] );
+    Arrow mark(0.5*word.height(),0.0);
+    if( textiter != scheme.end() )
+      mark.color( textiter->second );
+
     osg::ref_ptr<osg::Drawable> md = mark();
     osg::ref_ptr<osg::Geode> mgeo = new osg::Geode();
     mgeo->setName("MK_OSG_CTS_menubitsgeode");
     mgeo->addDrawable( md.get() );
 
-    if( !checker::has(this->bits(), EXPANDED) )
+    if( !checker::has(itembits, EXPANDED) )
     {
-      Detail::Arrow expander(0.5*mark.height(),0.001);
-      expander.color( scheme["background"] );
+      Arrow expander(0.5*mark.height(),0.001);
+      if( backgrounditer != scheme.end() )
+        expander.color( backgrounditer->second );
       osg::ref_ptr<osg::Drawable> exdraw = expander();
       mgeo->addDrawable( exdraw.get() );
     }
@@ -356,23 +394,25 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
       if( parent->layout()==Menu::VERTICAL )  // only for vertical parents
       {
         Detail::Box inner(thebox.height()-2.0*_border,thebox.width()-2.0*_border);
-        Detail::Border fence(thebox,inner,0.001);
-        fence.color( scheme["border"] );
+        Border fence(thebox,inner,0.001);
+        if( borderiter != scheme.end() )
+          fence.color( borderiter->second );
         osg::ref_ptr<osg::Node> fencenode = fence();
         mt->addChild( fencenode.get() );
       }
     }
 
-    // TODO: if expanded and parent is vertical, draw border
+    ///\todo TODO: if expanded and parent is vertical, draw border
 
     rgmt->addChild( mgeo.get() );
   }  // end of MENU add-on
 
-  if( checker::has(this->bits() , MARKED) )
+  if( checker::has(itembits , MARKED) )
   {
     Detail::Box inner(thebox.height()-2.0*_border,thebox.width()-2.0*_border);
-    Detail::Border fence(thebox,inner,0.001);
-    fence.color( scheme["border"] );
+    Border fence(thebox,inner,0.001);
+    if( borderiter != scheme.end() )
+      fence.color( borderiter->second );
     osg::ref_ptr<osg::Node> fencenode = fence();
     mt->addChild( fencenode.get() );
   }  // end of MARKED add-on
@@ -380,14 +420,20 @@ osg::Node* VisualThemeSkin<ThemeMap>::item_graphic(const std::string& txt,const 
   return mt;
 }
 
-/// TODO: support vertical separators for horizontal menus, low priority
-template<typename ThemeMap>
-osg::Node* VisualThemeSkin<ThemeMap>::separator_graphic()
+///\todo TODO: support vertical separators for horizontal menus, low priority
+osg::Node* VisualThemeSkin::_separator_graphic()
 {
-  Detail::FlatBox bgbox(this->separator().height(),
-                        this->box().width(),         /// TODO: possible problem area?
-                        -0.002);
-  bgbox.color( this->theme()["background"] );
+  FlatBox bgbox(this->separator().height(),
+                this->box().width(),         ///\todo TODO: possible problem area?
+                -0.002);
+
+  const base_class::theme_type& scheme = this->theme();
+  base_class::theme_type::const_iterator backgrounditer = scheme.find("background");
+  base_class::theme_type::const_iterator middleiter = scheme.find("middle");
+  base_class::theme_type::const_iterator textiter = scheme.find("text");
+
+  if( backgrounditer != scheme.end() )
+    bgbox.color( backgrounditer->second );
   osg::ref_ptr<osg::Drawable> bgdraw = bgbox();
 
   // make the background geode and add the geometry
@@ -396,10 +442,11 @@ osg::Node* VisualThemeSkin<ThemeMap>::separator_graphic()
   bggeo->addDrawable( bgdraw.get() );
 
   // make the left box
-  Detail::FlatBox leftbox(this->separator().height(),
-                          this->box().height()+_border,
-                         -0.001);
-  leftbox.color( this->theme()["middle"] );
+  FlatBox leftbox(this->separator().height(),
+                  this->box().height()+_border,
+                  -0.001);
+  if( middleiter != scheme.end() )
+    leftbox.color( middleiter->second );
   osg::ref_ptr<osg::Drawable> leftboxdraw = leftbox();
 
   // add the left box's geometry to a node
@@ -416,10 +463,11 @@ osg::Node* VisualThemeSkin<ThemeMap>::separator_graphic()
                                                           0.0) ) );
 
   // make the colored stripe geometry
-  Detail::FlatBox stripe(_text*(this->separator().height()),
-                         this->box().width()-this->box().height()-2.0*_border-_margin,
-                         -0.001);
-  stripe.color( this->theme()["text"] );
+  FlatBox stripe(_text*(this->separator().height()),
+                 this->box().width()-this->box().height()-2.0*_border-_margin,
+                 -0.001);
+  if( textiter != scheme.end() )
+    stripe.color( textiter->second );
   osg::ref_ptr<osg::Drawable> stripedraw = stripe();
 
   // add the stripe geometry to a node
@@ -450,8 +498,7 @@ osg::Node* VisualThemeSkin<ThemeMap>::separator_graphic()
   return group;
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::height(const Menu& m)
+float VisualThemeSkin::height(const Menu& m)
 {
   if( m.separator() )
     return( this->separator().height() );
@@ -459,8 +506,7 @@ float VisualThemeSkin<ThemeMap>::height(const Menu& m)
     return( box().height() ); // TODO: is this the best thing to do?
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::height(const Button& b)
+float VisualThemeSkin::height(const Button& b)
 {
   if( b.separator() )
     return( this->separator().height() );
@@ -468,33 +514,37 @@ float VisualThemeSkin<ThemeMap>::height(const Button& b)
     return( box().height() ); // TODO: is this the best thing to do?
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::width(const Menu& m)
+float VisualThemeSkin::height(const Item* i)
 {
-  return( item_width( m.text() , m.parent() ) );
+  if( i->separator() )
+    return( this->separator().height() );
+  else
+    return( box().height() ); // TODO: is this the best thing to do?
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::width(const Button& b)
+float VisualThemeSkin::width(const Menu& m)
 {
-  return( item_width(b.text(), b.parent()) );
+  return( _item_width( m.text() , m.parent() ) );
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::width(const Item* i)
+float VisualThemeSkin::width(const Button& b)
 {
-  return( item_width(i->text(), i->parent()) );
+  return( _item_width(b.text(), b.parent()) );
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::item_width(const std::string& s,const Menu* parent)
+float VisualThemeSkin::width(const Item* i)
+{
+  return( _item_width(i->text(), i->parent()) );
+}
+
+float VisualThemeSkin::_item_width(const std::string& s,const Menu* parent)
 {
   // check for text content
   if( s.empty() )
     return( 0.0 );
 
   // use graphics engine to calculate width of displayed text
-  float wordwidth = this->word_width( s );
+  float wordwidth = this->_word_width( s );
 
   // check for top-level item
   if( !parent )
@@ -517,10 +567,9 @@ float VisualThemeSkin<ThemeMap>::item_width(const std::string& s,const Menu* par
     return( 2.0*(this->box().height()+_border+_margin) + wordwidth );
 }
 
-template<typename ThemeMap>
-float VisualThemeSkin<ThemeMap>::word_width(const std::string& s)
+float VisualThemeSkin::_word_width(const std::string& s)
 {
-  Detail::Word word;
+  Word word;
   word.height( _text*(this->box().height()) );
   word.text( s );
   word.font( font() );
@@ -530,7 +579,7 @@ float VisualThemeSkin<ThemeMap>::word_width(const std::string& s)
   osg::ref_ptr<osg::Drawable> drawable = word();
 
   // make a box for convenience, used below to move the word
-  osg::BoundingBox bb = drawable->getBound();
+  const osg::BoundingBox& bb = drawable->getBound();
   return( bb.xMax() - bb.xMin() );
 }
 

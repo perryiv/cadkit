@@ -1,28 +1,39 @@
-#ifndef _menukit_osg_tilemason_h_
-#define _menukit_osg_tilemason_h_
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2004, John K. Grant.
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
 
-// menukit includes
-#include "MenuKit/Visitor.h"           // the base class
+#ifndef _menukit_osg_mason_h_
+#define _menukit_osg_mason_h_
+
+#include "MenuKit/Visitor.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+
 #include "MenuKit/Stack.h"
+#include "MenuKit/Box.h"
 
-#include "MenuKit/OSG/ThemeSkinTile.h"   // included for typedef
-
-// osg includes
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
-// std includes
-#include <numeric>  // for accumulate(...)
-#include <string>   // for _scene_name
+#include <string>
+
+#include <numeric>  // for std::accumulate
 
 namespace MenuKit
 {
-
   namespace OSG
   {
     /** TileMason
-      * TileMason is a class that uses a tile to produce a
-      * menu consisting of multiple menu item tiles.
+      * The TileMason class is a Visitor that builds a scene
+      * from the MenuKit::Item that accepted it.
+      *
+      * It uses a TileFunctor class that only needs to support
+      *  a few interfaces.
       *
       * The main goal of the Mason is to use a tile to obtain size
       * information so that each item can be placed adjacent to other items.
@@ -30,320 +41,275 @@ namespace MenuKit
       *
       * A secondary goal is to configure the tile for display attributes.
       */
-    template<class TileType>
-    class TileMason : public Visitor
+    template<typename TileType>
+    class Mason : public Visitor
     {
     public:
-      TileMason(): Visitor(Visitor::EXPANDED),
-        _tile(), _hori(), _vert(), _scene(0x0),
-        _scene_name("MK_OSG_TOP"), _xform_name("MK_OSG_XFORM")
-      {}
+      typedef Visitor base_class;
+      typedef TileType tile_type;
+      typedef typename tile_type::Ptr tile_ptr;
+      typedef Mason<tile_type> thisclass;
+      MENUKIT_DECLARE_POINTER ( thisclass );
+      typedef Detail::Stack<float> FloatStack;
 
-      MENUKIT_DECLARE_POINTER(TileMason);
+      Mason(): base_class(base_class::EXPANDED), _tile(0x0), _hori(), _vert(), _scene(0x0), _scene_name("MK_OSG_TOP"), _xform_name("MK_OSG_XFORM") {}
 
-      osg::Group* scene() { return _scene.get(); }
+      virtual void apply(Menu& m);
+      virtual void apply(Button& m);
 
-      void tile(const TileType& t) { _tile = t; }
-      const TileType& tile() const { return _tile; }
-      TileType& tile() { return _tile; }
+      const FloatStack& horizontal_stack() const { return _hori; }
+      const FloatStack& vertical_stack() const { return _vert; }
 
-      void scene_name(const std::string& s) { _scene_name = s; }
+      void tile(tile_type* t)       { _tile = t; }
+      tile_type* tile()             { return _tile.get(); }
+      const tile_type* tile() const { return _tile.get(); }
+
+      //const osg::Node* scene() const { return _scene.get(); }
+      osg::Node* scene() { return _scene.get(); }
+
       const std::string& scene_name() const { return _scene_name; }
-
-      void transform_name(const std::string& s) { _xform_name = s; }
       const std::string& transform_name() const { return _xform_name; }
 
-      virtual void apply(Menu&);
-      virtual void apply(Button&);
-      // TODO, remove Button and Menu classes,then: virtual void apply(Item&);
-
     protected:
-      virtual ~TileMason() {}
+      virtual ~Mason() {}
 
-      // TODO: clean up all these overloaded functions
-      // TODO: once the Item class has been rewritten
-      // TODO: and the Menu and Button classes have been removed
-      osg::Vec3 displacement(const Menu& item);
-      osg::Vec3 displacement(const Button& item);
-      void determine_push(const Menu& menu,const Detail::Box& box,const Menu* parent=NULL);
-      void push(const Menu* parent, const Detail::Box& box);
-      void pop(const Menu& menu);
-      void determine_pop(const Menu* parent, const Menu& menu);
+      void _do_push(Menu::Layout pl,const Detail::Box& b);
+      void _do_push(Menu::Layout ml, Menu::Layout pl,const Detail::Box& b);
+      void _do_pops(Menu::Layout ml,unsigned int number);
+      void _do_pop(Menu::Layout ml, Menu::Layout pl);
+      void _make_graphic(const Menu& m, float dx, float dy);
+      void _make_graphic(const Button& b, float dx, float dy);
+      float _determine_greatest(const Menu::Items& items, Menu::Layout direction);
+
+      template<typename ItemType>
+      inline void _configure_tile_color(tile_type* t,const ItemType& m)
+      {
+        t->display_mode( tile_type::NORMAL );
+        if( m.marked() || m.expanded() )
+          t->display_mode( tile_type::HIGHLIGHT );
+        if( !m.enabled() )
+          t->display_mode( tile_type::DISABLED );
+      }
+
+      template<typename ItemType>
+      inline void _configure_tile_size(tile_type* t,const ItemType& m,Menu::Layout parent_layout)
+      {
+        Detail::Box box;
+        if( parent_layout == Menu::HORIZONTAL )
+        {
+          ///\todo TODO: could be 'tallest' child height
+          box.height( t->height(m) );
+          box.width( t->width(m) );
+        }
+
+        else  // parent's layout is VERTICAL
+        {
+          box.height( t->height(m) );
+          if( m.parent() )
+            box.width( _determine_greatest( m.parent()->items(), parent_layout ) );
+          else
+            box.width( t->width(m) );
+        }
+
+        t->box( box );
+      }
 
     private:
-      TileType _tile;
-      Detail::Stack<float> _hori, _vert;
+      ///\todo TODO: evaluate if this class is copyable
+      // not implemented by design
+      Mason(const Mason& m);
+      Mason& operator =(const Mason& m);
+
+      tile_ptr _tile;
+      FloatStack _hori, _vert;
       osg::ref_ptr<osg::Group> _scene;
       std::string _scene_name, _xform_name;
     };
 
-  typedef TileMason<osgVisualSkinTile> osgVisualMason;
-  };
-
-};
-
-// ---- implementation ---- //
-
-using namespace MenuKit;
-using namespace OSG;
-
-template<class TileType>
-void TileMason<TileType>::determine_push(const Menu& menu,
-                                         const Detail::Box& box,
-                                         const Menu* parent)
-{
-  /// TODO: error checking would be good in this method
-  if( !parent )
-    return;
-
-  if( parent->layout() == Menu::HORIZONTAL )
-  {
-    if( menu.layout() == Menu::VERTICAL )
-      _vert.push( box.height() );
-    else
-      _hori.push( box.width() );
-  }
-
-  else
-  {
-    _hori.push( box.width() );
-  }
-}
-
-template<class TileType>
-void TileMason<TileType>::determine_pop(const Menu* parent,const Menu& menu)
-{
-  if( !parent )
-    return;
-
-  if( parent->layout() == Menu::HORIZONTAL )
-  {
-    if( menu.layout() == Menu::VERTICAL )
-      _vert.pop();
-    else
-      _hori.pop();
-  }
-
-  else
-    _hori.pop();
-}
-
-template<class TileType>
-void TileMason<TileType>::push(const Menu* parent, const Detail::Box& box)
-{
-  /// TODO: error checking needs to go here
-  if( parent->layout() == Menu::HORIZONTAL )
-    _hori.push(box.width());
-  else
-    _vert.push(box.height());
-}
-
-template<class TileType>
-void TileMason<TileType>::pop(const Menu& parent)
-{
-  if( parent.layout() == Menu::HORIZONTAL )
-    for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
-      _hori.pop();
-
-  else
-    for(Menu::const_iterator iter=parent.begin(); iter!=parent.end(); ++iter)
-      _vert.pop();
-}
-
-template<class TileType>
-osg::Vec3 TileMason<TileType>::displacement(const Menu& m)
-{
-  float height = _tile.height(b);  // the tile checks for a separator case
-  float width  = _tile.width(b);   // the tile computes the required width
-  return( osg::Vec3(width, height,0.0) );
-}
-
-template<class TileType>
-osg::Vec3 TileMason<TileType>::displacement(const Button& b)
-{
-  float height = _tile.height(b);  // the tile checks for a separator case
-  float width  = _tile.width(b);   // the tile computes the required width
-  return( osg::Vec3(width, height,0.0) );
-}
-
-/// TODO: improve/optimize Box management design in ::apply(Menu&) method (below)
-template<class TileType>
-void OSG::TileMason<TileType>::apply(Menu& m)
-{
-  // manage the width of the item
-  Menu* parent = m.parent();
-  if( !parent )  // parent is NOT valid
-  {
-    // TODO: current children of the _scene need to be properly cleaned up
-    // TODO: actually, this might be doing that b/c of smart pointer :P
-    _scene = new osg::Group();
-    _scene->setName(_scene_name);
-
-    // escape when no parent and no text
-    if( m.text().empty() )  // do not generate a graphic
-    {                       // do not waste time with the remainder of this method
-      traverse( m );        // just move onto traversal
-      if( m.expanded() )    // this pop is not really necessary, just overly cautious
-        pop( m );
-      return;
-    }
-
-    // no parent means assume a horizontal style for the item's graphic
-    _tile.box().width( _tile.width( m ) );
-
-    // configure the tile!
-    if( m.expanded() )
-      _tile.mode( TileType::HIGHLIGHT );
-    else
-      _tile.mode( TileType::NORMAL );
-    if( !m.enabled() )
-      _tile.mode( TileType::DISABLED );
-
-    // modify either the horizontal or vertical displacement stack
-    Detail::Box qbox(_tile.height(m),_tile.width(m));
-    if( m.expanded() )
-      determine_push( m , qbox, parent );
-
-    // generate the graphic
-    osg::ref_ptr<osg::Node> node = _tile( m );
-
-    // attach graphic to total scene
-    _scene->addChild( node.get() );
-
-    // traverse children
-    traverse( m );
-    if( m.expanded() )
-      pop( m );
-    return;
-  }
-
-  // configure the tile's width
-  if( parent->layout() == Menu::HORIZONTAL )
-  {
-    float width = _tile.width( m );
-    _tile.box().width( width );
-  }
-
-  else  // parent menu is VERTICAL
-  {
-    /// TODO: determine if this can be pulled out
-    /// TODO: optimize with STL: find the widest possible graphic
-    float widest(0.0);
-    for(Menu::const_iterator iter=parent->begin(); iter!=parent->end(); ++iter)
+    template<typename T>
+    void Mason<T>::apply(Menu& m)
     {
-      float tempwidth = _tile.width( (*iter).get() );
-      if( tempwidth > widest )
-        widest = tempwidth;
-    }
-    _tile.box().width( widest );
-  }
-
-  // configure the tile's appearance due to its state
-  _tile.mode( TileType::NORMAL );
-
-  if( m.expanded() || m.marked() )
-    _tile.mode( TileType::HIGHLIGHT );
-
-  if( !m.enabled() )
-    _tile.mode( TileType::DISABLED );
-
-  // create the graphic
-  osg::ref_ptr<osg::Node> node = _tile( m );
-
-  // calculate the position of the graphic
-  osg::Vec3 sum(std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f),
-               -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f),
-                0.0f);
-
-  // add the graphic to the scene, with the correct position
-  osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-  mt->setName( _xform_name );
-  mt->addChild( node.get() );
-  mt->setMatrix( osg::Matrix::translate(sum) );
-  _scene->addChild( mt.get() );
-
-  // save this menu's box state
-  Detail::Box menubox(_tile.height(m),_tile.width(m));
-
-  // manage placement of items
-  Detail::Box qbox(_tile.height(m),_tile.width(m));
-  if( m.expanded() )
-    determine_push( m , qbox, parent );
-
-  traverse( m );  // the _tile's box state will change
-
-  if( m.expanded() )
-  {
-    pop( m );
-    determine_pop( parent , m );
-  }
-
-  if( parent )
-    push( parent , menubox );  // use original box size
-}
-
-template<class TileType>
-void TileMason<TileType>::apply(Button& b)
-{
-  // manage the width of the item
-  Menu* parent = b.parent();
-
-  if( parent )
-  {
-    if( parent->layout() == Menu::HORIZONTAL )
-    {
-      float width = _tile.width( b );
-      _tile.box().width( width );
-    }
-
-    else  // parent menu is VERTICAL
-    {
-      /// TODO: determine if this can be pulled out, to a higher level in the code
-      /// TODO: optimize with STL functor design
-      // find the widest possible graphic
-      float widest(0.0);
-      for(Menu::const_iterator iter=parent->begin(); iter!=parent->end(); ++iter)
+      ///\todo TODO: find if there is a better way to reset the _scene
+      // grab some info
+      Menu* parent = m.parent();
+      Menu::Layout pl;
+      if( parent )
+        pl = parent->layout();
+      else
       {
-        float tempwidth = _tile.width( (*iter).get() );
-        if( tempwidth > widest )
-          widest = tempwidth;
+        ///\todo TODO: implement a 'switch' to be the initialization event
+        _scene = new osg::Group();  // catch initialization event
+        _scene->setName( _scene_name );
+        pl = Menu::HORIZONTAL;  // designates as horizontal layout
       }
-      _tile.box().width( widest );
+
+      // configure the tile
+      _configure_tile_color( _tile.get() , m );
+      _configure_tile_size( _tile.get() , m , pl );
+
+      // save the tile's box state
+      Detail::Box mbox( _tile->box() );
+
+      // create the graphics
+      _make_graphic(m,
+        std::accumulate(_hori.data().begin(),_hori.data().end(),0.0),
+       -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0) );
+
+      Menu::Layout ml = m.layout();
+
+      // things to do when children are exposed
+      // internal member _tile may be modified
+      if( m.expanded() )
+      {
+        _do_push( ml, pl, mbox );
+        traverse( m );
+        _do_pops( ml, m.items().size() );
+        _do_pop( ml, pl );
+      }
+
+      // push for this graphic so the next menu item will accumulate correctly
+      _do_push( pl , mbox );
     }
-  }
 
-  else // no parent
-  {
-    _scene = new osg::Group();
-    _scene->setName(_scene_name);
-    _tile.box().width( _tile.width( b ) );
-  }
+    template<typename T>
+    void Mason<T>::apply(Button& b)
+    {
+      // push for this graphic so the next menu item will accumulate correctly
+      Menu* parent = b.parent();
+      Menu::Layout pl;
+      if( parent )
+        pl = parent->layout();
+      else
+      {
+        _scene = new osg::Group();  // catch initialization event
+        _scene->setName( _scene_name );
+        pl = Menu::HORIZONTAL;  // designates to be a horizontal layout
+      }
 
-  // configure the tile
-  _tile.mode( TileType::NORMAL );
-  if( b.marked() )
-    _tile.mode( TileType::HIGHLIGHT );
-  if( !b.enabled() )
-    _tile.mode( TileType::DISABLED );
+      // configure tile
+      _configure_tile_color( _tile.get() , b );
+      _configure_tile_size( _tile.get() , b , pl );
 
-  // create the graphic
-  osg::ref_ptr<osg::Node> node = _tile( b );
+      // generate the graphic
+      _make_graphic(b,
+        std::accumulate(_hori.data().begin(),_hori.data().end(),0.0),
+       -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0) );
 
-  // calculate the position of the graphic
-  float xsum = std::accumulate(_hori.data().begin(),_hori.data().end(),0.0f);
-  float ysum = std::accumulate(_vert.data().begin(),_vert.data().end(),0.0f);
-  osg::Vec3 sum( xsum, -ysum, 0.0f);
+      _do_push( pl, _tile->box() );
+    }
 
-  // add the graphic to the scene, with the correct position
-  osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-  mt->setName( _xform_name );
-  mt->addChild( node.get() );
-  mt->setMatrix( osg::Matrix::translate(sum) );
-  _scene->addChild( mt.get() );
+    template<typename T>
+    void Mason<T>::_do_pops(Menu::Layout ml,unsigned int number)
+    {
+      if( ml == Menu::HORIZONTAL )
+        for(unsigned int i=0; i<number; ++i)
+          _hori.pop();
 
-  Detail::Box qbox(_tile.height(b),_tile.width(b));
-  if( parent )
-    push( parent, qbox );
-}
+      else
+        for(unsigned int i=0; i<number; ++i)
+          _vert.pop();
+    }
+
+    template<typename T>
+    void Mason<T>::_do_push(Menu::Layout pl, const Detail::Box& box)
+    {
+      if( pl == Menu::VERTICAL )
+        _vert.push( box.height() );
+      else
+        _hori.push( box.width() );
+    }
+
+    template<typename T>
+    void Mason<T>::_do_push(Menu::Layout ml, Menu::Layout pl, const Detail::Box& box)
+    {
+      if( pl == Menu::HORIZONTAL )
+      {
+        if( ml == Menu::VERTICAL )
+          _vert.push( box.height() );
+        else
+          _vert.push( box.height() ); // a quick fix
+          //_hori.push( box.width() );// this will look terrible
+      }
+
+      else  // parent's layout is vertical
+        _hori.push( box.width() );
+    }
+
+    template<typename T>
+    void Mason<T>::_do_pop(Menu::Layout ml, Menu::Layout pl)
+    {
+      if( pl == Menu::HORIZONTAL )
+      {
+        if( ml == Menu::VERTICAL )
+          _vert.pop();
+        else
+          _hori.pop();
+      }
+
+      else
+        _hori.pop();
+    }
+
+    template<typename T>
+    void Mason<T>::_make_graphic(const Button& b, float dx, float dy)
+    {
+      // this method uses the state of the _tile for correctness
+      osg::ref_ptr<osg::Node> node = (*_tile)( b );
+
+      // make a xform node and attach it to the scene.
+      osg::MatrixTransform* xform = new osg::MatrixTransform();
+      xform->setName(_xform_name);
+      xform->setMatrix( osg::Matrix::translate(dx,dy,0.0) );
+
+      // make the graphic via the tile and add it to the xform
+      xform->addChild( (*_tile)(b) );
+      _scene->addChild( xform );
+    }
+
+    template<typename T>
+    void Mason<T>::_make_graphic(const Menu& m, float dx, float dy)
+    {
+      // this method uses the state of the _tile for correctness
+      osg::ref_ptr<osg::Node> node = (*_tile)( m );
+
+      // make a xform node and attach it to the scene.
+      osg::MatrixTransform* xform = new osg::MatrixTransform();
+      xform->setName(_xform_name);
+      xform->setMatrix( osg::Matrix::translate(dx,dy,0.0) );
+
+      // make the graphic via the tile and add it to the xform
+      xform->addChild( (*_tile)(m) );
+      _scene->addChild( xform );
+    }
+
+    template<typename T>
+    float Mason<T>::_determine_greatest(const Menu::Items& items, Menu::Layout direction)
+    {
+      float max_value(0.0f);
+      if( direction == Menu::VERTICAL )
+      {
+        for(Menu::Items::const_iterator iter=items.begin(); iter!=items.end(); ++iter)
+        {
+          float temp = _tile->width( (*iter).get() );  ///\todo TODO: this call assumes menu and button are calculated with the same formula, could be improved
+          if( max_value < temp )
+            max_value = temp;
+        }
+      }
+
+      else // direction is HORIZONTAL
+      {
+        for(Menu::Items::const_iterator iter=items.begin(); iter!=items.end(); ++iter)
+        {
+          float temp = _tile->height( (*iter).get() );  ///\todo TODO: this call assumes menu and button are calculated with the same formula, could be improved
+          if( max_value < temp )
+            max_value = temp;
+        }
+      }
+
+      return max_value;
+    }
+
+  };
+};
 
 #endif

@@ -23,20 +23,20 @@ class Atom
 public:
   typedef unsigned int ID;
 
-	Atom(const char*, std::string, const PeriodicTable &);
+  Atom(const char*, std::string, const PeriodicTable &);
   Atom(const Atom&);
   ~Atom();
-	const float getX() const { return _point[0]; }
-	const float getY() const { return _point[1]; }
-	const float getZ() const { return _point[2]; }
-	const std::string getName() const { return _name; }
-	const std::string getType() const { return _type; }
+  const float getX() const { return _point[0]; }
+  const float getY() const { return _point[1]; }
+  const float getZ() const { return _point[2]; }
+  const std::string getName() const { return _name; }
+  const std::string getType() const { return _type; }
   const std::string getSymbol() const { return _element->getElementSymbol(); }
-	const ID getId() const { return _id; }
-	const osg::Vec3& getVec3() const { return _point; }
+  const ID getId() const { return _id; }
+  const osg::Vec3& getVec3() const { return _point; }
   const float length2() const { return _point.length2(); }
   const float length() const { return _point.length(); }
-	std::string toString() const;
+  std::string toString() const;
   bool valid() const { return _id != 0; }
   const float getRadius() const;
   Atom& operator=(const Atom&);
@@ -44,7 +44,7 @@ public:
 private:
   Atom();
   const Element * _element;
-	ID _id;
+  ID _id;
   osg::Vec3 _point;
   std::string _type, _name;
 };

@@ -8,7 +8,7 @@ SOURCE = \
 	PeriodicTable.cpp \
 	MaterialChooser.cpp \
 	Molecule.cpp \
-	ReaderWriter.cpp 
+	ReaderWriterPDB.cpp 
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
@@ -32,10 +32,14 @@ LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 INCLUDES = \
 	-I../../ \
 	-I${OSG_INC_DIR} \
-	-I${USUL_INC_DIR}
+	-I${USUL_INC_DIR} \
+	-I${OPENTHREADS_INC_DIR} \
+	-I${PRODUCER_INC_DIR}
 
 OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
+	-L${OPENTHREADS_LIB_DIR} \
+	-l${PRODUCER_LIB_DIR} \
 	-losgDB -losg
 
 USUL_LIBS = \
@@ -47,7 +51,7 @@ LIBS = $(USUL_LIBS) $(OSG_LIBS)
 TARGET      = osgdb_pdb
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = $(TARGET).so
-BIN_DIR     = 
+BIN_DIR     = ${OSG_LIB_DIR}/osgPlugins/
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)

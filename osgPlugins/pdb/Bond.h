@@ -23,6 +23,7 @@ public:
   const osg::Vec3& getPoint1() const { return _point1; }
   const osg::Vec3& getPoint2() const { return _point2; }
   const std::string toString() const;
+  bool valid() const { return _id != -1; }
 private:
   float _getHeight(const osg::Vec3&, const osg::Vec3&);
   int _id;

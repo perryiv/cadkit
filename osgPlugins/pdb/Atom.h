@@ -17,23 +17,27 @@
 class Atom 
 {
 public:
-  Atom() { _id = -1; }
-	Atom(std::istringstream&, std::string);
+  typedef unsigned int ID;
+
+  Atom() { _id = 0; }
 	Atom(char*, std::string);
+  Atom(const Atom&);
 	const float getX() const { return _point[0]; }
 	const float getY() const { return _point[1]; }
 	const float getZ() const { return _point[2]; }
 	const float getR() const { return _r; }
 	std::string getName() const { return _name; }
 	std::string getType() const { return _type; }
-	const int getId() const { return _id; }
+	const ID getId() const { return _id; }
 	const osg::Vec3& getVec3() const { return _point; }
 	std::string toString() const;
-  bool valid() { return _id != -1; }
+  bool valid() const { return _id != 0; }
+
+  Atom& operator=(const Atom&);
 private:
-	int _id;
+	ID _id;
   osg::Vec3 _point;
-	float _x,_y,_z, _r;
+	float _r;
 	std::string _name, _type;
 };
 

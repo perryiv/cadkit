@@ -16,8 +16,10 @@
 #ifndef _CADKIT_DATABASE_PERFORMER_LIBRARY_HELPER_FUNCTIONS_H_
 #define _CADKIT_DATABASE_PERFORMER_LIBRARY_HELPER_FUNCTIONS_H_
 
-#ifndef _CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY
-# error "This header file is intended for internal Database/Performer code only."
+#ifdef _MSC_VER
+# ifndef _CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY
+#  error "This header file is intended for internal Database/Performer code only."
+# endif
 #endif
 
 #include "Interfaces/Enum.h"

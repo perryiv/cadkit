@@ -55,6 +55,7 @@
 #include "Performer/pf/pfGroup.h"
 #include <string>
 #include <iostream>
+#include <list>
 
 using namespace CadKit;
 
@@ -116,21 +117,18 @@ int main ( int argc, char **argv )
   if ( argc < 2 )
   {
     std::cout << "Usage: " << CadKit::justFilename ( std::string ( argv[0] ) );
-    std::cout << " <filename1.jt> [filename2.jt] ..." << std::endl;
+    std::cout << " [-v] <filename1.jt> [filename2.jt] ..." << std::endl;
+    std::cout << "\t-v  Verbose output to stdout." << std::endl;
     return 0;
   }
-  /*
+
   // Initialize the shared arenas. From the man pages, "However, a libpr
   // application that wishes to use Performer's arenas, must call 
   // pfInitArenas before calling pfInit to ensure that the type system
-  // is created in shared memory."
-  result = ::pfInitArenas();
-  if ( 1 != result )
-  {
-    std::cout << "Failed to initialize Performer's shared memory arenas, pfInitArenas() returned " << result << std::endl;
-    return 0;
-  }
-  */
+  // is created in shared memory." The man pages are not clear on what 
+  // the return values mean.
+  //::pfInitArenas();
+
   // Initialize Performer.
   int result = ::pfInit();
   if ( 1 != result )
@@ -168,12 +166,25 @@ int main ( int argc, char **argv )
     return 0;
   }
 
-  // Loop through all the input files.
+  // Get the arguments.
+  typedef std::list<std::string> Args;
+  Args args;
   for ( int i = 1; i < argc; ++i )
+    args.push_back ( argv[i] );
+
+  // See if the first argument is "-v".
+  if ( args.front() == "-v" )
+  {
+    // Set the verbose flag and lose that argument.
+    jt2pf.setVerbose ( true );
+    args.pop_front();
+  }
+
+  // Loop through all the input files.
+  for ( Args::iterator f = args.begin(); f != args.end(); ++f )
   {
     // Translate the jupiter database.
-    std::string filename ( argv[i] );
-    ::_translate ( filename, jt2pf );
+    ::_translate ( *f, jt2pf );
   }
 
   // Done with Performer.

@@ -14,14 +14,12 @@ LOCAL_INCLUDE = -I/usr/include/Performer
 LOCAL_LIBS = \
 	-lCkDbJt_s \
 	-lCkSl_s \
-	-lpfdu \
-	-lpfui \
 	-lpfutil \
 	-lpf \
 	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 
-LOCAL_CPP_FLAGS = -D_CADKIT_SL_PRINT_DEBUG
+LOCAL_CPP_FLAGS =
 
 # The name of the thing we are making.
 TARGET = CkTrJt2Pf

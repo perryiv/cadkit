@@ -89,6 +89,17 @@
       <translate> -2.0   0.0  -2.0 </translate>
       <comment>Should the status-bar be visible at startup?</comment>
       <visible>yes</visible>
+      <color>
+        <comment>customizable status bar color scheme</comment>
+        
+        <bg> 0.6 0.6 0.6 1.0</bg>
+        <txt>0.0 0.0 0.0 1.0</txt>
+
+        <comment>
+        <bg> 1.0 1.0 1.0 1.0</bg>
+        <txt>0.0 0.0 1.0 1.0</txt>
+        </comment>
+      </color>
     </status_bar>
     <speed>
       <translate>  0.05 </translate>

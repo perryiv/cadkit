@@ -86,19 +86,19 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, TUX      );
   POPULATE ( gif, GIF, WARNING  );
   POPULATE ( gif, GIF, CAMERA   );
-  POPULATE ( bmp, BMP, ARROW    );
-  POPULATE ( gif, GIF, EYE      );
-  POPULATE ( bmp, BMP, HAND     );
-  POPULATE ( bmp, BMP, HOME     );
-  POPULATE ( bmp, BMP, FILLED   );
-  POPULATE ( bmp, BMP, LINES    );
-  POPULATE ( bmp, BMP, POINTS   );
-  POPULATE ( bmp, BMP, SEEK     );
-  POPULATE ( bmp, BMP, SET_HOME );
+  POPULATE ( gif, GIF, SEEK     );
   POPULATE ( gif, GIF, TOOL_SELECTION   );
   POPULATE ( gif, GIF, TRIANGLE         );
   POPULATE ( gif, GIF, DELETE_CONNECTED );
   POPULATE ( gif, GIF, KEEP_CONNECTED   );
+  POPULATE ( gif, GIF, ARROW    );
+  POPULATE ( gif, GIF, EYE      );
+  POPULATE ( gif, GIF, HAND     );
+  POPULATE ( gif, GIF, HOME     );
+  POPULATE ( gif, GIF, FILLED   );
+  POPULATE ( gif, GIF, LINES    );
+  POPULATE ( gif, GIF, POINTS   );
+  POPULATE ( bmp, BMP, SET_HOME );
 }
 
 

@@ -442,6 +442,12 @@
 				<File
 					RelativePath="System\LastError.h">
 				</File>
+				<File
+					RelativePath=".\System\Screen.cpp">
+				</File>
+				<File
+					RelativePath=".\System\Screen.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Types"

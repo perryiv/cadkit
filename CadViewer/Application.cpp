@@ -673,7 +673,6 @@ void Application::_initMenu()
   // set the stateset
   _menuBranch->setStateSet( ss.get() );
 
-
   // Fill the callback map.
   CV_REGISTER ( _quitCallback,     "exit" );
   CV_REGISTER ( _quitCallback,     "quit" );
@@ -732,8 +731,9 @@ void Application::_initMenu()
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
-  VRV::Interfaces::IMenuRead::ValidQueryPtr reader( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
-                                                                                      CV_GRAPHICAL_USER_INTERFACE      ) );
+  VRV::Interfaces::IMenuRead::ValidQueryPtr reader
+    ( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
+      CV_GRAPHICAL_USER_INTERFACE ) );
 
   // Find the path to the config file.
   std::string filename ( CV::Config::filename ( "menu" ) );
@@ -1075,7 +1075,7 @@ bool Application::_handleIntersectionEvent()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Callback for the quit-button.
+//  Callback for the joystick.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -7,30 +7,37 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_FOX_EVENT_H__
-#define __USUL_INTERFACES_FOX_EVENT_H__
+#ifndef __USUL_INTERFACES_FOX_MESSAGE_HANDLER_H__
+#define __USUL_INTERFACES_FOX_MESSAGE_HANDLER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
+
+namespace FX 
+{ 
+class FXObject; 
+typedef unsigned int FXuint;
+typedef FXuint FXSelector;
+};
 
 namespace Usul
 {
   namespace Interfaces
   {
-    class IFoxEvent : public Usul::Interfaces::IUnknown
+    class IFoxMessageHandler : public Usul::Interfaces::IUnknown
     {
     public:
       typedef Usul::Interfaces::IUnknown Unknown;
 
       /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxEvent );
+      USUL_DECLARE_QUERY_POINTERS ( IFoxMessageHandler );
 
-      enum { IID = 1100798022 };
+      enum { IID = 1101837237u };
 
-      virtual void execute( Unknown* caller, const FX::FXEvent &event) = 0;
+      virtual long handle( Unknown* caller, FX::FXObject *, FX::FXSelector, void * ) = 0;
 
-    }; //class IFoxEvent
+    }; //class IFoxMessageHandler
   }; //namespace Interfaces
 }; //namespace Usul
 
-#endif // __USUL_INTERFACES_FOX_EVENT_H__
+#endif // __USUL_INTERFACES_FOX_MESSAGE_HANDLER_H__
 

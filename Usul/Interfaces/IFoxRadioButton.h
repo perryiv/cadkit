@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_FOX_EVENT_H__
-#define __USUL_INTERFACES_FOX_EVENT_H__
+#ifndef __USUL_INTERFACES_FOX_RADIO_BUTTON_H__
+#define __USUL_INTERFACES_FOX_RADIO_BUTTON_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -16,21 +16,20 @@ namespace Usul
 {
   namespace Interfaces
   {
-    class IFoxEvent : public Usul::Interfaces::IUnknown
+    class IFoxRadioButton : public Usul::Interfaces::IUnknown
     {
     public:
       typedef Usul::Interfaces::IUnknown Unknown;
 
       /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxEvent );
+      USUL_DECLARE_QUERY_POINTERS ( IFoxRadioButton);
 
-      enum { IID = 1100798022 };
+      enum { IID = 1101838442u };
 
-      virtual void execute( Unknown* caller, const FX::FXEvent &event) = 0;
 
-    }; //class IFoxEvent
+    }; //class IFoxRadioButton
   }; //namespace Interfaces
 }; //namespace Usul
 
-#endif // __USUL_INTERFACES_FOX_EVENT_H__
+#endif // __USUL_INTERFACES_FOX_RADIO_BUTTON_H__
 

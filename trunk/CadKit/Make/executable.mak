@@ -19,5 +19,5 @@ clobber:
 $(TARGET): $(OBJECTS)
 	$(CPP) $(OBJECTS) $(LINK_FLAGS) $(LIBS) -o $@
 	mkdir -p $(CADKIT_ROOT_DIR)/bin
-	cp $(TARGET) $(CADKIT_ROOT_DIR)/bin/.
+	mv $(TARGET) $(CADKIT_ROOT_DIR)/bin/.
 	echo ----- Target $(TARGET) successfully built! -----

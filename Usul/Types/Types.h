@@ -23,15 +23,15 @@ namespace Types {
 
 #ifdef _MSC_VER // Visual C++
 
-    typedef unsigned __int64  Uint64;
-    typedef unsigned __int32  Uint32;
-    typedef unsigned __int16  Uint16;
+  typedef unsigned __int64  Uint64;
+  typedef unsigned __int32  Uint32;
+  typedef unsigned __int16  Uint16;
 
-    typedef __int64           Int64;
-    typedef __int32           Int32;
-    typedef __int16           Int16;
+  typedef __int64           Int64;
+  typedef __int32           Int32;
+  typedef __int16           Int16;
 
-#elif
+#else
 
   #include <stdint.h>
 

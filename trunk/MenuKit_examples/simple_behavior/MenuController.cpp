@@ -21,7 +21,6 @@ MenuController::MenuController(osg::Group* g,const std::string& f): BaseClass(),
   _kdm.insert( KDM::value_type(oPEA::KEY_Left,MKB::LEFT) );
   _kdm.insert( KDM::value_type(oPEA::KEY_Right,MKB::RIGHT) );
 
-
   // --- make the graphics objects --- //
 
   // load a skin
@@ -32,14 +31,17 @@ MenuController::MenuController(osg::Group* g,const std::string& f): BaseClass(),
   if( font.valid() )
     skin->font( font.get() );
 
+  osg::Vec4 red(1.0,0.0,0.0,1.0);
+  osg::Vec4 white(0.0,0.0,1.0,1.0);
+  osg::Vec4 darkgrey(0.5,0.5,0.5,1.0);
+  osg::Vec4 lightgrey(0.7,0.7,0.7,1.0);
+
   MenuKit::OSG::osg_color_theme ct;
   MenuKit::OSG::osg_color_map norm=ct.get_map();
   MenuKit::OSG::osg_color_map hi=ct.get_map();
-  osg::Vec4 lightblue(0.5,0.5,1.0,1.0);
-  hi["background"] = lightblue;
+  hi["text"] = red;
   MenuKit::OSG::osg_color_map dis=ct.get_map();
-  osg::Vec4 darkgrey(0.5,0.5,0.5,1.0);
-  dis["text"] = darkgrey;
+  dis["text"] = white;
 
   typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
   DMTMAP dmtmap;
@@ -70,7 +72,7 @@ bool MenuController::handle(const osgGA::GUIEventAdapter& ea,
       {
         // use the behavior class to modify the menu
         _behavior->moveFocused( iter->second );
- 
+
         // build a new scene
         MenuKit::Menu* menu = _behavior->root();
         menu->accept( *_mason );
@@ -86,17 +88,13 @@ bool MenuController::handle(const osgGA::GUIEventAdapter& ea,
             break;
         }
 
-        //if( index != maxchild )
-        //{
-        //  _attach->removeChild(index,1);
-        //  _attach->addChild(_mason->scene());
-        //}
-        //else
-        //  _attach->addChild(_mason->scene());
-        unsigned int num(_attach->getNumChildren());
-        if( num )
-          _attach->removeChild(0,num);
-        _attach->addChild( _mason->scene() );
+        if( index != maxchild )
+        {
+          _attach->removeChild(index,1);
+          _attach->addChild(_mason->scene());
+        }
+        else
+          _attach->addChild(_mason->scene());
       }
 
       return false;

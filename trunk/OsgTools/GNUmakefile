@@ -39,14 +39,17 @@ archive_libname = lib$(PKG_NAME)_a.a
 
 OBJS=\
 	$(BUILD)/Axes.o \
-	$(BUILD)/Box.o \
+	$(BUILD)/Circle.o \
+	$(BUILD)/ColorSetter.o \
 	$(BUILD)/Font.o \
 	$(BUILD)/Grid.o \
 	$(BUILD)/Group.o \
+	$(BUILD)/MaterialSetter.o \
+	$(BUILD)/Mesh.o \
 	$(BUILD)/Ray.o \
+	$(BUILD)/State.o \
 	$(BUILD)/Text.o \
-	$(BUILD)/Torus.o \
-	$(BUILD)/State.o
+	$(BUILD)/Torus.o
 
 shared_lib: $(OBJS)
 	$(CXX) $(OS_LINK_FLAGS) -shared -g $(OBJS) -o $(BUILD)/$(shared_libname) $(libs)

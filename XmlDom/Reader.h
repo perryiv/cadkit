@@ -39,9 +39,9 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef typename NodeType Node;
-  typedef typename NodeType::Pointer Pointer;
-  typedef typename NodeType::String String;
+  typedef NodeType Node;
+  typedef typename Node::Pointer Pointer;
+  typedef typename Node::String String;
   typedef ErrorPolicyType ErrorPolicy;
   typedef NodeCallbackType NodeCallback;
   typedef TrimPolicyType TrimPolicy;

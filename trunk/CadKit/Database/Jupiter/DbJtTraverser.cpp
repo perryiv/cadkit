@@ -543,7 +543,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
     return false;
 
   // Get the components of the material.
-  const int BAD_SHININESS ( -999.0 ); // From DirectModel toolkit's example5.
+  const float BAD_SHININESS ( -999.0f ); // From DirectModel toolkit's example5.
   DbJtVisApiArray<float> a, d, sp, e;
   float sh ( BAD_SHININESS );
 
@@ -648,7 +648,7 @@ bool DbJtTraverser::getNumShapes ( EntityHandle entity, const unsigned int &whic
   eaiPart *part = (eaiPart *) hierarchy;
 
   // Should be true, but won't crash if it's false.
-  SL_ASSERT ( whichLOD < part->numPolyLODs() );
+  SL_ASSERT ( whichLOD < (unsigned int) part->numPolyLODs() );
 
   // Get the number of shapes.
   numShapes = part->numPolyShapes ( whichLOD );
@@ -684,8 +684,8 @@ eaiShape *_getShape ( DbJtTraverser::EntityHandle entity, const unsigned int &wh
   eaiPart *part = (eaiPart *) hierarchy;
 
   // Should be true, but won't crash if it's false.
-  SL_ASSERT ( whichLOD < part->numPolyLODs() );
-  SL_ASSERT ( whichShape < part->numPolyShapes ( whichLOD ) );
+  SL_ASSERT ( whichLOD < (unsigned int) part->numPolyLODs() );
+  SL_ASSERT ( whichShape < (unsigned int) part->numPolyShapes ( whichLOD ) );
 
   // Ask for the shape (there may not be one).
   eaiShape *shape = NULL;
@@ -760,7 +760,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
     return false;
 
   // Should be true, but won't crash if it's false.
-  SL_ASSERT ( whichSet < shape->numOfSets() );
+  SL_ASSERT ( whichSet < (unsigned int) shape->numOfSets() );
 
   // Needed below. Note: the "vertexCount" is not the number of vertices, 
   // but rather the number of elements in the vertext array. Same for the 

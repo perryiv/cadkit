@@ -84,14 +84,14 @@ template<class T> inline void threadSafeIncrement ( T &num )
 #ifdef _WIN32
   SL_ASSERT ( sizeof ( long ) == sizeof ( T ) );
   ::InterlockedIncrement ( (long *) (&num) );
-#elif _LINUX
+#elif __GNUC__
   // TODO, is this the correct way to do this?
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock ( &mutex );
   ++num;
   pthread_mutex_unlock ( &mutex );
 #else
-TODO // This may be the same as _LINUX, have to check...
+TODO // This may be the same as __GNUC__, have to check...
 #endif
 }
 
@@ -107,14 +107,14 @@ template<class T> inline void threadSafeDecrement ( T &num )
 #ifdef _WIN32
   SL_ASSERT ( sizeof ( long ) == sizeof ( T ) );
   ::InterlockedDecrement ( (long *) (&num) );
-#elif _LINUX
+#elif __GNUC__
   // TODO, is this the correct way to do this?
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock ( &mutex );
   --num;
   pthread_mutex_unlock ( &mutex );
 #else
-TODO // This may be the same as _LINUX, have to check...
+TODO // This may be the same as __GNUC__, have to check...
 #endif
 }
 

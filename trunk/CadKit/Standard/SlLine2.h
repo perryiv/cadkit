@@ -79,8 +79,15 @@ public:
   bool            intersect ( const SlLine2 &line, Vec2 &answer ) const;
   bool            intersect ( const Vec2 &linePoint, const Vec2 &lineDir, Vec2 &answer ) const;
 
-  friend bool     operator == ( const SlLine2 &line1, const SlLine2 &line2 );
-  friend bool     operator != ( const SlLine2 &line1, const SlLine2 &line2 );
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend bool operator == ( const SlLine2<P> &line1, const SlLine2<P> &line2 );
+  template<class P> friend bool operator != ( const SlLine2<P> &line1, const SlLine2<P> &line2 );
+#else
+  friend bool     operator == ( const Line2 &line1, const Line2 &line2 );
+  friend bool     operator != ( const Line2 &line1, const Line2 &line2 );
+#endif
 
   void            normalize() { _vec.normalize(); }
 

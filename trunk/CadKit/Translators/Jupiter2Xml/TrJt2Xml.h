@@ -71,7 +71,7 @@ public:
   bool                    init();
 
   // Translate the Jupiter database to XML.
-  bool                    translate ( const char *filename );
+  bool                    translate ( const char *filename, DbXmlGroup &root );
 
 protected:
 

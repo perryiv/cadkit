@@ -46,6 +46,7 @@
 
 #include "SlVec4.h"
 #include "SlTypedefs.h"
+#include "SlDeclareConst.h"
 
 // For convenience.
 #define SL_COLOR_CLASS_ARGS class Real, class Integer, Integer MAX_INTEGER, class PackedInteger
@@ -627,10 +628,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::setColor
   {
   case 8: // 64 bits
 
-    c0 =                   static_cast<Integer> ( ( color & 0x000000000000FFFF ) >>  0 );
-    c1 =                   static_cast<Integer> ( ( color & 0x00000000FFFF0000 ) >> 16 );
-    c2 =                   static_cast<Integer> ( ( color & 0x0000FFFF00000000 ) >> 32 );
-    alpha = ( hasAlpha ) ? static_cast<Integer> ( ( color & 0xFFFF000000000000 ) >> 48 ) : MAX_INTEGER;
+    c0 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x000000000000FFFF ) ) >>  0 );
+    c1 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x00000000FFFF0000 ) ) >> 16 );
+    c2 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x0000FFFF00000000 ) ) >> 32 );
+    alpha = ( hasAlpha ) ? static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0xFFFF000000000000 ) ) >> 48 ) : MAX_INTEGER;
     break;
 
   case 4: // 32 bits

@@ -62,7 +62,8 @@ SL_IMPLEMENT_DYNAMIC_CLASS ( SgPath, SlRefBase );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SgPath::SgPath() : SlRefBase ( INITIAL_REF_COUNT )
+SgPath::SgPath() : SlRefBase ( INITIAL_REF_COUNT ),
+  _nodes ( new Nodes )
 {
   SL_PRINT2 ( "SgPath::SgPath(), this = %X\n", this );
 }
@@ -75,9 +76,10 @@ SgPath::SgPath() : SlRefBase ( INITIAL_REF_COUNT )
 ///////////////////////////////////////////////////////////////////////////////
 
 SgPath::SgPath ( const SgPath &path ) : SlRefBase ( INITIAL_REF_COUNT ),
-  _nodes ( path._nodes )
+  _nodes ( new Nodes )
 {
   SL_PRINT2 ( "SgPath::SgPath(), this = %X\n", this );
+  _nodes->assign ( path._nodes->begin(), path._nodes->end() );
 }
 
 
@@ -93,6 +95,8 @@ SgPath::~SgPath()
 
   // We don't have to do anything here because the vector's elements are 
   // "reference pointers". Their destructors will release the nodes.
+  if ( _nodes )
+    delete _nodes;
 }
 
 
@@ -111,7 +115,7 @@ void SgPath::clear()
   SL_ASSERT ( this );
 
   // Clear the list. This will automatically release the nodes.
-  _nodes.clear();
+  _nodes->clear();
 }
 
 
@@ -130,7 +134,7 @@ void SgPath::append ( SgNode *node )
   SL_ASSERT ( this && node );
 
   // Stick it at the end. This will automatically reference.
-  _nodes.push_back ( node );
+  _nodes->push_back ( node );
 }
 
 
@@ -148,7 +152,7 @@ SgNode *SgPath::getNode ( const Index &index ) const
   Index count = 0;
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     if ( index == count ) 
       return i->getValue();
@@ -172,7 +176,7 @@ bool SgPath::hasNode ( const SgNode *node ) const
   SL_ASSERT ( this && node );
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // Return true if the current node is the same as the given node.
     if ( node == i->getValue() ) 
@@ -195,7 +199,7 @@ bool SgPath::hasNodeOfType ( const SlType *type ) const
   SL_ASSERT ( this && type );
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // Return true if the current node is the correct type.
     if ( i->getValue()->isOfType ( type ) ) 
@@ -218,7 +222,7 @@ bool SgPath::hasNodeOfExactType ( const SlType *type ) const
   SL_ASSERT ( this && type );
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // Return true if the current node is the correct type.
     if ( i->getValue()->isOfExactType ( type ) ) 
@@ -242,10 +246,10 @@ void SgPath::setValue ( const SgPath &path )
   this->clear();
 
   // Loop through all of the given path's nodes.
-  for ( Nodes::const_iterator i = path._nodes.begin(); i != path._nodes.end(); ++i )
+  for ( Nodes::const_iterator i = path._nodes->begin(); i != path._nodes->end(); ++i )
   {
     // Append the current node our list. This will automatically reference.
-    _nodes.push_back ( *i );
+    _nodes->push_back ( *i );
   }
 }
 
@@ -261,7 +265,7 @@ SgNode *SgPath::getFirstOfType ( const SlType *type ) const
   SL_ASSERT ( this && type );
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // If the node is the right type then return it.
     if ( i->getValue()->isOfType ( type ) ) 
@@ -284,11 +288,16 @@ SgNode *SgPath::getLastOfType ( const SlType *type ) const
   SL_ASSERT ( this && type );
 
   // Loop through all the nodes.
-  for ( Nodes::const_reverse_iterator i = _nodes.rbegin(); i != _nodes.rend(); ++i )
+#ifdef __GNUC__
+  SL_ASSERT ( 0 ); // Make sure this works. Had to hack it in because gcc didn't like me using const_reverse_iterator.
+  for ( Nodes::const_iterator i = _nodes->end(); i != _nodes->begin(); --i )
+#else
+  for ( Nodes::const_reverse_iterator i = _nodes->rbegin(); i != _nodes->rend(); ++i )
+#endif
   {
     // If the node is the right type then return it.
     if ( i->getValue()->isOfType ( type ) ) 
-      return i->getValue();
+      return (SgNode *) (i->getValue());
   }
 
   // Didn't find a node with the right type.
@@ -305,7 +314,7 @@ SgNode *SgPath::getLastOfType ( const SlType *type ) const
 SgNode *SgPath::getHead() const
 {
   SL_ASSERT ( this );
-  return _nodes.front().getValue();
+  return _nodes->front().getValue();
 }
 
 
@@ -318,7 +327,7 @@ SgNode *SgPath::getHead() const
 SgNode *SgPath::getTail() const
 {
   SL_ASSERT ( this );
-  return _nodes.back().getValue();
+  return _nodes->back().getValue();
 }
 
 
@@ -339,7 +348,7 @@ void SgPath::write ( ::ostream &out ) const
   Index count = 0;
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // Print the node pointer.
     out << count++ << " " << (*i) << ::endl;
@@ -367,7 +376,7 @@ void SgPath::write ( std::ostream &out ) const
   Index count = 0;
 
   // Loop through all the nodes.
-  for ( Nodes::const_iterator i = _nodes.begin(); i != _nodes.end(); ++i )
+  for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
   {
     // Print the node pointer.
     out << count++ << " " << (*i) << ::endl;

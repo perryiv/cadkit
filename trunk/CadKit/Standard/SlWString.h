@@ -51,7 +51,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdio.h>
 # include <stdarg.h>
-# ifdef _LINUX
+# ifdef __GNUC__
 #  include <wctype.h>
 # endif
 #endif

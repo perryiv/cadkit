@@ -124,13 +124,26 @@ public:
   SlVec2 &                operator += ( const SlVec2 &vec );
   SlVec2 &                operator -= ( const SlVec2 &vec );
   SlVec2                  operator - () const;
-  friend SlVec2           operator * ( const SlVec2 &vec, const T &value );
-  friend SlVec2           operator * ( const T &value, const SlVec2 &vec );
-  friend SlVec2           operator / ( const SlVec2 &vec, const T &value );
-  friend SlVec2           operator + ( const SlVec2 &vecA, const SlVec2 &vecB );
-  friend SlVec2           operator - ( const SlVec2 &vecA, const SlVec2 &vecB );
+
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template<class P> friend SlVec2<P> operator *  ( const SlVec2<P> &vec,  const T &value );
+  template<class P> friend SlVec2<P> operator *  ( const T &value,        const SlVec2<P> &vec );
+  template<class P> friend SlVec2<P> operator /  ( const SlVec2<P> &vec,  const T &value );
+  template<class P> friend SlVec2<P> operator +  ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
+  template<class P> friend SlVec2<P> operator -  ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
+  template<class P> friend bool      operator == ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
+  template<class P> friend bool      operator != ( const SlVec2<P> &vecA, const SlVec2<P> &vecB );
+#else
+  friend SlVec2           operator *  ( const SlVec2 &vec,  const T &value );
+  friend SlVec2           operator *  ( const T &value,     const SlVec2 &vec );
+  friend SlVec2           operator /  ( const SlVec2 &vec,  const T &value );
+  friend SlVec2           operator +  ( const SlVec2 &vecA, const SlVec2 &vecB );
+  friend SlVec2           operator -  ( const SlVec2 &vecA, const SlVec2 &vecB );
   friend bool             operator == ( const SlVec2 &vecA, const SlVec2 &vecB );
   friend bool             operator != ( const SlVec2 &vecA, const SlVec2 &vecB );
+#endif
 
   // I/O.
   #ifdef CADKIT_DEFINE_SL_VECTOR_2_OSTREAM_OPERATOR
@@ -386,8 +399,8 @@ template<class T> inline SlVec2<T> operator * ( const SlVec2<T> &vec, const T &v
 template<class T> inline SlVec2<T> operator * ( const T &value, const SlVec2<T> &vec )
 {
   return SlVec2<T> ( 
-    vec._v[0] * value, 
-    vec._v[1] * value );
+    vec[0] * value, 
+    vec[1] * value );
 }
 
 

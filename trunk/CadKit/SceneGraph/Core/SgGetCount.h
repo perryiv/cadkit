@@ -46,10 +46,6 @@
 
 #include "SgVisitor.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <map>
-#endif
-
 
 namespace CadKit
 {
@@ -68,10 +64,9 @@ public:
 
 protected:
 
-  // Making this a pointer because of VC++ warning 4786. 
+  // Hiding the std::map because of VC++ warning 4786. 
   // The pragma isn't helping.
-  typedef std::map<const SlType *, IndexGetCount> CountMap;
-  CountMap *_countMap;
+  void *_countMap;
 
   void              _incrementCount ( const SlType *type );
 
@@ -81,7 +76,7 @@ protected:
   SG_DECLARE_DYNAMIC_VISITOR ( SgGetCount, 0x00001014 );
 };
 
-}; // nsmaspace CadKit
+}; // namespace CadKit
 
 
 /////////////////////////////////////////////////////////////////////////////

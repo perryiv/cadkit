@@ -697,10 +697,10 @@ bool TrJt2Xml::_addSet ( DbJtTraverser::EntityHandle entity,
 ///////////////////////////////////////////////////////////////////////////////
 
 bool TrJt2Xml::_addArray ( const unsigned int &valid, 
-                         const unsigned int &which, 
-                         const std::vector<float> &array, 
-                         const char *arrayName, 
-                         DbXmlGroup &set )
+                           const unsigned int &which, 
+                           const std::vector<float> &array, 
+                           const char *arrayName, 
+                           DbXmlGroup &set )
 {
   SL_PRINT ( "In TrJt2Xml::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
   SL_ASSERT ( arrayName );

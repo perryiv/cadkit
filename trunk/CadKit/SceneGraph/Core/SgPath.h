@@ -48,7 +48,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefBase.h"
-# include <list>
+# include <vector> // gcc doesn't like <list>.
 #endif
 
 #ifdef CADKIT_DEFINE_SG_PATH_WRITE_TO_OSTREAM
@@ -67,7 +67,7 @@ class SgPath : public SlRefBase
 public:
 
   typedef IndexPath Index;
-  typedef std::list<SgNode::Ptr> Nodes;
+  typedef std::vector<SgNode::Ptr> Nodes;
 
   SgPath();
   SgPath ( const SgPath &path );
@@ -84,8 +84,8 @@ public:
   SgNode *          getLastOfType ( const SlType *type ) const;
 
   SgNode *          getNode ( const Index &index ) const;
-  const Nodes &     getNodes() const { return _nodes; }
-  Index             getNumNodes() const { return _nodes.size(); }
+  const Nodes *     getNodes() const { return _nodes; }
+  Index             getNumNodes() const { return _nodes->size(); }
 
   SgNode *          getHead() const;
   SgNode *          getTail() const;
@@ -102,7 +102,7 @@ public:
 
 protected:
 
-  Nodes _nodes; // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
+  Nodes *_nodes; // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
 
   SL_DECLARE_DYNAMIC_CLASS ( SgPath, 0x00001060 );
   SL_DECLARE_REFCOUNT_TYPE ( SgPath );

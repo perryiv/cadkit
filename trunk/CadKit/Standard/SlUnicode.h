@@ -81,7 +81,7 @@ inline HRESULT ansiToUnicode ( const unsigned int &csize, const char *chars, con
     return HRESULT_FROM_WIN32 ( error );
   }
 
-#elif _LINUX
+#elif __GNUC__
 
   SL_ASSERT ( 0 ); // TODO.
 
@@ -124,7 +124,7 @@ inline HRESULT unicodeToAnsi ( const unsigned int &wsize, const wchar_t *wchars,
     return HRESULT_FROM_WIN32 ( error );
   }
 
-#elif _LINUX
+#elif __GNUC__
 
   SL_ASSERT ( 0 ); // TODO.
 

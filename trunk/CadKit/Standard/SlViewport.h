@@ -59,8 +59,15 @@ public:
   const T &             getWidth()  const { return _width; }
   const T &             getHeight() const { return _height; }
 
-  friend bool           operator == ( const SlViewport<T> &vpA, const SlViewport<T> &vpB );
-  friend bool           operator != ( const SlViewport<T> &vpA, const SlViewport<T> &vpB );
+  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
+  // and http://www.bero.org/gcc296.html
+#if __GNUC__ >= 2
+  template <class P> friend bool operator == ( const SlViewport<P> &vpA, const SlViewport<P> &vpB );
+  template <class P> friend bool operator != ( const SlViewport<P> &vpA, const SlViewport<P> &vpB );
+#else
+  friend bool           operator == ( const SlViewport &vpA, const SlViewport &vpB );
+  friend bool           operator != ( const SlViewport &vpA, const SlViewport &vpB );
+#endif
 
   void                  setValue ( const SlViewport<T> &vp );
   void                  setValue ( const T &x, const T &y, const T &width, const T &height );

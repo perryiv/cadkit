@@ -81,6 +81,10 @@ public:
   // Initialize. Call this before doing anything else.
   bool                    init();
 
+  // Set the verbose flag. If true it will print progress notifications 
+  // to stdout. Default is false.
+  void                    setVerbose ( bool verbose ) { _verbose = verbose; }
+
   // Translate the Jupiter database to Performer.
   bool                    translate ( const char *filename, pfGroup &root );
 
@@ -103,6 +107,7 @@ protected:
     SlMaterialf _material;
   };
 
+  bool _verbose;
   typedef std::list<Group> Assemblies;
   DbJtTraverser::Ptr _jtTraverser;
   std::string _error;

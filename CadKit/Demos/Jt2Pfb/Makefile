@@ -13,7 +13,6 @@ LOCAL_LIBS = \
 	-lCkDbJt_s \
 	-lCkSl_s \
 	-lpfdu \
-	-lpfui \
 	-lpfutil \
 	-lpf \
 	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40

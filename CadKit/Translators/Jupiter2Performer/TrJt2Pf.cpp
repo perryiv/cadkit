@@ -61,6 +61,8 @@
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"
 # include "Performer/pr/pfMaterial.h"
+# include <iostream>
+# include <iomanip>
 #endif
 
 using namespace CadKit;
@@ -73,6 +75,7 @@ using namespace CadKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 TrJt2Pf::TrJt2Pf() :
+  _verbose ( false ),
   _jtTraverser ( NULL ),
   _error ( "" )
 {
@@ -208,15 +211,38 @@ bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
   switch ( message )
   {
   case DbJtTraverser::IMPORT_START:
+
+    if ( _verbose )
+      std::cout << "Importing... " << std::flush;
+    break;
+
   case DbJtTraverser::IMPORT_FINISH:
+
+    if ( _verbose )
+      std::cout << "done" << std::endl;
+    break;
+
   case DbJtTraverser::TRAVERSAL_START:
+
+    if ( _verbose )
+      std::cout << "Starting the traversal" << std::endl;
+    break;
+
   case DbJtTraverser::TRAVERSAL_FINISH:
+
+    if ( _verbose )
+      std::cout << "Done traversing" << std::endl;
+    break;
+
   case DbJtTraverser::LEVEL_PUSH:
 
     // Do nothing.
     break;
 
   case DbJtTraverser::LEVEL_POP:
+
+    if ( _verbose )
+      std::cout << "Done with assembly" << std::endl;
 
     // Pop the Performer scene tree level.
     return this->_endCurrentGroup();
@@ -514,6 +540,9 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
   // Make the new assembly the current one.
   _assemblies.push_back ( assembly );
 
+  if ( _verbose )
+    std::cout << std::setw ( 10 ) << "assembly: " << assembly.getGroup()->getName() << std::endl;
+
   // It worked.
   return true;
 }
@@ -539,6 +568,9 @@ bool TrJt2Pf::_addPart ( DbJtTraverser::EntityHandle entity )
 
   // Add the new part to the Performer scene.
   _assemblies.back().getGroup()->addChild ( part.getGroup() );
+
+  if ( _verbose )
+    std::cout << std::setw ( 10 ) << "part: " << part.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;
@@ -721,28 +753,28 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
 
     // Set the length of this most recent set of vertices.
     // Note: We by 3 divide because 3 elements in the vector is one vertex.
-    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
+    if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_VERTICES ) )
     {
       SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
       numVertices[i] =  ( vertices.size() - currentSizeVertices ) / 3;
     }
 
     // Set the length of the normals.
-    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
+    if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_NORMALS ) )
     {
       SL_ASSERT ( 0 == ( vertices.size() % 3 ) );
       numNormals[i] = ( normals.size() - currentSizeNormals ) / 3;
     }
 
     // Set the length of the colors.
-    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_COLORS ) )
+    if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_COLORS ) )
     {
       SL_ASSERT ( 0 == ( vertices.size() % 4 ) );
       numColors[i] = ( colors.size() - currentSizeColors ) / 4;
     }
 
     // Set the length of the texture coordinates.
-    if ( CadKit::hasBits ( valid, DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
+    if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::SHAPE_ARRAY_TEXTURE ) )
     {
       SL_ASSERT ( 0 == ( vertices.size() % 2 ) );
       numTextureCoords[i] = ( textureCoords.size() - currentSizeTextureCoords ) / 2;
@@ -814,6 +846,9 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 
   // Add the new part to the tree.
   _assemblies.back()->addChild ( instance );
+
+  if ( _verbose )
+    std::cout << std::setw ( 10 ) << "instance: " << assembly.getGroup()->getName() << std::endl;
 
   // It worked.
   return true;

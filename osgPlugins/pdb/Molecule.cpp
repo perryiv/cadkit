@@ -122,12 +122,14 @@ osg::LOD *Molecule::_makeBond (const Bond &bond ) const
 
   Cylinder c(bond.getPoint1(), bond.getPoint2());
 
+  float detail[] = { 10.0, 20.0, 45.0, 60.0, 90.0 };
+
   //add several cylinders
   for(unsigned int i = 0; i < _numLodChildren; ++i)
   {
-    float detail = 10.0 + (10 * i);
+    //float detail = 10.0 + (10 * i);
     osg::ref_ptr< osg::Geode > geode (new osg::Geode);
-    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), detail) ));
+    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), detail[i]) ));
     lod->addChild(geode.release());
   }
 

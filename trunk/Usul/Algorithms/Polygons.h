@@ -212,11 +212,6 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     // Go to the next keeper.
     ++keeperItr;
     double percent = (double) ( keepers.size() * numVertsPerPoly ) / vertices.size();
-#ifdef _DEBUG
-    std::ostringstream os;
-    os << "Precentage = " << percent * 100 << std::endl;
-    ::OutputDebugString ( os.str().c_str() );
-#endif
     updater.update ( percent );
     updater.setStatus( keepers.size() );
   }

@@ -22,7 +22,7 @@ namespace Usul
       typedef Usul::Interfaces::IUnknown Unknown;
 
       /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxRadioButton);
+      USUL_DECLARE_QUERY_POINTERS ( IFoxToggleButton);
 
       enum { IID = 1101838475u };
 

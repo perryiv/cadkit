@@ -172,8 +172,8 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
 
   p->resize ( 2 );
-  (*p)[0] = osg::Vec3(0.0, 0.0, 0.0);//point1;
-  (*p)[1] = osg::Vec3(0.0, 1.0, 0.0);//point2;
+  (*p)[0] = osg::Vec3(0.0, 0.0, 0.0);
+  (*p)[1] = osg::Vec3(0.0, 1.0, 0.0);
 
   geom->setVertexArray ( p.get() );
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
@@ -201,7 +201,7 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
 
 osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const
 {
-  // Make a sphere.
+  // Make a cylinder of length one with given radius and number of sides.
   osg::ref_ptr<osg::Geometry> geometry ( _cylinderFactory->create ( radius, sides ) );
 
   // TODO, make this an option. Display lists crash with really big files.
@@ -315,11 +315,6 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( geometry.get() );
 
-  // Add the geode to the matrix-transform.
-  //mt->addChild ( geode.get() );
-
-  // Return the matrix-transform.
-  //return mt.release();
   return geode.release();
 }
 
@@ -375,11 +370,6 @@ osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( drawable.get() );
 
-  // Add the geode to the matrix-transform.
-  //mt->addChild ( geode.get() );
-
-  // Return the matrix-transform.
-  //return mt.release();
   return geode.release();
 }
 

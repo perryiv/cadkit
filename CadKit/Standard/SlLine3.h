@@ -59,16 +59,6 @@ public:
   bool            isParallelTo ( const Line3 &line ) const;
   bool            isPerpendicularTo ( const Line3 &line ) const;
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template<class P> friend bool operator == ( const SlLine3<P> &line1, const SlLine3<P> &line2 );
-  template<class P> friend bool operator != ( const SlLine3<P> &line1, const SlLine3<P> &line2 );
-#else
-  friend bool     operator == ( const Line3 &line1, const Line3 &line2 );
-  friend bool     operator != ( const Line3 &line1, const Line3 &line2 );
-#endif
-
   void            normalize() { _vec.normalize(); }
 
   void            setDirection ( const Vec3 &vec ) { _vec = vec; }
@@ -86,6 +76,17 @@ protected:
   Vec3 _vec; // The direction vector.
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> bool operator == ( const SlLine3<T> &line1, const SlLine3<T> &line2 );
+template<class T> bool operator != ( const SlLine3<T> &line1, const SlLine3<T> &line2 );
 
 
 ///////////////////////////////////////////////////////////////////////////////

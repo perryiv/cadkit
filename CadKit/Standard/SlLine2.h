@@ -51,16 +51,6 @@ public:
   bool            intersect ( const SlLine2 &line, Vec2 &answer ) const;
   bool            intersect ( const Vec2 &linePoint, const Vec2 &lineDir, Vec2 &answer ) const;
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template<class P> friend bool operator == ( const SlLine2<P> &line1, const SlLine2<P> &line2 );
-  template<class P> friend bool operator != ( const SlLine2<P> &line1, const SlLine2<P> &line2 );
-#else
-  friend bool     operator == ( const Line2 &line1, const Line2 &line2 );
-  friend bool     operator != ( const Line2 &line1, const Line2 &line2 );
-#endif
-
   void            normalize() { _vec.normalize(); }
 
   void            setValue ( const SlLine2 &line );
@@ -71,6 +61,18 @@ protected:
   Vec2 _pt;  // A point on the line.
   Vec2 _vec; // The direction vector.
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> bool operator == ( const SlLine2<T> &line1, const SlLine2<T> &line2 );
+template<class T> bool operator != ( const SlLine2<T> &line1, const SlLine2<T> &line2 );
 
 
 ///////////////////////////////////////////////////////////////////////////////

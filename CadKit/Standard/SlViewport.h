@@ -31,15 +31,8 @@ public:
   const T &             getWidth()  const { return _width; }
   const T &             getHeight() const { return _height; }
 
-  // Friend function operators. See http://gcc.gnu.org/faq.html#friend 
-  // and http://www.bero.org/gcc296.html
-#if __GNUC__ >= 2
-  template <class P> friend bool operator == ( const SlViewport<P> &vpA, const SlViewport<P> &vpB );
-  template <class P> friend bool operator != ( const SlViewport<P> &vpA, const SlViewport<P> &vpB );
-#else
-  friend bool           operator == ( const SlViewport &vpA, const SlViewport &vpB );
-  friend bool           operator != ( const SlViewport &vpA, const SlViewport &vpB );
-#endif
+  bool                  isEqual    ( const SlViewport<T> &v ) const;
+  bool                  isNotEqual ( const SlViewport<T> &v ) const;
 
   void                  setValue ( const SlViewport<T> &vp );
   void                  setValue ( const T &x, const T &y, const T &width, const T &height );
@@ -51,6 +44,18 @@ protected:
   T _width;
   T _height;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Additional operators. These are not members of the class because compilers
+//  vary too much in the proper syntax for friend functions in templates. 
+//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> bool operator == ( const SlViewport<T> &vpA, const SlViewport<T> &vpB );
+template<class T> bool operator != ( const SlViewport<T> &vpA, const SlViewport<T> &vpB );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +123,7 @@ template<class T> inline void SlViewport<T>::setValue ( const SlViewport<T> &vp 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool operator == ( const SlViewport<T> &vpA, const SlViewport<T> &vpB )
+template<class T> inline bool SlViewport<T>::isEqual ( const SlViewport<T> &v ) const
 {
   return ( 
     vpA._x == vpB._x && 
@@ -134,9 +139,33 @@ template<class T> inline bool operator == ( const SlViewport<T> &vpA, const SlVi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+template<class T> inline bool SlViewport<T>::isNotEqual ( const SlViewport<T> &v ) const
+{
+  return ( false == this->isEqual ( v ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if they're equal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline bool operator == ( const SlViewport<T> &vpA, const SlViewport<T> &vpB )
+{
+  return vpA.isEqual ( vpB );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if they're not equal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<class T> inline bool operator != ( const SlViewport<T> &vpA, const SlViewport<T> &vpB )
 {
-  return !( vpA == vpB );
+  return vpA.isNotEqual ( vpB );
 }
 
 

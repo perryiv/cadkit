@@ -18,10 +18,11 @@
 
 #include "SgGlApi.h"
 
+#include "Standard/SlRefBase.h"
+#include "Standard/SlMatrix4.h"
+#include "Standard/SlStack.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlRefBase.h"
-# include "Standard/SlMatrix4.h"
-# include "Standard/SlStack.h"
 # include <map>
 # include <memory>
 #endif
@@ -82,8 +83,8 @@ protected:
   std::auto_ptr<MatrixStack> _modelviewStack;
   std::auto_ptr<MatrixStack> _projectionStack;
   std::auto_ptr<StateMap> _stateMap;
-  mutable SlMatrix4f _M;
-  mutable SlMatrix4f _P;
+  mutable SlMatrix4f _modelViewMatrix;
+  mutable SlMatrix4f _projectionMatrix;
 
   virtual ~SgGlState();
 

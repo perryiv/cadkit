@@ -598,7 +598,7 @@ bool SgViewer::_processViewing ( const unsigned long &buttonsDown )
   SL_ASSERT ( this );
   SL_ASSERT ( _camera.isValid() );
   SL_ASSERT ( _renderer.isValid() );
-  SL_TRACE ( "In SgViewer::_processViewing(), buttonsDown = %d\n", buttonsDown );
+  SL_TRACE2 ( "In SgViewer::_processViewing(), buttonsDown = %d\n", buttonsDown );
 
   // Get the viewport.
   SlViewporti viewport;
@@ -995,7 +995,7 @@ bool SgViewer::getRay ( long x, long y, SlLine3f &line ) const
     // Make the line (in absolute global space).
     line.setValue ( vrp, pointOnWindow );
 
-    SL_TRACE ( "In SgViewer::getRay(),  line.getPoint() = %f,%f,%f, line.getDirection() = %f,%f,%f\n", line.getPoint()[0], line.getPoint()[1], line.getPoint()[2], line.getDirection()[0], line.getDirection()[1], line.getDirection()[2] );
+    SL_TRACE7 ( "In SgViewer::getRay(),  line.getPoint() = %f,%f,%f, line.getDirection() = %f,%f,%f\n", line.getPoint()[0], line.getPoint()[1], line.getPoint()[2], line.getDirection()[0], line.getDirection()[1], line.getDirection()[2] );
 
     // It worked.
     return true;
@@ -1050,7 +1050,7 @@ bool SgViewer::getRay2 ( const long &winX, const long &winY, SlLine3f &line ) co
   line.setValue ( nearPoint, farPoint - nearPoint );
   line.getDirection().normalize();
 
-  SL_TRACE ( "In SgViewer::getRay2(), line.getPoint() = %f,%f,%f, line.getDirection() = %f,%f,%f\n", line.getPoint()[0], line.getPoint()[1], line.getPoint()[2], line.getDirection()[0], line.getDirection()[1], line.getDirection()[2] );
+  SL_TRACE7 ( "In SgViewer::getRay2(), line.getPoint() = %f,%f,%f, line.getDirection() = %f,%f,%f\n", line.getPoint()[0], line.getPoint()[1], line.getPoint()[2], line.getDirection()[0], line.getDirection()[1], line.getDirection()[2] );
 
   // It worked.
   return true;

@@ -1,7 +1,7 @@
 # Set these variables for all platforms.
 CPP = g++
-#GLOBAL_CPP_FLAGS = -D_DEBUG -g
-GLOBAL_CPP_FLAGS =
+GLOBAL_CPP_FLAGS = -D_DEBUG -g
+#GLOBAL_CPP_FLAGS =
 GLOBAL_LINK_FLAGS =
 
 # Set these variables based on the operating system.
@@ -16,7 +16,7 @@ ifeq ($(OS_TYPE), Irix)
 	Os = Irix
 	os = irix
 	PLATFORM_CPP_FLAGS = -LANG:std -D_SGI_NATIVE_COMPILER
-	PLATFORM_LINK_FLAGS = -LANG:std
+	PLATFORM_LINK_FLAGS = -LANG:std -v
 endif
 
 # If we are on Linux. The flag '_ISOC99_SOURCE' is for vswprintf()

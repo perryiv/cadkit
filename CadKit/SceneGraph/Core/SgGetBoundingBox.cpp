@@ -23,11 +23,9 @@
 #include "SgTranslation.h"
 #include "SgCube.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlPrint.h"
-# include "Standard/SlTrace.h"
-# include "Standard/SlConstants.h"
-#endif
+#include "Standard/SlPrint.h"
+#include "Standard/SlTrace.h"
+#include "Standard/SlConstants.h"
 
 using namespace CadKit;
 
@@ -194,15 +192,15 @@ bool SgGetBoundingBox::visit ( SgCube &cube )
   SlVec3f bbmin ( c[0] - hs, c[1] - hs, c[2] - hs );
   SlVec3f bbmax ( c[0] + hs, c[1] + hs, c[2] + hs );
   SlBoundingBoxf bbox ( bbmin, bbmax );
-  SL_TRACE ( "       bbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", bbox.getMin()[0], bbox.getMin()[1], bbox.getMin()[2], bbox.getMax()[0], bbox.getMax()[1], bbox.getMax()[2] );
+  SL_TRACE7 ( "       bbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", bbox.getMin()[0], bbox.getMin()[1], bbox.getMin()[2], bbox.getMax()[0], bbox.getMax()[1], bbox.getMax()[2] );
 
   // Put it in model space.
   bbox = _M * bbox;
-  SL_TRACE ( "_M = \n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n", _M[0], _M[4], _M[8], _M[12], _M[1], _M[5], _M[9], _M[13], _M[2], _M[6], _M[10], _M[14], _M[3], _M[7], _M[11], _M[15] );
+  SL_TRACE17 ( "_M = \n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n%12.7f%12.7f%12.7f%12.7f\n", _M[0], _M[4], _M[8], _M[12], _M[1], _M[5], _M[9], _M[13], _M[2], _M[6], _M[10], _M[14], _M[3], _M[7], _M[11], _M[15] );
 
   // Add it to the sum.
   _bbox += bbox;
-  SL_TRACE ( "      _bbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", _bbox.getMin()[0], _bbox.getMin()[1], _bbox.getMin()[2], _bbox.getMax()[0], _bbox.getMax()[1], _bbox.getMax()[2] );
+  SL_TRACE7 ( "      _bbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", _bbox.getMin()[0], _bbox.getMin()[1], _bbox.getMin()[2], _bbox.getMax()[0], _bbox.getMax()[1], _bbox.getMax()[2] );
 
   return true;
 }
@@ -283,7 +281,7 @@ bool SgGetBoundingBox::visit ( SgGroup &group )
     if ( !group.getChild ( i )->accept ( *this ) ) 
     {
       SL_ASSERT ( 0 ); // Why didn't it work?
-      SL_TRACE ( "In SgGetBoundingBox::visit ( SgGroup & ), failed to get bounding box of child %d", i );
+      SL_TRACE2 ( "In SgGetBoundingBox::visit ( SgGroup & ), failed to get bounding box of child %d", i );
 
       // Set the result but keep going.
       result = false;

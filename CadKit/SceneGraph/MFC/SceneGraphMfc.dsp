@@ -52,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"../../bin/CadKitSgMfc.dll" /libpath:"$(MODELSPACE_HOME)\lib"
+# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"../../bin/CkSgMfc.dll" /libpath:"$(MODELSPACE_HOME)\lib"
 # SUBTRACT LINK32 /profile
 
 !ELSEIF  "$(CFG)" == "SceneGraphMfc - Win32 Debug"
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 Sgd.lib Sld.lib glu32.lib opengl32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Debug/CadKitSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
-# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../bin/CadKitSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
+# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../bin/CkSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
 
 !ENDIF 
 

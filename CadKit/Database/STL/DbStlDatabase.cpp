@@ -62,9 +62,7 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbStlDatabase::DbStlDatabase() : DbBaseTarget(),
-  _fmgr( new DbStlFacetManager ),
-  _partLodCheck( new std::set<PartHandle> )
+DbStlDatabase::DbStlDatabase() : DbBaseTarget()
 {
   SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
 }
@@ -179,7 +177,7 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
 
   // Write the root to file.
-  return _fmgr.storeData( filename.c_str, DbStlFacetManager::STL_ASCII_FILE_MODE );
+  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
   //TODO - flag for choosing binary or ascii
 }
 
@@ -203,7 +201,7 @@ bool DbStlDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   // Push the matrix if there is one.
   SlMatrix44f matrix;
   if ( true == query->getTransform ( assembly, matrix, false ) )
-    _fmgr._transforms.push( matrix );
+    _fmgr.pushTransform ( matrix );
 
   // It worked
   return true;
@@ -245,7 +243,7 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
   // Push the matrix if there is one.
   SlMatrix44f matrix;
   if ( true == query->getTransform ( part, matrix, false ) )
-    _fmgr._transforms.push( matrix );
+    _fmgr.pushTransform ( matrix );
 
   // It worked
   return true;
@@ -290,7 +288,7 @@ bool DbStlDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   // Push the matrix if there is one.
   SlMatrix44f matrix;
   if ( true == query->getTransform ( instance, matrix, false ) )
-    _fmgr._transforms.push( matrix );
+    _fmgr.pushTransform ( matrix );
 
   // It worked
   return true;

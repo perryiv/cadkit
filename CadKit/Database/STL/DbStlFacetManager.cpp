@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Eric W. Schmidt
@@ -12,6 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+//???????????
+// I need this up here or else I get this VC++ error (and many others):
+// SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
+#include <math.h>
+//????????????
+
+#include "DbStlPrecompiled.h"
 #include "DbStlFileIO.h"
 #include "DbStlFacetManager.h"
 
@@ -22,13 +30,16 @@ using namespace CadKit;
 //  DbStlFacetManager::DbStlFacetManager() constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
-DbStlFacetManager::DbStlFacetManager( ) :
+DbStlFacetManager::DbStlFacetManager( )
+/*
+ :
   _facets( new Facets ),
-	_transforms( new TransformStack ),
+	_transforms( new TransformStack ), // Eric, these are objects in the header, not pointers.
   _vSetter( new DbStlVertexSetter ),
   _nSetter( new DbStlNormalSetter ),
   _vbuf( new Vertices ),
   _nbuf( new Normals )
+*/
 {
   // empty
 }
@@ -41,13 +52,15 @@ DbStlFacetManager::DbStlFacetManager( ) :
 ///////////////////////////////////////////////////////////////////////////////
 DbStlFacetManager::~DbStlFacetManager( )
 {
+/*
   delete( _facets );
 	delete( _transforms );
   delete( _vSetter );
-  delete( _nSetter );
+  delete( _nSetter );// Eric, these are objects in the header, not pointers.
   delete( _vbuf );
   delete( _nbuf );
-  delete( _partLodCheck );
+*/
+  //delete( _partLodCheck ); Eric, not a member.
 }
 
 
@@ -285,6 +298,18 @@ bool DbStlFacetManager::fetchVerticesPerShape( IUnknown *caller, ShapeHandle sha
 //*******************************************************************************************************//
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DbStlFacetManager::TransformStack() : std::stack<SlMatrix44f>::stack()
+{
+  // Empty.
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

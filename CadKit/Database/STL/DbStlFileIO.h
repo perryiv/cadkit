@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Eric W. Schmidt
@@ -15,21 +16,24 @@
 #ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_STL_FILE_IO_H_
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_STL_FILE_IO_H_
 
+#include "DbStlApi.h"
 
-//#include "DbStlApi.h"
-#include <iostream>
-#include <fstream>
-#include <string>
 #include "Standard/SlVec3.h"
 #include "Standard/SlStack.h"
 #include "Standard/SlMatrix44.h"
 #include "Standard/SlMatrix44IO.h"
 #include "Standard/SlTypedefs.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <iostream>
+# include <fstream>
+# include <string>
+#endif
+
 
 namespace CadKit
 {
-class /*DB_STL_API*/ DbStlOutputFile : public std::basic_ofstream<char>
+class DB_STL_API DbStlOutputFile : public std::ofstream
 {
 public:
   enum StlFileState
@@ -73,7 +77,7 @@ protected:
 
 
 
-class /*DB_STL_API*/ DbStlAsciiOutputFile : public DbStlOutputFile
+class DB_STL_API DbStlAsciiOutputFile : public DbStlOutputFile
 {
 public:
   
@@ -95,7 +99,7 @@ protected:
 
 };
 
-class /*DB_STL_API*/ DbStlBinaryOutputFile : public DbStlOutputFile
+class DB_STL_API DbStlBinaryOutputFile : public DbStlOutputFile
 {
 public:  
   DbStlBinaryOutputFile( ) { }

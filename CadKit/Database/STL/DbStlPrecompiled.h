@@ -31,6 +31,11 @@
 # include <map>
 # include <stack>
 # include <algorithm>
+# include <stdio.h>
+# include <iostream>
+# include <fstream>
+# include <vector>
+# include <set>
 #endif
 
 #endif // _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Eric W. Schmidt
@@ -15,20 +16,9 @@
 #ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_FACET_MANAGER_H_
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_FACET_MANAGER_H_
 
-//???????????
-// I need this up here or else I get this VC++ error (and many others):
-// SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
-//#include <math.h>
-//????????????
 #include "DbStlApi.h"
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <set>
-#include <stack>
-//#include "Standard/SlVec2.h"
+
 #include "Standard/SlVec3.h"
-//#include "Standard/SlVec4.h"
 #include "Standard/SlStack.h"
 #include "Standard/SlMatrix44.h"
 #include "Standard/SlMatrix44IO.h"
@@ -39,6 +29,13 @@
 #include "Interfaces/IQueryVertices.h"
 #include "Interfaces/IQueryNormals.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <stdio.h>
+# include <iostream>
+# include <vector>
+# include <set>
+# include <stack>
+#endif
 
 
 namespace CadKit
@@ -111,13 +108,13 @@ public:
 	// operating on.
   /////////////////////////////////////////////////////////////////////////////
 
-//	class TransformStack : public SlStack<SlMatrix44f>
-  class TransformStack : public std::stack<SlMatrix44f>
+	class TransformStack : public SlStack<SlMatrix44f>
+//  class TransformStack : public std::stack<SlMatrix44f>
 	{
 	public:
 		
-//    TransformStack( ) : SlStack<SlMatrix44f>::SlStack() { } // constructor
-    TransformStack( ) : std::stack<SlMatrix44f>::stack() { } // constructor
+    TransformStack( );
+//    TransformStack( );
 
     //  Override the default push function so that the new matrix is multiplied
 		//  by the matrix on top of the stack.
@@ -152,6 +149,9 @@ public:
 
   // Get number of facets
   int getNumFacets ( ) { return _facets.size(); }
+
+  // Push a transform onto the stack.
+  void pushTransform ( const SlMatrix44f &matrix ) { _transforms.push ( matrix ); }
 
 
 
@@ -202,11 +202,11 @@ protected:
 
     DbStlNormalSetter ( const VertexBinding &binding )/* : _binding ( CadKit::getBinding ( binding ) )*/ { /* TODO */ }
 
-    bool setData ( const unsigned int &index, const SlVec3f &vec ) { /* TODO */ }
-    bool setSize ( const unsigned int &size ) { /* TODO */ }
+    bool setData ( const unsigned int &index, const SlVec3f &vec ) { SL_ASSERT ( 0 ); return false; /* TODO */ }
+    bool setSize ( const unsigned int &size ) { SL_ASSERT ( 0 ); return false; /* TODO */ }
 
-    bool setNumPrimitives  ( const unsigned int &num ) { /* TODO */ }
-    bool setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { /* TODO */ }
+    bool setNumPrimitives  ( const unsigned int &num ) { SL_ASSERT ( 0 ); return false; /* TODO */ }
+    bool setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { SL_ASSERT ( 0 ); return false; /* TODO */ }
   };
 
 
@@ -214,8 +214,8 @@ protected:
 	TransformStack _transforms;
 
   // interfaces and buffers for fetching vertices and normals from data source
-  DbStlVertexSetter _vSetter;
-  DbStlNormalSetter _nSetter;
+  DbStlVertexSetter _vSetter; // Eric, does this need to be a member?
+  DbStlNormalSetter _nSetter; // Eric, does this need to be a member? It needs a default constructor if that is the case. Otherwise, make it a pointer and pass in the argument(s) to the constructor in the constructor's initializer list (that I commented out).
   Vertices _vbuf;
   Normals _nbuf;
 //  Binding _binding; //TODO

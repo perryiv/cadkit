@@ -188,6 +188,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name Controllers
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseStl
+    End Project Dependency
 }}}
 
 ###############################################################################

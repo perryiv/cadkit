@@ -366,6 +366,9 @@
 					RelativePath=".\Interfaces\IFoxSubMenu.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxTabBook.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFoxTabItem.h">
 				</File>
 				<File
@@ -400,6 +403,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\INotify.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\INotifyClose.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IOpenSceneGraph.h">

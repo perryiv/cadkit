@@ -21,6 +21,7 @@
 
 #include "fxver.h"
 #include "fxdefs.h"
+#include "FXHash.h"
 #include "FXStream.h"
 #include "FXCURCursor.h"
 

@@ -21,10 +21,10 @@
 
 #include "fxver.h"
 #include "fxdefs.h"
+#include "FXHash.h"
 #include "FXStream.h"
 #include "FXString.h"
 #include "FXRegistry.h"
-#include "FXHash.h"
 #include "FXSize.h"
 #include "FXPoint.h"
 #include "FXRectangle.h"

@@ -290,7 +290,7 @@ osg::Node *Molecule::_makeAtom ( Atom::Ptr atom ) const
 
   // Add several spheres.
   float denominator ( _numLodChildren - 1 );
-  for ( unsigned int i = 0; i < _numLodChildren; ++i )
+  for ( unsigned int i = 0; i < _numLodChildren - 1; ++i )
   {
     float loop ( i );
     float detail ( ::pow ( 1.0f - loop / denominator, _lodDistancePower ) );
@@ -346,12 +346,13 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
 osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
 {
   // Make the sphere.
-  osg::ref_ptr<osg::Box> cube ( new osg::Box ( osg::Vec3 ( 0, 0, 0 ), size ) );
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( cube.get() ) );
+  osg::Vec3 sides ( size, size, size );
+  //osg::ref_ptr<osg::Box> cube ( new osg::Box ( osg::Vec3 ( 0, 0, 0 ), size ) );
+  //osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( cube.get() ) );
 
   // Add the cube to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( drawable.get() );
+  geode->addDrawable ( _shapeFactory->cube( sides ) ); //drawable.get() );
 
   return geode.release();
 }

@@ -21,6 +21,7 @@
 
 #include "fxver.h"
 #include "fxdefs.h"
+#include "FXHash.h"
 #include "FXStream.h"
 #include "FXBMPIcon.h"
 #include "FXGIFIcon.h"
@@ -103,6 +104,7 @@ Factory::Factory() : _map()
   POPULATE ( bmp, BMP, TRIANGLE         );
   POPULATE ( bmp, BMP, DELETE_CONNECTED );
   POPULATE ( bmp, BMP, KEEP_CONNECTED   );
+  POPULATE ( bmp, BMP, OPEN_BMP   );
 }
 
 

@@ -24,6 +24,7 @@
 #include "FXPoint.h"
 #include "FXRectangle.h"
 #include "FXString.h"
+#include "FXHash.h"
 #include "FXStream.h"
 #include "FXToolBar.h"
 #include "FXIcon.h"

@@ -174,7 +174,7 @@ ReaderWriterPDB::WriteResult ReaderWriterPDB::writeNode ( const osg::Node& node,
 
 void ReaderWriterPDB::_init()
 {
-  //_molecules->clear();
+  _molecules->clear();
   //_materialFactory->clear();
   _currentMolecule = NULL;
 }
@@ -237,7 +237,8 @@ osg::Group *ReaderWriterPDB::_build() const
 {
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
-  root->setUserData( _molecules.get() );
+  //make a copy
+  root->setUserData( new MoleculeList ( _molecules->molecules() ) );
 
   Molecules molecules ( _molecules->molecules() );
 

@@ -9,30 +9,51 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Functions to delete windows.
+//  Wait cursor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FoxTools/Functions/Delete.h"
+#include "Wait.h"
 
-#include <stdarg.h>
+#include <cstdarg>
 
 #include "fxver.h"
 #include "fxdefs.h"
 #include "FXString.h"
 #include "FXHash.h"
 #include "FXStream.h"
-#include "FXWindow.h"
+#include "FXSize.h"
+#include "FXPoint.h"
+#include "FXRectangle.h"
+#include "FXRegistry.h"
+#include "FXThread.h"
+#include "FXApp.h"
+
+using namespace FoxTools;
+using namespace FoxTools::Adaptors;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Delete all the child windows.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxTools::Functions::deleteChildren ( FX::FXWindow *window )
+Wait::Wait ( FX::FXApp *app ) : _app ( app )
 {
-  while ( window && window->numChildren() )
-    delete window->childAtIndex ( 0 );
+  if ( _app )
+    _app->beginWaitCursor();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Wait::~Wait()
+{
+  if ( _app )
+    _app->endWaitCursor();
 }

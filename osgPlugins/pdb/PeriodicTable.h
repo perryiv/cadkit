@@ -13,6 +13,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include "osg/ref_ptr"
 
@@ -26,7 +27,7 @@ public:
   typedef std::vector< osg::ref_ptr<Element> > VectorElements;
   typedef std::map< std::string, osg::ref_ptr<Element> > MapElements;
   PeriodicTable();
-  const Element * getPointer(std::string) const;
+  const Element * getPointer(const std::string&) const;
   const Element * getPointer(int) const;
 private:
   VectorElements _vectorElements;

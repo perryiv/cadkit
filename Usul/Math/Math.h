@@ -52,6 +52,7 @@ extern "C"
   double atan  ( double ) _USUL_THROW;
   double sqrt  ( double ) _USUL_THROW;
   double atan2 ( double, double ) _USUL_THROW;
+  double pow   ( double, double ) _USUL_THROW;
 };
 
 
@@ -151,6 +152,7 @@ USUL_DECLARE_UNARY_SPECIALIZATIONS ( SquareRoot, ::sqrt, sqrt );
 ///////////////////////////////////////////////////////////////////////////////
 
 USUL_DECLARE_BINARY_SPECIALIZATIONS ( ArcTangent2, ::atan2, atan2 );
+USUL_DECLARE_BINARY_SPECIALIZATIONS ( Power,       ::pow, pow );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -136,7 +136,7 @@ template < class Real, class Sequence > void sphere ( unsigned int n, Sequence &
   const Real Z ( static_cast < Real > ( 0.8506508083528655993 ) );
 
   // Reserve space in the sequences. It works out to 60 * 4 ^ n.
-  const unsigned int need ( 60 * ::pow ( 4, n ) );
+  const unsigned int need ( 60 * Usul::Math::pow (static_cast< Real> (4), static_cast<Real> (n) ) );
   vertices.reserve ( need );
 
   // Make the subdivider.

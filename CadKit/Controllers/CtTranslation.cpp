@@ -272,9 +272,46 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
         return false;
     }
 
+    else if ( arg == "-ob" || arg == "--output-binary" )
+    {
+
+    }
+
+    else if ( arg == "-oa" || arg == "--output-ascii" )
+    {
+
+    }
+
+    else if ( arg == "-c" || arg == "--center" )
+    {
+
+    }
+
+    else if ( arg == "-s" || arg == "--scale" )
+    {
+
+    }
+
+    else if ( arg == "-t" || arg == "--translate" )
+    {
+
+    }
+
+    else if ( arg == "-r" || arg == "--rotate" )
+    {
+
+    }
+
+    else if ( arg == "-stf" || arg == "--scale-to-fit" )
+    {
+
+    }
+      
     // Otherwise just save the argument.
     else
+    {
       args.push_back ( argv[i] );
+    }
   }
 
   // It worked.

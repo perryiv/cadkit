@@ -205,6 +205,10 @@ void Mesh::read ( const std::string &filename )
 
     // Set this element.
     in >> points[j][0] >> points[j][1] >> points[j][2];
+
+    // Read the rest of the line, discarding additional dimensions.
+    while ( '\n' != in.peek() )
+      in.get();
   }
 
   // Read the normals.

@@ -73,8 +73,8 @@ protected:
 
   virtual ~SgGlRenderingContext();
 
-  SL_DECLARE_CLASS(SgGlRenderingContext,0x00005032);
-  SL_DECLARE_REFCOUNT_TYPE(SgGlRenderingContext);
+  SL_DECLARE_REFERENCE_POINTER ( SgGlRenderingContext );
+  SL_DECLARE_CLASS ( SgGlRenderingContext, 1032912241 );
 };
 
 }; // namespace CadKit

@@ -42,6 +42,7 @@
 using namespace CadKit;
 
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbOsgDatabase, DbBaseTarget );
+CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbOsgDatabase, SlRefBase );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,45 +98,6 @@ IUnknown *DbOsgDatabase::queryInterface ( const unsigned long &iid )
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the reference count.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned long DbOsgDatabase::getRefCount() const
-{
-  SL_PRINT2 ( "In DbOsgDatabase::getRefCount(), this = %X\n", this );
-  return SlRefBase::getRefCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbOsgDatabase::ref()
-{
-  SL_PRINT2 ( "In DbOsgDatabase::ref(), this = %X\n", this );
-  this->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbOsgDatabase::unref()
-{
-  SL_PRINT2 ( "In DbOsgDatabase::unref(), this = %X\n", this );
-  this->_decrementReferenceCount();
 }
 
 

@@ -103,8 +103,8 @@ protected:
 
   Nodes *_nodes; // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
 
-  SL_DECLARE_DYNAMIC_CLASS ( SgPath, 0x00001060 );
-  SL_DECLARE_REFCOUNT_TYPE ( SgPath );
+  SL_DECLARE_REFERENCE_POINTER ( SgPath );
+  SL_DECLARE_DYNAMIC_CLASS ( SgPath, 1032912036 );
 };                       
 
 }; // namespace CadKit

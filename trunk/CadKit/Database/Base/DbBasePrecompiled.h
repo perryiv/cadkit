@@ -28,6 +28,7 @@
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
 # include <algorithm> // For std::transform
+# include <string>
 #endif
 
 #endif // _CADKIT_DATABASE_BASE_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

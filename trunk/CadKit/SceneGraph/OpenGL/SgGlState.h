@@ -125,8 +125,8 @@ protected:
 
   State                 _getState ( const unsigned int &flag ) const;
 
-  SL_DECLARE_DYNAMIC_CLASS(SgGlState,0x00005022);
-  SL_DECLARE_REFCOUNT_TYPE(SgGlState);
+  SL_DECLARE_DYNAMIC_CLASS(SgGlState,1032912059);
+  SL_DECLARE_REFERENCE_POINTER(SgGlState);
 };
 
 }; // namespace CadKit

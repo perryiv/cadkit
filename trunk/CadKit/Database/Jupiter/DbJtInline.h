@@ -34,7 +34,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class HandleType> inline bool isOfType ( HandleType ptr, const unsigned int &typeId )
+template <class HandleType> inline bool isOfType ( HandleType ptr, const eaiEntity::TypeID &typeId )
 {
   return ( ptr && typeId == ((eaiEntity *) ptr)->typeID() );
 }

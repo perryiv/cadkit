@@ -87,8 +87,8 @@ protected:
   void                  _setPointersToNull();
   static bool           _setupPixelFormat ( HDC deviceContext );
 
-  SL_DECLARE_DYNAMIC_CLASS(SgGlWinRenderingContext,0x00005033);
-  SL_DECLARE_REFCOUNT_TYPE(SgGlWinRenderingContext);
+  SL_DECLARE_REFERENCE_POINTER ( SgGlWinRenderingContext );
+  SL_DECLARE_DYNAMIC_CLASS ( SgGlWinRenderingContext, 1032911989 );
 };
 
 }; // namespace CadKit

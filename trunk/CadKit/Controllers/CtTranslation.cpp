@@ -41,6 +41,7 @@
 using namespace CadKit;
 
 SL_IMPLEMENT_DYNAMIC_CLASS ( CtTranslation, SlRefBase );
+CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( CtTranslation, SlRefBase );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,45 +103,6 @@ CadKit::IUnknown *CtTranslation::queryInterface ( const unsigned long &iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the reference count.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned long CtTranslation::getRefCount() const
-{
-  SL_PRINT2 ( "In CtTranslation::getRefCount(), this = %X\n", this );
-  return SlRefBase::getRefCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void CtTranslation::ref()
-{
-  SL_PRINT2 ( "In CtTranslation::ref(), this = %X\n", this );
-  this->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void CtTranslation::unref()
-{
-  SL_PRINT2 ( "In CtTranslation::unref(), this = %X\n", this );
-  this->_decrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Check the arguments.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,10 +131,10 @@ std::string CtTranslation::getUsageString ( const std::string &program, const st
   std::string usage;
   CadKit::format ( usage, 
                    "Usage: %s [options] <filename1.%s> [filename2.%s] ...",
-                   CadKit::justFilename ( program ),
+                   CadKit::justFilename ( program ).c_str(),
                    ext.c_str(),
                    ext.c_str() );
-  usage += "\t-v, --verbose     Verbose output to stdout.";
+  usage += "\n\t-v, --verbose     Verbose output to stdout.";
 
   // Return the usage string.
   return usage;

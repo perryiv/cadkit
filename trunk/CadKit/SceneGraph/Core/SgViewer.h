@@ -68,7 +68,7 @@ class SG_API SgViewer : public SlRefBase
 public:
 
   // Declare SgViewer::Ptr up here.
-  SL_DECLARE_REFCOUNT_TYPE ( SgViewer );
+  SL_DECLARE_REFERENCE_POINTER ( SgViewer );
 
   #define SG_VMTA SlUint64, std::string, const void *, SlRefPtr<SgViewer>
   typedef SgMessage < SG_VMTA > Message;
@@ -222,7 +222,7 @@ protected:
   virtual bool           _processSeek ( const long &x, const long &y );
   virtual bool           _processViewing ( const unsigned long &buttonsDown );
 
-  SL_DECLARE_DYNAMIC_CLASS ( SgViewer, 0x00001038 );
+  SL_DECLARE_DYNAMIC_CLASS ( SgViewer, 1032912045 );
 };
 };
 

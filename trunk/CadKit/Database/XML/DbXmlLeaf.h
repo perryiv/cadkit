@@ -66,7 +66,7 @@ protected:
 
   virtual ~DbXmlLeaf();
 
-  DB_XML_DECLARE_DYNAMIC_NODE(DbXmlLeaf,0x00001018);
+  DB_XML_DECLARE_DYNAMIC_NODE ( DbXmlLeaf, 1032912339 );
 };
 };
 

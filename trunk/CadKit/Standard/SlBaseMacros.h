@@ -106,8 +106,8 @@ public: \
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define _SL_IMPLEMENT_CLASS_TYPE_INFO(class_name, base_class_name, theCreateFunction) \
-  const SlType class_name::type##class_name =   { #class_name, theCreateFunction, SL_CLASS_TYPE(base_class_name) }; \
+#define _SL_IMPLEMENT_CLASS_TYPE_INFO(class_name, base_class_name, create_function) \
+  const SlType class_name::type##class_name =   { #class_name, create_function, SL_CLASS_TYPE(base_class_name) }; \
   const SlType *class_name::getBaseClassType()  { return SL_CLASS_TYPE(base_class_name); } \
   const SlType *class_name::getClassType()      { return SL_CLASS_TYPE(class_name); } \
   const SlType *class_name::getType() const     { return SL_CLASS_TYPE(class_name); } \

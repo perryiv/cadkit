@@ -78,8 +78,8 @@ protected:
 
   virtual ~SgGlStateMap();
 
-  SL_DECLARE_DYNAMIC_CLASS(SgGlStateMap,0x00005023);
-  SL_DECLARE_REFCOUNT_TYPE(SgGlStateMap);
+  SL_DECLARE_REFERENCE_POINTER ( SgGlStateMap );
+  SL_DECLARE_DYNAMIC_CLASS ( SgGlStateMap, 1032912103 );
 };
 
 }; // namespace CadKit

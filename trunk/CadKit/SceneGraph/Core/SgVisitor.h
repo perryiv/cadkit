@@ -116,10 +116,6 @@ public:
   // any accumulated states are reset.
   virtual bool          reset();
 
-  // Reference/unreference the visitor.
-  void                  ref()   { this->_incrementReferenceCount(); }
-  void                  unref() { this->_decrementReferenceCount(); }
-
 protected:
 
   SgVisitor();

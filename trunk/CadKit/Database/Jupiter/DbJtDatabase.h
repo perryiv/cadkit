@@ -50,21 +50,8 @@ public:
   // the environment variable "DMDTK_CUSTOMER_ID".
   DbJtDatabase ( const unsigned int &customerId = 0 );
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IUnknown interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the reference count.
-  virtual unsigned long   getRefCount() const;
-
-  // See if the interface is supported.
-  virtual IUnknown *      queryInterface ( const unsigned long &iid );
-
-  // Reference/unreference this instance.
-  virtual void            ref();
-  virtual void            unref();
+  // IUnknown interface.
+  CADKIT_DECLARE_IUNKNOWN_MEMBERS;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -163,7 +150,7 @@ protected:
 
   bool                    _traverse ( const std::string &filename );
 
-  SL_DECLARE_REFCOUNT_TYPE ( DbJtDatabase );
+  SL_DECLARE_REFERENCE_POINTER ( DbJtDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbJtDatabase, 1032628516 );
 };
 

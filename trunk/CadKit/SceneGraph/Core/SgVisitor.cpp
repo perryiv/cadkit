@@ -163,13 +163,13 @@ SgVisitor::~SgVisitor()
 
   // These are not ref-pointers. You manually referenced them in 
   // _setCurrentNode() below. You have to safely release them.
-  CadKit::safeDereference ( _currentCoordinate );
-  CadKit::safeDereference ( _currentCoordinate3 );
-  CadKit::safeDereference ( _currentCoordinate4 );
-  CadKit::safeDereference ( _currentNormal );
-  CadKit::safeDereference ( _currentMaterial );
-  CadKit::safeDereference ( _currentBaseColor );
-  CadKit::safeDereference ( _currentDrawStyle );
+  CadKit::safeUnref ( _currentCoordinate );
+  CadKit::safeUnref ( _currentCoordinate3 );
+  CadKit::safeUnref ( _currentCoordinate4 );
+  CadKit::safeUnref ( _currentNormal );
+  CadKit::safeUnref ( _currentMaterial );
+  CadKit::safeUnref ( _currentBaseColor );
+  CadKit::safeUnref ( _currentDrawStyle );
 }
 
 
@@ -249,13 +249,13 @@ template <class T> inline void _setCurrentNode ( T *node, T *&current )
   current = node;
 
   // If the given pointer is not null then reference it.
-  CadKit::safeReference ( current );
+  CadKit::safeRef ( current );
 
   // If the old one is not null then release it. Make sure we do this last 
   // because the given pointer "p" could be a child (indirect or direct) of 
   // "old". If we release "old" before we reference "p" then "p" may get 
   // deleted when it should not have.
-  CadKit::safeDereference ( old );
+  CadKit::safeUnref ( old );
 }
 }; // namespace CadKit
 

@@ -54,6 +54,7 @@ void _decrementPointerReferenceCount ( eaiEntity *p );
 };
 
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtDatabase, SlRefBase );
+CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtDatabase, SlRefBase );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,45 +115,6 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
   default:
     return NULL;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the reference count.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned long DbJtDatabase::getRefCount() const
-{
-  SL_PRINT2 ( "In DbJtDatabase::getRefCount(), this = %X\n", this );
-  return SlRefBase::getRefCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtDatabase::ref()
-{
-  SL_PRINT2 ( "In DbJtDatabase::ref(), this = %X\n", this );
-  this->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtDatabase::unref()
-{
-  SL_PRINT2 ( "In DbJtDatabase::unref(), this = %X\n", this );
-  this->_decrementReferenceCount();
 }
 
 

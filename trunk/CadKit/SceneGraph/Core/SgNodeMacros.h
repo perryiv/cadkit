@@ -63,7 +63,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SG_DECLARE_NODE(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE ( class_name ); \
+  SL_DECLARE_REFERENCE_POINTER ( class_name ); \
   SL_DECLARE_CLASS(class_name, id); \
   _SG_DECLARE_ACCEPT_FUNCTION
 
@@ -75,7 +75,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SG_DECLARE_DYNAMIC_NODE(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE ( class_name ); \
+  SL_DECLARE_REFERENCE_POINTER ( class_name ); \
   SL_DECLARE_DYNAMIC_CLASS(class_name, id); \
   _SG_DECLARE_ACCEPT_FUNCTION
 

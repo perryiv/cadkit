@@ -69,10 +69,6 @@ public:
   const std::string &       getName() const { return _name; }
   void                      setName  ( const char *name ) { _name = name; }
 
-  // Reference/unreference the node.
-  void                      ref()   { this->_incrementReferenceCount(); }
-  void                      unref() { this->_decrementReferenceCount(); }
-
 protected:
 
   static long _numNodes;
@@ -83,7 +79,7 @@ protected:
   DbXmlNode ( const DbXmlNode &node );
   virtual ~DbXmlNode();
 
-  DB_XML_DECLARE_NODE ( DbXmlNode, 0x0000101C );
+  DB_XML_DECLARE_NODE ( DbXmlNode, 1032912296 );
 };
 
 }; // namespace CadKit

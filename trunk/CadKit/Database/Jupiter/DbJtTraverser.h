@@ -124,10 +124,6 @@ public:
   // Traverse the database.
   bool                    traverse ( const char *filename );
 
-  // Reference/unreference this instance.
-  void                    ref()   { this->_incrementReferenceCount(); }
-  void                    unref() { this->_decrementReferenceCount(); }
-
 protected:
 
   // Internal flags.
@@ -157,8 +153,8 @@ protected:
   static int              _traverseCallback ( eaiHierarchy *node, int level );
   int                     _traverseNotify ( eaiHierarchy *node, int level );
 
-  SL_DECLARE_REFCOUNT_TYPE ( DbJtTraverser );
-  SL_DECLARE_DYNAMIC_CLASS ( DbJtTraverser, 0x00001054 );
+  SL_DECLARE_REFERENCE_POINTER ( DbJtTraverser );
+  SL_DECLARE_DYNAMIC_CLASS ( DbJtTraverser, 1032912016 );
   SL_DECLARE_BITMASK_FUNCTIONS ( Flags, unsigned int, _flags );
 };
 

@@ -62,6 +62,8 @@ public:
 
   SgShading();
 
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
 protected:
 
   virtual ~SgShading();

@@ -45,6 +45,7 @@
 #ifndef _CADKIT_SCENEGRAPH_OPENGL_FEEDBACK_INTERNAL_MACROS_H_
 #define _CADKIT_SCENEGRAPH_OPENGL_FEEDBACK_INTERNAL_MACROS_H_
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 //  Macro for implementing all the SgGlFeedback::visit() functions. All 
@@ -55,7 +56,8 @@
 #define SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION(NodeName) \
 bool SgGlFeedback::visit ( NodeName &node ) \
 { \
-  if ( this->hasFlags ( PASS_THROUGH ) ) ::glPassThrough ( (GLfloat) ( (GLuint) this ) ); \
+  if ( this->hasFlags ( PASS_THROUGH ) ) \
+    ::glPassThrough ( (GLfloat) ( (GLuint) this ) ); \
   return SgGlRenderer::visit ( node ); \
 }
 
@@ -70,95 +72,10 @@ bool SgGlFeedback::visit ( NodeName &node ) \
 #define SG_GL_IMPLEMENT_GET_FEEDBACK_VISITOR_FUNCTION_NO_VERTICES(NodeName) \
 bool SgGlGetFeedbackSize::visit ( NodeName &node ) \
 { \
-  if ( passThrough ) _size += 2; \
+  if ( passThrough ) \
+    _size += 2; \
   return SL_TRUE; \
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro used when rendering a separator node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SG_GL_RENDER_SEPARATOR_SAVE_STATE \
-  SgCoordinate3::Ptr coordinate3 ( NULL ); \
-  SgCoordinate4::Ptr coordinate4 ( NULL ); \
-  SgCoordinate::Ptr coordinate ( NULL ); \
-  SgNormal::Ptr normal ( NULL ); \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::COORDINATES ) ) \
-  { \
-    coordinate3 = _coordinate3; \
-    coordinate4 = _coordinate4; \
-    coordinate = _coordinate; \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::NORMALS ) ) \
-  { \
-    normal = _normal; \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::PROJECTION ) ) \
-  { \
-    _state->pushProjectionMatrix(); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::MODELVIEW ) ) \
-  { \
-    _state->pushModelviewMatrix(); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::ATTRIBUTES ) ) \
-  { \
-    ::glPushAttrib ( GL_ALL_ATTRIB_BITS ); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::NAMES ) ) \
-  { \
-    PUSH_NAME; \
-  }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro used when rendering a separator node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SG_GL_RENDER_SEPARATOR_RESTORE_STATE \
-  if ( separator.hasPushPopFlags ( SgSeparator::NAMES ) ) \
-  { \
-    POP_NAME; \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::ATTRIBUTES ) ) \
-  { \
-    ::glPopAttrib(); \
-    _state->clear(); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::MODELVIEW ) ) \
-  { \
-    _state->popModelviewMatrix(); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::PROJECTION ) ) \
-  { \
-    _state->popProjectionMatrix(); \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::COORDINATES ) ) \
-  { \
-    _coordinate3 = coordinate3; \
-    _coordinate4 = coordinate4; \
-    _coordinate = coordinate; \
-  } \
-\
-  if ( separator.hasPushPopFlags ( SgSeparator::NORMALS ) ) \
-  { \
-    _normal = normal; \
-  }
 
 
 #endif // _CADKIT_SCENEGRAPH_OPENGL_FEEDBACK_INTERNAL_MACROS_H_

@@ -57,28 +57,26 @@ class SG_API SgGroup : public SgNode
 {
 public:
 
-  typedef IndexGroup Index;
-
   SgGroup();
 
   // Add the node to the group. You cannot add this instance to itself.
   void            addChild ( SgNode *child );
 
   // Get the i'th child.
-  SgNode *        getChild ( const Index &index ) const;
+  SgNode *        getChild ( const unsigned int &index ) const;
 
   // Get the i'th child of the given type.
-  SgNode *        getChildOfType ( const SlType *type, const Index &index ) const;
+  SgNode *        getChildOfType ( const SlType *type, const unsigned int &index ) const;
 
   // Get the i'th child of the given exact type.
-  SgNode *        getChildOfExactType ( const SlType *type, const Index &index ) const;
+  SgNode *        getChildOfExactType ( const SlType *type, const unsigned int &index ) const;
 
   // Get the number of children.
-  Index           getNumChildren() const { return _nodes.size(); }
+  unsigned int    getNumChildren() const { return _nodes.size(); }
 
   // Insert a child. If "index" is too small it will prepend, if it's too big it 
   // will append. It returns the position that the node was inserted.
-  Index           insertChild ( const Index &index, SgNode *child );
+  unsigned int    insertChild ( const unsigned int &index, SgNode *child );
 
   // Remove the children. When the nodes are removed their reference count is
   // decremented. Any node that has it's reference decrement to zero is automatically
@@ -91,7 +89,7 @@ public:
   // returns false if it cannot find the specified child. The second one will assert
   // (in debug build) if the given index is out of range.
   bool            removeChild ( SgNode *child );
-  void            removeChild ( const Index &index );
+  void            removeChild ( const unsigned int &index );
 
 protected:
 
@@ -100,9 +98,9 @@ protected:
 
   virtual ~SgGroup();
 
-  Nodes::iterator _getIterator ( const Index &index );
+  Nodes::iterator _getIterator ( const unsigned int &index );
 
-  SG_DECLARE_DYNAMIC_NODE(SgGroup,0x00001016);
+  SG_DECLARE_DYNAMIC_NODE ( SgGroup, 0x00001016 );
 };
 };
 

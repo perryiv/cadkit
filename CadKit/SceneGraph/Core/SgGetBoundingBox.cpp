@@ -299,13 +299,13 @@ bool SgGetBoundingBox::visit ( SgGroup &group )
   SL_ASSERT ( this );
 
   // Get the number of children.
-  SgGroup::Index numChildren = group.getNumChildren();
+  unsigned int numChildren = group.getNumChildren();
 
   // Initialize the return value.
   bool result ( true );
 
   // Loop through all the nodes.
-  for ( SgGroup::Index i = 0; i < numChildren; ++i )
+  for ( unsigned int i = 0; i < numChildren; ++i )
   {
     // Give the node this visitor.
     if ( !group.getChild ( i )->accept ( *this ) ) 

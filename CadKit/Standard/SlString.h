@@ -87,7 +87,7 @@ public:
 
   // Erase the elements.
   iterator                      erase ( iterator first, iterator last ) { return _s.erase ( first, last ); }
-  iterator                      erase ( iterator it ) { return _s.erase ( it, ++it ); } // Keep for STLport.
+  iterator                      erase ( iterator it ) { return _s.erase ( it ); } // Keep for STLport.
   StringType &                  erase ( unsigned int p0 = 0, unsigned int n = StringType::npos ) { return _s.erase ( p0, n ); }
 
   // Iterators.
@@ -246,4 +246,4 @@ typedef SlString<wchar_t> SlWString;
 }; // namespace CadKit.
 
 
-#endif // CADKIT_DEFINE_SL_TEMPLATE_STRING_SET_FROM_ERROR_ID
+#endif // _CADKIT_STANDARD_LIBRARY_TEMPLATE_STRING_CLASS_

@@ -114,3 +114,25 @@ void SgBaseColor::setValue ( const SgBaseColor &baseColor )
 {
   rgba.setValue ( baseColor.rgba );
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgBaseColor::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgBaseColor::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgBaseColor &c = (SgBaseColor &) node;
+
+  // Are they the same?
+  return ( rgba == c.rgba && SgBaseColor::isEqualVisibleProperties ( node ) );
+}

@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../" /D "_MBCS" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../" /D "_CADKIT_SL_PRINT_DEBUG" /D "_MBCS" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /FD /GZ /c
 # SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -223,10 +223,6 @@ SOURCE=.\SlType.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlAString.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlConvertStrings.h
 # End Source File
 # Begin Source File
@@ -243,15 +239,7 @@ SOURCE=.\SlStringIO.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlTString.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlUnicode.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlWString.h
 # End Source File
 # End Group
 # Begin Group "Threads"
@@ -344,6 +332,18 @@ SOURCE=.\SlList.h
 # Begin Source File
 
 SOURCE=.\SlStack.h
+# End Source File
+# End Group
+# Begin Group "System"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlSystem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlSystem.h
 # End Source File
 # End Group
 # End Target

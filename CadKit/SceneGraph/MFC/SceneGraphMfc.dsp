@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "$(LOCAL_INCLUDE_DIR)" /I "$(MODELSPACE_HOME)\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_AFXEXT" /YX"SgMfcPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "../../" /D "_WINDLL" /D "_AFXEXT" /D "_AFXDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_SL_PRINT_DEBUG" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /YX"SgMfcPrecompiled.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "../../" /D "_WINDLL" /D "_AFXEXT" /D "_AFXDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /YX"SgMfcPrecompiled.h" /FD /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

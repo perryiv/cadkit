@@ -42,7 +42,17 @@ CCubeApp::CCubeApp()
 {
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
+  //_CrtSetBreakAlloc ( 126 );
 }
+
+CCubeApp::~CCubeApp()
+{
+  // Should be zero.
+#ifdef _DEBUG
+  TRACE ( "In CCubeApp::~CCubeApp(), final number of nodes = %d\n", SgNode::getNumNodes() );
+#endif
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // The one and only CCubeApp object

@@ -52,8 +52,6 @@ class SG_API SgUnScale : public SgTransformation
 {
 public:
 
-  typedef FlagsUnScale Flags;
-
   enum // Possible flags.
   {
     PROCESS_ROTATIONS    = (1L<<0), // Account for rotations in the matrix when getting the scale.
@@ -64,12 +62,12 @@ public:
 
 protected:
 
-  Flags _unScaleFlags;
+  unsigned int _unScaleFlags;
 
   virtual ~SgUnScale();
 
-  SG_DECLARE_DYNAMIC_NODE(SgUnScale,0x00001036);
-  SL_DECLARE_BITMASK_FUNCTIONS(Flags,Flags,_unScaleFlags);
+  SG_DECLARE_DYNAMIC_NODE ( SgUnScale, 0x00001036 );
+  SL_DECLARE_BITMASK_FUNCTIONS ( Flags, unsigned int, _unScaleFlags );
 };
 
 }; // namespace CadKit

@@ -50,9 +50,8 @@
 # include "Standard/SlRefBase.h"
 # include "Standard/SlMatrix4.h"
 # include "Standard/SlStack.h"
-# include <stdlib.h>
-# include <GL/gl.h>
 # include <map>
+# include <memory>
 #endif
   
 
@@ -74,10 +73,10 @@ public:
   void                  clear();
 
   // Enable/disable the state-flag.
-  bool                  enable     ( const GLenum &flag );
-  bool                  disable    ( const GLenum &flag );
-  bool                  isEnabled  ( const GLenum &flag );
-  bool                  isDisabled ( const GLenum &flag );
+  bool                  enable     ( const unsigned int &flag );
+  bool                  disable    ( const unsigned int &flag );
+  bool                  isEnabled  ( const unsigned int &flag );
+  bool                  isDisabled ( const unsigned int &flag );
 
   // Modelview matrix.
   const SlMatrix4f &    getModelviewMatrix() const;
@@ -99,33 +98,22 @@ public:
   void                  pushProjectionMatrix ( const SlMatrix4f &P );
   void                  setProjectionMatrix ( const SlMatrix4f &P );
 
-  // Names.
-  const GLuint &        getName() const;
-  unsigned long         getNameStackDepth() const;
-  void                  initNameStack();
-  void                  popName();
-  void                  pushName ( const GLuint &name );
-
   // Set the matrix mode.
   void                  setMatrixMode ( const MatrixMode &mode );
 
 protected:
 
-  typedef std::map<GLenum,bool> StateMap;
-  typedef SlStack<StateMap> StateStack;
+  typedef std::map<unsigned int,bool> StateMap;
   typedef SlStack<SlMatrix4f> MatrixStack;
-  typedef SlStack<GLuint> NameStack;
 
   MatrixMode _matrixMode;
-  MatrixStack _modelviewStack;
-  MatrixStack _projectionStack;
-  StateStack _stateStack;
-  NameStack _nameStack;
+  std::auto_ptr<MatrixStack> _modelviewStack;
+  std::auto_ptr<MatrixStack> _projectionStack;
+  std::auto_ptr<StateMap> _stateMap;
+  mutable SlMatrix4f _M;
+  mutable SlMatrix4f _P;
 
   virtual ~SgGlState();
-
-  const StateMap &      _getCurrentStateMap() const;
-  StateMap &            _getCurrentStateMap();
 
   // Possible states.
   enum State
@@ -135,7 +123,7 @@ protected:
     _UNDETERMINED
   };
 
-  State                 _getState ( const GLenum &flag ) const;
+  State                 _getState ( const unsigned int &flag ) const;
 
   SL_DECLARE_DYNAMIC_CLASS(SgGlState,0x00005022);
   SL_DECLARE_REFCOUNT_TYPE(SgGlState);

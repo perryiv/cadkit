@@ -66,7 +66,6 @@ class SgPath : public SlRefBase
 {
 public:
 
-  typedef IndexPath Index;
   typedef std::vector<SgNode::Ptr> Nodes;
 
   SgPath();
@@ -83,9 +82,9 @@ public:
   SgNode *          getFirstOfType ( const SlType *type ) const;
   SgNode *          getLastOfType ( const SlType *type ) const;
 
-  SgNode *          getNode ( const Index &index ) const;
+  SgNode *          getNode ( const unsigned int &index ) const;
   const Nodes *     getNodes() const { return _nodes; }
-  Index             getNumNodes() const { return _nodes->size(); }
+  unsigned int      getNumNodes() const { return _nodes->size(); }
 
   SgNode *          getHead() const;
   SgNode *          getTail() const;

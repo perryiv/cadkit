@@ -47,7 +47,7 @@
 #include "SgAttribute.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlColor.h"
+# include "Standard/SlMaterial.h"
 #endif
 
 
@@ -65,18 +65,14 @@ public:
   };
 
   Side side;
-
-  // All fields range from [0,1].
-  SlColorf ambient;
-  SlColorf diffuse;
-  SlColorf specular;
-  SlColorf emissive;
-  SlFloat32 shininess;
+  SlMaterialf material; // All fields range from [0,1].
 
   SgMaterial();
   SgMaterial ( const SgMaterial &material );
 
-  void          setValue ( const SgMaterial &material );
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
+  void                  setValue ( const SgMaterial &material );
 
 protected:
 

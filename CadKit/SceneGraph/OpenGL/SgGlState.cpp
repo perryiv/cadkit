@@ -47,6 +47,8 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
 # include "Standard/SlAssert.h"
+# include <stdlib.h>
+# include <GL/gl.h>
 #endif
 
 using namespace CadKit;
@@ -61,17 +63,21 @@ SL_IMPLEMENT_DYNAMIC_CLASS(SgGlState,SlRefBase);
 ///////////////////////////////////////////////////////////////////////////////
 
 SgGlState::SgGlState() : SlRefBase ( 0 ),
-  _matrixMode ( MODELVIEW )
+  _matrixMode ( MODELVIEW ),
+  _modelviewStack ( new MatrixStack ),
+  _projectionStack ( new MatrixStack ),
+  _stateMap ( new StateMap )
 {
   SL_PRINT2 ( "SgGlState::SgGlState(), this = %X\n", this );
+  SL_ASSERT ( NULL != _modelviewStack.get() );
+  SL_ASSERT ( NULL != _projectionStack.get() );
+  SL_ASSERT ( NULL != _stateMap.get() );
 
-  // Initialize the stacks.
-  this->initModelviewMatrixStack();
-  this->initProjectionMatrixStack();
-  this->initNameStack();
-
-  StateMap top;
-  _stateStack.push ( top );
+  // Initialize the matrix stacks. Don't call the respective init functions 
+  // because they require a current context (which may not exist yet).
+  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+  _modelviewStack->push ( I );
+  _projectionStack->push ( I );
 }
 
 
@@ -84,14 +90,16 @@ SgGlState::SgGlState() : SlRefBase ( 0 ),
 SgGlState::~SgGlState()
 {
   SL_PRINT2 ( "SgGlState::~SgGlState(), this = %X\n", this );
+
+  // The stacks are auto-pointers. They get deleted automatically.
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Enable the state-flag.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool SgGlState::enable  ( const GLenum &flag )
 {
@@ -100,7 +108,11 @@ bool SgGlState::enable  ( const GLenum &flag )
 
   // See if this state-flag is already enabled.
   if ( _ENABLED == this->_getState ( flag ) )
+  {
+    // Should be turned on.
+    SL_ASSERT ( GL_TRUE == ::glIsEnabled ( flag ) );
     return true;
+  }
 
   // Turn on the state.
   ::glEnable ( flag );
@@ -111,18 +123,18 @@ bool SgGlState::enable  ( const GLenum &flag )
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Save the state.
-  _getCurrentStateMap()[flag] = true;
+  (*_stateMap)[flag] = true;
 
   // It worked.
   return true;
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Disable the state-flag.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool SgGlState::disable  ( const GLenum &flag )
 {
@@ -131,7 +143,11 @@ bool SgGlState::disable  ( const GLenum &flag )
 
   // See if this state-flag is already enabled.
   if ( _DISABLED == this->_getState ( flag ) )
+  {
+    // Should be turned off.
+    SL_ASSERT ( GL_FALSE == ::glIsEnabled ( flag ) );
     return true;
+  }
 
   // Turn on the state.
   ::glDisable ( flag );
@@ -142,18 +158,18 @@ bool SgGlState::disable  ( const GLenum &flag )
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Save the state.
-  _getCurrentStateMap()[flag] = true;
+  (*_stateMap)[flag] = true;
 
   // It worked.
   return true;
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  See if the flag is enabled.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool SgGlState::isEnabled  ( const GLenum &flag )
 {
@@ -169,11 +185,11 @@ bool SgGlState::isEnabled  ( const GLenum &flag )
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  See if the flag is disabled.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool SgGlState::isDisabled  ( const GLenum &flag )
 {
@@ -184,28 +200,21 @@ bool SgGlState::isDisabled  ( const GLenum &flag )
 }
 
 
-//Was gutting this class to just be a thin wrapper. 
-//Someday when I have time I can look into making it more efficient. 
-//For now, just get some pictures on the screen.
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the state from the map (don't ask OpenGL).
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 SgGlState::State SgGlState::_getState ( const GLenum &flag ) const
 {
   SL_ASSERT ( this );
 
   // Look for the flag.
-  StateMap::const_iterator i = _getCurrentStateMap().find ( flag );
+  StateMap::const_iterator i = _stateMap->find ( flag );
 
   // If we didn't find it...
-  if ( _getCurrentStateMap().end() == i ) 
+  if ( i == _stateMap->end() ) 
     return _UNDETERMINED;
 
   // Sanity check.
@@ -219,24 +228,24 @@ SgGlState::State SgGlState::_getState ( const GLenum &flag ) const
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Clear the state. This will make it ask OpenGL again to refill the map.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void SgGlState::clear()
 {
   SL_ASSERT ( this );
-  _getCurrentStateMap().clear();
+  _stateMap->clear();
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the matrix mode.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void SgGlState::setMatrixMode ( const MatrixMode &mode )
 {
@@ -251,7 +260,6 @@ void SgGlState::setMatrixMode ( const MatrixMode &mode )
   if ( MODELVIEW == mode )
   {
     // Set our flag and tell OpenGL too.
-    SL_ASSERT ( MODELVIEW == mode );
     _matrixMode = MODELVIEW;
     ::glMatrixMode ( GL_MODELVIEW );
     SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
@@ -269,380 +277,293 @@ void SgGlState::setMatrixMode ( const MatrixMode &mode )
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the modelview matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 const SlMatrix4f &SgGlState::getModelviewMatrix() const
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _modelviewStack.empty() );
-  return _modelviewStack.top();
+  SL_ASSERT ( false == _modelviewStack->empty() );
+
+  // Get the current modelview matrix from OpenGL.
+  ::glGetFloatv ( GL_MODELVIEW_MATRIX, _M );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Return the current matrix.
+  return _M;
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Push the modelview matrix.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::pushModelviewMatrix()
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( false == _modelviewStack.empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( MODELVIEW );
-
-  // Push OpenGL's matrix.
-  //::glPushMatrix();
-
-  #ifdef _DEBUG
-  GLenum error = ::glGetError();
-  GLint maxDepth, depth;
-  if ( GL_NO_ERROR != error )
-  {
-    SL_ASSERT ( 0 );
-    ::glGetIntegerv ( GL_MODELVIEW_STACK_DEPTH, &depth );
-    ::glGetIntegerv ( GL_MAX_MODELVIEW_STACK_DEPTH, &maxDepth );
-  }
-  #endif
-  
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Push our matrix.
-  _modelviewStack.push();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Pop the modelview matrix.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::popModelviewMatrix()
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( false == _modelviewStack.empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( MODELVIEW );
-
-  // Pop OpenGL's matrix.
-  //::glPopMatrix();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Pop our matrix.
-  _modelviewStack.pop();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Make the modelview matrix the identity.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::makeModelviewMatrixIdentity()
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( false == _modelviewStack.empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( MODELVIEW );
-
-  // Make OpenGL's identity.
-  ::glLoadIdentity();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make ours identity.
-  _modelviewStack.top().identity();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Make the projection matrix the identity.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::makeProjectionMatrixIdentity()
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( false == _projectionStack.empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( PROJECTION );
-
-  // Make OpenGL's identity.
-  ::glLoadIdentity();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make ours identity.
-  _projectionStack.top().identity();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the projection matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 const SlMatrix4f &SgGlState::getProjectionMatrix() const
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _projectionStack.empty() );
-  return _projectionStack.top();
+  SL_ASSERT ( false == _projectionStack->empty() );
+
+  // Get the current projection matrix from OpenGL.
+  ::glGetFloatv ( GL_PROJECTION_MATRIX, _P );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Return the current matrix.
+  return _P;
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Push the modelview matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SgGlState::pushModelviewMatrix()
+{
+  SL_ASSERT ( this );
+  SL_ASSERT ( false == _modelviewStack->empty() );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Push OpenGL's current matrix onto our stack.
+  const SlMatrix4f &M = this->getModelviewMatrix();
+  _modelviewStack->push ( M );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Push the projection matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void SgGlState::pushProjectionMatrix()
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _projectionStack.empty() );
+  SL_ASSERT ( false == _projectionStack->empty() );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( PROJECTION );
-
-  // Push OpenGL's matrix.
-  //::glPushMatrix();
-
-  #ifdef _DEBUG
-  GLenum error = ::glGetError();
-  GLint maxDepth, depth;
-  if ( GL_NO_ERROR != error )
-  {
-    SL_ASSERT ( 0 );
-    ::glGetIntegerv ( GL_PROJECTION_STACK_DEPTH, &depth );
-    ::glGetIntegerv ( GL_MAX_PROJECTION_STACK_DEPTH, &maxDepth );
-  }
-  #endif
-
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Push our matrix.
-  _projectionStack.push();
+  // Push OpenGL's current matrix onto our stack.
+  const SlMatrix4f &P = this->getProjectionMatrix();
+  _projectionStack->push ( P );
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Pop the projection matrix.
+//  Pop the modelview matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::popProjectionMatrix()
+void SgGlState::popModelviewMatrix()
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _projectionStack.empty() );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Make sure we're in the right matrix mode.
-  this->setMatrixMode ( PROJECTION );
-
-  // Pop OpenGL's matrix.
-  //::glPopMatrix();
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Pop our matrix.
-  _projectionStack.pop();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the modelview matrix.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::setModelviewMatrix ( const SlMatrix4f &M )
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( false == _modelviewStack.empty() );
+  SL_ASSERT ( false == _modelviewStack->empty() );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( MODELVIEW );
 
-  // Set OpenGL's matrix.
+  // Load the matrix that is saved on top of the stack.
+  const SlMatrix4f &M = _modelviewStack->top();
   ::glLoadMatrixf ( M );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  // Set our matrix.
-  _modelviewStack.top().setValue ( M );
+  // Pop our matrix.
+  _modelviewStack->pop();
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the projection matrix.
+//  Pop the projection matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::setProjectionMatrix ( const SlMatrix4f &M )
+void SgGlState::popProjectionMatrix()
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _projectionStack.empty() );
+  SL_ASSERT ( false == _projectionStack->empty() );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Make sure we're in the right matrix mode.
   this->setMatrixMode ( PROJECTION );
 
-  // Set OpenGL's matrix.
-  ::glLoadMatrixf ( M );
+  // Load the matrix that is saved on top of the stack.
+  const SlMatrix4f &P = _projectionStack->top();
+  ::glLoadMatrixf ( P );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  // Set our matrix.
-  _projectionStack.top().setValue ( M );
+  // Pop our matrix.
+  _projectionStack->pop();
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the top state map.
+//  Make the modelview matrix the identity.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-const SgGlState::StateMap &SgGlState::_getCurrentStateMap() const
+void SgGlState::makeModelviewMatrixIdentity()
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _stateStack.empty() );
-  return _stateStack.top();
+  SL_ASSERT ( false == _modelviewStack->empty() );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make sure we're in the right matrix mode.
+  this->setMatrixMode ( MODELVIEW );
+
+  // Make OpenGL's identity (not ours).
+  ::glLoadIdentity();
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make our cached copy identity.
+  _M.identity();
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the top state map.
+//  Make the projection matrix the identity.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-SgGlState::StateMap &SgGlState::_getCurrentStateMap()
+void SgGlState::makeProjectionMatrixIdentity()
 {
   SL_ASSERT ( this );
-  SL_ASSERT ( false == _stateStack.empty() );
-  return _stateStack.top();
+  SL_ASSERT ( false == _projectionStack->empty() );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make sure we're in the right matrix mode.
+  this->setMatrixMode ( PROJECTION );
+
+  // Make OpenGL's identity (not ours).
+  ::glLoadIdentity();
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make our cached copy identity.
+  _P.identity();
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Push a name.
+//  Set the modelview matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::pushName ( const GLuint &name )
+void SgGlState::setModelviewMatrix ( const SlMatrix4f &M )
 {
   SL_ASSERT ( this );
-  _nameStack.push ( name );
+  SL_ASSERT ( false == _modelviewStack->empty() );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make sure we're in the right matrix mode.
+  this->setMatrixMode ( MODELVIEW );
+
+  // Set OpenGL's matrix (not ours).
+  ::glLoadMatrixf ( M );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Pop a name.
+//  Set the projection matrix.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::popName()
+void SgGlState::setProjectionMatrix ( const SlMatrix4f &P )
 {
   SL_ASSERT ( this );
-  _nameStack.pop();
+  SL_ASSERT ( false == _projectionStack->empty() );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Make sure we're in the right matrix mode.
+  this->setMatrixMode ( PROJECTION );
+
+  // Set OpenGL's matrix (not ours).
+  ::glLoadMatrixf ( P );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the name stack.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgGlState::initNameStack()
-{
-  SL_ASSERT ( this );
-  _nameStack.clear();
-  // The name stack can have a depth of zero.
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize the matrix stack.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void SgGlState::initModelviewMatrixStack()
 {
   SL_ASSERT ( this );
-  _modelviewStack.clear();
-  _modelviewStack.push ( SlMatrix4f ( SL_MATRIX4_IDENTITY_F ) );
+
+  // Make an identity matrix.
+  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+
+  // Put one identity matrix on the stack.
+  _modelviewStack->clear();
+  _modelviewStack->push ( I );
+
+  // Make OpenGL's matrix identity too.
+  this->makeModelviewMatrixIdentity();
+
+  // Should be true.
+  SL_ASSERT ( I == this->getModelviewMatrix() );
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize the matrix stack.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void SgGlState::initProjectionMatrixStack()
 {
   SL_ASSERT ( this );
-  _projectionStack.clear();
-  _projectionStack.push ( SlMatrix4f ( SL_MATRIX4_IDENTITY_F ) );
+
+  // Make an identity matrix.
+  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+
+  // Put one identity matrix on the stack.
+  _projectionStack->clear();
+  _projectionStack->push ( SlMatrix4f ( SL_MATRIX4_IDENTITY_F ) );
+
+  // Make OpenGL's matrix identity too.
+  this->makeProjectionMatrixIdentity();
+
+  // Should be true.
+  SL_ASSERT ( I == this->getProjectionMatrix() );
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Return the stack's depth.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 unsigned long SgGlState::getModelviewMatrixStackDepth() const
 {
   SL_ASSERT ( this );
-  return static_cast<unsigned long>(_modelviewStack.size());
+  return static_cast<unsigned long>(_modelviewStack->size());
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Return the stack's depth.
 //
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 unsigned long SgGlState::getProjectionMatrixStackDepth() const
 {
   SL_ASSERT ( this );
-  return static_cast<unsigned long>(_projectionStack.size());
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Return the stack's depth.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-unsigned long SgGlState::getNameStackDepth() const
-{
-  SL_ASSERT ( this );
-  return static_cast<unsigned long>(_nameStack.size());
+  return static_cast<unsigned long>(_projectionStack->size());
 }

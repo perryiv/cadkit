@@ -81,8 +81,8 @@ public:
   bool                    isOnStack ( const T &val ) const;
 
   //  Return the i'th element on the stack. 0 is the bottom of the stack.
-  T &                     operator [] ( SlInt32 i )       { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
-  const T &               operator [] ( SlInt32 i ) const { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
+  T &                     operator [] ( unsigned int i )       { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
+  const T &               operator [] ( unsigned int i ) const { SL_ASSERT ( i >= 0 && i < _sequence.size() ); return _sequence[i]; }
 
   //  Pop the top element off of the stack. This does the same thing as 
   //  std::stack::pop() with the exception of the assert.
@@ -103,7 +103,7 @@ public:
 
   //  Remove all occurances of "val" from the stack, Return the number of 
   //  times "val" was removed.
-  SlInt32                 removeAll ( const T &val );
+  unsigned int            removeAll ( const T &val );
 
   //  Return the top of the stack. These do the same thing as std::stack::top() 
   //  with the exception of the assert.
@@ -184,9 +184,9 @@ template<class T> inline bool SlStack<T>::remove ( const T &val )
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlInt32 SlStack<T>::removeAll ( const T &val )
+template<class T> inline unsigned int SlStack<T>::removeAll ( const T &val )
 {
-  SlInt32 count = 0;
+  unsigned int count = 0;
   std::deque<T>::iterator i = _sequence.begin();
 
   // See note 3813d8e0-8836-11d3-9843-0040054c86c7.

@@ -54,9 +54,7 @@ class SG_API SgCoordinate : public SgNode
 {
 public:
 
-  typedef IndexCoord Index;
-
-  virtual Index             getNumPoints() const = 0;
+  virtual unsigned int      getNumPoints() const = 0;
 
 protected:
 

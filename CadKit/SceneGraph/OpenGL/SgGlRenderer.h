@@ -75,18 +75,9 @@ public:
 
   SgGlRenderer();
 
-  // The flags for the enable/disable function.
-  enum GraphicsState
-  {
-    AUTO_NORMAL = 0, // Default is on.
-    DEPTH_TEST,      // Default is on.
-    NORMALIZE,       // Default is on.
-    _LAST,           // Don't use this one.
-  };
-
   // Enable/disable the state. Use the above flags.
-  bool                  disable ( const GraphicsState &state );
-  bool                  enable  ( const GraphicsState &state );
+  bool                  disable ( const unsigned int &state );
+  bool                  enable  ( const unsigned int &state );
 
   // Get the viewport.
   virtual bool          getViewport ( SlViewporti &viewport ) const;
@@ -97,8 +88,8 @@ public:
   virtual bool          init ( const SlViewporti &viewport, SgGlContext *context );
 
   // Check the state.
-  bool                  isDisabled ( const GraphicsState &state );
-  bool                  isEnabled  ( const GraphicsState &state );
+  bool                  isDisabled ( const unsigned int &state );
+  bool                  isEnabled  ( const unsigned int &state );
 
   // Call these before and after render(). You can call render() any 
   // number of times between preRender() and postRender().
@@ -123,12 +114,6 @@ public:
 
 protected:
 
-  // Internal graphics states.
-  enum
-  {
-    _BLEND = _LAST,
-  };
-
   mutable SgGlContext::Ptr _context;
   SgGlState::Ptr _state;
   SlUint32 _flags;
@@ -141,6 +126,9 @@ protected:
   virtual ~SgGlRenderer();
 
   virtual bool          _makeContextCurrent() const;
+
+  void                  _pushMatrices ( const SgSeparator &separator );
+  void                  _popMatrices ( const SgSeparator &separator );
 
   void                  _setContext ( SgGlContext *context );
 

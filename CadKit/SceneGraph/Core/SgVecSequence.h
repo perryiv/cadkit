@@ -64,6 +64,7 @@ public:
 
   void                  clear() { _vectors.clear(); }
   Index                 getNumElements() const { return static_cast<Index> ( _vectors.size() ); }
+  bool                  isEqual ( const SgVecSequence &sequence ) const { return _vectors == sequence._vectors; }
 
   bool					        setNumElements ( const Index &numElements );
 	bool					        setElement ( const Vec &vec, const Index &index );

@@ -40,37 +40,51 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 {
-  // Add some material to the scene.
-	SgMaterial *material = new SgMaterial;
-	material->diffuse.setValue ( 0.7f, 0.2f, 0.2f, 1.0f );
-	material->side = SgMaterial::FRONT_AND_BACK;
-	_root->addChild ( material );
+  // Seed the random-number generator with current time so that
+  // the numbers will be different every time we run.
+  ::srand ( (unsigned int) ::time ( NULL ) );
 
-  // Now the cube.
-	SgCube *cube = new SgCube;
-	cube->size = 10.0f;
-	cube->center.setValue ( 3.0f, 0.0f, -10.0f );
-	_root->addChild ( cube );
+  // For making randome numbers in the range [0,1]
+  float normalize = 1.0f / ( (float) RAND_MAX );
+  #define RANDOM_NUMBER ((float) ::rand()) * normalize
 
-  // Make a translation.
-  SgTranslation *trans = new SgTranslation;
-  trans->setTranslation ( SlVec3f ( cube->size * 2, 0.0f, 0.0f ) );
-
-  // Add some more cubes with translations in between.
+  // Make a separator for our scene and attach it to the inherited _root.
   SgSeparator::Ptr root = new SgSeparator;
   _root->addChild ( root );
-  for ( int i = 0; i < 0; ++i )
+
+  for ( int i = 0; i < 10; ++i )
   {
+    // A separator for the i'th group of nodes.
     SgSeparator::Ptr branch = new SgSeparator;
     branch->removePushPopFlags ( SgSeparator::PROJECTION );
-	  branch->addChild ( trans );
 
-    SlVec3f axis ( 1.0f, 1.0f, (float) i );
+    // Add some material to the scene.
+	  SgMaterial::Ptr material = new SgMaterial;
+    SlVec4f diffuse ( RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER, 1.0f );
+    material->material.setDiffuse ( diffuse );
+	  material->side = SgMaterial::FRONT;
+	  branch->addChild ( material );
+
+    // Now the cube.
+    SgCube::Ptr cube = new SgCube;
+	  cube->size = 10.0f;
+	  cube->center.setValue ( 3.0f, 0.0f, -10.0f );
+	  branch->addChild ( cube );
+
+    // A rotation about an axis.
+    SlVec3f axis ( 1.0f, 1.0f, 1.0f );
     axis.normalize();
     branch->addChild ( new SgRotation ( axis, 10.0f ) );
 
-	  branch->addChild ( cube );
+    // Make a translation.
+    SgTranslation::Ptr trans = new SgTranslation;
+    trans->setTranslation ( SlVec3f ( cube->size * 2, 0.0f, 0.0f ) );
+    branch->addChild ( trans );
+
+    // Add the i'th branch to the root.
     root->addChild ( branch );
+
+    // With this line we create nested groups.
     root = branch;
   }
 }
@@ -78,6 +92,10 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
+  // Should be zero.
+#ifdef _DEBUG
+  TRACE ( "In CMainFrame::~CMainFrame(), final number of nodes = %d\n", SgNode::getNumNodes() );
+#endif
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

@@ -83,7 +83,8 @@ protected:
   //}}AFX_VIRTUAL
 
   //{{AFX_MSG(SgMfcMdiChildWnd)
-  //}}AFX_MSG
+	afx_msg void OnDestroy();
+	//}}AFX_MSG
 
   // This has to be last.
   DECLARE_MESSAGE_MAP()

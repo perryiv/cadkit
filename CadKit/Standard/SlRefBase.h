@@ -93,11 +93,17 @@ protected:
 
 /// These are for class SlRefPtr. The client can overload these functions to
 /// use SlRefPtr with another kind of pointer (like IUnknown). By making 
-/// SlRefPtr call these global functions instead of it's contained pointer's
+/// SlRefPtr call these functions instead of it's contained pointer's
 /// ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
 /// API of it's contained pointer.
-inline void _incrementPointerReferenceCount ( SlRefBase *p ) { p->_incrementReferenceCount(); }
-inline void _decrementPointerReferenceCount ( SlRefBase *p ) { p->_decrementReferenceCount(); }
+void _incrementPointerReferenceCount ( SlRefBase *p );
+void _decrementPointerReferenceCount ( SlRefBase *p );
+
+
+/// Safely reference/unreference the pointer. Provided as a convenience.
+void safeReference   ( SlRefBase *ptr );
+void safeDereference ( SlRefBase *ptr );
+
 
 
 }; // namespace CadKit

@@ -62,11 +62,11 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgMaterial,SgAttribute);
 
 SgMaterial::SgMaterial() : SgAttribute(), 
   side ( FRONT ),
-  ambient   ( SG_DEFAULT_MATERIAL_AMBIENT), 
-  diffuse   ( SG_DEFAULT_MATERIAL_DIFFUSE ), 
-  specular  ( SG_DEFAULT_MATERIAL_SPECULAR ), 
-  emissive  ( SG_DEFAULT_MATERIAL_EMISSIVE ), 
-  shininess ( SG_DEFAULT_MATERIAL_SHININESS )
+  material ( SlVec4f ( SG_DEFAULT_MATERIAL_AMBIENT ), 
+             SlVec4f ( SG_DEFAULT_MATERIAL_DIFFUSE ), 
+             SlVec4f ( SG_DEFAULT_MATERIAL_SPECULAR ), 
+             SlVec4f ( SG_DEFAULT_MATERIAL_EMISSIVE ), 
+             SG_DEFAULT_MATERIAL_SHININESS )
 {
   SL_PRINT2 ( "SgMaterial::SgMaterial(), this = %X\n", this );
 }
@@ -80,11 +80,7 @@ SgMaterial::SgMaterial() : SgAttribute(),
 
 SgMaterial::SgMaterial ( const SgMaterial &copyMe ) : SgAttribute(), 
   side ( copyMe.side ),
-  ambient ( copyMe.ambient ), 
-  diffuse ( copyMe.diffuse ), 
-  specular ( copyMe.specular ), 
-  emissive ( copyMe.emissive ), 
-  shininess ( copyMe.shininess )
+  material ( copyMe.material )
 {
   SL_PRINT2 ( "SgMaterial::SgMaterial(), this = %X\n", this );
 }
@@ -108,12 +104,32 @@ SgMaterial::~SgMaterial()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgMaterial::setValue ( const SgMaterial &material )
+void SgMaterial::setValue ( const SgMaterial &m )
 {
   SL_ASSERT ( this );
-  ambient.setValue ( material.ambient );
-  diffuse.setValue ( material.diffuse );
-  specular.setValue ( material.specular );
-  emissive.setValue ( material.emissive );
-  shininess = material.shininess;
+  material.setValue ( m.material );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgMaterial::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgMaterial::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgMaterial &c = (SgMaterial &) node;
+
+  // Are they the same?
+  return ( 
+    material.isEqual ( c.material ) && 
+    SgAttribute::isEqualVisibleProperties ( node ) );
 }

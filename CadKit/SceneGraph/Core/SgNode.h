@@ -50,6 +50,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefPtr.h"
 # include "Standard/SlBitmask.h"
+# include <string>
 #endif
 
 
@@ -58,8 +59,6 @@ namespace CadKit
 class SG_API SgNode : public SlRefBase
 {
 public:
-
-  typedef FlagsNode Flags;
 
   // Possible flags.
   enum
@@ -83,6 +82,9 @@ public:
   const char *              getName() const { return _name; }
   void                      setName ( const char *name );
 
+  // Does the given node have the same visible properties?
+  virtual bool              isEqualVisibleProperties ( const SgNode &node ) const;
+
   // Set the data members from the given node.
   void                      setValue ( const SgNode &node );
 
@@ -96,17 +98,17 @@ protected:
   static long _numNodes;
   #endif
 
-  Flags _flags;
+  unsigned int _flags;
   mutable const void *_reservedData;
   const void *_clientData;
-  char *_name; // Instance of std::string is 16 bytes, this is 4.
+  char *_name;
 
   SgNode();
   SgNode ( const SgNode &node );
   virtual ~SgNode();
 
   SG_DECLARE_NODE ( SgNode, 0x0000101C );
-  SL_DECLARE_BITMASK_FUNCTIONS(NodeFlags,Flags,_flags);
+  SL_DECLARE_BITMASK_FUNCTIONS ( NodeFlags, unsigned int, _flags );
 };
 
 }; // namespace CadKit

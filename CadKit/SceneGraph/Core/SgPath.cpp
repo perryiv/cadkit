@@ -144,12 +144,12 @@ void SgPath::append ( SgNode *node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SgNode *SgPath::getNode ( const Index &index ) const
+SgNode *SgPath::getNode ( const unsigned int &index ) const
 {
   SL_ASSERT ( this && index < this->getNumNodes() );
 
   // Initialize the counter.
-  Index count = 0;
+  unsigned int count = 0;
 
   // Loop through all the nodes.
   for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
@@ -341,7 +341,7 @@ void SgPath::write ( ::ostream &out ) const
   SL_ASSERT ( this );
 
   // Initialize the counter.
-  Index count = 0;
+  unsigned int count = 0;
 
   // Loop through all the nodes.
   for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )
@@ -369,7 +369,7 @@ void SgPath::write ( std::ostream &out ) const
   SL_ASSERT ( this );
 
   // Initialize the counter.
-  Index count = 0;
+  unsigned int count = 0;
 
   // Loop through all the nodes.
   for ( Nodes::const_iterator i = _nodes->begin(); i != _nodes->end(); ++i )

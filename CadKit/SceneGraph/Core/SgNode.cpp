@@ -83,6 +83,10 @@ SG_IMPLEMENT_NODE(SgNode,SlRefBase);
 long SgNode::_numNodes = 0;
 #endif
 
+#ifdef _DEBUG
+typedef std::map<SgNode *, SgNode *> NodeMap;
+NodeMap _nodeMap;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -99,6 +103,7 @@ SgNode::SgNode() : SlRefBase ( INITIAL_REF_COUNT ),
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeIncrement ( _numNodes );
+  _nodeMap[this] = this;
   #endif
 }
 
@@ -118,6 +123,7 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeIncrement ( _numNodes );
+  _nodeMap[this] = this;
   #endif
 
   // Set the name.
@@ -136,6 +142,7 @@ SgNode::~SgNode()
   SL_PRINT2 ( "SgNode::~SgNode(), this = %X\n", this );
   #ifdef _DEBUG
   CadKit::threadSafeDecrement ( _numNodes );
+  _nodeMap.erase ( _nodeMap.find ( this ) );
   #endif
 
   // Free the name is if it has been allocated.
@@ -145,24 +152,17 @@ SgNode::~SgNode()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Set the name.
+//  Does the given node have the same visible properties?
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgNode::setName ( const char *name )
+bool SgNode::isEqualVisibleProperties ( const SgNode &node ) const
 {
   SL_ASSERT ( this );
 
-  // Delete the current one if it's not null.
-  if ( _name )
-    ::free ( _name );
-
-  // Initialize (every time).
-  _name = NULL;
-
-  // If the given name is valid then copy it.
-  if ( name )
-    _name = ::strdup ( name );
+  // The default implementation has to return true because child classes 
+  // call their base class's function.
+  return true;
 }
 
 
@@ -179,4 +179,23 @@ void SgNode::setValue ( const SgNode &node )
   _clientData = node._clientData;
   _flags = node._flags;
   this->setName ( node._name );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name the node.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void SgNode::setName ( const char *name )
+{
+  SL_ASSERT ( this );
+
+  // Delete the old one if there is one.
+  if ( _name )
+    ::free ( _name );
+
+  // Assign the new name.
+  _name = ( name ) ? ::strdup ( name ) : NULL;
 }

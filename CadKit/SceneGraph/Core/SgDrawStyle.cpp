@@ -79,5 +79,34 @@ SgDrawStyle::SgDrawStyle() : SgAttribute(),
 
 SgDrawStyle::~SgDrawStyle()
 {
-  SL_PRINT2 ( "SgDrawStyle::SgDrawStyle(), this = %X\n", this );
+  SL_PRINT2 ( "SgDrawStyle::~SgDrawStyle(), this = %X\n", this );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgDrawStyle::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgDrawStyle::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgDrawStyle &d = (SgDrawStyle &) node;
+
+  // Are they the same?
+  return ( 
+    polygonStyle       == d.polygonStyle && 
+    side               == d.side && 
+    pointSize          == d.pointSize && 
+    lineWidth          == d.lineWidth && 
+    lineStippleFactor  == d.lineStippleFactor && 
+    lineStipplePattern == d.lineStipplePattern && 
+    SgAttribute::isEqualVisibleProperties ( node ) );
 }

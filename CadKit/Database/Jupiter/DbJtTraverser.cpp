@@ -149,7 +149,7 @@ DbJtTraverser *DbJtTraverser::_getCurrent()
 
 void DbJtTraverser::_setCurrent ( DbJtTraverser *traverser )
 {
-  SL_PRINT2 ( "In DbJtTraverser::_getCurrent(), traverser = %X\n", traverser );
+  SL_PRINT2 ( "In DbJtTraverser::_setCurrent(), traverser = %X\n", traverser );
   _currentTraverser = traverser;
 }
 

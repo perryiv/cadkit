@@ -107,6 +107,14 @@ SOURCE=.\DbStlPrecompiled.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\DbStlAsciiWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbStlBinaryWriter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbStlDatabase.cpp
 # End Source File
 # Begin Source File

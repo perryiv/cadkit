@@ -77,8 +77,14 @@ protected:
 
   typedef std::list<DbStlTriangle> Facets;
   Facets _facets;
+  bool _ascii;
 
   virtual ~DbStlDatabase();
+
+  std::string             _getHeader() const;
+
+  bool                    _writeAscii ( const std::string &filename );
+  bool                    _writeBinary ( const std::string &filename );
 
   SL_DECLARE_REFERENCE_POINTER ( DbStlDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbStlDatabase, 1038408962 );

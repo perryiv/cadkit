@@ -13,7 +13,6 @@
 #include "osg/ref_ptr"
 #include "osg/material"
 
-
 #include <string>
 #include <map>
 

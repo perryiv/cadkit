@@ -21,12 +21,13 @@ public:
   Element(int, std::string, float);
   Element(const Element&);
   const float getRadius() const { return _radius; }
-  const std::string getElement() const { return _element; }
+  const std::string getElementSymbol() const { return _elementSymbol; }
+  const std::string getElementName() const { return _elementName; }
   const int getAtomicNumber() const { return _atomicNumber; }
   Element& operator=(const Element&);
 private:
   int _atomicNumber;
-  std::string _element;
+  std::string _elementSymbol, _elementName;
   float _radius;
 };
 

@@ -28,10 +28,10 @@ const double SL_LOG_POWELL_TAU_D  = -0.20898764025;    // log of Powell tau d in
 const float  SL_LOG_POWELL_TAU_F  = -0.20898764025f;   // log of Powell tau d in 32 bit precision
 
 // Unit conversions.
-const double SL_RAD_TO_DEG_D      = 57.2957795131;    // Converts a number in radians to a number in degrees.
-const float  SL_RAD_TO_DEG_F      = 57.2957795131f;   // Converts a number in radians to a number in degrees.
-const double SL_DEG_TO_RAD_D      = 0.01745329252;    // Converts a number in degrees to a number in radians.
-const float  SL_DEG_TO_RAD_F      = 0.01745329252f;   // Converts a number in degrees to a number in radians.
+const double SL_RAD_TO_DEG_D      = 57.2957795131;    // Converts radians to degrees.
+const float  SL_RAD_TO_DEG_F      = 57.2957795131f;   // Converts radians to degrees.
+const double SL_DEG_TO_RAD_D      = 0.01745329252;    // Converts degrees to radians.
+const float  SL_DEG_TO_RAD_F      = 0.01745329252f;   // Converts degrees to radians.
 const double SL_METERS_TO_FEET_D  = 3.28083989501;
 const double SL_METERS_TO_FEET_F  = 3.28083989501f;
 
@@ -90,12 +90,25 @@ template<class T> class SlConstants{};
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  For platform independence of the template magic below.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+# define _CADKIT_TEMPLATE_CLASS
+#else
+# define _CADKIT_TEMPLATE_CLASS template<>
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Macro for declaring a class that returns integer constants.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_DECLARE_CONSTANT_CLASS_INTEGER(_Type,_zero,_one,_two) \
-class SlConstants<_Type> \
+_CADKIT_TEMPLATE_CLASS class SlConstants<_Type> \
 { \
 public: \
   static _Type zero() { return _zero; } \
@@ -111,7 +124,7 @@ public: \
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CADKIT_DECLARE_CONSTANT_CLASS_FLOAT(_Type,_zero,_half,_one,_two) \
-class SlConstants<_Type> \
+_CADKIT_TEMPLATE_CLASS class SlConstants<_Type> \
 { \
 public: \
   static _Type zero() { return _zero; } \

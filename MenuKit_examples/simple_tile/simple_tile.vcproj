@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OsgToolsd.lib osgd.lib osgTextd.lib osgProducerd.lib Producerd.lib MenuKitd.lib MenuKitOsgd.lib"
+				AdditionalDependencies="MenuKitd.lib osgd.lib osgTextd.lib osgProducerd.lib Producerd.lib MenuKitOsgd.lib"
 				OutputFile="$(OutDir)/simple_tile.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OsgTools.lib osg.lib osgText.lib osgProducer.lib Producer.lib MenuKit.lib MenuKitOsg.lib"
+				AdditionalDependencies="MenuKit.lib osg.lib osgText.lib osgProducer.lib Producer.lib MenuKitOsg.lib"
 				OutputFile="$(OutDir)/simple_tile.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"

@@ -18,8 +18,14 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
+#include "osgUtil/Optimizer"
+
+#include "OsgTools/Visitor.h"
+#include "OsgTools/SetDataVariance.h"
+
 #include "Usul/IO/Reader.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/File/Path.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -103,6 +109,39 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::readNode ( const std::string &file,
   catch ( ... )
   {
     return ReaderWriterR3D::ReadResult ( "Unknown exception caught" );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterR3D::WriteResult ReaderWriterR3D::writeNode ( const osg::Node &node, const std::string &filename, const Options *options )
+{
+  try
+  {
+    return this->_write ( node, filename, options );
+  }
+
+  // Catch known exceptions.
+  catch ( const ReaderWriterR3D::WriteResult &r )
+  {
+    return r;
+  }
+
+  // Catch standard exceptions.
+  catch ( const std::exception &e )
+  {
+    return ReaderWriterR3D::WriteResult ( e.what() );
+  }
+
+  // Catch all other exceptions.
+  catch ( ... )
+  {
+    return ReaderWriterR3D::WriteResult ( "Unknown exception caught" );
   }
 }
 
@@ -271,7 +310,6 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
   if ( !in.is_open() )
     throw std::runtime_error ( "Error 2260991012: Failed to open binary file: " + filename );
 
-
   // Check the header.
   this->_check ( in, "#" );
   this->_check ( in, "vtk" );
@@ -298,7 +336,7 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
   // Needed in the loop.
   Usul::Types::Float32 x, y, z;
 
-  //Time of last updating
+  // Time of last updating.
   double lastTime ( ::clock() );
 
   // Start reading the vertices.
@@ -307,9 +345,9 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
     Usul::IO::ReadBigEndian::read ( in, x, y, z );
     pool.at(i).set ( x, y, z );
 
-    if( ( ::clock() - lastTime ) > 500 )
+    if ( ( ::clock() - lastTime ) > 500 )
     {
-      //update the progress
+      // Update the progress.
       (*progress) ( ( (float) i / numPoints ) * 50 );
       lastTime = ::clock();
     }
@@ -345,13 +383,12 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
       strips.at(j).at(k) = index;
     }
 
-    if( ( ::clock() - lastTime ) > 500 )
+    if ( ( ::clock() - lastTime ) > 500 )
     {
-      //update the progress
+      // Update the progress.
       (*progress) ( 50 + ( (float) j / numStrips * 50 ) );
       lastTime = ::clock();
     }
-
   }
 
   // Size the vertices.
@@ -392,6 +429,80 @@ void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate 
       _normals.at(tc++).set ( n );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the R3D file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const osg::Node &node, const std::string &name, const Options *options )
+{
+  // Check extension.
+  std::string ext = osgDB::getFileExtension ( name );
+  if ( !this->acceptsExtension ( ext ) )
+    return WriteResult::FILE_NOT_HANDLED;
+
+  // Make a temporary file name.
+  static unsigned long count ( 0 );
+  std::ostringstream file;
+  file << Usul::File::directory ( name, true )
+       << "temporary_file_" << count++ << '.'
+       << Usul::File::extension ( name );
+
+  // Call the other one.
+  WriteResult result ( this->_write ( file.str(), node, options ) );
+
+  // Remove the temporary file.
+  ::remove ( file.str().c_str() );
+
+  // Return the result.
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the R3D file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const std::string &file, const osg::Node &node, const Options *options )
+{
+  // Open file for writing.
+  std::ofstream out ( file.c_str(), std::ofstream::out | std::ofstream::binary );
+  if ( !out.is_open() )
+    return WriteResult::ERROR_IN_WRITING_FILE;
+
+  // Make a copy of the scene.
+  osg::ref_ptr<osg::Node> copy ( dynamic_cast < osg::Node * > ( node.clone ( osg::CopyOp::DEEP_COPY_ALL ) ) );
+
+  // Traverse the scene and change all transforms to static data-variance.
+  typedef OsgTools::SetDataVariance SetDataVariance;
+  typedef OsgTools::Visitor < osg::Transform, SetDataVariance > VarianceVisitor;
+  SetDataVariance setter ( osg::Object::STATIC );
+  VarianceVisitor::Ptr vv ( new VarianceVisitor ( setter ) );
+  copy->accept ( *vv );
+
+  // Flatten static transforms and make tri-strips.
+  osgUtil::Optimizer optimizer;
+  optimizer.optimize ( copy.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS | osgUtil::Optimizer::TRISTRIP_GEOMETRY );
+
+  // Write the header.
+#if 0
+  // Traverse the scene and write the file.
+  typedef OsgTools::ForEach < WriteR3D, osg::Drawable > Operation;
+  typedef OsgTools::Visitor < osg::Geode, Operation > Visitor;
+
+  // Make the visitor.
+  WriteR3D write ( out );
+  Operation op ( write );
+  Visitor::Ptr visitor ( new Visitor ( op ) );
+#endif
+  // TODO
+  return WriteResult::FILE_SAVED;
 }
 
 

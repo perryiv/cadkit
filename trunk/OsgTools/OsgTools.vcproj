@@ -288,6 +288,9 @@
 					RelativePath=".\ScopedOptions.h">
 				</File>
 				<File
+					RelativePath=".\SetDataVariance.h">
+				</File>
+				<File
 					RelativePath=".\State.cpp">
 				</File>
 				<File

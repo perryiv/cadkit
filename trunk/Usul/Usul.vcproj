@@ -734,6 +734,13 @@
 					RelativePath=".\Scope\Reset.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Endian"
+				Filter="">
+				<File
+					RelativePath=".\Endian\Endian.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -27,7 +27,7 @@ GSG_IMPLEMENT_CLONE ( Vec2Pool );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec2Pool::Vec2Pool() : VecPool(), 
+Vec2Pool::Vec2Pool() : Referenced(), 
   _values()
 {
   // Empty.
@@ -40,7 +40,7 @@ Vec2Pool::Vec2Pool() : VecPool(),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec2Pool::Vec2Pool ( const Vec2Pool &p ) : VecPool ( p ), 
+Vec2Pool::Vec2Pool ( const Vec2Pool &p ) : Referenced ( p ), 
   _values ( p._values )
 {
   // Empty.

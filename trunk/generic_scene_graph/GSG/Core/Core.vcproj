@@ -199,6 +199,12 @@
 				<File
 					RelativePath=".\Primitive.h">
 				</File>
+				<File
+					RelativePath=".\PrimitiveSet.cpp">
+				</File>
+				<File
+					RelativePath=".\PrimitiveSet.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Visitors"
@@ -272,6 +278,12 @@
 				Name="Pools"
 				Filter="">
 				<File
+					RelativePath=".\InterleavedPool.cpp">
+				</File>
+				<File
+					RelativePath=".\InterleavedPool.h">
+				</File>
+				<File
 					RelativePath=".\Vec2Pool.cpp">
 				</File>
 				<File
@@ -294,9 +306,6 @@
 				Name="Misc"
 				Filter="">
 				<File
-					RelativePath=".\Algorithms.h">
-				</File>
-				<File
 					RelativePath=".\Base.h">
 				</File>
 				<File
@@ -309,16 +318,10 @@
 					RelativePath=".\BoundingSphere.h">
 				</File>
 				<File
-					RelativePath=".\Container.h">
-				</File>
-				<File
 					RelativePath=".\Factory.cpp">
 				</File>
 				<File
 					RelativePath=".\Factory.h">
-				</File>
-				<File
-					RelativePath=".\Functors.h">
 				</File>
 				<File
 					RelativePath=".\Interaction.cpp">
@@ -343,15 +346,6 @@
 				</File>
 				<File
 					RelativePath=".\Pointer.h">
-				</File>
-				<File
-					RelativePath=".\Predicates.h">
-				</File>
-				<File
-					RelativePath=".\PushPop.cpp">
-				</File>
-				<File
-					RelativePath=".\PushPop.h">
 				</File>
 				<File
 					RelativePath=".\Referenced.cpp">
@@ -427,6 +421,31 @@
 				</File>
 				<File
 					RelativePath=".\RenderElement.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Details"
+				Filter="">
+				<File
+					RelativePath=".\Adaptors.h">
+				</File>
+				<File
+					RelativePath=".\Algorithms.h">
+				</File>
+				<File
+					RelativePath=".\Container.h">
+				</File>
+				<File
+					RelativePath=".\Functors.h">
+				</File>
+				<File
+					RelativePath=".\Predicates.h">
+				</File>
+				<File
+					RelativePath=".\PushPop.cpp">
+				</File>
+				<File
+					RelativePath=".\PushPop.h">
 				</File>
 			</Filter>
 		</Filter>

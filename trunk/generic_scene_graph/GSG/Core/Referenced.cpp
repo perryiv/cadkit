@@ -79,7 +79,7 @@ void Referenced::ref()
 void Referenced::unref ( bool allowDeletion )
 {
   Lock lock ( this );
-  assert ( _refCount >= 1 );
+  GSG_ASSERT ( _refCount >= 1 );
   if ( 0 == --_refCount && allowDeletion )
     delete this;
 }

@@ -68,30 +68,30 @@ protected:
   virtual ~MainWindow();
 
   // Get the status bar
-  const FXStatusBar * statusBar() const { return _statusBar; }
-  FXStatusBar *       statusBar()       { return _statusBar; }
+  const FXStatusBar * statusBar() const { return _statusBar.get(); }
+  FXStatusBar *       statusBar()       { return _statusBar.get(); }
 
   // Get the window pane.
-  const FXMenuPane *  windowMenu() const { return _windowMenu; }
-  FXMenuPane *        windowMenu()       { return _windowMenu; }
+  const FXMenuPane *  windowMenu() const { return _windowMenu.get(); }
+  FXMenuPane *        windowMenu()       { return _windowMenu.get(); }
 
   // Get the menu bar.
-  const FXMenuBar *   menuBar() const { return _menuBar; }
-  FXMenuBar *         menuBar()       { return _menuBar; }
+  const FXMenuBar *   menuBar() const { return _menuBar.get(); }
+  FXMenuBar *         menuBar()       { return _menuBar.get(); }
 
   // Get the file menu.
-  const FXMenuPane *  fileMenu() const { return _fileMenu; }
-  FXMenuPane *        fileMenu()       { return _fileMenu; }
+  const FXMenuPane *  fileMenu() const { return _fileMenu.get(); }
+  FXMenuPane *        fileMenu()       { return _fileMenu.get(); }
 
   // Get the help menu.
-  const FXMenuPane *  helpMenu() const { return _helpMenu; }
-  FXMenuPane *        helpMenu()       { return _helpMenu; }
+  const FXMenuPane *  helpMenu() const { return _helpMenu.get(); }
+  FXMenuPane *        helpMenu()       { return _helpMenu.get(); }
 
 private:
 
-  typedef Pointer < FXMenuBar,   NullOkPolicy, std::auto_ptr < FXMenuBar   > > FXMenuBarPtr;
-  typedef Pointer < FXStatusBar, NullOkPolicy, std::auto_ptr < FXStatusBar > > FXStatusBarPtr;
-  typedef Pointer < FXMenuPane,  NullOkPolicy, std::auto_ptr < FXMenuPane  > > FXMenuPanePtr;
+  typedef std::auto_ptr < FXMenuBar   > FXMenuBarPtr;
+  typedef std::auto_ptr < FXStatusBar > FXStatusBarPtr;
+  typedef std::auto_ptr < FXMenuPane  > FXMenuPanePtr;
 
   FXMenuBarPtr   _menuBar;
   FXStatusBarPtr _statusBar;

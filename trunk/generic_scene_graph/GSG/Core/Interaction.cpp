@@ -51,7 +51,7 @@ Trackball::~Trackball(){}
 
 void Trackball::operator () ( Viewer &v )
 {
-  assert ( 0 ); // TODO
+  GSG_ASSERT ( 0 ); // TODO
 }
 
 
@@ -75,7 +75,7 @@ Translate::~Translate(){}
 
 void Translate::operator () ( Viewer &v )
 {
-  assert ( 0 ); // TODO
+  GSG_ASSERT ( 0 ); // TODO
 }
 
 
@@ -99,5 +99,5 @@ Scale::~Scale(){}
 
 void Scale::operator () ( Viewer &v )
 {
-  assert ( 0 ); // TODO
+  GSG_ASSERT ( 0 ); // TODO
 }

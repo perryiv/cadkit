@@ -30,69 +30,17 @@ public:
   GSG_DECLARE_LOCAL_TYPEDEFS ( Primitive, Referenced );
   typedef Indices::size_type size_type;
 
-  // The type of primitive.
-  enum Type
-  {
-    TYPE_UNKNOWN,
-    TYPE_POINTS,
-    TYPE_LINES,
-    TYPE_LINE_STRIP,
-    TYPE_LINE_LOOP,
-    TYPE_TRIANGLES,
-    TYPE_TRIANGLE_STRIP,
-    TYPE_TRIANGLE_FAN,
-    TYPE_QUADS,
-    TYPE_QUAD_STRIP,
-    TYPE_POLYGON
-  };
-
-  // The kind of normal and color binding.
-  enum Binding
-  {
-    BINDING_UNKNOWN,
-    BINDING_PER_VERTEX,
-    BINDING_PER_PRIMITIVE
-  };
-
-  // How to interpret the indices.
-  enum Format
-  {
-    INDICES_UNKNOWN,
-    INDICES_RANDOM, // Each index is for a single vertex.
-    INDICES_SEQUENTIAL_OVERLAPPED, // start1, count1, start2, count2, ...
-    INDICES_SEQUENTIAL_ADJACENT,   // count1, count2, ...
-  };
-
   explicit Primitive();
+  Primitive ( Index start, Index size );
   Primitive ( const Primitive &prim );
 
-  // Set/get the type of primitives.
-  void                    type ( Type t );
-  Type                    type() const { return _type; }
+  // The start of the primitive.
+  Index                   start() const { return _start; }
+  void                    start ( Index s );
 
-  // Set/get the format of the indices.
-  Format                  format() const { return _format; }
-  void                    format ( Format f );
-
-  // Access the vertices.
-  const Indices &         vertices() const { return _vi; }
-  Indices &               vertices()       { return _vi; }
-
-  // Access the normals.
-  const Indices &         normals() const { return _ni; }
-  Indices &               normals()       { return _ni; }
-
-  // Set/get the colors.
-  const Indices &         colors() const { return _ci; }
-  Indices &               colors()       { return _ci; }
-
-  // Normal binding.
-  Binding                 normalBinding() const { return _nb; }
-  void                    normalBinding ( Binding nb );
-
-  // Color binding.
-  Binding                 colorBinding()  const { return _cb; }
-  void                    colorBinding  ( Binding cb );
+  // The number of vertices in the primitive.
+  Index                   size() const { return _size; }
+  void                    size ( Index s );
 
 protected:
 
@@ -100,15 +48,8 @@ protected:
 
 private:
 
-  Binding _nb;
-  Binding _cb;
-  Indices _vi;
-  Indices _ni;
-  Indices _ci;
-  Type _type;
-  Format _vf;
-  Format _nf;
-  Format _cf; HERE... do you need a different index-format for each array?
+  Index _start;
+  Index _size;
 };
 
 

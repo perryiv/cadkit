@@ -16,9 +16,9 @@
 #ifndef _GENERIC_SCENE_GRAPH_OPENGL_API_H_
 #define _GENERIC_SCENE_GRAPH_OPENGL_API_H_
 
-#include <GL/glu.h>
+#include "GSG/Core/Assert.h"
 
-#include <cassert>
+#include <GL/glu.h>
 
 
 namespace GSG {
@@ -38,6 +38,14 @@ inline void enable ( GLenum cap )
 inline void disable ( GLenum cap )
 {
   ::glDisable ( cap );
+}
+inline void enableClientState ( GLenum array )
+{
+  ::glEnableClientState ( array );
+}
+inline void disableClientState ( GLenum array )
+{
+  ::glDisableClientState ( array );
 }
 inline void clear ( GLbitfield mask )
 {
@@ -128,12 +136,12 @@ namespace Detail
 };
 inline void material ( GLenum face, GLenum name, GLdouble shininess )
 {
-  assert ( GL_SHININESS == name );
+  GSG_ASSERT ( GL_SHININESS == name );
   ::glMaterialf ( face, name, static_cast < GLfloat > ( shininess ) );
 }
 inline void material ( GLenum face, GLenum name, GLfloat shininess )
 {
-  assert ( GL_SHININESS == name );
+  GSG_ASSERT ( GL_SHININESS == name );
   ::glMaterialf ( face, name, shininess );
 }
 template < typename Color_ > inline void material ( GLenum face, GLenum name, const Color_ &color )
@@ -171,6 +179,37 @@ template < typename Color_ > inline void color ( const Color_ &color )
 {
   typedef typename Color_::value_type value_type;
   Detail::SetColor < value_type > () ( color.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Normal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < typename T > struct SetNormal;
+  template <> struct SetNormal < GLdouble >
+  {
+    void operator () ( const GLdouble *n ) const
+    {
+      ::glNormal3dv ( n );
+    }
+  };
+  template <> struct SetNormal < GLfloat >
+  {
+    void operator () ( const GLfloat *n ) const
+    {
+      ::glNormal3fv ( n );
+    }
+  };
+};
+template < typename Normal_ > inline void normal ( const Normal_ &n )
+{
+  typedef typename Normal_::value_type value_type;
+  Detail::SetNormal < value_type > () ( n.get() );
 }
 
 
@@ -337,6 +376,74 @@ template < typename Viewport_ > inline void viewport ( const Viewport_ &vp )
   typedef typename Viewport_::SizeType SizeType;
   Detail::SetViewport < LocationType, SizeType > () ( vp.x(), vp.y(), vp.width(), vp.height() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Vertex arrays.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < typename SizeType_, typename StrideType_ > 
+inline void vertexPointer ( SizeType_ size, StrideType_ stride, const double *array )
+{
+  ::glVertexPointer ( (GLint) size, GL_DOUBLE, (GLsizei) stride, (const GLvoid *) array );
+}
+template < typename SizeType_, typename StrideType_ > 
+inline void vertexPointer ( SizeType_ size, StrideType_ stride, const float *array )
+{
+  ::glVertexPointer ( (GLint) size, GL_FLOAT, (GLsizei) stride, (const GLvoid *) array );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Interleaved arrays.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < typename StrideType_ > 
+inline void interleavedArrays ( GLenum format, StrideType_ stride, const double *array )
+{
+  ::glInterleavedArrays ( format, (GLsizei) stride, (const GLvoid *) array );
+}
+template < typename StrideType_ > 
+inline void interleavedArrays ( GLenum format, StrideType_ stride, const float *array )
+{
+  ::glInterleavedArrays ( format, (GLsizei) stride, (const GLvoid *) array );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the arrays that are set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < typename IndexType_, typename SizeType_ > 
+inline void drawArrays ( GLenum mode, IndexType_ first, SizeType_ count )
+{
+  ::glDrawArrays ( mode, (GLint) first, (GLsizei) count );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Begin and end pair.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct BeginAndEnd
+{
+  BeginAndEnd ( GLenum mode )
+  {
+    ::glBegin ( mode );
+  }
+  ~BeginAndEnd()
+  {
+    ::glEnd();
+  }
+};
 
 
 }; // namespace GL

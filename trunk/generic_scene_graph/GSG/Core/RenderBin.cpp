@@ -80,7 +80,6 @@ void RenderBin::add ( RenderElement *e )
 
 RenderBin::const_iterator RenderBin::begin() const
 {
-  Lock lock ( this );
   return _elements.begin();
 }
 
@@ -93,7 +92,6 @@ RenderBin::const_iterator RenderBin::begin() const
 
 RenderBin::iterator RenderBin::begin()
 {
-  Lock lock ( this );
   return _elements.begin();
 }
 
@@ -106,7 +104,6 @@ RenderBin::iterator RenderBin::begin()
 
 RenderBin::const_iterator RenderBin::end() const
 {
-  Lock lock ( this );
   return _elements.end();
 }
 
@@ -119,6 +116,18 @@ RenderBin::const_iterator RenderBin::end() const
 
 RenderBin::iterator RenderBin::end()
 {
-  Lock lock ( this );
   return _elements.end();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the bin.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void RenderBin::clear()
+{
+  Lock lock ( this );
+  _elements.erase ( _elements.begin(), _elements.end() );
 }

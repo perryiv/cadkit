@@ -97,30 +97,51 @@ MdiChildWindow::MdiChildWindow (
   INITIALIZER_LIST
 {
   // Should be true.
-  ErrorChecker ( _root.valid() );
+  ErrorChecker ( 0x0 != _root.get() );
   ErrorChecker ( 0x0 != this->getApp() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MdiChildWindow::~MdiChildWindow()
+{
+  // Nothing to delete.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MdiChildWindow::create()
+{
+  // Should be true.
+  ErrorChecker ( 0x0 != _root.get() );
+  ErrorChecker ( 0x0 != this->getApp() );
+  ErrorChecker ( 0x0 != this->getParent()->id() );
+
+  // Call the base class's function.
+  BaseClass::create();
 
   // The first time we create the visual.
-  if ( false == _visual.valid() )
+  if ( 0x0 == _visual.get() )
   {
     _visual = FXGLVisualPtr ( new FXGLVisual ( this->getApp(), FX::VISUAL_DOUBLEBUFFER ) );
-    ErrorChecker ( _visual.valid() );
+    ErrorChecker ( 0x0 != _visual.get() );
     _visual->create();
   }
 
   // View.
   _view = ViewPtr ( new View ( this, _visual.get() ) );
-  ErrorChecker ( _view.valid() );
-
-  // See if you should create too.
-  if ( parent->id() )
-  {
-    // Create this instance.
-    BaseClass::create();
-
-    // Now we can create the view.
-    _view->create();
-  }
+  ErrorChecker ( 0x0 != _view.get() );
+  _view->create();
 
   // Make the viewer and set it.
   Viewer::ValidPtr viewer ( new Viewer );
@@ -154,18 +175,6 @@ MdiChildWindow::MdiChildWindow (
 
   // Set the viewer's camera.
   viewer->camera ( camera );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MdiChildWindow::~MdiChildWindow()
-{
-  // Nothing to delete.
 }
 
 

@@ -47,6 +47,9 @@ public:
   // Add an element.
   void                          add ( RenderElement *e );
 
+  // Clear the bin.
+  void                          clear();
+
 protected:
 
   virtual ~RenderBin();

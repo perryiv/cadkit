@@ -106,6 +106,9 @@ public:
   Callback *              postVisitCallback();
   void                    postVisitCallback ( Callback *cb );
 
+  // Reset the internal state.
+  virtual void            reset();
+
   // Traverse the scene.
   void                    traverse ( Node & );
 

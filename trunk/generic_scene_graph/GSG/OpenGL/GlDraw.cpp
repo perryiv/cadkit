@@ -15,16 +15,16 @@
 
 #include "GSG/OpenGL/Precompiled.h"
 #include "GSG/OpenGL/GlDraw.h"
+#include "GSG/OpenGL/Utility.h"
 #include "GSG/OpenGL/GlContext.h"
 #include "GSG/OpenGL/GlApi.h"
 #include "GSG/OpenGL/ErrorCheck.h"
 
-#include "GSG/Core/Primitive.h"
+#include "GSG/Core/PrimitiveSet.h"
 #include "GSG/Core/Matrix.h"
 #include "GSG/Core/Material.h"
 #include "GSG/Core/Defaults.h"
 #include "GSG/Core/Bits.h"
-#include "GSG/Core/Container.h"
 
 
 #include <GL/glu.h>
@@ -45,7 +45,8 @@ const GSG::Real SHININESS_SCALE = 128.0f; // OpenGL is [0,128].
 GlDraw::GlDraw ( RenderBin *bin, const Viewport &vp, GlContext *context ) : 
   Draw ( bin ),
   _context ( context ),
-  _stateBits ( 0 )
+  _serverState ( 0 ),
+  _clientState ( 0 )
 {
   // Initialize if we have a valid context and viewport.
   if ( context, vp.valid() )
@@ -62,7 +63,8 @@ GlDraw::GlDraw ( RenderBin *bin, const Viewport &vp, GlContext *context ) :
 
 GlDraw::GlDraw ( const GlDraw &d ) : Draw ( d ),
   _context ( d._context ),
-  _stateBits ( d._stateBits )
+  _serverState ( d._serverState ),
+  _clientState ( d._clientState )
 {
 }
 
@@ -100,6 +102,8 @@ void GlDraw::init ( const Viewport &vp, GlContext *context )
 
   // Set the viewport.
   this->viewport ( vp );
+
+  GSG_GL_ERROR_CHECKER;
 
   // Projection matrix defaults.
   Real aspect = static_cast < Real > ( vp.width() ) 
@@ -144,11 +148,11 @@ void GlDraw::init ( const Viewport &vp, GlContext *context )
   GL::enable ( GL_DEPTH_TEST );
   GL::clearColor ( GSG_BACKGROUND_COLOR );
 
-  // Scale normals. See: 
+  // Do not scale the normals. See: 
   // http://www.opengl.org/developers/code/features/KilgardTechniques/oglpitfall/oglpitfall.html
   // Basically, scaling on the modelview matrix will mess up lighting unless 
   // you tell OpenGL to scale the normal vectors.
-  GL::enable ( GL_NORMALIZE );
+  GL::disable ( GL_NORMALIZE );
 }
 
 
@@ -187,6 +191,7 @@ const GlContext *GlDraw::context() const
 void GlDraw::backgroundColor ( const Color &c )
 {
   Lock lock ( this );
+  GSG_GL_ERROR_CHECKER;
   this->_makeContextCurrent();
 
   // Set the color.
@@ -206,10 +211,22 @@ void GlDraw::backgroundColor ( const Color &c )
 void GlDraw::viewport ( const Viewport &vp ) 
 {
   Lock lock ( this );
+  GSG_GL_ERROR_CHECKER;
   this->_makeContextCurrent();
 
   // Set the viewport.
   GL::viewport ( vp );
+
+#if 0
+  // Projection matrix defaults.
+  Real aspect = static_cast < Real > ( vp.width() ) / static_cast < Real > ( vp.height() );
+  Matrix P;
+  P.perspective ( GSG_FIELD_OF_VIEW_Y, aspect, GSG_CAMERA_Z_NEAR, GSG_CAMERA_Z_FAR );
+  GL::matrixMode ( GL_PROJECTION );
+  //GL::loadMatrix ( P );
+  ::gluPerspective ( GSG_FIELD_OF_VIEW_Y, aspect, GSG_CAMERA_Z_NEAR, GSG_CAMERA_Z_FAR );
+  GL::matrixMode ( GL_MODELVIEW );
+#endif
 
   // Call the base class's function.
   BaseClass::viewport ( vp );
@@ -312,29 +329,87 @@ void GlDraw::_postTraverse ( Node & )
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Visit the element.
+//  Visit the primitive-element.
+//
+//  Good page for vertex arrays:
+//  http://www.parallab.uib.no/SGI_bookshelves/SGI_Developer/books/OpenGL_PG/sgi_html/ch03.html#id56018
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void GlDraw::_visit ( PrimitiveElement &e )
+void GlDraw::_visit ( PrimitiveSetElement &e )
 {
+  // Vertex arrays only support single or double precision.
+  BOOST_STATIC_ASSERT ( ( boost::is_same<Real,float>::value || boost::is_same<Real,double>::value ) );
+
   Lock lock ( this );
+  this->_makeContextCurrent();
   GSG_GL_ERROR_CHECKER;
 
-  // Get the primitive.
-  const Primitive *p = e.primitive();
-  ErrorChecker ( 0x0 != p );
+  typedef PrimitiveSet::ConstValidNoRefPtr PrimitiveSetPtr;
+  typedef PrimitiveSet::ValuePool  ValuePool;
+  typedef PrimitiveSet::NormalPool NormalPool;
+  typedef PrimitiveSet::ColorPool  ColorPool;
 
-  // Loop through the vertices.
-  for ( Primitive::ConstVertexIterator i = p->beginVertices(); i != p->endVertices(); ++i )
+  // Get the primitive-set.
+  PrimitiveSetPtr ps ( e.set() );
+
+  // Get the pools.
+  const ValuePool  *interleaved = ps->values();
+  const NormalPool *normals     = ps->normals();
+  const ColorPool  *colors      = ps->colors();
+
+  // If we don't have vertices or primitives then all bets are off.
+  if ( 0x0 == interleaved || 
+       0x0 == interleaved->ptr() || 
+       0   == ps->numPrimitives() )
+    return;
+
+  // Determine the primitive type for the set.
+  GLenum type ( Detail::primitiveType ( ps->type() ) );
+
+  // Determine the interleaved format.
+  GLenum format ( Detail::interleavedFormat ( interleaved ) );
+
+  // Turn on interleaved arrays.
+  GL::interleavedArrays ( format, 0, interleaved->ptr() );
+
+  // See if we have per-primitive bindings.
+  bool perPrimNormals ( Detail::isPerVertexBinding ( ps->normalBinding() ) );
+  bool perPrimColors  ( Detail::isPerVertexBinding ( ps->colorBinding()  ) );
+
+  // Should be true.
+  ErrorChecker ( !perPrimNormals || ( perPrimNormals && ( normals->values().size() == ps->numPrimitives() ) ) );
+  ErrorChecker ( !perPrimColors  || ( perPrimColors  && (  colors->values().size() == ps->numPrimitives() ) ) );
+
+  // Loop through all the primitives.
+  UnsignedInteger count ( 0 );
+  for ( PrimitiveSet::const_iterator i = ps->begin(); i != ps->end(); ++i )
   {
-    Primitive::ConstVertexIterator::reference vertex = *i;
+    GSG_GL_ERROR_CHECK_NOW;
 
-    HERE
-    Consider making Primitive not use an indexed pool, but require all the vertices.
-    This will require more memory but you can use vertex-arrays (just pass the array to OpenGL).
-    Then you won't need all the fancy iterator business, and can go back to using VC6.
-    Besides, VC7 doesn't have OpenGL help.
+    // Get the primitive.
+    const Primitive *prim = (*i).get();
+    ErrorChecker ( 0x0 != prim );
+
+    // Set per-primitive bindings.
+    if ( perPrimNormals )
+      GL::normal ( normals->value ( count ) );
+    if ( perPrimColors )
+      GL::color ( colors->value ( count ) );
+
+    // Get the start and size.
+    Index start ( prim->start() );
+    Index size  ( prim->size()  );
+
+    // Make sure they are in range.
+    ErrorChecker ( start >= 0 && interleaved->values().size() >  start );
+    ErrorChecker ( size  >  0 && interleaved->values().size() >= start + size );
+
+    // Draw the primitive.
+    GL::drawArrays ( type, start, size );
+
+    // Increment.
+    ++count;
   }
 }
 
@@ -414,8 +489,8 @@ void GlDraw::_visit ( MaterialElement &e )
   const Material *m = e.material();
   ErrorChecker ( 0x0 != m );
 
-  this->_disable ( COLOR_MATERIAL, GL_COLOR_MATERIAL );
-  this->_enable  ( LIGHTING, GL_LIGHTING );
+  this->_disableServerState ( COLOR_MATERIAL, GL_COLOR_MATERIAL );
+  this->_enableServerState  ( LIGHTING,       GL_LIGHTING );
 
   GL::material ( face, GL_AMBIENT,   m->ambient() );
   GL::material ( face, GL_DIFFUSE,   m->diffuse() );
@@ -436,8 +511,8 @@ void GlDraw::_visit ( ColorElement &e )
   Lock lock ( this );
   GSG_GL_ERROR_CHECKER;
 
-  this->_enable  ( COLOR_MATERIAL, GL_COLOR_MATERIAL );
-  this->_disable ( LIGHTING, GL_LIGHTING );
+  this->_enableServerState  ( COLOR_MATERIAL, GL_COLOR_MATERIAL );
+  this->_disableServerState ( LIGHTING,       GL_LIGHTING );
 
   GL::color ( e.color() );
 }
@@ -445,35 +520,100 @@ void GlDraw::_visit ( ColorElement &e )
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Enable the state.
+//  Enable the state on the server (card).
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void GlDraw::_enable  ( UnsignedInteger f, gl_enum g )
+void GlDraw::_enableServerState ( UnsignedInteger f, gl_enum g )
 {
   BOOST_MPL_ASSERT_IS_SAME ( gl_enum, GLenum );
+  GSG_GL_ERROR_CHECKER;
 
-  if ( false == GSG::hasBits ( _stateBits, f ) )
+  if ( false == GSG::hasBits ( _serverState, f ) )
   {
     GL::enable ( g );
-    _stateBits = GSG::addBits ( _stateBits, f );
+    _serverState = GSG::addBits ( _serverState, f );
   }
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Disable the state.
+//  Disable the state on the server (card).
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void GlDraw::_disable ( UnsignedInteger f, gl_enum g )
+void GlDraw::_disableServerState ( UnsignedInteger f, gl_enum g )
 {
   BOOST_MPL_ASSERT_IS_SAME ( gl_enum, GLenum );
+  GSG_GL_ERROR_CHECKER;
 
-  if ( GSG::hasBits ( _stateBits, f ) )
+  if ( GSG::hasBits ( _serverState, f ) )
   {
     GL::disable ( g );
-    _stateBits = GSG::removeBits ( _stateBits, f );
+    _serverState = GSG::removeBits ( _serverState, f );
   }
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Enable the state on the client side.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void GlDraw::_enableClientState ( UnsignedInteger f, gl_enum g )
+{
+  BOOST_MPL_ASSERT_IS_SAME ( gl_enum, GLenum );
+  GSG_GL_ERROR_CHECKER;
+
+  if ( false == GSG::hasBits ( _clientState, f ) )
+  {
+    GL::enableClientState ( g );
+    _clientState = GSG::addBits ( _clientState, f );
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Disable the state on the client side.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void GlDraw::_disableClientState ( UnsignedInteger f, gl_enum g )
+{
+  BOOST_MPL_ASSERT_IS_SAME ( gl_enum, GLenum );
+  GSG_GL_ERROR_CHECKER;
+
+  if ( GSG::hasBits ( _clientState, f ) )
+  {
+    GL::disableClientState ( g );
+    _clientState = GSG::removeBits ( _clientState, f );
+  }
+}
+
+
+#if 0
+
+  ::glDisable ( GL_COLOR_MATERIAL );
+  ::glDisable ( GL_LIGHTING );
+
+  ::glPushAttrib ( GL_ALL_ATTRIB_BITS );
+
+  ::glMatrixMode ( GL_MODELVIEW );
+  ::glPushMatrix();
+  ::glLoadIdentity();
+
+  ::glBegin ( GL_TRIANGLES );
+    ::glColor3f ( 1, 0, 0 );
+    ::glVertex3f ( 0, 0, -10 );
+    ::glVertex3f ( 1, 0, -10 );
+    ::glVertex3f ( 1, 1, -10 );
+  ::glEnd();
+
+  ::glPopMatrix();
+
+  ::glPopAttrib();
+
+#endif

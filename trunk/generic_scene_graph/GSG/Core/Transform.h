@@ -35,7 +35,8 @@ public:
   Transform ( const Transform &t );
 
   // Get/set the matrix.
-
+  const Matrix &          matrix() const { return _matrix; }
+  void                    matrix ( const Matrix & );
 
 protected:
 

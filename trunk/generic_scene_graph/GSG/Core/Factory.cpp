@@ -110,7 +110,7 @@ Shape *Factory::box ( const Vec3 &c, const Vec3 &s )
   // Make a vertex and normal pool.
   VertexPool::ValidPtr vp ( new VertexPool );
   NormalPool::ValidPtr np ( new NormalPool );
-
+/* redo... again
   // Set the starting spots.
   SizeType sv ( vp->values().size() );
   SizeType sn ( np->values().size() );
@@ -206,22 +206,15 @@ Shape *Factory::box ( const Vec3 &c, const Vec3 &s )
   // Set the primitive's data. The indices are copied.
   set->vertices ( vp );
   set->normals  ( np );
-
+*/
   // Add the primitive set to a new shape.
   Shape::ValidPtr shape ( new Shape );
-  shape->append ( set );
+  //shape->append ( set );
 
   // Return the shape.
   return shape.release();
 }
 
-/*
-
-I eliminated the map in Vec3Pool and moved the indices from the Primitive to VecPool.
-Primitive is now PrimitiveSet, which holds multiple primitives, all of the same type.
-This was all done to take advantage of OpenGL vertex arrays.
-The below code relies on that map which is no longer in Vec3Pool.
-It should be easy enough to make a local map and do the same thing.
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -235,29 +228,53 @@ void subdivideSphere (
   Real x1, Real y1, Real z1, 
   Real x2, Real y2, Real z2, 
   Real x3, Real y3, Real z3, 
-  Real r,  UnsignedInteger depth, 
-  VertexPool &vp, NormalPool &np, 
-  Indices &vi, Indices &ni )
+  const Vec3 &c, 
+  Real r, 
+  UnsignedInteger depth, 
+  PrimitiveSet &prims )
 {
+  typedef PrimitiveSet::ValuePool ValuePool;
+  typedef ValuePool::value_type value_type;
+
+  // Get the pool.
+  ValuePool::ValidPtr pool ( prims.values() );
+
   // The vertices are all a unit length from the center, 
   // so they are also the normal.
   if ( 0 == depth )
   {
+    // Make room in the pool.
+    ValuePool::size_type index ( pool->numRows() );
+    pool->numRows ( index + 3 );
+
+    // Three new vertices (that are also normals).
     Vec3 p1 ( x1, y1, z1 );
     Vec3 p2 ( x2, y2, z2 );
     Vec3 p3 ( x3, y3, z3 );
 
-    // This will look for the vertex in the pool and append it if not 
-    // found. The bracket operator returns the index of the vertex. This 
-    // index is appended to the sequence of indices.
-    ni.push_back ( np[p1] );
-    ni.push_back ( np[p2] );
-    ni.push_back ( np[p3] );
+    // Add the normals.
+    pool->normal ( index,     p1[0], p1[1], p1[2] );
+    pool->normal ( index + 1, p2[0], p2[1], p2[2] );
+    pool->normal ( index + 2, p3[0], p3[1], p3[2] );
 
-    // Do the same for the vertices.
-    vi.push_back ( vp[p1*r] );
-    vi.push_back ( vp[p2*r] );
-    vi.push_back ( vp[p3*r] );
+    // Scale by the radius. Do this first.
+    p1 *= r;
+    p2 *= r;
+    p3 *= r;
+
+    // Offset by the center. Do this second.
+    p1 += c;
+    p2 += c;
+    p3 += c;
+
+    // Add the vertices.
+    pool->vertex ( index,     p1[0], p1[1], p1[2] );
+    pool->vertex ( index + 1, p2[0], p2[1], p2[2] );
+    pool->vertex ( index + 2, p3[0], p3[1], p3[2] );
+
+    // Add the primitive.
+    prims.append ( new Primitive ( index, 3 ) );
+
     return;
   }
 
@@ -290,10 +307,10 @@ void subdivideSphere (
   x31 *= invd; y31 *= invd; z31 *= invd;
 
   --depth;
-  subdivideSphere (  x1,  y1,  z1, x12, y12, z12, x31, y31, z31, r, depth, vp, np, vi, ni );
-  subdivideSphere (  x2,  y2,  z2, x23, y23, z23, x12, y12, z12, r, depth, vp, np, vi, ni );
-  subdivideSphere (  x3,  y3,  z3, x31, y31, z31, x23, y23, z23, r, depth, vp, np, vi, ni );
-  subdivideSphere ( x12, y12, z12, x23, y23, z23, x31, y31, z31, r, depth, vp, np, vi, ni );
+  subdivideSphere (  x1,  y1,  z1, x12, y12, z12, x31, y31, z31, c, r, depth, prims );
+  subdivideSphere (  x2,  y2,  z2, x23, y23, z23, x12, y12, z12, c, r, depth, prims );
+  subdivideSphere (  x3,  y3,  z3, x31, y31, z31, x23, y23, z23, c, r, depth, prims );
+  subdivideSphere ( x12, y12, z12, x23, y23, z23, x31, y31, z31, c, r, depth, prims );
 }
 }; // namespace Detail
 }; // namespace GSG
@@ -324,55 +341,54 @@ Shape *Factory::sphere ( const Vec3 &c, Real r, UnsignedInteger n )
   typedef VertexPool::size_type SizeType;
   Lock lock ( this );
 
-  // Make a vertex and normal pool.
-  VertexPool::ValidPtr vp ( this->_getVertexPool() );
-  NormalPool::ValidPtr np ( this->_getNormalPool() );
-
   // Declare these constants used in the subdivision algorithm.
   const Real X ( static_cast < Real > ( 0.525731112119133606 ) );
   const Real Z ( static_cast < Real > ( 0.8506508083528655993 ) );
 
-  // Declare the indices.
-  Indices vi, ni;
+  // Make an interleaved pool.
+  ValuePool::ValidPtr pool ( new ValuePool );
+  pool->contains ( ValuePool::NORMALS );
+
+  // Declare the primitive-set and attach the pool.
+  PrimitiveSet::ValidPtr prims ( new PrimitiveSet );
+  prims->type ( PrimitiveSet::TYPE_TRIANGLES );
+  prims->normalBinding ( PrimitiveSet::BINDING_PER_VERTEX );
+  prims->colorBinding  ( PrimitiveSet::BINDING_PER_NONE );
+  prims->values ( pool );
+
+  // Reserve space in the pool. It works out to 60 * 4 ^ n.
+  const UnsignedInteger need ( 60 * GSG::Math::pow ( 4, n ) );
+  pool->reserveRows ( need );
 
   // Call the sub-divider.
-  Detail::subdivideSphere ( -X,  0,  Z,  X,  0,  Z,  0,  Z,  X, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -X,  0,  Z,  0,  Z,  X, -Z,  X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -Z,  X,  0,  0,  Z,  X,  0,  Z, -X, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0,  Z,  X,  Z,  X,  0,  0,  Z, -X, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0,  Z,  X,  X,  0,  Z,  Z,  X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  Z,  X,  0,  X,  0,  Z,  Z, -X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  Z,  X,  0,  Z, -X,  0,  X,  0, -Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0,  Z, -X,  Z,  X,  0,  X,  0, -Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0,  Z, -X,  X,  0, -Z, -X,  0, -Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -X,  0, -Z,  X,  0, -Z,  0, -Z, -X, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0, -Z, -X,  X,  0, -Z,  Z, -X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0, -Z, -X,  Z, -X,  0,  0, -Z,  X, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0, -Z, -X,  0, -Z,  X, -Z, -X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -Z, -X,  0,  0, -Z,  X, -X,  0,  Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -X,  0,  Z,  0, -Z,  X,  X,  0,  Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0, -Z,  X,  Z, -X,  0,  X,  0,  Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -Z,  X,  0, -Z, -X,  0, -X,  0,  Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -Z,  X,  0, -X,  0, -Z, -Z, -X,  0, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere ( -Z,  X,  0,  0,  Z, -X, -X,  0, -Z, r, n, *vp, *np, vi, ni );
-  Detail::subdivideSphere (  0, -Z, -X, -Z, -X,  0, -X,  0, -Z, r, n, *vp, *np, vi, ni );
+  Detail::subdivideSphere ( -X,  0,  Z,  X,  0,  Z,  0,  Z,  X, c, r, n, *prims );
+  Detail::subdivideSphere ( -X,  0,  Z,  0,  Z,  X, -Z,  X,  0, c, r, n, *prims );
+  Detail::subdivideSphere ( -Z,  X,  0,  0,  Z,  X,  0,  Z, -X, c, r, n, *prims );
+  Detail::subdivideSphere (  0,  Z,  X,  Z,  X,  0,  0,  Z, -X, c, r, n, *prims );
+  Detail::subdivideSphere (  0,  Z,  X,  X,  0,  Z,  Z,  X,  0, c, r, n, *prims );
+  Detail::subdivideSphere (  Z,  X,  0,  X,  0,  Z,  Z, -X,  0, c, r, n, *prims );
+  Detail::subdivideSphere (  Z,  X,  0,  Z, -X,  0,  X,  0, -Z, c, r, n, *prims );
+  Detail::subdivideSphere (  0,  Z, -X,  Z,  X,  0,  X,  0, -Z, c, r, n, *prims );
+  Detail::subdivideSphere (  0,  Z, -X,  X,  0, -Z, -X,  0, -Z, c, r, n, *prims );
+  Detail::subdivideSphere ( -X,  0, -Z,  X,  0, -Z,  0, -Z, -X, c, r, n, *prims );
+  Detail::subdivideSphere (  0, -Z, -X,  X,  0, -Z,  Z, -X,  0, c, r, n, *prims );
+  Detail::subdivideSphere (  0, -Z, -X,  Z, -X,  0,  0, -Z,  X, c, r, n, *prims );
+  Detail::subdivideSphere (  0, -Z, -X,  0, -Z,  X, -Z, -X,  0, c, r, n, *prims );
+  Detail::subdivideSphere ( -Z, -X,  0,  0, -Z,  X, -X,  0,  Z, c, r, n, *prims );
+  Detail::subdivideSphere ( -X,  0,  Z,  0, -Z,  X,  X,  0,  Z, c, r, n, *prims );
+  Detail::subdivideSphere (  0, -Z,  X,  Z, -X,  0,  X,  0,  Z, c, r, n, *prims );
+  Detail::subdivideSphere ( -Z,  X,  0, -Z, -X,  0, -X,  0,  Z, c, r, n, *prims );
+  Detail::subdivideSphere ( -Z,  X,  0, -X,  0, -Z, -Z, -X,  0, c, r, n, *prims );
+  Detail::subdivideSphere ( -Z,  X,  0,  0,  Z, -X, -X,  0, -Z, c, r, n, *prims );
+  Detail::subdivideSphere (  0, -Z, -X, -Z, -X,  0, -X,  0, -Z, c, r, n, *prims );
 
-  // Make the primitive. It is a collection of individual triangles.
-  Primitive::ValidPtr prim ( new Primitive );
-  prim->type ( Primitive::TRIANGLES );
-
-  // Set the primitive's data. The indices are copied.
-  prim->vertexIndices ( vi );
-  prim->normalIndices ( ni );
-  prim->vertexPool ( vp );
-  prim->normalPool ( np );
-
-  // Add the primitive to a new shape.
+  // Add the primitive-set to a new shape.
   Shape::ValidPtr shape ( new Shape );
-  shape->append ( prim );
+  shape->append ( prims );
+
+  // Should be true.
+  ErrorChecker ( pool->numRows() == pool->rowsReserved() );
 
   // Return the shape.
   return shape.release();
 }
-
-*/

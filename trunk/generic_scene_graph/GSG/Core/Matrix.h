@@ -604,8 +604,8 @@ public:
 
   template < class Vector3_, typename Real_ > static Matrix rotation ( Real_ cosine, Real_ sine, const Vector3_ &axis )
   {
-    assert ( cosine >= -1 && cosine <= 1 );
-    assert ( sine >= -1 && sine <= 1 );
+    GSG_ASSERT ( cosine >= -1 && cosine <= 1 );
+    GSG_ASSERT ( sine >= -1 && sine <= 1 );
 
     const Real_ x ( axis[0] );
     const Real_ y ( axis[1] );

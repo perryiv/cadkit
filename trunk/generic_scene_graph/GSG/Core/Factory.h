@@ -21,10 +21,12 @@
 
 namespace GSG {
 
+
 class Shape;
 class Vec4Pool;
 class Vec3Pool;
 class Vec2Pool;
+class InterleavedPool;
 
 
 class GSG_CORE_EXPORT Factory : public Referenced
@@ -36,6 +38,7 @@ public:
   typedef Vec3Pool VertexPool;
   typedef Vec3Pool NormalPool;
   typedef Vec4Pool ColorPool;
+  typedef InterleavedPool ValuePool;
 
   explicit Factory();
   Factory ( const Factory &f );
@@ -48,8 +51,8 @@ public:
   Shape *               cube ( const Vec3 &center, Real size );
 
   // Make a sphere. The first one makes a unit sphere at the origin.
-  Shape *               sphere ( UnsignedInteger numSubDivisions = 4 );
-  Shape *               sphere ( const Vec3 &center, Real radius, UnsignedInteger numSubDivisions = 4 );
+  Shape *               sphere ( UnsignedInteger numSubDivisions = 0 );
+  Shape *               sphere ( const Vec3 &center, Real radius, UnsignedInteger numSubDivisions = 0 );
 
 protected:
 

@@ -71,7 +71,8 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /WX /Gm /GR /GX /Zi /Od /I "../../" /I "$(BOOST_ROOT_DIR)" /D "COMPILING_GSG_CORE" /D "_USRDLL" /D "_MBCS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Fr /YX"Precompiled.h" /FD /GZ /Zm200 /c
+# ADD CPP /nologo /MDd /W3 /WX /Gm /GR /GX /Zi /Od /I "../../" /I "$(BOOST_ROOT_DIR)" /D "COMPILING_GSG_CORE" /D "_USRDLL" /D "_MBCS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX"Precompiled.h" /FD /GZ /Zm200 /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -92,6 +93,10 @@ LINK32=link.exe
 # Begin Group "Precompiled"
 
 # PROP Default_Filter "*.cpp;*.h"
+# Begin Source File
+
+SOURCE=.\Assert.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\Precompiled.cpp
@@ -273,6 +278,14 @@ SOURCE=.\Material.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\InterleavedPool.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\InterleavedPool.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Vec2Pool.cpp
 # End Source File
 # Begin Source File
@@ -295,22 +308,10 @@ SOURCE=.\Vec4Pool.cpp
 
 SOURCE=.\Vec4Pool.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\VecPool.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\VecPool.h
-# End Source File
 # End Group
 # Begin Group "Misc"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\Algorithms.h
-# End Source File
 # Begin Source File
 
 SOURCE=.\Base.h
@@ -329,19 +330,11 @@ SOURCE=.\BoundingSphere.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Container.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Factory.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\Factory.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Functors.h
 # End Source File
 # Begin Source File
 
@@ -374,18 +367,6 @@ SOURCE=.\Path.h
 # Begin Source File
 
 SOURCE=.\Pointer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Predicates.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PushPop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PushPop.h
 # End Source File
 # Begin Source File
 
@@ -482,6 +463,38 @@ SOURCE=.\RenderElement.cpp
 # Begin Source File
 
 SOURCE=.\RenderElement.h
+# End Source File
+# End Group
+# Begin Group "Details"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Adaptors.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Algorithms.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Container.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Functors.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Predicates.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PushPop.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PushPop.h
 # End Source File
 # End Group
 # End Group

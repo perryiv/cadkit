@@ -126,7 +126,6 @@ void Visitor::_popNode()
 
 const Visitor::Callback *Visitor::preVisitCallback() const
 {
-  Lock lock ( this );
   return _preVisitCB.get();
 }
 
@@ -139,7 +138,6 @@ const Visitor::Callback *Visitor::preVisitCallback() const
 
 Visitor::Callback *Visitor::preVisitCallback()
 {
-  Lock lock ( this );
   return _preVisitCB.get();
 }
 
@@ -165,7 +163,6 @@ void Visitor::preVisitCallback ( Visitor::Callback *cb )
 
 const Visitor::Callback *Visitor::postVisitCallback() const
 {
-  Lock lock ( this );
   return _postVisitCB.get();
 }
 
@@ -178,7 +175,6 @@ const Visitor::Callback *Visitor::postVisitCallback() const
 
 Visitor::Callback *Visitor::postVisitCallback()
 {
-  Lock lock ( this );
   return _postVisitCB.get();
 }
 
@@ -204,7 +200,6 @@ void Visitor::postVisitCallback ( Visitor::Callback *cb )
 
 void Visitor::_preVisit ( Node &n )
 {
-  Lock lock ( this );
   if ( _preVisitCB.valid() )
     (*_preVisitCB) ( *this, n );
 }
@@ -218,7 +213,6 @@ void Visitor::_preVisit ( Node &n )
 
 void Visitor::_postVisit ( Node &n )
 {
-  Lock lock ( this );
   if ( _postVisitCB.valid() )
     (*_postVisitCB) ( *this, n );
 }
@@ -257,7 +251,6 @@ void Visitor::_preTraverse ( Node &scene )
 
 void Visitor::_traverse ( Node &scene )
 {
-  Lock lock ( this );
   scene._accept ( *this );
 }
 
@@ -270,7 +263,6 @@ void Visitor::_traverse ( Node &scene )
 
 void Visitor::_traverse ( Group &g )
 {
-  Lock lock ( this );
   for ( Group::iterator i = g.begin(); i != g.end(); ++i )
     this->_traverse ( *(*i) );
 }
@@ -308,6 +300,16 @@ void Visitor::viewport ( const Viewport &viewport )
 
 const Viewport &Visitor::viewport() const
 {
-  Lock lock ( this );
   return _viewport;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the internal state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Visitor::reset()
+{
 }

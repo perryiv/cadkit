@@ -30,9 +30,12 @@ public:
   GSG_DECLARE_LOCAL_TYPEDEFS ( BinBuilder, Visitor );
 
   // Get/set the render-bin.
-  const RenderBin *             renderBin() const;
-  RenderBin *                   renderBin();
-  void                          renderBin ( RenderBin *bin );
+  const RenderBin *       renderBin() const;
+  RenderBin *             renderBin();
+  void                    renderBin ( RenderBin *bin );
+
+  // Reset the internal state.
+  virtual void            reset();
 
 protected:
 

@@ -22,6 +22,14 @@
 namespace GSG {
 
 
+class Node;
+class Shape;
+class Group;
+class Transform;
+class Camera;
+class PrimitiveSet;
+
+
 class GSG_CORE_EXPORT FrustumCull : public BinBuilder
 {
 public:
@@ -36,9 +44,12 @@ protected:
 
   virtual ~FrustumCull();
 
-  void                    _cull ( Node &n );
-  void                    _cull ( Shape &s );
-  void                    _cull ( Group &g );
+  void                    _cull ( Node & );
+  void                    _cull ( Shape & );
+  void                    _cull ( Group & );
+  void                    _cull ( Transform & );
+  void                    _cull ( Camera & );
+  void                    _cull ( PrimitiveSet & );
 
   GSG_DECLARE_VISIT_NODE_FUNCTIONS;
 };

@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
+#include <vector>
 
 
 namespace Usul {
@@ -27,6 +28,10 @@ namespace Interfaces {
 
 struct ISaveFileDialog : public Usul::Interfaces::IUnknown
 {
+  // Typedefs.
+  typedef std::pair < std::string, std::string > Filter;
+  typedef std::vector<Filter> Filters;
+
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ISaveFileDialog );
 
@@ -34,7 +39,7 @@ struct ISaveFileDialog : public Usul::Interfaces::IUnknown
   enum { IID = 1102623452u };
 
   // Get the name of the file to save to
-  virtual std::string   getSaveFileName() = 0;
+  virtual std::string   getSaveFileName ( const std::string &title = "Save", const Filters &filters = Filters() ) = 0;
 
 };
 

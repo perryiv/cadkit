@@ -22,6 +22,7 @@
 namespace FoxTools {
 namespace Cursors {
 
+
 class FOX_CURSORS_EXPORT Cursor
 {
 public:
@@ -61,8 +62,8 @@ public:
                                        FX::FXApp *app );
 };
 
-}; //namespace Cursors
 
+}; // namespace Cursors
 }; // namespace FoxTools
 
 

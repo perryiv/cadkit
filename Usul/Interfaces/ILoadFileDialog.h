@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
+#include <vector>
 
 
 namespace Usul {
@@ -27,6 +28,11 @@ namespace Interfaces {
 
 struct ILoadFileDialog : public Usul::Interfaces::IUnknown
 {
+  // Typedefs.
+  typedef std::pair < std::string, std::string > Filter;
+  typedef std::vector<Filter> Filters;
+  typedef std::vector<std::string> Filenames;
+
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ILoadFileDialog );
 
@@ -34,8 +40,8 @@ struct ILoadFileDialog : public Usul::Interfaces::IUnknown
   enum { IID = 1103131693u };
 
   // Get the name of the file to load from
-  virtual std::string   getLoadFileName() = 0;
-
+  virtual std::string   getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
+  virtual Filenames     getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
 };
 
 

@@ -113,14 +113,8 @@ osg::Group *Molecule::_build() const
   // Loop through the bonds.
   for ( Bonds::const_iterator i = b.begin(); i != b.end(); ++i )
   {
-    // Get the bond.
-    const Bond &bond = *i;
-
-    // Make the geometry.
-    osg::ref_ptr<osg::LOD> lod ( this->_makeBond ( bond ) );
-
-    // Add the lod to the root.
-    root->addChild ( lod.get() );
+    // Add the node for this bond
+    root->addChild ( this->_makeBond( *i ) );
   }
 
 

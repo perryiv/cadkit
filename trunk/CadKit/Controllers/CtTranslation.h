@@ -91,6 +91,7 @@ protected:
   SlVec2d _zeroRange;
   SlRefPtr<IUnknown> _target;
   SlRefPtr<IUnknown> _source;
+  std::string _outputDir;
 
   virtual ~CtTranslation();
 

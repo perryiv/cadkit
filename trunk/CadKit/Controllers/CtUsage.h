@@ -29,9 +29,10 @@ namespace CtUsage {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const char *getLong()
+std::string getLong()
 {
-  return "\n\
+  return std::string ( 
+  "\n\
   \n\
   --print-progress <priority>, -pp <priority>\n\
   \n\
@@ -72,7 +73,14 @@ const char *getLong()
   \n\
   --output-ascii, -oa\n\
   \n\
-      If possible, the output should be in ASCII.\n\
+      If possible, the output should be in ASCII.\n"
+  ) + std::string (
+  "\n\
+  --output-directory <directory name>, -od\n\
+  \n\
+      Specify the output directory. The default is the same directory\n\
+      as the corresponding input file. Regardless, the output filename\n\
+      will be the same as the input filename, but with a different extension.\n\
   \n\
   --num-decimals <decimals>, -nd\n\
   \n\
@@ -107,7 +115,7 @@ const char *getLong()
   \n\
   Note: Geometric transformations happen in the order in which the arguments\n\
         are parsed. Any arbitrary combination of transformations is permitted.\n\
-";
+" );
 
 //  -ea <action>      What to do if an error is encountered. Possible actions:\n\
 //                      exit:     Exit the program.\n\
@@ -127,7 +135,7 @@ const char *getLong()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string getShort()
+std::string getShort()
 {
   // Get the long string.
   const std::string usage ( getLong() );

@@ -139,7 +139,7 @@ protected:
   int *                   _makeIntArray ( const std::vector<unsigned int> &vec ) const;
   pfVec2 *                _makeVec2Array ( const std::vector<SlVec2f> &vec ) const;
   pfVec3 *                _makeVec3Array ( const std::vector<SlVec3f> &vec ) const;
-  pfVec4 *                _makeVec4Array ( const std::vector<SlVec4f> &vec ) const;
+  pfVec4 *                _makeVec4Array ( const std::vector<SlVec3f> &vec ) const;
 
   bool                    _processEntity ( DbJtTraverser::EntityHandle entity );
 

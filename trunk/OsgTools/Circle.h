@@ -15,7 +15,7 @@
 #ifndef _osg_tools_circle_builder_h_
 #define _osg_tools_circle_builder_h_
 
-#include "OsgTools/Export.h"
+#include "Export.h"
 
 namespace OsgTools
 {

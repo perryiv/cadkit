@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Ray.h"
-#include "OsgTools/ErrorChecker.h"
+#include "Ray.h"
+#include "ErrorChecker.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"

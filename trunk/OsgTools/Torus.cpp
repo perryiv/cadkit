@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Torus.h"
+#include "Torus.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"

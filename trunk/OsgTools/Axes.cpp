@@ -12,10 +12,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Axes.h"
-#include "OsgTools/ErrorChecker.h"
-#include "OsgTools/Torus.h"
-#include "OsgTools/Box.h"
+#include "Axes.h"
+#include "ErrorChecker.h"
+#include "Torus.h"
+#include "Box.h"
 
 #include "osg/Group"
 #include "osg/Geode"

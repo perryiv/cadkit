@@ -62,7 +62,7 @@ namespace MenuKit
       osg::ref_ptr<osg::Group> _scene;
     };
 
-  typedef TileLayer<BasicTile> BasicLayer;
+  typedef TileLayer<osgTile> osgTileLayer;
   };
 
 };

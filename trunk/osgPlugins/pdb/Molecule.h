@@ -10,6 +10,7 @@
 #ifndef __OSG_PDB_PLUGIN_MOLECULE_H__
 #define __OSG_PDB_PLUGIN_MOLECULE_H__
 
+#include "Export.h"
 #include "Atom.h"
 #include "Bond.h"
 
@@ -23,20 +24,27 @@ namespace osg { class Group; class LOD; class Geode; }
 #include <map>
 #include <list>
 
-class Molecule : public osg::Referenced
+namespace osgPlugins {
+namespace pdb {
+
+class OSG_PDB_EXPORT Molecule : public osg::Referenced
 {
 public:
-
-  typedef std::map<Atom::ID, Atom::Ptr> Map;
-  typedef Map Atoms;
+  typedef osgPlugins::pdb::Atom Atom;
+  typedef osgPlugins::pdb::Bond Bond;
+  //typedef std::map<Atom::ID, Atom::Ptr> Map;
+  typedef std::vector<Atom::Ptr> Atoms;
   typedef std::list<Bond::Ptr> Bonds;
   typedef OsgTools::ShapeFactory ShapeFactory;
   typedef OsgTools::MaterialFactory MaterialFactory;
-
-  Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags );
+  
+  Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags, unsigned int numAtoms );
   osg::Group* build() const { return _build(); }
   void addAtom(Atom::Ptr );
   void addBond(Atom::ID, Atom::ID);
+
+  Atoms& atoms() { return _atoms; }
+  Bonds& bonds() { return _bonds; }
 
 protected:
   virtual ~Molecule();
@@ -68,6 +76,9 @@ private:
   unsigned int _minNumSegsLong;
   unsigned int _maxNumSegsLong;
   unsigned int _flags;
+};
+
+};
 };
 
 

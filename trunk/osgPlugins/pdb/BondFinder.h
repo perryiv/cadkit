@@ -20,12 +20,14 @@
 class BondFinder
 {
 public:
+  #if 0
+
   typedef std::pair< Atom::ID, Atom::Ptr > AtomPair;
   typedef std::map<Atom::ID, Atom::Ptr >  Map;
   typedef std::vector< Atom::Ptr > Atoms;
   typedef std::list< Bond::Ptr > Bonds;
 
-#if 0
+
   struct SortAtom : public std::binary_function< Atom, Atom, bool>
   {
     bool operator() (const Atom &a, const Atom &b)

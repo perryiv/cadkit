@@ -23,6 +23,8 @@
 
 class PeriodicTable;
 
+namespace osgPlugins {
+namespace pdb {
 
 class OSG_PDB_EXPORT Atom : public osg::Referenced
 {
@@ -47,11 +49,16 @@ public:
   const float getTempFactor() const { return _tempFactor; }
   const std::string& getSegmentId() const { return _segmentId; }
   const std::string& getSymbol() const { return _element->getElementSymbol(); }
-  
-  const float length2() const { return _point.length2(); }
-  const float length() const { return _point.length(); }
+
+  //set/get fixed atom
+  bool fixed();
+  void fixed ( bool );
+
+  //get the atom information as a string
   std::string toString() const;
+  //Is this a valid atom
   bool valid() const { return _id != 0; }
+  //Get the radius of this atom
   const float getRadius() const;
   
   //Get/Set the matrix transform
@@ -72,5 +79,8 @@ private:
   float _occupancy, _tempFactor;
   mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
 };
+
+}; // namespace pdb
+}; // namespace osgPlugins
 
 #endif

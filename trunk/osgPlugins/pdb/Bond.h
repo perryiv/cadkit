@@ -19,11 +19,15 @@
 
 #include "Atom.h"
 
+namespace osgPlugins {
+namespace pdb {
+
 class Bond : public osg::Referenced
 {
 public:
   typedef osg::Referenced BaseClass;
   typedef osg::ref_ptr< Bond > Ptr;
+  typedef osgPlugins::pdb::Atom Atom;
 
   Bond(Atom::Ptr, Atom::Ptr, int);
   
@@ -40,6 +44,9 @@ private:
   int _id;
   osg::Vec3 _point1, _point2;
   mutable osg::ref_ptr< osg::MatrixTransform > _matrix;
+};
+
+};
 };
 
 #endif

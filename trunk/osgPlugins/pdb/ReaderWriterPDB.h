@@ -12,6 +12,7 @@
 
 #include "osgDB/ReaderWriter"
 
+#include "osg/Referenced"
 #include "osg/ref_ptr"
 
 #include <string>
@@ -29,13 +30,29 @@ namespace osg { class Group; class LOD; class Geode; };
 class OSG_PDB_EXPORT ReaderWriterPDB : public osgDB::ReaderWriter
 {
 public:
-
+  typedef osgPlugins::pdb::Molecule Molecule;
   typedef osg::ref_ptr< Molecule > MoleculePtr;
   typedef std::vector< MoleculePtr > Molecules;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef Molecule::MaterialFactory MaterialFactory;
   typedef Molecule::ShapeFactory ShapeFactory;
+  typedef Molecule::Atom Atom;
+  typedef Molecule::Bond Bond;
+
+  struct MoleculeList : public osg::Referenced
+  {
+    typedef Molecules::iterator Iterator;
+
+    MoleculeList() : _molecules() { }
+
+    void clear() { _molecules.clear(); }
+    void push_back( MoleculePtr m ) { _molecules.push_back( m ); }
+
+    Molecules& molecules() { return _molecules; }
+  private:
+    Molecules _molecules;
+  };
 
   ReaderWriterPDB();
   ~ReaderWriterPDB();
@@ -57,13 +74,13 @@ public:
   void                    setFlags ( unsigned int flags, bool state );
   void                    removeFlags ( unsigned int flags );
 
-  void                    parse ( std::ifstream &in ) { _parse ( in ); }
+  void                    parse ( std::ifstream &in, unsigned int filesize ) { _parse ( in, filesize ); }
   void                    parsePsf ( std::ifstream &in ) { _parsePsf ( in ); }
 
   std::string             getPsfPath( const std::string &file ) { return _getPsfPath( file ); }
   osg::Group*             build() const { return _build(); }
 
-  Molecules               getMolecules() { return _molecules; }
+  MoleculeList*           getMolecules() { return _molecules.get(); }
 
 protected:
 
@@ -73,19 +90,19 @@ protected:
 
   void                    _init();
 
-  Molecule*               _getCurrentMolecule();
+  Molecule*               _getCurrentMolecule( unsigned int numAtoms = 0);
   void                    _getFileContents ( const std::string &filename, std::string &contents ) const;
 
   std::string             _getPsfPath ( const std::string &file);
 
-  void                    _parse ( std::ifstream &in /*, std::ifstream &psf */);
+  void                    _parse ( std::ifstream &in, unsigned int filesize);
   void                    _parsePsf ( std::ifstream &in );
 
   Result                  _read ( const std::string &, const Options * );
 
 private:
   
-  Molecules _molecules; 
+  mutable osg::ref_ptr< MoleculeList > _molecules;
   MaterialFactory::Ptr _materialFactory;
   Molecule *_currentMolecule;
   ShapeFactory::Ptr _shapeFactory;

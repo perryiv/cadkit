@@ -45,7 +45,7 @@ public:
   typedef SlVec3<T> Vec3;
   typedef SlVec4<T> Vec4;
 
-  SlMatrix44 ( const bool &setToIdentity = true );
+  SlMatrix44 ( bool setToIdentity = true );
   SlMatrix44 ( const T m[16] );
   SlMatrix44 ( const Array4x4 &m );
   SlMatrix44 ( 
@@ -198,12 +198,12 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class T> SlMatrix44<T> operator *  ( const SlMatrix44<T> &A, const SlMatrix44<T> &B );
-template<class T> SlVec4<T>    operator *  ( const SlMatrix44<T> &M, const SlVec4<T> &v );
-template<class T> SlVec3<T>    operator *  ( const SlMatrix44<T> &M, const SlVec3<T> &v );
-template<class T> SlVec4<T>    operator /  ( const SlVec4<T> &v,    const SlMatrix44<T> &M );
-template<class T> SlVec3<T>    operator /  ( const SlVec3<T> &v,    const SlMatrix44<T> &M );
-template<class T> bool         operator == ( const SlMatrix44<T> &A, const SlMatrix44<T> &B );
-template<class T> bool         operator != ( const SlMatrix44<T> &A, const SlMatrix44<T> &B );
+template<class T> SlVec4<T>     operator *  ( const SlMatrix44<T> &M, const SlVec4<T> &v );
+template<class T> SlVec3<T>     operator *  ( const SlMatrix44<T> &M, const SlVec3<T> &v );
+template<class T> SlVec4<T>     operator /  ( const SlVec4<T> &v,     const SlMatrix44<T> &M );
+template<class T> SlVec3<T>     operator /  ( const SlVec3<T> &v,     const SlMatrix44<T> &M );
+template<class T> bool          operator == ( const SlMatrix44<T> &A, const SlMatrix44<T> &B );
+template<class T> bool          operator != ( const SlMatrix44<T> &A, const SlMatrix44<T> &B );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ template<class T> bool         operator != ( const SlMatrix44<T> &A, const SlMat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlMatrix44<T>::SlMatrix44 ( const bool &setToIdentity )
+template<class T> inline SlMatrix44<T>::SlMatrix44 ( bool setToIdentity )
 {
   // Set to identity if we are supposed to.
   if ( setToIdentity )
@@ -1497,6 +1497,7 @@ template<class T> inline void SlMatrix44<T>::setPerspective ( const T &fovyInRad
 template<class T> inline SlMatrix44<T> &SlMatrix44<T>::operator *= ( const Matrix4 &M )
 {
   this->multRight ( M );
+  return *this;
 }
 
 

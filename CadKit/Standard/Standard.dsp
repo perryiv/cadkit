@@ -395,6 +395,10 @@ SOURCE=.\SlList.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlMatrixStack.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlPartitionedVector.h
 # End Source File
 # Begin Source File

@@ -37,33 +37,29 @@ namespace CadKit {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline const T &max ( const T &a, const T &b )
-{
-  return std::max ( a, b );
-}
 template<class T> inline const T &max ( const T &a, const T &b, const T &c ) 
 {
-  return CadKit::max ( CadKit::max ( a, b ), c );
+  return std::max ( std::max ( a, b ), c );
 }
 template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d )
 {
-  return CadKit::max ( CadKit::max ( a, b, c ), d );
+  return std::max ( CadKit::max ( a, b, c ), d );
 }
 template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e )
 {
-  return CadKit::max ( CadKit::max ( a, b, c, d ), e );
+  return std::max ( CadKit::max ( a, b, c, d ), e );
 }
 template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f )
 {
-  return CadKit::max ( CadKit::max ( a, b, c, d, e ), f );
+  return std::max ( CadKit::max ( a, b, c, d, e ), f );
 }
 template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g )
 {
-  return CadKit::max ( CadKit::max ( a, b, c, d, e, f ), g );
+  return std::max ( CadKit::max ( a, b, c, d, e, f ), g );
 }
 template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h )
 {
-  return CadKit::max ( CadKit::max ( a, b, c, d, e, f, g ), h );
+  return std::max ( CadKit::max ( a, b, c, d, e, f, g ), h );
 }
 
 
@@ -73,33 +69,29 @@ template<class T> inline const T &max ( const T &a, const T &b, const T &c, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline const T &min ( const T &a, const T &b )
-{
-  return std::min ( a, b );
-}
 template<class T> inline const T &min ( const T &a, const T &b, const T &c ) 
 {
-  return CadKit::min ( CadKit::min ( a, b ), c );
+  return std::min ( std::min ( a, b ), c );
 }
 template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d )
 {
-  return CadKit::min ( CadKit::min ( a, b, c ), d );
+  return std::min ( CadKit::min ( a, b, c ), d );
 }
 template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e )
 {
-  return CadKit::min ( CadKit::min ( a, b, c, d ), e );
+  return std::min ( CadKit::min ( a, b, c, d ), e );
 }
 template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f )
 {
-  return CadKit::min ( CadKit::min ( a, b, c, d, e ), f );
+  return std::min ( CadKit::min ( a, b, c, d, e ), f );
 }
 template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g )
 {
-  return CadKit::min ( CadKit::min ( a, b, c, d, e, f ), g );
+  return std::min ( CadKit::min ( a, b, c, d, e, f ), g );
 }
 template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h )
 {
-  return CadKit::min ( CadKit::min ( a, b, c, d, e, f, g ), h );
+  return std::min ( CadKit::min ( a, b, c, d, e, f, g ), h );
 }
 
 

@@ -18,10 +18,8 @@
 
 #include "IUnknown.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-# include <list>
-#endif
+#include <string>
+#include <list>
 
 
 namespace CadKit

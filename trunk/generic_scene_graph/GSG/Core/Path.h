@@ -30,7 +30,7 @@ class GSG_CORE_EXPORT Path : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( Path );
+  GSG_DECLARE_REFERENCED ( Path );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Path, Referenced );
 
   explicit Path();

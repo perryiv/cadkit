@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT InterleavedPool : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( InterleavedPool );
+  GSG_DECLARE_REFERENCED ( InterleavedPool );
   GSG_DECLARE_LOCAL_TYPEDEFS ( InterleavedPool, Referenced );
   typedef GSG_RANDOM_ACCESS_CONTAINER < float > Values; // Has to be float.
   typedef Values::size_type size_type;

@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT RenderBin : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( RenderBin );
+  GSG_DECLARE_REFERENCED ( RenderBin );
   GSG_DECLARE_LOCAL_TYPEDEFS ( RenderBin, Referenced );
   typedef GSG_BIDIRECTIONAL_CONTAINER < RenderElement::ValidPtr > Elements;
   typedef Elements::size_type size_type;
@@ -49,6 +49,9 @@ public:
 
   // Clear the bin.
   void                          clear();
+
+  // Number of elements.
+  size_type                     size() const { return _elements.size(); }
 
 protected:
 

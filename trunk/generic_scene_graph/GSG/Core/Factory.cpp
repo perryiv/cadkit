@@ -22,7 +22,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Factory );
+GSG_IMPLEMENT_REFERENCED ( Factory );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,9 +31,9 @@ GSG_IMPLEMENT_CLONE ( Factory );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory() : Referenced()
+Factory::Factory() : Referenced(),
+  _attributes()
 {
-
 }
 
 
@@ -43,9 +43,9 @@ Factory::Factory() : Referenced()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory ( const Factory &f ) : Referenced ( f )
+Factory::Factory ( const Factory &f ) : Referenced ( f ),
+  _attributes ( f._attributes )
 {
-
 }
 
 
@@ -57,7 +57,37 @@ Factory::Factory ( const Factory &f ) : Referenced ( f )
 
 Factory::~Factory()
 {
+}
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Factory::setFrom ( const Factory &f )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _attributes = f._attributes;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( f );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set the attributes.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Factory::attributes ( AttributeSet *a )
+{
+  Lock lock ( this );
+  _attributes = a;
 }
 
 
@@ -103,6 +133,7 @@ Shape *Factory::cube ( const Vec3 &center, Real size )
 
 Shape *Factory::box ( const Vec3 &c, const Vec3 &s )
 {
+/* redo... again
   BOOST_MPL_ASSERT_IS_SAME ( VertexPool::size_type, VertexPool::size_type );
   typedef VertexPool::size_type SizeType;
   Lock lock ( this );
@@ -110,7 +141,7 @@ Shape *Factory::box ( const Vec3 &c, const Vec3 &s )
   // Make a vertex and normal pool.
   VertexPool::ValidPtr vp ( new VertexPool );
   NormalPool::ValidPtr np ( new NormalPool );
-/* redo... again
+
   // Set the starting spots.
   SizeType sv ( vp->values().size() );
   SizeType sn ( np->values().size() );
@@ -337,15 +368,12 @@ Shape *Factory::sphere ( UnsignedInteger numSubDivisions )
 
 Shape *Factory::sphere ( const Vec3 &c, Real r, UnsignedInteger n )
 {
-  BOOST_MPL_ASSERT_IS_SAME ( VertexPool::size_type, VertexPool::size_type );
-  typedef VertexPool::size_type SizeType;
-  Lock lock ( this );
-
   // Declare these constants used in the subdivision algorithm.
   const Real X ( static_cast < Real > ( 0.525731112119133606 ) );
   const Real Z ( static_cast < Real > ( 0.8506508083528655993 ) );
 
   // Make an interleaved pool.
+  typedef PrimitiveSet::ValuePool ValuePool;
   ValuePool::ValidPtr pool ( new ValuePool );
   pool->contains ( ValuePool::NORMALS );
 
@@ -382,12 +410,15 @@ Shape *Factory::sphere ( const Vec3 &c, Real r, UnsignedInteger n )
   Detail::subdivideSphere ( -Z,  X,  0,  0,  Z, -X, -X,  0, -Z, c, r, n, *prims );
   Detail::subdivideSphere (  0, -Z, -X, -Z, -X,  0, -X,  0, -Z, c, r, n, *prims );
 
+  // Should be true.
+  ErrorChecker ( pool->numRows() == pool->rowsReserved() );
+
   // Add the primitive-set to a new shape.
   Shape::ValidPtr shape ( new Shape );
   shape->append ( prims );
 
-  // Should be true.
-  ErrorChecker ( pool->numRows() == pool->rowsReserved() );
+  // Set the shape's attributes.
+  shape->attributes ( this->attibutes() );
 
   // Return the shape.
   return shape.release();

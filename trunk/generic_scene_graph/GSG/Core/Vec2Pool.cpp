@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Vec2Pool );
+GSG_IMPLEMENT_REFERENCED ( Vec2Pool );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -82,4 +82,22 @@ void Vec2Pool::value ( Vec2Pool::size_type i, const Vec2Pool::value_type &v )
 {
   BoundsChecker ( _values.size(), i );
   _values[i] = v;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Vec2Pool::setFrom ( const Vec2Pool &p )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _values = p._values;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( p );
 }

@@ -19,7 +19,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Viewer );
+GSG_IMPLEMENT_REFERENCED ( Viewer );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,6 +104,32 @@ Viewer::~Viewer()
 
 Viewer::Callback::~Callback()
 {
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setFrom ( const Viewer &v )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _flags       = v._flags | Detail::MOUSE_POINT_UNSET;
+  _scene       = v._scene;
+  _renderer    = v._renderer;
+  _camera      = v._camera;
+  _keys        = v._keys;
+  _windowMouse = v._windowMouse;
+  _lastMouse   = v._lastMouse;
+  _callback    = v._callback;
+  _dR          = v._dR;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( v );
 }
 
 
@@ -236,6 +262,9 @@ void Viewer::render()
 
     // Render the camera.
     _renderer->traverse ( *_camera );
+
+    // Reset the renderer.
+    _renderer->reset(); // TODO, make this exception-safe.
   }
 }
 

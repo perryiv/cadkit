@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT Update : public Visitor
 {
 public:
 
-  GSG_DECLARE_CLONE ( Update );
+  GSG_DECLARE_REFERENCED ( Update );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Update, Visitor );
 
   explicit Update();

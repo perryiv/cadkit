@@ -31,7 +31,7 @@ class GSG_CORE_EXPORT Viewer : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( Viewer );
+  GSG_DECLARE_REFERENCED ( Viewer );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Viewer, Referenced );
 
   // Viewer messages.

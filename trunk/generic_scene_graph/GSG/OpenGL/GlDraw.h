@@ -37,7 +37,7 @@ class GSG_OPENGL_EXPORT GlDraw : public Draw
 {
 public:
 
-  GSG_DECLARE_CLONE ( GlDraw );
+  GSG_DECLARE_REFERENCED ( GlDraw );
   GSG_DECLARE_LOCAL_TYPEDEFS ( GlDraw, Draw );
 
   // Constructors.

@@ -116,6 +116,27 @@ struct LessVec4
 };
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  For searching in a container for objects of a given type.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+struct IsOfType
+{
+  IsOfType ( const type_info &t ) : _t ( t ){}
+  template < class ContainerType > 
+  bool operator () ( const ContainerType &object ) const
+  {
+    // ContainerType should either be a "Referenced *" 
+    // or a smart-pointer to one.
+    return ( object->typeId() == _t ) ? true : false; // VC6 warning C4800.
+  }
+private:
+  const type_info &_t;
+};
+
+
 }; // namespace Detail
 }; // namespace GSG
 

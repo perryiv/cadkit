@@ -28,7 +28,7 @@ class GSG_CORE_EXPORT Camera : public Group
 {
 public:
 
-  GSG_DECLARE_CLONE ( Camera );
+  GSG_DECLARE_REFERENCED ( Camera );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Camera, Group );
 
   explicit Camera();

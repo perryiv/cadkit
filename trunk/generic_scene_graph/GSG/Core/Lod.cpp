@@ -21,7 +21,7 @@
 using namespace GSG;
 
 GSG_IMPLEMENT_ACCEPT_NODE ( Lod );
-GSG_IMPLEMENT_CLONE  ( Lod );
+GSG_IMPLEMENT_REFERENCED  ( Lod );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,4 +57,19 @@ Lod::Lod ( const Lod &l ) : Group ( l )
 Lod::~Lod()
 {
   // Empty.
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Lod::setFrom ( const Lod &l )
+{
+  Lock lock ( this );
+
+  // Call the base class's function.
+  BaseClass::setFrom ( l );
 }

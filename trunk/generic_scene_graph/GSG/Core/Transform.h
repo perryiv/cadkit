@@ -28,7 +28,7 @@ class GSG_CORE_EXPORT Transform : public Group
 {
 public:
 
-  GSG_DECLARE_CLONE ( Transform );
+  GSG_DECLARE_REFERENCED ( Transform );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Transform, Group );
 
   explicit Transform();

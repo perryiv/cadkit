@@ -28,7 +28,7 @@ class GSG_CORE_EXPORT Lod : public Group
 {
 public:
 
-  GSG_DECLARE_CLONE ( Lod );
+  GSG_DECLARE_REFERENCED ( Lod );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Lod, Group );
 
   explicit Lod();

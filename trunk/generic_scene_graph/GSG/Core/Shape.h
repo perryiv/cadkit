@@ -18,7 +18,7 @@
 
 #include "GSG/Core/Node.h"
 #include "GSG/Core/PrimitiveSet.h"
-#include "GSG/Core/Attributes.h"
+#include "GSG/Core/AttributeSet.h"
 
 
 namespace GSG {
@@ -28,14 +28,14 @@ class GSG_CORE_EXPORT Shape : public Node
 {
 public:
 
-  GSG_DECLARE_CLONE ( Shape );
+  GSG_DECLARE_REFERENCED ( Shape );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Shape, Node );
-  typedef GSG_BIDIRECTIONAL_CONTAINER < PrimitiveSet::ValidPtr > Sets;
-  typedef Sets::size_type size_type;
-  typedef Sets::iterator iterator;
-  typedef Sets::const_iterator const_iterator;
-  typedef Sets::reference reference;
-  typedef Sets::const_reference const_reference;
+  typedef GSG_BIDIRECTIONAL_CONTAINER < PrimitiveSet::ValidPtr > PrimitiveSets;
+  typedef PrimitiveSets::size_type size_type;
+  typedef PrimitiveSets::iterator iterator;
+  typedef PrimitiveSets::const_iterator const_iterator;
+  typedef PrimitiveSets::reference reference;
+  typedef PrimitiveSets::const_reference const_reference;
 
   explicit Shape();
   Shape ( const Shape &g );
@@ -52,9 +52,9 @@ public:
   void                    insert ( iterator beforeMe, PrimitiveSet *ps );
 
   // Get/set the attributes.
-  const Attributes *      attributes() const { return _attributes.get(); }
-  Attributes *            attributes()       { return _attributes.get(); }
-  void                    attributes ( Attributes *a );
+  const AttributeSet *    attributes() const { return _attributes.get(); }
+  AttributeSet *          attributes()       { return _attributes.get(); }
+  void                    attributes ( AttributeSet *a );
 
   // The number of primitives.
   size_type               size() const;
@@ -73,8 +73,8 @@ protected:
 
 private:
 
-  Sets _sets;
-  Attributes::Ptr _attributes;
+  PrimitiveSets _sets;
+  AttributeSet::Ptr _attributes;
 };
 
 

@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Material );
+GSG_IMPLEMENT_REFERENCED ( Material );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,14 +27,14 @@ GSG_IMPLEMENT_CLONE ( Material );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Material::Material() :
+Material::Material() : Attribute(),
   _ambient(),
   _diffuse(),
   _specular(),
   _emissive(),
-  _shininess ( 0 )
+  _shininess ( 0 ),
+  _side ( FRONT )
 {
-  // Empty.
 }
 
 
@@ -44,14 +44,14 @@ Material::Material() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Material::Material ( const Material &m ) :
+Material::Material ( const Material &m ) : Attribute ( m ),
   _ambient   ( m._ambient ),
   _diffuse   ( m._diffuse ),
   _specular  ( m._specular ),
   _emissive  ( m._emissive ),
-  _shininess ( m._shininess )
+  _shininess ( m._shininess ),
+  _side      ( m._side )
 {
-  // Empty.
 }
 
 
@@ -66,72 +66,27 @@ Material::Material (
   const Color &d, 
   const Color &sp, 
   const Color &e, 
-  value_type sh ) :
+  value_type sh,
+  Side side ) :
+  Attribute(),
   _ambient   ( a ),
   _diffuse   ( d ),
   _specular  ( sp ),
   _emissive  ( e ),
-  _shininess ( sh )
+  _shininess ( sh ),
+  _side      ( side )
 {
-  // Empty.
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Access to the colors.
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Color &Material::ambient() const
+Material::~Material()
 {
-  Lock lock ( this );
-  return _ambient;
-}
-Color &Material::ambient()
-{
-  Lock lock ( this );
-  return _ambient;
-}
-const Color &Material::diffuse() const
-{
-  Lock lock ( this );
-  return _diffuse;
-}
-Color &Material::diffuse()
-{
-  Lock lock ( this );
-  return _diffuse;
-}
-const Color &Material::specular() const
-{
-  Lock lock ( this );
-  return _specular;
-}
-Color &Material::specular()
-{
-  Lock lock ( this );
-  return _specular;
-}
-const Color &Material::emissive() const
-{
-  Lock lock ( this );
-  return _emissive;
-}
-Color &Material::emissive()
-{
-  Lock lock ( this );
-  return _emissive;
-}
-const Material::value_type &Material::shininess() const
-{
-  Lock lock ( this );
-  return _shininess;
-}
-Material::value_type &Material::shininess()
-{
-  Lock lock ( this );
-  return _shininess;
 }
 
 
@@ -141,7 +96,7 @@ Material::value_type &Material::shininess()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Material::set ( const Material &m )
+void Material::setFrom ( const Material &m )
 {
   Lock lock ( this );
   _ambient   = m._ambient;
@@ -149,6 +104,7 @@ void Material::set ( const Material &m )
   _specular  = m._specular;
   _emissive  = m._emissive;
   _shininess = m._shininess;
+  _side      = m._side;
 }
 
 
@@ -158,7 +114,7 @@ void Material::set ( const Material &m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Material::set ( const Color &a, const Color &d, const Color &sp, const Color &e, value_type sh )
+void Material::set ( const Color &a, const Color &d, const Color &sp, const Color &e, value_type sh, Side side )
 {
   Lock lock ( this );
   _ambient   = a;
@@ -166,6 +122,7 @@ void Material::set ( const Color &a, const Color &d, const Color &sp, const Colo
   _specular  = sp;
   _emissive  = e;
   _shininess = sh;
+  _side      = side;
 }
 
 
@@ -182,7 +139,8 @@ bool Material::equal ( const Material &m ) const
     _diffuse   == m._diffuse &&
     _specular  == m._specular &&
     _emissive  == m._emissive &&
-    _shininess == m._shininess;
+    _shininess == m._shininess &&
+    _side      == m._side;
 }
 
 
@@ -194,7 +152,84 @@ bool Material::equal ( const Material &m ) const
 
 Material &Material::operator = ( const Material &rhs )
 {
-  Lock lock ( this );
-  this->set ( rhs );
+  this->setFrom ( rhs );
   return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::ambient ( const Color &c )
+{
+  Lock lock ( this );
+  _ambient = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::diffuse ( const Color &c )
+{
+  Lock lock ( this );
+  _diffuse = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::specular ( const Color &c )
+{
+  Lock lock ( this );
+  _specular = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::emissive ( const Color &c )
+{
+  Lock lock ( this );
+  _emissive = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::shininess ( Material::value_type s )
+{
+  Lock lock ( this );
+  _shininess = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Material::side ( Side s )
+{
+  Lock lock ( this );
+  _side = s;
 }

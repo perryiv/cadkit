@@ -22,7 +22,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Update );
+GSG_IMPLEMENT_REFERENCED ( Update );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,4 +94,17 @@ void Update::_update ( Group &g )
   Lock lock ( this );
   this->_traverse ( g ); // Traverse first.
   this->_update ( static_cast < Node & > ( g ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Update::setFrom ( const Update &u )
+{
+  // Call the base class's function.
+  BaseClass::setFrom ( u );
 }

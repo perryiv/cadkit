@@ -18,7 +18,7 @@
 
 using namespace GSG;
 
-GSG_IMPLEMENT_CLONE ( Path );
+GSG_IMPLEMENT_REFERENCED ( Path );
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,4 +83,22 @@ void Path::pop()
   Lock lock ( this );
   ErrorChecker ( false == _stack.empty() );
   _stack.pop();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Path::setFrom ( const Path &s )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _stack = s._stack;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( s );
 }

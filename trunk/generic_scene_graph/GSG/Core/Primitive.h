@@ -26,7 +26,7 @@ class GSG_CORE_EXPORT Primitive : public Referenced
 {
 public:
 
-  GSG_DECLARE_CLONE ( Primitive );
+  GSG_DECLARE_REFERENCED ( Primitive );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Primitive, Referenced );
   typedef Indices::size_type size_type;
 

@@ -23,7 +23,7 @@ using namespace GSG;
 using namespace GSG::FOX;
 
 
-GSG_IMPLEMENT_CLONE ( Context );
+GSG_IMPLEMENT_REFERENCED ( Context );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,6 +62,24 @@ Context::Context ( const Context &c ) : GlContext ( c ),
 Context::~Context()
 {
   // Do not delete the canvas. FOX will do that.
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set from the given object.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Context::setFrom ( const Context &c )
+{
+  Lock lock ( this );
+
+  // Set the members.
+  _canvas = c._canvas;
+
+  // Call the base class's function.
+  BaseClass::setFrom ( c );
 }
 
 

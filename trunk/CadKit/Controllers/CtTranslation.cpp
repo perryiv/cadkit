@@ -389,10 +389,12 @@ bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown 
     message = s;
   }
 
+#ifdef _CADKIT_CATCH_ALL
   catch ( ... )
   {
     PRINT << "Unknown exception caught." << std::endl;
   }
+#endif
 
   PRINT << "Error: " << message;
 

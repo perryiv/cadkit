@@ -255,11 +255,13 @@ bool DbJtDatabase::readData ( const std::string &filename )
     ERROR ( FORMAT ( "Exception generated when traversing '%s', reason: %s", filename.c_str(), e ), 0 );
     return false;
   }
+#ifdef _CADKIT_CATCH_ALL
   catch ( ... )
   {
     ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename.c_str() ), 0 );
     return false;
   }
+#endif
 }
 
 

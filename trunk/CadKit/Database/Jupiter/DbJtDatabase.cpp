@@ -20,8 +20,9 @@
 #include "DbJtTraversalState.h"
 #include "DbJtVisApi.h"
 
-#include "Interfaces/IMessageNotify.h" // VC++ internal compiler error if
-#include "Interfaces/IEntityNotify.h"  // if these are after SlInline.h
+#include "Interfaces/ITriangleAppend.h" // Keep this first or else VC++ internal compiler error.
+#include "Interfaces/IMessageNotify.h"  // VC++ internal compiler error if
+#include "Interfaces/IEntityNotify.h"   // if these are after SlInline.h
 #include "Interfaces/IDataTarget.h"
 
 #include "Standard/SlPrint.h"
@@ -83,13 +84,14 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _partLoadOption ( INSTANCE_PART ),
   _brepLoadOption ( TESS_ONLY ),
-//  _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
+  _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
   _shapeData ( new ShapeData ( NULL ) ),
   _progressPriorityLevel ( 0 ), // Send everything.
   _result ( true ),
-  _lodOption ( CadKit::PROCESS_ALL_LODS )
+  _lodOption ( CadKit::PROCESS_ALL_LODS ),
+  _matrixStack()
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _assemblies.get() );
@@ -117,6 +119,7 @@ DbJtDatabase::~DbJtDatabase()
   SL_ASSERT ( NULL == _current->getPart() );
   SL_ASSERT ( NULL == _current->getInstance() );
   SL_ASSERT ( true == _assemblies->empty() );
+  SL_ASSERT ( true == _matrixStack.empty() );
 }
 
 
@@ -238,8 +241,7 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
     return false;
 
   // Set the options.
-//  importer->setShapeLoadOption ( CadKit::convert ( _shapeLoadOption,    _messageNotify ) );
-  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
+  importer->setShapeLoadOption ( CadKit::convert ( _shapeLoadOption,    _messageNotify ) );
   importer->setBrepLoadOption  ( CadKit::convert ( _brepLoadOption,     _messageNotify ) );
   importer->setAssemblyOption  ( CadKit::convert ( _assemblyLoadOption, _messageNotify ) );
 
@@ -394,6 +396,9 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     // Save this assembly.
     this->_pushAssembly ( (eaiAssembly *) hierarchy );
 
+    // Push its matrix.
+    this->_pushMatrix ( hierarchy );
+
     // Start the assembly.
     _result = this->_startAssembly ( (eaiAssembly *) hierarchy );
     break;
@@ -403,6 +408,9 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     // Save this part.
     this->_setCurrentPart ( (eaiPart *) hierarchy );
 
+    // Push its matrix.
+    this->_pushMatrix ( hierarchy );
+
     // Start the part.
     _result = this->_startPart ( (eaiPart *) hierarchy );
     break;
@@ -411,6 +419,11 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
 
     // Save this instance.
     this->_setCurrentInstance ( (eaiInstance *) hierarchy );
+
+    // Push its matrix. Note: Nesting this inside _setCurrentInstance() and 
+    // _setCurrentPart() won't work because of the way you call 
+    // _setCurrentPart() below (which pushed one too may matrices on the stack).
+    this->_pushMatrix ( hierarchy );
 
     // If we are supposed to convert the part-instances into parts...
     if ( EXPLODE_PART == _partLoadOption )
@@ -502,6 +515,10 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 
     // Done with this assembly.
     this->_popAssembly();
+
+    // Pop its matrix.
+    this->_popMatrix();
+
     break;
 
   case eaiHierarchy::eaiPART:
@@ -511,6 +528,10 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 
     // No more part.
     this->_setCurrentPart ( NULL );
+
+    // Pop its matrix.
+    this->_popMatrix();
+
     break;
 
   case eaiHierarchy::eaiINSTANCE:
@@ -548,6 +569,10 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 
     // No more instance.
     this->_setCurrentInstance ( NULL );
+    
+    // Pop its matrix.
+    this->_popMatrix();
+
     break;
 
   default:
@@ -898,7 +923,7 @@ bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int
     _current->setSet ( i );
 
     // Process the set.
-    if ( false == this->_processSet ( shape, i ) )
+    if ( false == this->_processSet ( shape, whichShape, i ) )
       if ( false == ERROR ( FORMAT ( "Failed to process vertices for set %d, shape %d, LOD %d, part '%s'", i, whichShape, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   }
@@ -920,7 +945,7 @@ bool DbJtDatabase::_processShape ( eaiPart *part, const int &whichLod, const int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
+bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichShape, const int &whichSet )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processSet(), this = %X, shape = %X, whichSet = %d\n", this, shape, whichSet );
   SL_ASSERT ( shape );
@@ -929,16 +954,80 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
   SL_ASSERT ( UNSET_INDEX != _current->getShape() );
   SL_ASSERT ( whichSet == _current->getSet() );
 
-  // Try this interface.
-  SlQueryPtr<ISetNotify> notify ( _target );
-  if ( notify.isValid() )
-    if ( false == notify->startEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
-        return false;
+  // Used frequently below.
+  SlRefPtr<CadKit::IUnknown> unknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
 
   // Try this interface.
-  if ( notify.isValid() )
-    if ( false == notify->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+  SlQueryPtr<ISetNotify> set ( _target );
+  if ( set.isValid() )
+  {
+    if ( false == set->startEntity ( CadKit::makeSetHandle ( whichSet ), unknown ) )
+    {
+      if ( false == ERROR ( FORMAT ( "Failed to start set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
+        return false;
+    }
+  }
+
+  // If that interface isn't supported...
+  else
+  {
+    // If this set is a tri-strip...
+    if ( eaiEntity::eaiTRISTRIPSET == shape->typeID() )
+    {
+      // Try this interface.
+      SlQueryPtr<ITriangleAppendFloat> triangle ( _target );
+      if ( triangle.isValid() )
+      {
+        // Get the matrix that transforms the vertices from local to global.
+        SlMatrix44f localToGlobal ( true );
+        _matrixStack.multiply ( localToGlobal );
+
+        // Set the shape data. Even though we already have a pointer to the 
+        // eaiShape, we have make a handle so that the correct _setShapeData() 
+        // is called.
+        this->_setShapeData ( CadKit::makeShapeHandle ( whichShape ) );
+
+        // Get the number of vertices.
+        unsigned int numVertices ( _shapeData->getVertices().size ( whichSet ) );
+
+        // Should be true.
+        SL_ASSERT ( numVertices >= 3 );
+
+        // Grab the first two vertices.
+        SlVec3f v0 ( _shapeData->getVertices() ( whichSet, 0 ) );
+        SlVec3f v1 ( _shapeData->getVertices() ( whichSet, 1 ) ), v2;
+
+        // Convert from local to global coordinates.
+        v0 = localToGlobal * v0;
+        v1 = localToGlobal * v1;
+
+        // Loop through the vertices.
+        for ( unsigned int i = 2; i < numVertices; ++i )
+        {
+          // Get the next triangle.
+          v2 = _shapeData->getVertices() ( whichSet, i );
+
+          // Convert from local to global coordinates.
+          v2 = localToGlobal * v2;
+
+          // Append the triangle.
+          triangle->appendTriangle ( 
+            v0[0], v0[1], v0[2],
+            v1[0], v1[1], v1[2],
+            v2[0], v2[1], v2[2],
+            unknown );
+
+          // Swap vertices so that we get the 3rd vertex of a new triangle next time.
+          v0 = v1;
+          v1 = v2;
+        }
+      }
+    }
+  }
+
+  // Try this interface.
+  if ( set.isValid() )
+    if ( false == set->endEntity ( CadKit::makeSetHandle ( whichSet ), unknown ) )
       if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
 
@@ -1007,16 +1096,51 @@ bool DbJtDatabase::setPartLoadOption ( const PartLoadOption &option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//bool DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
-//{
-//  SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
+bool DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
+{
+  SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
+
+  // Set the option.
+  _shapeLoadOption = option;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 //
-//  // Set the option.
-//  _shapeLoadOption = option;
+//  Push the transformation matrix.
 //
-//  // It worked.
-//  return true;
-//}
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_pushMatrix ( eaiHierarchy *hierarchy )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_pushMatrix(), this = %X, hierarchy = %X\n", this, hierarchy );
+  SL_ASSERT ( hierarchy );
+
+  // Get the transformation.
+  SlMatrix44f matrix ( true );
+  CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), hierarchy, matrix );
+
+  // Push it onto our stack of matrices.
+  _matrixStack.push ( matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pop the transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_popMatrix()
+{
+  SL_PRINT2 ( "In DbJtDatabase::_popMatrix(), this = %X\n", this );
+
+  // Pop the top matrix from the stack.
+  _matrixStack.pop();
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1098,6 +1222,8 @@ eaiAssembly *DbJtDatabase::_getTopAssembly() const
 void DbJtDatabase::_setCurrentPart ( eaiPart *part )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setCurrentPart(), this = %X, part = %X\n", this, part );
+
+  // Set the current part.
   _current->setPart ( part );
 }
 
@@ -1111,6 +1237,8 @@ void DbJtDatabase::_setCurrentPart ( eaiPart *part )
 void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setCurrentInstance(), this = %X, instance = %X\n", this, instance );
+
+  // Set the current instance.
   _current->setInstance ( instance );
 }
 
@@ -1726,10 +1854,16 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
   std::vector<SlVec3f> &normals   = _shapeData->getNormals().getData();
   std::vector<SlVec3f> &colors    = _shapeData->getColors().getData();
   std::vector<SlVec2f> &texCoords = _shapeData->getTexCoords().getData();
-  std::vector<unsigned int> &numVertices  = _shapeData->getVertices().getIndices();
-  std::vector<unsigned int> &numNormals   = _shapeData->getNormals().getIndices();
-  std::vector<unsigned int> &numColors    = _shapeData->getColors().getIndices();
-  std::vector<unsigned int> &numTexCoords = _shapeData->getTexCoords().getIndices();
+
+  std::vector<unsigned int> &numVertices  = _shapeData->getVertices().getSizes();
+  std::vector<unsigned int> &numNormals   = _shapeData->getNormals().getSizes();
+  std::vector<unsigned int> &numColors    = _shapeData->getColors().getSizes();
+  std::vector<unsigned int> &numTexCoords = _shapeData->getTexCoords().getSizes();
+
+  std::vector<unsigned int> &startOfVertices  = _shapeData->getVertices().getStarts();
+  std::vector<unsigned int> &startOfNormals   = _shapeData->getNormals().getStarts();
+  std::vector<unsigned int> &startOfColors    = _shapeData->getColors().getStarts();
+  std::vector<unsigned int> &startOfTexCoords = _shapeData->getTexCoords().getStarts();
 
   // Used in the loop.
   int vertexCount ( -1 ), normalCount ( -1 ), colorCount ( -1 ), textureCount ( -1 );
@@ -1768,6 +1902,12 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
       // If we have vertices...
       if ( vertexCount > 0 && NULL != v.getReference() )
       {
+        // Save the starting places. Have to do this first.
+        startOfVertices.push_back  ( vertices.size() );
+        startOfNormals.push_back   ( normals.size() );
+        startOfColors.push_back    ( colors.size() );
+        startOfTexCoords.push_back ( texCoords.size() );
+
         // Append the arrays to the std::vectors. If they are empty then the 
         // append function will just return.
         CadKit::append3D ( vertexCount,  v.getReference(), vertices );
@@ -1835,7 +1975,7 @@ bool DbJtDatabase::getVertices ( ShapeHandle shape, IQueryShapeVerticesVec3f::Ve
 
   // For convenience.
   std::vector<SlVec3f> &vertices         = _shapeData->getVertices().getData();
-  std::vector<unsigned int> &numVertices = _shapeData->getVertices().getIndices();
+  std::vector<unsigned int> &numVertices = _shapeData->getVertices().getSizes();
 
   // Get the number of vertices.
   unsigned int totalNumVertices = vertices.size();
@@ -2060,11 +2200,6 @@ bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, VertexSetType &type ) cons
 
     type = CadKit::POLYGON_SET;
     break;
-
-//  case eaiEntity::eaiTRIFANSET:
-//
-//    type = CadKit::TRI_FAN_SET;
-//    break;
 
   case eaiEntity::eaiTRISTRIPSET:
 

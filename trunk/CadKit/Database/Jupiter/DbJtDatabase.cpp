@@ -1056,9 +1056,13 @@ bool DbJtDatabase::_appendTriangles ( ShapeHandle shape, int whichSet )
       v2[0], v2[1], v2[2],
       unknown );
 
-    // Swap vertices so that we get the 3rd vertex of a new triangle next time.
-    v0 = v1;
-    v1 = v2;
+    // Swap vertices so that we get the 3rd vertex of a new triangle next 
+    // time. Note: we have to swap differently every other time in order
+    // to maintain consistant ordering.
+    if ( 0 == i % 2 )
+      v0 = v2;
+    else
+      v1 = v2;
   }
 
   // If we get to here then it worked.

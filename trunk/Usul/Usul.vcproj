@@ -354,6 +354,9 @@
 					RelativePath=".\Interfaces\IFoxToggleButton.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ILoadFileDialog.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IMenuEntry.h">
 				</File>
 				<File

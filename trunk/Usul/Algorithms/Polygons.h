@@ -60,15 +60,15 @@ private:
 //  Polygon Class
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+template < int VertsPerPoly >
 class Polygon
 {
 public:
   typedef SharedVertex< Polygon > SharedVertex;
-  typedef std::list< SharedVertex* > Vertices;
-  typedef Vertices::iterator Iterator;
+  typedef std::vector< SharedVertex* > Vertices;
+  typedef typename Vertices::iterator Iterator;
 
-  Polygon() : _vertices(), _visited( false ) { }
+  Polygon() : _index( 0 ), _vertices(), _visited( false ) { _vertices.reserve( VertsPerPoly ); }
 
   void append( SharedVertex *sv ) { _vertices.push_back( sv ); }
   Iterator begin() { return _vertices.begin(); }
@@ -76,71 +76,60 @@ public:
 
   bool visited() { return _visited; }
   void visited( bool v ) { _visited = v; }
+
+  unsigned int index() { return _index; }
+  void index( unsigned int i ) { _index = i; }
 private:
+  unsigned int _index;
   Vertices _vertices;
   bool _visited;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Base Functor
-//
-///////////////////////////////////////////////////////////////////////////////
-struct Functor
+template < class IndexSequence, class Polygon, class SharedVertex >
+struct UberFunctor
 {
-  virtual void operator() () = 0;
-};
+  UberFunctor ( IndexSequence& answer, std::list< UberFunctor >& todoStack, Polygon *p ) :
+  _answer( answer ),
+  _todoStack( todoStack ),
+  _polygon ( p ),
+  _sharedVertex( 0x0 )
+  { }
+  UberFunctor ( IndexSequence& answer, std::list< UberFunctor >& todoStack, SharedVertex *sv ) :
+  _answer( answer ),
+  _todoStack( todoStack ),
+  _polygon ( 0x0 ),
+  _sharedVertex( sv )
+  { }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  VisitVertex Functor
-//
-///////////////////////////////////////////////////////////////////////////////
-template < class VisitPolygon >
-struct VisitVertex : public Functor
-{
-  typedef typename VisitPolygon::Polygon Polygon;
-
-  VisitVertex ( SharedVertex< Polygon > *sv, std::list< Functor * > &todoStack ) : _sharedVertex ( sv ), _todoStack( todoStack ) {}
-  virtual void operator() ()
+  void operator() ()
   {
-    for(SharedVertex< Polygon >::Iterator i = _sharedVertex->begin(); i != _sharedVertex->end(); ++i)
+    if ( _polygon )
     {
-      if( !(*i)->visited() )
+      for( Polygon::Iterator sv = _polygon->begin(); sv != _polygon->end(); ++sv )
       {
-        _todoStack.push_back( new VisitPolygon ( *i, _todoStack ) );
-        (*i)->visited (true );
+        if( !(*sv)->visited() )
+        _todoStack.push_back( UberFunctor < IndexSequence, Polygon, SharedVertex > ( _answer, _todoStack, *sv ) );
+        (*sv)->visited ( true );
+      }
+      _answer.push_back( _polygon->index() );
+    }
+    if( _sharedVertex )
+    {
+      for(SharedVertex::Iterator i = _sharedVertex->begin(); i != _sharedVertex->end(); ++i)
+      {
+        if( !(*i)->visited() )
+        {
+          _todoStack.push_back( UberFunctor < IndexSequence, Polygon, SharedVertex > ( _answer, _todoStack, *i ) );
+          (*i)->visited ( true );
+        }
       }
     }
   }
 private:
-  SharedVertex< Polygon > *_sharedVertex;
-  std::list< Functor *> &_todoStack;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  VisitTriangle Functor
-//
-///////////////////////////////////////////////////////////////////////////////
-template < class Polygon_ >
-struct VisitPolygon : public Functor
-{
-  typedef Polygon_ Polygon;
-  VisitPolygon ( Polygon *p, std::list< Functor* > &todoStack ) : _polygon ( p ), _todoStack( todoStack ) { }
-  virtual void operator()()
-  {
-    for( Polygon::Iterator sv = _polygon->begin(); sv != _polygon->end(); ++sv )
-    {
-      if( !(*sv)->visited() )
-      _todoStack.push_back( new VisitVertex< VisitPolygon< Polygon > > ( *sv, _todoStack ) );
-      (*sv)->visited ( true );
-    }
-
-  }
-private:
+  IndexSequence &_answer;
+  std::list< UberFunctor > &_todoStack;
   Polygon *_polygon;
-  std::list< Functor *> &_todoStack;
+  SharedVertex *_sharedVertex;
 };
 
 }; // namespace Detail
@@ -245,8 +234,6 @@ inline void findAdjacent (
   typedef std::vector< Polygon > Polygons;
   typedef std::map< Vertex, SharedVertex * > Map;
 
-  typedef Detail::VisitPolygon < Polygon > VisitPolygon;
-
   // Initialize.
   answer.erase ( answer.begin(), answer.end() );
 
@@ -294,7 +281,9 @@ inline void findAdjacent (
   Map sharedVertsMap;
 
   //build the polygons, shared vertices, and map
-  Polygons::iterator currentPolygon = polygons.begin();
+  updater.statusMessage( "Finding shared vertices...");
+  Polygons::iterator currentPolygon ( polygons.begin() );
+  unsigned int polyIndex ( 0 );
   for( VertexIterator i = vertices.begin(); i != vertices.end(); i+=numVertsPerPoly )
   {
     for( unsigned int j = 0; j < numVertsPerPoly; ++j )
@@ -303,40 +292,37 @@ inline void findAdjacent (
       currentPolygon->append ( iter->second );
       iter->second->append( &*currentPolygon );
     }
+    currentPolygon->index( polyIndex++ );
     ++currentPolygon;
+
+    //update the progress
+    if( sharedVerts.size() % 250 == 0 )
+    {
+      std::ostringstream message;
+      message << "Found " << sharedVerts.size() << " shared vertices. ";
+      updater.statusMessage( message.str() );
+    }
   }
 
-  std::list< Detail::Functor* > todoStack;
+  typedef std::list< Detail::UberFunctor < IndexSequence,Polygon, SharedVertex > > TodoStack;
+  TodoStack todoStack;
 
   //put the functor for the selected polygon on the stack
-  Detail::Functor *first = new VisitPolygon( &polygons.at( selectedPolygon ), todoStack );
   polygons.at( selectedPolygon ).visited ( true );
-  todoStack.push_back( first );
+  todoStack.push_back( Detail::UberFunctor< IndexSequence, Polygon, SharedVertex > ( answer, todoStack, &polygons.at( selectedPolygon ) ) );
 
-  std::list< Detail::Functor *>::iterator todoIterator = todoStack.begin();
+  TodoStack::iterator todoIterator = todoStack.begin();
 
   //loop through the todo stack
-  unsigned int count ( 0 );
   while( todoIterator != todoStack.end() )
   {
-    ++count;
-    (*(*todoIterator))();
-    Detail::Functor *functor = *todoIterator;
+    (*todoIterator)();
     todoStack.pop_front();
-    delete functor;
     todoIterator = todoStack.begin();
-    updater ( count );
+    updater ( answer );
   }
 
-  //build the answer list
-  for(unsigned int i = 0; i < polygons.size(); ++i )
-  {
-    // any polygon that was visited is connected to the selected polygon
-    if( polygons.at(i).visited() )
-      answer.push_back( i );
-  }
 }
-
 
 }; // namespace Polygons
 }; // namespace Algorithms
@@ -344,3 +330,4 @@ inline void findAdjacent (
 
 
 #endif // _USUL_ALGORITHMS_POLYGONS_H_
+

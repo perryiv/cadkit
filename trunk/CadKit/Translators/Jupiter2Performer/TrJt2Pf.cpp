@@ -56,6 +56,7 @@
 # include "Standard/SlBitmask.h"
 # include "Performer/pf/pfDCS.h"
 # include "Performer/pf/pfLOD.h"
+# include "Performer/pf/pfGeode.h"
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"
@@ -563,9 +564,9 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
   // Make a GeoState to hold this GeoSet's state.
   SlRefPtr<pfGeoState> state = new pfGeoState;
 
-  // Look for (and add) the material. It could either belong to the part
-  // or to one of its parent assemblies.
-  this->_addMaterial ( part, *state );
+  // Look for (and add) the material. It could either belong to this shape, 
+  // the parent part or to one of its parent assemblies.
+  this->_addMaterial ( entity, whichLOD, whichShape, part, *state );
 
   // TODO. Make this work.
   //this->_addTexture ( part, state );
@@ -589,6 +590,11 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
     CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, _jtTraverser->getName ( entity ).c_str(), whichLOD, whichShape );
     return false;
   }
+
+  // Declare the vectors here and keep appending to them.
+  std::vector<float> vertices, normals, colors, texture;
+
+  You might want to think making a pfGeoSet for each set, because, is there any guarantee that each set in the shaps will have the same arrays? For example, will set 1 have colors, and set 2 not? I don't think you can jam that into one pfGeoSet.
 
   // Loop through the sets.
   for ( unsigned int i = 0; i < numSets; ++i )
@@ -624,7 +630,10 @@ bool TrJt2Pf::_addSet ( DbJtTraverser::EntityHandle entity,
                         const unsigned int &whichLOD, 
                         const unsigned int &whichShape, 
                         const unsigned int &whichSet, 
-                        pfGeoSet &gset )
+                        std::vector<float> vertices, 
+                        std::vector<float> normals, 
+                        std::vector<float> colors,
+                        std::vector<float> texture )
 {
   SL_PRINT5 ( "In TrJt2Pf::_addSet(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
 

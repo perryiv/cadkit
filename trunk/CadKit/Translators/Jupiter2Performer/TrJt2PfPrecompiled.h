@@ -57,6 +57,7 @@
 # include "Database/Jupiter/DbJtClientHeaders.h"
 # include "Performer/pf/pfDCS.h"
 # include "Performer/pf/pfLOD.h"
+# include "Performer/pf/pfGeode.h"
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 # include "Performer/pr/pfLinMath.h"

@@ -167,6 +167,9 @@
 				RelativePath=".\Molecule.cpp">
 			</File>
 			<File
+				RelativePath=".\Radii.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.cpp">
 			</File>
 		</Filter>
@@ -184,6 +187,9 @@
 			</File>
 			<File
 				RelativePath=".\Molecule.h">
+			</File>
+			<File
+				RelativePath=".\Radii.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.h">

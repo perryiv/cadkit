@@ -29,7 +29,7 @@ namespace Algorithms {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class ArrayType, class ContainerType > 
+template < class ArrayType, class ContainerType > inline
 void copy2dTo2d ( const ArrayType source,
                   typename ContainerType::size_type rows,
                   typename ContainerType::size_type columns,
@@ -58,7 +58,7 @@ void copy2dTo2d ( const ArrayType source,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class ArrayType, class ContainerType > 
+template < class ArrayType, class ContainerType > inline
 void copy1dTo2d ( const ArrayType source,
                   typename ContainerType::size_type rows,
                   typename ContainerType::size_type columns,

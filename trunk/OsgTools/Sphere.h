@@ -41,7 +41,7 @@ namespace OsgTools
       _radius = s._radius;
     }
 
-    virtual osg::Node* operator()()
+    virtual osg::Node* operator()() const
     {
       osg::ref_ptr<osg::Sphere> s = new osg::Sphere(osg::Vec3(0.0,0.0,0.0),_radius);
       osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable( s.get() );

@@ -54,8 +54,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace Usul {
-namespace Detail {
+namespace Config {
+namespace UsulDetail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ ErrorCheckerPrintAndThrow;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace Detail.
+//  End of namespace UsulDetail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -214,16 +214,22 @@ ErrorCheckerPrintAndThrow;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class RealType_ > class Config
+template
+<
+  class IndependentType_, 
+  class DependentType_ = IndependentType_,
+  class SizeType_ = unsigned int
+>
+class UsulConfig
 {
 public:
 
-  typedef Detail::ErrorCheckerType      ErrorCheckerType;
-  typedef GN::Config::Base::StringData  BaseClassType;
+  typedef UsulDetail::ErrorCheckerType   ErrorCheckerType;
+  typedef GN::Config::Base::StringData    BaseClassType;
 
-  typedef unsigned int SizeType;
-  typedef RealType_    IndependentType;
-  typedef RealType_    DependentType;
+  typedef IndependentType_  IndependentType;
+  typedef DependentType_    DependentType;
+  typedef SizeType_         SizeType;
 
 private:
 
@@ -250,13 +256,13 @@ public:
   typedef ::Usul::Math::Vector4<DependentType>  Vec4;
   typedef ::Usul::Math::Matrix44<DependentType> Matrix44;
 
-  typedef Detail::FloatTester<IndependentType> IndependentTester;
-  typedef Detail::FloatTester<DependentType>   DependentTester;
-  typedef Detail::Translation<Matrix44,Vec3>   Translation;
-  typedef Detail::Scale<Matrix44,Vec3>         Scale;
-  typedef Detail::Multiply<Matrix44,Vec4,Vec3> Multiply;
-  typedef Detail::SquareRoot<DependentType>    SquareRoot;
-  typedef Detail::Power<DependentType>         Power;
+  typedef UsulDetail::FloatTester<IndependentType> IndependentTester;
+  typedef UsulDetail::FloatTester<DependentType>   DependentTester;
+  typedef UsulDetail::Translation<Matrix44,Vec3>   Translation;
+  typedef UsulDetail::Scale<Matrix44,Vec3>         Scale;
+  typedef UsulDetail::Multiply<Matrix44,Vec4,Vec3> Multiply;
+  typedef UsulDetail::SquareRoot<DependentType>    SquareRoot;
+  typedef UsulDetail::Power<DependentType>         Power;
 };
 
 
@@ -266,7 +272,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace Usul
+}; // namespace Config
 }; // namespace GN
 
 

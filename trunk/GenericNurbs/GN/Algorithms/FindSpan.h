@@ -74,7 +74,7 @@ struct KnotSpan
   static SizeType find ( const IndependentSequence &knots, SizeType numCtrPts, SizeType low, IndependentArgument u )
   {
     GN_ERROR_CHECK ( !knots.empty() );
-    GN_ERROR_CHECK ( numCtrPts > Limits::MIN_NUM_CTR_PTS );
+    GN_ERROR_CHECK ( numCtrPts >= Limits::MIN_NUM_CTR_PTS );
     GN_ERROR_CHECK ( low > 0 );
 
     // See if it's the last knot.
@@ -133,7 +133,7 @@ struct KnotSpan
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType >
+template < class SplineType > inline
 typename SplineType::SizeType findKnotSpan ( const SplineType &spline, 
                                              typename SplineType::SizeType whichIndepVar, 
                                              typename SplineType::IndependentArgument u )
@@ -164,7 +164,7 @@ typename SplineType::SizeType findKnotSpan ( const SplineType &spline,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType >
+template < class CurveType > inline
 typename CurveType::SizeType findKnotSpan ( const CurveType &curve, 
                                             typename CurveType::IndependentArgument u )
 {

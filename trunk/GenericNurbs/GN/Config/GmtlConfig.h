@@ -53,8 +53,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace gmtl {
-namespace Detail {
+namespace Config {
+namespace GmtlDetail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,7 +179,7 @@ struct ThrowingPolicy
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace Detail.
+//  End of namespace GmtlDetail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -194,16 +194,22 @@ struct ThrowingPolicy
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class RealType_ > class Config
+template
+<
+  class IndependentType_, 
+  class DependentType_ = IndependentType_,
+  class SizeType_ = unsigned int
+>
+class GmtlConfig
 {
 public:
 
-  typedef Detail::ThrowingPolicy        ErrorCheckerType;
-  typedef GN::Config::Base::StringData  BaseClassType;
+  typedef GmtlDetail::ThrowingPolicy     ErrorCheckerType;
+  typedef GN::Config::Base::StringData    BaseClassType;
 
-  typedef unsigned int SizeType;
-  typedef RealType_    IndependentType;
-  typedef RealType_    DependentType;
+  typedef IndependentType_  IndependentType;
+  typedef DependentType_    DependentType;
+  typedef SizeType_         SizeType;
 
 private:
 
@@ -223,13 +229,13 @@ public:
   typedef ::gmtl::Vec<DependentType,4>       Vec4;
   typedef ::gmtl::Matrix<DependentType,4,4>  Matrix44;
 
-  typedef Detail::FloatTester<IndependentType> IndependentTester;
-  typedef Detail::FloatTester<DependentType>   DependentTester;
-  typedef Detail::Translation<Matrix44,Vec3>   Translation;
-  typedef Detail::Scale<Matrix44,Vec3>         Scale;
-  typedef Detail::Multiply<Matrix44,Vec4,Vec3> Multiply;
-  typedef Detail::SquareRoot<DependentType>    SquareRoot;
-  typedef Detail::Power<DependentType>         Power;
+  typedef GmtlDetail::FloatTester<IndependentType> IndependentTester;
+  typedef GmtlDetail::FloatTester<DependentType>   DependentTester;
+  typedef GmtlDetail::Translation<Matrix44,Vec3>   Translation;
+  typedef GmtlDetail::Scale<Matrix44,Vec3>         Scale;
+  typedef GmtlDetail::Multiply<Matrix44,Vec4,Vec3> Multiply;
+  typedef GmtlDetail::SquareRoot<DependentType>    SquareRoot;
+  typedef GmtlDetail::Power<DependentType>         Power;
 };
 
 
@@ -239,7 +245,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace gmtl
+}; // namespace Config
 }; // namespace GN
 
 

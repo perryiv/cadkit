@@ -25,12 +25,12 @@ ColorSetter& ColorSetter::operator =(const ColorSetter& cs)
   return *this;
 }
 
-void ColorSetter::operator ()(osg::ShapeDrawable* sd)
+void ColorSetter::operator ()(osg::ShapeDrawable* sd) const
 {
   sd->setColor( _color );
 }
 
-void ColorSetter::operator ()(osg::Geometry* g)
+void ColorSetter::operator ()(osg::Geometry* g) const
 {
   osg::Vec4Array* color_array = new osg::Vec4Array();
   color_array->push_back( _color );

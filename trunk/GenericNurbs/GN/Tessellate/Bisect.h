@@ -191,7 +191,7 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class IndependentSequenceType >
+template < class CurveType, class IndependentSequenceType > inline
 void bisect ( const CurveType &curve,
               typename CurveType::IndependentArgument u0,
               typename CurveType::IndependentArgument u1,
@@ -211,7 +211,7 @@ void bisect ( const CurveType &curve,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class IndependentSequenceType >
+template < class CurveType, class IndependentSequenceType > inline
 void bisect ( const CurveType &curve,
               typename CurveType::DependentArgument chordHeight,
               IndependentSequenceType &u )

@@ -47,17 +47,17 @@ MaterialSetter& MaterialSetter::operator =(const MaterialSetter& ms)
   return (*this);
 }
 
-void MaterialSetter::operator ()(osg::Node* n)
+void MaterialSetter::operator ()(osg::Node* n) const
 {
   adjust_stateset( n->getOrCreateStateSet() );
 }
 
-void MaterialSetter::operator ()(osg::Drawable* d)
+void MaterialSetter::operator ()(osg::Drawable* d) const
 {
   adjust_stateset( d->getOrCreateStateSet() );
 }
 
-void MaterialSetter::adjust_stateset(osg::StateSet* ss)
+void MaterialSetter::adjust_stateset(osg::StateSet* ss) const
 {
   osg::ref_ptr<osg::Material> mat = new osg::Material();
 

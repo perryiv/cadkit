@@ -334,7 +334,7 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 
   // Make the parameters.
   IndependentSequence params;
-  Parameterize::fit ( points, order, power, params );
+  Parameterize::fit ( points, power, params );
 
   // Make the knot vector. Size it for interpolation.
   IndependentSequence knots;
@@ -343,6 +343,9 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 
   // Interpolate.
   GN::Interpolate::global ( order, params, knots, points, s );
+
+  // Again.
+  GN::Interpolate::global ( order, points, power, s );
 
   // Check.
   ::confirm ( s );

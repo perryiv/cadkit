@@ -16,6 +16,8 @@
 #ifndef _USUL_CONTAINERS_s_CLASSES_H_
 #define _USUL_CONTAINERS_s_CLASSES_H_
 
+#include <functional>
+
 
 namespace Usul {
 namespace Containers {
@@ -390,6 +392,21 @@ public:
   {
     return _v.assign ( first, last );
   }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Equality predicates for troublesome nested containers.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct IsEqual : public std::binary_function < value_type, value_type, bool >
+  {
+    bool operator () ( const value_type &a, const value_type &b )
+    {
+      return ( a.equal ( b ) );
+    }
+  };
 
 
 private:

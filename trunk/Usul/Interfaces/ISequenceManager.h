@@ -20,11 +20,11 @@ namespace Usul
     {
     public:
       /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( ISequencesManager );
+      USUL_DECLARE_QUERY_POINTERS ( ISequenceManager );
 
       enum { IID = 1100798040 };
 
-      virtual IUnknown* getListOf ( unsigned int iid ) = 0;
+      virtual Usul::Interfaces::IUnknown* getListOf ( unsigned int iid ) = 0;
 
     }; //class ISequenceManager
   }; //namespace Interfaces

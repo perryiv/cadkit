@@ -26,12 +26,13 @@ namespace Usul
 
       enum { IID = iid };
 
-      virtual void pushMode( const ModeType & ) = 0;
+      virtual void pushMode( ModeType ) = 0;
       virtual void popMode() = 0;
 
     }; //class IModeStack
 
     typedef IModeStack< unsigned int, 1100797533u > IModeStackUint;
+
   }; //namespace Interfaces
 }; //namespace Usul
 

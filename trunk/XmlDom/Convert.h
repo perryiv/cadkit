@@ -62,6 +62,63 @@ template <> struct Convert < bool >
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class To > struct ConvertVec2
+{
+  template < class From > To operator () ( const From &from )
+  {
+    typedef typename From::value_type CharType;
+    std::basic_istringstream<CharType> in ( from );
+    To value;
+    in >> value[0] >> value[1];
+    return value;
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class To > struct ConvertVec3
+{
+  template < class From > To operator () ( const From &from )
+  {
+    typedef typename From::value_type CharType;
+    std::basic_istringstream<CharType> in ( from );
+    To value;
+    in >> value[0] >> value[1] >> value[2];
+    return value;
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class To > struct ConvertVec4
+{
+  template < class From > To operator () ( const From &from )
+  {
+    typedef typename From::value_type CharType;
+    std::basic_istringstream<CharType> in ( from );
+    To value;
+    in >> value[0] >> value[1] >> value[2] >> value[3];
+    return value;
+  }
+};
+
+
 }; // namespace XML
 
 

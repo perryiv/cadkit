@@ -38,6 +38,7 @@
 #include "Standard/SlMessageIds.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <fstream>
 #endif
 
 // To help shorten up the lines.
@@ -55,9 +56,7 @@ using namespace CadKit;
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbStlDatabase, DbBaseTarget );
 CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 
-#ifdef _DEBUG
-std::ofstream stl_out( "d:/temp/stlout.txt", std::ios_base::out | std::ios_base::trunc );
-#endif
+/*DEBUG*/std::ofstream stl_out( "d:/temp/stlout.txt", std::ios_base::out | std::ios_base::trunc );
 
 
 ///////////////////////////////////////////////////////////////////////////////

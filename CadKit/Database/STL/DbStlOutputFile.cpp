@@ -97,5 +97,10 @@ void DbStlOutputFile::close( )
 
 bool DbStlOutputFile::is_open() const
 {
+  // For some reason std::ofstream::is_open() is not declared "const" on Irix.
+#ifdef __sgi
+  return _out.rdbuf()->is_open();
+#else
   return _out.is_open();
+#endif
 }

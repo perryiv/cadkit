@@ -20,6 +20,8 @@
 #include "Standard/SlMaterial.h"
 
 class eaiEntity;
+class eaiTransform;
+class eaiMaterial;
 
 
 namespace CadKit

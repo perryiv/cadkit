@@ -11,8 +11,10 @@
 #define __USUL_POLYGONS_ADJACENCY_MAP_H__
 
 #include "Usul/Polygons/SharedVertex.h"
+#include "Usul/MPL/SameType.h"
 
 #include <functional>
+#include <map>
 
 namespace Usul {
 namespace Polygons {
@@ -26,13 +28,14 @@ struct NoCancelFunctor
   bool operator() () const { return false; }
 };
 
-template < class IndexSequence >
+
 struct NoUpdateFunctor
 {
   void operator () ( int ) { }
   void operator () ( const std::string& ) { }
-  void operator () ( const IndexSequence& keepers, bool b = false ) { }
+  template < class IndexSequence > void operator () ( const IndexSequence& keepers, bool b = false ) { }
 };
+
 
 } //namespace Functors
 
@@ -61,7 +64,8 @@ namespace Compare
   };
 } //namespace Compare
 
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Adjacency Graph Class
 //
@@ -71,33 +75,87 @@ template
 <
   class Polygon,
   class VertexSequence,
-  class UpdateFunctor = Functors::NoUpdateFunctor,
-  class CancelFunctor = Functors::NoCancelFunctor,
   class Compare = std::less< VertexSequence::value_type >
 >
 class AdjacencyMap
 {
 public:
+
   //Useful typedefs
-  typedef typename VertexSequence::value_type Vertex;
+  typedef typename VertexSequence::value_type VertexType;
   typedef typename VertexSequence::size_type SizeType;
   typedef typename VertexSequence::const_iterator VertexIterator;
-  typedef SharedVertex< Polygon > SharedVertex;
-  typedef std::vector< Polygon > Polygons;
-  typedef std::map< Vertex, SharedVertex, Compare > Map;
+  typedef SharedVertex < Polygon, VertexType > SharedVertex;
+  typedef std::vector < Polygon > Polygons;
+  typedef std::map < VertexType, SharedVertex, Compare > Map;
 
   AdjacencyMap() :
-  _sharedVertsMap(),
-  _polygons()
+    _sharedVertsMap(),
+    _polygons()
   {
+    USUL_ASSERT_SAME_TYPE ( VertexType, typename Polygon::VertexType );
+    USUL_ASSERT_SAME_TYPE ( VertexType, typename SharedVertex::ValueType );
   }
 
   AdjacencyMap( const Compare& c ) :
-  _sharedVertsMap( c ),
-  _polygons()
+    _sharedVertsMap( c ),
+    _polygons()
   { 
   }
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Clear the data.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void clear()
+  {
+    _sharedVertsMap.clear();
+    _polygons.clear();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access the map of shared vertices.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const Map &sharedVertsMap() const
+  {
+    return _sharedVertsMap;
+  }
+  Map &sharedVertsMap()
+  {
+    return _sharedVertsMap;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access the polygons.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const Polygons &polygons() const
+  {
+    return _polygons;
+  }
+  Polygons &polygons()
+  {
+    return _polygons;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Add vertices.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class UpdateFunctor, class CancelFunctor >
   void add ( const VertexSequence& vertices, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int numVertsPerPoly )
   {
     // Handle trivial case.
@@ -149,7 +207,7 @@ public:
       for( unsigned int j = 0; j < numVertsPerPoly; ++j )
       {
         //Key to find shared vertex in map
-        Vertex key ( *(i + j ) );
+        VertexType key ( *(i + j ) );
 
         //Get the iterator if the key is in the map
         Map::iterator iter ( _sharedVertsMap.find( key ) );
@@ -181,8 +239,8 @@ public:
   }
 
 
-  template < class Functor, class IndexSequence >
-  void walkPolygons( IndexSequence& answer, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int selectedPolygon )
+  template < class Functor, class IndexSequence, class UpdateFunctor, class CancelFunctor >
+  void walkPolygons ( IndexSequence& answer, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int selectedPolygon )
   {
     typedef typename IndexSequence::iterator IndexIterator;
     typedef std::vector< Functor > TodoStack;
@@ -229,9 +287,6 @@ public:
     updater ( answer, true );
   }
 
-  Polygons&       polygons ()       { return _polygons; }
-  const Polygons& polygons () const { return _polygons; }
-
   void setAllUnvisited()
   {
     for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
@@ -241,16 +296,20 @@ public:
       i->second.visited( false );
   }
 
-  unsigned int size() const { _polygons.size() + _sharedVertsMap.size(); }
+  unsigned int size() const
+  {
+    return _polygons.size() + _sharedVertsMap.size();
+  }
 
 private:
+
   Map            _sharedVertsMap;
   Polygons       _polygons;
 
 }; //class AdjacencyMap
 
-} //namespace Polygons
 
+} //namespace Polygons
 } //namespace Usul
 
 

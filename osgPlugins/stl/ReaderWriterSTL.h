@@ -19,9 +19,7 @@
 #include <string>
 #include <list>
 #include <map>
-
-#include <iostream>
-#include <fstream>
+#include <iosfwd>
 
 namespace osg { class Group; class Geode; };
 
@@ -69,8 +67,8 @@ protected:
 private:
 
   bool                    _isAscii ( const std::string &filename ) const;
-  void                    _parseBinaryFile ( std::ifstream &in, const Update &progress );
-  void                    _parseAsciiFile  ( std::ifstream &in, unsigned int filesize, const Update &progress );
+  void                    _parseBinaryFile ( std::istream &in, const Update &progress );
+  void                    _parseAsciiFile  ( std::istream &in, unsigned int filesize, const Update &progress );
 
   typedef std::list < osg::Vec3 > Vertices;
   typedef std::list < osg::Vec3 > Normals;

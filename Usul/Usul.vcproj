@@ -307,6 +307,9 @@
 				Name="Exceptions"
 				Filter="">
 				<File
+					RelativePath=".\Exceptions\Canceled.h">
+				</File>
+				<File
 					RelativePath="Exceptions\Thrower.h">
 				</File>
 			</Filter>
@@ -473,10 +476,10 @@
 					Name="File"
 					Filter="">
 					<File
-						RelativePath=".\Interfaces\IAcceptExtension.h">
+						RelativePath=".\Interfaces\ICanRead.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICanRead.h">
+						RelativePath=".\Interfaces\ICanWrite.h">
 					</File>
 					<File
 						RelativePath="Interfaces\IRead.h">
@@ -799,6 +802,9 @@
 				<File
 					RelativePath=".\Io\Reader.h">
 				</File>
+				<File
+					RelativePath=".\Io\Writer.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Polygons"
@@ -814,6 +820,13 @@
 				</File>
 				<File
 					RelativePath=".\Polygons\Triangle.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Strings"
+				Filter="">
+				<File
+					RelativePath=".\Strings\Case.h">
 				</File>
 			</Filter>
 		</Filter>

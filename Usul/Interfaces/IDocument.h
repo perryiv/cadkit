@@ -18,6 +18,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <string>
+#include <utility>
 
 namespace Usul {
 namespace Interfaces {
@@ -25,6 +27,9 @@ namespace Interfaces {
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
+  /// Typedefs.
+  typedef std::pair<std::string,bool> Filename;
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IDocument );
 
@@ -34,8 +39,8 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                         modified ( bool m ) = 0;
   virtual bool                         modified() const = 0;
 
-  virtual const std::string&           filename() const = 0;
-  virtual void                         filename( const std::string& f ) = 0;
+  virtual const Filename &             filename() const = 0;
+  virtual void                         filename ( const std::string &f, bool valid = true ) = 0;
   
 }; // class IDocument
 

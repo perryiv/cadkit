@@ -297,6 +297,12 @@
 					RelativePath=".\State.h">
 				</File>
 				<File
+					RelativePath=".\Statistics.cpp">
+				</File>
+				<File
+					RelativePath=".\Statistics.h">
+				</File>
+				<File
 					RelativePath="Visitor.h">
 				</File>
 			</Filter>

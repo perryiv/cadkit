@@ -212,6 +212,12 @@
 				Name="Functions"
 				Filter="">
 				<File
+					RelativePath=".\Functions\App.cpp">
+				</File>
+				<File
+					RelativePath=".\Functions\App.h">
+				</File>
+				<File
 					RelativePath=".\Functions\Check.cpp">
 				</File>
 				<File
@@ -234,6 +240,18 @@
 				</File>
 				<File
 					RelativePath=".\Functions\Files.h">
+				</File>
+				<File
+					RelativePath=".\Functions\GLVisual.cpp">
+				</File>
+				<File
+					RelativePath=".\Functions\GLVisual.h">
+				</File>
+				<File
+					RelativePath=".\Functions\MainWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\Functions\MainWindow.h">
 				</File>
 				<File
 					RelativePath=".\Functions\Mouse.cpp">
@@ -344,6 +362,9 @@
 				</File>
 				<File
 					RelativePath=".\Headers\GLCanvas.h">
+				</File>
+				<File
+					RelativePath=".\Headers\GLVisual.h">
 				</File>
 				<File
 					RelativePath=".\Headers\HorizontalFrame.h">
@@ -458,6 +479,9 @@
 				</File>
 				<File
 					RelativePath=".\Headers\VerticalFrame.h">
+				</File>
+				<File
+					RelativePath=".\Headers\Visual.h">
 				</File>
 				<File
 					RelativePath=".\Headers\Window.h">

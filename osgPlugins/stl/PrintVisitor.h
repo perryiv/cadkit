@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -5,7 +6,6 @@
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef __OSG_STL_PLUGIN_PRINT_VISITOR_H__
 #define __OSG_STL_PLUGIN_PRINT_VISITOR_H__
@@ -116,6 +116,7 @@ void PrintVisitor<Writer>::apply(osg::Geode& geode)
   }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Visit a lod node.  Only traverse the highest lod.
@@ -132,5 +133,6 @@ void PrintVisitor<Writer>::apply(osg::LOD& lod)
     child->accept( *this );
   }
 }
+
 
 #endif //__OSG_STL_PLUGIN_PRINT_VISITOR_H__

@@ -47,10 +47,12 @@ template < class T > inline T *findParent ( FX::FXWindow *window )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0 // Depreciated. Use FoxTools::Functions::mainWindow()
 inline FX::FXMainWindow *findMainWindow ( FX::FXWindow *window )
 {
   return FoxTools::Functions::findParent<FX::FXMainWindow> ( window );
 }
+#endif
 
 
 }; // namespace Functions

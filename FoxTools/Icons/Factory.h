@@ -21,7 +21,7 @@
 #include <vector>
 #include <map>
 
-namespace FX { class FXMetaClass; class FXIcon; class FXApp; };
+namespace FX { class FXMetaClass; class FXIcon; };
 
 
 namespace FoxTools {
@@ -101,7 +101,7 @@ public:
   void                data ( unsigned int id, const Data &d );
 
   // Get the icon. Throws if value not found.
-  FX::FXIcon *        icon ( unsigned int id, FX::FXApp *app ) const;
+  FX::FXIcon *        icon ( unsigned int id ) const;
 
 private:
 

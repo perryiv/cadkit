@@ -24,6 +24,8 @@ namespace osg
   class Geode;
   class StateSet;
   class LOD;
+  class PrimitiveSet;
+  class Transform;
 };
 
 namespace osgText

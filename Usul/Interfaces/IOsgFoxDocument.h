@@ -37,8 +37,8 @@ struct IOsgFoxDocument : public Usul::Interfaces::IUnknown
   enum { IID = 2405311697u };
 
   /// Return pointer to the document.
-  virtual const Document *        getOsgFoxDocument() const = 0;
-  virtual Document *              getOsgFoxDocument() = 0;
+  virtual const Document *        osgFoxDocument() const = 0;
+  virtual Document *              osgFoxDocument() = 0;
 };
 
 

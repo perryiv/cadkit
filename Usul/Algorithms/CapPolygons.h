@@ -24,20 +24,20 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   if( p.visited() )
     return;
 
-  SharedVertex *v1 ( p.vertexOne() );
+  SharedVertex *v1 ( p.vertex1() );
 
   if( !v1->visited() )
   {
     visitSharedVertex( polygons, uncapped, loop, *v1 );
   }
 
-  SharedVertex *v2 ( p.vertexTwo() );
+  SharedVertex *v2 ( p.vertex2() );
   if( !v2->visited() )
   {
     visitSharedVertex( polygons, uncapped, loop, *v2 );
   }
 
-  SharedVertex *v3 ( p.vertexThree() );
+  SharedVertex *v3 ( p.vertex3() );
   if( !v3->visited() )
   {
     visitSharedVertex( polygons, uncapped, loop, *v3 );
@@ -52,7 +52,7 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
   typedef typename SharedVertex::PolygonList PolygonList;
   typedef typename Polygons::value_type Polygon;
 
-  PolygonList p1 ( sv.getPolygons() );
+  PolygonList p1 ( sv.polygons() );
   for( PolygonList::iterator poly = p1.begin(); poly != p1.end(); ++poly )
   {
     if( !(*poly)->visited() )

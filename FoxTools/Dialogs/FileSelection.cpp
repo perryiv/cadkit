@@ -14,6 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Dialogs/FileSelection.h"
+#include "FoxTools/Functions/App.h"
+#include "FoxTools/Functions/MainWindow.h"
+#include "FoxTools/Headers/MainWindow.h"
 #include "FoxTools/Headers/FileDialog.h"
 #include "FoxTools/Headers/App.h"
 
@@ -207,7 +210,7 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
 #else
 
   // Make a file-selection dialog on the stack.
-  FX::FXFileDialog dialog ( owner, _title.c_str() );
+  FX::FXFileDialog dialog ( ( ( owner ) ? owner : FoxTools::Functions::mainWindow() ), _title.c_str() );
 
   // Set the default filename.
   dialog.setFilename ( _defaultFile.c_str() );
@@ -385,8 +388,12 @@ void FileSelection::filterIndex ( unsigned int index )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileSelection::FilesResult FileSelection::askForFileNames ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
+FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, const std::string &title, const Filters &filters, FX::FXWindow *owner )
 {
+  // Make main window owner if given null.
+  if ( 0x0 == owner )
+    owner = FoxTools::Functions::mainWindow();
+
   // Declare and configure a file dialog.
   FileSelection dialog ( type, title, filters );
 
@@ -397,17 +404,15 @@ FileSelection::FilesResult FileSelection::askForFileNames ( FX::FXWindow *owner,
   std::replace ( name.begin(), name.end(), ' ', '_' );
   section << "file_dialog_" << name;
 
-  // Try to set the filter index.
-  if ( owner )
-    dialog.filterIndex ( ( title.empty() ) ? 0 : owner->getApp()->reg().readUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() ) );
+  // Set the filter index.
+  dialog.filterIndex ( ( title.empty() ) ? 0 : FoxTools::Functions::application()->reg().readUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() ) );
 
   // Run the dialog in a modal loop.
   if ( !dialog.runModal ( owner ) )
     return FilesResult();
 
   // Push the filter index back into the registry.
-  if ( owner )
-    owner->getApp()->reg().writeUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() );
+  FoxTools::Functions::application()->reg().writeUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() );
 
   // Return the file names.
   return FilesResult ( dialog.filenames(), dialog.filter ( dialog.filterIndex() ) );
@@ -420,8 +425,8 @@ FileSelection::FilesResult FileSelection::askForFileNames ( FX::FXWindow *owner,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FileSelection::FileResult FileSelection::askForFileName ( FX::FXWindow *owner, const Type &type, const std::string &title, const Filters &filters )
+FileSelection::FileResult FileSelection::askForFileName ( const Type &type, const std::string &title, const Filters &filters, FX::FXWindow *owner )
 {
-  FilesResult result ( FileSelection::askForFileNames ( owner, type, title, filters ) );
+  FilesResult result ( FileSelection::askForFileNames ( type, title, filters, owner ) );
   return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }

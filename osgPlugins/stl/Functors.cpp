@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2004, Adam Kubach
@@ -12,36 +13,20 @@
 #include "osg/Geometry"
 #include "osg/Vec3"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the number of facets in this geometry to the running total
-//
-///////////////////////////////////////////////////////////////////////////////
-void FacetCounter::countFacets( osg::Geode *geode )
-{
-  unsigned int numDrawables ( geode->getNumDrawables() );
-  for ( unsigned int i = 0; i < numDrawables; ++i )
-  {
-    // Get the drawable.
-    const osg::Drawable *drawable = geode->getDrawable ( i );
+#include "Usul/MPL/SameType.h"
+#include "Usul/Types/Types.h"
+#include "Usul/IO/Writer.h"
 
-    // See if the drawable is a geometry.
-    const osg::Geometry *geometry = drawable->asGeometry();
-    if(geometry)
-    {
-      const osg::Vec3Array *normals = geometry->getNormalArray();
+#include <iostream>
 
-      _numFacets += normals->size();
-    }
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write out a facet in Ascii
 //
 ///////////////////////////////////////////////////////////////////////////////
-void AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
+
+void AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3 )
 {
   _out << "facet normal " << normal[0] << " " << normal[1] << " " << normal[2] << " " << std::endl;
   _out << "  outer loop " << std::endl;
@@ -52,53 +37,26 @@ void AsciiWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, co
   _out << "endfacet"      << std::endl;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write out a facet in binary
+//  Write out a facet in binary. STL is little-endian. 
+//  See: http://www.transcendata.com/cadfix/support/changeNotesDX.htm
 //
 ///////////////////////////////////////////////////////////////////////////////
-void BinaryWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
+
+void BinaryWriter::operator () ( const osg::Vec3& normal, const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3 )
 {
-  char buf[50]; //50 bytes to define a facet
-  ::memset( buf, 0, 50 );
+  // Current algorithm only works on 32-bit machines.
+  USUL_ASSERT_SAME_TYPE ( Usul::Types::Float32, float );
 
-  float f1, f2, f3;
+  // Write the normal and vertices.
+  Usul::IO::WriteLittleEndian::write3 ( _out, normal );
+  Usul::IO::WriteLittleEndian::write3 ( _out, v1 );
+  Usul::IO::WriteLittleEndian::write3 ( _out, v2 );
+  Usul::IO::WriteLittleEndian::write3 ( _out, v3 );
 
-  //write normal
-  f1 = normal[0];
-  f2 = normal[1];
-  f3 = normal[2];
-  ::memcpy( buf    , &f1, 4);
-  ::memcpy( buf + 4, &f2, 4);
-  ::memcpy( buf + 8, &f3, 4);
-
-  //write first vertex
-  f1 = v1[0];
-  f2 = v1[1];
-  f3 = v1[2];
-  ::memcpy( buf + 12, &f1, 4);
-  ::memcpy( buf + 16, &f2, 4);
-  ::memcpy( buf + 20, &f3, 4);
-
-  //write second vertex
-  f1 = v2[0];
-  f2 = v2[1];
-  f3 = v2[2];
-  ::memcpy( buf + 24, &f1, 4);
-  ::memcpy( buf + 28, &f2, 4);
-  ::memcpy( buf + 32, &f3, 4);
-
-  //write third vertex
-  f1 = v3[0];
-  f2 = v3[1];
-  f3 = v3[2];
-  ::memcpy( buf + 36, &f1, 4);
-  ::memcpy( buf + 40, &f2, 4);
-  ::memcpy( buf + 44, &f3, 4);
-
-  //write spacers
-  ::memcpy( buf + 48, "\0", 1);
-  ::memcpy( buf + 49, "\0", 1);
-
-  _out.write( buf, 50 );
+  // Write spacers to bring record size to 50 bytes.
+  _out.write ( "\0", 1 );
+  _out.write ( "\0", 1 );
 }

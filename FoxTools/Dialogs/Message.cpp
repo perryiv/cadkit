@@ -16,7 +16,9 @@
 #include "FoxTools/Dialogs/Message.h"
 #include "FoxTools/Registry/Registry.h"
 #include "FoxTools/Icons/Factory.h"
+#include "FoxTools/Functions/MainWindow.h"
 
+#include "FoxTools/Headers/MainWindow.h"
 #include "FoxTools/Headers/Registry.h"
 #include "FoxTools/Headers/App.h"
 #include "FoxTools/Headers/GIFIcon.h"
@@ -286,15 +288,9 @@ const Message::Icon &Message::icon() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Message::icon ( unsigned int id, FX::FXObject *object )
+void Message::icon ( unsigned int id )
 {
-  FX::FXWindow *window = SAFE_CAST_FOX ( FX::FXWindow, object );
-
-  if ( 0x0 == window )
-    throw std::invalid_argument ( "Error 2360216853: Given object is not an FX::FXWindow" );
-
-  FX::FXIcon *icon ( FoxTools::Icons::Factory::instance()->icon ( id, window->getApp() ) );
-  this->icon ( icon, true );
+  this->icon ( FoxTools::Icons::Factory::instance()->icon ( id ), true );
 }
 
 
@@ -566,14 +562,14 @@ std::string Message::_find ( FX::FXRegistry &reg ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Message::error ( FX::FXObject *owner, 
-                             const std::string &b, 
+std::string Message::error ( const std::string &b, 
                              const std::string &title, 
-                             const std::string &text )
+                             const std::string &text,
+                             FX::FXObject *owner )
 {
   Message m;
   m.text ( title, text );
-  m.icon ( FoxTools::Icons::Factory::ICON_ERROR, owner );
+  m.icon ( FoxTools::Icons::Factory::ICON_ERROR );
   m.buttons ( b );
   return m.run ( owner, FX::PLACEMENT_OWNER );
 }
@@ -586,14 +582,34 @@ std::string Message::error ( FX::FXObject *owner,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Message::info ( FX::FXObject *owner, 
-                            const std::string &b, 
+std::string Message::info ( const std::string &b, 
                             const std::string &title, 
-                            const std::string &text )
+                            const std::string &text,
+                            FX::FXObject *owner )
 {
   Message m;
   m.text ( title, text );
-  m.icon ( FoxTools::Icons::Factory::ICON_INFO, owner );
+  m.icon ( FoxTools::Icons::Factory::ICON_INFO );
+  m.buttons ( b );
+  return m.run ( owner, FX::PLACEMENT_OWNER );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to display a question dialog. Separate buttons 
+//  with a '|' character. For example, "Yes|No|Cancel".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Message::question ( const std::string &b, 
+                                const std::string &title, 
+                                const std::string &text,
+                                FX::FXObject *owner )
+{
+  Message m;
+  m.text ( title, text );
+  m.icon ( FoxTools::Icons::Factory::ICON_QUESTION );
   m.buttons ( b );
   return m.run ( owner, FX::PLACEMENT_OWNER );
 }
@@ -626,8 +642,9 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
 
   // Make sure we have a window.
   FX::FXWindow *owner = SAFE_CAST_FOX ( FX::FXWindow, object );
+  owner = ( owner ) ? owner : FoxTools::Functions::mainWindow();
   if ( 0x0 == owner )
-    throw std::invalid_argument ( "Error 3116974582: invalid dialog owner given" );
+    throw std::invalid_argument ( "Error 3116974582: invalid dialog owner given, and main windows is null" );
 
   // Set dialog's flags.
   unsigned int flags ( FX::DECOR_CLOSE | FX::DECOR_TITLE | FX::DECOR_BORDER );

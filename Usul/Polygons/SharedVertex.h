@@ -12,8 +12,10 @@
 
 #include <list>
 
+
 namespace Usul {
 namespace Polygons {
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,39 +23,86 @@ namespace Polygons {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Polygon >
+template < class Polygon, class ValueType_ >
 class SharedVertex
 {
 public:
-  typedef typename std::list< Polygon *> PolygonList;
+
+  typedef typename std::list < Polygon * > PolygonList;
   typedef typename PolygonList::iterator Iterator;
+  typedef typename ValueType_ ValueType;
 
-  SharedVertex( ) : _polygons(), _visited( false ) { }
+  SharedVertex ( const ValueType &v ) : _polygons(), _value ( v ), _visited ( false )
+  {
+  }
 
-  //Append a polygon
-  void append( Polygon *p ) { _polygons.push_back( p ); }
+  ~SharedVertex()
+  {
+  }
 
-  Iterator begin() { return _polygons.begin(); }
-  Iterator end()   { return _polygons.end(); }
+  // Append a polygon
+  void append ( Polygon *p )
+  {
+    _polygons.push_back ( p );
+  }
 
-  bool visited() const  { return _visited; }
-  void visited( bool v ) { _visited = v; }
+  Iterator begin()
+  {
+    return _polygons.begin();
+  }
 
-  PolygonList getPolygons() const { return _polygons; }
+  Iterator end()
+  {
+    return _polygons.end();
+  }
+
+  bool visited() const
+  {
+    return _visited;
+  }
+
+  void visited ( bool v )
+  {
+    _visited = v;
+  }
+
+  const PolygonList &polygons() const
+  {
+    return _polygons;
+  }
+
+  const ValueType &value() const
+  {
+    return _value;
+  }
+
+  void value ( const ValueType &v )
+  {
+    _value = v;
+  }
+
+  ValueType normal() const
+  {
+    ValueType n ( 0, 0, 0 );
+    for ( PolygonList::const_iterator i = _polygons.begin(); i != _polygons.end(); ++i )
+      n += (*i)->normal();
+    return n;
+  }
 
 private:
+
+  // No copying.
+  SharedVertex ( const SharedVertex & );
+  SharedVertex &operator = ( const SharedVertex & );
+
   PolygonList _polygons;
+  ValueType _value;
   bool _visited;
-  //TODO Should probably have it's actual Vertex value here too
-  //Possibly have the normal so the geometry can be built right from the 
-  //Adjacency Map
-
-}; //class SharedVertex
+};
 
 
-} //namespace Polygons
-
-} //namespace Usul
+} // namespace Polygons
+} // namespace Usul
 
 
 #endif // __USUL_POLYGONS_SHARED_VERTEX_H__

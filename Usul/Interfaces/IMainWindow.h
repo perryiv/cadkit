@@ -31,7 +31,7 @@ struct IMainWindow : public Usul::Interfaces::IUnknown
   enum { IID = 1232733632u };
 
   virtual Usul::Interfaces::IUnknown* getMainWindow() = 0;
-}; // class IMainWindow
+};
 
 
 }; // namespace Interfaces

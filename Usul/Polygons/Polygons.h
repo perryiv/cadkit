@@ -23,11 +23,13 @@ namespace Polygons {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < unsigned int numVertsPerPoly = 3>
+template < class VertexType_, unsigned int numVertsPerPoly = 3 >
 class Polygon
 {
 public:
-  typedef SharedVertex< Polygon > SharedVertex;
+
+  typedef VertexType_ VertexType;
+  typedef SharedVertex < Polygon, VertexType > SharedVertex;
   typedef std::vector< SharedVertex* > Vertices;
   typedef typename Vertices::iterator Iterator;
 

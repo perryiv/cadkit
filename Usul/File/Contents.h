@@ -31,24 +31,35 @@ namespace File {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Container > inline void contents ( const std::string &filename, Container &container )
+template < class Stream, class Container > inline void contents ( Stream &in, Container &container )
+{
+  while ( !in.eof() )
+    container.push_back ( in.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the file contents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Container > inline void contents ( const std::string &filename, bool binary, Container &container )
 {
   // Get the size of the file.
   unsigned int size ( Usul::File::size ( filename ) );
   container.reserve ( size );
 
-  // Open the file.
-  std::ifstream in ( filename.c_str() );
-  if ( !in.is_open() )
-    throw std::runtime_error ( "Error 1406927723, failed to open file: " + filename );
+  // Set proper flags.
+  std::ifstream::openmode mode ( ( binary ) ? std::ifstream::in | std::ifstream::binary : std::ifstream::in );
 
-  // Copy the entire file to the container.
-  while ( EOF != in.peek() )
-  {
-    // Have to cast to character to get newlines.
-    char c ( in.get() );
-    container.push_back ( c );
-  }
+  // Open the file.
+  std::ifstream in ( filename.c_str(), mode );
+  if ( !in.is_open() )
+    throw std::runtime_error ( "Error 1772137598, failed to open file: " + filename );
+
+  // Call above function.
+  Usul::File::contents ( in, container );
 }
 
 

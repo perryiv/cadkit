@@ -674,5 +674,9 @@ SOURCE=.\SgDll.cpp
 SOURCE=..\..\Notes\SceneGraph.txt
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\Nurbs\Core\notes.txt
+# End Source File
 # End Target
 # End Project

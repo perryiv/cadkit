@@ -16,7 +16,7 @@
 #include "Controllers/CtInline.h"
 #include "Controllers/CtTranslation.h"
 #include "Database/Jupiter/DbJtDatabase.h"
-#include "Database/OpenSceneGraph/DbOsgDatabase.h"
+#include "Database/STL/DbStlDatabase.h"
 
 using namespace CadKit;
 
@@ -29,6 +29,6 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
-  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, (DbJtDatabase *) NULL, argc, argv, true );
+  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbStlDatabase, argc, argv, true );
   return ( result ) ? 1 : 0;
 }

@@ -1,20 +1,11 @@
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  (c) 1998-2001, MODELSPACE CORPORATION
-//  ALL RIGHTS RESERVED
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
-//  UNPUBLISHED -- Rights reserved under the copyright laws of the United
-//  States. Use of a copyright notice is precautionary only and does not
-//  imply publication or disclosure.
-//
-//  THE CONTENT OF THIS WORK CONTAINS CONFIDENTIAL AND PROPRIETARY
-//  INFORMATION OF MODELSPACE CORPORATION. ANY DUPLICATION, MODIFICATION,
-//  DISTRIBUTION, OR DISCLOSURE IN ANY FORM, IN WHOLE, OR IN PART, IS 
-//  STRICTLY PROHIBITED WITHOUT THE PRIOR EXPRESS WRITTEN PERMISSION OF 
-//  MODELSPACE CORPORATION.
-//
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 //

@@ -26,11 +26,11 @@
 namespace CadKit
 {
 // Using Win32 this will dump to the output debug window. On Unix it will dump to stdout.
-void _modelspaceStandardLibraryDebugTrace ( const char *formatString, ... );
+void _cadkitStandardLibraryDebugTrace ( const char *formatString, ... );
 };
 
 #ifdef _DEBUG
-# define SL_TRACE CadKit::_modelspaceStandardLibraryDebugTrace
+# define SL_TRACE CadKit::_cadkitStandardLibraryDebugTrace
 # define SL_TRACE2 SL_TRACE
 # define SL_TRACE3 SL_TRACE
 # define SL_TRACE4 SL_TRACE

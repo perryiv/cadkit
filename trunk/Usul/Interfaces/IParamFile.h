@@ -9,40 +9,36 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the document
+//  Interface for getting and setting the Param File
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_DOCUMENT_H_
-#define _USUL_INTERFACE_DOCUMENT_H_
+#ifndef __USUL_INTERFACE_PARAM_FILE_H__
+#define __USUL_INTERFACE_PARAM_FILE_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgFox { namespace Documents { class Document; } }
+#include <string>
 
 namespace Usul {
 namespace Interfaces {
 
-
-struct IDocument : public Usul::Interfaces::IUnknown
+struct IParamFile : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDocument );
+  USUL_DECLARE_QUERY_POINTERS ( IParamFile );
 
   /// Id for this interface.
-  enum { IID = 3762815634u };
+  enum { IID = 2140045974u };
 
-  virtual void                         modified ( bool m ) = 0;
-  virtual bool                         modified() const = 0;
+  virtual const std::string& paramFile() const = 0;
+  virtual void paramFile( const std::string& file ) = 0;
 
-  virtual const std::string&           filename() const = 0;
-  virtual void                         filename( const std::string& f ) = 0;
-  
-}; // class IDocument
+}; // class IParamFile
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_DOCUMENT_H_
+#endif // __USUL_INTERFACE_PARAM_FILE_H__

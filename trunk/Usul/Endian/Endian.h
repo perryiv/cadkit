@@ -17,7 +17,7 @@
 #define _USUL_LIBRARY_ENDIAN_H_
 
 #include "Usul/Types/Types.h"
-
+#include "Usul/Cast/Cast.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -133,26 +133,38 @@ inline void _reverseBytes ( Usul::Types::Uint64 &n )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Type > struct ReverseBytes;
+template < unsigned int Size > struct ReverseBytes;
 template <> struct ReverseBytes < sizeof ( Usul::Types::Uint16 ) >
 {
-  void operator () ( Usul::Types::Uint16 &n )
+  void operator () ( Usul::Types::Uint16 &n ) const
   {
     Usul::Endian::Detail::_reverseBytes ( n );
+  }
+  void operator () ( Usul::Types::Int16 &n ) const
+  {
+    Usul::Endian::Detail::_reverseBytes (  USUL_UNSAFE_CAST ( Usul::Types::Uint16&, n ) );
   }
 };
 template <> struct ReverseBytes < sizeof ( Usul::Types::Uint32 ) >
 {
-  void operator () ( Usul::Types::Uint32 &n )
+  void operator () ( Usul::Types::Uint32 &n ) const
   {
     Usul::Endian::Detail::_reverseBytes ( n );
+  }
+  void operator () ( Usul::Types::Int32 &n ) const
+  {
+    Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint32&, n ) );
   }
 };
 template <> struct ReverseBytes < sizeof ( Usul::Types::Uint64 ) >
 {
-  void operator () ( Usul::Types::Uint64 &n )
+  void operator () ( Usul::Types::Uint64 &n ) const
   {
     Usul::Endian::Detail::_reverseBytes ( n );
+  }
+  void operator () ( Usul::Types::Int64 &n ) const
+  {
+    Usul::Endian::Detail::_reverseBytes ( USUL_UNSAFE_CAST ( Usul::Types::Uint64&, n ) );
   }
 };
 
@@ -172,7 +184,7 @@ template <> struct ReverseBytes < sizeof ( Usul::Types::Uint64 ) >
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Type > inline bool reverseBytes ( Type &n )
+template < class Type > inline void reverseBytes ( Type &n )
 {
   typedef Usul::Endian::Detail::ReverseBytes < sizeof ( Type ) > ReverseBytes;
   ReverseBytes () ( n );

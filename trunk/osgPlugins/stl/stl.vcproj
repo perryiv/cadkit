@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plug osgPlugin STL"
+	Name="plug: osgPlugin STL"
 	ProjectGUID="{848F88F3-B756-4D39-808B-796D86B2BE7E}"
 	SccProjectName=""
 	SccLocalPath="">

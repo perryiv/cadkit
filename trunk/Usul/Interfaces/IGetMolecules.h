@@ -9,40 +9,41 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the document
+//  Interface for getting the molecule list
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_DOCUMENT_H_
-#define _USUL_INTERFACE_DOCUMENT_H_
+#ifndef _USUL_INTERFACE_GET_MOLECULES_H_
+#define _USUL_INTERFACE_GET_MOLECULES_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgFox { namespace Documents { class Document; } }
+#include <vector>
+
+namespace osg { template < class T > class ref_ptr; }
+namespace osgPlugins { namespace pdb { class Molecule; } }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IDocument : public Usul::Interfaces::IUnknown
+struct IGetMolecules : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDocument );
+  USUL_DECLARE_QUERY_POINTERS ( IGetMolecules );
 
   /// Id for this interface.
-  enum { IID = 3762815634u };
+  enum { IID = 1986733210u };
 
-  virtual void                         modified ( bool m ) = 0;
-  virtual bool                         modified() const = 0;
+  typedef osg::ref_ptr< osgPlugins::pdb::Molecule > MoleculePtr;
+  typedef std::vector< MoleculePtr > Molecules;
 
-  virtual const std::string&           filename() const = 0;
-  virtual void                         filename( const std::string& f ) = 0;
-  
-}; // class IDocument
+  virtual Molecules& getMolecules() = 0;
+}; // class IGetMolecules
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_DOCUMENT_H_
+#endif // _USUL_MOLECULES_DOCUMENT_H_

@@ -35,10 +35,10 @@ Socket::Socket( const std::string& hostname, int port )
 {
   this->_init();
 
-  if( this->connect( hostname, port ) < 0 )
+  if( !this->connect( hostname, port ) )
   {
     std::ostringstream os;
-    os << "Failed to connect to"  << hostname << " using port " << port << std::endl;
+    os << "Failed to connect to "  << hostname << " using port " << port << std::endl;
     throw std::runtime_error ( os.str() );
   }
 }
@@ -70,7 +70,7 @@ Socket::~Socket()
 
 void Socket::_init()
 {
-  #if defined(_MSC_VER)
+#if defined(_MSC_VER)
   //make sure windows sockets are initialized
 
   WSADATA wsdata;
@@ -90,14 +90,14 @@ void Socket::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Socket::connect( const std::string& hostname, int port )
+bool Socket::connect( const std::string& hostname, int port )
 {
   char address[1024];
   struct hostent *host;
 
   host = gethostbyname( hostname.c_str() );
   if ( 0x0 == host ) 
-    return -1;
+    return false;
 
   sprintf(address, "%d.%d.%d.%d",
     (unsigned char) host->h_addr_list[0][0],
@@ -111,7 +111,7 @@ int Socket::connect( const std::string& hostname, int port )
   _addr.sin_addr.s_addr = inet_addr(address);
   _addr.sin_port = htons(port);  
 
-  return ::connect(_sd, (struct sockaddr *) &_addr, sizeof(_addr));
+  return ( ::connect(_sd, (struct sockaddr *) &_addr, sizeof(_addr)) != -1 );
 }
 
 
@@ -149,7 +149,7 @@ int Socket::listen()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Socket::read(void *buf, int len) const 
+int Socket::_read(void *buf, int len) const 
 {
 #if defined(_MSC_VER)
   return ::recv(_sd, (char*) buf, len, 0); // windows lacks the read() call
@@ -166,7 +166,7 @@ int Socket::read(void *buf, int len) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Socket::write(const void *buf, int len)  const
+int Socket::_write(const void *buf, int len)  const
 {
 #if defined(_MSC_VER)
   return ::send(_sd, (const char*) buf, len, 0);  // windows lacks the write() call
@@ -175,7 +175,7 @@ int Socket::write(const void *buf, int len)  const
 #endif
 }
 
-int Socket::selectRead( int seconds )
+int Socket::_selectRead( int seconds ) const
 {
   fd_set rfd;
   struct timeval tv;
@@ -191,7 +191,7 @@ int Socket::selectRead( int seconds )
   return rc;
 }
 
-int Socket::selectWrite( int seconds ) 
+int Socket::_selectWrite( int seconds ) const
 {
   fd_set wfd;
   struct timeval tv;
@@ -206,3 +206,56 @@ int Socket::selectWrite( int seconds )
   } while (rc < 0 && errno == EINTR);
   return rc;
 }
+
+
+bool Socket::read ( Buffer &buf, bool wait, int seconds ) const
+{
+  if( wait )
+    if ( this->_selectRead( seconds ) != 1 )
+      return false;
+
+  int numRead( 0 );
+  int numLeft( buf.requested() );
+  char *buffer ( buf.buffer() );
+
+  while ( numLeft > 0 )
+  {
+    numRead = this->_read( buffer, numLeft );
+    if( numRead < 0 )
+      return false;
+    numLeft -= numRead;
+    buffer += numRead;
+    buf.size( buf.size() + numRead );
+  }
+  
+  //buf.buffer( buffer );
+
+  return true;
+}
+
+bool Socket::write ( Buffer &buf, bool wait, int seconds ) const
+{
+  if( wait )
+    if ( this->_selectWrite( seconds ) != 1 )
+      return false;
+
+  int numRead( 0 );
+  int numLeft( buf.requested() );
+  char *buffer ( buf.buffer() );
+
+  while ( numLeft > 0 )
+  {
+    numRead = this->_write( buffer, numLeft );
+    if ( numRead < 0 ) 
+      return false;
+    numLeft -= numRead;
+    buffer += numRead;
+
+    buf.size( buf.size() + numRead );
+  }
+
+
+  return true;
+}
+
+

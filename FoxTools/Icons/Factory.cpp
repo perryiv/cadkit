@@ -15,17 +15,12 @@
 
 #include "FoxTools/Icons/Factory.h"
 #include "FoxTools/Icons/Images.h"
+#include "FoxTools/Headers/BMPIcon.h"
+#include "FoxTools/Headers/GIFIcon.h"
+#include "FoxTools/Headers/PNGIcon.h"
 
 #include <stdexcept>
 #include <sstream>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXBMPIcon.h"
-#include "FXGIFIcon.h"
-#include "FXPNGIcon.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Icons;

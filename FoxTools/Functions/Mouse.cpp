@@ -14,22 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Functions/Mouse.h"
+#include "FoxTools/Headers/App.h"
 
 #include "Usul/Bits/Bits.h"
-
-#include <stdarg.h>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXString.h"
-#include "FXRegistry.h"
-#include "FXSize.h"
-#include "FXPoint.h"
-#include "FXRectangle.h"
-#include "FXThread.h"
-#include "FXApp.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

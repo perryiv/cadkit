@@ -201,8 +201,6 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::_read ( const std::string &filename
   return root.release();
 }
 
-//Crashes if you keep-all-connected and pick "yes" when it asks to save when exiting.
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -258,7 +256,7 @@ void ReaderWriterR3D::_skipLine ( std::istream &in ) const
 //
 //  Note: even though the VTK file holds tri-strip information, there are so 
 //  many of them that, at least with OSG, it will probably be faster to draw 
-//  individual triangles. This is because glDrawArrays() is used internally. 
+//  individual triangles, which will use glDrawArrays() is used internally. 
 //  Don't think OSG supports packing the tri-strips end-to-end in a single 
 //  osg::Geometry and passing this to OpenGL in an efficient way.
 //

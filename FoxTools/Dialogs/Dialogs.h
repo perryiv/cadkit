@@ -10,14 +10,8 @@
 #ifndef __FOXTOOLS_DIALOGS_H__
 #define __FOXTOOLS_DIALOGS_H__
 
-#include "fxver.h"
-#include "fxdefs.h"
-
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXWindow.h"
-#include "FXMessageBox.h"
+#include "FoxTools/Headers/Window.h"
+#include "FoxTools/Headers/MessageBox.h"
 
 #include <sstream>
 #include <string>
@@ -35,6 +29,7 @@ inline int SaveDialog( FX::FXWindow* owner, const std::string& filename )
   return message.warning ( owner, FX::MBOX_YES_NO_CANCEL, "Save File?", os.str().c_str() );
 }
 
+#if 0
 inline int MatrixDialog( FX::FXWindow* owner, FX::FXMatrix *matrix, const std::string& title, int layout )
 {
   FX::FXDialogBox dialog ( owner, title.c_str(), layout ,0,0,0,0, 10,10,10,10, 4,4 );
@@ -52,6 +47,7 @@ inline int MatrixDialog( FX::FXWindow* owner, FX::FXMatrix *matrix, const std::s
 
   return dialog.execute( FX::PLACEMENT_OWNER );
 }
+#endif
 
 };
 };

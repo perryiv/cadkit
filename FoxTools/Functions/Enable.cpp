@@ -14,17 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Functions/Enable.h"
+#include "FoxTools/Headers/Window.h"
 
 #include "Usul/Cast/Cast.h"
-
-#include <stdarg.h>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXWindow.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

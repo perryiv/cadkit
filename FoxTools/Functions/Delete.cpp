@@ -14,15 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Functions/Delete.h"
-
-#include <stdarg.h>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXWindow.h"
+#include "FoxTools/Headers/Window.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

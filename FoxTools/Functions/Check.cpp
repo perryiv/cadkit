@@ -14,20 +14,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Functions/Check.h"
+#include "FoxTools/Headers/MenuCheck.h"
+#include "FoxTools/Headers/MenuRadio.h"
+#include "FoxTools/Headers/ToggleButton.h"
 
 #include "Usul/Cast/Cast.h"
-
-#include <stdarg.h>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXWindow.h"
-#include "FXMenuCheck.h"
-#include "FXMenuRadio.h"
-#include "FXToggleButton.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

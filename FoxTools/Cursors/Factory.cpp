@@ -17,13 +17,9 @@
 #include "FoxTools/Cursors/Arrays.h"
 #include "FoxTools/Errors/ErrorChecker.h"
 
-#include <memory>
+#include "FoxTools/Headers/CURCursor.h"
 
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXCURCursor.h"
+#include <memory>
 
 using namespace FoxTools;
 using namespace FoxTools::Cursors;

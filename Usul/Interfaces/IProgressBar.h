@@ -23,32 +23,52 @@ namespace Usul {
 namespace Interfaces {
 
 
-template
-<
-  class ValueType, 
-  unsigned long iid
->
 struct IProgressBar : public Usul::Interfaces::IUnknown
 {
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IProgressBar );
 
   // Id for this interface.
-  enum { IID = iid };
+  enum { IID = 1100747838u };
+
+  struct NoUpdate
+  {
+    virtual ~NoUpdate () { }
+    virtual void operator () ( unsigned int ) { }
+  };
+
+  //Functor for updating progress bar
+  struct Update : public NoUpdate
+  {
+    Update( Usul::Interfaces::IProgressBar* progress, unsigned int init, unsigned int total ) :
+    _progress ( progress )
+    {
+      _progress->showProgressBar();
+      _progress->setTotalProgressBar( total );
+      _progress->updateProgressBar ( init );
+    }
+    virtual ~Update ()
+    {
+      _progress->hideProgressBar();
+    }
+
+    virtual void operator() ( unsigned int value )
+    {
+      _progress->updateProgressBar( value );
+    }
+  private:
+    Usul::Interfaces::IProgressBar* _progress;
+  };
 
   //show the progress bar
   virtual void showProgressBar () = 0;
   //set the total of progress bar
-  virtual void setTotalProgressBar ( const ValueType &value ) = 0;
+  virtual void setTotalProgressBar ( unsigned int value ) = 0;
   // update the progress bar
-  virtual void updateProgressBar ( const ValueType &value ) = 0;
+  virtual void updateProgressBar ( unsigned int value ) = 0;
   //hide the progress bar
   virtual void hideProgressBar () = 0;
-}; // class IProgressBar
-
-
-typedef IProgressBar < float,   1100747837u > IProgressBarFloat;
-typedef IProgressBar < int,     1100747838u > IProgressBarInt;
+}; // struct IProgressBar
 
 
 }; // namespace Interfaces

@@ -183,13 +183,11 @@ ReaderWriterR3D::ReadResult ReaderWriterR3D::_read ( const std::string &filename
   // Make sure the internal data members are initialized.
   this->_init();
 
-  // Open the binary file.
-  std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
-  if ( !in.is_open() )
-    throw std::runtime_error ( "Error 2260991012: Failed to open binary file: " + filename );
+  //No update functor
+  std::auto_ptr < Progress::NoUpdate > progress ( new Progress::NoUpdate );
 
   // Parse the file.
-  this->_parse ( in );
+  this->_parse ( filename, progress.get() );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( this->_build() );
@@ -266,8 +264,14 @@ void ReaderWriterR3D::_skipLine ( std::istream &in ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterR3D::_parse ( std::istream &in )
+void ReaderWriterR3D::_parse (  const std::string& filename, Progress::NoUpdate *progress  )
 {
+  // Open the binary file.
+  std::ifstream in ( filename.c_str(), std::ifstream::in | std::ifstream::binary );
+  if ( !in.is_open() )
+    throw std::runtime_error ( "Error 2260991012: Failed to open binary file: " + filename );
+
+
   // Check the header.
   this->_check ( in, "#" );
   this->_check ( in, "vtk" );
@@ -294,11 +298,21 @@ void ReaderWriterR3D::_parse ( std::istream &in )
   // Needed in the loop.
   Usul::Types::Float32 x, y, z;
 
+  //Time of last updating
+  double lastTime ( ::clock() );
+
   // Start reading the vertices.
   for ( unsigned int i = 0; i < numPoints; ++i )
   {
     Usul::IO::ReadBigEndian::read ( in, x, y, z );
     pool.at(i).set ( x, y, z );
+
+    if( ( ::clock() - lastTime ) > 500 )
+    {
+      //update the progress
+      (*progress) ( ( (float) i / numPoints ) * 50 );
+      lastTime = ::clock();
+    }
   }
 
   // Make sure it is a collection of tri-strips.
@@ -330,6 +344,14 @@ void ReaderWriterR3D::_parse ( std::istream &in )
       Usul::IO::ReadBigEndian::read ( in, index );
       strips.at(j).at(k) = index;
     }
+
+    if( ( ::clock() - lastTime ) > 500 )
+    {
+      //update the progress
+      (*progress) ( 50 + ( (float) j / numStrips * 50 ) );
+      lastTime = ::clock();
+    }
+
   }
 
   // Size the vertices.

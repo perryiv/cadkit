@@ -10,6 +10,10 @@
 #ifndef __READER_WRITER_STL_H__
 #define __READER_WRITER_STL_H__
 
+#include "Export.h"
+
+#include "Usul/Interfaces/IProgressBar.h"
+
 #include "osgDB/ReaderWriter"
 
 #include <string>
@@ -22,7 +26,7 @@
 namespace osg { class Group; class Geode; };
 
 
-class ReaderWriterSTL : public osgDB::ReaderWriter
+class OSG_STL_EXPORT ReaderWriterSTL : public osgDB::ReaderWriter
 {
 public:
 
@@ -30,6 +34,7 @@ public:
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
+  typedef Usul::Interfaces::IProgressBar Progress;
 
   ReaderWriterSTL();
   ~ReaderWriterSTL();
@@ -40,13 +45,16 @@ public:
 
   virtual WriteResult     writeNode(const osg::Node& node, const std::string& fileName, const Options* options);
 
+  void                    init() { this->_init(); }
+  void                    parse ( const std::string& filename, Progress::NoUpdate *progress  ) { this->_read( filename, progress ); }
+  osg::Group*             build () const { return this->_build(); }
 
 protected:
 
   osg::Group *            _build() const;
   void                    _init();
-  void                    _parse ( std::ifstream &in );
-  Result                  _read ( const std::string &, const Options * );
+
+  void                    _read ( const std::string &, Progress::NoUpdate *progress );
 
   WriteResult             _writeAscii  ( const osg::Node& node, const std::string& filename );
   WriteResult             _writeBinary ( const osg::Node& node, const std::string& filename );
@@ -54,8 +62,8 @@ protected:
 private:
 
   bool                    _isAscii ( const std::string &filename ) const;
-  void                    _parseBinaryFile( std::ifstream &in );
-  void                    _parseAsciiFile( std::ifstream &in );
+  void                    _parseBinaryFile( std::ifstream &in, Progress::NoUpdate *progress );
+  void                    _parseAsciiFile ( std::ifstream &in, unsigned int filesize, Progress::NoUpdate *progress );
 
   typedef std::list < osg::Vec3 > Vertices;
   typedef std::list < osg::Vec3 > Normals;

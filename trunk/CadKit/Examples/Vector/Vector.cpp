@@ -210,7 +210,7 @@ int main ( int argc, char **argv )
   SL_ASSERT ( pt.isEqualTo ( save, 1e-10 ) );
 
   // Wait for user to press the 'any' key.
-  //std::cin.get();
+  std::cin.get();
 
   return 0;
 }

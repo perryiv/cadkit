@@ -17,7 +17,6 @@
 class Element : public osg::Referenced
 {
 public:
-  Element();
   Element(int, std::string, float);
   Element(const Element&);
   const float getRadius() const { return _radius; }
@@ -25,6 +24,10 @@ public:
   const std::string getElementName() const { return _elementName; }
   const int getAtomicNumber() const { return _atomicNumber; }
   Element& operator=(const Element&);
+protected:
+  Element();
+  //Use reference counting
+  virtual ~Element();
 private:
   int _atomicNumber;
   std::string _elementSymbol, _elementName;

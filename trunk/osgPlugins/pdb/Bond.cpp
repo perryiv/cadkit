@@ -14,6 +14,7 @@
 #include "osg/Matrixd"
 
 Bond::Bond(const Atom& lhs, const Atom& rhs, int id)  :
+BaseClass(),
 _matrix ( new osg::MatrixTransform )
 {
   _id = id;

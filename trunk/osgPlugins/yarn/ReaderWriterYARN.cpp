@@ -19,7 +19,7 @@
 #include "osg/Geometry"
 #include "osg/Material"
 
-#include "Usul/Adaptors/Random.h"
+#include "OsgTools/MaterialFactory.h"
 
 #include <vector>
 #include <sstream>
@@ -119,12 +119,8 @@ osg::Group *ReaderWriterYARN::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  // Random number generator.
-  Usul::Adaptors::Random<float> rd ( 0.0f, 1.0f );
-
-  // Colors used below.
-  osg::Vec4 emissive ( 0.0f, 0.0f, 0.0f, 1.0f );
-  osg::Vec4 specular ( 0.8f, 0.8f, 0.8f, 1.0f );
+  //Material Factory
+  OsgTools::MaterialFactory::Ptr materialFactory ( new OsgTools::MaterialFactory );
 
   // Loop through the meshes.
   for ( Meshes::const_iterator i = _meshes.begin(); i != _meshes.end(); ++i )
@@ -132,21 +128,9 @@ osg::Group *ReaderWriterYARN::_build() const
     // Generate the node.
     osg::ref_ptr< osg::Node > node ( (*i)() );
 
-    // Make a random colors.
-    osg::Vec4 diffuse ( rd(), rd(), rd(), 1.0f );
-    osg::Vec4 ambient ( diffuse );
-
-    // Make a material.
-    osg::ref_ptr<osg::Material> mat ( new osg::Material() );
-	  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, ambient  );
-	  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, diffuse  );
-	  mat->setEmission  ( osg::Material::FRONT_AND_BACK, emissive );
-    mat->setSpecular  ( osg::Material::FRONT_AND_BACK, specular );
-	  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100      );
-
     // Set the material.
     osg::ref_ptr< osg::StateSet > ss ( node->getOrCreateStateSet() );
-    ss->setAttribute( mat.get() );
+    ss->setAttribute( materialFactory->create() );
 
     // Add new mesh to the root.
     root->addChild ( node.get() );

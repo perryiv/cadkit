@@ -6,29 +6,24 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copyright (c) 2004, Adam Kubach
-//  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//
-///////////////////////////////////////////////////////////////////////////////
 
 #ifndef __OSG_PDB_PLUGIN_BOND_H__
 #define __OSG_PDB_PLUGIN_BOND_H__
 
 #include <string>
 
+#include "osg/Referenced"
 #include "osg/Vec3"
 #include "osg/MatrixTransform"
 #include "osg/ref_ptr"
 
 class Atom;
 
-//TODO inherit from osg::Referenced?
-class Bond 
+class Bond : public osg::Referenced
 {
 public:
+  typedef osg::Referenced BaseClass;
+
   Bond(const Atom&, const Atom&, int);
   ~Bond();
   const int getId() const { return _id; }

@@ -11,11 +11,31 @@
 
 #include <sstream>
 
-Bond::Bond(const Atom& lhs, const Atom& rhs, int id)
+#include "osg/Matrixd"
+
+Bond::Bond(const Atom& lhs, const Atom& rhs, int id)  :
+_matrix ( new osg::MatrixTransform )
 {
   _id = id;
   _point1 = lhs.getVec3();
   _point2 = rhs.getVec3();
+
+  osg::Vec3 uY (0.0, 1.0, 0.0);
+
+  //get distance
+  osg::Vec3 dist = _point2 - _point1;
+  float d = dist.length();
+  dist.normalize();
+  
+  //set up Matrix Transforms
+  osg::Matrixf scale, rotate, translate, matrix;
+  scale = matrix.scale( osg::Vec3(1, d, 1) );
+  rotate.makeRotate(uY, dist);
+  translate.setTrans(_point1);
+  osg::Matrixf T = scale * rotate * translate;
+
+  // Make a matrix-transform.
+  _matrix->setMatrix ( T );
 }
 
 

@@ -10,6 +10,8 @@
 #include <sstream>
 #include <algorithm> //for std::transform
 
+#include "osg/Matrixd"
+
 #include "Atom.h"
 #include "PeriodicTable.h"
 
@@ -20,7 +22,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable )
+Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable ) :
+_matrix ( new osg::MatrixTransform )
 {
 	char num[9];
 	//get id number
@@ -74,6 +77,20 @@ Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &peri
       }
     }
   }
+
+  // Make a translation.
+  osg::Matrixd T;
+  T.makeTranslate ( _point );
+
+  // Random rotation.
+  osg::Matrixd R;
+  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
+  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
+  axis.normalize();
+  R.makeRotate ( angle, axis );
+
+  // Make a matrix-transform.
+  _matrix->setMatrix ( R * T );
 }
 
 
@@ -88,7 +105,8 @@ Atom::Atom(const Atom& atom) :
   _point(atom.getVec3()),
   _name(atom.getName()),
   _type(atom.getType()),
-  _element(atom.getElement())
+  _element(atom.getElement()),
+  _matrix(atom.getMatrix())
 {
 }
 
@@ -131,6 +149,7 @@ Atom& Atom::operator =(const Atom& atom)
   this->_point = atom.getVec3();
   this->_type = atom.getType();
   this->_element = atom.getElement();
+  this->_matrix = atom.getMatrix();
   return *this;
 }
 

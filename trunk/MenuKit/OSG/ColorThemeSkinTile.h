@@ -40,10 +40,10 @@ namespace MenuKit
       {
         BaseClass::operator=(tt);
         _skin = tt._skin;
-        _disabled = tt.disabled;
+        _disabled = tt._disabled;
         _highlight = tt._highlight;
         _normal = tt._normal;
-        _mode = tt._dm;
+        _mode = tt._mode;
         return( *this );
       }
 
@@ -74,7 +74,7 @@ namespace MenuKit
       const ThemeType& normal() const { return _normal; }
       ThemeType& normal() { return _normal; }
 
-      void skin(const SkinType& s) { _skin = n; }
+      void skin(const SkinType& s) { _skin = s; }
       const SkinType& skin() const { return _skin; }
       SkinType& skin() { return _skin; }
 

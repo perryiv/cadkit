@@ -43,7 +43,7 @@ namespace MenuKit
       {
         BaseClass::operator =(ct);
         _picture = ct._picture;
-        _margin = ct._margnin;
+        _margin = ct._margin;
         _text = ct._text;
         return( *this );
       }

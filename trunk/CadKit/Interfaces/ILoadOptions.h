@@ -28,11 +28,18 @@ public:
   // Id for this interface.
   enum { IID = 1032647722 };
 
-  // Possible assembly load options (haven't played with this yet...)
+  // Possible assembly load options.
   enum AssemblyLoadOption
   {
-    INSTANCE_ASSEMBLY, // Load instances?
-    EXPLODE_ASSEMBLY   // Explode instances into parts?
+    INSTANCE_ASSEMBLY, // Instances that are assemblies get traversed as instances.
+    EXPLODE_ASSEMBLY   // Instances that are assemblies get traversed as assemblies.
+  };
+
+  // Possible part load options.
+  enum PartLoadOption
+  {
+    INSTANCE_PART, // Instances that are parts get traversed as instances.
+    EXPLODE_PART   // Instances that are parts get traversed as parts.
   };
 
   // Possible brep load options.
@@ -50,14 +57,17 @@ public:
     HIGH_LOD
   };
 
-  // Set the assembly load option.
-  virtual void            setAssemblyLoadOption ( const AssemblyLoadOption &option ) = 0;
+  // Set the assembly load option. Returns false if not supported.
+  virtual bool            setAssemblyLoadOption ( const AssemblyLoadOption &option ) = 0;
 
-  // Set the brep load option.
-  virtual void            setBrepLoadOption ( const BrepLoadOption &option ) = 0;
+  // Set the brep load option. Returns false if not supported.
+  virtual bool            setBrepLoadOption ( const BrepLoadOption &option ) = 0;
 
-  // Set the shape load option.
-  virtual void            setShapeLoadOption ( const ShapeLoadOption &option ) = 0;
+  // Set the part load option. Returns false if not supported.
+  virtual bool            setPartLoadOption ( const PartLoadOption &option ) = 0;
+
+  // Set the shape load option. Returns false if not supported.
+  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option ) = 0;
 };
 
 }; // namespace CadKit

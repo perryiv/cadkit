@@ -29,14 +29,17 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
-  // Make the DMDTk only hand us assemblies and not instances of assemblies
-  // (we still get instances of parts). Ideally, this should be handled as 
-  // a command line argument.
+  // Make the source only hand us assemblies and parts instead of instances 
+  // of assemblies and parts. Ideally, this should be handled as a command 
+  // line argument. 
   DbJtDatabase *jt = new DbJtDatabase;
   SlRefPtr<IUnknown> unknown ( jt->queryInterface ( IUnknown::IID ) );
   SlQueryPtr<ILoadOptions> options ( unknown );
   if ( options.isValid() )
+  {
     options->setAssemblyLoadOption ( ILoadOptions::EXPLODE_ASSEMBLY );
+    options->setPartLoadOption ( ILoadOptions::EXPLODE_PART );
+  }
 
   bool result = CadKit::translate ( new CtTranslation, jt, new DbStlDatabase, argc, argv, true );
   return ( result ) ? 1 : 0;

@@ -90,14 +90,17 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  // Set the assembly load option.
-  virtual void            setAssemblyLoadOption ( const AssemblyLoadOption &option );
+  // Set the assembly load option. Returns false if not supported.
+  virtual bool            setAssemblyLoadOption ( const AssemblyLoadOption &option );
 
-  // Set the brep load option.
-  virtual void            setBrepLoadOption ( const BrepLoadOption &option );
+  // Set the brep load option. Returns false if not supported.
+  virtual bool            setBrepLoadOption ( const BrepLoadOption &option );
 
-  // Set the shape load option.
-  virtual void            setShapeLoadOption ( const ShapeLoadOption &option );
+  // Set the part load option. Returns false if not supported.
+  virtual bool            setPartLoadOption ( const PartLoadOption &option );
+
+  // Set the shape load option. Returns false if not supported.
+  virtual bool            setShapeLoadOption ( const ShapeLoadOption &option );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -256,6 +259,7 @@ protected:
 
   bool _initialized;
   AssemblyLoadOption _assemblyLoadOption;
+  PartLoadOption _partLoadOption;
   BrepLoadOption _brepLoadOption;
   ShapeLoadOption _shapeLoadOption;
   std::auto_ptr<Assemblies> _assemblies;
@@ -271,6 +275,8 @@ protected:
   bool                    _endPart     ( eaiPart *part );
 
   eaiAssembly *           _getCurrentAssembly() const;
+  eaiInstance *           _getCurrentInstance() const;
+  eaiPart *               _getCurrentPart() const;
   eaiShape *              _getShape ( ShapeHandle shape ) const;
   eaiShape *              _getShape ( eaiPart *part, const int &whichLod, const int &whichShape ) const;
   eaiAssembly *           _getTopAssembly() const;
@@ -288,6 +294,7 @@ protected:
   void                    _pushAssembly ( eaiAssembly *assembly );
   void                    _popAssembly();
 
+  void                    _replaceProperties ( eaiInstance *instance, eaiPart *part );
   void                    _resetStateIndices();
 
   void                    _setCurrentPart     ( eaiPart *part );

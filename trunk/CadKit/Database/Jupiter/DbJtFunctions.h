@@ -24,8 +24,14 @@ class eaiEntity;
 
 namespace CadKit
 {
+  // Get the transformation.
+  eaiTransform *getTransform ( eaiEntity *entity );
+
   // Get the transformation matrix.
   bool getTransform ( eaiEntity *ptr, SlMatrix44f &matrix );
+
+  // Get the material.
+  eaiMaterial *getMaterial ( eaiEntity *entity );
 
   // Get the material.
   bool getMaterial ( eaiEntity *entity, SlMaterialf &mat );

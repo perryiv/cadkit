@@ -25,7 +25,7 @@
 # include "Standard/SlRefBase.h"
 # include "Standard/SlVec2.h"
 # include "Standard/SlVec3.h"
-# include "Standard/SlMatrix4.h"
+# include "Standard/SlMatrix44.h"
 # include "Standard/SlLine3.h"
 # include "Standard/SlCallback.h"
 # include <string>
@@ -153,8 +153,8 @@ public:
   static bool            unProject ( const long &winX, 
                                      const long &winY, 
                                      const float &winZ, 
-                                     const SlMatrix4f &M, 
-                                     const SlMatrix4f &P, 
+                                     const SlMatrix44f &M, 
+                                     const SlMatrix44f &P, 
                                      const SlViewporti &vp, 
                                      float &objX, 
                                      float &objY, 
@@ -184,7 +184,7 @@ protected:
   SlCallback<Callback *, const void *, const void *> _callback;
   long _spinTolerance;
   long _spinTimerInterval;
-  SlMatrix4f _dR;
+  SlMatrix44f _dR;
 
   virtual ~SgViewer();
 

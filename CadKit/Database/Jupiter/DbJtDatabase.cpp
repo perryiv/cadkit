@@ -1140,7 +1140,7 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix, bool tryParents ) const
+bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
   return CadKit::getTransform ( (eaiEntity *) assembly, matrix );
@@ -1153,7 +1153,7 @@ bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix, b
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix4f &matrix, bool tryParents ) const
+bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
   return CadKit::getTransform ( (eaiEntity *) part, matrix );
@@ -1166,7 +1166,7 @@ bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix4f &matrix, bool tryP
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix4f &matrix, bool tryParents ) const
+bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
   return CadKit::getTransform ( (eaiEntity *) instance, matrix );

@@ -698,7 +698,7 @@ bool SgGlRenderer::visit ( SgCube &cube )
   SlBoundingBoxf lbbox ( min, max );
 
   // Put it in global space.
-  const SlMatrix4f &M = _state->getModelviewMatrix();
+  const SlMatrix44f &M = _state->getModelviewMatrix();
   SlBoundingBoxf gbbox = M * lbbox;
   min = gbbox.getMin();
   max = gbbox.getMax();
@@ -1055,7 +1055,7 @@ bool SgGlRenderer::visit ( SgPerspectiveCamera &camera )
   SL_ASSERT ( this );
 
   // Set the projection.
-  SlMatrix4f P ( false );
+  SlMatrix44f P ( false );
   P.setPerspective ( SL_DEG_TO_RAD_F * camera.getFieldOfView(), camera.getAspectRatio(), camera.getZNear(), camera.getZFar() );
   _state->setProjectionMatrix ( P );
 

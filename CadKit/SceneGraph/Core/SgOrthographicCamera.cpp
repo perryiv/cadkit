@@ -69,11 +69,11 @@ SgOrthographicCamera::~SgOrthographicCamera()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlMatrix4f SgOrthographicCamera::getProjectionMatrix() const
+SlMatrix44f SgOrthographicCamera::getProjectionMatrix() const
 {
   SL_ASSERT ( this );
 
-  SlMatrix4f P;
+  SlMatrix44f P;
   this->getProjectionMatrix ( P );
   return P;
 }
@@ -85,7 +85,7 @@ SlMatrix4f SgOrthographicCamera::getProjectionMatrix() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgOrthographicCamera::getProjectionMatrix ( SlMatrix4f &P ) const
+void SgOrthographicCamera::getProjectionMatrix ( SlMatrix44f &P ) const
 {
   SL_ASSERT ( this );
   SL_ASSERT ( 0 ); // TODO.

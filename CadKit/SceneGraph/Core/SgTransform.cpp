@@ -29,7 +29,7 @@ SG_IMPLEMENT_DYNAMIC_NODE ( SgTransform, SgTransformation );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgTransform::SgTransform() : SgTransformation(), _matrix ( SL_MATRIX4_IDENTITY_F )
+SgTransform::SgTransform() : SgTransformation(), _matrix ( SL_MATRIX_44_IDENTITY_F )
 {
   SL_PRINT2 ( "SgTransform::SgTransform(), this = %X\n", this );
 }
@@ -41,7 +41,7 @@ SgTransform::SgTransform() : SgTransformation(), _matrix ( SL_MATRIX4_IDENTITY_F
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgTransform::SgTransform ( const SlMatrix4f &matrix ) : SgTransformation(), _matrix ( matrix )
+SgTransform::SgTransform ( const SlMatrix44f &matrix ) : SgTransformation(), _matrix ( matrix )
 {
   SL_PRINT2 ( "SgTransform::SgTransform(), this = %X\n", this );
 }

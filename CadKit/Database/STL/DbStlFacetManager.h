@@ -28,8 +28,8 @@
 #include "Standard/SlVec3.h"
 //#include "Standard/SlVec4.h"
 #include "Standard/SlStack.h"
-#include "Standard/SlMatrix4.h"
-#include "Standard/SlMatrix4IO.h"
+#include "Standard/SlMatrix44.h"
+#include "Standard/SlMatrix44IO.h"
 
 
 namespace CadKit
@@ -114,14 +114,14 @@ public:
 	// operating on.
   /////////////////////////////////////////////////////////////////////////////
 
-	class TransMatStack : public SlStack<SlMatrix4f>
+	class TransMatStack : public SlStack<SlMatrix44f>
 	{
 	public:
 		
 		//  Override the default push function so that the new matrix is multiplied
 		//  by the matrix on top of the stack.
 		void push( );
-		void push ( const SlMatrix4f &val );
+		void push ( const SlMatrix44f &val );
   };
 
 

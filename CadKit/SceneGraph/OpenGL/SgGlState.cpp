@@ -47,7 +47,7 @@ SgGlState::SgGlState() : SlRefBase ( 0 ),
 
   // Initialize the matrix stacks. Don't call the respective init functions 
   // because they require a current context (which may not exist yet).
-  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+  SlMatrix44f I ( SL_MATRIX_44_IDENTITY_F );
   _modelviewStack->push ( I );
   _projectionStack->push ( I );
 }
@@ -255,7 +255,7 @@ void SgGlState::setMatrixMode ( const MatrixMode &mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlMatrix4f &SgGlState::getModelviewMatrix() const
+const SlMatrix44f &SgGlState::getModelviewMatrix() const
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
@@ -275,7 +275,7 @@ const SlMatrix4f &SgGlState::getModelviewMatrix() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlMatrix4f &SgGlState::getProjectionMatrix() const
+const SlMatrix44f &SgGlState::getProjectionMatrix() const
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
@@ -302,7 +302,7 @@ void SgGlState::pushModelviewMatrix()
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Push OpenGL's current matrix onto our stack.
-  const SlMatrix4f &M = this->getModelviewMatrix();
+  const SlMatrix44f &M = this->getModelviewMatrix();
   _modelviewStack->push ( M );
 }
 
@@ -320,7 +320,7 @@ void SgGlState::pushProjectionMatrix()
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Push OpenGL's current matrix onto our stack.
-  const SlMatrix4f &P = this->getProjectionMatrix();
+  const SlMatrix44f &P = this->getProjectionMatrix();
   _projectionStack->push ( P );
 }
 
@@ -341,7 +341,7 @@ void SgGlState::popModelviewMatrix()
   this->setMatrixMode ( MODELVIEW );
 
   // Load the matrix that is saved on top of the stack.
-  const SlMatrix4f &M = _modelviewStack->top();
+  const SlMatrix44f &M = _modelviewStack->top();
   ::glLoadMatrixf ( M );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
@@ -366,7 +366,7 @@ void SgGlState::popProjectionMatrix()
   this->setMatrixMode ( PROJECTION );
 
   // Load the matrix that is saved on top of the stack.
-  const SlMatrix4f &P = _projectionStack->top();
+  const SlMatrix44f &P = _projectionStack->top();
   ::glLoadMatrixf ( P );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
@@ -429,7 +429,7 @@ void SgGlState::makeProjectionMatrixIdentity()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::setModelviewMatrix ( const SlMatrix4f &M )
+void SgGlState::setModelviewMatrix ( const SlMatrix44f &M )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _modelviewStack->empty() );
@@ -450,7 +450,7 @@ void SgGlState::setModelviewMatrix ( const SlMatrix4f &M )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SgGlState::setProjectionMatrix ( const SlMatrix4f &P )
+void SgGlState::setProjectionMatrix ( const SlMatrix44f &P )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( false == _projectionStack->empty() );
@@ -476,7 +476,7 @@ void SgGlState::initModelviewMatrixStack()
   SL_ASSERT ( this );
 
   // Make an identity matrix.
-  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+  SlMatrix44f I ( SL_MATRIX_44_IDENTITY_F );
 
   // Put one identity matrix on the stack.
   _modelviewStack->clear();
@@ -501,11 +501,11 @@ void SgGlState::initProjectionMatrixStack()
   SL_ASSERT ( this );
 
   // Make an identity matrix.
-  SlMatrix4f I ( SL_MATRIX4_IDENTITY_F );
+  SlMatrix44f I ( SL_MATRIX_44_IDENTITY_F );
 
   // Put one identity matrix on the stack.
   _projectionStack->clear();
-  _projectionStack->push ( SlMatrix4f ( SL_MATRIX4_IDENTITY_F ) );
+  _projectionStack->push ( SlMatrix44f ( SL_MATRIX_44_IDENTITY_F ) );
 
   // Make OpenGL's matrix identity too.
   this->makeProjectionMatrixIdentity();

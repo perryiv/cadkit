@@ -19,7 +19,7 @@
 #include "SgNode.h"
 
 #include "Standard/SlVec3.h"
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 
 
 namespace CadKit
@@ -38,12 +38,12 @@ public:
   const SlVec3f &       getOrigin() const { return _origin; }
   const SlVec3f &       getCenter() const { return _center; }
   const float &         getDistance() const { return _distance; }
-  const SlMatrix4f &    getModelviewMatrix() const { return _M; }
-  SlMatrix4f &          getModelviewMatrix() { return _M; }
-  virtual SlMatrix4f    getProjectionMatrix() const = 0;
-  virtual void          getProjectionMatrix ( SlMatrix4f &P ) const = 0;
-  const SlMatrix4f &    getRotation() const { return _R; }
-  SlMatrix4f &          getRotation() { return _R; }
+  const SlMatrix44f &    getModelviewMatrix() const { return _M; }
+  SlMatrix44f &          getModelviewMatrix() { return _M; }
+  virtual SlMatrix44f    getProjectionMatrix() const = 0;
+  virtual void          getProjectionMatrix ( SlMatrix44f &P ) const = 0;
+  const SlMatrix44f &    getRotation() const { return _R; }
+  SlMatrix44f &          getRotation() { return _R; }
   const float &         getScale() const { return _scale; }
   const float &         getZNear() const { return _zNear; }
   const float &         getZFar() const { return _zFar; }
@@ -52,7 +52,7 @@ public:
   virtual bool          viewAll ( SgNode &scene ) = 0;
 
   // Transform the camera.
-  void                  rotate ( const SlMatrix4f &R );
+  void                  rotate ( const SlMatrix44f &R );
   void                  translate ( const float &x, const float &y, const float &z );
   void                  scale ( const float &scale );
 
@@ -65,9 +65,9 @@ public:
   bool                  setCenter ( const SlVec3f &center, const bool &isGlobal );
 
   // Set the camera's transformation.
-  bool                  setRotation ( const SlMatrix4f &R );
+  bool                  setRotation ( const SlMatrix44f &R );
   void                  setScale ( const float &scale );
-  void                  setMatrix ( const SlMatrix4f &M ) { _M.setValue ( M ); }
+  void                  setMatrix ( const SlMatrix44f &M ) { _M.setValue ( M ); }
 
   // Set the matrix mode.
   void                  setMatrixMode ( const unsigned long &mode ) { _mode = mode; }
@@ -98,8 +98,8 @@ protected:
   SlVec3f _origin;
   SlVec3f _center;
   float _distance;
-  SlMatrix4f _R;
-  SlMatrix4f _M;
+  SlMatrix44f _R;
+  SlMatrix44f _M;
   float _viewAllFactor; // Scale factor for the viewAll() function to use.
 
   SgCamera();

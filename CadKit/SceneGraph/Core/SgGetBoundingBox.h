@@ -20,7 +20,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlBoundingBox.h"
-# include "Standard/SlMatrix4.h"
+# include "Standard/SlMatrix44.h"
 #endif
 
 
@@ -45,14 +45,14 @@ public:
 
   // Set the matrix.
   void                    setIdentityMatrix() { _M.identity(); }
-  void                    setMatrix ( const SlMatrix4f &M ) { _M = M; }
+  void                    setMatrix ( const SlMatrix44f &M ) { _M = M; }
 
   // The visit functions.
   SG_DECLARE_ALL_VISITOR_FUNCTIONS;
 
 protected:
 
-  SlMatrix4f _M;
+  SlMatrix44f _M;
   SlBoundingBoxf _bbox;
 
   SG_DECLARE_DYNAMIC_VISITOR ( SgGetBoundingBox, 0x00001013 );

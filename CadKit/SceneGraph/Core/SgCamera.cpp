@@ -40,8 +40,8 @@ SgCamera::SgCamera() : SgNode(),
   _origin ( 0.0f, 0.0f, 0.0f ),
   _center ( 0.0f, 0.0f, 0.0f ),
   _distance ( 1.0f ), // See note below.
-  _R ( SL_MATRIX4_IDENTITY_F ),
-  _M ( SL_MATRIX4_IDENTITY_F ),
+  _R ( SL_MATRIX_44_IDENTITY_F ),
+  _M ( SL_MATRIX_44_IDENTITY_F ),
   _viewAllFactor ( SG_DEFAULT_CAMERA_VIEW_ALL_FACTOR )
 {
   SL_PRINT2 ( "SgCamera::SgCamera(), this = %X\n", this );
@@ -124,7 +124,7 @@ void SgCamera::setValue ( const SgCamera &camera )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgCamera::rotate ( const SlMatrix4f &R )
+void SgCamera::rotate ( const SlMatrix44f &R )
 {
   SL_ASSERT ( this );
 
@@ -143,12 +143,12 @@ void SgCamera::rotate ( const SlMatrix4f &R )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-bool SgCamera::setRotation ( const SlMatrix4f &R )
+bool SgCamera::setRotation ( const SlMatrix44f &R )
 {
   SL_ASSERT ( this );
 
   // Get the inverse of the current rotation.
-  SlMatrix4f IR = _R;
+  SlMatrix44f IR = _R;
   if ( !IR.invert() ) 
     return false;
 
@@ -264,7 +264,7 @@ bool SgCamera::setCenter ( const SlVec3f &center, const bool &isGlobal )
   if ( !isGlobal )
   {
     // Get the inverse of our modelview matrix.
-    SlMatrix4f IM = _M;
+    SlMatrix44f IM = _M;
     if ( !IM.invert() ) 
       return false;
 

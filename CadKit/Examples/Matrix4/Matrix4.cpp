@@ -1,5 +1,5 @@
-#include "Standard/SlMatrix4.h"
-#include "Standard/SlMatrix4IO.h"
+#include "Standard/SlMatrix44.h"
+#include "Standard/SlMatrix44IO.h"
 #include "Standard/SlConstants.h"
 #include <iostream>
 
@@ -8,13 +8,13 @@ using namespace CadKit;
 
 void testMatrices()
 {
-  SlMatrix4d M1;
+  SlMatrix44d M1;
   std::cout << "M1 = \n" << M1 << std::endl;
 
-  SlMatrix4d M2 ( SL_MATRIX4_IDENTITY_D );
+  SlMatrix44d M2 ( SL_MATRIX_44_IDENTITY_D );
   std::cout << "M2 = \n" << M2 << std::endl;
 
-  SlMatrix4d M3 = SlMatrix4d::absolute ( M2 );
+  SlMatrix44d M3 = SlMatrix44d::absolute ( M2 );
   std::cout << "M3 = \n" << M3 << std::endl;
 
   M3.absolute();

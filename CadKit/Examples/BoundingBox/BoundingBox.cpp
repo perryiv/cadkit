@@ -29,7 +29,7 @@ void testBoundingBox()
   SlBoundingBoxd bd3 ( min, max );
   bd1.grow ( bd3 );
 
-  SlMatrix4d M ( true );
+  SlMatrix44d M ( true );
   SlBoundingBoxd bd4 = M * bd1;
 
   bd3 += bd1;

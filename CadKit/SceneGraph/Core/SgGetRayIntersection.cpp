@@ -42,8 +42,8 @@ SgGetRayIntersection::SgGetRayIntersection() : SgVisitor(),
   _global ( 0.0f, 0.0f, 0.0f ),
   _local ( 0.0f, 0.0f, 0.0f ),
   _ray ( SlVec3f ( 0.0f, 0.0f, 0.0f ), SlVec3f ( 1.0f, 0.0f, 0.0f ) ),
-  _M ( SL_MATRIX4_IDENTITY_F ),
-  _IM ( SL_MATRIX4_IDENTITY_F )
+  _M ( SL_MATRIX_44_IDENTITY_F ),
+  _IM ( SL_MATRIX_44_IDENTITY_F )
 {
   SL_PRINT2 ( "SgGetRayIntersection::SgGetRayIntersection(), this = %X\n", this );
 }

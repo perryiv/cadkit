@@ -101,7 +101,7 @@ SgViewer::SgViewer() : SlRefBase ( 0 ),
   _callback ( NULL, NULL, NULL ),
   _spinTolerance ( 2 ), // 25
   _spinTimerInterval ( 1 ), // 10
-  _dR ( SL_MATRIX4_IDENTITY_F )
+  _dR ( SL_MATRIX_44_IDENTITY_F )
 {
   SL_PRINT2 ( "SgViewer::SgViewer(), this = %X\n", this );
 }
@@ -1031,9 +1031,9 @@ bool SgViewer::getRay2 ( const long &winX, const long &winY, SlLine3f &line ) co
     return false;
 
   // Get the matrices.
-  //const SlMatrix4f &M = _camera->getModelviewMatrix();
-  const SlMatrix4f M ( SL_MATRIX4_IDENTITY_F );
-  SlMatrix4f P;
+  //const SlMatrix44f &M = _camera->getModelviewMatrix();
+  const SlMatrix44f M ( SL_MATRIX_44_IDENTITY_F );
+  SlMatrix44f P;
   _camera->getProjectionMatrix ( P );
 
   // Get the 3D point on the near plane.
@@ -1123,15 +1123,15 @@ SgNode *SgViewer::getIntersection ( const SlLine3f &line, SlVec3f &global, SlVec
 bool SgViewer::unProject ( const long &winX, 
                            const long &winY, 
                            const float &winZ, 
-                           const SlMatrix4f &M, 
-                           const SlMatrix4f &P, 
+                           const SlMatrix44f &M, 
+                           const SlMatrix44f &P, 
                            const SlViewporti &vp, 
                            float &x, 
                            float &y, 
                            float &z )
 {
   // Get the inverse of PM.
-  SlMatrix4f invPM = P * M;
+  SlMatrix44f invPM = P * M;
   if ( false == invPM.invert() ) 
     return false;
 

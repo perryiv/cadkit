@@ -115,7 +115,7 @@ public:
   virtual AssemblyHandle  getParent ( AssemblyHandle assembly ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( AssemblyHandle assembly, SlMatrix4f &matrix, bool tryParents ) const;
+  virtual bool            getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -133,7 +133,7 @@ public:
   virtual AssemblyHandle  getParent ( PartHandle part ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( PartHandle part, SlMatrix4f &matrix, bool tryParents ) const;
+  virtual bool            getTransform ( PartHandle part, SlMatrix44f &matrix, bool tryParents ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -157,7 +157,7 @@ public:
   virtual AssemblyHandle  getParent ( InstanceHandle instance ) const;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( InstanceHandle instance, SlMatrix4f &matrix, bool tryParents ) const;
+  virtual bool            getTransform ( InstanceHandle instance, SlMatrix44f &matrix, bool tryParents ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //

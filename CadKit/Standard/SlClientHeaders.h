@@ -39,7 +39,7 @@
 #include "SlThread.h"
 #include "SlColor.h"
 #include "SlConstants.h"
-#include "SlMatrix4.h"
+#include "SlMatrix44.h"
 #include "SlBoundingBox.h"
 #include "SlTrace.h"
 #include "SlLine2.h"

@@ -19,7 +19,7 @@
 #include "IChildQuery.h"
 
 #include "Standard/SlMaterial.h"
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
@@ -40,7 +40,7 @@ public:
   virtual bool            getMaterial ( EntityHandle entity, SlMaterial<Real> &material, bool tryParents ) const = 0;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( EntityHandle entity, SlMatrix4<Real> &matrix, bool tryParents ) const = 0;
+  virtual bool            getTransform ( EntityHandle entity, SlMatrix44<Real> &matrix, bool tryParents ) const = 0;
 };
 
 

@@ -41,8 +41,8 @@ public:
   float                   getFieldOfView ( const FieldOfViewOrientation &flag ) const;
 
   // Get the projection matrix.
-  virtual SlMatrix4f      getProjectionMatrix() const;
-  virtual void            getProjectionMatrix ( SlMatrix4f &P ) const;
+  virtual SlMatrix44f      getProjectionMatrix() const;
+  virtual void            getProjectionMatrix ( SlMatrix44f &P ) const;
 
   // Set the field of view.
   void                    setFieldOfView ( const float &fov ) { _fieldOfView = fov; }

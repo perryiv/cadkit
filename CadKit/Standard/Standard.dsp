@@ -299,11 +299,15 @@ SOURCE=.\SlMaterial.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlMatrix4.h
+SOURCE=.\SlMatrix44.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlMatrix4IO.h
+SOURCE=.\SlMatrix44IO.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlMatrixNN.h
 # End Source File
 # End Group
 # Begin Group "Geometry"

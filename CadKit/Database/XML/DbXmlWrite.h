@@ -20,7 +20,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlBoundingBox.h"
-# include "Standard/SlMatrix4.h"
+# include "Standard/SlMatrix44.h"
 # include <fstream>
 # include <string>
 #endif

@@ -16,7 +16,7 @@
 #ifndef _CADKIT_DATABASE_PERFORMER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 #define _CADKIT_DATABASE_PERFORMER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 
-#include "Standard/SlMatrix4.h"
+#include "Standard/SlMatrix44.h"
 #include "Standard/SlRefPtr.h"
 
 #include "Interfaces/IEntityQuery.h"
@@ -58,7 +58,7 @@ inline SlRefPtr<pfGroup> createGroup ( HandleType entity, InterfaceType *query, 
   group->setName ( query->getName ( entity ).c_str() );
 
   // Set the matrix if there is one.
-  SlMatrix4f T;
+  SlMatrix44f T;
   if ( true == query->getTransform ( entity, T, false ) )
   {
     pfMatrix M ( T(0,0), T(1,0), T(2,0), T(3,0),

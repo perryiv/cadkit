@@ -24,7 +24,8 @@ using namespace OsgTools;
 
 ShapeFactory::ShapeFactory() : BaseClass(),
   _latLongSpheres(),
-  _cubes()
+  _cubes(),
+  _cylinders()
 {
 }
 
@@ -203,3 +204,69 @@ osg::Geometry *ShapeFactory::sphere ( float radius,
   _latLongSpheres[key] = geometry;
   return geometry.get();
 }
+
+osg::Geometry * ShapeFactory::cylinder ( float radius, 
+                                         unsigned int sides, 
+                                         const osg::Vec3& pointOne,
+                                         const osg::Vec3& pointTwo )
+{
+  CylinderProperties key ( CylinderSize( radius, sides ), CylinderPoints( pointOne, pointTwo ) );
+  Cylinders::iterator iter = _cylinders.find ( key );
+  if ( _cylinders.end() != iter )
+    return iter->second.get();
+
+  Geometry geometry ( new osg::Geometry );
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > normals  ( new osg::Vec3Array );
+
+  //build a unit cylinder
+  //osg::Vec3 unPoint1 (0,0,0);
+  //osg::Vec3 unPoint2 (0,1,0);
+
+  //_point1 = unPoint1;
+  //_point2 = unPoint2;
+
+  osg::Vec3 center;
+  center[0] = (pointOne[0] + pointTwo[0])/2.0;
+  center[1] = (pointOne[1] + pointTwo[1])/2.0;
+  center[2] = (pointOne[2] + pointTwo[2])/2.0;
+
+  float c = 3.14159 / 180.0;
+  float x,y,z;
+  //calculate the point for the unit cylinder then multiply it by the transform matrix
+  for(unsigned int i = 0; i < sides; ++i)
+  {
+    float u = (float) i / (float) (sides - 1);
+    float theta = u * 360.0;
+    x = radius * sin( c * theta ) + pointOne[0];
+    y = pointOne[1];
+    z = radius * cos( c * theta ) + pointOne[2];
+    vertices->push_back( osg::Vec3(x, y, z) );
+
+    x = radius * sin( c * theta ) + pointTwo[0];
+    y = pointTwo[1];
+    z = radius * cos( c * theta ) + pointTwo[2];
+    vertices->push_back( osg::Vec3(x, y, z) );
+  }
+
+  geometry->setVertexArray ( vertices.get() );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
+
+  normals->reserve(vertices->size());
+
+  //calculate the normals for the tri-strips
+  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++ i)
+  {
+    osg::Vec3 normal ( *i );
+    normal.normalize();
+    normals->push_back(normal);
+  }
+
+  geometry->setNormalArray(normals.get());
+  geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+
+  _cylinders[key] = geometry;
+  return geometry.get();
+
+}
+

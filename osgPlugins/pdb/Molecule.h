@@ -13,7 +13,7 @@
 #include "Atom.h"
 #include "Bond.h"
 #include "MaterialChooser.h"
-#include "CylinderFactory.h"
+//#include "CylinderFactory.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -33,9 +33,9 @@ public:
   typedef std::map<Atom::ID, Atom> Map;
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
-  typedef OsgTools::ShapeFactory SphereFactory;
+  typedef OsgTools::ShapeFactory ShapeFactory;
 
-  Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags );
+  Molecule ( MaterialChooser *mc, ShapeFactory *sf, unsigned int flags );
   osg::Group* build() const { return _build(); }
   void addAtom(const Atom&);
   void addBond(Atom::ID, Atom::ID);
@@ -63,8 +63,8 @@ private:
   unsigned int _stepFactor;
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
-  mutable SphereFactory::Ptr _sphereFactory;
-  mutable CylinderFactory::Ptr _cylinderFactory;
+  mutable ShapeFactory::Ptr _shapeFactory;
+//  mutable CylinderFactory::Ptr _cylinderFactory;
   unsigned int _minNumSegsLat;
   unsigned int _maxNumSegsLat;
   unsigned int _minNumSegsLong;

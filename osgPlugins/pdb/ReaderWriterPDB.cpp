@@ -58,8 +58,8 @@ ReaderWriterPDB::ReaderWriterPDB() :
   _molecules(),
   _materialChooser(),
   _currentMolecule(NULL),
-  _sphereFactory ( new SphereFactory ),
-  _cylinderFactory ( new CylinderFactory ),
+  _shapeFactory ( new ShapeFactory ),
+//  _cylinderFactory ( new CylinderFactory ),
   _periodicTable(),
   _flags ( PDB::SHOW_ATOMS | PDB::SHOW_BONDS | PDB::LOAD_ATOMS | PDB::LOAD_BONDS )
 {
@@ -369,8 +369,8 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get(), _cylinderFactory.get(), _flags );
-    osg::ref_ptr< Molecule > r = _currentMolecule;
+    _currentMolecule = new Molecule ( &_materialChooser, _shapeFactory.get(), _flags );
+    osg::ref_ptr< Molecule > r ( _currentMolecule );
     _molecules.push_back(r);
   }
   return _currentMolecule;

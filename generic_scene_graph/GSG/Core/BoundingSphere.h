@@ -17,6 +17,7 @@
 #define _GENERIC_SCENE_GRAPH_CORE_BOUNDING_SPHERE_H_
 
 #include "GSG/Core/Math.h"
+#include "GSG/Core/Assert.h"
 
 #include "boost/mpl/assert_is_same.hpp"
 
@@ -208,7 +209,7 @@ public:
       _radius = dist;
 
     // Sanity check.
-    assert ( this->valid() );
+    GSG_ASSERT ( this->valid() );
   }
 
 
@@ -269,7 +270,7 @@ public:
     }
 
     // Sanity check.
-    assert ( this->valid() );
+    GSG_ASSERT ( this->valid() );
   }
 
 

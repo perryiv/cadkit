@@ -16,18 +16,18 @@
 #ifndef _GENERIC_SCENE_GRAPH_CORE_VEC_2_POOL_H_
 #define _GENERIC_SCENE_GRAPH_CORE_VEC_2_POOL_H_
 
-#include "GSG/Core/VecPool.h"
+#include "GSG/Core/Referenced.h"
 
 
 namespace GSG {
 
 
-class GSG_CORE_EXPORT Vec2Pool : public VecPool
+class GSG_CORE_EXPORT Vec2Pool : public Referenced
 {
 public:
 
   GSG_DECLARE_CLONE ( Vec2Pool );
-  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec2Pool, VecPool );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( Vec2Pool, Referenced );
   typedef SeqVec2::size_type size_type;
   typedef SeqVec2::iterator iterator;
   typedef SeqVec2::const_iterator const_iterator;

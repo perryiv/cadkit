@@ -30,6 +30,7 @@ extern "C"
   double atan  ( double );
   double sqrt  ( double );
   double atan2 ( double, double );
+  double pow   ( double, double );
 };
 
 
@@ -120,6 +121,31 @@ GSG_DECLARE_UNARY_SPECIALIZATIONS ( SquareRoot, ::sqrt, sqrt );
 ///////////////////////////////////////////////////////////////////////////////
 
 GSG_DECLARE_BINARY_SPECIALIZATIONS ( ArcTangent2, ::atan2, atan2 );
+GSG_DECLARE_BINARY_SPECIALIZATIONS ( Power,       ::pow,   pow );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  For making "pow" for integer types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define GSG_DECLARE_INTEGER_POWER_FUNCTIONS(Type_) \
+template < typename Number_ > inline Number_ pow ( Number_ n, Type_ p ) \
+{ \
+  return ( !p ) ? 1 : n * pow ( n, p - 1 ); \
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Special case "pow" for integer types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GSG_DECLARE_INTEGER_POWER_FUNCTIONS ( unsigned char  );
+GSG_DECLARE_INTEGER_POWER_FUNCTIONS ( unsigned short );
+GSG_DECLARE_INTEGER_POWER_FUNCTIONS ( unsigned int   );
+GSG_DECLARE_INTEGER_POWER_FUNCTIONS ( unsigned long  );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -95,26 +95,26 @@ MainWindow::MainWindow (
   // Menu bar.
   unsigned int layout ( LAYOUT_SIDE_TOP | LAYOUT_FILL_X );
   _menuBar = FXMenuBarPtr ( new FXMenuBar ( this, layout ) );
-  ErrorChecker ( _menuBar.valid() );
+  ErrorChecker ( 0x0 != _menuBar.get() );
 
   // File menu.
   _fileMenu = FXMenuPanePtr ( new FXMenuPane ( this ) );
-  ErrorChecker ( _fileMenu.valid() );
+  ErrorChecker ( 0x0 != _fileMenu.get() );
   ErrorChecker ( 0x0 != new FXMenuTitle ( _menuBar.get(), "&File", 0x0, _fileMenu.get() ) );
 
   // Status bar.
   layout = LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER;
   _statusBar = FXStatusBarPtr ( new FXStatusBar ( this, layout ) );
-  ErrorChecker ( _statusBar.valid() );
+  ErrorChecker ( 0x0 != _statusBar.get() );
 
   // Window menu
   _windowMenu = FXMenuPanePtr ( new FXMenuPane ( this ) );
-  ErrorChecker ( _windowMenu.valid() );
+  ErrorChecker ( 0x0 != _windowMenu.get() );
   ErrorChecker ( 0x0 != new FXMenuTitle ( _menuBar.get(), "&Window", 0x0, _windowMenu.get() ) );
 
   // Help menu
   _helpMenu = FXMenuPanePtr ( new FXMenuPane ( this ) );
-  ErrorChecker ( _helpMenu.valid() );
+  ErrorChecker ( 0x0 != _helpMenu.get() );
   ErrorChecker ( 0x0 != new FXMenuTitle ( _menuBar.get(), "&Help", 0x0, _helpMenu.get(), LAYOUT_LEFT ) );
   ErrorChecker ( 0x0 != new FXMenuCommand ( _helpMenu.get(), "&About...", 0x0, this, MainWindow::ID_ABOUT, 0 ) );
 }
@@ -128,8 +128,6 @@ MainWindow::MainWindow (
 
 MainWindow::~MainWindow()
 {
-  // Make sure we release these pointers because FOX is going to delete them.
-  _statusBar.release();
 }
 
 

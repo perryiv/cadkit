@@ -69,7 +69,7 @@ View::View() :
   _seekingCursor   ( 0x0 )
 {
   // Do not use this constructor.
-  assert ( false );
+  GSG_ASSERT ( false );
   ErrorChecker ( false );
 }
 
@@ -278,7 +278,7 @@ void View::notify ( Viewer::Message id, Path *path, Viewer &viewer )
 
   default:
 
-    assert ( 0 ); // What message is this?
+    GSG_ASSERT ( 0 ); // What message is this?
   }
 }
 
@@ -318,7 +318,7 @@ void View::spin ( bool state )
   }
 
   // Should be true.
-  assert ( 0x0 == _timer );
+  GSG_ASSERT ( 0x0 == _timer );
 
   // If we are supposed to spin.
   if ( state && _viewer.valid() ) 
@@ -328,7 +328,7 @@ void View::spin ( bool state )
   }
 
   // We should have a good timer now.
-  assert ( ( 0x0 != _timer ) == state );
+  GSG_ASSERT ( ( 0x0 != _timer ) == state );
 }
 
 

@@ -78,7 +78,6 @@ void BinBuilder::renderBin ( RenderBin *bin )
 
 const RenderBin *BinBuilder::renderBin() const
 {
-  Lock lock ( this );
   return _bin.get();
 }
 
@@ -91,6 +90,18 @@ const RenderBin *BinBuilder::renderBin() const
 
 RenderBin *BinBuilder::renderBin()
 {
-  Lock lock ( this );
   return _bin.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the internal state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BinBuilder::reset()
+{
+  if ( _bin.valid() )
+    _bin->clear();
 }

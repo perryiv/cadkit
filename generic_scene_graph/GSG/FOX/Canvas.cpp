@@ -47,7 +47,7 @@ FXIMPLEMENT ( Canvas, FXGLCanvas, CanvasMap, ARRAYNUMBER ( CanvasMap ) );
 Canvas::Canvas() : FXGLCanvas()
 {
   // Do not use this constructor.
-  assert ( false );
+  GSG_ASSERT ( false );
   ErrorChecker ( false );
 }
 

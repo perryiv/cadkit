@@ -34,6 +34,7 @@
 # include "boost/static_assert.hpp"
 # include "boost/intrusive_ptr.hpp"
 # include "boost/mpl/assert_is_same.hpp"
+# include "boost/call_traits.hpp"
 
 # include <cassert>
 # include <utility>

@@ -41,16 +41,10 @@ public:
   Shape ( const Shape &g );
 
   // Iterators to the primitive sets.
-  const_iterator          begin() const;
-  iterator                begin();
-  const_iterator          end() const;
-  iterator                end();
-
-  // Access to the first and last primitive set.
-  reference               front();
-  const_reference         front() const;
-  reference               back();
-  const_reference         back() const;
+  const_iterator          begin() const { return _sets.begin(); }
+  iterator                begin()       { return _sets.begin(); }
+  const_iterator          end() const   { return _sets.end(); }
+  iterator                end()         { return _sets.end(); }
 
   // Add a primitive set.
   void                    append ( PrimitiveSet *ps );
@@ -58,8 +52,8 @@ public:
   void                    insert ( iterator beforeMe, PrimitiveSet *ps );
 
   // Get/set the attributes.
-  const Attributes *      attributes() const;
-  Attributes *            attributes();
+  const Attributes *      attributes() const { return _attributes.get(); }
+  Attributes *            attributes()       { return _attributes.get(); }
   void                    attributes ( Attributes *a );
 
   // The number of primitives.

@@ -35,8 +35,8 @@ public:
   Camera ( const Camera &c );
 
   // Get the matrices.
-  const Matrix &      modelviewMatrix()  const;
-  const Matrix &      projectionMatrix() const;
+  const Matrix &      modelview()  const;
+  const Matrix &      projection() const;
 
   // Transform the camera.
   void                rotate ( const Matrix &R );
@@ -44,10 +44,10 @@ public:
   void                scale ( Real scale );
 
   // Get these properties.
-  Real                fieldOfView() const;
-  Real                aspectRatio() const;
-  Real                nearZ()       const;
-  Real                farZ()        const;
+  Real                fieldOfView() const { return _fov; }
+  Real                aspectRatio() const { return _aspect; }
+  Real                nearZ()       const { return _nearZ; }
+  Real                farZ()        const { return _farZ; }
 
   // Set these properties.
   void                fieldOfView ( Real aspect );

@@ -20,6 +20,7 @@
 #include "GSG/Core/Camera.h"
 #include "GSG/Core/Shape.h"
 #include "GSG/Core/Functors.h"
+#include "GSG/Core/Adaptors.h"
 
 using namespace GSG;
 
@@ -111,7 +112,6 @@ void Renderer::insert ( Visitors::iterator beforeMe, Visitor *v )
 
 Renderer::Visitors::const_iterator Renderer::begin() const
 {
-  Lock lock ( this );
   return _visitors.begin();
 }
 
@@ -124,7 +124,6 @@ Renderer::Visitors::const_iterator Renderer::begin() const
 
 Renderer::Visitors::iterator Renderer::begin()
 {
-  Lock lock ( this );
   return _visitors.begin();
 }
 
@@ -137,7 +136,6 @@ Renderer::Visitors::iterator Renderer::begin()
 
 Renderer::Visitors::const_iterator Renderer::end() const
 {
-  Lock lock ( this );
   return _visitors.end();
 }
 
@@ -150,7 +148,6 @@ Renderer::Visitors::const_iterator Renderer::end() const
 
 Renderer::Visitors::iterator Renderer::end()
 {
-  Lock lock ( this );
   return _visitors.end();
 }
 
@@ -163,7 +160,33 @@ Renderer::Visitors::iterator Renderer::end()
 
 void Renderer::_traverse ( Node &scene )
 {
-  Lock lock ( this );
   typedef GSG::Detail::Traverse < Node > Traverse;
   std::for_each ( _visitors.begin(), _visitors.end(), Traverse ( &scene ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the internal state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::reset()
+{
+  std::for_each ( _visitors.begin(), _visitors.end(), Detail::mem_fun_void ( &Visitor::reset ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::viewport ( const Viewport &vp )
+{
+  Lock lock ( this );
+  BaseClass::viewport ( vp );
+  for ( iterator i = _visitors.begin(); i != _visitors.end(); ++i )
+    (*i)->viewport ( vp );
 }

@@ -24,10 +24,10 @@ namespace GSG {
 
 template
 <
-  class First,
-  class Second
+  class First_,
+  class Second_
 >
-class Pair : protected std::pair < First, Second >
+class Pair
 {
 public:
 
@@ -37,8 +37,8 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef typename First FirstType;
-  typedef typename Second SecondType;
+  typedef typename First first_type;
+  typedef typename Second second_type;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  explicit Pair() : std::pair()
+  explicit Pair() : _pair()
   {
     // Empty.
   }
@@ -59,7 +59,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Pair ( const Pair &b ) : std::pair ( b.first, b.second )
+  Pair ( const Pair &b ) : _pair ( b.first(), b.second() )
   {
     // Empty.
   }
@@ -71,14 +71,14 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  FirstType &getFirst()
+  first_type &first()
   {
-    return first;
+    return _pair.first;
   }
 
-  const FirstType &getFirst() const
+  const first_type &first() const
   {
-    return first;
+    return _pair.first;
   }
 
 
@@ -88,14 +88,14 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  SecondType &getSecond()
+  second_type &second()
   {
-    return second;
+    return _pair.second;
   }
 
-  const SecondType &getSecond() const
+  const second_type &second() const
   {
-    return second;
+    return _pair.second;
   }
 
 
@@ -105,9 +105,9 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void setFirst ( const FirstType &f )
+  void first ( const first_type &f )
   {
-    first = f;
+    _pair.first = f;
   }
 
 
@@ -117,10 +117,15 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void setSecond ( const SecondType &s )
+  void second ( const second_type &s )
   {
-    second = s;
+    _pair.second = s;
   }
+
+
+private:
+
+  std::pair < first_type, second_type > _pair;
 };
 
 

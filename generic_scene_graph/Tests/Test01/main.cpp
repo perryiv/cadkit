@@ -44,7 +44,7 @@ struct MyUpdateCallback : public GSG::Visitor::Callback
 
 void MyUpdateCallback::operator () ( Visitor &v, Node &n )
 {
-  assert ( dynamic_cast < Update * > ( &v ) );
+  GSG_ASSERT ( dynamic_cast < Update * > ( &v ) );
   std::cout << "Updating node: " << &n 
             << ", name: " << n.first 
             << ", data = " << n.second 
@@ -77,8 +77,8 @@ Group::Ptr buildScene ( Factory *f )
   Shape::Ptr cube ( factory->cube() );
   cube->first = "Shape ";
   cube->first += name.str();
-  cube->setAttributes ( new Attributes );
-  cube->getAttributes()->getMaterial() = material;
+  cube->attributes ( new Attributes );
+  cube->attributes()->frontMaterial() = material;
 
   color.set ( 0.0f, 0.0f, 1.0f, 1.0f );
   material.ambient() = color;
@@ -87,8 +87,8 @@ Group::Ptr buildScene ( Factory *f )
   Shape::Ptr sphere ( factory->sphere() );
   sphere->first = "Shape ";
   sphere->first += name.str();
-  sphere->setAttributes ( new Attributes );
-  sphere->getAttributes()->getMaterial() = material;
+  sphere->attributes ( new Attributes );
+  sphere->attributes()->frontMaterial() = material;
 
   group->append ( cube );
   group->append ( sphere );
@@ -112,9 +112,9 @@ void test()
 
   // Make a factory and set its pools.
   Factory::Ptr factory ( new Factory );
-  factory->setVertexPool ( new VertexPool );
-  factory->setNormalPool ( new NormalPool );
-  factory->setColorPool ( new ColorPool );
+  factory->vertexPool ( new VertexPool );
+  factory->snormalPool ( new NormalPool );
+  factory->colorPool ( new ColorPool );
 
   // Build the scene again, this time passing the factory.
   for ( i = 0; i < num; ++i )
@@ -129,9 +129,9 @@ void test()
   Nodes::iterator c = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Group 6" ) );
 
   // Make sure we found a node.
-  assert ( a->valid() );
-  assert ( b->valid() );
-  assert ( c->valid() );
+  GSG_ASSERT ( a->valid() );
+  GSG_ASSERT ( b->valid() );
+  GSG_ASSERT ( c->valid() );
 
   // Print the names.
   std::cout << "Found node: " << Select () ( *(*a) ) << std::endl;

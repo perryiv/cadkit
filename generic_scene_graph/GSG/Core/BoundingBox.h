@@ -195,7 +195,7 @@ public:
     }
 
     // Sanity check.
-    assert ( this->valid() );
+    GSG_ASSERT ( this->valid() );
   }
 
 

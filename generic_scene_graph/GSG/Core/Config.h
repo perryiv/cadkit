@@ -84,6 +84,8 @@ typedef Detail::BoundingSphere < Vec3 > BoundingSphere;
 typedef Detail::AssertErrorChecker ErrorChecker;
 typedef Detail::AssertNullChecker NullCheckPolicy;
 typedef Detail::NoNullChecker NullOkPolicy;
+typedef Detail::NoReferenceCounting NoRefCountPolicy;
+typedef Detail::ReferenceCounting RefCountPolicy;
 typedef std::pair < std::string, void * > RootClass;
 typedef Detail::Vector2 < SignedInteger, Index, BoundsChecker > MousePoint;
 

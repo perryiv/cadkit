@@ -95,23 +95,7 @@ Camera::~Camera()
 
 void Camera::viewAll()
 {
-  Lock lock ( this );
   // TODO
-//  See how OSG does this.
-//  You may not need all of these members.
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the aspect ratio.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Real Camera::aspectRatio() const
-{
-  Lock lock ( this );
-  return _aspect;
 }
 
 
@@ -143,19 +127,6 @@ void Camera::aspectRatio ( Real aspect )
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Get the field of view.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Real Camera::fieldOfView() const
-{
-  Lock lock ( this );
-  return _fov;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 //  Set the field of view.
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -165,19 +136,6 @@ void Camera::fieldOfView ( Real fov )
   Lock lock ( this );
   _fov = fov;
   _valid = false;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the z-distance to the near plane.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Real Camera::nearZ() const
-{
-  Lock lock ( this );
-  return _nearZ;
 }
 
 
@@ -197,20 +155,7 @@ void Camera::nearZ ( Real n )
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Get the z-distance to the far plane.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Real Camera::farZ() const
-{
-  Lock lock ( this );
-  return _farZ;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the z-distance to the far plane.
+//  Set the z-distance to the far plane.
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -296,13 +241,13 @@ void Camera::_updateMatrices()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const Matrix &Camera::modelviewMatrix() const
+const Matrix &Camera::modelview() const
 {
-  Lock lock ( this );
-
   // Update it if we need to.
   if ( !_valid )
   {
+    Lock lock ( this );
+
     // Doing the const-cast because I want this function to remain const.
     // The lazy matrix update is an implementation detail that should not 
     // effect the interface.
@@ -321,13 +266,13 @@ const Matrix &Camera::modelviewMatrix() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-const Matrix &Camera::projectionMatrix() const
+const Matrix &Camera::projection() const
 {
-  Lock lock ( this );
-
   // Update it if we need to.
   if ( !_valid )
   {
+    Lock lock ( this );
+
     // Doing the const-cast because I want this function to remain const.
     // The lazy matrix update is an implementation detail that should not 
     // effect the interface.

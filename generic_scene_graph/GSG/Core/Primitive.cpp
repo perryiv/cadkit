@@ -28,13 +28,21 @@ GSG_IMPLEMENT_CLONE ( Primitive );
 /////////////////////////////////////////////////////////////////////////////
 
 Primitive::Primitive() : Referenced(), 
-  _nb ( BINDING_UNKNOWN ),
-  _cb ( BINDING_UNKNOWN ),
-  _vi (),
-  _ni (),
-  _ci (),
-  _type   ( TYPE_UNKNOWN ),
-  _format ( INDICES_UNKNOWN )
+  _start ( 0 ),
+  _size  ( 0 )
+{
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+Primitive::Primitive ( Index start, Index size ) : Referenced(), 
+  _start ( start ),
+  _size  ( size )
 {
 }
 
@@ -46,13 +54,8 @@ Primitive::Primitive() : Referenced(),
 /////////////////////////////////////////////////////////////////////////////
 
 Primitive::Primitive ( const Primitive &s ) : Referenced ( s ), 
-  _nb ( s._nb ),
-  _cb ( s._cb ),
-  _vi ( s._vi ),
-  _ni ( s._ni ),
-  _ci ( s._ci ),
-  _type   ( s._type ),
-  _format ( s._format )
+  _start ( s._start ),
+  _size  ( s._size )
 {
 }
 
@@ -71,51 +74,25 @@ Primitive::~Primitive()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Set the primitive type.
+//  The start of the primitive.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Primitive::type ( Type type )
+void Primitive::start ( Index s )
 {
   Lock lock ( this );
-  _type = type;
+  _start = s;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the format of the indices.
+//  The number of vertices in the primitive.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Primitive::format ( Format f )
+void Primitive::size ( Index s )
 {
   Lock lock ( this );
-  _format = f;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void Primitive::normalBinding ( Binding nb )
-{
-  Lock lock ( this );
-  _nb = nb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void Primitive::colorBinding ( Binding cb )
-{
-  Lock lock ( this );
-  _cb = cb;
+  _size = s;
 }

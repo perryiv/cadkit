@@ -44,10 +44,6 @@ ChildWindow::ChildWindow() : BaseClass()
 ChildWindow::ChildWindow ( const FXString &name, MainWindow *parent ) : 
   BaseClass ( parent->clientArea(), name, NULL, parent->mdiMenu(), 0, 20, 20, 400, 300 )
 {
-  // Build the scene.
-  GSG::Factory::ValidPtr factory ( new GSG::Factory );
-  this->root()->append ( factory->sphere() );
-  this->view()->viewAll();
 }
 
 
@@ -59,5 +55,26 @@ ChildWindow::ChildWindow ( const FXString &name, MainWindow *parent ) :
 
 ChildWindow::~ChildWindow()
 {
-  // Nothing to delete.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ChildWindow::create()
+{
+  // Call the base class's function.
+  BaseClass::create();
+
+  // Should be true.
+  GSG::ErrorChecker ( 0x0 != this->root() );
+  GSG::ErrorChecker ( 0x0 != this->view() );
+
+  // Build the scene.
+  GSG::Factory::ValidPtr factory ( new GSG::Factory );
+  this->root()->append ( factory->sphere ( GSG::Vec3 ( 0, 0, -200 ), 1, 0 ) );
+  this->view()->viewAll();
 }

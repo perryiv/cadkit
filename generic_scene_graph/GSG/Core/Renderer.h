@@ -47,6 +47,12 @@ public:
   void                    prepend ( Visitor *v );
   void                    insert ( Visitors::iterator beforeMe, Visitor *v );
 
+  // Reset the internal state.
+  virtual void            reset();
+
+  // Set the viewport.
+  virtual void            viewport ( const Viewport &viewport );
+
 protected:
 
   virtual ~Renderer();

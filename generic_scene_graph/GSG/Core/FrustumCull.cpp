@@ -91,9 +91,24 @@ void FrustumCull::_cull ( Node &n )
 
 void FrustumCull::_cull ( Shape &s )
 {
-  Lock lock ( this );
+  // Loop through the primitive-sets.
+  for ( Shape::iterator i = s.begin(); i != s.end(); ++i )
+    this->_cull ( **i );
+}
 
-  // Insert the accumulated matrix and the shape.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cull the primitive-set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FrustumCull::_cull ( PrimitiveSet &ps )
+{
+  ErrorChecker ( 0x0 != this->renderBin() );
+
+  // Insert the elements into the bin.
+  this->renderBin()->add ( new PrimitiveSetElement ( &ps ) );
 }
 
 
@@ -105,8 +120,46 @@ void FrustumCull::_cull ( Shape &s )
 
 void FrustumCull::_cull ( Group &g )
 {
-  Lock lock ( this );
-  this->_traverse ( g ); // Traverse first.
-  this->_cull ( static_cast < Node & > ( g ) );
-  // TODO.
+  // Traverse the group.
+  this->_traverse ( g );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cull the transform.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FrustumCull::_cull ( Transform &t )
+{
+  ErrorChecker ( 0x0 != this->renderBin() );
+
+  // Insert the elements into the bin.
+  this->renderBin()->add ( new MatrixModeElement ( MatrixModeElement::MODELVIEW ) );
+  this->renderBin()->add ( new MatrixLoadElement ( t.matrix() ) );
+
+  // Delegate.
+  this->_cull ( (Transform::BaseClass &) t );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cull the camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FrustumCull::_cull ( Camera &c )
+{
+  ErrorChecker ( 0x0 != this->renderBin() );
+
+  // Insert the elements into the bin.
+  this->renderBin()->add ( new MatrixModeElement ( MatrixModeElement::PROJECTION ) );
+  this->renderBin()->add ( new MatrixLoadElement ( c.projection() ) );
+  this->renderBin()->add ( new MatrixModeElement ( MatrixModeElement::MODELVIEW ) );
+  this->renderBin()->add ( new MatrixLoadElement ( c.modelview() ) );
+
+  // Delegate.
+  this->_cull ( (Camera::BaseClass &) c );
 }

@@ -92,11 +92,11 @@ MdiMainWindow::MdiMainWindow (
 {
   // MDI client area.
   _clientArea = FXMDIClientPtr ( new FXMDIClient ( this, LAYOUT_FILL_X | LAYOUT_FILL_Y ) );
-  ErrorChecker ( _clientArea.valid() );
+  ErrorChecker ( 0x0 != _clientArea.get() );
 
   // Make MDI Menu
   _mdiMenu = FXMDIMenuPtr ( new FXMDIMenu ( this, _clientArea.get() ) );
-  ErrorChecker ( _mdiMenu.valid() );
+  ErrorChecker ( 0x0 != _mdiMenu.get() );
 
   // MDI buttons in menu.
   ErrorChecker ( 0x0 != new FXMDIWindowButton   ( this->menuBar(), _mdiMenu.get(), _clientArea.get(), FXMDIClient::ID_MDI_MENUWINDOW,   LAYOUT_LEFT ) );

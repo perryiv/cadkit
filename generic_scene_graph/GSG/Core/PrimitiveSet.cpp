@@ -28,9 +28,12 @@ GSG_IMPLEMENT_CLONE ( PrimitiveSet );
 /////////////////////////////////////////////////////////////////////////////
 
 PrimitiveSet::PrimitiveSet() : Referenced(), 
-  _vp ( 0x0 ),
-  _np ( 0x0 ),
-  _cp ( 0x0 ),
+  _pool ( 0x0 ),
+  _ppn  ( 0x0 ),
+  _ppc  ( 0x0 ),
+  _type ( TYPE_UNKNOWN ),
+  _nb   ( BINDING_UNKNOWN ),
+  _cb   ( BINDING_UNKNOWN ),
   _prims(),
   _bound()
 {
@@ -44,15 +47,18 @@ PrimitiveSet::PrimitiveSet() : Referenced(),
 /////////////////////////////////////////////////////////////////////////////
 
 PrimitiveSet::PrimitiveSet ( const PrimitiveSet &s ) : Referenced ( s ), 
-  _vp ( s._vp ),
-  _np ( s._np ),
-  _cp ( s._cp ),
+  _pool  ( s._pool ),
+  _ppn   ( s._ppn ),
+  _ppc   ( s._ppc ),
+  _type  ( s._type ),
+  _nb    ( s._nb ),
+  _cb    ( s._cb ),
   _prims ( s._prims ),
   _bound ( s._bound )
 {
-  BOOST_MPL_ASSERT_IS_SAME ( size_type, VertexPool::size_type );
+  BOOST_MPL_ASSERT_IS_SAME ( size_type,  ValuePool::size_type );
   BOOST_MPL_ASSERT_IS_SAME ( size_type, NormalPool::size_type );
-  BOOST_MPL_ASSERT_IS_SAME ( size_type, ColorPool::size_type );
+  BOOST_MPL_ASSERT_IS_SAME ( size_type,  ColorPool::size_type );
 }
 
 
@@ -70,52 +76,120 @@ PrimitiveSet::~PrimitiveSet()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Set the vertex indices.
+//  Set the type.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void PrimitiveSet::vertices ( VertexPool *vp )
+void PrimitiveSet::type ( Type t )
 {
   Lock lock ( this );
-  _vp = vp;
+  _type = t;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Set the vertex indices.
+//  Normal binding.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::normalBinding ( Binding nb )
+{
+  Lock lock ( this );
+  _nb = nb;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Color binding.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::colorBinding ( Binding cb )
+{
+  Lock lock ( this );
+  _cb = cb;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Append the primitive.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::append ( Primitive *ps )
+{
+  Lock lock ( this );
+  _prims.insert ( _prims.end(), Primitive::ValidPtr ( ps ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Prepend the primitive.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::prepend ( Primitive *ps )
+{
+  Lock lock ( this );
+  _prims.insert ( _prims.begin(), Primitive::ValidPtr ( ps ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Insert the primitive.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::insert ( PrimitiveSet::iterator beforeMe, Primitive *ps )
+{
+  Lock lock ( this );
+  _prims.insert ( beforeMe, Primitive::ValidPtr ( ps ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set the values.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PrimitiveSet::values ( ValuePool *vp )
+{
+  Lock lock ( this );
+  _pool = vp;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Set/get the per-primitive normals. If the normals are in the 
+//  interleaved array then this should be null.
 //
 /////////////////////////////////////////////////////////////////////////////
 
 void PrimitiveSet::normals ( NormalPool *np )
 {
   Lock lock ( this );
-  _np = np;
+  _ppn = np;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Set the vertex indices.
+//  Set/get the per-primitive colors. If the colors are in the 
+//  interleaved array then this should be null.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void PrimitiveSet::colors  ( ColorPool *cp )
+void PrimitiveSet::colors ( ColorPool *cp )
 {
   Lock lock ( this );
-  _cp = cp;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the bounding sphere.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-const BoundingSphere &PrimitiveSet::boundingSphere() const
-{
-  return _bound;
+  _ppc = cp;
 }
 
 
@@ -142,10 +216,10 @@ void PrimitiveSet::calculateBoundingSphere()
 {
   // Loop through the primitives and grow the bounding sphere.
   BoundingSphere bound;
-  for ( Sets::iterator i = _prims.begin(); i != _prims.end(); ++i )
+  for ( Primitives::const_iterator i = _prims.begin(); i != _prims.end(); ++i )
   {
     Primitive::ValidPtr prim ( *i );
-    bound.grow ( prim->calculateBoundingSphere ( _vp ) );
+    this->_grow ( prim, bound );
   }
 
   // Set this instance's sphere.
@@ -155,23 +229,21 @@ void PrimitiveSet::calculateBoundingSphere()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Calculate the bounding sphere.
+//  Grow the bounding sphere.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-HERE
-Snag: need to interpret indices correctly.
-Either need a smart iterator or a (template?) function that takes a functor.
-This functor will most likely need to call a member function.
-
-void PrimitiveSet::_calculateBoundingSphere ( const Primitive *prim )
+void PrimitiveSet::_grow ( const Primitive *prim, BoundingSphere &bound ) const
 {
   // Loop through the vertices and grow the bounding sphere.
-  BoundingSphere bound;
-  Indices::size_type numVerts ( prim->vertices().size() );
-  for ( Indices::size_type i = 0; i < prim->vertices().size(); ++i )
+  Real v0, v1, v2;
+  Indices::size_type size ( prim->size() );
+  for ( Indices::size_type i = prim->start(); i < size; ++i )
   {
-    Primitive::ValidPtr prim ( *i );
-    bound.grow ( _pool->value ( i ) );
+    // Get the vertex.
+    _pool->vertex ( i, v0, v1, v2 );
+
+    // Vector-type may not be the same.
+    bound.grow ( BoundingSphere::VectorType ( v0, v1, v2 ) );
   }
 }

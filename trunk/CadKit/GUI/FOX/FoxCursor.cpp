@@ -33,8 +33,8 @@
 # define NOMINMAX // Fox includes <windows.h>
 #endif
 
-#include <fx.h>
-#include <FXCURCursor.h>
+#include "fx.h"
+#include "FXCURCursor.h"
 
 
 using namespace CadKit;
@@ -70,7 +70,7 @@ FXCursor *FoxCursor::create ( const Type &type, const bool &createIt, FXApp *app
   case FoxCursor::CURSOR_ARROW:
 
     // Make the new cursor.
-    cursor = new FXCursor ( app, ::CURSOR_ARROW );
+    cursor = new FXCursor ( app, FX::CURSOR_ARROW );
     GUI_FOX_CHECK_EXPRESSION ( cursor.isValid() );
 
     // Create the cursor if we're supposed to.
@@ -157,15 +157,16 @@ FXCursor *FoxCursor::create ( const Type &type, const bool &createIt, FXApp *app
 //
 //////////////////////////////////////////////////////////////////////////
 
-FXCursor *FoxCursor::create ( const unsigned char *source, 
-                              const unsigned char *mask, 
-                              const int &width, 
-                              const int &height, 
-                              const int &hotSpotX, 
-                              const int &hotSpotY, 
-                              const Format &format,
-                              const bool &createIt,
-                              FXApp *app )
+FXCursor *FoxCursor::create ( 
+  const unsigned char *source, 
+  const unsigned char *mask, 
+  const int &width, 
+  const int &height, 
+  const int &hotSpotX, 
+  const int &hotSpotY, 
+  const Format &format,
+  const bool &createIt,
+  FXApp *app )
 {
   SL_ASSERT ( app );
   SL_ASSERT ( source );

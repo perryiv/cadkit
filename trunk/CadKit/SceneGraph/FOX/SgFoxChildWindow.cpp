@@ -132,7 +132,6 @@ bool SgFoxChildWindow::init()
 {
   SL_ASSERT ( this );
   SL_ASSERT ( this->getApp() );
-  SL_ASSERT ( this->getApp()->getMainWindow() );
   SL_ASSERT ( this->isCreated() );
 	SL_ASSERT ( _root.isValid() );
 

@@ -114,11 +114,11 @@ FoxMainWindow::~FoxMainWindow()
 bool FoxMainWindow::init()
 {
   // Menubar.
-  _menuBar = new FXMenubar ( this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X );
+  _menuBar = new FXMenuBar ( this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X );
   GUI_FOX_CHECK_EXPRESSION ( _menuBar.isValid() );
 
   // Status bar.
-  _statusBar = new FXStatusbar ( this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER );
+  _statusBar = new FXStatusBar ( this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER );
   GUI_FOX_CHECK_EXPRESSION ( _statusBar.isValid() );
 
   // File menu.
@@ -134,7 +134,7 @@ bool FoxMainWindow::init()
   // Help menu
   _helpMenu = new FXMenuPane ( this );
   GUI_FOX_CHECK_EXPRESSION ( _helpMenu.isValid() );
-  GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _helpMenu, "&About...", NULL, this, ID_ABOUT, 0 ) );
+  GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuCommand ( _helpMenu, "&About...", NULL, this, FoxMainWindow::ID_ABOUT, 0 ) );
   GUI_FOX_CHECK_EXPRESSION ( 0x0 != new FXMenuTitle ( _menuBar, "&Help", NULL, _helpMenu, LAYOUT_LEFT ) );
 
   // It worked.

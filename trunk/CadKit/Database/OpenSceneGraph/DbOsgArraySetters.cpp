@@ -116,7 +116,7 @@ bool DbOsgVertexSetter::setPrimitiveRange ( const unsigned int &index, const uns
       return false;
 
   // Map our type to osg's mode.
-  osg::Primitive::Mode mode = this->_getPrimitiveMode();
+  osg::PrimitiveSet::Mode mode = this->_getPrimitiveMode();
 
   // Set the primitive.
   _primitives[index] = new osg::DrawArrays ( mode, start, length );
@@ -132,23 +132,23 @@ bool DbOsgVertexSetter::setPrimitiveRange ( const unsigned int &index, const uns
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Primitive::Mode DbOsgVertexSetter::_getPrimitiveMode() const
+osg::PrimitiveSet::Mode DbOsgVertexSetter::_getPrimitiveMode() const
 {
   switch ( _type )
   {
   case CadKit::LINE_STRIP_SET:
-    return osg::Primitive::LINE_STRIP;
+    return osg::PrimitiveSet::LINE_STRIP;
   case CadKit::POINT_SET:
-    return osg::Primitive::POINTS;
+    return osg::PrimitiveSet::POINTS;
   case CadKit::POLYGON_SET:
-    return osg::Primitive::POLYGON;
+    return osg::PrimitiveSet::POLYGON;
   case CadKit::TRI_STRIP_SET:
-    return osg::Primitive::TRIANGLE_STRIP;
+    return osg::PrimitiveSet::TRIANGLE_STRIP;
   case CadKit::TRI_FAN_SET:
-    return osg::Primitive::TRIANGLE_FAN;
+    return osg::PrimitiveSet::TRIANGLE_FAN;
   default:
     SL_ASSERT ( 0 );                      // What type is this?
-    return osg::Primitive::LINE_STRIP; // Play it safe.
+    return osg::PrimitiveSet::LINE_STRIP; // Play it safe.
   }
 }
 

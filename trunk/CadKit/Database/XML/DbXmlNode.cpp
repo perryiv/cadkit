@@ -44,6 +44,11 @@
 #include "DbXmlPrecompiled.h"
 #include "DbXmlNode.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlThread.h"
+#endif
+
 using namespace CadKit;
 
 DB_XML_IMPLEMENT_NODE(DbXmlNode,SlRefBase);
@@ -91,7 +96,7 @@ long DbXmlNode::_numNodes = 0;
 DbXmlNode::DbXmlNode() : SlRefBase ( INITIAL_REF_COUNT ), 
   _name ( DEFAULT_NAME )
 {
-  SL_PRINT ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
   CadKit::threadSafeIncrement ( _numNodes );
 }
 
@@ -105,7 +110,7 @@ DbXmlNode::DbXmlNode() : SlRefBase ( INITIAL_REF_COUNT ),
 DbXmlNode::DbXmlNode ( const char *name ) : SlRefBase ( INITIAL_REF_COUNT ), 
   _name ( ( name ) ? name : DEFAULT_NAME )
 {
-  SL_PRINT ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
   CadKit::threadSafeIncrement ( _numNodes );
 }
 
@@ -119,7 +124,7 @@ DbXmlNode::DbXmlNode ( const char *name ) : SlRefBase ( INITIAL_REF_COUNT ),
 DbXmlNode::DbXmlNode ( const DbXmlNode &node ) : SlRefBase ( INITIAL_REF_COUNT ), 
   _name ( node._name )
 {
-  SL_PRINT ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
   CadKit::threadSafeIncrement ( _numNodes );
 
   // Do not use the copy constructor. What does it mean to copy a tree? 
@@ -138,6 +143,6 @@ DbXmlNode::DbXmlNode ( const DbXmlNode &node ) : SlRefBase ( INITIAL_REF_COUNT )
 
 DbXmlNode::~DbXmlNode()
 {
-  SL_PRINT ( "In DbXmlNode::~DbXmlNode(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlNode::~DbXmlNode(), this = %X\n", this );
   CadKit::threadSafeDecrement ( _numNodes );
 }

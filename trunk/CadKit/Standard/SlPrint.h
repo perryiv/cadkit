@@ -64,31 +64,16 @@
 # define SL_WPRINT4 SL_WPRINT
 # define SL_WPRINT5 SL_WPRINT
 #else // No _CADKIT_SL_PRINT_DEBUG
-# ifdef _WIN32
-#  define SL_PRINT ((void)0)
-#  define SL_PRINT2 SL_PRINT
-#  define SL_PRINT3 SL_PRINT
-#  define SL_PRINT4 SL_PRINT
-#  define SL_PRINT5 SL_PRINT
-#  define SL_WPRINT ((void)0)
-#  define SL_WPRINT2 SL_WPRINT
-#  define SL_WPRINT3 SL_WPRINT
-#  define SL_WPRINT4 SL_WPRINT
-#  define SL_WPRINT5 SL_WPRINT
-# elif __GNUC__
-#  define SL_PRINT(exp) ((void)0)
-#  define SL_PRINT2(exp1,exp2) ((void)0)
-#  define SL_PRINT3(exp1,exp2,exp3) ((void)0)
-#  define SL_PRINT4(exp1,exp2,exp3,exp4) ((void)0)
-#  define SL_PRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
-#  define SL_WPRINT(exp) ((void)0)
-#  define SL_WPRINT2(exp1,exp2) ((void)0)
-#  define SL_WPRINT3(exp1,exp2,exp3) ((void)0)
-#  define SL_WPRINT4(exp1,exp2,exp3,exp4) ((void)0)
-#  define SL_WPRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
-# else
-TODO
-# endif
+# define SL_PRINT(exp) ((void)0)
+# define SL_PRINT2(exp1,exp2) ((void)0)
+# define SL_PRINT3(exp1,exp2,exp3) ((void)0)
+# define SL_PRINT4(exp1,exp2,exp3,exp4) ((void)0)
+# define SL_PRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
+# define SL_WPRINT(exp) ((void)0)
+# define SL_WPRINT2(exp1,exp2) ((void)0)
+# define SL_WPRINT3(exp1,exp2,exp3) ((void)0)
+# define SL_WPRINT4(exp1,exp2,exp3,exp4) ((void)0)
+# define SL_WPRINT5(exp1,exp2,exp3,exp4,exp5) ((void)0)
 #endif // _CADKIT_SL_PRINT_DEBUG
 
 

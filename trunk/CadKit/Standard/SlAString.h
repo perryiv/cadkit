@@ -115,9 +115,7 @@ public:
   bool                      setFromErrorId ( const HRESULT &error );
   #endif
 
-  #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
   void                      split ( const char &delimiter, std::list<SlAString> &components ) const;
-  #endif
   
   // Convert all characters to upper/lower case.
   void                      toLower();
@@ -180,6 +178,33 @@ inline SlAString::SlAString ( size_type pos,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Format the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void SlAString::format ( const char *f, va_list ap )
+{
+   SL_ASSERT ( f );
+   SL_ASSERT ( ap );
+
+   // The string we write to. Do not make these static because I want it 
+   // to be thread-safe. Hopefully this is big enough.
+   const size_t length = SL_STRING_FUNCTION_BUFFER_SIZE - 1; // 2^15 - 1.
+   char buf[length + 1];
+
+   // Format the text into the buffer.
+   SL_VSNPRINTF ( buf, length, f, ap );
+
+   // Check for memory problems.
+   SL_ASSERT ( ::strlen ( buf ) <= length );
+
+   // Set the new string.
+   this->setValue ( buf );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,33 +246,6 @@ inline void SlAString::format ( const char *f, ... )
 
    // End variable argument processing.
    va_end ( ap );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Format the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline void SlAString::format ( const char *f, va_list ap )
-{
-   SL_ASSERT ( f );
-   SL_ASSERT ( ap );
-
-   // The string we write to. Do not make these static because I want it 
-   // to be thread-safe. Hopefully this is big enough.
-   const size_t length = SL_STRING_FUNCTION_BUFFER_SIZE - 1; // 2^15 - 1.
-   char buf[length + 1];
-
-   // Format the text into the buffer.
-   SL_VSNPRINTF ( buf, length, f, ap );
-
-   // Check for memory problems.
-   SL_ASSERT ( ::strlen ( buf ) <= length );
-
-   // Set the new string.
-   this->setValue ( buf );
 }
 
 
@@ -446,9 +444,6 @@ SL_TEMPLATE_STRING_OUTPUT_OPERATOR ( SlAString, float );
 SL_TEMPLATE_STRING_OUTPUT_OPERATOR ( SlAString, double );
 
 
-#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Split the string.
@@ -460,9 +455,6 @@ inline void SlAString::split ( const char &delimiter, std::list<SlAString> &comp
   // Call the non-member function.
   CadKit::_splitStringIntoList ( *this, delimiter, components );
 }
-
-
-#endif // CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
 
 
 #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SET_FROM_ERROR_ID

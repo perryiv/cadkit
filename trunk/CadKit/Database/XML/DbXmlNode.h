@@ -50,6 +50,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefPtr.h"
 # include "Standard/SlRefBase.h"
+# include <string>
 #endif
 
 

@@ -86,7 +86,7 @@ DbJtTraverser::DbJtTraverser() : SlRefBase ( 0 ),
   _clientData ( NULL ),
   _currentLevel ( 0 )
 {
-  SL_PRINT ( "In DbJtTraverser::DbJtTraverser(), this = %X\n", this );
+  SL_PRINT2 ( "In DbJtTraverser::DbJtTraverser(), this = %X\n", this );
 
   // Should be true for a one-to-one mapping between the entity types.
   SL_ASSERT ( (unsigned int) eaiEntity::eaiNONE == (unsigned int) NONE );
@@ -102,7 +102,7 @@ DbJtTraverser::DbJtTraverser() : SlRefBase ( 0 ),
 
 DbJtTraverser::~DbJtTraverser()
 {
-  SL_PRINT ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
+  SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
 }
 
 
@@ -116,7 +116,7 @@ namespace CadKit
 {
 template <class T> void _copyArray ( const unsigned int &num, const T *array, std::vector<T> &vec )
 {
-  SL_PRINT ( "In CadKit::_copyArray(), num = %d, array = %X\n", num, array );
+  SL_PRINT3 ( "In CadKit::_copyArray(), num = %d, array = %X\n", num, array );
   SL_ASSERT ( num > 0 );
   SL_ASSERT ( array );
 
@@ -139,7 +139,7 @@ template <class T> void _copyArray ( const unsigned int &num, const T *array, st
 
 void DbJtTraverser::setCallback ( DbJtTraverserCB *callback, const void *clientData )
 {
-  SL_PRINT ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
+  SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
   _clientCallback = callback;
   _clientData = clientData;
 }
@@ -153,7 +153,7 @@ void DbJtTraverser::setCallback ( DbJtTraverserCB *callback, const void *clientD
 
 DbJtTraverser *DbJtTraverser::_getCurrent()
 {
-  SL_PRINT ( "In DbJtTraverser::_getCurrent(), _currentTraverser = %X\n", _currentTraverser );
+  SL_PRINT2 ( "In DbJtTraverser::_getCurrent(), _currentTraverser = %X\n", _currentTraverser );
   return _currentTraverser;
 }
 
@@ -166,7 +166,7 @@ DbJtTraverser *DbJtTraverser::_getCurrent()
 
 void DbJtTraverser::_setCurrent ( DbJtTraverser *traverser )
 {
-  SL_PRINT ( "In DbJtTraverser::_getCurrent(), traverser = %X\n", traverser );
+  SL_PRINT2 ( "In DbJtTraverser::_getCurrent(), traverser = %X\n", traverser );
   _currentTraverser = traverser;
 }
 
@@ -181,12 +181,12 @@ namespace CadKit
 {
 void _incrementPointerReferenceCount ( eaiEntity *p )
 {
-  SL_PRINT ( "In _incrementPointerReferenceCount ( eaiEntity * ), p = %X\n", p );
+  SL_PRINT2 ( "In _incrementPointerReferenceCount ( eaiEntity * ), p = %X\n", p );
   p->ref();
 }
 void _decrementPointerReferenceCount ( eaiEntity *p )
 {
-  SL_PRINT ( "In _decrementPointerReferenceCount ( eaiEntity * ), p = %X\n", p );
+  SL_PRINT2 ( "In _decrementPointerReferenceCount ( eaiEntity * ), p = %X\n", p );
   p->unref();
 }
 };
@@ -200,7 +200,7 @@ void _decrementPointerReferenceCount ( eaiEntity *p )
 
 bool DbJtTraverser::traverse ( const char *filename )
 {
-  SL_PRINT ( "In DbJtTraverser::traverse(), this = %X, filename = %s\n", this, filename );
+  SL_PRINT3 ( "In DbJtTraverser::traverse(), this = %X, filename = %s\n", this, filename );
   SL_ASSERT ( filename );
 
   try
@@ -224,7 +224,7 @@ bool DbJtTraverser::traverse ( const char *filename )
 
 bool DbJtTraverser::_traverse ( const char *filename )
 {
-  SL_PRINT ( "In DbJtTraverser::_traverse(), this = %X, filename = %s\n", this, filename );
+  SL_PRINT3 ( "In DbJtTraverser::_traverse(), this = %X, filename = %s\n", this, filename );
   SL_ASSERT ( filename );
 
   // Initialize.
@@ -325,7 +325,7 @@ bool DbJtTraverser::_traverse ( const char *filename )
 
 bool DbJtTraverser::_sendMessage ( const Message &message )
 {
-  SL_PRINT ( "In DbJtTraverser::_sendMessage(), this = %X, message = %d\n", this, message );
+  SL_PRINT3 ( "In DbJtTraverser::_sendMessage(), this = %X, message = %d\n", this, message );
 
   // If there is a callback...
   if ( _clientCallback )
@@ -347,7 +347,7 @@ bool DbJtTraverser::_sendMessage ( const Message &message )
 
 int DbJtTraverser::_traverseCallback ( eaiHierarchy *node, int level )
 {
-  SL_PRINT ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", node, level );
+  SL_PRINT3 ( "In DbJtTraverser::_traverseCallback(), node = %X, level = %d\n", node, level );
   SL_ASSERT ( DbJtTraverser::_getCurrent() );
 
   // Call the other one.
@@ -363,7 +363,7 @@ int DbJtTraverser::_traverseCallback ( eaiHierarchy *node, int level )
 
 int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
 {
-  SL_PRINT ( "In DbJtTraverser::_traverseNotify(), this = %X, node = %X, name = %s, level = %d\n", this, node, ( node->name() ) ? node->name() : "", level );
+  SL_PRINT5 ( "In DbJtTraverser::_traverseNotify(), this = %X, node = %X, name = %s, level = %d\n", this, node, ( node->name() ) ? node->name() : "", level );
   SL_ASSERT ( this );
 
   // Set the current node.
@@ -425,7 +425,7 @@ int DbJtTraverser::_traverseNotify ( eaiHierarchy *node, int level )
 
 bool DbJtTraverser::getType ( EntityHandle entity, DbJtTraverser::EntityType &type ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getType(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getType(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -447,7 +447,7 @@ bool DbJtTraverser::getType ( EntityHandle entity, DbJtTraverser::EntityType &ty
 
 bool DbJtTraverser::getName ( EntityHandle entity, std::string &name ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getName(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getName(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -469,7 +469,7 @@ bool DbJtTraverser::getName ( EntityHandle entity, std::string &name ) const
 
 bool DbJtTraverser::getTransform ( EntityHandle entity, SlMatrix4f &matrix ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getTransform(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getTransform(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -523,7 +523,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
                                   float &shininess, 
                                   unsigned int &valid ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getMaterial(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getMaterial(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -605,7 +605,7 @@ bool DbJtTraverser::getMaterial ( EntityHandle entity,
 
 bool DbJtTraverser::getNumLODs ( EntityHandle entity, unsigned int &numLODs ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getNumLODs(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getNumLODs(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -634,7 +634,7 @@ bool DbJtTraverser::getNumLODs ( EntityHandle entity, unsigned int &numLODs ) co
 
 bool DbJtTraverser::getNumShapes ( EntityHandle entity, const unsigned int &whichLOD, unsigned int &numShapes ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getNumShapes(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
+  SL_PRINT4 ( "In DbJtTraverser::getNumShapes(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -670,7 +670,7 @@ namespace CadKit
 {
 eaiShape *_getShape ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape )
 {
-  SL_PRINT ( "In DbJtTraverser::_getShape(), entity = %X, whichLOD = %d, whichShape = %d\n", entity, whichLOD, whichShape );
+  SL_PRINT4 ( "In DbJtTraverser::_getShape(), entity = %X, whichLOD = %d, whichShape = %d\n", entity, whichLOD, whichShape );
   SL_ASSERT ( entity );
 
   // Get the pointer we need.
@@ -708,7 +708,7 @@ bool DbJtTraverser::getNumSets ( EntityHandle entity,
                                  const unsigned int &whichShape, 
                                  unsigned int &numSets ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getNumShapeSets(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
+  SL_PRINT4 ( "In DbJtTraverser::getNumShapeSets(), this = %X, entity = %X, whichLOD = %d\n", this, entity, whichLOD );
   SL_ASSERT ( entity );
 
   // Ask for the shape (there may not be one). Catching with SlRefPtr will 
@@ -746,7 +746,7 @@ bool DbJtTraverser::getShape ( EntityHandle entity,
                                std::vector<float> &texture, 
                                unsigned int &valid ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
+  SL_PRINT5 ( "In DbJtTraverser::getShape(), this = %X, entity = %X, whichLOD = %d, whichShape = %d\n", this, entity, whichLOD, whichShape );
   SL_ASSERT ( entity );
 
   // Initialize.
@@ -819,7 +819,7 @@ bool DbJtTraverser::getShapeType ( EntityHandle entity,
                                    const unsigned int &whichShape, 
                                    DbJtTraverser::EntityType &type ) const
 {
-  SL_PRINT ( "In DbJtTraverser::getShapeType(), this = %X, entity = %X\n", this, entity );
+  SL_PRINT3 ( "In DbJtTraverser::getShapeType(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Initialize.

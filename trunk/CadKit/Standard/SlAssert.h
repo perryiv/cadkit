@@ -53,11 +53,11 @@
 
 #ifdef _DEBUG
 # ifdef _WIN32
-#   include <crtdbg.h>
-#   define SL_ASSERT _ASSERT	  // Default assertion behavior is ok.
+#  include <crtdbg.h>
+#  define SL_ASSERT _ASSERT	  // Default assertion behavior is ok.
 # else // Unix.
-#   include <stdio.h>
-#   define SL_ASSERT(exp) if ( !(exp) ) { ::printf ( "Assertion failed at line: %s, file: %s\n", __LINE__, __FILE__ ); ::fflush ( stdout ); }
+#  include <stdio.h>
+#  define SL_ASSERT(exp) if ( !(exp) ) { ::fprintf ( stderr, "Assertion failed at line: %d, file: %s\n", __LINE__, __FILE__ ); ::fflush ( stderr ); }
 # endif
 # define SL_VERIFY SL_ASSERT    // Make verify do the same thing as assert.
 #else // Release.

@@ -51,6 +51,7 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdarg.h>
 # include <string>
+# include <list>
 # if __GNUC__
    typedef basic_string <wchar_t> wstring; // See /usr/include/g++-3/string
 # endif
@@ -76,10 +77,6 @@
 # include <iostream>
 #endif
 
-#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
-# include <list>
-#endif
-
 #ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SET_FROM_ERROR_ID
 # ifdef _WIN32
 #  include "windows.h"
@@ -94,6 +91,11 @@ namespace CadKit
 template<class T> class SlTString : public std::basic_string<T>
 {
 public:
+
+#ifdef _SGI_NATIVE_COMPILER
+  typedef size_t size_type;
+  typedef const T *const_iterator;
+#endif
 
   // Constructors.
   explicit SlTString();
@@ -138,7 +140,12 @@ public:
   bool                      isSameFile ( const T *str ) const;
 
   // Typecast operators.
+#ifdef _SGI_NATIVE_COMPILER
+  operator                  const T * () const { return this->c_str(); }
+#else
   operator                  const T * const () const { return this->c_str(); }
+#endif
+
 #ifdef _WIN32
   operator                  const std::basic_string<T> & () const { return *this; }
   operator                  std::basic_string<T> & () { return *this; }
@@ -625,7 +632,7 @@ template<class T> inline const T &SlTString<T>::operator [] ( size_t index ) con
 
 template<class T> inline T &SlTString<T>::operator [] ( size_t index )
 {
-  SL_ASSERT ( this && index >= 0 && index < this->size() );
+  SL_ASSERT ( this && index < this->size() );
   return this->at ( index );
 }
 
@@ -1076,9 +1083,6 @@ template<class T> inline bool operator != ( T sa, const SlTString<T> &sb )
 }
 
 
-#ifdef CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Split the string. This is a template function (not a member).
@@ -1123,9 +1127,6 @@ template<class T, class L> inline void _splitStringIntoList ( const SlTString<T>
   // Push the last string onto the list.
   components.push_back ( current );
 }
-
-
-#endif // CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
 
 
 ///////////////////////////////////////////////////////////////////////////////

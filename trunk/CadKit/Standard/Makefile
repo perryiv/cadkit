@@ -1,20 +1,22 @@
-# Source files go in here.
-include MakeSource.in
+# C++ source files.
+CPP_FILES = \
+  SlBase.cpp \
+  SlPrecompiled.cpp \
+  SlPreComputedArrays.cpp \
+  SlRefBase.cpp \
+  SlTrace.cpp
 
 # The include path.
-INCLUDE = -I./
+LOCAL_INCLUDE = 
 
 # The libraries to link to.
-LIBS = 
+LOCAL_LIBS = 
 
 # Any flags for the compiler.
-CPPFLAGS = -D_DEBUG
+LOCAL_CPP_FLAGS = 
 
 # The name of the thing we are making.
 TARGET = CkSl
 
-# By default we compile a library.
-default: lib
-
 # The common rules for compiling are in here.
-include $(CADKIT_ROOT_DIR)/Make/MakeLibrary.in
+include $(CADKIT_ROOT_DIR)/Make/library.mak

@@ -45,6 +45,11 @@
 #include "DbXmlVisitor.h"
 #include "DbXmlNode.h"
 
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlAssert.h"
+#endif
+
 using namespace CadKit;
 
 DB_XML_IMPLEMENT_VISITOR(DbXmlVisitor,SlRefBase);
@@ -58,7 +63,7 @@ DB_XML_IMPLEMENT_VISITOR(DbXmlVisitor,SlRefBase);
 
 DbXmlVisitor::DbXmlVisitor() : SlRefBase ( 0 )
 {
-  SL_PRINT ( "In DbXmlVisitor::DbXmlVisitor(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlVisitor::DbXmlVisitor(), this = %X\n", this );
 }
 
 
@@ -70,7 +75,7 @@ DbXmlVisitor::DbXmlVisitor() : SlRefBase ( 0 )
 
 DbXmlVisitor::~DbXmlVisitor()
 {
-  SL_PRINT ( "In DbXmlVisitor::~DbXmlVisitor(), this = %X\n", this );
+  SL_PRINT2 ( "In DbXmlVisitor::~DbXmlVisitor(), this = %X\n", this );
 }
 
 

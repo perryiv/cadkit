@@ -27,8 +27,8 @@ namespace GSG {
 /////////////////////////////////////////////////////////////////////////////
 
 template < class Child_ > struct ParentType;
-struct ParentType < Node >      { typedef Group Type; };
-struct ParentType < Primitive > { typedef Shape Type; };
+template <> struct ParentType < Node >      { typedef Group Type; };
+template <> struct ParentType < Primitive > { typedef Shape Type; };
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="demo: GSG Fox Viewer"
+	Name="app: GSG Fox Viewer"
 	ProjectGUID="{42EB2971-371D-4244-8683-05BB89F42B9E}"
 	SccProjectName=""
 	SccLocalPath="">

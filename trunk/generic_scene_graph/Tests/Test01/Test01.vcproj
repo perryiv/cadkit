@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="demo: GSG Test 1"
+	Name="app: GSG Test 1"
 	ProjectGUID="{4249E43E-6C2A-4A3B-B7F7-DAD71CF7F086}"
 	SccProjectName=""
 	SccLocalPath="">

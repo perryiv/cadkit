@@ -112,7 +112,7 @@ osg::Geometry *SphereFactory::create ( float radius, unsigned int numLatitude, u
   typedef osg::Vec3Array Normals;
   typedef std::pair<unsigned int, unsigned int> Strip;
   typedef std::vector<Strip> Strips;
-  typedef Usul::Algorithms::LatLongSphere<float,Points,Normals,Strips> Sphere;
+  typedef Usul::Algorithms::LatLongSphere<float> Sphere;
 
   // The points, normals, and indices.
   osg::ref_ptr<Points>  points  ( new Points  );

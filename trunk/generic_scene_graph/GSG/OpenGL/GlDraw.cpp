@@ -47,7 +47,7 @@ GlDraw::GlDraw ( RenderBin *bin, const Viewport &vp, GlContext *context ) :
   _clientState ( 0 )
 {
   // Initialize if we have a valid context and viewport.
-  if ( context, vp.valid() )
+  if ( context && vp.valid() )
     this->init ( vp, context );
 }
 

@@ -34,7 +34,7 @@ namespace Detail
     }
     template < class Vec3, class TriangleType > bool operator () ( const Vec3 &mn, const Vec3 &mx, const TriangleType &t ) const
     {
-      VertexContainer &v = *_v;
+      const VertexContainer &v = *_v;
 
       // Determine place of first vertex (in or out).
       bool x0 ( v[t.v0][0] > mn[0] && v[t.v0][0] <= mx[0] );
@@ -63,16 +63,16 @@ namespace Detail
     {
       return _v;
     }
-    VertexContainer *vertices()
+    const VertexContainer *vertices()
     {
       return _v;
     }
-    void vertices ( VertexContainer *v )
+    void vertices ( const VertexContainer *v )
     {
       _v = v;
     }
   private:
-    VertexContainer *_v;
+    const VertexContainer *_v;
   };
 };
 
@@ -191,11 +191,16 @@ namespace Detail
     typedef void * CubeType;
     typedef unsigned int IndexType;
     Triangle() : v0(0), v1(0), v2(0), cube(0){}
-    Triangle ( IndexType i0, IndexType i1, IndexType i2 ) : v0(i0), v1(i1), v2(i2), cube(0){}
+    Triangle ( IndexType i0, IndexType i1, IndexType i2 ) : v0(i0), v1(i1), v2(i2), cube(0) {}
     IndexType v0;
     IndexType v1;
     IndexType v2;
     CubeType cube;
+
+    bool operator==( const Triangle& tri )
+    {
+      return (this->v0 == tri.v0 && this->v1 == tri.v1 && this->v2 == tri.v2 );
+    }
   };
 };
 
@@ -316,6 +321,12 @@ public:
     return _adder ( *this, object );
   }
 
+  void remove ( Object &object )
+  {
+    std::remove( _objects.begin(), _objects.end(), object);
+    for( ChildItr i = _children.begin(); i != _children.end(); ++i )
+       (*i)->remove( object );
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   //

@@ -62,7 +62,8 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbOsgDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbOsgDatabase::DbOsgDatabase() : DbBaseTarget(),
-  _groupStack ( new GroupStack )
+  _groupStack ( new GroupStack ),
+  _outputAttribute ( FORMAT_ATTRIBUTE_ASCII )
 {
   SL_PRINT2 ( "In DbOsgDatabase::DbOsgDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
@@ -200,7 +201,17 @@ IUnknown *DbOsgDatabase::queryInterface ( unsigned long iid )
 std::string DbOsgDatabase::getFileExtension() const
 {
   SL_PRINT2 ( "In DbOsgDatabase::getFileExtension(), this = %X\n", this );
-  return "osg";
+
+  switch ( _outputAttribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return "ive";
+  case FORMAT_ATTRIBUTE_ASCII:
+    return "osg";
+  default:
+    SL_ASSERT ( 0 ); // What attribute is this?
+    return "osg";
+  }
 }
 
 
@@ -217,7 +228,7 @@ bool DbOsgDatabase::isAttributeSupported ( const FormatAttribute &attribute ) co
   switch ( attribute )
   {
   case FORMAT_ATTRIBUTE_BINARY:
-    return false;
+    return true;
   case FORMAT_ATTRIBUTE_ASCII:
     return true;
   default:
@@ -237,8 +248,15 @@ bool DbOsgDatabase::setOutputAttribute ( const FormatAttribute &attribute )
 {
   SL_PRINT3 ( "In DbOsgDatabase::setOutputAttribute(), this = %X, attribute = %d\n", this, attribute );
 
-  // There is only ascii output.
-  return ( FORMAT_ATTRIBUTE_ASCII == attribute );
+  // Is it supported?
+  if ( false == this->isAttributeSupported ( attribute ) )
+    return false;
+
+  // Set the attribute.
+  _outputAttribute = attribute;
+
+  // It worked.
+  return true;
 }
 
 
@@ -254,7 +272,8 @@ bool DbOsgDatabase::writeData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
   SL_ASSERT ( NULL != this->_getRoot() );
 
-  // Write the root to file.
+  // Write the root to file. Note: OpenSceneGraph will write binary or ascii 
+  // depending on the extension.
   return osgDB::writeNodeFile ( *(this->_getRoot()), filename );
 }
 

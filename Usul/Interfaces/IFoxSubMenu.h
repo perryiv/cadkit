@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace FX { class FXMenuPane; }
+namespace FX { class FXWindow; class FXMenuPane; }
 
 namespace Usul 
 {
@@ -30,7 +30,7 @@ namespace Usul
       virtual std::string   menuText() const = 0;
 
       //build the menu
-      virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXMenuPane*  ) = 0;
+      virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow *owner, FX::FXMenuPane *menuPane  ) = 0;
 
     }; // class IFoxSubMenu
   }; //namespace Usul

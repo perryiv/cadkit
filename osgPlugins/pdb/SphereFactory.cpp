@@ -9,7 +9,6 @@
 
 #include "SphereFactory.h"
 
-//#include "osg/Geometry"
 #include "osg/Geode"
 
 #include "osgUtil/TriStripVisitor"

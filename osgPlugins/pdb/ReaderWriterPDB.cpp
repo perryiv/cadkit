@@ -447,7 +447,7 @@ void ReaderWriterPDB::_configure ( const Options *options )
 void ReaderWriterPDB::_getFileContents ( const std::string &filename, std::string &contents ) const
 {
   struct STAT buf;
-  int result = _stat ( filename.c_str(), &buf );
+  int result = STAT ( filename.c_str(), &buf );
   if ( result )
   {
     // Size the string that will hold the entire file.

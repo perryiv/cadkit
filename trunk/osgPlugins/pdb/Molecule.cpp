@@ -518,3 +518,4 @@ void Molecule::_setCentersAndRanges ( osg::LOD *lod, const osg::Vec3 &center ) c
   // Set the range for the last child.
   lod->setRange ( numChildren - 1, rangeMin, _lastRangeMax );
 }
+

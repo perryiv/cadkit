@@ -67,7 +67,7 @@ SL_IMPLEMENT_CLASS(SlRefBase,SlBase);
 
 SlRefBase::SlRefBase ( const unsigned long &refCount ) : SlBase(), _refCount ( refCount )
 {
-  SL_PRINT3 ( "SlRefBase::SlRefBase(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::SlRefBase(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
 }
 
 #endif

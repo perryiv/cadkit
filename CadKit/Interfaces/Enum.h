@@ -54,6 +54,14 @@ enum VertexBinding
 };
 
 
+// Possible options for processing LODs.
+enum LodProcessOption
+{
+  PROCESS_ALL_LODS,
+  PROCESS_HIGH_LOD,
+  PROCESS_LOW_LOD,
+};
+
 }; // namespace CadKit
 
 

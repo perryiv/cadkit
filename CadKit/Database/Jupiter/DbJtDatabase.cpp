@@ -83,12 +83,13 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _partLoadOption ( INSTANCE_PART ),
   _brepLoadOption ( TESS_ONLY ),
-  _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
+//  _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
   _shapeData ( new ShapeData ( NULL ) ),
   _progressPriorityLevel ( 0 ), // Send everything.
-  _result ( true )
+  _result ( true ),
+  _lodOption ( CadKit::PROCESS_ALL_LODS )
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _assemblies.get() );
@@ -157,6 +158,8 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
     return static_cast<IQueryShapeTexCoordsVec2f *>(this);
   case IMessagePriority::IID:
     return static_cast<IMessagePriority *>(this);
+  case ILodOption::IID:
+    return static_cast<ILodOption *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -235,7 +238,8 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
     return false;
 
   // Set the options.
-  importer->setShapeLoadOption ( CadKit::convert ( _shapeLoadOption,    _messageNotify ) );
+//  importer->setShapeLoadOption ( CadKit::convert ( _shapeLoadOption,    _messageNotify ) );
+  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
   importer->setBrepLoadOption  ( CadKit::convert ( _brepLoadOption,     _messageNotify ) );
   importer->setAssemblyOption  ( CadKit::convert ( _assemblyLoadOption, _messageNotify ) );
 
@@ -768,10 +772,23 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
   // Get the number of LODs.
   int numLods = part->numPolyLODs();
 
+  // If there are no LODs then return, otherwise the logic below gets more 
+  // complicated. It is not an error to have zero LODs.
+  if ( numLods <= 0 )
+    return true;
+
+  // We start the loop at zero unless we only want the lowest LOD, 
+  // in which case we start at the last LOD.
+  int start = ( PROCESS_LOW_LOD == _lodOption ) ? numLods - 1 : 0;
+
+  // We end the loop at the last LOD unless we only want the highest LOD,
+  // in which case we end at the first LOD.
+  int end = ( PROCESS_HIGH_LOD == _lodOption ) ? 1 : numLods;
+
   PROGRESS_LEVEL ( 2 ) ( FORMAT ( "\tLODs: %d", numLods ) );
 
   // Loop through the LODs.
-  for ( int i = 0; i < numLods; ++i )
+  for ( int i = start; i < end; ++i )
   {
     // Set the current indices.
     _current->setLod ( i );
@@ -990,16 +1007,16 @@ bool DbJtDatabase::setPartLoadOption ( const PartLoadOption &option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
-{
-  SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
-
-  // Set the option.
-  _shapeLoadOption = option;
-
-  // It worked.
-  return true;
-}
+//bool DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
+//{
+//  SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
+//
+//  // Set the option.
+//  _shapeLoadOption = option;
+//
+//  // It worked.
+//  return true;
+//}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2123,6 +2140,21 @@ bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, const unsi
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set option for processing the LODs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::setLodProcessOption ( LodProcessOption &option )
+{
+  SL_PRINT3 ( "In DbJtDatabase::setLodProcessOption(), this = %X, option = %d\n", this, option );
+
+  // Set the option.
+  _lodOption = option;
 }
 
 

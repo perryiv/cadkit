@@ -31,6 +31,7 @@
 #include "Interfaces/IDataTarget.h"
 #include "Interfaces/IControlled.h"
 #include "Interfaces/IMessagePriority.h"
+#include "Interfaces/ILodOption.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <time.h>
@@ -59,7 +60,8 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( CtTranslation, SlRefBase );
 CtTranslation::CtTranslation() : SlRefBase ( 0 ),
   _out ( NULL ),
   _progressPrintLevel ( 0 ),
-  _printFlags ( 0 )
+  _printFlags ( 0 ),
+  _lodOption ( CadKit::PROCESS_ALL_LODS )
 {
   SL_PRINT2 ( "In CtTranslation::CtTranslation(), this = %X\n", this );
 }
@@ -140,13 +142,19 @@ bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
   -wa <action>      What to do if a warning is encountered. Possible actions:\n\
                       exit:     Exit the program.\n\
                       continue: Continue executing is possible.\n\
+  -al               Where applicable, translate all of the Levels-of-Detail (LODs)'.\n\
+  -hl               Where applicable, translate only the highest Level-of-Detail (LOD)'.\n\
+  -ll               Where applicable, translate only the lowest Level-of-Detail (LOD)'.\n\
   --print-progress  Same as '-pp'.\n\
   --print-errors    Same as '-pe'.\n\
   --print-warnings  Same as '-pw'.\n\
   --print-info      Same as '-pi'.\n\
   --verbose         Same as '-v'.\n\
   --error-action    Same as '-ea'.\n\
-  --warning-action  Same as '-wa'."
+  --warning-action  Same as '-wa'.\n\
+  --all-lods        Same as '-al'.\n\
+  --high-lod        Same as '-hl'.\n\
+  --low-lod         Same as '-ll'."
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -245,6 +253,21 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
       _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
     }
 
+    else if ( arg == "-al" || arg == "--all-lods" )
+    {
+      _lodOption = CadKit::PROCESS_ALL_LODS;
+    }
+
+    else if ( arg == "-hl" || arg == "--high-lod" )
+    {
+      _lodOption = CadKit::PROCESS_HIGH_LOD;
+    }
+
+    else if ( arg == "-ll" || arg == "--low-lod" )
+    {
+      _lodOption = CadKit::PROCESS_LOW_LOD;
+    }
+
     // Otherwise just save the argument.
     else
       args.push_back ( argv[i] );
@@ -275,6 +298,16 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   SlQueryPtr<IMessagePriority> sourceMessagePriority ( source );
   if ( sourceMessagePriority.isValid() )
     sourceMessagePriority->setMessagePriorityLevel ( CadKit::MESSAGE_PROGRESS, _progressPrintLevel );
+
+  // See if we can tell the target which LODs to process.
+  SlQueryPtr<ILodOption> targetLodOption ( target );
+  if ( targetLodOption.isValid() )
+    targetLodOption->setLodProcessOption ( _lodOption );
+
+  // See if we can tell the source which LODs to process.
+  SlQueryPtr<ILodOption> sourceLodOption ( source );
+  if ( sourceLodOption.isValid() )
+    sourceLodOption->setLodProcessOption ( _lodOption );
 
   // Make sure the source supports the interface we need.
   SlQueryPtr<IDataSource> ds ( source );

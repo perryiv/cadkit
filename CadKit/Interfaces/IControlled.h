@@ -34,4 +34,4 @@ public:
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_CONTROLLER_H_
+#endif // _CADKIT_INTERFACE_CONTROLLED_H_

@@ -96,10 +96,11 @@ protected:
     _PRINT_WARNINGS = 0x00000002,
     _PRINT_INFO     = 0x00000004,
   };
-  
+
   std::ostream *_out;
   unsigned int _progressPrintLevel;
   unsigned int _printFlags;
+  LodProcessOption _lodOption;
 
   virtual ~CtTranslation();
 

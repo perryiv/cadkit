@@ -40,23 +40,23 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline eaiCADImporter::ShapeLoadOption convert ( const ILoadOptions::ShapeLoadOption &option, IMessageNotify *notify )
-{
-  // Have to use case statements and not typecasts because of differences
-  // between DMDTk 4.0 and 5.0.
-  switch ( option )
-  {
-  case ILoadOptions::ALL_LODS:
-    return eaiCADImporter::eaiALL_LODS;
-  case ILoadOptions::HIGH_LOD:
-    return eaiCADImporter::eaiHIGH_LOD;
-  default:
-    SL_ASSERT ( 0 );
-    if ( notify )
-      notify->messageNotify ( CadKit::getString ( "DMDTk does not support shape load option '%d', using eaiCADImporter::eaiALL_LODS instead.", option ), CadKit::UNSUPPORTED, CadKit::MESSAGE_WARNING );
-    return eaiCADImporter::eaiALL_LODS;
-  }
-}
+//inline eaiCADImporter::ShapeLoadOption convert ( const ILoadOptions::ShapeLoadOption &option, IMessageNotify *notify )
+//{
+//  // Have to use case statements and not typecasts because of differences
+//  // between DMDTk 4.0 and 5.0.
+//  switch ( option )
+//  {
+//  case ILoadOptions::ALL_LODS:
+//    return eaiCADImporter::eaiALL_LODS;
+//  case ILoadOptions::HIGH_LOD:
+//    return eaiCADImporter::eaiHIGH_LOD;
+//  default:
+//    SL_ASSERT ( 0 );
+//    if ( notify )
+//      notify->messageNotify ( CadKit::getString ( "DMDTk does not support shape load option '%d', using eaiCADImporter::eaiALL_LODS instead.", option ), CadKit::UNSUPPORTED, CadKit::MESSAGE_WARNING );
+//    return eaiCADImporter::eaiALL_LODS;
+//  }
+//}
 
 
 ///////////////////////////////////////////////////////////////////////////////

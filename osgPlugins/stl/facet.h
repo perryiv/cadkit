@@ -19,7 +19,7 @@ class Facet
 public:
   Facet();
   void setNormal(const osg::Vec3 &n) { _normal = n; }
-  void setVector(const osg::Vec3 &v);
+  void setVertex(const osg::Vec3 &v);
   const osg::Vec3 getNormal() const { return _normal; }
   const osg::Vec3 getV1() const { return _v1; }
   const osg::Vec3 getV2() const { return _v2; }

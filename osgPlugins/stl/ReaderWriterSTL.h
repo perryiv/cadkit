@@ -42,6 +42,9 @@ protected:
   Result                  _read ( const std::string &, const Options * );
 
 private:
+  void _parseBinaryFile( std::ifstream &in );
+  void _parseAsciiFile( std::ifstream &in );
+
   std::vector< Facet* > _facets;
   Facet *_currentFacet;
 };

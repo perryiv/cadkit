@@ -19,13 +19,14 @@
 #include "SlInlineMath.h"
 #include "SlAssert.h"
 #include "SlTemplateSupport.h"
-#include "SlZero.h"
+#include "SlConstants.h"
+#include "SlTestEquality.h"
 
 // For convenience.
-#define SL_VEC3_ZERO ( static_cast<T>(0) )
-#define SL_VEC3_HALF ( static_cast<T>(0.5) )
-#define SL_VEC3_ONE  ( static_cast<T>(1) )
-#define SL_VEC3_TWO  ( static_cast<T>(2) )
+#define SL_VEC3_ZERO SlConstants<T>::zero()
+#define SL_VEC3_HALF SlConstants<T>::half()
+#define SL_VEC3_ONE  SlConstants<T>::one()
+#define SL_VEC3_TWO  SlConstants<T>::two()
 
 
 namespace CadKit
@@ -116,6 +117,10 @@ template<class T> SlVec3<T> operator -  ( const SlVec3<T> &vecA, const SlVec3<T>
 template<class T> bool      operator == ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
 template<class T> bool      operator != ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
 
+#ifdef _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
+template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -187,29 +192,16 @@ template<class T> inline void SlVec3<T>::getValue ( T &v0, T &v1, T &v2 ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the vectors are equal within the given tolerance. Deliberately not 
-//  a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline bool isEqual ( const SlVec3<T> &v1, const SlVec3<T> &v2, const T &tolerance )
-{
-  return (
-    ( SL_ABS ( v1[0] - v2[0] ) ) <= tolerance &&
-    ( SL_ABS ( v1[1] - v2[1] ) ) <= tolerance &&
-    ( SL_ABS ( v1[2] - v2[2] ) ) <= tolerance );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  See if the vectors are equal within the given tolerance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec, const T &tolerance ) const
 {
-  return CadKit::isEqual ( *this, vec, tolerance );
+  return (
+    ( SL_ABS ( _v[0] - vec._v[0] ) ) <= tolerance &&
+    ( SL_ABS ( _v[1] - vec._v[1] ) ) <= tolerance &&
+    ( SL_ABS ( _v[2] - vec._v[2] ) ) <= tolerance );
 }
 
 
@@ -249,6 +241,55 @@ template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec ) const
 template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec ) const
 {
   return ( false == this->isEqual ( vec ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the vectors are equal within the given tolerance. Deliberately not 
+//  a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline bool isEqual ( const SlVec3<T> &v1, const SlVec3<T> &v2, const T &tolerance )
+{
+  return v1.isEqual ( v2, tolerance );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the array of vectors are equal within the given tolerance. 
+//  Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const SlVec3<T> *v1, const SlVec3<T> *v2, const I &size )
+{
+  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
+
+  for ( I i = 0; i < size; ++i )
+    if ( false == v1[i].isEqual ( v2[i] ) )
+      return false;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the array of vectors are equal within the given tolerance. 
+//  Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const SlVec3<T> *v1, const SlVec3<T> *v2, const I &size, const T &tolerance )
+{
+  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
+
+  for ( I i = 0; i < size; ++i )
+    if ( false == v1[i].isEqual ( v2[i], tolerance ) )
+      return false;
+  return true;
 }
 
 
@@ -390,6 +431,28 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vec, const T &v
     vec[1] / value, 
     vec[2] / value );
 }
+
+
+#ifdef _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the component-wise division of the given vectors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
+{
+  // Do not multiply by inverse because that fauls up integer vectors.
+  return SlVec3<T> ( 
+    vecA[0] / vecB[0], 
+    vecA[1] / vecB[1], 
+    vecA[2] / vecB[2] );
+}
+
+
+#endif // _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -568,34 +631,6 @@ template<class T> inline T SlVec3<T>::getDistance ( const SlVec3<T> &vec ) const
 template<class T> inline T SlVec3<T>::getLength() const
 {
   return SL_SQRT ( this->dot ( *this ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return a zero-vector. Deliberately not a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void getZero ( SlVec3<T> &vec )
-{
-  T zero;
-  CadKit::getZero ( zero );
-  vec.setValue ( zero, zero, zero );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the number zero? Deliberately not a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline bool isZero ( const SlVec3<T> &vec )
-{
-  SlVec3<T> zero;
-  CadKit::getZero ( zero );
-  return vec.isEqual ( zero );
 }
 
 
@@ -787,6 +822,54 @@ typedef SlVec3<int>         SlVec3i;
 typedef SlVec3<short>       SlVec3s;
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Explicit declaration of constant types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec3ld, 
+  SlVec3ld ( 0.0, 0.0, 0.0 ), 
+  SlVec3ld ( 0.5, 0.5, 0.5 ), 
+  SlVec3ld ( 1.0, 1.0, 1.0 ),
+  SlVec3ld ( 2.0, 2.0, 2.0 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec3d,  
+  SlVec3d ( 0.0, 0.0, 0.0 ), 
+  SlVec3d ( 0.5, 0.5, 0.5 ), 
+  SlVec3d ( 1.0, 1.0, 1.0 ),
+  SlVec3d ( 2.0, 2.0, 2.0 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec3f,  
+  SlVec3f ( 0.0f, 0.0f, 0.0f ), 
+  SlVec3f ( 0.5f, 0.5f, 0.5f ), 
+  SlVec3f ( 1.0f, 1.0f, 1.0f ),
+  SlVec3f ( 2.0f, 2.0f, 2.0f ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec3l,  
+  SlVec3l ( 0, 0, 0 ), 
+  SlVec3l ( 1, 1, 1 ),
+  SlVec3l ( 2, 2, 2 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec3i,  
+  SlVec3i ( 0, 0, 0 ), 
+  SlVec3i ( 1, 1, 1 ),
+  SlVec3i ( 2, 2, 2 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec3s,  
+  SlVec3s ( 0, 0, 0 ), 
+  SlVec3s ( 1, 1, 1 ),
+  SlVec3s ( 2, 2, 2 ) 
+  );
+
+
 }; // namespace CadKit
+
 
 #endif // _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_

@@ -19,6 +19,8 @@
 #include "NcInternalMacros.h"
 #include "NcDefine.h"
 
+#include "Standard/SlTestEquality.h"
+
 
 namespace CadKit
 {
@@ -57,38 +59,38 @@ public:
   const IndexType *             getNumKnots()  const { return _numKnots; }
 
   /// Get data values.
-  const ParameterType &         getKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot )  const { return _knots[whichIndepVar][whichKnot]; }
-  const ControlPointType &      getCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt ) const { return _ctrPts[whichDepVar][whichCtrPt]; }
-  const ControlPointType &      getWeight ( const IndexType &whichWeight )                                const { return _weights[whichWeight]; }
+  const ParamType &             getKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot )  const { return _knots[whichIndepVar][whichKnot]; }
+  const CtrPtType &             getCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt ) const { return _ctrPts[whichDepVar][whichCtrPt]; }
+  const CtrPtType &             getWeight ( const IndexType &whichWeight )                                const { return _weights[whichWeight]; }
 
   /// Set data values.
-  void                          setKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot,   const ParameterType &knot )     { _knots[whichIndepVar][whichKnot] = knot; }
-  void                          setCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt,  const ControlPointType &ctrPt ) { _ctrPts[whichDepVar][whichCtrPt] = ctrPt; }
-  void                          setWeight ( const IndexType &whichWeight,   const ControlPointType &weight )                              { _weights[whichWeight] = weight; }
+  void                          setKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot,   const ParamType &knot )     { _knots[whichIndepVar][whichKnot] = knot; }
+  void                          setCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt,  const CtrPtType &ctrPt ) { _ctrPts[whichDepVar][whichCtrPt] = ctrPt; }
+  void                          setWeight ( const IndexType &whichWeight,   const CtrPtType &weight )                              { _weights[whichWeight] = weight; }
 
   /// Get data arrays as const.
-  const ParameterType *         getAllKnots()  const { return _allKnots; }
-  const ControlPointType *      getAllCtrPts() const { return _allCtrPts; }
+  const ParamType *             getAllKnots()  const { return _allKnots; }
+  const CtrPtType *             getAllCtrPts() const { return _allCtrPts; }
 
   /// Get data arrays as const.
-  const ParameterType *         getKnots ( const IndexType &whichIndepVar ) const { return _knots[whichIndepVar]; }
-  const ControlPointType *      getCtrPts ( const IndexType &whichDepVar )  const { return _ctrPts[whichDepVar]; }
+  const ParamType *             getKnots ( const IndexType &whichIndepVar ) const { return _knots[whichIndepVar]; }
+  const CtrPtType *             getCtrPts ( const IndexType &whichDepVar )  const { return _ctrPts[whichDepVar]; }
 
   /// Get data-pointer arrays as const.
-  const ParameterType **        getKnots()  const { return const_cast<const ParameterType **> ( _knots ); }
-  const ControlPointType **     getCtrPts() const { return const_cast<const ControlPointType **> ( _ctrPts ); }
+  const ParamType **            getKnots()  const { return const_cast<const ParamType **> ( _knots ); }
+  const CtrPtType **            getCtrPts() const { return const_cast<const CtrPtType **> ( _ctrPts ); }
 
   /// Get shortcut to the _weights.
-  const ControlPointType *      getWeights() const { return _weights; }
+  const CtrPtType *             getWeights() const { return _weights; }
 
   /// Get the number of bytes for the types.
   static unsigned int           getNumBytesIndexType()        { return sizeof ( IndexType ); }
-  static unsigned int           getNumBytesParameterType()    { return sizeof ( ParameterType ); }
-  static unsigned int           getNumBytesControlPointType() { return sizeof ( ControlPointType ); }
+  static unsigned int           getNumBytesParamType()    { return sizeof ( ParamType ); }
+  static unsigned int           getNumBytesCtrPtType() { return sizeof ( CtrPtType ); }
 
   /// Get the first and last knot.
-  const ParameterType &         getFirstKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, 0 ); }
-  const ParameterType &         getLastKnot  ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
+  const ParamType &             getFirstKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, 0 ); }
+  const ParamType &             getLastKnot  ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
 
   /// Assignment operator.
   NcSplineData &                operator = ( const NcSplineData &sd ) { SL_VERIFY ( this->setValue ( sd ) ); return *this; }
@@ -113,15 +115,15 @@ public:
                                   const IndexType *numCtrPts );
 
   /// Confirm parametric range.
-  bool                          isInRange ( const IndexType &whichIndepVar, const ParameterType &u ) const;
+  bool                          isInRange ( const IndexType &whichIndepVar, const ParamType &u ) const;
 
   /// Equality test.
-  bool                          isEqual    ( const NcSplineData &spline ) const { return a.isEqual ( b, 0, 0 ); }
-  bool                          isEqual    ( const NcSplineData &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const;
+  bool                          isEqual    ( const NcSplineData &spline ) const;
+  bool                          isEqual    ( const NcSplineData &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const;
 
   /// Inequality test.
   bool                          isNotEqual ( const NcSplineData &spline ) const { return false == this->isEqual ( spline ); }
-  bool                          isNotEqual ( const NcSplineData &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
+  bool                          isNotEqual ( const NcSplineData &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
 
 protected:
 
@@ -142,18 +144,21 @@ protected:
   IndexType *_numKnots;
 
   /// Data arrays.
-  ParameterType *_allKnots;
-  ControlPointType *_allCtrPts;
+  ParamType *_allKnots;
+  CtrPtType *_allCtrPts;
 
   /// Data-pointer arrays.
-  ParameterType **_knots;
-  ControlPointType **_ctrPts;
+  ParamType **_knots;
+  CtrPtType **_ctrPts;
 
   /// Shortcut to the _weights.
-  ControlPointType *_weights;
+  CtrPtType *_weights;
 
   /// Delete the internal arrays.
   void                          _delete();
+
+  /// Test the equality of the integers.
+  bool                          _isEqualIntegers ( const NcSplineData<NCSDCA> &spline ) const;
 };
 
 
@@ -304,12 +309,11 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::isValid() const
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-/// Equality.
+///  Test the equality of the integers.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual 
-  ( const NcSplineData<NCSDCA> &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::_isEqualIntegers ( const NcSplineData<NCSDCA> &spline ) const
 {
   return (
     _rational       == spline._rational &&
@@ -321,9 +325,40 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual
     true == CadKit::isEqualArray ( _numCtrPts, spline._numCtrPts, _numIndepVars ) &&
     true == CadKit::isEqualArray ( _order,     spline._order,     _numIndepVars ) &&
     true == CadKit::isEqualArray ( _degree,    spline._degree,    _numIndepVars ) &&
-    true == CadKit::isEqualArray ( _numKnots,  spline._numKnots,  _numIndepVars ) &&
+    true == CadKit::isEqualArray ( _numKnots,  spline._numKnots,  _numIndepVars )
+    );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Equality.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual 
+  ( const NcSplineData<NCSDCA> &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const
+{
+  return (
+    true == this->_isEqualIntegers ( spline ) &&
     true == CadKit::isEqualArray ( _allKnots,  spline._allKnots,  _totalNumKnots,  knotTol ) &&
     true == CadKit::isEqualArray ( _allCtrPts, spline._allCtrPts, _totalNumCtrPts * _numDepVars, ctrPtTol )
+    );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Equality.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual ( const NcSplineData<NCSDCA> &spline ) const
+{
+  return (
+    true == this->_isEqualIntegers ( spline ) &&
+    true == CadKit::isEqualArray ( _allKnots,  spline._allKnots,  _totalNumKnots ) &&
+    true == CadKit::isEqualArray ( _allCtrPts, spline._allCtrPts, _totalNumCtrPts * _numDepVars )
     );
 }
 
@@ -360,7 +395,7 @@ template<NCSDTA> inline bool operator != ( const NcSplineData<NCSDCA> &a, const 
 
 template<NCSDTA> inline bool NcSplineData<NCSDCA>::isInRange ( 
   const IndexType &whichIndepVar, 
-  const ParameterType &u ) const
+  const ParamType &u ) const
 {
   return (
     u >= this->getFirstKnot ( whichIndepVar ) &&

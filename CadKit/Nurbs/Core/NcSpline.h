@@ -24,24 +24,7 @@
 
 namespace CadKit
 {
-template<typename ParameterType = double,
-  typename ControlPointType = double,
-  typename IndexType = unsigned int,
-  typename BitMaskType = unsigned int,
-  typename IndexAllocatorType = std::allocator<IndexType>,
-  typename ParameterAllocatorType = std::allocator<ParameterType>,
-  typename ParameterPointerAllocatorType = std::allocator<ParameterType *>,
-  typename ControlPointAllocatorType = std::allocator<ControlPointType>,
-  typename ControlPointPointerAllocatorType = std::allocator<ControlPointType *> >
-class NcSpline : public NcSplineData<ParameterType, 
-  ControlPointType, 
-  IndexType, 
-  BitMaskType, 
-  IndexAllocatorType, 
-  ParameterAllocatorType, 
-  ParameterPointerAllocatorType, 
-  ControlPointAllocatorType, 
-  ControlPointPointerAllocatorType>
+template<NCSDTCD> class NcSpline : public NcSplineData<NCSDCA>
 {
 public:
 
@@ -60,11 +43,11 @@ public:
 
   /// Equality test.
   bool                          isEqual    ( const NcSpline &spline ) const;
-  bool                          isEqual    ( const NcSpline &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const;
+  bool                          isEqual    ( const NcSpline &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const;
 
   /// Inequality test.
   bool                          isNotEqual ( const NcSpline &spline ) const { return false == this->isEqual ( spline ); }
-  bool                          isNotEqual ( const NcSpline &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
+  bool                          isNotEqual ( const NcSpline &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const { return false == this->isEqual ( spline, knotTol, ctrPtTol ); }
 
   /// Check the state.
   bool                          isAllocated() const { return ( 0 != _numIndepVars && 0 != _numDepVars ); }
@@ -174,7 +157,7 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA>
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual 
-  ( const NcSpline<NCSDCA> &spline, const ParameterType &knotTol, const ControlPointType &ctrPtTol ) const
+  ( const NcSpline<NCSDCA> &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const
 {
   return (
     _flags == spline._flags &&
@@ -191,13 +174,10 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual
 
 template<NCSDTA> inline bool NcSpline<NCSDCA>::isEqual ( const NcSpline<NCSDCA> &spline ) const
 {
-  ParameterType knotTol;
-  CadKit::getZero ( knotTol );
-
-  ControlPointType ctrPtTol;
-  CadKit::getZero ( ctrPtTol );
-
-  return NcSpline<NCSDCA>::isEqual ( spline, knotTol, ctrPtTol );
+  return (
+    _flags == spline._flags &&
+    true == NcSplineData<NCSDCA>::isEqual ( spline )
+    );
 }
 
 

@@ -32,32 +32,32 @@ public:
   /// Find the span.
   static IndexType              find ( 
                                   const NcCurve<NCSDCA> &curve,
-                                  const ParameterType &u );
+                                  const ParamType &u );
 
   /// Find the span.
   static IndexType              find ( 
                                   const NcCurve<NCSDCA> &curve,
-                                  const ParameterType &u, 
+                                  const ParamType &u, 
                                   const IndexType &low );
 
   /// Find the span.
   static IndexType              find ( 
                                   const NcSpline<NCSDCA> &spline,
                                   const IndexType &whichIndepVar, 
-                                  const ParameterType &u );
+                                  const ParamType &u );
 
   /// Find the span.
   static IndexType              find ( 
                                   const NcSpline<NCSDCA> &spline,
                                   const IndexType &whichIndepVar, 
-                                  const ParameterType &u, 
+                                  const ParamType &u, 
                                   const IndexType &low );
 
   /// Find the span.
   static IndexType              find ( 
-                                  const ParameterType *knots, 
+                                  const ParamType *knots, 
                                   const IndexType &numCtrPts, 
-                                  const ParameterType &u, 
+                                  const ParamType &u, 
                                   IndexType low );
 };
 
@@ -78,9 +78,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find ( 
-  const ParameterType *knots, 
+  const ParamType *knots, 
   const IndexType &numCtrPts, 
-  const ParameterType &u, 
+  const ParamType &u, 
   IndexType low )
 {
   SL_ASSERT ( NULL != knots );
@@ -96,7 +96,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 
   while ( low <= high )
   {
-    mid = static_cast<IndexType> ( static_cast<ParameterType> ( low + high ) * 0.5f );  
+    mid = static_cast<IndexType> ( static_cast<ParamType> ( low + high ) * 0.5f );  
 
     if ( u == knots[mid] )
     {
@@ -133,7 +133,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   const NcSpline<NCSDCA> &spline,
   const IndexType &whichIndepVar, 
-  const ParameterType &u, 
+  const ParamType &u, 
   const IndexType &low )
 {
   SL_ASSERT ( true == spline.isValid() );
@@ -141,7 +141,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   SL_ASSERT ( true == spline.isInRange ( whichIndepVar, u ) );
 
   // Get the start of the knot vector.
-  const ParameterType *knots = spline.getKnots ( whichIndepVar );
+  const ParamType *knots = spline.getKnots ( whichIndepVar );
 
   // Get the number of controls points.
   const IndexType numCtrPtr ( spline.getNumCtrPts ( whichIndepVar ) );
@@ -160,7 +160,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   const NcSpline<NCSDCA> &spline,
   const IndexType &whichIndepVar, 
-  const ParameterType &u )
+  const ParamType &u )
 {
   // Call the other one.
   return NcFindSpan<NCSDCA>::find ( spline, whichIndepVar, u, spline.getDegree ( whichIndepVar ) );
@@ -175,7 +175,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 
 template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   const NcCurve<NCSDCA> &curve,
-  const ParameterType &u, 
+  const ParamType &u, 
   const IndexType &low )
 {
   // Call the other one.
@@ -191,7 +191,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 
 template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   const NcCurve<NCSDCA> &curve,
-  const ParameterType &u )
+  const ParamType &u )
 {
   // Call the other one.
   return NcFindSpan<NCSDCA>::find ( curve, 0, u, curve.getDegree() );

@@ -19,12 +19,14 @@
 #include "SlInlineMath.h"
 #include "SlAssert.h"
 #include "SlTemplateSupport.h"
+#include "SlConstants.h"
+#include "SlTestEquality.h"
 
 // For convenience.
-#define SL_VEC2_ZERO ( static_cast<T>(0) )
-#define SL_VEC2_HALF ( static_cast<T>(0.5) )
-#define SL_VEC2_ONE  ( static_cast<T>(1) )
-#define SL_VEC2_TWO  ( static_cast<T>(2) )
+#define SL_VEC2_ZERO SlConstants<T>::zero()
+#define SL_VEC2_HALF SlConstants<T>::half()
+#define SL_VEC2_ONE  SlConstants<T>::one()
+#define SL_VEC2_TWO  SlConstants<T>::two()
 
 
 namespace CadKit
@@ -225,6 +227,55 @@ template<class T> inline bool SlVec2<T>::isEqual ( const SlVec2<T> &vec ) const
 template<class T> inline bool SlVec2<T>::isNotEqual ( const SlVec2<T> &vec ) const
 {
   return ( false == this->isEqual ( vec ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the vectors are equal within the given tolerance. Deliberately not 
+//  a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline bool isEqual ( const SlVec2<T> &v1, const SlVec2<T> &v2, const T &tolerance )
+{
+  return v1.isEqual ( v2, tolerance );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the array of vectors are equal within the given tolerance. 
+//  Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const SlVec2<T> *v1, const SlVec2<T> *v2, const I &size )
+{
+  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
+
+  for ( I i = 0; i < size; ++i )
+    if ( false == v1[i].isEqual ( v2[i] ) )
+      return false;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the array of vectors are equal within the given tolerance. 
+//  Deliberately not a member function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline bool isEqualArray ( const SlVec2<T> *v1, const SlVec2<T> *v2, const I &size, const T &tolerance )
+{
+  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
+
+  for ( I i = 0; i < size; ++i )
+    if ( false == v1[i].isEqual ( v2[i], tolerance ) )
+      return false;
+  return true;
 }
 
 
@@ -645,6 +696,53 @@ typedef SlVec2<float>       SlVec2f;
 typedef SlVec2<long>        SlVec2l;
 typedef SlVec2<int>         SlVec2i;
 typedef SlVec2<short>       SlVec2s;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Explicit declaration of constant types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec2ld, 
+  SlVec2ld ( 0.0, 0.0 ), 
+  SlVec2ld ( 0.5, 0.5 ), 
+  SlVec2ld ( 1.0, 1.0 ),
+  SlVec2ld ( 2.0, 2.0 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec2d,  
+  SlVec2d ( 0.0, 0.0 ), 
+  SlVec2d ( 0.5, 0.5 ), 
+  SlVec2d ( 1.0, 1.0 ),
+  SlVec2d ( 2.0, 2.0 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
+  SlVec2f,  
+  SlVec2f ( 0.0f, 0.0f ), 
+  SlVec2f ( 0.5f, 0.5f ), 
+  SlVec2f ( 1.0f, 1.0f ),
+  SlVec2f ( 2.0f, 2.0f ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec2l,  
+  SlVec2l ( 0, 0 ), 
+  SlVec2l ( 1, 1 ),
+  SlVec2l ( 2, 2 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec2i,  
+  SlVec2i ( 0, 0 ), 
+  SlVec2i ( 1, 1 ),
+  SlVec2i ( 2, 2 ) 
+  );
+CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
+  SlVec2s,  
+  SlVec2s ( 0, 0 ), 
+  SlVec2s ( 1, 1 ),
+  SlVec2s ( 2, 2 ) 
+  );
 
 
 }; // namespace CadKit

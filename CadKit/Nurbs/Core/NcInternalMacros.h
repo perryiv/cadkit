@@ -17,7 +17,6 @@
 #define _CADKIT_NURBS_CORE_LIBRARY_INTERNAL_MACROS_H_
 
 #include "Standard/SlAssert.h"
-#include "Standard/SlPartitionedVector.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <memory> // For std::allocator
@@ -105,8 +104,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define NCSDTA \
-  typename ParameterType, \
-  typename ControlPointType, \
+  typename ParamType, \
+  typename CtrPtType, \
   typename IndexType, \
   typename BitMaskType, \
   typename IndexAllocatorType, \
@@ -116,8 +115,8 @@
   typename ControlPointPointerAllocatorType
 
 #define NCSDCA \
-  ParameterType, \
-  ControlPointType, \
+  ParamType, \
+  CtrPtType, \
   IndexType, \
   BitMaskType, \
   IndexAllocatorType, \
@@ -127,15 +126,15 @@
   ControlPointPointerAllocatorType
 
 #define NCSDTCD \
-  typename ParameterType = double, \
-  typename ControlPointType = double, \
+  typename ParamType = double, \
+  typename CtrPtType = double, \
   typename IndexType = unsigned int, \
   typename BitMaskType = unsigned int, \
   typename IndexAllocatorType = std::allocator<IndexType>, \
-  typename ParameterAllocatorType = std::allocator<ParameterType>, \
-  typename ParameterPointerAllocatorType = std::allocator<ParameterType *>, \
-  typename ControlPointAllocatorType = std::allocator<ControlPointType>, \
-  typename ControlPointPointerAllocatorType = std::allocator<ControlPointType *>
+  typename ParameterAllocatorType = std::allocator<ParamType>, \
+  typename ParameterPointerAllocatorType = std::allocator<ParamType *>, \
+  typename ControlPointAllocatorType = std::allocator<CtrPtType>, \
+  typename ControlPointPointerAllocatorType = std::allocator<CtrPtType *>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,8 +146,8 @@
 #define DECLARE_TYPEDEFS \
   typedef IndexType Index; \
   typedef BitMaskType BitMask; \
-  typedef ParameterType Parameter; \
-  typedef ControlPointType ControlPoint; \
+  typedef ParamType Parameter; \
+  typedef CtrPtType ControlPoint; \
   typedef IndexAllocatorType IndexAllocator; \
   typedef ParameterAllocatorType ParameterAllocator; \
   typedef ParameterPointerAllocatorType ParameterPointerAllocator; \

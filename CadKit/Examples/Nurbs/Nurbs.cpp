@@ -20,6 +20,7 @@
 #define _CADKIT_NURBS_CORE_CHECK_FUNCTION_ARGUMENTS
 #define _CADKIT_NURBS_CORE_CHECK_MEMORY_ALLOCATION
 #define _CADKIT_NURBS_CORE_CHECK_FUNCTION_RESULTS
+#define _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
 
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec3IO.h"
@@ -120,7 +121,7 @@ template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1,
 
 template<NCSDTA, class Vec> void testCurve2 ( const Vec &center, 
                                               const Vec &normal, 
-                                              const ControlPointType &radius, 
+                                              const CtrPtType &radius, 
                                               NcCurve<NCSDCA> &c1, 
                                               NcCurve<NCSDCA> &c2 )
 {
@@ -161,10 +162,10 @@ int main ( int argc, char **argv )
   NcCurve<double,double, unsigned long, long>           c06;
   NcCurve<float, float,  unsigned int,  unsigned int>   c07;
   NcCurve<float, float,  unsigned int,  unsigned int>   c08;
-//  NcCurve<double,SlVec3d,unsigned long, unsigned short> c09;
-//  NcCurve<double,SlVec3d,unsigned long, unsigned short> c10;
-//  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c11;
-//  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c12;
+  NcCurve<double,SlVec3d,unsigned long, unsigned short> c09;
+  NcCurve<double,SlVec3d,unsigned long, unsigned short> c10;
+  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c11;
+  NcCurve<float, SlVec3f,unsigned short,unsigned long>  c12;
 
   // Points used for curve construction.
   SlVec3d p1d ( 1.1,  2.2,  3.3 );
@@ -182,8 +183,8 @@ int main ( int argc, char **argv )
   std::cout << "Testing curves c03 and c04" << std::endl; testCurve1 ( p1d, p2d, c03, c04 );
   std::cout << "Testing curves c05 and c06" << std::endl; testCurve1 ( p1d, p2d, c05, c06 );
   std::cout << "Testing curves c07 and c08" << std::endl; testCurve1 ( p1f, p2f, c07, c08 );
-//  std::cout << "Testing curves c09 and c10" << std::endl; testCurve1 ( p1d, p2d, c09, c10 );
-//  std::cout << "Testing curves c11 and c12" << std::endl; testCurve1 ( p1f, p2f, c11, c12 );
+  std::cout << "Testing curves c09 and c10" << std::endl; testCurve1 ( p1d, p2d, c09, c10 );
+  std::cout << "Testing curves c11 and c12" << std::endl; testCurve1 ( p1f, p2f, c11, c12 );
 
   // More tests for the curves with scalar control point types.
   std::cout << "Testing curves c01 and c02" << std::endl; testCurve2 ( p1d, n1d, 2.0,  c01, c02 );

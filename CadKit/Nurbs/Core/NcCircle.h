@@ -31,14 +31,14 @@ public:
   DECLARE_TYPEDEFS;
 
   // Create the 2D circle.
-  static bool create ( const SlVec2<ControlPointType> &center, 
-                       const ControlPointType &radius, 
+  static bool create ( const SlVec2<CtrPtType> &center, 
+                       const CtrPtType &radius, 
                        NcCurve<NCSDCA> &curve );
 
   // Create the 3D circle.
-  static bool create ( const SlVec3<ControlPointType> &center, 
-                       const SlVec3<ControlPointType> &normal, 
-                       const ControlPointType &radius, 
+  static bool create ( const SlVec3<CtrPtType> &center, 
+                       const SlVec3<CtrPtType> &normal, 
+                       const CtrPtType &radius, 
                        NcCurve<NCSDCA> &curve );
 protected:
 
@@ -142,8 +142,8 @@ template<NCSDTA> inline bool NcCircle<NCSDCA>::_create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcCircle<NCSDCA>::create (
-  const SlVec2<ControlPointType> &center, 
-  const ControlPointType &radius,
+  const SlVec2<CtrPtType> &center, 
+  const CtrPtType &radius,
   NcCurve<NCSDCA> &curve )
 {
   // Create the unit circle.
@@ -163,9 +163,9 @@ template<NCSDTA> inline bool NcCircle<NCSDCA>::create (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline bool NcCircle<NCSDCA>::create (
-  const SlVec3<ControlPointType> &center, 
-  const SlVec3<ControlPointType> &normal,
-  const ControlPointType &radius,
+  const SlVec3<CtrPtType> &center, 
+  const SlVec3<CtrPtType> &normal,
+  const CtrPtType &radius,
   NcCurve<NCSDCA> &curve )
 {
   // Create the unit circle.

@@ -12,9 +12,8 @@
 //  SlPartitionedVector: Encapsulated a vector (array) that is partitioned
 //  into sub-parts. An integer vector stores the partitions. 
 //
-//  Note: it is left up to the client to decide what the indices mean.
-//  Wether that be the size of each partition, or the starting index of each 
-//  partition, or whatever.
+//  Note: it is left up to the client to decide what the indices mean
+//  (the size of each partition, the start of each partition, or whatever).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +21,6 @@
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_PARTITIONED_VECTOR_CLASS_H_
 
 #include "SlTestEquality.h"
-#include "SlZero.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <vector>

@@ -151,6 +151,10 @@ SOURCE=.\SlCallbackList.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlCharacters.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlConstants.h
 # End Source File
 # Begin Source File
@@ -204,10 +208,6 @@ SOURCE=.\SlTypedefs.h
 # Begin Source File
 
 SOURCE=.\SlViewport.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlZero.h
 # End Source File
 # End Group
 # Begin Group "Base Class"

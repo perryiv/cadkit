@@ -52,7 +52,7 @@ struct KnotSpan
   typedef IndependentSequence_                                  IndependentSequence;
   typedef typename IndependentSequence::value_type              IndependentType;
   typedef typename GN::Traits::Argument<IndependentType>::Type  IndependentArgument;
-  typedef typename SizeType_                                    SizeType;
+  typedef SizeType_                                             SizeType;
   typedef GN::Limits::Nurbs<SizeType>                           Limits;
   typedef ErrorCheckerType_                                     ErrorCheckerType;
 

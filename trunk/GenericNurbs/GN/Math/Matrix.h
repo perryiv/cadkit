@@ -172,7 +172,7 @@ public:
   void resize ( SizeType rows, SizeType columns )
   {
     _m.resize ( rows );
-    for ( ContainerType::iterator i = _m.begin(); i != _m.end(); ++i )
+    for ( typename ContainerType::iterator i = _m.begin(); i != _m.end(); ++i )
       i->resize ( columns );
   }
 

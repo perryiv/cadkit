@@ -176,6 +176,7 @@ struct TriangleFunctor
   typedef std::vector< TriangleFunctor > TodoStack;
   typedef typename Triangle<Vertex>::SharedVertex SharedVertex;
   typedef typename SharedVertex::RefPtr SharedVertexPtr;
+  typedef typename SharedVertex::Iterator SharedVertexItr;
 
   //Construct with a triangle
   TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, Triangle<Vertex> *t ) :
@@ -232,7 +233,7 @@ struct TriangleFunctor
     else if( _sharedVertex )
     {
       //Loop through the triangles of this shared vertex
-      for(SharedVertex::Iterator triangle = _sharedVertex->begin(); triangle != _sharedVertex->end(); ++triangle)
+      for(SharedVertexItr triangle = _sharedVertex->begin(); triangle != _sharedVertex->end(); ++triangle)
       {
         //If we haven't visited yet
         if( !(*triangle)->visited() )
@@ -272,7 +273,7 @@ struct TriangleTest
   template < class TriangleType > bool operator () ( const TriangleType &t1, const TriangleType &t2 ) const
   {
     typedef typename TriangleType::SharedVertex SharedVertex;
-    typedef typename const SharedVertex* SharedVertexPtr;
+    typedef const SharedVertex* SharedVertexPtr;
     unsigned int count ( 0 );
 
     SharedVertexPtr t1v1 ( t1.vertex1() );

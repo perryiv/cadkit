@@ -30,7 +30,7 @@ inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigne
   typedef typename AdjacencyMap::SharedVertex SharedVertex;
   typedef typename IndexSequence::iterator IndexIterator;
   typedef std::vector< Functor > TodoStack;
-  typedef TodoStack::iterator TodoStackItr;
+  typedef typename TodoStack::iterator TodoStackItr;
 
   map.setAllUnvisited();
 

@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -33,10 +33,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producerd.lib osgProducerd.lib MenuKitd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib osgTextd.lib"
+				AdditionalDependencies="MenuKitd.lib OpenThreadsWin32.lib Producer.lib osgProducer.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib osg.lib"
 				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/simple_menu.pdb"
 				SubSystem="1"
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -82,10 +82,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producer.lib osgProducer.lib MenuKit.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
+				AdditionalDependencies="MenuKit.lib OpenThreadsWin32.lib Producer.lib osgProducer.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
 				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"

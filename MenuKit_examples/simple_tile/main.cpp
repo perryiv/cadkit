@@ -5,65 +5,66 @@
 
 #include "osg/MatrixTransform"
 #include "osgProducer/Viewer"
+#include "osgDB/FileUtils"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
-#include "MenuKit/ColorThemeSkinTile.h"
+#include "MenuKit/OSG/osg_types.h"
+#include "MenuKit/OSG/VisualThemeSkin.h"
 
 int main(int argc, char* argv[])
 {
   // load font for skin
-  osg::ref_ptr<osgText::Font> font = osgText::readFontFile("fonts/arial.ttf");
+  std::string fontfile("");
+  if( argc > 1 && osgDB::fileExists(argv[1]) )
+    fontfile = argv[1];
+  else
+    fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\dirtydoz.ttf";
 
-  // make a skin
-  MenuKit::OSG::osgColorThemeSkin osgskin;
-  osgskin.font( font.get() );
-
-  // define some colors
-  osg::Vec4 red(1.0,0.0,0.0,1.0);
-  osg::Vec4 green(0.0,1.0,0.0,1.0);
-  osg::Vec4 blue(0.0,0.0,1.0,1.0);
-  osg::Vec4 black(0.0,0.0,0.0,1.0);
-  osg::Vec4 white(1.0,1.0,1.0,1.0);
-  osg::Vec4 transwhite(1.0,1.0,1.0,0.5);
+  osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
 
   // define some themes
-  MenuKit::OSG::osgColorTheme redblue;
-  redblue.text( blue );
-  redblue.middle( white );
-  redblue.back( red );
+  MenuKit::OSG::osg_color_theme ct;
+  MenuKit::OSG::osg_color_map hi(ct.get_map()),
+                              norm(ct.get_map()),
+                              dis(ct.get_map());
 
-  MenuKit::OSG::osgColorTheme redgreen;
-  redgreen.text( green  );
-  redgreen.middle( black );
-  redgreen.back( red );
+  // allocate & setup a skin
+  MenuKit::OSG::VisualThemeSkin::Ptr skin = new MenuKit::OSG::VisualThemeSkin();
+  if( font.valid() )
+    skin->font( font.get() );
 
-  MenuKit::OSG::osgColorTheme blackwhite;
-  blackwhite.back( black );
-  blackwhite.middle( red );
-  blackwhite.text( transwhite );
+  // allocate a tile
+  MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
 
-  // define a skin
-  MenuKit::OSG::osgColorThemeSkin skinner;
+  // set up the tile
+  // these setup steps are extremely important
+  // the keys inserted will be used by a Mason is traversing a menu
+  tile->skin( skin.get() );
 
-  // define a tile
-  MenuKit::OSG::osgColorThemeSkinTile tile;
-  tile.skin( skinner );
-  tile.normal( blackwhite);
-  tile.highlight( redgreen );
-  tile.disabled( redblue  );
-  tile.box().height( 1.0 );
+  typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
+  DMTMAP dmtmap;
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
+  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
+  tile->theme_map( dmtmap );
 
   // define a menu item
-  MenuKit::Menu::Ptr button = new MenuKit::Menu();
-  button->text( "Filexxxxxxxxxxxxxx" );
+  MenuKit::Menu::Ptr menu = new MenuKit::Menu("File","",MenuKit::Menu::VERTICAL);
+  MenuKit::Menu::Ptr button = new MenuKit::Menu("Open","",MenuKit::Menu::VERTICAL);
+  //MenuKit::Button::Ptr button = new MenuKit::Button("Open","");
   //button->expanded( true );
+  //button->toggle( true );
   //button->radio( true );
   //button->checked( true );
+  menu->append( button.get() );
+
+  // set the size for the tile
+  MenuKit::Detail::Box box(tile->height(*button),tile->width(*button));
+  tile->box( box );
 
   // generate the graphic for the item
-  tile.box().width( tile.skin().width( *button ) );
-  osg::ref_ptr<osg::Node> scene = tile( *button );
+  osg::ref_ptr<osg::Node> scene = tile->operator ()( *button );
 
   // place menu gfx into scene
   osg::ref_ptr<osg::MatrixTransform> root = new osg::MatrixTransform();

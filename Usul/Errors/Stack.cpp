@@ -227,7 +227,7 @@ void Stack::format ( std::string &s ) const
   typedef Elements::container_type Container;
   std::ostringstream temp;
   for ( Container::const_iterator i = _s.begin(); i != _s.end(); ++i )
-    temp << i->id() << ": " << i->message();
+    temp << i->id() << ": " << i->message() << '\n';
   s = temp.str();
 }
 

@@ -40,6 +40,8 @@ public:
   typedef typename Sequence::difference_type difference_type;
   typedef typename Sequence::iterator iterator;
   typedef typename Sequence::const_iterator const_iterator;
+  typedef typename Sequence::reverse_iterator reverse_iterator;
+  typedef typename Sequence::const_reverse_iterator const_reverse_iterator;
   typedef typename Sequence::reference reference;
   typedef typename Sequence::const_reference const_reference;
   typedef Vector<Sequence,ErrorChecker> this_type;
@@ -174,29 +176,49 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Iterators.
+  //  Iterators. We don't need bounds-checking here.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   iterator begin()
   {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.begin();
   }
   const_iterator begin() const
   {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.begin();
   }
   iterator end()
   {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.end();
   }
   const_iterator end() const
   {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.end();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Reverse iterators. We don't need bounds-checking here.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  reverse_iterator rbegin()
+  {
+    return _v.rbegin();
+  }
+  const_reverse_iterator rbegin() const
+  {
+    return _v.rbegin();
+  }
+  reverse_iterator rend()
+  {
+    return _v.rend();
+  }
+  const_reverse_iterator rend() const
+  {
+    return _v.rend();
   }
 
 

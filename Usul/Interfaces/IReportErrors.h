@@ -39,7 +39,7 @@ struct IReportErrors : public Usul::Interfaces::IUnknown
     STATUS_BAR     = 0x00000020,
   };
 
-  virtual void reportErrors ( unsigned int options, bool clear = false ) = 0;
+  virtual void reportErrors ( unsigned int options, bool clear ) = 0;
 
 }; //  IReportsErrors
 

@@ -9,13 +9,8 @@
 
 #include "ReaderWriterPDB.h"
 
-#include "osg/Geometry"
-#include "osg/LineWidth"
-
-#include "osg/Geode"
-#include "osg/LOD"
-#include "osg/Shape"
-#include "osg/ShapeDrawable"
+#include "osg/Group"
+#include "osg/MatrixTransform"
 
 #include "osgDB/ReadFile"
 #include "osgDB/Registry"
@@ -24,9 +19,11 @@
 
 #include <fstream>
 #include <sstream>
-#include <limits>
 #include <sys/stat.h>
 #include <cassert>
+
+#include "Atom.h"
+#include "Bond.h"
 
 #ifdef _WIN32
 #define STAT _stat
@@ -41,13 +38,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterPDB::ReaderWriterPDB() :
-  _atoms(),
-  _bonds(),
+  _molecules(),
   _materialChooser(),
-  _maxDistanceFactor ( 50 ),
-  _lastRangeMax ( std::numeric_limits<float>::max() ),
-  _numLodChildren ( 5 ),
-  _lodDistancePower ( 2 )
+  _currentMolecule(NULL)
 {
 }
 
@@ -129,8 +122,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
 
 void ReaderWriterPDB::_init()
 {
-  _atoms.clear();
-  _bonds.clear();
+  _molecules.clear();
   _materialChooser.clear();
 }
 
@@ -187,27 +179,13 @@ osg::Group *ReaderWriterPDB::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  // Loop through all the atoms.
-  for ( Atoms::const_iterator i = _atoms.begin(); i != _atoms.end(); ++i )
+  
+  //Loop through the molecules
+  for (Molecules::const_iterator i = _molecules.begin(); i != _molecules.end(); ++i)
   {
-    // Get the atom.
-    const Atom &atom = *i;
-
-    if(i->getId() != -1) 
-    {
-      // make the geometry for this point.
-      osg::ref_ptr<osg::LOD> lod ( this->_makeAtom ( atom ) );
-
-      // Add the lod to the root.
-      root->addChild ( lod.get() );
-    }
-  }
-
-  for (Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i)
-  {
-    const Bond &bond = *i;
-    osg::ref_ptr<osg::LOD> lod (this->_makeBond( bond ) );
-    root->addChild ( lod.get() );
+    const MoleculePtr &molecule = *i;
+    osg::ref_ptr<osg::MatrixTransform> mt ((osg::MatrixTransform *) (molecule.get())->build() );
+    root->addChild ( mt.get() );
   }
 
   // Return the root.
@@ -215,167 +193,6 @@ osg::Group *ReaderWriterPDB::_build() const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make an bond.
-//  TODO, make several branches in the lod. 
-//  Use bounding-box info to set lod-ranges.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::LOD *ReaderWriterPDB::_makeBond (const Bond &bond ) const
-{
-  osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
-
-  const osg::Vec3 center (bond.getX(), bond.getY(), bond.getZ());
-  const float height = bond.getH();
-  const float radius = bond.getR();
-  //std::cout << height << std::endl;
-  /*
-  //draw a cylinder
-  osg::ref_ptr<osg::Shape> cylinder ( new osg::Cylinder (center, radius, height));
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable(cylinder.get()));
-
-  
-  // Not so many triangles.
-  osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
-  hints->setDetailRatio ( 0.25f ); // TODO, remove hard-coded value.
-  drawable->setTessellationHints ( hints.get() );
-  */  
-  // Add the cylinder to a geode.
-  osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-  //geode->addDrawable ( drawable.get() );
-  
-  
-  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-  osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
-
-  p->resize ( 2 );
-  (*p)[0] = bond.getPoint1();
-  (*p)[1] = bond.getPoint2();
-
-  geom->setVertexArray ( p.get() );
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
-
-  osg::ref_ptr<osg::Vec4Array> c ( new osg::Vec4Array );
-  c->resize ( 1 );
-  (*c)[0] = osg::Vec4(1.0, 1.0, 1.0, 1.0);
-
-  geom->setColorArray ( c.get() );
-  geom->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE_SET );
-
-  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
-  lw->setWidth ( 5 );
-
-  osg::ref_ptr<osg::StateSet> state = geom->getOrCreateStateSet();
-  state->setAttribute ( lw.get() );
-  state->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
-
-  geode->addDrawable ( geom.get() );
-
-  // Name the geode with the line from the file.
-  geode->setName ( bond.toString() );
-
-  // Add the geode to the lod.
-  lod->addChild ( geode.get() );
-
-  // Set the range.
-  lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
-
-  return lod.release();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make an atom.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::LOD *ReaderWriterPDB::_makeAtom ( const Atom &atom ) const
-{
-  // The lod holding the various representations.
-  osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
-
-   // Set the lod's material. This will effect all the children.
-  osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
-  const std::string type ( atom.getName() );
-  osg::ref_ptr<osg::Material> m ( _materialChooser.getMaterial ( type ) );
-  ss->setAttribute ( m.get() );
-
-  // Get the atom's numbers.
-  const osg::Vec3 center ( atom.getX(), atom.getY(), atom.getZ() );
-  const float radius ( atom.getR() );
-
-  // Name the lod with the data from the atom.
-  lod->setName ( atom.toString() );
-
-  // Add several spheres.
-  for ( unsigned int i = 0; i < _numLodChildren - 1; ++i )
-  {
-    float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 1 ), _lodDistancePower ) );
-    lod->addChild ( this->_makeSphere ( center, radius, detail ) );
-  }
-
-  // Last child is a cube.
-  //lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
-
-  // Set the centers and ranges.
-  this->_setCentersAndRanges ( lod.get() );
-
-  // Return the lod.
-  return lod.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make a sphere. TODO, use osg::Geometry for vertex arrays. 
-//  Perhaps make soccer ball.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Geode *ReaderWriterPDB::_makeSphere ( const osg::Vec3 &center, float radius, float detail ) const
-{
-  // Make the sphere.
-  osg::ref_ptr<osg::Sphere> sphere ( new osg::Sphere ( center, radius ) );
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( sphere.get() ) );
-
-  // Adjust the number of triangles.
-  osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
-  hints->setDetailRatio ( detail );
-  drawable->setTessellationHints ( hints.get() );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  drawable->setUseDisplayList ( false );
-
-  // Add the sphere to a geode.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( drawable.get() );
-
-  // Return the geode.
-  return geode.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make a cube. TODO, use osg::Geometry for vertex arrays. 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Geode *ReaderWriterPDB::_makeCube ( const osg::Vec3 &center, float size ) const
-{
-  // Make the sphere.
-  osg::ref_ptr<osg::Box> cube ( new osg::Box ( center, size ) );
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( cube.get() ) );
-
-  // Add the cube to a geode.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( drawable.get() );
-
-  // Return the geode.
-  return geode.release();
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -389,9 +206,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
   char buf[size];
-  int numAtoms = 0;
-
-  _atoms.resize (filesize / 80);
+  Molecule * molecule = NULL;
 
   // Loop until we reach the end of the file.
   while ( !in.eof() )
@@ -414,31 +229,26 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
     // is never reached, resulting in an infinite loop.)
     if ( "END" == type )
       break;
-
+    if("MODEL" == type) 
+      molecule = this->_getCurrentMolecule();
+    else if("ENDMDL" == type)
+      _currentMolecule = NULL;
     // See if it is an atom.
-    if ( "ATOM" == type )
+    else if ( "ATOM" == type )
     {
-		numAtoms++;
-		Atom atom(buf, type);
-		//std::cout << numAtoms << " = " << atom.getId() << std::endl;
-		//if(atom.getId() != numAtoms) {
-		//	std::cerr << "Atoms are not sequential\n";
-		//}
-    _atoms.at( atom.getId() ) = atom;
+      molecule = this->_getCurrentMolecule();
+		  Atom atom(buf, type);
+      molecule->addAtom(atom);
     }
 	  else if( type == "HETATM") 
     {
-		  /*numAtoms++;
-		  Atom atom(in, type);
-		  //std::cout << numAtoms << " = " << atom.getId() << std::endl;
-		  //if(atom.getId() != numAtoms) {
-		  //	std::cerr << "Atoms are not sequential\n";
-		  //}
-		  _atoms.push_back( atom );
-		  */
+      molecule = this->_getCurrentMolecule();
+		  Atom atom(buf, type);
+      molecule->addAtom(atom);
 	  }
 	  else if( type == "CONECT")
     {
+      molecule = this->_getCurrentMolecule();
 		  int id, connect, len, columnStart = 6;
       const int columnLength = 5;
       char num[6];
@@ -452,8 +262,7 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
         memset(num,0, 6*sizeof(char));
         strncpy(num, buf + columnStart, columnLength);
         connect = atoi (num);
-        if(_atoms.at(id).valid() && _atoms.at(connect).valid())
-          _bonds.push_back( Bond (_atoms.at(id), _atoms.at(connect), _bonds.size() + 1));
+        molecule->addBond((Atom::ID) id, (Atom::ID) connect);
         columnStart += columnLength;
       }
 	  }
@@ -461,52 +270,15 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, int filesize )
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the lod center and ranges.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ReaderWriterPDB::_setCentersAndRanges ( osg::LOD *lod ) const
+Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
-  // If there are no children then just return.
-  if ( 0 == lod->getNumChildren() )
-    return;
-
-  // Get the first child.
-  osg::Node *child = lod->getChild ( 0 );
-
-  // Get the bounding sphere for the first child.
-  const osg::BoundingSphere &boundingSphere = child->getBound();
-  if ( boundingSphere.radius() <= 0 )
-    throw ( std::runtime_error ( "Error 1614663463, bounding sphere has zero radius" ) );
-
-  // The maximum distance for the lod ranges.
-  float maxDist ( _maxDistanceFactor * boundingSphere.radius() );
-
-  // Get the center of the bounding sphere.
-  const osg::Vec3 &center = boundingSphere.center();
-
-  // Set the center of this lod to be the center of the bounding sphere.
-  lod->setCenter ( center );
-
-  // The minimum of the range we set.
-  float rangeMin ( 0 );
-
-  // Loop through all of the children except the last one.
-  // Note: Unlike previous versions of OSG, there is one LOD "range" for 
-  // each LOD "child". Each "range" has a min and max value.
-  unsigned int numChildren ( lod->getNumChildren() );
-  for ( unsigned int i = 0; i < numChildren - 1; ++i )
+  if(_currentMolecule == NULL)
   {
-    // Set the range.
-    float rangeMax = ( ( (float) i + 1 ) * maxDist ) / ( (float) ( numChildren - 1 ) );
-    lod->setRange ( i, rangeMin, rangeMax );
-    rangeMin = rangeMax;
+    _currentMolecule = new Molecule(&_materialChooser);
+    osg::ref_ptr< Molecule > r = _currentMolecule;
+    _molecules.push_back(r);
   }
-
-  // Set the range for the last child.
-  lod->setRange ( numChildren - 1, rangeMin, _lastRangeMax );
+  return _currentMolecule;
 }
 
 

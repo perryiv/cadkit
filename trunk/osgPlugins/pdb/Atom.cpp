@@ -11,25 +11,6 @@
 
 #include "atom.h"
 
-Atom::Atom(std::istringstream &in, std::string type)
-{
-	std::string word;
-	//get id number
-	in >> _id;
-	//get name
-	in >> _name;
-	//discard next 3
-	in >> word >> word >> word;
-	//set center point
-	in >> _x;
-	in >> _y;
-	in >> _z;
-	//set radius
-	_r = 0.5f;
-	_type = type;
-
-}
-
 Atom::Atom(char *atomString, std::string type) {
 	char num[9];
 	//get id number
@@ -55,9 +36,28 @@ Atom::Atom(char *atomString, std::string type) {
 	_type = type;
 }
 
+Atom::Atom(const Atom& atom) :
+  _id(atom.getId()),
+  _name(atom.getName()),
+  _point(atom.getVec3()),
+  _r(atom.getR()),
+  _type(atom.getType())
+  {
+  }
+
 std::string Atom::toString() const
 {
 	std::ostringstream out;
-	out << _type <<" " << _id << " " << _name << " " << _x << " " <<  _y << " " <<  _z;
+	out << _type <<" " << _id << " " << _name << " " << _point[0] << " " <<  _point[1] << " " <<  _point[2];
 	return std::string(out.str());
+}
+
+Atom& Atom::operator =(const Atom& atom)
+{
+  this->_id = atom.getId();
+  this->_name = atom.getName();
+  this->_point = atom.getVec3();
+  this->_r = atom.getR();
+  this->_type = atom.getType();
+  return *this;
 }

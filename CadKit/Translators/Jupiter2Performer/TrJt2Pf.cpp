@@ -54,7 +54,7 @@
 # include "Standard/SlPrint.h"
 # include "Standard/SlPathname.h"
 # include "Standard/SlBitmask.h"
-# include "Performer/pf/pfGroup.h"
+# include "Performer/pf/pfDCS.h"
 # include "Performer/pr/pfGeoSet.h"
 # include "Performer/pr/pfGeoState.h"
 #endif
@@ -90,20 +90,20 @@ TrJt2Pf::~TrJt2Pf()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  So class SlRefPtr works with class eaiEntity.
+//  So class SlRefPtr works with class pfObject.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace CadKit
 {
-void _incrementPointerReferenceCount ( pfNode *p )
+void _incrementPointerReferenceCount ( pfObject *p )
 {
-  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfNode * ), p = %X\n", p );
+  SL_PRINT2 ( "In _incrementPointerReferenceCount ( pfObject * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->ref();
 }
-void _decrementPointerReferenceCount ( pfNode *p )
+void _decrementPointerReferenceCount ( pfObject *p )
 {
-  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfNode * ), p = %X\n", p );
+  SL_PRINT2 ( "In _decrementPointerReferenceCount ( pfObject * ), p = %X, ref-count = %d\n", p, p->getRef() );
   p->unref();
 }
 };
@@ -154,7 +154,7 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
 
   // Make sure we have just one group on the stack.
   _groupStack.clear();
-  _groupStack.push_back ( &root );
+  _groupStack.push_back ( Group ( &root, SlMaterialf() ) );
 
   // Tell the traverser to traverse the database.
   if ( false == _jtTraverser->traverse ( filename ) )
@@ -166,7 +166,7 @@ bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
   // The database traversal stops when the last child is parsed, which may be 
   // deep in the heiarchy.
   SL_ASSERT ( _groupStack.size() >= 1 );
-  SL_ASSERT ( &root == _groupStack.front() );
+  SL_ASSERT ( &root == _groupStack.front().getGroup() );
 
   // It worked.
   return true;
@@ -287,7 +287,7 @@ bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, pfNode &node )
   SL_PRINT3 ( "In TrJt2Pf::_addName(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
-  // Query name of the group, there may not be one.
+  // Query name of the entity, there may not be one.
   std::string name;
   if ( false == _jtTraverser->getName ( entity, name ) )
     return false;
@@ -299,41 +299,37 @@ bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, pfNode &node )
   return true;
 }
 
-/*
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the transformation matrix, if there is one.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfGroup &group )
+bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
 {
   SL_PRINT3 ( "In TrJt2Pf::_addTransform(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
   // Query the transformation, there may not be one.
-  SlMatrix4f transform;
-  if ( false == _jtTraverser->getTransform ( entity, transform ) )
+  SlMatrix4f T;
+  if ( false == _jtTraverser->getTransform ( entity, T ) )
     return false;
 
-  // Write it on a single line, one row after the other.
-  SlAString tempString;
-  tempString.format ( 
-    "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-    transform[0],  transform[1],  transform[2],  transform[3], 
-    transform[4],  transform[5],  transform[6],  transform[7], 
-    transform[8],  transform[9],  transform[10], transform[11], 
-    transform[12], transform[13], transform[14], transform[15]
-    );
+  // Put the SlMatrix into a pfMatrix.
+  pfMatrix M ( T(0,0), T(0,1), T(0,2), T(0,3),
+               T(1,0), T(1,1), T(1,2), T(1,3),
+               T(2,0), T(2,1), T(2,2), T(2,3),
+               T(3,0), T(3,1), T(3,2), T(3,3) );
 
-  // Add the name-value pair for the transformation.
-  group.addChild ( new DbXmlLeaf ( "transform", tempString.c_str() ) );
+  // Add the transformation to the coordinate system.
+  dcs.setMat ( M );
 
   // It worked.
   return true;
 }
 
-
+/*
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the material, if there is one.
@@ -353,7 +349,7 @@ bool TrJt2Pf::_addMaterial ( DbJtTraverser::EntityHandle entity, pfGroup &group 
     return false;
 
   // Make a group for the material.
-  pfGroup::Ptr material = new pfGroup ( "material" );
+  pfGroup::Ptr material = (use pfMalloc) pfGroup ( "material" );
   if ( material.isNull() )
     return false;
 
@@ -423,19 +419,40 @@ bool TrJt2Pf::_addColor ( const unsigned int &valid,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-pfGroup *TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity )
+bool TrJt2Pf::_createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group )
 {
-  SL_PRINT4 ( "In TrJt2Pf::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
+  SL_PRINT4 ( "In TrJt2Pf::_createGroup(), this = %X, entity = %X\n", this, entity );
   SL_ASSERT ( entity );
 
-  // Make a new group.
-  pfGroup *group = new pfGroup;
-  if ( NULL == group )
-    return NULL;
+  // Make a new dynamic coordinate system. We make a dynamic coordinate 
+  // system and leave it up to the client to decide to optimize (by 
+  // converting to static).
+  pfDCS *dcs = new pfDCS;
+  if ( NULL == dcs )
+    return false;
+
+  // Add the coordinate system to the given group.
+  group.setGroup ( dcs );
 
   // Add some properties to the group.
-  //this->_addName      ( entity, *group );
-  //this->_addTransform ( entity, *group );
+  this->_addName      ( entity, *dcs );
+  this->_addTransform ( entity, *dcs );
+
+  // Get the material, if there is one.
+  SlMaterialf material;
+  if ( _jtTraverser->getMaterial ( entity, material ) )
+  {
+    // Jupiter assemblies can contain materials. However, there is no 
+    // corresponding association in Performer. Only pfGeoSets, through 
+    // their pfGeoStates, can have materials. And pfGeoSets are collections
+    // of primitives (i.e., eaiShapes). So, we save the material along 
+    // side of the group that represents the assembly.
+HERE
+Need to rethink the performer structure.
+  }
+
+
+
   //this->_addMaterial  ( entity, *group );
 
   // Return the new group.
@@ -459,7 +476,7 @@ bool TrJt2Pf::_assemblyStart ( DbJtTraverser::EntityHandle entity )
     return false;
 
   // Add the new assembly to the tree.
-  _groupStack.back()->addChild ( assembly );
+  _groupStack.back().getGroup()->addChild ( assembly );
 
   // Make the new assembly the current one.
   _groupStack.push_back ( assembly );

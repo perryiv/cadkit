@@ -50,7 +50,7 @@
 # include "Standard/SlRefBase.h"
 # include "Standard/SlString.h"
 # include "Standard/SlMatrix4.h"
-# include <vector>
+# include "Standard/SlMaterial.h"
 # include <vector>
 #endif
 
@@ -86,15 +86,6 @@ public:
     BOX_SET, CYLINDER_SET, PYRAMID_SET, SPHERE_SET, TRI_PRISM_SET
   };
 
-  enum // Material components.
-  {
-    MATERIAL_COLOR_AMBIENT   = (1<<0L),
-    MATERIAL_COLOR_DIFFUSE   = (1<<1L),
-    MATERIAL_COLOR_SPECULAR  = (1<<2L),
-    MATERIAL_COLOR_EMISSIVE  = (1<<3L),
-    MATERIAL_COLOR_SHININESS = (1<<4L)
-  };
-
   enum // Shape components.
   {
     SHAPE_ARRAY_VERTICES = (1<<0L),
@@ -114,7 +105,7 @@ public:
   EntityHandle            getCurrentEntity() const { return _currentNode; }
 
   // Get the current entity's property.
-  bool                    getMaterial  ( EntityHandle entity, SlVec4f &ambient, SlVec4f &diffuse, SlVec4f &specular, SlVec4f &emissive, float &shininess, unsigned int &valid ) const;
+  bool                    getMaterial  ( EntityHandle entity, SlMaterialf &material ) const;
   bool                    getName      ( EntityHandle entity, std::string &name ) const;
   bool                    getNumLODs   ( EntityHandle entity, unsigned int &numLODs ) const;
   bool                    getNumShapes ( EntityHandle entity, const unsigned int &whichLOD, unsigned int &numShapes ) const;

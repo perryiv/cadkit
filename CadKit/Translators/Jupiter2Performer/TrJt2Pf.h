@@ -48,13 +48,16 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Database/Jupiter/DbJtTraverser.h"
+# include "Standard/SlMaterial.h"
 # include <list>
 # include <string>
 # include <vector>
 #endif
 
+class pfDCS;
 class pfGroup;
 class pfNode;
+class pfObject;
 
 
 namespace CadKit
@@ -79,7 +82,24 @@ public:
 
 protected:
 
-  typedef std::list<pfGroup *> GroupStack;
+  // Class to contain a group and all associated with it.
+  class Group
+  {
+  public:
+    Group() : _group ( NULL ) { _material.setValid ( 0 ); }
+    Group ( pfGroup *group, const SlMaterialf &material ) : _group ( group ), _material ( material ){}
+    Group ( const Group &group ) : _group ( group._group ), _material ( group._material ){}
+    Group &operator = ( const Group &group ) { _group = group._group; _material = group._material; return *this; }
+    pfGroup *getGroup() { return _group; }
+    SlMaterialf &getMaterial() { return _material; }
+    void setGroup ( pfGroup *group ) { _group = group; }
+    void setMaterial ( const SlMaterial &material ) { _material = material; }
+  protected:
+    pfGroup *_group;
+    SlMaterialf _material;
+  };
+
+  typedef std::list<Group> GroupStack;
   DbJtTraverser::Ptr _jtTraverser;
   std::string _error;
   GroupStack _groupStack;
@@ -94,10 +114,10 @@ protected:
   //bool                    _addPart       ( DbJtTraverser::EntityHandle entity );
   //bool                    _addSet        ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, const unsigned int &whichSet, const std::string &name, DbXmlGroup &shape );
   //bool                    _addShape      ( DbJtTraverser::EntityHandle entity, const unsigned int &whichLOD, const unsigned int &whichShape, DbXmlGroup &lod );
-  //bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, DbXmlGroup &group );
+  bool                    _addTransform  ( DbJtTraverser::EntityHandle entity, pfDCS &group );
   bool                    _assemblyStart ( DbJtTraverser::EntityHandle entity );
 
-  pfGroup *               _createGroup ( DbJtTraverser::EntityHandle entity );
+  bool                    _createGroup ( DbJtTraverser::EntityHandle entity, TrJt2Pf::Group &group );
 
   bool                    _endCurrentGroup();
 
@@ -111,8 +131,8 @@ protected:
 
 
 // So class SlRefPtr works with class pfNodes. 
-void _incrementPointerReferenceCount ( pfNode *p );
-void _decrementPointerReferenceCount ( pfNode *p );
+void _incrementPointerReferenceCount ( pfObject *p );
+void _decrementPointerReferenceCount ( pfObject *p );
 
 
 }; // namespace CadKit

@@ -9,12 +9,23 @@
 
 #include "CylinderFactory.h"
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 CylinderFactory::CylinderFactory() :
 _cylinders()
 {
 }
 
-osg::Geometry* CylinderFactory::create(unsigned int sides)
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return geometry if exists, otherwise create a new one and return it
+//  TODO make look up based on radius and sides?
+//
+///////////////////////////////////////////////////////////////////////////////
+osg::Geometry* CylinderFactory::create(float r, unsigned int sides)
 {
   if(sides >= _cylinders.size())
     _cylinders.resize(sides + 1);
@@ -22,7 +33,7 @@ osg::Geometry* CylinderFactory::create(unsigned int sides)
   if(_cylinders.at(sides).valid())
     return _cylinders.at(sides)->getGeometry();
 
-  _cylinders.at(sides) = new Cylinder(sides);
+  _cylinders.at(sides) = new Cylinder(r, sides);
 
   return  _cylinders.at(sides)->getGeometry();
 }

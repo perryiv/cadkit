@@ -44,8 +44,10 @@ ReaderWriterPDB::ReaderWriterPDB() :
   _atoms(),
   _bonds(),
   _materialChooser(),
-  _maxDistanceFactor ( 30 ),
-  _lastRangeMax ( std::numeric_limits<float>::max() )
+  _maxDistanceFactor ( 50 ),
+  _lastRangeMax ( std::numeric_limits<float>::max() ),
+  _numLodChildren ( 5 ),
+  _lodDistancePower ( 2 )
 {
 }
 
@@ -69,7 +71,7 @@ ReaderWriterPDB::~ReaderWriterPDB()
 
 const char* ReaderWriterPDB::className()
 {
-  return "PDB Reader/Writer";
+  return "PDB Reader";
 }
 
 
@@ -308,10 +310,9 @@ osg::LOD *ReaderWriterPDB::_makeAtom ( const Atom &atom ) const
   lod->setName ( atom.toString() );
 
   // Add several spheres.
-  unsigned int numChildren ( 5 );
-  for ( unsigned int i = 0; i < numChildren - 1; ++i )
+  for ( unsigned int i = 0; i < _numLodChildren - 1; ++i )
   {
-    float detail ( 1.0f - (float) i / ( numChildren - 1 ) );
+    float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 1 ), _lodDistancePower ) );
     lod->addChild ( this->_makeSphere ( center, radius, detail ) );
   }
 

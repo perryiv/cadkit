@@ -62,6 +62,8 @@ private:
   MaterialChooser _materialChooser;
   float _maxDistanceFactor;
   float _lastRangeMax;
+  unsigned int _numLodChildren;
+  float _lodDistancePower;
 };
 
 

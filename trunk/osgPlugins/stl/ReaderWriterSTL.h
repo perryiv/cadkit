@@ -15,7 +15,8 @@
 #include "facet.h"
 
 #include <string>
-#include <vector>
+#include <list>
+#include <map>
 
 namespace osg { class Group; class Geode; };
 
@@ -46,8 +47,14 @@ private:
   void                    _parseBinaryFile( std::ifstream &in );
   void                    _parseAsciiFile( std::ifstream &in );
 
-  std::vector< Facet* > _facets;
+  typedef std::list < osg::Vec3 > Vertices;
+  typedef std::list < osg::Vec3 > Normals;
+  typedef std::pair < Vertices, Normals > PolygonList;
+  typedef std::map < unsigned int, PolygonList > Polygons;
+
+  std::vector < Facet* > _facets;
   Facet *_currentFacet;
+  Polygons _polygons;
 };
 
 

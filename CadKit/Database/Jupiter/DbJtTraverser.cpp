@@ -51,7 +51,8 @@
 #define EAI_STANDARD_HXX // From DMDataTk/eaiStandard.h
 #define EAI_TOOLKIT_API __declspec(dllimport)
 enum { eai_ERROR = 0, eai_OK = 1 };
-enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, METERS, KILOMETERS, INCHES, FEET, YARDS, MILES, MILS };
+enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS, 
+             METERS, KILOMETERS, INCHES, FEET, YARDS, MILES, MILS };
 #endif
 
 #include "DMDataTk/eaiEntityFactory.h" // Doesn't compile in DbJtPrecompiled.h

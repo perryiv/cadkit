@@ -23,9 +23,19 @@ namespace Usul
 
       SinglePlayer ( Callback *cb ) : BaseClass( cb ) { }
 
+      template < class Itr > _play ( Itr first, Itr end)
+      {
+        while ( first != end )
+        {
+          _callback->setFrameOne( *first );
+          (*_callback) ( );
+          ++first;
+        }
+      }
+
       virtual void play()  { }
-      virtual void forward ( Sequence &frames ) { }
-      virtual void reverse ( Sequence &frames ) { }
+      virtual void forward ( Sequence &frames ) { _play ( frames.begin(), frames.end()); }
+      virtual void reverse ( Sequence &frames ) { _play ( frames.rbegin(), frames.rend()); }
       virtual void stop () { }
       virtual void pause() { }
 

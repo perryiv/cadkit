@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ReaderWriterPDB.h"
+#include "Enum.h"
 
 #include "osg/Group"
 #include "osg/MatrixTransform"
@@ -17,6 +18,16 @@
 #include "osgDB/FileNameUtils"
 #include "osgDB/FileUtils"
 
+#include "XmlDom/Error.h"
+#include "XmlDom/Config.h"
+#include "XmlDom/Callback.h"
+#include "XmlDom/Node.h"
+#include "XmlDom/Reader.h"
+#include "XmlDom/Convert.h"
+
+#include "Usul/Bits/Bits.h"
+#include "Usul/Predicates/FileExists.h"
+
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
@@ -24,6 +35,12 @@
 
 #include "Atom.h"
 #include "Bond.h"
+
+#ifdef _WIN32
+# define STAT _stat
+#else
+# define STAT stat
+#endif
 
 //#define USE_EXCEPTIONS
 
@@ -40,7 +57,8 @@ ReaderWriterPDB::ReaderWriterPDB() :
   _currentMolecule(NULL),
   _sphereFactory ( new SphereFactory ),
   _cylinderFactory ( new CylinderFactory ),
-  _periodicTable()
+  _periodicTable(),
+  _flags ( PDB::SHOW_ATOMS | PDB::SHOW_BONDS | PDB::LOAD_ATOMS | PDB::LOAD_BONDS )
 {
 }
 
@@ -144,10 +162,13 @@ void ReaderWriterPDB::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const osgDB::ReaderWriter::Options * )
+ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const osgDB::ReaderWriter::Options *options )
 {
   // Make sure the internal data members are initialized.
   this->_init();
+
+  // Configure this instance based on the options.
+  this->_configure ( options );
 
   // Make sure we handle files with this extension.
   if ( !acceptsExtension ( osgDB::getFileExtension ( file ) ) )
@@ -160,7 +181,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   if ( !in.is_open() )
     return ReadResult::ERROR_IN_READING_FILE;
 
-  //create ifstream for psf file
+  // Create ifstream for psf file.
   std::string psfPath = _getPsfPath( file );
   std::ifstream psf( psfPath.c_str());
   
@@ -189,7 +210,6 @@ osg::Group *ReaderWriterPDB::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  
   //Loop through the molecules
   for (Molecules::const_iterator i = _molecules.begin(); i != _molecules.end(); ++i)
   {
@@ -216,8 +236,6 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
   char buf[size];
   Molecule * molecule = NULL;
 
-  
-
   // Loop until we reach the end of the file.
   while ( !in.eof() )
   {
@@ -239,18 +257,19 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
     // is never reached, resulting in an infinite loop.)
     if ( "END" == type )
       break;
-    if("MODEL" == type) 
+    if ( "MODEL" == type ) 
       molecule = this->_getCurrentMolecule();
-    else if("ENDMDL" == type)
+    else if ( "ENDMDL" == type )
       _currentMolecule = NULL;
+
     // See if it is an atom.
-    else if ( "ATOM" == type )
+    else if ( "ATOM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
       molecule = this->_getCurrentMolecule();
 		  Atom atom(buf, type, _periodicTable);
       molecule->addAtom(atom);
     }
-	  else if( type == "HETATM") 
+	  else if ( "HETATM" == type && this->hasFlags ( PDB::LOAD_ATOMS ) )
     {
       molecule = this->_getCurrentMolecule();
 		  Atom atom(buf, type, _periodicTable);
@@ -280,8 +299,9 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
       }
 	  }*/
   }
-  if(psf.is_open())
-    _parsePsf( psf );
+
+  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )
+    this->_parsePsf ( psf );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -327,7 +347,7 @@ void ReaderWriterPDB::_parsePsf( std::ifstream &in )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Returns point to current molecule.  If none exists, it creates a new one.
+//  Returns pointer to current molecule. If none exists, it creates a new one.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -335,27 +355,164 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get(), _cylinderFactory.get() );
+    _currentMolecule = new Molecule ( &_materialChooser, _sphereFactory.get(), _cylinderFactory.get(), _flags );
     osg::ref_ptr< Molecule > r = _currentMolecule;
     _molecules.push_back(r);
   }
   return _currentMolecule;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Gets path to PSF file given a PDB path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 std::string ReaderWriterPDB::_getPsfPath( const std::string &file)
 {
-    std::string psf = osgDB::getStrippedName(file);
+  std::string psf = osgDB::getStrippedName(file);
   std::string path = osgDB::getFilePath(file);
   psf += ".psf";
   if(!path.empty())
   {
-#if defined (WIN32)
+    #if defined (WIN32)
     psf = path + "\\" + psf;
-#else
-  psf = path + "/" + psf;
-#endif
+    #else
+    psf = path + "/" + psf;
+    #endif
   }
   return psf;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Configure this instance by parsing the options string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::_configure ( const Options *options )
+{
+  // Handle trivial case.
+  if ( !options )
+    return;
+
+  // Get the string.
+  std::string chunk ( options->getOptionString() );
+
+  // If the chunk is a filename then get the contents.
+  if ( Usul::Predicates::FileExists() ( chunk ) )
+    this->_getFileContents ( chunk, chunk );
+
+  // For convenience.
+  const bool checkForErrors ( true );
+  const bool createMissingChildren ( true );
+  typedef XML::Error::Assert < checkForErrors > AssertPolicy;
+  typedef XML::Error::Thrower < checkForErrors > ThrowPolicy;
+  typedef XML::Error::Pair < AssertPolicy, ThrowPolicy > ErrorPolicy;
+  typedef XML::Node < std::string, ErrorPolicy, createMissingChildren > Node;
+  typedef XML::Callback::Notify < std::string > NodeCallback;
+  typedef XML::Config::Trim TrimPolicy;
+  typedef XML::Reader < Node, ErrorPolicy, NodeCallback, TrimPolicy > Reader;
+  typedef Reader::Node Node;
+  typedef Node::Pointer Pointer;
+  typedef Node::String String;
+
+  // Construct the node tree and get the root.
+  Reader reader ( chunk.begin(), chunk.end() );
+  Pointer root ( reader.getRoot() );
+
+  // Needed to convert.
+  XML::Convert<bool> toBool;
+  //XML::Convert<int> toInt;
+  //XML::Convert<unsigned int> toUint;
+  //XML::Convert<float> toFloat;
+  //XML::Convert<double> toDouble;
+
+  // Set our members.
+  this->setFlags ( PDB::SHOW_ATOMS, toBool ( root->getChild ( "atoms/show", '/' )->getValue() ) );
+  this->setFlags ( PDB::SHOW_BONDS, toBool ( root->getChild ( "bonds/show", '/' )->getValue() ) );
+  this->setFlags ( PDB::LOAD_ATOMS, toBool ( root->getChild ( "atoms/load", '/' )->getValue() ) );
+  this->setFlags ( PDB::LOAD_BONDS, toBool ( root->getChild ( "bonds/load", '/' )->getValue() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the contents of the file as a string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::_getFileContents ( const std::string &filename, std::string &contents ) const
+{
+  struct STAT buf;
+  int result = _stat ( filename.c_str(), &buf );
+  if ( result )
+  {
+    // Size the string that will hold the entire file.
+    contents.resize ( buf.st_size );
+
+    // Open the file.
+    std::ifstream in ( filename.c_str() );
+    if ( in.is_open() )
+    {
+      // Read the file into the string.
+      for ( std::string::size_type i = 0; i < contents.size(); ++i )
+        contents[i] = in.get();
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::setFlags ( unsigned int flags, bool state )
+{
+  if ( state )
+    this->addFlags ( flags );
+  else
+    this->removeFlags ( flags );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::addFlags ( unsigned int flags )
+{
+  _flags = Usul::Bits::add ( _flags, flags );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterPDB::removeFlags ( unsigned int flags )
+{
+  _flags = Usul::Bits::remove ( _flags, flags );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if we have the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ReaderWriterPDB::hasFlags ( unsigned int flags ) const
+{
+  return Usul::Bits::has ( _flags, flags );
 }
 
 

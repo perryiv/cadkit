@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\../../../lib"
+			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -47,7 +47,7 @@
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				IgnoreDefaultLibraryNames="LIBC"
-				ImportLibrary=".\../../../lib/osgdb_pdb.lib"
+				ImportLibrary=".\Release\osgdb_pdb.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -55,7 +55,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\../../../lib/osgpdb.tlb"
+				TypeLibraryName=".\Release\osgpdb.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -80,7 +80,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\../../../lib"
+			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -115,8 +115,8 @@
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\../../../lib/osgdb_pdbd.pdb"
-				ImportLibrary=".\../../../lib/osgdb_pdbd.lib"
+				ProgramDatabaseFile=".\Debug\osgdb_pdbd.pdb"
+				ImportLibrary=".\Debug\osgdb_pdbd.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -124,7 +124,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\../../../lib/osgpdb.tlb"
+				TypeLibraryName=".\Debug\osgpdb.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -186,6 +186,9 @@
 			</File>
 			<File
 				RelativePath=".\Element.h">
+			</File>
+			<File
+				RelativePath=".\Enum.h">
 			</File>
 			<File
 				RelativePath=".\MaterialChooser.cpp">

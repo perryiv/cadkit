@@ -9,10 +9,14 @@ LOCAL_INCLUDE =
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-lCkCt_a \
-	-lCkDbJt_a \
-	-lCkDbOsg_a \
-	-lCkSl_a
+	-lCkCt_s \
+	-lCkDbJt_s \
+	-lCkDbOsg_s \
+	-lCkSl_s \
+	-L$(OSGHOME)/lib \
+	-losgDB \
+	-losg \
+	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk40
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = 

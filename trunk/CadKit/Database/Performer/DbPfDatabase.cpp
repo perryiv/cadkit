@@ -458,14 +458,6 @@ void DbPfDatabase::_setLodParameters ( pfLOD *lod ) const
   unsigned int numChildren = lod->getNumChildren();
   for ( unsigned int i = 1; i < numChildren; ++i )
   {
-    // Get the i'th child node.
-    child = lod->getChild ( i );
-    SL_ASSERT ( child );
-
-    // As of now, this should be true. However, it isn't important to the 
-    // algorithm. Take this out if/when this is no longer true.
-    SL_ASSERT ( NULL != dynamic_cast<pfGeode *> ( child ) );
-
     // Set the range.
     float dist = ( ( (float) i ) * maxDist ) / ( (float) ( numChildren - 1 ) );
     lod->setRange ( i, dist );

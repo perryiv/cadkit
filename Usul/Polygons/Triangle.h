@@ -18,43 +18,23 @@ namespace Polygons {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
-//  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifndef __USUL_POLYGONS_POLYGONS_H__
-#define __USUL_POLYGONS_POLYGONS_H__
-
-#include "Usul/Export/Export.h"
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
-#include "Usul/Polygons/SharedVertex.h"
-
-
-namespace Usul {
-namespace Polygons {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Triangle Class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class Triangle : public Usul::Base::Referenced
+class Triangle
 {
 public:
   typedef SharedVertex< Triangle > SharedVertex;
-  typedef typename SharedVertex::RefPtr SharedVertexPtr;
-  typedef std::vector< SharedVertexPtr > Vertices;
-  typedef typename Vertices::iterator Iterator;
+  
 
-  /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Triangle );
-
-  Triangle() : _index( 0 ), _vertices(), _visited( false ) {  }
+  Triangle() : 
+  _index( 0 ), 
+  _v1( 0x0 ), 
+  _v2( 0x0 ),
+  _v3( 0x0 ),
+  _visited( false ) 
+  {  }
 
   void setVertices( SharedVertex* v1, SharedVertex* v2, SharedVertex* v3 )
   {
@@ -62,27 +42,34 @@ public:
     _v2 = v2;
     _v3 = v3;
   }
+
+  void append( SharedVertex *v )
+  {
+    if( _v1 == 0x0 )
+      _v1 = v;
+    else if( _v2 == 0x0 )
+      _v2 = v;
+    else if( _v3 == 0x0 )
+      _v3 = v;
+  }
+
+  SharedVertex * vertexOne()    { return _v1; }
+  SharedVertex * vertexTwo()    { return _v2; }
+  SharedVertex * vertexThree()  { return _v3; }
   
   //Has this triangle been visited?
-  bool visited() { return _visited; }
-  void visited( bool v ) { _visited = v; }
+  bool visited () const   { return _visited; }
+  void visited ( bool v ) { _visited = v; }
 
   //Get the index
-  unsigned int index() { return _index; }
-  void index( unsigned int i ) { _index = i; }
-
-  //Not sure if this is needed
-  unsigned int numVerts () const { return 3; }
-
-protected:
-  //Use ref counting
-  virtual ~Triangle () {}
+  unsigned int index() const           { return _index; }
+  void         index( unsigned int i ) { _index = i; }
 
 private:
   unsigned int _index;
-  SharedVertexPtr _v1;
-  SharedVertexPtr _v2;
-  SharedVertexPtr _v3;
+  SharedVertex * _v1;
+  SharedVertex * _v2;
+  SharedVertex * _v3;
   bool _visited;
 };
 
@@ -109,8 +96,92 @@ struct TriangleCreator
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+template < class IndexSequence >
 struct TriangleFunctor
 {
+  typedef std::vector< TriangleFunctor > TodoStack;
+  typedef Triangle::SharedVertex SharedVertex;
+
+  //Construct with a triangle
+  TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, Triangle *t ) :
+  _answer( answer ),
+  _todoStack( todoStack ),
+  _triangle ( t ),
+  _sharedVertex( 0x0 )
+  { }
+
+  //Construct with a shared vertex
+  TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, SharedVertex *sv ) :
+  _answer( answer ),
+  _todoStack( todoStack ),
+  _triangle ( 0x0 ),
+  _sharedVertex( sv )
+  { }
+
+  void operator() ()
+  {
+    //If we have a triangle...
+    if ( _triangle )
+    {
+      SharedVertex* v1 ( _triangle->vertexOne() );
+      SharedVertex* v2 ( _triangle->vertexTwo() );
+      SharedVertex* v3 ( _triangle->vertexThree() );
+
+      //Have we visited v1 yet?
+      if( !v1->visited() )
+      {
+        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v1 ) );
+        v1->visited( true );
+      }
+
+      //Have we visited v2 yet?
+      if( !v2->visited() )
+      {
+        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v2 ) );
+        v2->visited( true );
+      }
+
+      //Have we visited v3 yet?
+      if( !v3->visited() )
+      {
+        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v3 ) );
+        v3->visited( true );
+      }
+      
+      //If we get here the polygon is connected, add polygon to answer
+      _answer.push_back( _triangle->index() );
+    }
+
+    //If we have a shared vertex
+    else if( _sharedVertex )
+    {
+      //Loop through the triangles of this shared vertex
+      for(SharedVertex::Iterator triangle = _sharedVertex->begin(); triangle != _sharedVertex->end(); ++triangle)
+      {
+        //If we haven't visited yet
+        if( !(*triangle)->visited() )
+        {
+          //Add the functor to the todo statck
+          _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, *triangle ) );
+          (*triangle)->visited ( true );
+        }
+      }
+    }
+  }
+
+  bool operator= ( const TriangleFunctor& that )
+  {
+    this->_answer = that._answer;
+    this->_todoStack = that._todoStack;
+    this->_triangle = that._triangle;
+    this->_sharedVertex = that._sharedVertex;
+    return true;
+  }
+private:
+  IndexSequence &      _answer;
+  TodoStack &          _todoStack;
+  Triangle *           _triangle;
+  SharedVertex *       _sharedVertex;
 };
 
 

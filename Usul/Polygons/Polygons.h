@@ -45,9 +45,6 @@ public:
   unsigned int index () const           { return _index; }
   void         index ( unsigned int i ) { _index = i; }
 
-  unsigned int numVerts () const { return _vertices.size(); }
-
-
 private:
   unsigned int _index;
   Vertices _vertices;
@@ -105,6 +102,7 @@ struct PolygonFunctor
     //If we have a shared vertex
     if( _sharedVertex )
     {
+      //Loop through the polygons of this shared vertex
       for(SharedVertex::Iterator i = _sharedVertex->begin(); i != _sharedVertex->end(); ++i)
       {
         //If we haven't visited yet

@@ -10,9 +10,9 @@
 #ifndef __USUL_POLYGONS_ADJACENCY_MAP_H__
 #define __USUL_POLYGONS_ADJACENCY_MAP_H__
 
-
-#include "Usul/Export/Export.h"
 #include "Usul/Polygons/SharedVertex.h"
+
+#include <functional>
 
 namespace Usul {
 namespace Polygons {
@@ -34,7 +34,12 @@ struct NoUpdateFunctor
   void operator () ( const IndexSequence& keepers, bool b = false ) { }
 };
 
-};
+} //namespace Functors
+
+
+namespace Compare
+{
+} //namespace Compare
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -47,7 +52,8 @@ template
   class Polygon,
   class VertexSequence,
   class UpdateFunctor = Functors::NoUpdateFunctor,
-  class CancelFunctor = Functors::NoCancelFunctor
+  class CancelFunctor = Functors::NoCancelFunctor,
+  class Compare = std::less< VertexSequence::value_type >
 >
 class AdjacencyMap
 {
@@ -58,7 +64,7 @@ public:
   typedef typename VertexSequence::const_iterator VertexIterator;
   typedef SharedVertex< Polygon > SharedVertex;
   typedef std::vector< Polygon > Polygons;
-  typedef std::map< Vertex, SharedVertex* > Map;
+  typedef std::map< Vertex, SharedVertex*, Compare > Map;
   typedef std::vector< SharedVertex > SharedVertices;
 
   AdjacencyMap() :
@@ -128,7 +134,7 @@ public:
         //Do we have a shared vertex already?
         if( iter == _sharedVertsMap.end() )
         {
-          //Add the shared vertex
+          //Create a shared vertex
           _sharedVerts.push_back( SharedVertex() );
 
           //Add the shared vertex to te map
@@ -149,8 +155,8 @@ public:
       p.index( _polygons.size() - 1 );
 
       //update the progress
-      if( _sharedVerts.size() % 1000 == 0 )
-        updater ( _sharedVerts.size() );
+      if( _sharedVertsMap.size() % 1000 == 0 )
+        updater ( _sharedVertsMap.size() );
     }
   }
 

@@ -96,8 +96,8 @@ public:
 
 protected:
 
-  int _read(void *buf, int len) const;
-  int _write(const void *buf, int len) const;
+  int _read(char *buf, int len) const;
+  int _write(const char *buf, int len) const;
 
   bool _selectRead( int seconds ) const;
   bool _selectWrite ( int seconts ) const;

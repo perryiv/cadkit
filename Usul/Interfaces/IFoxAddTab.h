@@ -7,6 +7,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Interface that "asks" if wants to add a tab.
+//
+/////////////////////////////////////////////////////////////////////////////
+  
+
 #ifndef _USUL_INTERFACE_FOX_ADD_TAB_H_
 #define _USUL_INTERFACE_FOX_ADD_TAB_H_
 
@@ -23,7 +30,7 @@ struct IFoxAddTab : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2332281712u };
 
-  virtual void foxAddTab( Usul::Interfaces::IUnknown* ) = 0;
+  virtual void foxAddTab( Usul::Interfaces::IUnknown *caller ) = 0;
 
 }; // class IFoxAddTab
 

@@ -12,23 +12,22 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul
+namespace Usul {
+namespace Interfaces {
+    
+struct IFoxToggleButton : public Usul::Interfaces::IUnknown
 {
-  namespace Interfaces
-  {
-    class IFoxToggleButton : public Usul::Interfaces::IUnknown
-    {
-    public:
-      typedef Usul::Interfaces::IUnknown Unknown;
+  typedef Usul::Interfaces::IUnknown Unknown;
 
-      /// Smart-pointer definitions.
-      USUL_DECLARE_QUERY_POINTERS ( IFoxToggleButton);
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IFoxToggleButton);
 
-      enum { IID = 1101838475u };
+  enum { IID = 1101838475u };
 
 
-    }; //class IFoxToggleButton
-  }; //namespace Interfaces
+}; // IFoxToggleButton
+  
+}; //namespace Interfaces
 }; //namespace Usul
 
 #endif // __USUL_INTERFACES_FOX_TOGGLE_BUTTON_H__

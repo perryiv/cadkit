@@ -35,6 +35,7 @@
 # include <vector>
 # include <set>
 # include <stack>
+# include <list>
 #endif
 
 

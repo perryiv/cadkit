@@ -17,7 +17,7 @@
 #define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_DATABASE_H_
 
 #include "DbStlApi.h"
-#include "DbStlFacetmanager.h"
+#include "DbStlFacetManager.h"
 
 #include "Database/Base/DbBaseTarget.h"
 

@@ -55,7 +55,11 @@ using namespace CadKit;
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbStlDatabase, DbBaseTarget );
 CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 
-/*DEBUG*/std::ofstream stl_out( "d:/temp/stlout.txt", std::ios_base::out | std::ios_base::trunc );
+#ifdef _DEBUG
+std::ofstream stl_out( "d:/temp/stlout.txt", std::ios_base::out | std::ios_base::trunc );
+#endif
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -426,7 +430,10 @@ bool DbStlDatabase::startEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
   SL_ASSERT ( caller );
-  /*DEBUG*/stl_out << "***Starting LOD(" << lod << ")***" << std::endl;
+
+#ifdef _DEBUG
+  stl_out << "***Starting LOD(" << lod << ")***" << std::endl;
+#endif
 
   // Nothing to do.
   return true;

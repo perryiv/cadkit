@@ -31,6 +31,10 @@
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 
+// To help shorten up the lines.
+#undef  ERROR
+#define ERROR    this->_notifyError
+
 using namespace CadKit;
 
 /*DEBUG*/extern std::ofstream stl_out;
@@ -79,7 +83,7 @@ DbStlFacetManager::~DbStlFacetManager( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::clearAll( )
+void DbStlFacetManager::clearAll( )
 {
   _facets.clear();
 	_transforms.clear();
@@ -93,7 +97,7 @@ void inline DbStlFacetManager::clearAll( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::init( )
+void DbStlFacetManager::init( )
 {
   clearAll();
 	_transforms.init();
@@ -454,7 +458,7 @@ DbStlFacetManager::facet::facet( const SlVec3f &vertex1, const SlVec3f &vertex2,
 //  Set the value
 //
 ///////////////////////////////////////////////////////////////////////////////
-void inline DbStlFacetManager::facet::setValue( const SlVec3f vertices[3], const SlVec3f &normal )
+void DbStlFacetManager::facet::setValue( const SlVec3f vertices[3], const SlVec3f &normal )
 {
   _vertices[0].setValue( vertices[0] );
   _vertices[1].setValue( vertices[1] );
@@ -469,7 +473,7 @@ void inline DbStlFacetManager::facet::setValue( const SlVec3f vertices[3], const
 //  Set the value
 //
 ///////////////////////////////////////////////////////////////////////////////
-void inline DbStlFacetManager::facet::setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 )
+void DbStlFacetManager::facet::setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 )
 {
   _vertices[0].setValue( vertex1 );
   _vertices[1].setValue( vertex2 );
@@ -485,7 +489,7 @@ void inline DbStlFacetManager::facet::setVertices( const SlVec3f &vertex1, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::facet::setNormal( const SlVec3f &normal )
+void DbStlFacetManager::facet::setNormal( const SlVec3f &normal )
 {
   _normal.setValue( normal );
 }
@@ -498,7 +502,7 @@ void inline DbStlFacetManager::facet::setNormal( const SlVec3f &normal )
 //  Set the value of the vertices
 //
 ///////////////////////////////////////////////////////////////////////////////
-void inline DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
+void DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal )
 {
   _vertices[0].setValue( vertex1 );
   _vertices[1].setValue( vertex2 );
@@ -506,7 +510,6 @@ void inline DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const Sl
   _normal.setValue( normal );
 }
     
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -516,7 +519,7 @@ void inline DbStlFacetManager::facet::setValue( const SlVec3f &vertex1, const Sl
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::facet::setVertices( const SlVec3f vertices[3] )
+void DbStlFacetManager::facet::setVertices( const SlVec3f vertices[3] )
 {
   _vertices[0].setValue( vertices[0] );
   _vertices[1].setValue( vertices[1] );
@@ -532,7 +535,7 @@ void inline DbStlFacetManager::facet::setVertices( const SlVec3f vertices[3] )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::facet::getNormal( SlVec3f &normal )
+void DbStlFacetManager::facet::getNormal( SlVec3f &normal )
 {
   normal.setValue( _normal );
 }
@@ -546,7 +549,7 @@ void inline DbStlFacetManager::facet::getNormal( SlVec3f &normal )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void inline DbStlFacetManager::facet::getVertices( SlVec3f vertices[3] )
+void DbStlFacetManager::facet::getVertices( SlVec3f vertices[3] )
 {
   vertices[0].setValue( _vertices[0] );
   vertices[1].setValue( _vertices[1] );
@@ -561,7 +564,7 @@ void inline DbStlFacetManager::facet::getVertices( SlVec3f vertices[3] )
 //  Gets the vertices
 //
 ///////////////////////////////////////////////////////////////////////////////
-void inline DbStlFacetManager::facet::getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 )
+void DbStlFacetManager::facet::getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 )
 {
   vertex1.setValue( _vertices[0] );
   vertex2.setValue( _vertices[1] );

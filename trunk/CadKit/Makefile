@@ -9,11 +9,13 @@ SUBDIRS = \
 	Database/OpenSceneGraph \
 	Database/Performer \
 	Database/XML \
+	Database/STL \
 	Translators/Jupiter2Performer \
 	Translators/Jupiter2Xml \
 	Demos/Jupiter2Osg \
 	Demos/Jupiter2Performer \
 	Demos/Jupiter2Xml \
+	Demos/Jupiter2Stl \
 	Examples/BoundingBox \
 	Examples/Matrix4 \
 	Examples/Pathname \

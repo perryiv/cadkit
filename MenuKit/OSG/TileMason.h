@@ -34,7 +34,9 @@ namespace MenuKit
     class TileMason : public Visitor
     {
     public:
-      TileMason(): Visitor(Visitor::EXPANDED), _tile(), _hori(), _vert(), _scene(0x0), _scene_name("MK_OSG_TOP")
+      TileMason(): Visitor(Visitor::EXPANDED),
+        _tile(), _hori(), _vert(), _scene(0x0),
+        _scene_name("MK_OSG_TOP"), _xform_name("MK_OSG_XFORM")
       {}
 
       MENUKIT_DECLARE_POINTER(TileMason);
@@ -47,6 +49,9 @@ namespace MenuKit
 
       void scene_name(const std::string& s) { _scene_name = s; }
       const std::string& scene_name() const { return _scene_name; }
+
+      void transform_name(const std::string& s) { _xform_name = s; }
+      const std::string& transform_name() const { return _xform_name; }
 
       virtual void apply(Menu&);
       virtual void apply(Button&);
@@ -69,7 +74,7 @@ namespace MenuKit
       TileType _tile;
       Detail::Stack<float> _hori, _vert;
       osg::ref_ptr<osg::Group> _scene;
-      std::string _scene_name;
+      std::string _scene_name, _xform_name;
     };
 
   typedef TileMason<osgVisualSkinTile> osgVisualMason;
@@ -252,7 +257,7 @@ void OSG::TileMason<TileType>::apply(Menu& m)
 
   // add the graphic to the scene, with the correct position
   osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-  mt->setName("MK_OSG_XFORM");
+  mt->setName( _xform_name );
   mt->addChild( node.get() );
   mt->setMatrix( osg::Matrix::translate(sum) );
   _scene->addChild( mt.get() );
@@ -314,9 +319,7 @@ void TileMason<TileType>::apply(Button& b)
     _tile.box().width( _tile.width( b ) );
   }
 
-  // TODO: configure the tile if necessary for different themes
-  // TODO: by telling the tile what mode to be in.
-  // TODO: change this default command:
+  // configure the tile
   _tile.mode( TileType::NORMAL );
   if( b.marked() )
     _tile.mode( TileType::HIGHLIGHT );
@@ -333,7 +336,7 @@ void TileMason<TileType>::apply(Button& b)
 
   // add the graphic to the scene, with the correct position
   osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-  mt->setName("MK_OSG_XFORM");
+  mt->setName( _xform_name );
   mt->addChild( node.get() );
   mt->setMatrix( osg::Matrix::translate(sum) );
   _scene->addChild( mt.get() );

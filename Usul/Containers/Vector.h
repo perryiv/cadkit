@@ -205,27 +205,51 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  reference operator [] ( size_type i )
+  reference at ( size_type i )
   {
     ErrorChecker ( __FILE__, __LINE__, i < this->size() );
     return _v[i];
+  }
+  const_reference at ( size_type i ) const
+  {
+    ErrorChecker ( __FILE__, __LINE__, i < this->size() );
+    return _v[i];
+  }
+  reference at ( difference_type i )
+  {
+    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
+    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
+    return _v[i];
+  }
+  const_reference at ( difference_type i ) const
+  {
+    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
+    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
+    return _v[i];
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Array syntax.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  reference operator [] ( size_type i )
+  {
+    return this->at ( i );
   }
   const_reference operator [] ( size_type i ) const
   {
-    ErrorChecker ( __FILE__, __LINE__, i < this->size() );
-    return _v[i];
+    return this->at ( i );
   }
   reference operator [] ( difference_type i )
   {
-    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
-    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
-    return _v[i];
+    return this->at ( i );
   }
   const_reference operator [] ( difference_type i ) const
   {
-    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
-    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
-    return _v[i];
+    return this->at ( i );
   }
 
 

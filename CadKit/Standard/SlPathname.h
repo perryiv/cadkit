@@ -82,6 +82,8 @@ protected:
   String _dir;
   String _file;
   String _ext;
+
+  void                  _addSlash ( String &pathname ) const;
 };
 
 
@@ -258,6 +260,27 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add a slash if it isn't there.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class String> inline void SlPathname<String>::_addSlash ( String &pathname ) const
+{
+  if ( pathname.empty() )
+    return;
+
+  if ( SL_PATHNAME_FORWARD_SLASH == pathname.at ( pathname.size() - 1 ) )
+    return;
+
+  if ( SL_PATHNAME_BACKWARD_SLASH == pathname.at ( pathname.size() - 1 ) )
+    return;
+
+  pathname += SL_PATHNAME_SLASH;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the (unaltered) path name.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -285,6 +308,7 @@ template<class String> inline void SlPathname<String>::getPathname ( String &pat
 
   if ( filename.size() )
   {
+    this->_addSlash ( pathname );
     pathname += filename;
   }
 

@@ -448,6 +448,19 @@ SOURCE=.\IQueryVertices.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IScale.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IShapeQuery.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"

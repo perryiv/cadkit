@@ -276,6 +276,9 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   SL_PRINT3 ( "In DbJtDatabase::_traverse(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
+  // Since this is the beginning of a new file, we need to scale.
+  this->_setNeedToScale ( true );
+
   // Make sure the client data is cleared.
   this->_clearClientDataMaps();
 
@@ -1516,7 +1519,17 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
 bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
-  return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, matrix );
+  bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, matrix );
+
+  // The first time we scale, even if the above didn't work.
+  if ( this->_doWeNeedToScale() )
+  {
+    this->_applyScaleOnce ( matrix );
+    return true;
+  }
+
+  // Return the result.
+  return result;
 }
 
 
@@ -1529,7 +1542,17 @@ bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, 
 bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool tryParents ) const
 {
   // TODO. Handle "tryParents".
-  return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, matrix );
+  bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, matrix );
+
+  // The first time we scale, even if the above didn't work.
+  if ( this->_doWeNeedToScale() )
+  {
+    this->_applyScaleOnce ( matrix );
+    return true;
+  }
+
+  // Return the result.
+  return result;
 }
 
 

@@ -114,6 +114,7 @@ protected:
   void                    _setProgressPrintLevel ( unsigned int level );
   void                    _setZeroRange ( double negative, double positive );
   void                    _setOutputNumDecimals ( unsigned int numDecimals );
+  void                    _setScale ( double x, double y, double z );
 
   void                    _translate ( const std::string &filename );
 

@@ -41,6 +41,7 @@
 #include "Interfaces/IFileExtension.h"
 #include "Interfaces/IOutputAttribute.h"
 #include "Interfaces/IOutputPrecision.h"
+#include "Interfaces/IScale.h"
 
 #include <time.h>
 #include <stdexcept>
@@ -307,7 +308,24 @@ bool CtTranslation::_parseArguments ( int argc, char **argv, std::list<std::stri
 
     else if ( arg == "-s" || arg == "--scale" )
     {
+      // Get the next three arguments, if there are any.
+      std::string x ( ( i + 1 == argc ) ? "" : argv[i+1] );
+      std::string y ( ( i + 2 == argc ) ? "" : argv[i+2] );
+      std::string z ( ( i + 3 == argc ) ? "" : argv[i+3] );
 
+      // See if the strings are a numbers.
+      if ( true == CadKit::isNumber ( x ) && 
+           true == CadKit::isNumber ( y ) && 
+           true == CadKit::isNumber ( z ) )
+      {
+        // Set the scale and increment the loop index.
+        this->_setScale ( ::atof ( x.c_str() ), ::atof ( y.c_str() ), ::atof ( z.c_str() ) );
+        i += 3;
+      }
+
+      // Otherwise return false.
+      else
+        return false;
     }
 
     else if ( arg == "-t" || arg == "--translate" )
@@ -749,9 +767,34 @@ void CtTranslation::_setOutputNumDecimals ( unsigned int numDecimals )
   SL_PRINT3 ( "In CtTranslation::_setOutputNumDecimals(), this = %X, numDecimals = %d\n", this, numDecimals );
 
   // Set the output precision if the interface is available. 
-  SlQueryPtr<IOutputPrecision> oa ( _target );
-  if ( oa.isValid() )
-    oa->setOutputNumDecimals ( numDecimals );
+  SlQueryPtr<IOutputPrecision> op ( _target );
+  if ( op.isValid() )
+    op->setOutputNumDecimals ( numDecimals );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setScale ( double x, double y, double z )
+{
+  SL_PRINT3 ( "In CtTranslation::_setScale(), this = %X, numDecimals = %d\n", this, numDecimals );
+
+  // Set the scale if the interface is available. 
+  SlQueryPtr<IScaleDouble> sd ( _source );
+  if ( sd.isValid() )
+  {
+    sd->scale ( x, y, z );
+    return;
+  }
+
+  // Try this interface too. 
+  SlQueryPtr<IScaleFloat> sf ( _source );
+  if ( sf.isValid() )
+    sf->scale ( static_cast<float> ( x ), static_cast<float> ( y ), static_cast<float> ( z ) );
 }
 
 

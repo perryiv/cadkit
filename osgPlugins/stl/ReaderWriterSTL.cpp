@@ -22,15 +22,19 @@
 
 #include <sstream>
 #include <iostream>
+#include <cassert>
 
 ReaderWriterSTL::ReaderWriterSTL() :
-_facets(),
-_currentFacet(NULL)
+  _facets(),
+  _currentFacet(NULL),
+  _polygons()
 {
 }
 
 ReaderWriterSTL::~ReaderWriterSTL()
 {
+  // This will delete the facets.
+  this->_init();
 }
 
 bool ReaderWriterSTL::acceptsExtension ( const std::string &ext )
@@ -75,11 +79,7 @@ osg::Group * ReaderWriterSTL::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  /*osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-
-  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( ) );
-  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( ) );*/
+#if 0
 
   for(unsigned int i = 0; i < _facets.size(); ++i)
   {
@@ -88,20 +88,34 @@ osg::Group * ReaderWriterSTL::_build() const
     osg::ref_ptr< osg::Geometry > geometry ( facet->getGeometry() );
     geode->addDrawable ( geometry.get() );
     root->addChild ( geode.get() );
-    /*vertices->push_back( _facets[i]->getV1() );
-    vertices->push_back( _facets[i]->getV2() );
-    vertices->push_back( _facets[i]->getV3() );
-
-    normals->push_back( _facets[i]->getNormal() );*/
   }
 
-  /*geometry->setVertexArray ( vertices.get() );
-  geometry->setNormalArray ( normals.get() );
-  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+#else
 
-  geode->addDrawable ( geometry.get() );
-  root->addChild ( geode.get() );*/
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  root->addChild ( geode.get() );
+
+  // Make triangles.
+  Polygons::const_iterator i = _polygons.find ( 3 );
+  if ( _polygons.end() != i )
+  {
+    const Vertices &v = i->second.first;
+    const Normals  &n = i->second.second;
+    assert ( n.size() * 3 == v.size() );
+
+    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( v.begin(), v.end() ) );
+    osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( n.begin(), n.end() ) );
+
+    osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
+    geode->addDrawable ( geom.get() );
+
+    geom->setVertexArray ( vertices.get() );
+    geom->setNormalArray ( normals.get() );
+    geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+    geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+  }
+
+#endif
 
   return root.release();
 }
@@ -112,6 +126,7 @@ void  ReaderWriterSTL::_init()
     delete _facets[i];
   _facets.clear();
   _currentFacet = NULL;
+  _polygons.clear();
 }
 
 //TODO detect if stl is binary or ascii format
@@ -158,13 +173,24 @@ void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
     _currentFacet = new Facet();
     in.read(buf, 50);
     memcpy(f, buf, 12); // copy first 12 bytes for normal
-    _currentFacet->setNormal ( osg::Vec3( f[0], f[1], f[2] ) );
+    osg::Vec3 n ( f[0], f[1], f[2] );
+    _currentFacet->setNormal ( n );
+    _polygons[3].second.push_back ( n );
+
     memcpy(f, buf+12, 12);  // copy first vertex
-    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    osg::Vec3 v0 ( f[0], f[1], f[2] );
+    _currentFacet->setVertex ( v0 );
+    _polygons[3].first.push_back ( v0 );
+
     memcpy(f, buf+24, 12);  // copy second vertex
-    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    osg::Vec3 v1 ( f[0], f[1], f[2] );
+    _currentFacet->setVertex ( v1 );
+    _polygons[3].first.push_back ( v1 );
+
     memcpy(f, buf+36, 12);  // copy third vertex
-    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    osg::Vec3 v2 ( f[0], f[1], f[2] );
+    _currentFacet->setVertex ( v2 );
+    _polygons[3].first.push_back ( v2 );
     
     _facets.push_back(_currentFacet);
     _currentFacet = NULL;
@@ -176,6 +202,8 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
 {
   const unsigned int size ( 512 );
   char buf[size];
+  Vertices vertices;
+  Normals normals;
 
   while( !in.eof() )
   {
@@ -194,25 +222,37 @@ void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
       _currentFacet = new Facet();
       std::string normal;
       in >> normal;
-      float n1, n2, n3;
-      in >> n1;
-      in >> n2;
-      in >> n3;
-      _currentFacet->setNormal( osg::Vec3(n1, n2, n3) ); 
+      osg::Vec3 n;
+      in >> n[0] >> n[1] >> n[2];
+      _currentFacet->setNormal ( n );
+      normals.push_back ( n );
     }
     else if (type == "outer")
     {
     }
     else if (type == "vertex")
     {
-      float n1, n2, n3;
-      in >> n1;
-      in >> n2;
-      in >> n3;
-      _currentFacet->setVertex( osg::Vec3(n1, n2, n3) );
+      osg::Vec3 v;
+      in >> v[0] >> v[1] >> v[2];
+      _currentFacet->setVertex ( v );
+      vertices.push_back ( v );
     }
     else if (type == "endloop")
     {
+      // Make sure we have one of these.
+      _polygons[vertices.size()];
+
+      // Now get short-cuts.
+      Vertices &v = _polygons[vertices.size()].first;
+      Normals  &n = _polygons[vertices.size()].second;
+
+      // Append the new vertices and normals.
+      v.insert ( v.end(), vertices.begin(), vertices.end() );
+      n.insert ( n.end(), normals.begin(),  normals.end()  );
+
+      // Clear the temporary lists.
+      vertices.clear();
+      normals.clear();
     }
     else if (type == "endfacet")
     {

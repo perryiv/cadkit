@@ -57,6 +57,7 @@
 #include "SgUnScale.h"
 #include "SgVertexSet.h"
 #include "SgPrimitive.h"
+#include "SgText.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
@@ -280,3 +281,4 @@ SG_VISIT_FUNCTION_GET_COUNT ( SgTriangle, SgPrimitive );
 SG_VISIT_FUNCTION_GET_COUNT ( SgUnScale, SgTransformation );
 SG_VISIT_FUNCTION_GET_COUNT ( SgVertexSet, SgShape );
 SG_VISIT_FUNCTION_GET_COUNT ( SgPrimitive, SgShape );
+SG_VISIT_FUNCTION_GET_COUNT ( SgText, SgShape );

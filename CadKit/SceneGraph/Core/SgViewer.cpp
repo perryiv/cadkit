@@ -22,6 +22,7 @@
 #include "SgMessage.h"
 #include "SgDefine.h"
 #include "SgMessageIds.h"
+#include "SgText.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlPrint.h"
@@ -48,11 +49,17 @@ SL_IMPLEMENT_DYNAMIC_CLASS(SgViewer,SlRefBase);
 
 enum // Bits for "_internalFlags".
 {
-  FIRST_TIME_IN_MOUSEMOVED = 0x00000001,
-  MOUSE_IS_MOVING          = 0x00000002,
-  VIEWING_MODE             = 0x00000004,
-  SEEKING_MODE             = 0x00000008,
-  SPINNING                 = 0x00000010
+  FIRST_TIME_IN_MOUSEMOVED    = 0x00000001,
+  MOUSE_IS_MOVING             = 0x00000002,
+  VIEWING_MODE                = 0x00000004,
+  SEEKING_MODE                = 0x00000008,
+  SPINNING                    = 0x00000010,
+  DISPLAY_MODELVIEW_MATRIX    = 0x00000020,
+  DISPLAY_FRAME_RATE          = 0x00000040,
+  DISPLAY_POLYGON_COUNT       = 0x00000080,
+  DISPLAY_LINE_SEGMENT_COUNT  = 0x00000100,
+  DISPLAY_VERTEX_COUNT        = 0x00000200,
+  DISPLAY_NUM_STATE_CHANGES   = 0x00000400,
 };
 
 enum // Dragger state.
@@ -82,6 +89,8 @@ namespace CadKit
 
 SgViewer::SgViewer() : SlRefBase ( 0 ), 
   _scene ( NULL ), 
+  _display ( new SgGroup ),
+  _modelviewText ( new SgText ),
   _renderer ( NULL ),
   _camera ( NULL ),
   _internalFlags ( FIRST_TIME_IN_MOUSEMOVED | VIEWING_MODE ),
@@ -93,11 +102,12 @@ SgViewer::SgViewer() : SlRefBase ( 0 ),
   _translateMouseButtons ( MOUSE_RIGHT ),
   _scaleMouseButtons ( MOUSE_LEFT | MOUSE_RIGHT ),
   _seekMouseButtons ( MOUSE_LEFT ),
-  _viewingToggleKey ( 118 ), // FOX key code for 'v'
-  _seekingToggleKey ( 115 ), // FOX key code for 's'
-  _rotateKey ( 114 ),        // FOX key code for 'r'
-  _translateKey ( 116 ),     // FOX key code for 't'
-  _scaleKey ( 122 ),         // FOX key code for 'z'
+  _viewingKey ( 118 ),        // FOX key code for 'v'
+  _seekingKey ( 115 ),        // FOX key code for 's'
+  _rotateKey ( 114 ),         // FOX key code for 'r'
+  _translateKey ( 116 ),      // FOX key code for 't'
+  _scaleKey ( 122 ),          // FOX key code for 'z'
+  _displayMatrixKey ( 109 ),  // FOX key code for 'm'
   _callback ( NULL, NULL, NULL ),
   _spinTolerance ( 2 ), // 25
   _spinTimerInterval ( 1 ), // 10
@@ -399,6 +409,19 @@ bool SgViewer::sendMessage ( Message &message ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Are we displaying the modelview matrix?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SgViewer::isDisplayingModelviewMatrix() const
+{
+  SL_ASSERT ( this );
+  return CadKit::hasBits ( _internalFlags, (unsigned long) DISPLAY_MODELVIEW_MATRIX );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Are we in picking mode?
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -453,6 +476,41 @@ bool SgViewer::isSeeking() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the display of the modelview matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SgViewer::setDisplayOfModelviewMatrix ( const bool &state )
+{
+  SL_ASSERT ( this );
+
+  // If we are supposed to draw the modelview matrices values...
+  if ( state )
+  {
+    // Add the flag.
+    _internalFlags = CadKit::addBits ( _internalFlags, (unsigned long) DISPLAY_MODELVIEW_MATRIX );
+
+    // Should be true.
+    SL_ASSERT ( false == _display->removeChild ( _modelviewText ) );
+
+    // Add the modelview text.
+    _display->addChild ( _modelviewText );
+  }
+
+  // Otherwise...
+  else
+  {
+    // Remove the flag.
+    _internalFlags = CadKit::removeBits ( _internalFlags, (unsigned long) DISPLAY_MODELVIEW_MATRIX );
+
+    // Remove the child.
+    _display->removeChild ( _modelviewText );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the picking mode.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -475,7 +533,9 @@ void SgViewer::setPicking ( const bool &state )
 void SgViewer::setViewing ( const bool &state )
 {
   SL_ASSERT ( this );
-  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, (unsigned long) VIEWING_MODE ) : CadKit::removeBits ( _internalFlags, (unsigned long) VIEWING_MODE );
+  _internalFlags = ( state ) ? 
+    CadKit::addBits ( _internalFlags, (unsigned long) VIEWING_MODE ) : 
+    CadKit::removeBits ( _internalFlags, (unsigned long) VIEWING_MODE );
 }
 
 
@@ -488,7 +548,9 @@ void SgViewer::setViewing ( const bool &state )
 void SgViewer::setSeeking ( const bool &state )
 {
   SL_ASSERT ( this );
-  _internalFlags = ( state ) ? CadKit::addBits ( _internalFlags, (unsigned long) SEEKING_MODE ) : CadKit::removeBits ( _internalFlags, (unsigned long) SEEKING_MODE );
+  _internalFlags = ( state ) ? 
+    CadKit::addBits ( _internalFlags, (unsigned long) SEEKING_MODE ) : 
+  CadKit::removeBits ( _internalFlags, (unsigned long) SEEKING_MODE );
 }
 
 
@@ -793,6 +855,10 @@ bool SgViewer::render()
       if ( false == _renderer->render ( *_scene ) ) 
         return false;
 
+      // Render our displays.
+      if ( false == _renderer->render ( *_display ) )
+        return false;
+
       // Post-render the scene.
       return _renderer->postRender ( *_scene );
     }
@@ -845,6 +911,7 @@ bool SgViewer::keyDown ( const unsigned long &theChar )
 #ifdef __GNUC__
   // Make sure your usage of std::vector is ok.
   // See if you can figure out how to use std::map.
+  // This is just a heads-up for the first time I run this on linux.
   SL_ASSERT ( 0 ); 
 #endif
 
@@ -852,7 +919,7 @@ bool SgViewer::keyDown ( const unsigned long &theChar )
   CadKit::_keyStates[theChar] = CadKit::KEY_DOWN;
 
   // If the given char is for viewing...
-  if ( theChar == _viewingToggleKey ) 
+  if ( theChar == _viewingKey )
   {
     // Make sure seeking is off.
     this->setSeeking ( false );
@@ -868,8 +935,8 @@ bool SgViewer::keyDown ( const unsigned long &theChar )
       return false;
   }
 
-  // If the given char is for seeking..
-  else if ( theChar == _seekingToggleKey ) 
+  // If the given char is for seeking...
+  else if ( theChar == _seekingKey )
   {
     // Toggle the seeking mode.
     this->setSeeking ( !this->isSeeking() );
@@ -882,7 +949,14 @@ bool SgViewer::keyDown ( const unsigned long &theChar )
       return false;
   }
 
-  // All is good.
+  // Display the current transformation matrix.
+  else if ( theChar == _displayMatrixKey )
+  {
+    // Toggle the display of the current modelview matrix.
+    this->setDisplayOfModelviewMatrix ( !this->isDisplayingModelviewMatrix() );
+  }
+
+  // It worked.
   return true;
 }
 

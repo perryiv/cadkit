@@ -69,7 +69,7 @@ DbXmlNode::DbXmlNode() : SlRefBase ( INITIAL_REF_COUNT ),
   _name ( DEFAULT_NAME )
 {
   SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
-  CadKit::threadSafeIncrement ( _numNodes );
+  CadKit::Threads::safeIncrement ( _numNodes );
 }
 
 
@@ -83,7 +83,7 @@ DbXmlNode::DbXmlNode ( const char *name ) : SlRefBase ( INITIAL_REF_COUNT ),
   _name ( ( name ) ? name : DEFAULT_NAME )
 {
   SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
-  CadKit::threadSafeIncrement ( _numNodes );
+  CadKit::Threads::safeIncrement ( _numNodes );
 }
 
 
@@ -97,7 +97,7 @@ DbXmlNode::DbXmlNode ( const DbXmlNode &node ) : SlRefBase ( INITIAL_REF_COUNT )
   _name ( node._name )
 {
   SL_PRINT2 ( "In DbXmlNode::DbXmlNode(), this = %X\n", this );
-  CadKit::threadSafeIncrement ( _numNodes );
+  CadKit::Threads::safeIncrement ( _numNodes );
 
   // Do not use the copy constructor. What does it mean to copy a tree? 
   // Does the new group have referenced pointers of the children, or copies 
@@ -116,5 +116,5 @@ DbXmlNode::DbXmlNode ( const DbXmlNode &node ) : SlRefBase ( INITIAL_REF_COUNT )
 DbXmlNode::~DbXmlNode()
 {
   SL_PRINT2 ( "In DbXmlNode::~DbXmlNode(), this = %X\n", this );
-  CadKit::threadSafeDecrement ( _numNodes );
+  CadKit::Threads::safeDecrement ( _numNodes );
 }

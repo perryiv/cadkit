@@ -20,9 +20,7 @@
 
 #include "Standard/SlTypedefs.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <iostream>
-#endif
+#include <iostream>
 
 
 namespace CadKit {
@@ -38,15 +36,15 @@ template<NCSDTA> inline void write ( const CadKit::NcSpline<NCSDCA> &spline, std
 {
   const char *rational = ( spline.isRational() ) ? "yes" : "no";
 
-  out << "Size of IndexType ..................... " << spline.getNumBytesIndexType()        << std::endl;
-  out << "Size of ParamType ................. " << spline.getNumBytesParamType()    << std::endl;
-  out << "Size of CtrPtType .............. " << spline.getNumBytesCtrPtType() << std::endl;
-  out << "Number of independent variables ....... " << spline.getNumIndepVars()             << std::endl;
-  out << "Number of dependent variables ......... " << spline.getNumDepVars()               << std::endl;
-  out << "Dimension ............................. " << spline.getDimension()                << std::endl;
-  out << "Rational .............................. " << rational                             << std::endl;
-  out << "Total number of knots ................. " << spline.getTotalNumKnots()            << std::endl;
-  out << "Total number of control points ........ " << spline.getTotalNumCtrPts()           << std::endl;
+  out << "Size of IndexType ..................... " << spline.getNumBytesIndexType() << std::endl;
+  out << "Size of ParamType ..................... " << spline.getNumBytesParamType() << std::endl;
+  out << "Size of CtrPtType ..................... " << spline.getNumBytesCtrPtType() << std::endl;
+  out << "Number of independent variables ....... " << spline.getNumIndepVars()      << std::endl;
+  out << "Number of dependent variables ......... " << spline.getNumDepVars()        << std::endl;
+  out << "Dimension ............................. " << spline.getDimension()         << std::endl;
+  out << "Rational .............................. " << rational                      << std::endl;
+  out << "Total number of knots ................. " << spline.getTotalNumKnots()     << std::endl;
+  out << "Total number of control points ........ " << spline.getTotalNumCtrPts()    << std::endl;
 
   IndexType i ( 0 ), j ( 0 );
 

@@ -17,10 +17,9 @@
 #define _CADKIT_NURBS_CORE_LIBRARY_INTERNAL_MACROS_H_
 
 #include "Standard/SlAssert.h"
+#include "Standard/SlSingleThreaded.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <memory> // For std::allocator
-#endif
+#include <memory> // For std::allocator
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -121,11 +120,12 @@
   typename CtrPtType, \
   typename IndexType, \
   typename BitMaskType, \
-  typename IndexAllocatorType, \
-  typename ParameterAllocatorType, \
-  typename ParameterPointerAllocatorType, \
-  typename ControlPointAllocatorType, \
-  typename ControlPointPointerAllocatorType
+  class IndexAllocatorType, \
+  class ParameterAllocatorType, \
+  class ParameterPointerAllocatorType, \
+  class ControlPointAllocatorType, \
+  class ControlPointPointerAllocatorType, \
+  class ThreadingPolicyType
 
 #define NCSDCA \
   ParamType, \
@@ -136,18 +136,20 @@
   ParameterAllocatorType, \
   ParameterPointerAllocatorType, \
   ControlPointAllocatorType, \
-  ControlPointPointerAllocatorType
+  ControlPointPointerAllocatorType, \
+  ThreadingPolicyType
 
 #define NCSDTCD \
   typename ParamType = double, \
   typename CtrPtType = double, \
   typename IndexType = unsigned int, \
   typename BitMaskType = unsigned int, \
-  typename IndexAllocatorType = std::allocator<IndexType>, \
-  typename ParameterAllocatorType = std::allocator<ParamType>, \
-  typename ParameterPointerAllocatorType = std::allocator<ParamType *>, \
-  typename ControlPointAllocatorType = std::allocator<CtrPtType>, \
-  typename ControlPointPointerAllocatorType = std::allocator<CtrPtType *>
+  class IndexAllocatorType = std::allocator<IndexType>, \
+  class ParameterAllocatorType = std::allocator<ParamType>, \
+  class ParameterPointerAllocatorType = std::allocator<ParamType *>, \
+  class ControlPointAllocatorType = std::allocator<CtrPtType>, \
+  class ControlPointPointerAllocatorType = std::allocator<CtrPtType *>, \
+  class ThreadingPolicyType = CadKit::Threads::SingleThreaded<char> // TODO. Change this.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -165,7 +167,8 @@
   typedef ParameterAllocatorType ParameterAllocator; \
   typedef ParameterPointerAllocatorType ParameterPointerAllocator; \
   typedef ControlPointAllocatorType ControlPointAllocator; \
-  typedef ControlPointPointerAllocatorType ControlPointPointerAllocator
+  typedef ControlPointPointerAllocatorType ControlPointPointerAllocator; \
+  typedef ThreadingPolicyType ThreadingPolicy
 
 
 

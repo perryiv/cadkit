@@ -1198,10 +1198,10 @@ bool SgGlRenderer::visit ( SgGroup &group )
   SgNode *child = NULL;
 
   // Get the number of children.
-  int numChildren = group.getNumChildren();
+  unsigned int numChildren = group.getNumChildren();
 
   // Loop through all the nodes.
-  for ( int i = 0; i < numChildren; ++i )
+  for ( unsigned int i = 0; i < numChildren; ++i )
   {
     // Get the child.
     child = group.getChild ( i );
@@ -1538,6 +1538,19 @@ bool SgGlRenderer::visit ( SgUnScale & )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( 0 ); return true; // TODO.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit this kind of node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SgGlRenderer::visit ( SgText & )
+{
+  SL_ASSERT ( this );
+  return true;
 }
 
 

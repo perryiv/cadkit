@@ -38,7 +38,7 @@ template <class T> inline void copy ( const unsigned int &num, const T *array, s
     return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   vec.resize ( num );
 
   // Loop through the array and assign the elements to the vector.
@@ -63,7 +63,7 @@ template <class T> inline void append ( const unsigned int &num, const T *array,
   unsigned int size = vec.size();
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   vec.resize ( size + num );
 
   // Loop through the array and assign the elements to the vector.
@@ -93,7 +93,7 @@ template <class T> inline void append2D ( const unsigned int &num, const T *arra
   unsigned int size = vec.size();
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   vec.resize ( size + num );
 
   // Loop through the array and assign the elements to the vector.
@@ -130,7 +130,7 @@ template <class T> inline void append3D ( const unsigned int &num, const T *arra
   unsigned int size = vec.size();
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   vec.resize ( size + num );
 
   // Loop through the array and assign the elements to the vector.
@@ -167,7 +167,7 @@ template <class T> inline void append4D ( const unsigned int &num, const T *arra
   unsigned int size = vec.size();
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   vec.resize ( size + num );
 
   // Loop through the array and assign the elements to the vector.
@@ -205,7 +205,7 @@ template <class T> inline void append2D ( const std::vector<SlVec2<T> > &from,
     return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   to.resize ( sizeTo + sizeFrom * 2 );
 
   // We start here in the "to" vector.
@@ -241,7 +241,7 @@ template <class T> inline void append3D ( const std::vector<SlVec3<T> > &from,
     return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   to.resize ( sizeTo + sizeFrom * 3 );
 
   // We start here in the "to" vector.
@@ -278,7 +278,7 @@ template <class T> inline void append4D ( const std::vector<SlVec4<T> > &from,
     return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
-  // to make std::vector::size() returns the correct number.
+  // to make std::vector::size() return the correct number.
   to.resize ( sizeTo + sizeFrom * 4 );
 
   // We start here in the "to" vector.

@@ -299,6 +299,10 @@ SOURCE=.\SlUnicode.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\SlSingleThreaded.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlThread.h
 # End Source File
 # End Group

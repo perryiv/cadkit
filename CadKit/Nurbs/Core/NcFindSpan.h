@@ -23,44 +23,8 @@
 #include "Standard/SlAssert.h"
 
 
-namespace CadKit
-{
-template<NCSDTA> class NcFindSpan : public NcAlgorithm<NCSDCA>
-{
-public:
-
-  /// Find the span.
-  static IndexType              find ( 
-                                  const NcCurve<NCSDCA> &curve,
-                                  const ParamType &u );
-
-  /// Find the span.
-  static IndexType              find ( 
-                                  const NcCurve<NCSDCA> &curve,
-                                  const ParamType &u, 
-                                  const IndexType &low );
-
-  /// Find the span.
-  static IndexType              find ( 
-                                  const NcSpline<NCSDCA> &spline,
-                                  const IndexType &whichIndepVar, 
-                                  const ParamType &u );
-
-  /// Find the span.
-  static IndexType              find ( 
-                                  const NcSpline<NCSDCA> &spline,
-                                  const IndexType &whichIndepVar, 
-                                  const ParamType &u, 
-                                  const IndexType &low );
-
-  /// Find the span.
-  static IndexType              find ( 
-                                  const ParamType *knots, 
-                                  const IndexType &numCtrPts, 
-                                  const ParamType &u, 
-                                  IndexType low );
-};
-
+namespace CadKit {
+namespace Nurbs {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
@@ -77,7 +41,7 @@ public:
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find ( 
+template<NCSDTA> inline IndexType findSpan ( 
   const ParamType *knots, 
   const IndexType &numCtrPts, 
   const ParamType &u, 
@@ -130,7 +94,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
+template<NCSDTA> inline IndexType findSpan (
   const NcSpline<NCSDCA> &spline,
   const IndexType &whichIndepVar, 
   const ParamType &u, 
@@ -147,7 +111,7 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
   const IndexType numCtrPtr ( spline.getNumCtrPts ( whichIndepVar ) );
 
   // Call the function to find the span.
-  return NcFindSpan<NCSDCA>::find ( knots, numCtrPtr, u, low );
+  return findSpan<NCSDCA> ( knots, numCtrPtr, u, low );
 }
 
 
@@ -157,13 +121,13 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
+template<NCSDTA> inline IndexType findSpan (
   const NcSpline<NCSDCA> &spline,
   const IndexType &whichIndepVar, 
   const ParamType &u )
 {
   // Call the other one.
-  return NcFindSpan<NCSDCA>::find ( spline, whichIndepVar, u, spline.getDegree ( whichIndepVar ) );
+  return findSpan<NCSDCA> ( spline, whichIndepVar, u, spline.getDegree ( whichIndepVar ) );
 }
 
 
@@ -173,13 +137,13 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
+template<NCSDTA> inline IndexType findSpan (
   const NcCurve<NCSDCA> &curve,
   const ParamType &u, 
   const IndexType &low )
 {
   // Call the other one.
-  return NcFindSpan<NCSDCA>::find ( curve, 0, u, low );
+  return findSpan<NCSDCA> ( curve, 0, u, low );
 }
 
 
@@ -189,15 +153,16 @@ template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline IndexType NcFindSpan<NCSDCA>::find (
+template<NCSDTA> inline IndexType findSpan (
   const NcCurve<NCSDCA> &curve,
   const ParamType &u )
 {
   // Call the other one.
-  return NcFindSpan<NCSDCA>::find ( curve, 0, u, curve.getDegree() );
+  return findSpan<NCSDCA> ( curve, 0, u, curve.getDegree() );
 }
 
 
+}; // namespace Nurbs
 }; // namespace CadKit
 
 

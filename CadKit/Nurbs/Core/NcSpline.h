@@ -19,8 +19,6 @@
 #include "NcSplineData.h"
 #include "NcWork.h"
 
-#include "Standard/SlBitmask.h"
-
 
 namespace CadKit
 {
@@ -70,8 +68,6 @@ protected:
 
   BitMaskType _flags;
   mutable NcWork<NCSDCA> _work;
-
-  SL_DECLARE_BITMASK_FUNCTIONS ( Flags, BitMaskType, _flags );
 };
 
 

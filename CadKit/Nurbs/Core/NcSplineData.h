@@ -19,7 +19,113 @@
 #include "NcInternalMacros.h"
 #include "NcDefine.h"
 
-#include "Standard/SlTestEquality.h"
+#include <functional>
+
+
+/*
+
+Possible policy hierarchy under NcSplineData:
+
+- BaseClass
+- WorkSpace
+  - Allocator
+  - Deallocator
+  - ErrorHandler
+- KnotVector
+  - Allocator
+  - Deallocator
+  - ErrorHandler
+- ControlPoints
+  - Allocator
+  - Deallocator
+  - ErrorHandler
+- ErrorHandler
+- ThreadingModel
+- Factory
+- Cloner
+- NumericalChecker
+- MatrixNN
+- Matrix44
+- Vec2
+- Vec3
+- Vec4
+
+typedef Nurbs::Curve 
+<
+  OperatorNewAllocator, 
+  OperatorDeleteDeallocator, 
+  DefaultErrorHandler
+>
+DefaultWorkSpace;
+
+
+typedef Nurbs::Curve 
+<
+  DefaultBaseClass,
+  DefaultWorkSpace, 
+  MyKnotVector, 
+  MyControlPoints, 
+  MyErrorHandler, 
+  SingleThreaded, 
+  MyCloner,
+  MyFactory,
+  NoNumericalChecker, 
+  MyMatrixNN, 
+  MyMatrix44, 
+  MyVec2, 
+  MyVec3, 
+  MyVec4
+>
+MyNurbsCurve;
+
+
+Three possible implementations of ControlPoints include:
+- StdVectorControlPoint // uses std::vector
+- StdValarrayControlPoints // uses std::valarray
+- DynamicArrayControlPoints // uses a c-style array, reallocates when needed.
+- StaticArrayControlPoints // uses a c-style array that doesn't get reallocated, ever. Produces an error if receives a request for more space than available.
+
+
+*/
+
+/*
+// Was going to make this a policy...
+template <typename AllocatedType, typename SizeType> struct Allocator
+{
+  static AllocatedType *allocate ( const SizeType &size )
+  {
+    assert ( size > 0 );
+    AllocatedType *array = new AllocatedType[size];
+    return array;
+  }
+
+  static void deallocate ( const AllocatedType *&array )
+  {
+    assert ( array );
+    delete [] array;
+    array = 0x0;
+  }
+};
+
+// Do you need above policy class in here, or perhaps inside a KnotVector and ControlPoints policy class?
+// They can be wrappers around either regular arrays or std::vector.
+
+// Working on the new template parameters...
+template
+<
+  typename ParamType = double,
+  typename CtrPtType = double,
+  typename IndexType = unsigned int,
+  typename BitMaskType = unsigned int,
+  class ParameterAllocatorType = std::allocator<ParamType>,
+  class ParameterPointerAllocatorType = std::allocator<ParamType *>,
+  class ControlPointAllocatorType = std::allocator<CtrPtType>,
+  class ControlPointPointerAllocatorType = std::allocator<CtrPtType *>,
+  class ThreadingPolicyType = CadKit::Threads::SingleThreaded
+>
+
+// Adaptors line std::bind2nd for making all z's zero?
+*/
 
 
 namespace CadKit
@@ -64,7 +170,7 @@ public:
   const CtrPtType &             getWeight ( const IndexType &whichWeight )                                const { return _weights[whichWeight]; }
 
   /// Set data values.
-  void                          setKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot,   const ParamType &knot )     { _knots[whichIndepVar][whichKnot] = knot; }
+  void                          setKnot   ( const IndexType &whichIndepVar, const IndexType &whichKnot,   const ParamType &knot )  { _knots[whichIndepVar][whichKnot] = knot; }
   void                          setCtrPt  ( const IndexType &whichDepVar,   const IndexType &whichCtrPt,  const CtrPtType &ctrPt ) { _ctrPts[whichDepVar][whichCtrPt] = ctrPt; }
   void                          setWeight ( const IndexType &whichWeight,   const CtrPtType &weight )                              { _weights[whichWeight] = weight; }
 
@@ -104,7 +210,7 @@ public:
                                   const bool &rational );
 
   /// Set the value.
-  bool                          setValue ( const NcSplineData &sd, const bool &makeCopy );
+  bool                          setValue ( const NcSplineData &sd, bool makeCopy );
 
   /// Validate.
   bool                          isValid() const;
@@ -309,7 +415,7 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::isValid() const
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-/// Set the rational flag. All this does is flip the flag. If the spline 
+/// Set the rational flag. All this does is set the flag. If the spline 
 /// really is rational (i.e., it has weights) and you call this with false, 
 /// the weights will be ignored and the homogeneous control points will be 
 /// treated like regular coordinates. If the spline is nonrational and you 
@@ -351,12 +457,84 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::_isEqualIntegers ( const NcSp
     _dimension      == spline._dimension &&
     _totalNumCtrPts == spline._totalNumCtrPts &&
     _totalNumKnots  == spline._totalNumKnots &&
-    true == CadKit::isEqualArray ( _numCtrPts, spline._numCtrPts, _numIndepVars ) &&
-    true == CadKit::isEqualArray ( _order,     spline._order,     _numIndepVars ) &&
-    true == CadKit::isEqualArray ( _degree,    spline._degree,    _numIndepVars ) &&
-    true == CadKit::isEqualArray ( _numKnots,  spline._numKnots,  _numIndepVars )
+    true == std::equal ( _numCtrPts, _numCtrPts + _numIndepVars, spline._numCtrPts ) &&
+    true == std::equal ( _order,     _order     + _numIndepVars, spline._order     ) &&
+    true == std::equal ( _degree,    _degree    + _numIndepVars, spline._degree    ) &&
+    true == std::equal ( _numKnots,  _numKnots  + _numIndepVars, spline._numKnots  )
     );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Predicate functor to test equality within a given tolerance.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template <typename T> class IsEqualWithinTolerance : public std::binary_function<T,T,bool>
+{
+public:
+  IsEqualWithinTolerance ( const T &tol ) : _tol ( tol ){}
+  bool operator() ( const T &a, const T &b ) const
+  {
+    return ( a < b ) ? ( b - a ) < _tol : ( a - b ) < _tol;
+  }
+private:
+  T _tol;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Predicate functor to test equality within a given tolerance.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template <> class IsEqualWithinTolerance<SlVec3d> : public std::binary_function<SlVec3d,SlVec3d,bool>
+{
+public:
+  IsEqualWithinTolerance ( const SlVec3d &tol ) : _tol ( tol ){}
+  bool operator() ( const SlVec3d &a, const SlVec3d &b ) const
+  {
+    return 
+      ( ( a[0] < b[0] ) ? ( b[0] - a[0] ) < _tol[0] : ( a[0] - b[0] ) < _tol[0] ) &&
+      ( ( a[1] < b[1] ) ? ( b[1] - a[1] ) < _tol[1] : ( a[1] - b[1] ) < _tol[1] ) &&
+      ( ( a[2] < b[2] ) ? ( b[2] - a[2] ) < _tol[2] : ( a[2] - b[2] ) < _tol[2] );
+  }
+private:
+  SlVec3d _tol;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Predicate functor to test equality within a given tolerance.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template <> class IsEqualWithinTolerance<SlVec3f> : public std::binary_function<SlVec3f,SlVec3f,bool>
+{
+public:
+  IsEqualWithinTolerance ( const SlVec3f &tol ) : _tol ( tol ){}
+  bool operator() ( const SlVec3f &a, const SlVec3f &b ) const
+  {
+    return 
+      ( ( a[0] < b[0] ) ? ( b[0] - a[0] ) < _tol[0] : ( a[0] - b[0] ) < _tol[0] ) &&
+      ( ( a[1] < b[1] ) ? ( b[1] - a[1] ) < _tol[1] : ( a[1] - b[1] ) < _tol[1] ) &&
+      ( ( a[2] < b[2] ) ? ( b[2] - a[2] ) < _tol[2] : ( a[2] - b[2] ) < _tol[2] );
+  }
+private:
+  SlVec3f _tol;
+};
+
+
+//TODO
+//Since the client may want to pass a floating point number as the control point
+//tolerance even when the control point type is a SlVec3d, you may want to move 
+//the isEqual functions out of this class and into their own template class (or 
+//namespace) and have overloaded template functions that can handle all cases. 
+//Move these predicate functors to a more appropriate place too. Might want to 
+//make something similar to CADKIT_DECLARE_CONSTANT_CLASS_FLOAT and friends.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -368,10 +546,12 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::_isEqualIntegers ( const NcSp
 template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual 
   ( const NcSplineData<NCSDCA> &spline, const ParamType &knotTol, const CtrPtType &ctrPtTol ) const
 {
+  IndexType total ( _totalNumCtrPts * _numDepVars );
+  IsEqualWithinTolerance<CtrPtType> functor ( ctrPtTol );
   return (
     true == this->_isEqualIntegers ( spline ) &&
-    true == CadKit::isEqualArray ( _allKnots,  spline._allKnots,  _totalNumKnots,  knotTol ) &&
-    true == CadKit::isEqualArray ( _allCtrPts, spline._allCtrPts, _totalNumCtrPts * _numDepVars, ctrPtTol )
+    true == std::equal ( _allKnots,  _allKnots + _totalNumKnots, spline._allKnots,  IsEqualWithinTolerance<ParamType> ( knotTol ) ) &&
+    true == std::equal ( _allCtrPts, _allCtrPts + total,         spline._allCtrPts, functor )
     );
 }
 
@@ -384,10 +564,11 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual
 
 template<NCSDTA> inline bool NcSplineData<NCSDCA>::isEqual ( const NcSplineData<NCSDCA> &spline ) const
 {
+  IndexType total ( _totalNumCtrPts * _numDepVars );
   return (
     true == this->_isEqualIntegers ( spline ) &&
-    true == CadKit::isEqualArray ( _allKnots,  spline._allKnots,  _totalNumKnots ) &&
-    true == CadKit::isEqualArray ( _allCtrPts, spline._allCtrPts, _totalNumCtrPts * _numDepVars )
+    true == std::equal ( _allKnots,  _allKnots  + _totalNumKnots, spline._allKnots  ) &&
+    true == std::equal ( _allCtrPts, _allCtrPts + total,          spline._allCtrPts )
     );
 }
 
@@ -521,14 +702,14 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::resize (
   ControlPointAllocator cpa;
 
   // Resize the arrays if needed.
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _numCtrPts, ia ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _order,     ia ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _degree,    ia ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _numKnots,  ia ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numIndepVars,  numIndepVars,  _knots,     ppa ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _numDepVars,    numDepVars,    _ctrPts,    cppa ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( _totalNumKnots, totalNumKnots, _allKnots,  pa ) );
-  NC_VERIFY_ALLOCATION ( CadKit::_resize ( oldCtrPtsSize,  newCtrPtsSize, _allCtrPts, cpa ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numIndepVars,  numIndepVars,  _numCtrPts, ia ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numIndepVars,  numIndepVars,  _order,     ia ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numIndepVars,  numIndepVars,  _degree,    ia ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numIndepVars,  numIndepVars,  _numKnots,  ia ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numIndepVars,  numIndepVars,  _knots,     ppa ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _numDepVars,    numDepVars,    _ctrPts,    cppa ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( _totalNumKnots, totalNumKnots, _allKnots,  pa ) );
+  NC_VERIFY_ALLOCATION ( true == CadKit::_resize ( oldCtrPtsSize,  newCtrPtsSize, _allCtrPts, cpa ) );
 
   // Set these integer members.
   _rational       = rational;
@@ -580,7 +761,7 @@ template<NCSDTA> inline bool NcSplineData<NCSDCA>::resize (
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-template<NCSDTA> inline bool NcSplineData<NCSDCA>::setValue ( const NcSplineData<NCSDCA> &sd, const bool &makeCopy )
+template<NCSDTA> inline bool NcSplineData<NCSDCA>::setValue ( const NcSplineData<NCSDCA> &sd, bool makeCopy )
 {
   NC_CHECK_ARGUMENT ( sd.isValid() );
 

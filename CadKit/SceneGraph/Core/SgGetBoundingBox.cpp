@@ -22,6 +22,7 @@
 #include "SgTransform.h"
 #include "SgTranslation.h"
 #include "SgCube.h"
+#include "SgText.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlTrace.h"
@@ -661,6 +662,19 @@ bool SgGetBoundingBox::visit ( SgVertexSet & )
 ///////////////////////////////////////////////////////////////////////////////
 
 bool SgGetBoundingBox::visit ( SgPrimitive & )
+{
+  SL_ASSERT ( this );
+  SL_ASSERT ( 0 ); return true; // TODO.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit this kind of node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SgGetBoundingBox::visit ( SgText & )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( 0 ); return true; // TODO.

@@ -32,7 +32,7 @@ SL_IMPLEMENT_DYNAMIC_CLASS ( SgFoxContext, SgGlContext );
 SgFoxContext::SgFoxContext() : SgGlContext(), 
   _context ( new SgFoxContextImpl )
 {
-  SL_ASSERT ( 0x0 != _context.get() );
+  SL_ASSERT ( 0x0 != _context );
 }
 
 
@@ -44,7 +44,8 @@ SgFoxContext::SgFoxContext() : SgGlContext(),
 
 SgFoxContext::~SgFoxContext()
 {
-  // Nothing to delete.
+  // VC++ doesn't like an auto-pointer here.
+  delete _context;
 }
 
 

@@ -13,6 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+# pragma warning(disable:4786) // Truncated debug names.
+#endif
+
 #include "SgFoxChildWindow.h"
 #include "SgFoxView.h"
 

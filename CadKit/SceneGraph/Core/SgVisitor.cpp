@@ -283,15 +283,16 @@ namespace CadKit {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Template function to see if the stack has the given element.
+//  Template function to see if the sequence has the given element.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Standard/SlStack.h"
+
 template <class Sequence, class Element> inline bool _doAllElementsEqual ( const Sequence &seq, const Element *element )
 {
-  unsigned int size = seq.size();
-  for ( unsigned int i = 0; i < size; ++i )
-    if ( seq[i] != element )
+  for ( Sequence::const_iterator i = seq.begin(); i != seq.end(); ++i )
+    if ( *i != element )
       return false;
   return true;
 }
@@ -309,7 +310,7 @@ template <class Stack, class Node> inline void _popNode ( SgVisitor &visitor, St
   SL_ASSERT ( false == stack.empty() );
 
   // Get the node on the top of the stack. We have to catch this with a 
-  // ref-pointer or else it crashes with the same group is added twice to 
+  // ref-pointer or else it crashes when the same group is added twice to 
   // the scene (at least that's when I noticed). I think the node gets 
   // deleted prematurely without the ref-pointer catch.
   SlRefPtr<Node> topNode = stack.top();
@@ -330,7 +331,7 @@ template <class Stack, class Node> inline void _popNode ( SgVisitor &visitor, St
     // They should all be null. The only time a null is pushed onto the stack 
     // is when that node has not been encountered yet. Therefore, every other
     // node on the stack should also be null.
-    SL_ASSERT ( CadKit::_doAllElementsEqual ( stack, (Node *) NULL ) );
+    SL_ASSERT ( CadKit::_doAllElementsEqual ( stack.deque(), (Node *) NULL ) );
 
     // The current node is now null.
     CadKit::_setCurrentNode ( (Node *) NULL, current );

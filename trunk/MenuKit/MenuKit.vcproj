@@ -235,6 +235,28 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="OSG"
+			Filter="">
+			<File
+				RelativePath=".\Osg\ColorTheme.h">
+			</File>
+			<File
+				RelativePath=".\Osg\ColorThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\Osg\ColorThemeSkinTile.h">
+			</File>
+			<File
+				RelativePath=".\Osg\ThemeSkin.h">
+			</File>
+			<File
+				RelativePath=".\Osg\TileFunctor.h">
+			</File>
+			<File
+				RelativePath=".\Osg\TileLayer.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

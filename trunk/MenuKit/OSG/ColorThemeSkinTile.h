@@ -7,7 +7,7 @@
 #define _menukit_osg_skintile_h_
 
 #include "TileFunctor.h"      // base class
-#include "BasicTheme.h"       // for typedef
+#include "ColorTheme.h"       // for typedef
 #include "ColorThemeSkin.h"   // for typedef
 
 #include "osg/Node"
@@ -107,17 +107,9 @@ const ThemeType& SkinTile<ThemeType,SkinType>::proper_theme()
 template<class ThemeType, class SkinType>
 osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Menu& m)
 {
-  // --- configure the skin --- //
-  switch( _mode )
-  {
-  case DISABLED:  _skin.theme( _disabled ); break;
-  case HIGHLIGHT: _skin.theme( _highlight ); break;
-  case NORMAL:    _skin.theme( _normal ); break;
-  default:        _skin.theme( _normal ); break;
-  };
-
+  // configure the skin
+  _skin.theme( proper_theme() );
   _skin.box( box() );
-  // -------------------------- //
 
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(m);
@@ -127,10 +119,9 @@ osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Menu& m)
 template<class ThemeType, class SkinType>
 osg::Node* SkinTile<ThemeType,SkinType>::operator ()(const Button& b)
 {
-  // --- configure the skin --- //
+  // configure the skin
   _skin.theme( proper_theme() );
   _skin.box( box() );
-  // -------------------------- //
 
   // produce the graphic
   osg::ref_ptr<osg::Node> node = _skin(b);

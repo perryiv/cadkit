@@ -106,8 +106,8 @@ template<class T> inline bool isEqual ( const std::vector<T> &v1, const std::vec
   if ( v1.size() != v2.size() )
     return false;
 
-  std::vector<T>::const_iterator i1 = v1.begin();
-  std::vector<T>::const_iterator i2 = v2.begin();
+  typename std::vector<T>::const_iterator i1 = v1.begin();
+  typename std::vector<T>::const_iterator i2 = v2.begin();
 
   while ( i1 != v1.end() )
   {

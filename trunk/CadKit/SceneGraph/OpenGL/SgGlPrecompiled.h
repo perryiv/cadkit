@@ -26,8 +26,10 @@
 
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <map>
 # include <memory>
 # include <limits>
+# include <stdexcept>
 #endif
 
 #endif // _CADKIT_SCENEGRAPH_OPENGL_INTERNAL_PRECOMPILED_HEADERS_H_

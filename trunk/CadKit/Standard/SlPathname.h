@@ -28,9 +28,9 @@
 
 #define SL_PATHNAME_SAFE_BUFFER_SIZE 2048
 
-#define SL_PATHNAME_PERIOD         ( static_cast<String::value_type>('.') )
-#define SL_PATHNAME_FORWARD_SLASH  ( static_cast<String::value_type>('/') )
-#define SL_PATHNAME_BACKWARD_SLASH ( static_cast<String::value_type>('\\') )
+#define SL_PATHNAME_PERIOD         ( static_cast<Char>('.') )
+#define SL_PATHNAME_FORWARD_SLASH  ( static_cast<Char>('/') )
+#define SL_PATHNAME_BACKWARD_SLASH ( static_cast<Char>('\\') )
 #ifdef _WIN32
 # define SL_PATHNAME_SLASH SL_PATHNAME_BACKWARD_SLASH
 #else
@@ -43,6 +43,8 @@ namespace CadKit
 template<class String> class SlPathname
 {
 public:
+
+  typedef typename String::value_type Char;
 
   SlPathname();
   SlPathname ( const String &pathname );
@@ -138,6 +140,9 @@ template<class String> inline void SlPathname<String>::setPathname ( const SlPat
 
 template<class String> inline void SlPathname<String>::setPathname ( const String &p )
 {
+  // Convenient typedef.
+  typedef typename String::value_type Char;
+
   // Initialize.
   _drive.erase();
   _dir.erase();
@@ -153,7 +158,7 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
 
   // Split the given string at the drive.
   String drive, dir, file, ext, temp1, temp2;
-  CadKit::splitAtFirst ( pathname, static_cast<String::value_type>(':'), drive, temp1 );
+  CadKit::splitAtFirst ( pathname, static_cast<Char>(':'), drive, temp1 );
   //SL_PRINT2 ( "In SlPathname::setPathname(), pathname = %s\n", pathname.c_str() );
   //SL_PRINT2 ( "In SlPathname::setPathname(), drive = %s\n", drive.c_str() );
   //SL_PRINT2 ( "In SlPathname::setPathname(), temp1 = %s\n", temp1.c_str() );
@@ -266,7 +271,7 @@ template<class String> inline void SlPathname<String>::getPathname ( String &pat
   if ( drive.size() )
   {
     pathname += drive;
-    pathname += static_cast<String::value_type>(':');
+    pathname += static_cast<Char>(':');
   }
 
   if ( dir.size() )
@@ -314,7 +319,7 @@ inline void _getFullPathName ( const wchar_t *pathname, const unsigned int &bufS
 #ifdef _WIN32
   SL_VERIFY ( NULL != ::_wfullpath ( fullpath, pathname, bufSize ) );
 #elif __GNUC__
-  TODO
+  SL_ASSERT ( 0 ); // Not supported (that I know of).
 #elif __sgi
   SL_ASSERT ( 0 ); // Not supported (that I know of).
 #else
@@ -336,7 +341,7 @@ template<class String> inline void SlPathname<String>::getFullpath ( String &ful
 
   // Convert to the full path.
   const unsigned int bufSize ( SL_PATHNAME_SAFE_BUFFER_SIZE );
-  String::value_type temp[bufSize];
+  Char temp[bufSize];
   _getFullPathName ( current.c_str(), bufSize, temp );
 
   // Set the given string.

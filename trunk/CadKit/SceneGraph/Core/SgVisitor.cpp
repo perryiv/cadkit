@@ -23,11 +23,14 @@
 #include "SgDrawStyle.h"
 #include "SgSeparator.h"
 
+#include "Standard/SlPrint.h"
+#include "Standard/SlAssert.h"
+#include "Standard/SlStack.h"
+#include "Standard/SlErrorPolicy.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlPrint.h"
-# include "Standard/SlAssert.h"
-# include "Standard/SlStack.h"
 # include <memory>
+# include <stdexcept>
 #endif
 
 using namespace CadKit;
@@ -43,14 +46,16 @@ SG_IMPLEMENT_VISITOR(SgVisitor,SlRefBase);
 
 namespace CadKit
 {
-  typedef SlStack<SgNode::Ptr>        NodeStack;
-  typedef SlStack<SgCoordinate::Ptr>  CoordinateStack;
-  typedef SlStack<SgCoordinate3::Ptr> Coordinate3Stack;
-  typedef SlStack<SgCoordinate4::Ptr> Coordinate4Stack;
-  typedef SlStack<SgNormal::Ptr>      NormalStack;
-  typedef SlStack<SgMaterial::Ptr>    MaterialStack;
-  typedef SlStack<SgBaseColor::Ptr>   BaseColorStack;
-  typedef SlStack<SgDrawStyle::Ptr>   DrawStyleStack;
+  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > StackErrorPolicy;
+
+  typedef SlStack < SgNode::Ptr,        StackErrorPolicy > NodeStack;
+  typedef SlStack < SgCoordinate::Ptr,  StackErrorPolicy > CoordinateStack;
+  typedef SlStack < SgCoordinate3::Ptr, StackErrorPolicy > Coordinate3Stack;
+  typedef SlStack < SgCoordinate4::Ptr, StackErrorPolicy > Coordinate4Stack;
+  typedef SlStack < SgNormal::Ptr,      StackErrorPolicy > NormalStack;
+  typedef SlStack < SgMaterial::Ptr,    StackErrorPolicy > MaterialStack;
+  typedef SlStack < SgBaseColor::Ptr,   StackErrorPolicy > BaseColorStack;
+  typedef SlStack < SgDrawStyle::Ptr,   StackErrorPolicy > DrawStyleStack;
 };
  
 
@@ -283,23 +288,6 @@ namespace CadKit {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Template function to see if the sequence has the given element.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#include "Standard/SlStack.h"
-
-template <class Sequence, class Element> inline bool _doAllElementsEqual ( const Sequence &seq, const Element *element )
-{
-  for ( Sequence::const_iterator i = seq.begin(); i != seq.end(); ++i )
-    if ( *i != element )
-      return false;
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Template function to implement the "pop" functions.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -331,7 +319,7 @@ template <class Stack, class Node> inline void _popNode ( SgVisitor &visitor, St
     // They should all be null. The only time a null is pushed onto the stack 
     // is when that node has not been encountered yet. Therefore, every other
     // node on the stack should also be null.
-    SL_ASSERT ( CadKit::_doAllElementsEqual ( stack.deque(), (Node *) NULL ) );
+    SL_ASSERT ( stack.end() == std::find_if ( stack.begin(), stack.end(), std::bind2nd ( std::not_equal_to<Node *>(), (Node *) NULL ) ) );
 
     // The current node is now null.
     CadKit::_setCurrentNode ( (Node *) NULL, current );

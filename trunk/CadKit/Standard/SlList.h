@@ -7,87 +7,85 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//  SlList.h: A two-way linked list.
+//  SlList.h: A list class with array-like access.
 //
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_TWO_WAY_LINKED_LIST_H_
-#define _CADKIT_STANDARD_LIBRARY_TWO_WAY_LINKED_LIST_H_
+#ifndef _CADKIT_STANDARD_LIBRARY_LINKED_LIST_H_
+#define _CADKIT_STANDARD_LIBRARY_LINKED_LIST_H_
 
-#include "SlAssert.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <list>
-#endif
+#include <list>
+#include <assert.h>
 
 
-namespace CadKit
-{
-template<class T> class SlList : public std::list<T>
+namespace CadKit {
+
+
+template
+<
+  class Value,
+  class ErrorPolicy
+>
+class SlList : public std::list<Value>
 {
 public:
 
-  typedef std::list<T>::size_type Index;
-  T &              operator [] ( const Index &index );
-  const T &        operator [] ( const Index &index ) const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Overloaded bracket operator.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  value_type &operator [] ( size_type index )
+  {
+    assert ( 0 ); // Changed but didn't test. Take out when confident.
+    _errorPolicy ( this && index >= 0 && index < this->size() );
+    iterator i = std::find_if ( this->begin(), this->end(), Find ( index ) );
+    _errorPolicy ( i != this->end() );
+    return *i;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Overloaded bracket operator.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const value_type &operator [] ( size_type index ) const
+  {
+    assert ( 0 ); // Changed but didn't test. Take out when confident.
+    _errorPolicy ( this && index >= 0 && index < this->size() );
+    const_iterator i = std::find_if ( this->begin(), this->end(), Find ( index ) );
+    _errorPolicy ( i != this->end() );
+    return *i;
+  }
+
+
+protected:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Small predicate class to help find the correct iterator.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct Find
+  {
+    Find ( size_type index ) : _index ( index ), _count ( 0 ){}
+    template < class T > bool operator() ( T & ) { return _index == _count++; }
+  private:
+    size_type _index, _count;
+  };
+
+
+  ErrorPolicy _errorPolicy;
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-//
-//  Overloaded bracket operator. So the client can use the list like
-//  an array.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline T &SlList<T>::operator [] ( const Index &index )
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( index >= 0 );
-  SL_ASSERT ( index < this->size() );
-
-  // Get an iterator that points to the beginning of the list.
-  std::list<T>::iterator i = this->begin();
-
-  // Move the iterator to the correct location.
-  for ( Index j = 0; j < index; ++j ) 
-  {
-    ++i;
-  }
-
-  // Return the value at this location.
-  return (*i);
-}
+}; // namespace CadKit
 
 
-//////////////////////////////////////////////////////////////////////////
-//
-//  Overloaded bracket operator. So the client can use the list like
-//  an array.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &SlList<T>::operator [] ( const Index &index ) const
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( index >= 0 );
-  SL_ASSERT ( index < this->size() );
-
-  // Get an iterator that points to the beginning of the list.
-  std::list<T>::iterator i = this->begin();
-
-  // Move the iterator to the correct location.
-  for ( Index j = 0; j <= index; ++j )
-  {
-    ++i;
-  }
-
-  // Return the value at this location.
-  return (*i);
-}
-
-};
-
-#endif
+#endif // _CADKIT_STANDARD_LIBRARY_LINKED_LIST_H_

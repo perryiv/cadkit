@@ -42,25 +42,31 @@ using namespace CadKit;
 
 template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 {
+  // Typedefs.
+  typedef NcCurve<NCSDCA> Curve;
+  typedef typename Curve::Parameter Parameter;
+  typedef typename Curve::ControlPoint ControlPoint;
+  typedef typename Curve::Index Index;
+
   // Find the first and last knot.
-  NcCurve<NCSDCA>::Parameter firstU ( curve.getFirstKnot() );
-  NcCurve<NCSDCA>::Parameter lastU  ( curve.getLastKnot() );
+  Parameter firstU ( curve.getFirstKnot() );
+  Parameter lastU  ( curve.getLastKnot() );
   std::cout << "C01: First knot = " << firstU << std::endl;
   std::cout << "C02: Last knot  = " << lastU << std::endl;
 
 	// For loop speed.
-  NcCurve<NCSDCA>::Index numParams ( 25 );
-  NcCurve<NCSDCA>::Index order ( curve.getOrder() );
-  NcCurve<NCSDCA>::Index dimension ( curve.getDimension() ), j, span;
-	NcCurve<NCSDCA>::Parameter diffU ( lastU - firstU ), u, sum;
-  SlArrayPtr<NcCurve<NCSDCA>::Parameter,NcCurve<NCSDCA>::Index> N ( new NcCurve<NCSDCA>::Parameter[order] );
-  SlArrayPtr<NcCurve<NCSDCA>::ControlPoint,NcCurve<NCSDCA>::Index> pt ( new NcCurve<NCSDCA>::ControlPoint[dimension] );
+  Index numParams ( 25 );
+  Index order ( curve.getOrder() );
+  Index dimension ( curve.getDimension() ), j, span;
+	Parameter diffU ( lastU - firstU ), u, sum;
+  SlArrayPtr<Parameter,Index> N ( new Parameter[order] );
+  SlArrayPtr<ControlPoint,Index> pt ( new ControlPoint[dimension] );
 
   // Loop through the parameters.
-  for ( NcCurve<NCSDCA>::Index i = 0; i < numParams; ++i )
+  for ( Index i = 0; i < numParams; ++i )
   {
-		u = static_cast<NcCurve<NCSDCA>::Parameter> ( i ) 
-      / static_cast<NcCurve<NCSDCA>::Parameter> ( numParams - 1 );
+		u = static_cast<Parameter> ( i ) 
+      / static_cast<Parameter> ( numParams - 1 );
 		u = firstU + u * diffU;
 
     // Print the span.
@@ -95,8 +101,13 @@ template<NCSDTA, class Vec> void testCurve1 (
   NcCurve<NCSDCA> &c1, 
   NcCurve<NCSDCA> &c2 )
 {
-  NcCurve<NCSDCA>::Parameter knotTol ( SlConstants<NcCurve<NCSDCA>::Parameter>::zero() );
-  NcCurve<NCSDCA>::ControlPoint ctrPtTol ( SlConstants<NcCurve<NCSDCA>::ControlPoint>::zero() );
+  // Typedefs.
+  typedef NcCurve<NCSDCA> Curve;
+  typedef typename Curve::Parameter Parameter;
+  typedef typename Curve::ControlPoint ControlPoint;
+
+  Parameter knotTol ( SlConstants<Parameter>::zero() );
+  ControlPoint ctrPtTol ( SlConstants<ControlPoint>::zero() );
 
   // Print to stdout.
   std::cout << "A01: p1 = " << p1 << std::endl;

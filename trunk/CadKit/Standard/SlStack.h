@@ -9,222 +9,159 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  SlStack: A stack class.
+//  SlStack: A stack class. Some platforms do not have std::stack.
 //
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef _CADKIT_STANDARD_LIBRARY_STACK_H_
 #define _CADKIT_STANDARD_LIBRARY_STACK_H_
 
-#include "SlAssert.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <stack>
-#endif
-
-#if _WIN32 || __sgi
-# define _sequence c
-#elif __GNUC__
-# define _sequence _M_c
-#else
-TODO
-#endif
+#include <list>
 
 
-namespace CadKit
-{
-template<class T> class SlStack : public std::stack<T>
+namespace CadKit {
+
+template
+<
+  class Value,
+  class ErrorPolicy,
+  class Sequence = std::list<Value>
+>
+class SlStack
 {
 public:
 
-  SlStack();
-  ~SlStack();
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Typedefs.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  //  Return the bottom of the stack.
-  T &                     bottom()        { SL_ASSERT ( _sequence.size() > 0 ); return ( _sequence.front() ); }
-  const T &               bottom() const  { SL_ASSERT ( _sequence.size() > 0 ); return ( _sequence.front() ); }
+  typedef typename Sequence::const_iterator const_iterator;
+  typedef typename Sequence::iterator iterator;
+  typedef typename Sequence::value_type value_type;
+  typedef typename Sequence::size_type size_type;
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor and destructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  SlStack(){}
+  ~SlStack(){}
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the number of elements on the stack.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  size_type size() const
+  {
+    return _sequence.size();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Is the stack empty?
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  bool empty() const
+  {
+    return _sequence.empty();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Clear the stack.
-  void                    clear() { _sequence.clear(); }
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  //  Access to the internal deque.
-  const std::deque<T> &   deque() const { return _sequence; }
-  std::deque<T> &         deque()       { return _sequence; }
+  void clear()
+  {
+    // Do this safely, some containers are fussy.
+    if ( !_sequence.empty() )
+      _sequence.erase ( _sequence.begin(), _sequence.end() );
+  }
 
-  //  Is "val" anywhere on the stack?
-  bool                    isOnStack ( const T &val ) const;
 
-  //  Return the i'th element on the stack. 0 is the bottom of the stack.
-  T &                     operator [] ( unsigned int i )       { SL_ASSERT ( i < _sequence.size() ); return _sequence[i]; }
-  const T &               operator [] ( unsigned int i ) const { SL_ASSERT ( i < _sequence.size() ); return _sequence[i]; }
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Iterator access. Ideal stack usage does not require these functions. :)
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  //  Pop the top element off of the stack. This does the same thing as 
-  //  std::stack::pop() with the exception of the assert.
-  void                    pop() { SL_ASSERT ( _sequence.size() > 0 ); _sequence.pop_back(); }
+  const_iterator begin() const { return _sequence.begin(); }
+  iterator       begin()       { return _sequence.begin(); }
+  const_iterator end()   const { return _sequence.end(); }
+  iterator       end()         { return _sequence.end(); }
 
-  //  Push the top element onto the stack one more time. There has to be at 
-  //  least one element already on the stack.
-  void                    push() { SL_ASSERT ( _sequence.size() > 0 ); _sequence.push_back ( _sequence.back() ); }
 
-  //  Push the given element onto the stack. This does the same 
-  //  thing as std::push ( const T &val ) but the above CadKit::SlStack::push() 
-  //  hides the base class's function. This is here to please VC++.
-  void                    push ( const T &val );
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Pop the top element off of the stack.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  //  Remove the first occurance of "val" from the stack, no matter where it 
-  //  is. Return true if "val" was found and removed.
-  bool                    remove ( const T &val );
+  void pop()
+  {
+    _errorPolicy ( !_sequence.empty(), "SlStack::pop(), stack is empty" );
+    _sequence.pop_back();
+  }
 
-  //  Remove all occurances of "val" from the stack, Return the number of 
-  //  times "val" was removed.
-  unsigned int            removeAll ( const T &val );
 
-  //  Return the top of the stack. These do the same thing as std::stack::top() 
-  //  with the exception of the assert.
-  T &                     top();
-  const T &               top() const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Push the given element onto the stack.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void push ( const value_type &val )
+  {
+    _sequence.push_back ( val );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the top of the stack.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  value_type &top()
+  {
+    _errorPolicy ( !_sequence.empty(), "SlStack::top(), stack is empty" );
+    return _sequence.back();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the top of the stack.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const value_type &top() const
+  {
+    _errorPolicy ( !_sequence.empty(), "SlStack::top(), stack is empty" );
+    return _sequence.back();
+  }
+
+
+protected:
+
+  Sequence _sequence;
+  ErrorPolicy _errorPolicy;
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline SlStack<T>::SlStack() : std::stack<T>()
-{
-  // Empty.
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Inline destructor so that the stack will be cleared.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline SlStack<T>::~SlStack()
-{
-  // Clear the list.
-  this->clear();
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Push the given element onto the stack. This does the same 
-//  thing as std::push ( const T &val ) but the above CadKit::SlStack::push() 
-//  hides the base class's function. This is here to please VC++.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlStack<T>::push ( const T &val )
-{
-#ifdef _WIN32
-  _sequence.push_back ( val );
-#else
-  std::stack<T>::push ( val ); // Can't you do this VC++?
-#endif
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Remove "val" from the stack, no matter where it is. Return true if 
-//  "val" was found and removed.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline bool SlStack<T>::remove ( const T &val )
-{
-  for ( std::deque<T>::iterator i = _sequence.begin(); i < _sequence.end(); ++i )
-  {
-    if ( *i == val )
-    {
-      _sequence.erase ( i );
-      return true;
-    }
-  }
-
-  return false;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Remove all occurances of "val" from the stack, Return the number of 
-//  times "val" was removed.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline unsigned int SlStack<T>::removeAll ( const T &val )
-{
-  unsigned int count = 0;
-  std::deque<T>::iterator i = _sequence.begin();
-
-  // See note 3813d8e0-8836-11d3-9843-0040054c86c7.
-
-  while ( i != _sequence.end() )
-  {
-    if ( *i == val )
-    {
-      i = _sequence.erase ( i );
-      ++count;
-    }
-
-    else ++i;
-  }
-
-  return count;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Is it anywhere on the stack?
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline bool SlStack<T>::isOnStack ( const T &val ) const
-{
-  for ( std::deque<T>::const_iterator i = _sequence.begin(); i < _sequence.end(); ++i )
-  {
-    if ( *i == val ) return true;
-  }
-
-  return false;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Return the top of the stack. These do the same thing as std::stack::top() 
-//  with the exception of the assert.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline T &SlStack<T>::top()
-{
-  SL_ASSERT ( _sequence.size() > 0 ); 
-  return ( _sequence.back() );
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-//  Return the top of the stack. These do the same thing as std::stack::top() 
-//  with the exception of the assert.
-//
-//////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &SlStack<T>::top() const
-{
-  SL_ASSERT ( _sequence.size() > 0 );
-  return ( _sequence.back() );
-}
-
-
 }; // namespace CadKit
+
 
 #endif // _CADKIT_STANDARD_LIBRARY_STACK_H_

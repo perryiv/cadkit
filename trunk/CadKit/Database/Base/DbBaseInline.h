@@ -34,7 +34,7 @@ template <class KeyType, class MapType>
 inline const void *find ( const KeyType key, const MapType &theMap )
 {
   // See if it's in our map.
-	MapType::const_iterator i = theMap.find ( key );
+  typename MapType::const_iterator i = theMap.find ( key );
 
   // Return the result (which may be null).
   return ( i != theMap.end() ) ? i->second : NULL;

@@ -93,14 +93,14 @@ template <class StringType> inline bool isNumber ( const StringType &s )
   unsigned int numDigitsFound ( 0 );
 
   // Initialize the start of the string.
-  StringType::const_iterator start = s.begin();
+  typename StringType::const_iterator start = s.begin();
 
   // Increment the start if the first character is a sign.
   if ( '-' == s[0] || '+' == s[0] )
     ++start;
 
   // Loop through the string.
-  for ( StringType::const_iterator i = start; i != s.end(); ++i )
+  for ( typename StringType::const_iterator i = start; i != s.end(); ++i )
   {
     // Get the character.
     c = static_cast<unsigned char> ( *i );
@@ -133,10 +133,9 @@ template <class StringType> inline bool isNumber ( const StringType &s )
       if ( '-' == c || '+' == c )
         ++i;
 
-      // There should be another character. This will catch "123.4e" or 123.4e-"
+      // There should be another character. This will catch "123.4e" or "123.4e-"
       if ( ( i + 1 ) == s.end() )
         return false;
-
     }
 
     // Otherwise, see if it is a digit.
@@ -507,14 +506,14 @@ template<class Char, class String, class Sequence> inline bool split
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class Char, class String> inline void assemble
-  ( const std::list<String> &parts, const Char &delimiter, String &str )
+  ( const std::list<String> &parts, Char delimiter, String &str )
 {
   // Note: do not clear the string. Let the client handle that because he/she
   // may want to call this function more than once with the same string.
 
   // Loop through the list.
   unsigned int count = parts.size();
-  for ( std::list<String>::const_iterator i = parts.begin(); i != parts.end(); ++i )
+  for ( typename std::list<String>::const_iterator i = parts.begin(); i != parts.end(); ++i )
   {
     // Add the string.
     str += *i;

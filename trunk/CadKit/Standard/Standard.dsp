@@ -475,6 +475,10 @@ SOURCE=.\SlPathname.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\SlErrorPolicy.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlTruncateFunctor.h
 # End Source File
 # End Group

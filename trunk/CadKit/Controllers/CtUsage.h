@@ -110,7 +110,7 @@ const char *getLong()
       Print this extended help message.\n\
   \n\
   Note: Geometric transformations happen in the order in which the arguments\n\
-        are parsed. Any arbitrary combinations of transformations are permitted.\n\
+        are parsed. Any arbitrary combination of transformations is permitted.\n\
 ";
 
 //  -ea <action>      What to do if an error is encountered. Possible actions:\n\

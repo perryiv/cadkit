@@ -20,50 +20,9 @@
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
 # include <algorithm> // For std::transform
-# ifndef __CYGWIN__   // CygWin is missing wctype.h
-#  include <wctype.h> // For towupper() and towlower()
-# endif
+# include <ctype.h>   // For towupper() and towlower()
+# include <wctype.h>  // For towupper() and towlower()
 #endif
-
-
-#ifdef __CYGWIN__
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  CygWin is missing towupper(), and wctype.h
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline wint_t towupper ( wint_t theChar )
-{
-  // For readability.
-  const wint_t a ( 97 ), z ( 122 ), offset ( 32 );
-
-  // If the given wide character is in range, return the offset. Otherwise, 
-  // return the given character. This only works for the ascii range.
-  return ( theChar >= a && theChar <= z ) ? ( theChar - offset ) : theChar;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  CygWin is missing towlower(), and wctype.h
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline wint_t towlower ( wint_t theChar )
-{
-  // For readability.
-  const wint_t A ( 65 ), Z ( 90 ), offset ( 32 );
-
-  // If the given wide character is in range, return the offset. Otherwise, 
-  // return the given character. This only works for the ascii range.
-  return ( theChar >= A && theChar <= Z ) ? ( theChar + offset ) : theChar;
-}
-
-
-#endif // __CYGWIN__
 
 
 namespace CadKit

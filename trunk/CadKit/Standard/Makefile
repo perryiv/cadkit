@@ -3,6 +3,7 @@ include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
+	SlType.cpp \
   SlBase.cpp \
   SlPrecompiled.cpp \
   SlPreComputedArrays.cpp \

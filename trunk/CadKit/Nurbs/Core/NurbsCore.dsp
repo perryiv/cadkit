@@ -146,6 +146,10 @@ SOURCE=.\NcAlgorithm.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\NcBasisFunctions.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NcFindSpan.h
 # End Source File
 # End Group

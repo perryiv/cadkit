@@ -22,8 +22,9 @@ using namespace OsgTools;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShapeFactory::ShapeFactory() :
-  _latLongSpheres()
+ShapeFactory::ShapeFactory() : BaseClass(),
+  _latLongSpheres(),
+  _cubes()
 {
 }
 
@@ -36,6 +37,98 @@ ShapeFactory::ShapeFactory() :
 
 ShapeFactory::~ShapeFactory()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the internal maps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ShapeFactory::clear()
+{
+  _latLongSpheres.clear();
+  _cubes.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a cube. If one was already created with these inputs, then that 
+//  same cube is returned.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry *ShapeFactory::cube ( const osg::Vec3 &size )
+{
+  // See if we have this one already...
+  Cubes::iterator iter = _cubes.find ( size );
+  if ( _cubes.end() != iter )
+    return iter->second.get();
+
+  // Otherwise, make the new sphere...
+  // Half lengths
+  const float hw ( 0.5f * size[0] );
+  const float hh ( 0.5f * size[1] );
+  const float hd ( 0.5f * size[2] );
+
+  // Vertices and normals.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+
+  // Front face
+  vertices->push_back ( osg::Vec3 ( -hw, -hh,  hd ) );
+  vertices->push_back ( osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw,  hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 0, 1 ) );
+
+  // Back face
+  vertices->push_back ( osg::Vec3 (  hw, -hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( osg::Vec3 (  hw,  hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 0, -1 ) );
+
+  // Top face
+  vertices->push_back ( osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( osg::Vec3 (  hw,  hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw,  hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 1, 0 ) );
+
+  // Bottom face
+  vertices->push_back ( osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw, -hh,  hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( osg::Vec3 (  hw, -hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, -1, 0 ) );
+
+  // Left face
+  vertices->push_back ( osg::Vec3 ( -hw,  hh,  hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( osg::Vec3 ( -hw, -hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( -1, 0, 0 ) );
+
+  // Right face
+  vertices->push_back ( osg::Vec3 (  hw,  hh, -hd ) );
+  vertices->push_back ( osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( osg::Vec3 (  hw, -hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 1, 0, 0 ) );
+
+  // Make a new geometry and add the vertices and normals.
+  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
+
+  // Save this geometry in our collection and return it.
+  _cubes[size] = geometry;
+  return geometry.get();
 }
 
 

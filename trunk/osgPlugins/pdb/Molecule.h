@@ -63,7 +63,7 @@ private:
   unsigned int _stepFactor;
   float _lodDistancePower;
   MaterialChooser *_materialChooser;
-  mutable SphereFactory::RefPtr _sphereFactory;
+  mutable SphereFactory::Ptr _sphereFactory;
   mutable CylinderFactory::Ptr _cylinderFactory;
   unsigned int _minNumSegsLat;
   unsigned int _maxNumSegsLat;

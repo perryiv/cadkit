@@ -156,6 +156,7 @@ bool FileDialog::runModal ( FX::FXWindow *owner )
   dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::CONFIRM_FILE_EXISTS  ) ) ? ( OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST ) : 0;
   dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::HIDE_READ_ONLY       ) ) ?   OFN_READONLY                            : 0;
   dialog.Flags |= ( Usul::Bits::has ( _flags, FileDialog::ALLOW_MULTIPLE_FILES ) ) ?   OFN_ALLOWMULTISELECT                    : 0;
+  dialog.Flags |= ( FileDialog::SAVE == _type )                                    ?   OFN_OVERWRITEPROMPT                     : 0;
 
   // Set the function to call.
   typedef BOOL APIENTRY Function ( LPOPENFILENAME lpofn );

@@ -84,7 +84,7 @@ private:
   Molecules _molecules; 
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
-  SphereFactory::RefPtr _sphereFactory;
+  SphereFactory::Ptr _sphereFactory;
   CylinderFactory::Ptr _cylinderFactory;
   PeriodicTable _periodicTable;
   unsigned int _flags;

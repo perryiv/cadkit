@@ -169,9 +169,8 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
   //std::string psfPath = _getPsfPath( file );
   //std::ifstream psf( psfPath.c_str());
 
-  
   // Parse all the file and build internal data.
-  this->_parse ( in, Usul::File::size( file ) );
+  this->_parse ( in, Usul::File::size ( file ) );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );

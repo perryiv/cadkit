@@ -209,8 +209,8 @@ bool SgGetRayIntersection::visit ( SgCube &cube )
   ray.normalize();
 
   // Calculate the bounding box.
-  float halfSize = cube.size * 0.5f;
-  const SlVec3f &center = cube.center;
+  float halfSize = cube.getSize() * 0.5f;
+  const SlVec3f &center = cube.getCenter();
   SlVec3f min ( center[0] - halfSize, center[1] - halfSize, center[2] - halfSize );
   SlVec3f max ( center[0] + halfSize, center[1] + halfSize, center[2] + halfSize );
   SlBoundingBoxf bbox ( min, max );

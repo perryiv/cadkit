@@ -23,6 +23,7 @@
 # include "SceneGraph/Core/SgAllNodes.h"
 # include "Standard/SlViewport.h"
 # include "Standard/SlPrint.h"
+# include "Standard/SlTrace.h"
 # include "Standard/SlBoundingBox.h"
 # include "Standard/SlPreComputedArrays.h"
 # include "Standard/SlConstants.h"
@@ -637,13 +638,15 @@ bool SgGlRenderer::visit ( SgCube &cube )
   SL_ASSERT ( this );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  float halfSize ( cube.size * 0.5f );
-  float a ( cube.center[0] - halfSize );
-  float b ( cube.center[0] + halfSize );
-  float c ( cube.center[1] - halfSize );
-  float d ( cube.center[1] + halfSize );
-  float e ( cube.center[2] + halfSize );
-  float f ( cube.center[2] - halfSize );
+  float halfSize ( cube.getSize() * 0.5f );
+  const SlVec3f &center = cube.getCenter();
+
+  float a ( center[0] - halfSize );
+  float b ( center[0] + halfSize );
+  float c ( center[1] - halfSize );
+  float d ( center[1] + halfSize );
+  float e ( center[2] + halfSize );
+  float f ( center[2] - halfSize );
 
   // I thought about making this tri-strips or perhaps individual triangles,
   // but this way there are fewer calls to glVertex().
@@ -691,7 +694,6 @@ bool SgGlRenderer::visit ( SgCube &cube )
 #ifdef _DEBUG
 
   // Draw the bounding box in global space.
-  const SlVec3f &center = cube.center;
   float hs = halfSize;
   SlVec3f min ( center[0] - hs, center[1] - hs, center[2] - hs );
   SlVec3f max ( center[0] + hs, center[1] + hs, center[2] + hs );
@@ -854,34 +856,6 @@ bool SgGlRenderer::visit ( SgEllipse & )
 {
   SL_ASSERT ( this );
   SL_ASSERT ( 0 ); return true; // TODO.
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit this kind of node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SgGlRenderer::visit ( SgGroup &group )
-{
-  SL_ASSERT ( this );
-
-  // Get the number of children.
-  int numChildren = group.getNumChildren();
-
-  // Loop through all the nodes.
-  for ( int i = 0; i < numChildren; ++i )
-  {
-    // Give the node this visitor.
-    if ( false == group.getChild ( i )->accept ( *this ) ) 
-    {
-      SL_ASSERT ( 0 ); // Why didn't it render?
-      return false;
-    }
-  }
-
-  return true;
 }
 
 
@@ -1173,21 +1147,11 @@ bool SgGlRenderer::visit ( SgSeparator &separator )
   this->_pushMatrices ( separator );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  // Get the number of children.
-  int numChildren = separator.getNumChildren();
-
-  // Loop through all the nodes.
-  for ( int i = 0; i < numChildren; ++i )
+  // Pass this to the group function.
+  if ( false == this->visit ( (SgGroup &) separator ) )
   {
-    // Give the node this visitor.
-    if ( !separator.getChild ( i )->accept ( *this ) ) 
-    {
-      SL_ASSERT ( 0 ); // Why didn't it render?
-      return false;
-    }
-
-    // Should be true.
-    SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+    SL_ASSERT ( 0 ); // Why didn't it render?
+    return false;
   }
 
   // Pop everything we pushed.
@@ -1196,6 +1160,47 @@ bool SgGlRenderer::visit ( SgSeparator &separator )
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit this kind of node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SgGlRenderer::visit ( SgGroup &group )
+{
+  SL_ASSERT ( this );
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Used below.
+  SgNode *child = NULL;
+
+  // Get the number of children.
+  int numChildren = group.getNumChildren();
+
+  // Loop through all the nodes.
+  for ( int i = 0; i < numChildren; ++i )
+  {
+    // Get the child.
+    child = group.getChild ( i );
+
+    // Give the child this visitor.
+    if ( false == child->accept ( *this ) ) 
+    {
+      SL_ASSERT ( 0 ); // Why didn't it render?
+      return false;
+    }
+
+    // Should be true.
+    SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+    // How long did it take?
+    //SL_TRACE ( "node = %X, name = %s, type = %s, time = %d\n", child, ( ( NULL != child->getName() ) ? child->getName() : "" ), child->getClassName(), child->getRenderTime() );
+  }
+
   return true;
 }
 

@@ -32,8 +32,8 @@ SG_IMPLEMENT_DYNAMIC_NODE(SgCube,SgPrimitive);
 /////////////////////////////////////////////////////////////////////////////
 
 SgCube::SgCube() : SgPrimitive(),
-  center ( 0.0, 0.0, 0.0 ),
-  size ( 1.0f )
+  _center ( 0.0, 0.0, 0.0 ),
+  _size ( 1.0f )
 {
   SL_PRINT2 ( "SgCube::SgCube(), this = %X\n", this );
 }
@@ -45,9 +45,23 @@ SgCube::SgCube() : SgPrimitive(),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgCube::SgCube ( const SlVec3f &c, const SlFloat32 &s ) : SgPrimitive(),
-  center ( c ),
-  size ( s )
+SgCube::SgCube ( const SlVec3f &center, const SlFloat32 &size ) : SgPrimitive(),
+  _center ( center ),
+  _size ( size )
+{
+  SL_PRINT2 ( "SgCube::SgCube(), this = %X\n", this );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Copy constructor.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+SgCube::SgCube ( const SgCube &cube ) : SgPrimitive(),
+  _center ( cube._center ),
+  _size ( cube._size )
 {
   SL_PRINT2 ( "SgCube::SgCube(), this = %X\n", this );
 }

@@ -315,7 +315,7 @@ template <class Stack, class Node> inline void _popNode ( SgVisitor &visitor, St
   SlRefPtr<Node> topNode = stack.top();
 
   // Pop the top node. This will unreference it. Since we have already 
-  // referenced the node above with the re-pointer catch, this will not 
+  // referenced the node above with the ref-pointer catch, this will not 
   // delete the node.
   stack.pop();
 

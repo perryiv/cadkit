@@ -52,7 +52,7 @@ public:
   bool                  isDisabled ( const unsigned int &flag );
 
   // Modelview matrix.
-  const SlMatrix44f &    getModelviewMatrix() const;
+  const SlMatrix44f &   getModelviewMatrix() const;
   unsigned long         getModelviewMatrixStackDepth() const;
   void                  initModelviewMatrixStack();
   void                  makeModelviewMatrixIdentity();
@@ -62,7 +62,7 @@ public:
   void                  setModelviewMatrix ( const SlMatrix44f &M );
 
   // Projection matrix.
-  const SlMatrix44f &    getProjectionMatrix() const;
+  const SlMatrix44f &   getProjectionMatrix() const;
   unsigned long         getProjectionMatrixStackDepth() const;
   void                  initProjectionMatrixStack();
   void                  makeProjectionMatrixIdentity();

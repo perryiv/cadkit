@@ -61,7 +61,7 @@ public:
   // Make the matrix identity.
   void                    identity();
 
-  // Perform an LU decomposition.
+  // Perform an in-place LU decomposition.
   void                    ludecomp();
 
   // Typecast operators.
@@ -388,6 +388,7 @@ template<class T, class I> inline void SlMatrixNN<T,I>::_factorDiagonal ( const 
 {
   I j, k;
   T alpha;
+  const T CONST_0 ( SlConstants<T>::zero() );
 
   for ( k = 0; k < bsize; ++k )
   {
@@ -395,7 +396,7 @@ template<class T, class I> inline void SlMatrixNN<T,I>::_factorDiagonal ( const 
     for ( j = k+1; j < bsize; ++j )
     {
       // Should not divide by zero.
-      SL_ASSERT ( a[_size*k+k] != 0.0 );
+      SL_ASSERT ( CONST_0 != a[_size*k+k] );
 
       a[_size*j+k] /= a[_size*k+k];
 
@@ -441,13 +442,14 @@ template<class T, class I> inline void SlMatrixNN<T,I>::_modifyRow ( const I &bs
 {
   I j, k;
   T alpha;
+  const T CONST_0 ( SlConstants<T>::zero() );
 
   for ( k = 0; k < bsize; ++k )
   {
     for ( j = 0; j < bsize; ++j )
     {
       // Should not divide by zero.
-      SL_ASSERT ( diag[_size*k+k] != 0.0 );
+      SL_ASSERT ( diag[_size*k+k] != CONST_0 );
 
       a[_size*j+k] /= diag[_size*k+k];
 
@@ -485,7 +487,7 @@ template<class T, class I> inline void SlMatrixNN<T,I>::_modifyRowColumn ( const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the LU Decomposition.
+//  Perform an in-place LU decomposition.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -530,12 +532,12 @@ template<class T, class I> inline void SlMatrixNN<T,I>::forwardBackward ( T *b )
 
   I i, j;
   T sum;
+  const T CONST_0 ( SlConstants<T>::zero() );
 
-  // Forward substitution.
-
+  // Forward reduction.
   for ( i = 0; i < _size; ++i )
   {
-    sum = 0.0;
+    sum = CONST_0;
 
     for ( j = 0; j < i; ++j )
       sum += _m[_size*i+j]*b[j];
@@ -544,10 +546,9 @@ template<class T, class I> inline void SlMatrixNN<T,I>::forwardBackward ( T *b )
   }
 
   // Backward substitution.
-
   for ( i = _size-1; i >= 0; i-- )
   {
-    sum = 0.0;
+    sum = CONST_0;
 
     for ( j = _size-1; j > i; j-- )
       sum += _m[_size*i+j]*b[j];
@@ -555,7 +556,7 @@ template<class T, class I> inline void SlMatrixNN<T,I>::forwardBackward ( T *b )
     b[i] -= sum;
 
     // Do not divide by zero.
-    SL_ASSERT ( _m[_size*i+i] != 0.0 );
+    SL_ASSERT ( CONST_0 != _m[_size*i+i] );
 
     b[i] /= _m[_size*i+i];
 

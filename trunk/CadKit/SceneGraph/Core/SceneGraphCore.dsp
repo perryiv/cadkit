@@ -72,6 +72,7 @@ LINK32=link.exe
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgPrecompiled.h" /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /D "_USRDLL" /D "_MBCS" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY" /YX"SgPrecompiled.h" /FD /GZ /Zm200 /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -321,6 +322,14 @@ SOURCE=.\SgGroup.cpp
 # Begin Source File
 
 SOURCE=.\SgGroup.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SgLevelOfDetail.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SgLevelOfDetail.h
 # End Source File
 # Begin Source File
 

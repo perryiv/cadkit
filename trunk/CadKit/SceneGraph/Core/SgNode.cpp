@@ -71,7 +71,8 @@ SgNode::SgNode() : SlRefBase ( INITIAL_REF_COUNT ),
   _flags ( SgNode::ACCEPT_VISITORS ),
   _reservedData ( 0 ),
   _clientData ( 0 ),
-  _name ( NULL )
+  _name ( NULL ),
+  _renderTime ( 0 )
 {
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
@@ -91,7 +92,8 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
   _flags ( node._flags ),
   _reservedData ( node._reservedData ), 
   _clientData ( node._clientData ),
-  _name ( NULL )
+  _name ( NULL ),
+  _renderTime ( node._renderTime )
 {
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG

@@ -431,6 +431,10 @@ SOURCE=.\SlArrayPtr.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlAutoPtr.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlQueryPtr.h
 # End Source File
 # Begin Source File

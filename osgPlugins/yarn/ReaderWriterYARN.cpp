@@ -120,7 +120,7 @@ osg::Group *ReaderWriterYARN::_build() const
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
   // Random number generator.
-  Random<float> rd ( 0.0f, 1.0f );
+  Usul::Adaptors::Random<float> rd ( 0.0f, 1.0f );
 
   // Colors used below.
   osg::Vec4 emissive ( 0.0f, 0.0f, 0.0f, 1.0f );

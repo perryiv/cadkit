@@ -291,7 +291,7 @@ osg::LOD *ReaderWriterPDB::_makeBond (const Bond &bond ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::LOD *ReaderWriterPDB::_makeAtom (const Atom &atom ) const
+osg::LOD *ReaderWriterPDB::_makeAtom ( const Atom &atom ) const
 {
   // The lod holding the various representations.
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
@@ -310,9 +310,15 @@ osg::LOD *ReaderWriterPDB::_makeAtom (const Atom &atom ) const
   lod->setName ( atom.toString() );
 
   // Add several spheres.
-  lod->addChild ( this->_makeSphere ( center, radius, 1.0f  ) );
-  lod->addChild ( this->_makeSphere ( center, radius, 0.25f ) );
-  lod->addChild ( this->_makeCube   ( center, radius ) );
+  unsigned int numChildren ( 5 );
+  for ( unsigned int i = 0; i < numChildren - 1; ++i )
+  {
+    float detail ( 1.0f - (float) i / ( numChildren - 1 ) );
+    lod->addChild ( this->_makeSphere ( center, radius, detail ) );
+  }
+
+  // Last child is a cube.
+  lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
 
   // Set the centers and ranges.
   this->_setCentersAndRanges ( lod.get() );

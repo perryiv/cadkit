@@ -140,9 +140,9 @@ bool DbOsgDatabase::storeData ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::startNotify ( AssemblyHandle assembly, IUnknown *caller )
+bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 
@@ -184,9 +184,9 @@ bool DbOsgDatabase::startNotify ( AssemblyHandle assembly, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::endNotify ( AssemblyHandle assembly, IUnknown *caller )
+bool DbOsgDatabase::endEntity ( AssemblyHandle assembly, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groups->empty() );
 
@@ -204,9 +204,9 @@ bool DbOsgDatabase::endNotify ( AssemblyHandle assembly, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::startNotify ( PartHandle part, IUnknown *caller )
+bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 
@@ -221,9 +221,9 @@ bool DbOsgDatabase::startNotify ( PartHandle part, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::endNotify ( PartHandle part, IUnknown *caller )
+bool DbOsgDatabase::endEntity ( PartHandle part, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, part = %X, caller = %X\n", this, part, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 
@@ -238,9 +238,9 @@ bool DbOsgDatabase::endNotify ( PartHandle part, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::startNotify ( InstanceHandle instance, IUnknown *caller )
+bool DbOsgDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::startNotify(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 
@@ -255,9 +255,9 @@ bool DbOsgDatabase::startNotify ( InstanceHandle instance, IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::endNotify ( InstanceHandle instance, IUnknown *caller )
+bool DbOsgDatabase::endEntity ( InstanceHandle instance, IUnknown *caller )
 {
-  SL_PRINT4 ( "In DbOsgDatabase::endNotify(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
+  SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, instance = %X, caller = %X\n", this, instance, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( _root );
 

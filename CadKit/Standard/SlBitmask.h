@@ -113,7 +113,7 @@ template<class N, class B> inline N toggleBits ( const N &number, const B &bits 
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  Nifty macro used to declare bitmask handeling members functions.
+//  Nifty macro used to declare bitmask handling members functions.
 //  Put this in your class declaration.
 //
 //////////////////////////////////////////////////////////////////////////

@@ -23,19 +23,18 @@
 
 namespace CadKit
 {
-
 // Common handles.
 CADKIT_DECLARE_HANDLE ( AssemblyHandle );
 CADKIT_DECLARE_HANDLE ( PartHandle );
 CADKIT_DECLARE_HANDLE ( InstanceHandle );
+CADKIT_DECLARE_HANDLE ( HierarchyHandle );
 CADKIT_DECLARE_HANDLE ( MaterialHandle );
 CADKIT_DECLARE_HANDLE ( TransformHandle );
 CADKIT_DECLARE_HANDLE ( TextureHandle );
 CADKIT_DECLARE_HANDLE ( LevelOfDetailHandle );
 CADKIT_DECLARE_HANDLE ( ShapeHandle );
-
+CADKIT_DECLARE_HANDLE ( GroupHandle );
 
 }; // namespace CadKit
-
 
 #endif // _CADKIT_INTERFACE_HANDLES_H_

@@ -17,16 +17,15 @@
 #include "DbJtDatabase.h"
 #include "DbJtInline.h"
 
+#include "Interfaces/IEntityNotify.h"
+#include "Interfaces/IWarningNotify.h"
+#include "Interfaces/IProgressNotify.h"
+
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlStringFunctions.h"
-#include "Standard/SlQueryPtr.h"
 #include "Standard/SlMessageIds.h"
-
-#include "Interfaces/IErrorNotify.h"
-#include "Interfaces/IWarningNotify.h"
-#include "Interfaces/IProgressNotify.h"
-#include "Interfaces/IEntityNotify.h"
+#include "Standard/SlQueryPtr.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -38,10 +37,12 @@ namespace CadKit { DbJtDatabase *_traverser = NULL; }
 
 // To help shorted up the lines.
 #undef  ERROR
-#define ERROR    this->_notifyError
-#define PROGRESS this->_notifyProgress
-#define WARNING  this->_notifyWarning
-#define FORMAT   CadKit::getString
+#define ERROR         this->_notifyError
+#define PROGRESS      this->_notifyProgress
+#define WARNING       this->_notifyWarning
+#define FORMAT        CadKit::getString
+#define UNKNOWN(ptr)  SlRefPtr<CadKit::IUnknown> ( ptr ? ptr->queryInterface ( CadKit::IUnknown::IID ) : NULL )
+#define THIS_UNKNOWN  UNKNOWN ( this )
 
 using namespace CadKit;
 
@@ -478,18 +479,18 @@ bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *enti
   if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", level, entity->name() ) ) )
     return false;
 
-  // Get the controller's error handeling interface.
+  // Get the controller's error handling interface.
   SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
 
   // Try this interface.
-  SlQueryPtr<IAssemblyNotify> assembly ( IAssemblyNotify::IID, _target );
-  if ( assembly.isValid() )
-    return CadKit::handleEntity ( assembly, (AssemblyHandle) entity, controller );
+  SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
+  if ( assemblyNotify.isValid() )
+    return CadKit::handleEntityStart ( assemblyNotify.getValue(), (AssemblyHandle) entity, THIS_UNKNOWN, controller );
 
   // Try this interface.
-  SlQueryPtr<IGroupNotify> group ( IGroupNotify::IID, _target );
-  if ( group.isValid() )
-    return CadKit::handleEntity ( group, (GroupHandle) entity, controller );
+  SlQueryPtr<IGroupNotify> groupNotify ( IGroupNotify::IID, _target );
+  if ( groupNotify.isValid() )
+    return CadKit::handleEntityStart ( groupNotify.getValue(), (GroupHandle) entity, THIS_UNKNOWN, controller );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
@@ -507,32 +508,18 @@ bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity
 {
   SL_PRINT3 ( "In DbJtDatabase::_endAssembly(), entity = %X, level = %d\n", entity, level );
 
-  // Needed below.
-  SlRefPtr<CadKit::IUnknown> thisUnknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
+  // Get the controller's error handling interface.
+  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
 
-  // See if the target has the assembly interface.
-  SlQueryPtr<IAssemblyNotify> assembly ( IAssemblyNotify::IID, _target );
-  if ( assembly.isValid() )
-  {
-    // Let the target know we have a new assembly.
-    if ( false == assembly->endAssembly ( (AssemblyHandle) entity, thisUnknown ) )
-      return ERROR ( FORMAT ( "Failed to end assembly '%s' at level %d\n\tCall to IAssemblyNotify::endAssembly() returned false", entity->name(), level ), 0 );
+  // Try this interface.
+  SlQueryPtr<IAssemblyNotify> assemblyNotify ( IAssemblyNotify::IID, _target );
+  if ( assemblyNotify.isValid() )
+    return CadKit::handleEntityEnd ( assemblyNotify.getValue(), (AssemblyHandle) entity, THIS_UNKNOWN, controller );
 
-    // It worked.
-    return true;
-  }
-
-  // Try a group interface next.
-  SlQueryPtr<IGroupNotify> group ( IGroupNotify::IID, _target );
-  if ( group.isValid() )
-  {
-    // Let the target know we have a new group.
-    if ( false == group->endGroup ( thisUnknown ) )
-      return ERROR ( FORMAT ( "Failed to end group '%s' at level %d\n\tCall to IGroupNotify::endGroup() returned false", entity->name(), level ), 0 );
-
-    // It worked.
-    return true;
-  }
+  // Try this interface.
+  SlQueryPtr<IGroupNotify> groupNotify ( IGroupNotify::IID, _target );
+  if ( groupNotify.isValid() )
+    return CadKit::handleEntityEnd ( groupNotify.getValue(), (GroupHandle) entity, THIS_UNKNOWN, controller );
 
   // If we get here then we couldn't find an appropriate interface.
   // We let the target decide whether or not to continue.
@@ -870,6 +857,38 @@ std::string DbJtDatabase::getName ( AssemblyHandle assembly ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DbJtDatabase::getName ( PartHandle part ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, part = %X\n", this, part );
+  SL_ASSERT ( part );
+
+  // Call the template function.
+  return CadKit::getName ( part );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DbJtDatabase::getName ( InstanceHandle instance ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getName(), this = %X, instance = %X\n", this, instance );
+  SL_ASSERT ( instance );
+
+  // Call the template function.
+  return CadKit::getName ( instance );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the transformation matrix.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -881,4 +900,56 @@ bool DbJtDatabase::getTransform ( AssemblyHandle assembly, float matrix[16] ) co
 
   // Call the template function.
   return CadKit::getTransform ( assembly, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( PartHandle part, float matrix[16] ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, part = %X\n", this, part );
+  SL_ASSERT ( part );
+
+  // Call the template function.
+  return CadKit::getTransform ( part, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transformation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTransform ( InstanceHandle instance, float matrix[16] ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getTransform(), this = %X, instance = %X\n", this, instance );
+  SL_ASSERT ( instance );
+
+  // Call the template function.
+  return CadKit::getTransform ( instance, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the corresponding part or assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+HierarchyHandle DbJtDatabase::getCorresponding ( InstanceHandle instance ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getCorrespondingPart(), this = %X, instance = %X\n", this, instance );
+  SL_ASSERT ( instance );
+
+  // It has to be an instance.
+  if ( eaiEntity::eaiINSTANCE != ((eaiEntity *) instance)->typeID() )
+    return NULL;
+
+  // Return a pointer to the original part or assembly (which may be null).
+  return (HierarchyHandle) ((eaiInstance *) instance)->original();
 }

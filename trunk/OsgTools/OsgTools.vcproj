@@ -225,6 +225,9 @@
 					RelativePath="Convert.h">
 				</File>
 				<File
+					RelativePath=".\Dimension.h">
+				</File>
+				<File
 					RelativePath=".\FlipNormals.h">
 				</File>
 				<File
@@ -259,6 +262,12 @@
 				</File>
 				<File
 					RelativePath=".\MaterialSetter.h">
+				</File>
+				<File
+					RelativePath=".\Sample.cpp">
+				</File>
+				<File
+					RelativePath=".\Sample.h">
 				</File>
 				<File
 					RelativePath=".\State.cpp">

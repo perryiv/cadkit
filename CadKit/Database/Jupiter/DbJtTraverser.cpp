@@ -171,13 +171,47 @@ bool DbJtTraverser::init()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Query interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+IUnknown *DbJtTraverser::queryInterface ( const unsigned long &iid )
+{
+  SL_PRINT2 ( "In DbJtTraverser::queryInterface(), this = %X\n", this );
+
+  switch ( iid )
+  {
+  case IID_IError:
+    return static_cast<IError *>(this);
+  default:
+    return NULL;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Report an error.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtTraverser::errorNotify ( const std::string &error ) const
+{
+  SL_PRINT2 ( "In DbJtTraverser::errorNotify(), this = %X\n", this );
+
+  return true; // TODO.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the client's callback.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void DbJtTraverser::setCallback ( DbJtTraverserCB *callback, const void *clientData )
 {
-  SL_PRINT2 ( "In DbJtTraverser::~DbJtTraverser(), this = %X\n", this );
+  SL_PRINT2 ( "In DbJtTraverser::setCallback(), this = %X\n", this );
   _clientCallback = callback;
   _clientData = clientData;
 }

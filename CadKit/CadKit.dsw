@@ -156,6 +156,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "Interfaces"=.\Interfaces\Interfaces.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "SceneGraphCore"=.\SceneGraph\Core\SceneGraphCore.dsp - Package Owner=<4>
 
 Package=<5>

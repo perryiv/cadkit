@@ -56,6 +56,10 @@ public:
   void                    setFlags ( unsigned int flags, bool state );
   void                    removeFlags ( unsigned int flags );
 
+  void                    parse ( std::ifstream &in ) { _parse ( in ); }
+
+  osg::Group*             build() const { return _build(); }
+
 protected:
 
   osg::Group *            _build() const;
@@ -69,7 +73,7 @@ protected:
 
   std::string             _getPsfPath ( const std::string &file);
 
-  void                    _parse ( std::ifstream &in, std::ifstream &psf );
+  void                    _parse ( std::ifstream &in /*, std::ifstream &psf */);
   void                    _parsePsf ( std::ifstream &in );
 
   Result                  _read ( const std::string &, const Options * );

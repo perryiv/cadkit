@@ -189,7 +189,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   std::ifstream psf( psfPath.c_str());
   
   // Parse all the file and build internal data.
-  this->_parse ( in, psf );
+  this->_parse ( in /*, psf*/ );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
@@ -232,7 +232,7 @@ osg::Group *ReaderWriterPDB::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
+void ReaderWriterPDB::_parse ( std::ifstream &in /*, std::ifstream &psf*/ )
 {
   clock_t start, finish; // used by clock()
 	double total_second;
@@ -308,8 +308,8 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, std::ifstream &psf )
 	  }*/
   }
 
-  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )
-    this->_parsePsf ( psf );
+//  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )
+//    this->_parsePsf ( psf );
 
   
 	finish = clock();   // end of the computation; record the time

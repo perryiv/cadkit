@@ -224,6 +224,9 @@
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.h">
 			</File>
 			<File
+				RelativePath=".\Residue.h">
+			</File>
+			<File
 				RelativePath=".\SphereFactory.cpp">
 			</File>
 			<File

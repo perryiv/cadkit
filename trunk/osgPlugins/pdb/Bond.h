@@ -25,7 +25,7 @@
 
 class Atom;
 
-
+//TODO inherit from osg::Referenced?
 class Bond 
 {
 public:

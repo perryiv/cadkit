@@ -110,6 +110,8 @@ Factory::Factory() : _map()
   POPULATE ( gif, GIF, RED_X );
   POPULATE ( gif, GIF, WRITING );
   POPULATE ( gif, GIF, XYZ );
+  POPULATE ( gif, GIF, SMALL_DOT );
+  POPULATE ( gif, GIF, WRITE );
   POPULATE ( bmp, BMP, SET_HOME );
 }
 

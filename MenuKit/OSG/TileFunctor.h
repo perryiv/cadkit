@@ -6,6 +6,7 @@
 #ifndef _menukit_osg_tilefunctor_h_
 #define _menukit_osg_tilefunctor_h_
 
+#include "MenuKit/Referenced.h"  // for base class
 #include "MenuKit/Box.h"
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -29,26 +30,14 @@ namespace MenuKit
       * the DisplayMode enumeration and Box class members are
       * both template requirements.
       */
-    class TileFunctor
+    class TileFunctor : public Referenced
     {
     public:
+      typedef Referenced base_class;
+      MENUKIT_DECLARE_POINTER( TileFunctor );
       enum DisplayMode { DISABLED, HIGHLIGHT, NORMAL };
 
-      TileFunctor(): _box(1.0,0.0), _mode(NORMAL)
-      {}
-
-      TileFunctor(const TileFunctor& b): _box(b._box), _mode(b._mode)
-      {}
-
-      virtual ~TileFunctor()
-      {}
-
-      TileFunctor& operator = (const TileFunctor& btf)
-      {
-        _box = btf._box;
-        _mode = btf._mode;
-        return( *this );
-      }
+      TileFunctor(): _box(1.0,0.0), _mode(NORMAL) {}
 
       virtual float height(const Menu&)=0;
       virtual float height(const Button&)=0;
@@ -66,10 +55,24 @@ namespace MenuKit
       const Detail::Box& box() const { return _box; }
       Detail::Box& box() { return _box; }
 
-      void mode(DisplayMode d) { _mode = d; }
-      DisplayMode mode() const { return _mode; }
+      void display_mode(DisplayMode d) { _mode = d; }
+      DisplayMode display_mode() const { return _mode; }
+
+    protected:
+      virtual ~TileFunctor() {}
 
     private:
+      ///\todo TODO: evaluate if this class is copyable
+      // not implemented by design
+      TileFunctor(const TileFunctor& b);//: _box(b._box), _mode(b._mode) {}
+
+      TileFunctor& operator = (const TileFunctor& btf);
+      //{
+      //  _box = btf._box;
+      //  _mode = btf._mode;
+      //  return( *this );
+      //}
+
       Detail::Box _box;
       DisplayMode _mode;
     };

@@ -21,51 +21,52 @@ namespace MenuKit
       * is still meant to be extended by implementing      
       * the 'width' and 'height' memeber functions.
       */
-    template<class ThemeType>
+    template<typename ThemeMap>
     class ThemeTile : public TileFunctor
     {
     public:
-      typedef TileFunctor BaseClass;
-      typedef std::map<BaseClass::DisplayMode,ThemeType> ThemeMap;
+      typedef TileFunctor base_class;
+      typedef ThemeMap theme_type;
+      typedef ThemeTile<theme_type> thisclass;
+      MENUKIT_DECLARE_POINTER ( thisclass );
 
-      ThemeTile(): BaseClass(), _thememap()
+      typedef std::map<typename base_class::DisplayMode,theme_type> DisplayModeThemeMap;
+
+      ThemeTile(): base_class(), _thememap()
       {
-        ThemeType simple;
-        _thememap[BaseClass::DISABLED] = simple;
-        _thememap[BaseClass::HIGHLIGHT] = simple;
-        _thememap[BaseClass::NORMAL] = simple;
       }
 
-      ThemeTile(const ThemeTile& tt): BaseClass(tt), _thememap(tt._thememap)
-      {}
+      void theme_map(const DisplayModeThemeMap& t) { _thememap = t; }
+      const DisplayModeThemeMap& theme_map() const { return _thememap; }
+      DisplayModeThemeMap& theme_map() { return _thememap; }
 
-      ThemeTile& operator= (const ThemeTile& tt)
-      {
-        BaseClass::operator=(tt);
-        _thememap = tt._thememap;
-      }
-
+    protected:
       virtual ~ThemeTile() {}
 
-      virtual const ThemeType& proper_theme() const
+      virtual const theme_type& _proper_theme() const
       {
-        BaseClass::DisplayMode m = this->mode();
-        ThemeMap::const_iterator iter = _thememap.find( m );
-
-        if( iter == _thememap.end() ) /// TODO: use Perry's exception code here
+        DisplayModeThemeMap::const_iterator iter( _thememap.find(display_mode()) );
+        if( iter == _thememap.end() ) ///\todo TODO: use Perry's exception code here
           assert( 0 );
-
         return iter->second;
       }
 
-      void theme_map(const ThemeMap& t) { _thememap = t; }
-      const ThemeMap& theme_map() const { return _thememap; }
-
     private:
-      ThemeMap _thememap;
+
+      ///\todo TODO: evaluate if this class is copyable
+      // not implemented by design
+      ThemeTile(const ThemeTile& tt);//: base_class(tt), _thememap(tt._thememap)
+      //{}
+
+      ThemeTile& operator= (const ThemeTile& tt);
+      //{
+      //  base_class::operator=(tt);
+      //  _thememap = tt._thememap;
+      //}
+
+      DisplayModeThemeMap _thememap;
     };
 
-    typedef ThemeTile<osg::Vec4> osgThemeTile;
   };
 
 };

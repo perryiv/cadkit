@@ -54,6 +54,7 @@
 # include "Standard/SlVec4.h"
 # include "Standard/SlVec3.h"
 # include "Standard/SlVec2.h"
+# include "Standard/SlBitmask.h"
 # include <vector>
 #endif
 
@@ -68,6 +69,13 @@ class DB_JT_API DbJtTraverser : public SlRefBase
 {
 public:
 
+  // Possible flags.
+  enum
+  {
+    VERBOSE = (1<<0L) // Print progress and errors to stdout. Default is off.
+  };
+
+  // Possible messages.
   enum Message
   {
     IMPORT_START,
@@ -79,6 +87,7 @@ public:
     ENTITY,
   };
 
+  // Possible entity types.
   enum EntityType
   {
     NONE = 0, BREP, REGION, SHELL, FACE, LOOP, COEDGE, EDGE, VERTEX, 
@@ -91,7 +100,8 @@ public:
     BOX_SET, CYLINDER_SET, PYRAMID_SET, SPHERE_SET, TRI_PRISM_SET
   };
 
-  enum // Shape components.
+  // Shape components.
+  enum
   {
     SHAPE_ARRAY_VERTICES = (1<<0L),
     SHAPE_ARRAY_NORMALS  = (1<<1L),
@@ -101,7 +111,7 @@ public:
 
   typedef bool DbJtTraverserCB ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData );
 
-  DbJtTraverser();
+  DbJtTraverser ( const unsigned int &flags = 0 );
 
   // Handle to an entity.
   typedef void * EntityHandle;
@@ -127,8 +137,15 @@ public:
   // Get the last error.
   const std::string &     getLastError() const { return _error; }
 
+  // Initialize.
+  bool                    init();
+
   // Set the client's callback.
   void                    setCallback ( DbJtTraverserCB *callback, const void *clientData );
+
+  // Set/get the DMDTk customer number (needed for versions >= 5).
+  const unsigned int &    getCustomerNumber();
+  void                    setCustomerNumber ( const unsigned int &customerNumber ) { _customerNumber = customerNumber; }
 
   // Traverse the database.
   bool                    traverse ( const char *filename );
@@ -152,14 +169,23 @@ protected:
   static int              _traverseCallback ( eaiHierarchy *node, int level );
   int                     _traverseNotify ( eaiHierarchy *node, int level );
 
+  // Internal flags.
+  enum
+  {
+    _INITIALIZED = (1<<10L)
+  };
+
+  unsigned int _flags;
   std::string _error;
   eaiHierarchy *_currentNode;
   DbJtTraverserCB *_clientCallback;
   const void *_clientData;
   int _currentLevel;
+  unsigned int _customerNumber;
 
   SL_DECLARE_REFCOUNT_TYPE ( DbJtTraverser );
   SL_DECLARE_DYNAMIC_CLASS ( DbJtTraverser, 0x00001054 );
+  SL_DECLARE_BITMASK_FUNCTIONS ( Flags, unsigned int, _flags );
 };
 
 }; // namespace CadKit

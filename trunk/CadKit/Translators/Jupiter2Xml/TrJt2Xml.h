@@ -74,7 +74,7 @@ public:
 
   // Set the verbose flag. If true it will print progress notifications 
   // to stdout. Default is false.
-  void                    setVerbose ( bool verbose ) { _verbose = verbose; }
+  void                    setVerbose ( bool verbose );
 
   // Translate the Jupiter database to XML.
   bool                    translate ( const char *filename, DbXmlGroup &root );

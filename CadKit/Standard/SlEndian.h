@@ -89,6 +89,40 @@ inline bool isLittleEndian()
 
 //////////////////////////////////////////////////////////////////////////
 //
+//  Reverse the bytes of the data.
+//
+//////////////////////////////////////////////////////////////////////////
+
+template <class Type> inline bool reverseBytes ( Type &n )
+{
+  const unsigned int numBytes = sizeof ( Type );
+
+  switch ( numBytes )
+  {
+  case sizeof ( SlUint16 ):
+
+    reverseBytes16 ( (SlUint16 &) n );
+    return true;
+
+  case sizeof ( SlUint32 ):
+
+    reverseBytes32 ( (SlUint32 &) n );
+    return true;
+
+  case sizeof ( SlUint64 ):
+
+    reverseBytes64 ( (SlUint64 &) n );
+    return true;
+
+  default:
+
+    return false;
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
 //  Reverse the bytes of the integer.
 //
 //////////////////////////////////////////////////////////////////////////

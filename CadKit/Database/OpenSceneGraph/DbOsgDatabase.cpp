@@ -443,7 +443,7 @@ bool DbOsgDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   if ( geometry.isNull() )
     return ERROR ( "Failed to create osg::Geometry for given shape handle.", FAILED );
 
-  // Greate a StateSet.
+  // Create a StateSet.
   SlRefPtr<osg::StateSet> state = new osg::StateSet;
   if ( state.isNull() )
     return ERROR ( "Failed to create osg::StateSet for given shape handle.", FAILED );
@@ -532,7 +532,7 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
   SL_PRINT5 ( "In DbOsgDatabase::_addVertices(), this = %X, caller = %X, shape = %d, geometry = %X\n", this, caller, shape, geometry );
   SL_ASSERT ( caller );
   SL_ASSERT ( geometry );
-  
+
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeVerticesVec3f> query ( caller );
   if ( query.isNull() )
@@ -574,7 +574,7 @@ bool DbOsgDatabase::_addNormals ( IUnknown *caller, ShapeHandle shape, osg::Geom
   SL_PRINT5 ( "In DbOsgDatabase::_addNormals(), this = %X, caller = %X, shape = %d, geometry = %X\n", this, caller, shape, geometry );
   SL_ASSERT ( caller );
   SL_ASSERT ( geometry );
-  
+
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeNormalsVec3f> query ( caller );
   if ( query.isNull() )
@@ -613,7 +613,7 @@ bool DbOsgDatabase::_addColors ( IUnknown *caller, ShapeHandle shape, osg::Geome
   SL_PRINT5 ( "In DbOsgDatabase::_addColors(), this = %X, caller = %X, shape = %d, geometry = %X\n", this, caller, shape, geometry );
   SL_ASSERT ( caller );
   SL_ASSERT ( geometry );
-  
+
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeColorsVec4f> query ( caller );
   if ( query.isNull() )
@@ -652,7 +652,7 @@ bool DbOsgDatabase::_addTexCoords ( IUnknown *caller, ShapeHandle shape, osg::Ge
   SL_PRINT5 ( "In DbOsgDatabase::_addTexCoords(), this = %X, caller = %X, shape = %d, geometry = %X\n", this, caller, shape, geometry );
   SL_ASSERT ( caller );
   SL_ASSERT ( geometry );
-  
+
   // Get the interface we need from the caller.
   SlQueryPtr<IQueryShapeTexCoordsVec2f> query ( caller );
   if ( query.isNull() )

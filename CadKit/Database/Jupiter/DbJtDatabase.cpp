@@ -133,6 +133,10 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
     return static_cast<IQueryShapeNormalsVec3f *>(this);
   case IQueryShapeColorsVec3f::IID:
     return static_cast<IQueryShapeColorsVec3f *>(this);
+  case IQueryShapeColorsVec4f::IID:
+    return static_cast<IQueryShapeColorsVec4f *>(this);
+  case IQueryShapeTexCoordsVec2f::IID:
+    return static_cast<IQueryShapeTexCoordsVec2f *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -1795,6 +1799,83 @@ bool DbJtDatabase::getColors ( ShapeHandle shape, IQueryShapeColorsVec3f::ColorS
   unsigned int i;
   for ( i = 0; i < totalNumColors; ++i )
     if ( false == setter.setData ( i, colors[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColors ( ShapeHandle shape, IQueryShapeColorsVec4f::ColorSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColors(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &colors = _shapeData->getColors().getData();
+
+  // Get the number of colors.
+  unsigned int totalNumColors = colors.size();
+  if ( 0 == totalNumColors )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumColors ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumColors; ++i )
+    if ( false == setter.setData ( i, SlVec4f ( colors[i][0], colors[i][1], colors[i][2], 1.0f ) ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTextureCoords ( ShapeHandle shape, IQueryShapeTexCoordsVec2f::TexCoordSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getTextureCoords(), this = %X, shape = %X\n", this, shape );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setShapeData ( shape ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec2f> &texCoords = _shapeData->getTexCoords().getData();
+
+  // Get the number of texture coordinates.
+  unsigned int totalNumTexCoords = texCoords.size();
+  if ( 0 == totalNumTexCoords )
+    return false;
+
+  // Should be per-vertex binding.
+  SL_ASSERT ( totalNumTexCoords == _shapeData->getVertices().getData().size() );
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumTexCoords ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumTexCoords; ++i )
+    if ( false == setter.setData ( i, texCoords[i] ) )
       return false;
 
   // It worked.

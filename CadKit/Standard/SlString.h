@@ -79,15 +79,12 @@ public:
   StringType &                  append ( const CharType *str )   { _s.append ( str );    return *this; }
   StringType &                  append ( CharType c )            { _s.append ( 1, c );   return *this; }
 
-  // Access.
-
-
   // Clear the string, redundancy is for compatibility with template functions.
   void                          clear() { _s.erase ( _s.begin(), _s.end() ); }
 
   // Erase the elements.
   iterator                      erase ( iterator first, iterator last ) { return _s.erase ( first, last ); }
-  iterator                      erase ( iterator it ) { return _s.erase ( it ); } // Keep for STLport.
+  iterator                      erase ( iterator it ) { return _s.erase ( it ); } // STLport debug doesn't like.
   StringType &                  erase ( unsigned int p0 = 0, unsigned int n = StringType::npos ) { return _s.erase ( p0, n ); }
 
   // Iterators.
@@ -136,10 +133,10 @@ public:
   CharType &                    operator [] ( unsigned int index )       { return this->getChar ( index ); }
 
   // Assignment operators.
-  SlString &                    operator = ( const SlString &rhs )   { this->setValue ( rhs ); return *this; }
-  SlString &                    operator = ( const StringType &rhs ) { this->setValue ( rhs ); return *this; }
-  SlString &                    operator = ( const CharType *rhs )   { this->setValue ( rhs ); return *this; }
-  SlString &                    operator = ( CharType rhs )          { this->setValue ( rhs ); return *this; }
+  SlString &                    operator = ( const SlString &rhs )   { this->setString ( rhs ); return *this; }
+  SlString &                    operator = ( const StringType &rhs ) { this->setString ( rhs ); return *this; }
+  SlString &                    operator = ( const CharType *rhs )   { this->setString ( rhs ); return *this; }
+  SlString &                    operator = ( CharType rhs )          { this->setString ( rhs ); return *this; }
 
   // Append operators.
   SlString &                    operator += ( const SlString &rhs )   { this->append ( rhs ); return *this; }
@@ -162,10 +159,10 @@ public:
   void                          reverse();
 
   // Set the value.
-  void                          setValue ( const SlString &str )   { _s = str._s; }
-  void                          setValue ( const StringType &str ) { _s = str; }
-  void                          setValue ( const CharType *str )   { _s = str; }
-  void                          setValue ( CharType c )            { _s = c; }
+  void                          setString ( const SlString &str )   { _s = str._s; }
+  void                          setString ( const StringType &str ) { _s = str; }
+  void                          setString ( const CharType *str )   { _s = str; }
+  void                          setString ( CharType c )            { _s = c; }
 
 protected:
 

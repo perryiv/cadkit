@@ -175,5 +175,9 @@ SOURCE=.\DbXmlApi.h
 SOURCE=.\DbXmlDll.cpp
 # End Source File
 # End Group
+# Begin Group "Notes"
+
+# PROP Default_Filter ""
+# End Group
 # End Target
 # End Project

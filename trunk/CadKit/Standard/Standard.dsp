@@ -231,6 +231,10 @@ SOURCE=.\SlBaseMacros.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlType.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlType.h
 # End Source File
 # End Group

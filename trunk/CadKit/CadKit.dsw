@@ -225,6 +225,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "Docs"=.\Docs\Docs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "ExampleBoundingBox"=.\Examples\BoundingBox\ExampleBoundingBox.dsp - Package Owner=<4>
 
 Package=<5>

@@ -412,6 +412,60 @@ template<NCSDTA> inline bool operator != ( const NcSpline<NCSDCA> &a, const NcSp
 }
 
 
+/////////////////////////////////////////////////////////////////////
+//
+//  Find the span in the knot vector given the parameter.
+//
+//  knots:      The knot vector.
+//  numCtrPts:  The number of control points for the independent 
+//              direction associated with the given knot vector.
+//  u:          The parameter we are finding the span for.
+//  low:        The starting point in the knot vector to look, The 
+//              lowest "low" is the degree (which is what usually 
+//              is passed in). It gets changed.
+//
+/////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline I NcSpline<NCSDCA>::findSpan ( 
+  const NcSpline<NCSDCA>::ParameterArray *knots, 
+  const SlInt32 &numCtrPts, 
+  const SlFloat64 &u, 
+  SlInt32 low ) const
+{
+  SL_ASSERT ( knots && numCtrPts > 1 && low > 0 );
+
+  // See if it's the last knot.
+  if ( u == knots[numCtrPts] ) return numCtrPts - 1;
+
+  // Set the high value, the low is passed in (usually the degree).
+  SlInt32 high = numCtrPts, mid;
+
+  while ( low <= high )
+  {
+    mid = SlInt32 ( SlFloat64 ( low + high ) * 0.5 );  
+
+    if ( u == knots[mid] )
+    {
+      // Handle knot multiplicities.
+      while ( u == knots[mid + 1] ) mid++;
+      return mid;
+    }
+
+    if ( u < knots[mid] ) high = mid - 1; 
+    else low = mid + 1; 
+  }
+
+  if ( u == knots[high] )
+  {
+    // Handle knot multiplicities.
+    while( u == knots[high + 1] ) high++;
+    return high;
+  }
+
+  return low - 1;
+}
+
+
 }; // namespace CadKit
 
 

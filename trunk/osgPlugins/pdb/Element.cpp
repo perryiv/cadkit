@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 Element::Element(int en, std::string e, float r) : 
   _atomicNumber(en) ,  
-  _element(e),
+  _elementSymbol(e),
   _radius(r)
 {
 }
@@ -36,7 +36,7 @@ Element::Element()
 ///////////////////////////////////////////////////////////////////////////////
 Element::Element(const Element &element) :
   _atomicNumber(element.getAtomicNumber()),
-  _element(element.getElement()),
+  _elementSymbol(element.getElementSymbol()),
   _radius(element.getRadius())
 {
 }
@@ -49,7 +49,7 @@ Element::Element(const Element &element) :
 Element& Element::operator =(const Element& element)
 {
   this->_atomicNumber = element.getAtomicNumber();
-  this->_element = element.getElement();
+  this->_elementSymbol = element.getElementSymbol();
   this->_radius = element.getRadius();
   return *this;
 }

@@ -9,6 +9,7 @@
 
 #include "Molecule.h"
 #include "Cylinder.h"
+#include "BondFinder.h"
 
 #include "osg/Geometry"
 #include "osg/MatrixTransform"
@@ -19,6 +20,7 @@
 #include "osg/Material"
 
 #include <limits>
+#include <vector>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,6 +90,9 @@ void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 
 osg::Group *Molecule::_build() const
 {
+  BondFinder bf;
+  Bonds b = bf.findBonds(bf.mapToVector(_atoms));
+
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
@@ -105,6 +110,20 @@ osg::Group *Molecule::_build() const
     root->addChild ( this->_makeBond ( *i ) );
   }
 
+  // Loop through the bonds.
+  for ( Bonds::const_iterator i = b.begin(); i != b.end(); ++i )
+  {
+    // Get the bond.
+    const Bond &bond = *i;
+
+    // Make the geometry.
+    osg::ref_ptr<osg::LOD> lod ( this->_makeBond ( bond ) );
+
+    // Add the lod to the root.
+    root->addChild ( lod.get() );
+  }
+
+
   // Return the root.
   return root.release();
 }
@@ -113,6 +132,7 @@ osg::Group *Molecule::_build() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Make an bond.
+//  TODO make radius based on radii of connecting atoms
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -136,8 +156,8 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   lod->setName( bond.toString());
 
   // Set the range.
-  //lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
-  this->_setCentersAndRanges ( lod.get() );
+  lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
+  //this->_setCentersAndRanges ( lod.get() );
 
   return lod.release();
 }

@@ -34,6 +34,7 @@ _point2(v2)
 //
 //  Build the geometry for the cylinder
 //  TODO get it working correctly
+//  TODO have radius passed in.
 //
 ///////////////////////////////////////////////////////////////////////////////
 osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
@@ -73,6 +74,7 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
 
   float c = 3.14159 / 180.0;
   float x,y,z;
+  //calculate the point for the unit cylinder then multiply it by the transform matrix
   for(float theta = 0.0; theta <= 360; theta += step) 
   {
     x = r * sin( c * theta ) + unPoint1[0];
@@ -110,11 +112,12 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
 
   osg::Vec3 v1, v2, v3;
 
-  for(unsigned int i = 2; i < vertices->size(); ++ i)
+  //calculate the normals for the tri strips
+  for(unsigned int i = 0; i < vertices->size(); ++ i)
   {
     osg::Vec3 normal;
-    v1 = vertices->at(i-2);
-    v2 = vertices->at(i-1);
+    v1 = vertices->at( (i+2) % (vertices->size() - 1) );
+    v2 = vertices->at( (i+1) % (vertices->size() - 1) );
     v3 = vertices->at(i);
     normal = (v3-v1)^(v2-v1);
     normal.normalize();
@@ -133,9 +136,8 @@ osg::Geometry* Cylinder::getGeometry(osg::Material *m, float step) const
   state->setAttribute ( lw.get() );
   state->setAttribute ( m );
 
-  //causing run-time error for some reason
   geometry->setNormalArray(normals.get());
-  geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
+  geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
 
   return geometry.release();
 }

@@ -195,6 +195,9 @@
 				RelativePath=".\Bond.h">
 			</File>
 			<File
+				RelativePath=".\BondFinder.h">
+			</File>
+			<File
 				RelativePath=".\Cylinder.h">
 			</File>
 			<File

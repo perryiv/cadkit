@@ -36,6 +36,30 @@ void _decrementPointerReferenceCount ( eaiEntity *p );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the transformation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiTransform *getTransform ( eaiEntity *entity )
+{
+  SL_PRINT2 ( "In CadKit::getTransform(), entity = %X\n", entity );
+  SL_ASSERT ( entity );
+
+  // If we don't have a hierarchy then return.
+  if ( false == CadKit::isHierarchy ( entity ) )
+    return NULL;
+
+  // Ask for the transformation (there may not be one).
+  eaiTransform *transform = NULL;
+  ((eaiHierarchy *) entity)->getTransform ( transform );
+
+  // Return the transform, which may still be null.
+  return transform;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the transformation matrix.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,16 +69,8 @@ bool getTransform ( eaiEntity *entity, SlMatrix44f &matrix )
   SL_PRINT2 ( "In CadKit::getTransform(), entity = %X\n", entity );
   SL_ASSERT ( entity );
 
-  // If we don't have a hierarchy then return.
-  if ( false == CadKit::isHierarchy ( entity ) )
-    return false;
-
-  // Ask for the transformation (there may not be one).
-  eaiTransform *temp = NULL;
-  ((eaiHierarchy *) entity)->getTransform ( temp );
-
-  // Auto-release. This assignment will increment it from 0 -> 1.
-  SlRefPtr<eaiTransform> transform ( temp );
+  // Get the transform. This assignment will increment it from 0 -> 1.
+  SlRefPtr<eaiTransform> transform ( CadKit::getTransform ( entity ) );
 
   // If we didn't get a transform then just return.
   if ( transform.isNull() )
@@ -83,9 +99,9 @@ bool getTransform ( eaiEntity *entity, SlMatrix44f &matrix )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-eaiMaterial *_getMaterial ( eaiEntity *entity )
+eaiMaterial *getMaterial ( eaiEntity *entity )
 {
-  SL_PRINT2 ( "In CadKit::_getMaterial(), entity = %X\n", entity );
+  SL_PRINT2 ( "In CadKit::getMaterial(), entity = %X\n", entity );
   SL_ASSERT ( entity );
 
   // Initialize.
@@ -151,7 +167,7 @@ bool getMaterial ( eaiEntity *entity, SlMaterialf &mat )
 
   // Ask for the material (there may not be one). 
   // This assignment will increment it from 0 -> 1.
-  SlRefPtr<eaiMaterial> material = CadKit::_getMaterial ( entity );
+  SlRefPtr<eaiMaterial> material = CadKit::getMaterial ( entity );
   if ( material.isNull() )
     return false;
 

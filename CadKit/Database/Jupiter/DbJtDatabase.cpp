@@ -81,6 +81,7 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtDatabase, SlRefBase );
 DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
+  _partLoadOption ( INSTANCE_PART ),
   _brepLoadOption ( TESS_ONLY ),
   _shapeLoadOption ( ALL_LODS ), // TODO, want all lods by default.
   _assemblies ( new Assemblies ),
@@ -407,8 +408,36 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
     // Save this instance.
     this->_setCurrentInstance ( (eaiInstance *) hierarchy );
 
-    // Start the instance.
-    _result = this->_startInstance ( (eaiInstance *) hierarchy );
+    // If we are supposed to convert the part-instances into parts...
+    if ( EXPLODE_PART == _partLoadOption )
+    {
+      // For convenience.
+      eaiInstance *instance = (eaiInstance *) hierarchy;
+
+      // See if this instance is really a part.
+      if ( CadKit::isPart ( instance->original() ) )
+      {
+        // For convenience.
+        eaiPart *part = (eaiPart *) instance->original();
+
+        // Save this part.
+        this->_setCurrentPart ( part );
+
+        // Replace the part's properties with the instance's properties.
+        this->_replaceProperties ( instance, part );
+
+        // Start the part.
+        _result = this->_startPart ( part );
+      }
+    }
+
+    // Otherwise, just process the instance as-is.
+    else
+    {
+      // Start the instance.
+      _result = this->_startInstance ( (eaiInstance *) hierarchy );
+    }
+
     break;
 
   default:
@@ -482,8 +511,36 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
 
   case eaiHierarchy::eaiINSTANCE:
 
-    // End the instance.
-    _result = this->_endInstance ( (eaiInstance *) hierarchy );
+    // If we are supposed to convert the part-instances into parts...
+    if ( EXPLODE_PART == _partLoadOption )
+    {
+      // For convenience.
+      eaiInstance *instance = (eaiInstance *) hierarchy;
+
+      // See if this instance is really a part.
+      if ( CadKit::isPart ( instance->original() ) )
+      {
+        // For convenience.
+        eaiPart *part = (eaiPart *) instance->original();
+
+        // Should be true.
+        SL_ASSERT ( instance == this->_getCurrentInstance() );
+        SL_ASSERT ( part == this->_getCurrentPart() );
+
+        // End the part.
+        _result = this->_endPart ( part );
+
+        // No more part.
+        this->_setCurrentPart ( NULL );
+      }
+    }
+
+    // Otherwise, just process the instance as-is.
+    else
+    {
+      // End the instance.
+      _result = this->_endInstance ( (eaiInstance *) hierarchy );
+    }
 
     // No more instance.
     this->_setCurrentInstance ( NULL );
@@ -855,14 +912,6 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
   SL_ASSERT ( UNSET_INDEX != _current->getShape() );
   SL_ASSERT ( whichSet == _current->getSet() );
 
-////#ifdef _DEBUG
-////  ISetNotify *temp = _target->queryInterface ( ISetNotify::IID );
-////  SL_ASSERT ( temp );
-////  temp->ref();
-////  // do something here.
-////  temp->unref();
-////#endif
-
   // Try this interface.
   SlQueryPtr<ISetNotify> notify ( _target );
   if ( notify.isValid() )
@@ -887,12 +936,15 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbJtDatabase::setAssemblyLoadOption ( const AssemblyLoadOption &option )
+bool DbJtDatabase::setAssemblyLoadOption ( const AssemblyLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setAssemblyLoadOption(), this = %X, option = %d\n", this, option );
 
   // Set the option.
   _assemblyLoadOption = option;
+
+  // It worked.
+  return true;
 }
 
 
@@ -902,12 +954,33 @@ void DbJtDatabase::setAssemblyLoadOption ( const AssemblyLoadOption &option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbJtDatabase::setBrepLoadOption ( const BrepLoadOption &option )
+bool DbJtDatabase::setBrepLoadOption ( const BrepLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setBrepLoadOption(), this = %X, option = %d\n", this, option );
 
   // Set the option.
   _brepLoadOption = option;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the part load option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::setPartLoadOption ( const PartLoadOption &option )
+{
+  SL_PRINT3 ( "In DbJtDatabase::setPartLoadOption(), this = %X, option = %d\n", this, option );
+
+  // Set the option.
+  _partLoadOption = option;
+
+  // It worked.
+  return true;
 }
 
 
@@ -917,12 +990,15 @@ void DbJtDatabase::setBrepLoadOption ( const BrepLoadOption &option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
+bool DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
 {
   SL_PRINT3 ( "In DbJtDatabase::setShapeLoadOption(), this = %X, option = %d\n", this, option );
 
   // Set the option.
   _shapeLoadOption = option;
+
+  // It worked.
+  return true;
 }
 
 
@@ -1019,6 +1095,32 @@ void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
 {
   SL_PRINT3 ( "In DbJtDatabase::_setCurrentInstance(), this = %X, instance = %X\n", this, instance );
   _current->setInstance ( instance );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiPart *DbJtDatabase::_getCurrentPart() const
+{
+  SL_PRINT2 ( "In DbJtDatabase::_getCurrentPart(), this = %X\n", this );
+  return _current->getPart();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiInstance *DbJtDatabase::_getCurrentInstance() const
+{
+  SL_PRINT2 ( "In DbJtDatabase::_getCurrentInstance(), this = %X\n", this );
+  return _current->getInstance();
 }
 
 
@@ -2021,4 +2123,32 @@ bool DbJtDatabase::setMessagePriorityLevel ( const MessageType &type, const unsi
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace the part's properties with the instance's properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_replaceProperties ( eaiInstance *instance, eaiPart *part )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_replaceProperties(), this = %X, instance = %X, part = %X\n", this, instance, part );
+
+  // Replace the name. Note: a missing name will get replaced with a blank 
+  // name, but that should have the same behavior as the way we handle 
+  // missing names now (i.e., we return a blank string).
+  std::string name = CadKit::getName ( instance );
+  SL_VERIFY ( eai_OK == part->setName ( name.c_str() ) );
+
+  // Replace the material.
+  SlRefPtr<eaiMaterial> material = CadKit::getMaterial ( instance );
+  if ( material.isValid() )
+    SL_VERIFY ( eai_OK == part->setMaterial ( material ) );
+
+  // Replace the transform.
+  SlRefPtr<eaiTransform> transform = CadKit::getTransform ( instance );
+  if ( transform.isValid() )
+    SL_VERIFY ( eai_OK == part->setTransform ( transform ) );
 }

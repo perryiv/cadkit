@@ -58,6 +58,12 @@ int main(unsigned int argc, char* argv[])
   mason->tile().normal( nor );
   mason->tile().highlight( hil );
 
+  // load a nice font
+  //osgText::Font* font = osgText::readFontFile("arial.ttf" );
+
+  // give the font to the skin
+  //mason->tile().skin().font( font );
+
   // produce the menu scene
   menu->accept( *mason );
   osg::ref_ptr<osg::Node> scene = mason->scene();

@@ -27,6 +27,7 @@
 #include "Standard/SlTruncateFunctor.h"
 
 #include "Interfaces/IMessageNotify.h"
+#include "Interfaces/IFormatAttribute.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
@@ -46,7 +47,8 @@ class DB_BASE_API DbBaseObject : public SlRefBase,
                                  public IGroupClientData,
                                  public ILodClientData,
                                  public IShapeClientData,
-                                 public IZeroRangeFloat
+                                 public IZeroRangeFloat,
+                                 public IFormatAttribute
 {
 public:
 

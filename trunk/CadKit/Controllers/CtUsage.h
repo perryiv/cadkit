@@ -35,12 +35,8 @@ const char *getLong()
   \n\
   --print-progress <priority>, -pp <priority>\n\
   \n\
-      Print to stdout any progress messages with a priority\n\
-      level less than or equal to 'priority'.\n\
-  \n\
-  --print-errors, -pe\n\
-  \n\
-      Print error messages to stdout.\n\
+      Print to stdout any progress messages with a priority level <= 'priority'.\n\
+      The 'priority' needs to be >= 0.\n\
   \n\
   --print-warnings, -pw\n\
   \n\
@@ -52,7 +48,7 @@ const char *getLong()
   \n\
   --verbose, -v\n\
   \n\
-      Verbose output to stdout, same as '-pe -pw -pi -pp 1'.\n\
+      Verbose output to stdout, same as '-pw -pi -pp 1'.\n\
   \n\
   --all-lods, -al\n\
   \n\
@@ -78,7 +74,7 @@ const char *getLong()
   \n\
       If possible, the output should be in ASCII.\n\
   \n\
-  --output-precision <decimals>, -op\n\
+  --num-decimals <decimals>, -nd\n\
   \n\
       For ASCII output formats, specify the number of decimals.\n\
   \n\

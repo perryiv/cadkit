@@ -31,15 +31,8 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
-#ifdef _DEBUG
-#if 0
-  SlRefPtr<CtTranslation> temp ( new CtTranslation );
-  temp->execute ( argc, argv, (new DbJtDatabase)->queryInterface ( IUnknown::IID ), (new DbOsgDatabase)->queryInterface ( IUnknown::IID ) );
-#endif
-#endif
-
   // Translate.
-  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbOsgDatabase, argc, argv, true );
+  bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbOsgDatabase, argc, argv );
 
   // Return the result.
   return ( result ) ? 1 : 0;

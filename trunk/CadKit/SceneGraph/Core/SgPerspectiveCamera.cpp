@@ -131,7 +131,7 @@ bool SgPerspectiveCamera::viewAll ( SgNode &scene )
 
   // The scale factor is the number that will make the the two radii equal.
   // Use the minimum radius to a frustum wall.
-  float s = _viewAllFactor * ( SL_MIN ( radiusToRightFrustumWall, radiusToTopFrustumWall ) ) / globalSphereRadius;
+  float s = _viewAllFactor * ( std::min ( radiusToRightFrustumWall, radiusToTopFrustumWall ) ) / globalSphereRadius;
   this->setScale ( s );
 
   // It worked!

@@ -46,7 +46,7 @@ SG_IMPLEMENT_VISITOR(SgVisitor,SlRefBase);
 
 namespace CadKit
 {
-  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > StackErrorPolicy;
+  typedef CadKit::ErrorPolicy::Throw < std::out_of_range > StackErrorPolicy;
 
   typedef SlStack < SgNode::Ptr,        StackErrorPolicy > NodeStack;
   typedef SlStack < SgCoordinate::Ptr,  StackErrorPolicy > CoordinateStack;

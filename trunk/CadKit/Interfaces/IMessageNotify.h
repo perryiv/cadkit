@@ -34,7 +34,7 @@ public:
   enum { IID = 1033067270 };
 
   // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const MessageType &type ) = 0;
+  virtual bool            messageNotify ( const std::string &message, unsigned long id, const MessageType &type ) = 0;
 };
 
 }; // namespace CadKit

@@ -18,12 +18,16 @@
 #include "DbStlBinaryWriter.h"
 #include "DbStlAsciiWriter.h"
 
+#include "Database/Base/DbBaseInline.h"
+
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlQueryPtr.h"
+#include "Standard/SlFindExtreme.h"
 
 #include <fstream>
 #include <string>
+#include <limits>
 #include <time.h>
 
 using namespace CadKit;
@@ -40,7 +44,8 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 
 DbStlDatabase::DbStlDatabase() : DbBaseTarget(),
   _facets(),
-  _ascii ( false )
+  _outputAttribute ( FORMAT_ATTRIBUTE_BINARY ),
+  _numDecimals ( std::numeric_limits<float>::digits10 )
 {
   SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
 }
@@ -105,6 +110,14 @@ IUnknown *DbStlDatabase::queryInterface ( unsigned long iid )
   {
   case ITriangleAppendFloat::IID:
     return static_cast<ITriangleAppendFloat *>(this);
+  case IFileExtension::IID:
+    return static_cast<IFileExtension *>(this);
+  case IDataWrite::IID:
+    return static_cast<IDataWrite *>(this);
+  case IOutputAttribute::IID:
+    return static_cast<IOutputAttribute *>(this);
+  case IOutputPrecision::IID:
+    return static_cast<IOutputPrecision *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -126,23 +139,85 @@ std::string DbStlDatabase::getFileExtension() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Store the data.
+//  Does the format have the attribute?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlDatabase::storeData ( const std::string &filename )
+bool DbStlDatabase::isAttributeSupported ( const FormatAttribute &attribute ) const
 {
-  SL_PRINT3 ( "In DbStlDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
-  SL_ASSERT ( filename.size() );
+  SL_PRINT3 ( "In DbStlDatabase::isAttributeSupported(), this = %X, attribute = %d\n", this, attribute );
 
-  // Store as either ascii or binary.
-  if ( _ascii )
-    return _writeAscii ( filename );
-  else
-    return _writeBinary ( filename );
+  switch ( attribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return true;
+  case FORMAT_ATTRIBUTE_ASCII:
+    return true;
+  default:
+    SL_ASSERT ( 0 ); // What format is this?
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the output attribute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlDatabase::setOutputAttribute ( const FormatAttribute &attribute )
+{
+  SL_PRINT3 ( "In DbStlDatabase::setOutputAttribute(), this = %X, attribute = %d\n", this, attribute );
+
+  // Is it supported?
+  if ( false == this->isAttributeSupported ( attribute ) )
+    return false;
+
+  // Set the attribute.
+  _outputAttribute = attribute;
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of decimals to output.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlDatabase::setOutputNumDecimals ( unsigned int numDecimals )
+{
+  SL_PRINT3 ( "In DbStlDatabase::setOutputNumDecimals(), this = %X, numDecimals = %d\n", this, numDecimals );
+  _numDecimals = numDecimals;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbStlDatabase::writeData ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbStlDatabase::writeData(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
+
+  // Store as either ascii or binary.
+  switch ( _outputAttribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return _writeBinary ( filename );
+  case FORMAT_ATTRIBUTE_ASCII:
+    return _writeAscii ( filename );
+  default:
+    SL_ASSERT ( 0 ); // What format is this?
+    return false;
+  }
 }
 
 
@@ -156,6 +231,7 @@ std::string DbStlDatabase::_getHeader() const
 {
   SL_PRINT2 ( "In DbStlDatabase::_getHeader(), this = %X\n", this );
 
+  // Get the current time.
   time_t now ( time ( 0x0 ) );
   std::string header ( std::string ( "solid created: " ) + ::asctime ( ::localtime ( &now ) ) );
 
@@ -163,7 +239,7 @@ std::string DbStlDatabase::_getHeader() const
   header.erase ( header.end() );
 
   // Binary STL requires an 80 byte header. Since we append null characters
-  // the ascii output won't write them (which is good).
+  // the ascii output won't write them (so this will work for both).
   header.resize ( 80, '\0' );
 
   return header;
@@ -178,7 +254,7 @@ std::string DbStlDatabase::_getHeader() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlDatabase::_writeAscii ( const std::string &filename )
+bool DbStlDatabase::_writeAscii ( const std::string &filename ) const
 {
   SL_PRINT3 ( "In DbStlDatabase::_writeAscii(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
@@ -188,11 +264,22 @@ bool DbStlDatabase::_writeAscii ( const std::string &filename )
   if ( false == out.is_open() )
     return false;
 
+#ifdef _DEBUG
+  out.setf ( std::ios::unitbuf ); // Unbuffered output in debug build.
+#endif
+
+  // Write the number of triangles.
+  out << _facets.size() << '\n';
+
   // Write the header.
-  out << "solid created: " << this->_getHeader().c_str() << '\n';
+  out << this->_getHeader().c_str() << '\n';
+
+  // Calculate the column width.
+  Utility::CalculateWidth<float> cw;
+  unsigned int width ( cw ( _facets ) + _numDecimals );
 
   // Loop through the facets and write them.
-  std::for_each ( _facets.begin(), _facets.end(), DbStlAsciiWriter ( out ) );
+  std::for_each ( _facets.begin(), _facets.end(), DbStlAsciiWriter ( out, _numDecimals, width ) );
 
   // Write the footer.
   out << "endsolid\n";
@@ -209,7 +296,7 @@ bool DbStlDatabase::_writeAscii ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbStlDatabase::_writeBinary ( const std::string &filename )
+bool DbStlDatabase::_writeBinary ( const std::string &filename ) const
 {
   SL_PRINT3 ( "In DbStlDatabase::_writeBinary(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );

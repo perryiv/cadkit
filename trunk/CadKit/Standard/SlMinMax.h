@@ -16,154 +16,94 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_
 #define _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_
 
-#include "SlAssert.h"
+#include <algorithm>
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <limits>
+#ifdef _WIN32
+# ifdef  max
+#  undef max
+# endif
+# ifdef  min
+#  undef min
+# endif
 #endif
 
 
-namespace CadKit
-{
+namespace CadKit {
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the maximum of a and b.
+//  Several overloaded max functions.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline const T &maximum ( const T &a, const T &b )
+template<class T> inline const T &max ( const T &a, const T &b )
 {
-  return ( a > b ) ? a : b;
+  return std::max ( a, b );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c ) 
+{
+  return CadKit::max ( CadKit::max ( a, b ), c );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d )
+{
+  return CadKit::max ( CadKit::max ( a, b, c ), d );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e )
+{
+  return CadKit::max ( CadKit::max ( a, b, c, d ), e );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f )
+{
+  return CadKit::max ( CadKit::max ( a, b, c, d, e ), f );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g )
+{
+  return CadKit::max ( CadKit::max ( a, b, c, d, e, f ), g );
+}
+template<class T> inline const T &max ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h )
+{
+  return CadKit::max ( CadKit::max ( a, b, c, d, e, f, g ), h );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the minimum of a and b.
+//  Several overloaded min functions.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline const T &minimum ( const T &a, const T &b )
+template<class T> inline const T &min ( const T &a, const T &b )
 {
-  return ( a < b ) ? a : b;
+  return std::min ( a, b );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the maximum of a, b, and c.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &maximum ( const T &a, const T &b, const T &c )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c ) 
 {
-  return CadKit::maximum ( CadKit::maximum ( a, b ), c );
+  return CadKit::min ( CadKit::min ( a, b ), c );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the minimum of a, b, and c.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &minimum ( const T &a, const T &b, const T &c )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d )
 {
-  return CadKit::minimum ( CadKit::minimum ( a, b ), c );
+  return CadKit::min ( CadKit::min ( a, b, c ), d );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the maximum of a, b, c, and d.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &maximum ( const T &a, const T &b, const T &c, const T &d )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e )
 {
-  return CadKit::maximum ( CadKit::maximum ( a, b ), CadKit::maximum ( c, d ) );
+  return CadKit::min ( CadKit::min ( a, b, c, d ), e );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the minimum of a, b, c, and d.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline const T &minimum ( const T &a, const T &b, const T &c, const T &d )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f )
 {
-  return CadKit::minimum ( CadKit::minimum ( a, b ), CadKit::minimum ( c, d ) );
+  return CadKit::min ( CadKit::min ( a, b, c, d, e ), f );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the maximum element in the array.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T, class I> inline const T maximum ( const I &num, const T *array )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g )
 {
-  SL_ASSERT ( num > 0 );
-  SL_ASSERT ( array );
-
-  // Initialize.
-  T theMax ( std::numeric_limits<T>::min() );
-
-  // Loop through.
-  for ( I i = 0; i < num; ++i )
-  {
-    if ( array[i] > theMax )
-    {
-      theMax = array[i];
-    }
-  }
-
-  // Return the max.
-  return theMax;
+  return CadKit::min ( CadKit::min ( a, b, c, d, e, f ), g );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the minimum element in the array.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T, class I> inline const T &minimum ( const I &num, const T *array )
+template<class T> inline const T &min ( const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h )
 {
-  SL_ASSERT ( num > 0 );
-  SL_ASSERT ( array );
-
-  // Initialize.
-  T theMin ( std::numeric_limits<T>::max() );
-
-  // Loop through.
-  for ( I i = 0; i < num; ++i )
-  {
-    if ( array[i] < theMin )
-    {
-      theMin = array[i];
-    }
-  }
-
-  // Return the min.
-  return theMin;
+  return CadKit::min ( CadKit::min ( a, b, c, d, e, f, g ), h );
 }
 
 
 }; // namespace CadKit.
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// For convenience and backward compatability.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SL_MIN CadKit::minimum
-#define SL_MAX CadKit::maximum
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_MIN_MAX_H_

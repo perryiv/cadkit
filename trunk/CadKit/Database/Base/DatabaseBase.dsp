@@ -108,6 +108,10 @@ SOURCE=.\DbBasePrecompiled.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\DbBaseAsciiWriter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbBaseInline.h
 # End Source File
 # Begin Source File

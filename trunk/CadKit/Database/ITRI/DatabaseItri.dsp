@@ -111,19 +111,11 @@ SOURCE=.\DbItriAsciiWriter.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbItriBinaryWriter.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\DbItriDatabase.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\DbItriDatabase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DbItriTriangle.h
 # End Source File
 # End Group
 # Begin Group "DLL"

@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IDataTarget: Interface for a data target.
+//  IDataWrite: Interface for writing data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_DATA_TARGET_H_
-#define _CADKIT_INTERFACE_DATA_TARGET_H_
+#ifndef _CADKIT_INTERFACE_DATA_STORE_H_
+#define _CADKIT_INTERFACE_DATA_STORE_H_
 
 #include "IUnknown.h"
 
@@ -23,20 +23,17 @@
 
 namespace CadKit
 {
-class IDataTarget : public IUnknown
+class IDataWrite : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032674768 };
+  enum { IID = 1054759304 };
 
-  // Tell the target it is about to receive data.
-  virtual bool            dataTransferStart ( IUnknown *caller ) = 0;
-
-  // Tell the target it is done receiving data.
-  virtual bool            dataTransferEnd ( IUnknown *caller ) = 0;
+  // Write the data.
+  virtual bool            writeData ( const std::string &name ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_DATA_TARGET_H_
+#endif // _CADKIT_INTERFACE_DATA_STORE_H_

@@ -162,6 +162,19 @@ SOURCE=.\IControlled.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IDataRead.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IDataSource.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -188,6 +201,19 @@ SOURCE=.\IDataTarget.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IDataWrite.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\IEntityNotify.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -202,6 +228,32 @@ SOURCE=.\IEntityNotify.h
 # Begin Source File
 
 SOURCE=.\IEntityQuery.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IFileExtension.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IFormatAttribute.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -280,6 +332,32 @@ SOURCE=.\IMessageNotify.h
 # Begin Source File
 
 SOURCE=.\IMessagePriority.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IOutputAttribute.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IOutputPrecision.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -384,19 +462,6 @@ SOURCE=.\IShapeQuery.h
 # Begin Source File
 
 SOURCE=.\ISubEntityNotify.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\ITranslator.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

@@ -37,6 +37,9 @@
 # include <vector>
 # include <set>
 # include <string>
+# include <functional>
+# include <iomanip>
+# include <limits>
 #endif
 
 #endif // _CADKIT_DATABASE_ITRI_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_

@@ -87,6 +87,19 @@ public:
   void                    setValue ( const SlVec2 &vec );
   void                    setValue ( const T &v0, const T &v1 );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Execute the functor with all the elements. Make sure the argument is 
+  //  a reference or else you will faul things up.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Functor > void operator () ( Functor &functor ) const
+  {
+    functor ( _v[0] );
+    functor ( _v[1] );
+  }
+
 protected:
 
   T _v[2];

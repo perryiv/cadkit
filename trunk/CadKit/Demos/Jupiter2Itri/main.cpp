@@ -29,7 +29,7 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
-  // Make the source only hands the target assemblies and parts instead of 
+  // Make the source only hand the target assemblies and parts instead of 
   // instances of assemblies and parts. Ideally, this should be handled as a 
   // command line argument. 
   DbJtDatabase *jt = new DbJtDatabase;
@@ -41,6 +41,6 @@ int main ( int argc, char **argv )
     options->setPartLoadOption ( ILoadOptions::EXPLODE_PART );
   }
 
-  bool result = CadKit::translate ( new CtTranslation, jt, new DbItriDatabase, argc, argv, true );
+  bool result = CadKit::translate ( new CtTranslation, jt, new DbItriDatabase, argc, argv );
   return ( result ) ? 1 : 0;
 }

@@ -25,9 +25,10 @@ namespace CadKit
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class N, class B> inline bool hasBits ( const N &number, const B &bits )
+template<class N, class B> inline bool hasBits ( N number, B bits )
 {
   return ( ( number & bits ) == ( static_cast<N>(bits) ) );
+//  return ( ( number & bits ) == bits );
 }
 
 
@@ -37,12 +38,12 @@ template<class N, class B> inline bool hasBits ( const N &number, const B &bits 
 //  here to eliminate VC++ warning 4018.
 //
 //////////////////////////////////////////////////////////////////////////
-
-inline bool hasBits ( const unsigned long &number, const unsigned long &bits )
+/*
+inline bool hasBits ( unsigned long number, unsigned long bits )
 {
   return ( ( number & bits ) == bits );
 }
-
+*/
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -50,7 +51,7 @@ inline bool hasBits ( const unsigned long &number, const unsigned long &bits )
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class N, class B> inline N addBits ( const N &number, const B &bits )
+template<class N, class B> inline N addBits ( N number, B bits )
 {
   return ( number | bits );
 }
@@ -62,7 +63,7 @@ template<class N, class B> inline N addBits ( const N &number, const B &bits )
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class N, class B> inline N removeBits ( const N &number, const B &bits )
+template<class N, class B> inline N removeBits ( N number, B bits )
 {
   return ( ( number & bits ) ? ( number ^ bits ) : number );
 }
@@ -74,7 +75,7 @@ template<class N, class B> inline N removeBits ( const N &number, const B &bits 
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class N, class B> inline N toggleBits ( const N &number, const B &bits )
+template<class N, class B> inline N toggleBits ( N number, B bits )
 {
   return ( number ^ bits );
 }
@@ -92,12 +93,12 @@ template<class N, class B> inline N toggleBits ( const N &number, const B &bits 
 
 #define SL_DECLARE_BITMASK_FUNCTIONS(the_function_name,flag_type,the_flags) \
   public: \
-  const flag_type &get##the_function_name() const { return the_flags; } \
-  bool has##the_function_name    ( const flag_type &bits ) const { return CadKit::hasBits ( the_flags, bits ); } \
-  void add##the_function_name    ( const flag_type &bits ) { the_flags = CadKit::addBits ( the_flags, bits ); } \
-  void remove##the_function_name ( const flag_type &bits ) { the_flags = CadKit::removeBits ( the_flags, bits ); } \
-  void set##the_function_name    ( const flag_type &bits ) { the_flags = bits; } \
-  void toggle##the_function_name ( const flag_type &bits ) { the_flags = CadKit::toggleBits ( the_flags, bits ); }
+  flag_type get##the_function_name() const { return the_flags; } \
+  bool has##the_function_name    ( flag_type bits ) const { return CadKit::hasBits ( the_flags, bits ); } \
+  void add##the_function_name    ( flag_type bits ) { the_flags = CadKit::addBits ( the_flags, bits ); } \
+  void remove##the_function_name ( flag_type bits ) { the_flags = CadKit::removeBits ( the_flags, bits ); } \
+  void set##the_function_name    ( flag_type bits ) { the_flags = bits; } \
+  void toggle##the_function_name ( flag_type bits ) { the_flags = CadKit::toggleBits ( the_flags, bits ); }
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_BITMASK_H_

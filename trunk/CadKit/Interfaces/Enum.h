@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enum: Enumerations.
+//  Enumerations.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,8 +17,16 @@
 #define _CADKIT_INTERFACE_ENUMERATIONS_H_
 
 
-namespace CadKit
+namespace CadKit {
+
+
+// Possible format attributes.
+enum FormatAttribute
 {
+  FORMAT_ATTRIBUTE_ASCII,
+  FORMAT_ATTRIBUTE_BINARY
+};
+
 
 // Message types.
 enum MessageType
@@ -61,6 +69,7 @@ enum LodProcessOption
   PROCESS_HIGH_LOD,
   PROCESS_LOW_LOD,
 };
+
 
 }; // namespace CadKit
 

@@ -92,6 +92,8 @@ IUnknown *DbBaseObject::queryInterface ( unsigned long iid )
     return static_cast<IShapeClientData *>(this);
   case IZeroRangeFloat::IID:
     return static_cast<IZeroRangeFloat *>(this);
+  case IFormatAttribute::IID:
+    return static_cast<IFormatAttribute *>(this);
   case CadKit::IUnknown::IID:
     return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
@@ -156,13 +158,13 @@ bool DbBaseObject::_notifyProgress ( const std::string &message, const unsigned 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const void *DbBaseObject::getClientData ( void * const key )         const { return CadKit::find ( key, *(_genericClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const AssemblyHandle key ) const { return CadKit::find ( key, *(_assemblyClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const PartHandle key )     const { return CadKit::find ( key, *(_partClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const InstanceHandle key ) const { return CadKit::find ( key, *(_instanceClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const GroupHandle key )    const { return CadKit::find ( key, *(_groupClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const LodHandle key )      const { return CadKit::find ( key, *(_lodClientDataMap.get()) ); }
-const void *DbBaseObject::getClientData ( const ShapeHandle key )    const { return CadKit::find ( key, *(_shapeClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( void * const key )         const { return Utility::find ( key, *(_genericClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const AssemblyHandle key ) const { return Utility::find ( key, *(_assemblyClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const PartHandle key )     const { return Utility::find ( key, *(_partClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const InstanceHandle key ) const { return Utility::find ( key, *(_instanceClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const GroupHandle key )    const { return Utility::find ( key, *(_groupClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const LodHandle key )      const { return Utility::find ( key, *(_lodClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const ShapeHandle key )    const { return Utility::find ( key, *(_shapeClientDataMap.get()) ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

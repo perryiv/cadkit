@@ -69,7 +69,8 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbPfDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbPfDatabase::DbPfDatabase() : DbBaseTarget(),
-  _groupStack ( new GroupStack )
+  _groupStack ( new GroupStack ),
+  _outputAttribute ( FORMAT_ATTRIBUTE_BINARY )
 {
   SL_PRINT2 ( "In DbPfDatabase::DbPfDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
@@ -190,6 +191,12 @@ IUnknown *DbPfDatabase::queryInterface ( unsigned long iid )
     return static_cast<IShapeNotify *>(this);
   case ISetNotify::IID:
     return static_cast<ISetNotify *>(this);
+  case IFileExtension::IID:
+    return static_cast<IFileExtension *>(this);
+  case IDataWrite::IID:
+    return static_cast<IDataWrite *>(this);
+  case IOutputAttribute::IID:
+    return static_cast<IOutputAttribute *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -205,23 +212,79 @@ IUnknown *DbPfDatabase::queryInterface ( unsigned long iid )
 std::string DbPfDatabase::getFileExtension() const
 {
   SL_PRINT2 ( "In DbPfDatabase::getFileExtension(), this = %X\n", this );
-  return "pfb";
+
+  switch ( _outputAttribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return "pfb";
+  case FORMAT_ATTRIBUTE_ASCII:
+    return "pfa";
+  default:
+    SL_ASSERT ( 0 ); // What attribute is this?
+    return "pfb";
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Store the data.
+//  Does the format have the attribute?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbPfDatabase::storeData ( const std::string &filename )
+bool DbPfDatabase::isAttributeSupported ( const FormatAttribute &attribute ) const
 {
-  SL_PRINT3 ( "In DbPfDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_PRINT3 ( "In DbPfDatabase::isAttributeSupported(), this = %X, attribute = %d\n", this, attribute );
+
+  switch ( attribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return true;
+  case FORMAT_ATTRIBUTE_ASCII:
+    return true;
+  default:
+    SL_ASSERT ( 0 ); // What attribute is this?
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the output attribute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbPfDatabase::setOutputAttribute ( const FormatAttribute &attribute )
+{
+  SL_PRINT3 ( "In DbPfDatabase::setOutputAttribute(), this = %X, attribute = %d\n", this, attribute );
+
+  // Is it supported?
+  if ( false == this->isAttributeSupported ( attribute ) )
+    return false;
+
+  // Set the attribute.
+  _outputAttribute = attribute;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbPfDatabase::writeData ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbPfDatabase::writeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
   SL_ASSERT ( NULL != this->_getRoot() );
 
-#if 0 // _DEBUG
+#if 0
+#ifdef _DEBUG
   std::string dump ( filename );
   dump.append ( ".out" );
   FILE *out = ::fopen ( dump.c_str(), "w" );
@@ -229,9 +292,11 @@ bool DbPfDatabase::storeData ( const std::string &filename )
   ::pfPrint ( this->_getRoot(), PFTRAV_SELF | PFTRAV_DESCEND, PFPRINT_VB_DEBUG, out );
   ::fclose ( out );
 #endif
+#endif
 
-  // Write the root to file.
-  return ( 0 != pfdStoreFile ( this->_getRoot(), filename.c_str() ) );
+  // Write the root to file. Note: Performer will write binary or ascii 
+  // depending on the extension.
+  return ( 0 != ::pfdStoreFile ( this->_getRoot(), filename.c_str() ) );
 }
 
 

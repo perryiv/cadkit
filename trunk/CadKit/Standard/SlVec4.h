@@ -86,6 +86,22 @@ public:
 
   void                    truncate ( const T &negativeZero, const T &positiveZero );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Execute the functor with all the elements. Make sure the argument is 
+  //  a reference or else you will faul things up.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Functor > void operator () ( Functor &functor ) const
+  {
+    functor ( _v[0] );
+    functor ( _v[1] );
+    functor ( _v[2] );
+    functor ( _v[3] );
+  }
+
+
 protected:
 
   T _v[4];

@@ -15,6 +15,9 @@
 
 #include "DbItriPrecompiled.h"
 #include "DbItriDatabase.h"
+#include "DbItriAsciiWriter.h"
+
+#include "Database/Base/DbBaseInline.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
@@ -22,9 +25,13 @@
 #include "Standard/SlMessageIds.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlVec3IO.h"
+#include "Standard/SlFindExtreme.h"
 
 #include <fstream>
 #include <time.h>
+#include <functional>
+#include <iomanip>
+#include <limits>
 
 // To help shorten up the lines.
 #undef  ERROR
@@ -32,6 +39,7 @@
 #define PROGRESS this->_notifyProgress
 #define WARNING  this->_notifyWarning
 #define FORMAT   CadKit::getString
+#define SW       std::setw ( width )
 
 using namespace CadKit;
 
@@ -45,7 +53,9 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbItriDatabase, SlRefBase );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbItriDatabase::DbItriDatabase() : DbBaseTarget()
+DbItriDatabase::DbItriDatabase() : DbBaseTarget(),
+  _triangles(),
+  _numDecimals ( std::numeric_limits<float>::digits10 )
 {
   SL_PRINT2 ( "In DbItriDatabase::DbItriDatabase(), this = %X\n", this );
 }
@@ -75,8 +85,8 @@ bool DbItriDatabase::dataTransferStart ( IUnknown *caller )
 {
   SL_PRINT3 ( "In DbItriDatabase::dataTransferStart(), this = %X, caller = %X\n", this, caller );
 
-  // Clear the list of facets.
-  _facets.clear();
+  // Clear the list of triangles.
+  _triangles.clear();
 
   // It worked.
   return true;
@@ -112,6 +122,14 @@ IUnknown *DbItriDatabase::queryInterface ( unsigned long iid )
   {
   case ITriangleAppendFloat::IID:
     return static_cast<ITriangleAppendFloat *>(this);
+  case IFileExtension::IID:
+    return static_cast<IFileExtension *>(this);
+  case IDataWrite::IID:
+    return static_cast<IDataWrite *>(this);
+  case IOutputAttribute::IID:
+    return static_cast<IOutputAttribute *>(this);
+  case IOutputPrecision::IID:
+    return static_cast<IOutputPrecision *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -156,13 +174,42 @@ bool DbItriDatabase::isAttributeSupported ( const FormatAttribute &attribute ) c
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Store the data.
+//  Set the output attribute.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbItriDatabase::storeData ( const std::string &filename )
+bool DbItriDatabase::setOutputAttribute ( const FormatAttribute &attribute )
 {
-  SL_PRINT3 ( "In DbItriDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_PRINT3 ( "In DbItriDatabase::setOutputAttribute(), this = %X, attribute = %d\n", this, attribute );
+
+  // There is only ascii output.
+  return ( FORMAT_ATTRIBUTE_ASCII == attribute );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of decimals to output.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbItriDatabase::setOutputNumDecimals ( unsigned int numDecimals )
+{
+  SL_PRINT3 ( "In DbItriDatabase::setOutputNumDecimals(), this = %X, numDecimals = %d\n", this, numDecimals );
+  _numDecimals = numDecimals;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbItriDatabase::writeData ( const std::string &filename )
+{
+  SL_PRINT3 ( "In DbItriDatabase::writeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
   // Open a file.
@@ -170,26 +217,15 @@ bool DbItriDatabase::storeData ( const std::string &filename )
   if ( false == out.is_open() )
     return false;
 
-  // Write the header.
-  //time_t now ( time ( 0x0 ) );
-  //out << "solid created: " << ::asctime ( ::localtime ( &now ) ) << "\n";
-  out << _facets.size() << "\n";
+  // Write the number of triangles.
+  out << _triangles.size() << '\n';
 
-  // Loop through the facets.
-  for ( Facets::const_iterator i = _facets.begin(); i != _facets.end(); ++i )
-  {
-    const DbItriTriangle &facet = *i;
-    //out << "facet normal " << facet.getNormal() << "\n";
-    //out << "outer loop\n";
-    out << facet.getVertex ( 0 ) << "\n" ;
-    out << facet.getVertex ( 1 ) << "\n" ;
-    out << facet.getVertex ( 2 ) << "\n";
-    //out << "endloop\n";
-    //out << "endfacet\n";
-  }
+  // Calculate the column width.
+  Utility::CalculateWidth<float> cw;
+  unsigned int width ( cw ( _triangles ) + _numDecimals );
 
-  // Write the footer.
-  //out << "endsolid\n";
+  // Loop through the triangles and write them.
+  std::for_each ( _triangles.begin(), _triangles.end(), DbItriAsciiWriter ( out, _numDecimals, width ) );
 
   // It worked.
   return true;
@@ -203,18 +239,18 @@ bool DbItriDatabase::storeData ( const std::string &filename )
 ///////////////////////////////////////////////////////////////////////////////
 
 bool DbItriDatabase::appendTriangle ( float t0v0, float t0v1, float t0v2, 
-                                     float t1v0, float t1v1, float t1v2,
-                                     float t2v0, float t2v1, float t2v2,
-                                     IUnknown *caller )
+                                      float t1v0, float t1v1, float t1v2,
+                                      float t2v0, float t2v1, float t2v2,
+                                      IUnknown *caller )
 {
   SL_PRINT3 ( "In DbItriDatabase::appendTriangle(), this = %X, caller = %X\n", this, caller );
   SL_ASSERT ( caller );
 
   // Append the triangle.
-  _facets.push_back ( DbItriTriangle ( 
-    t0v0, t0v1, t0v2,
-    t1v0, t1v1, t1v2,
-    t2v0, t2v1, t2v2 ) );
+  _triangles.push_back ( Triangle ( 
+    SlVec3f ( t0v0, t0v1, t0v2 ),
+    SlVec3f ( t1v0, t1v1, t1v2 ),
+    SlVec3f ( t2v0, t2v1, t2v2 ) ) );
 
   // It worked.
   return true;

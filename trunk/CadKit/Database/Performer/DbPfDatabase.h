@@ -22,6 +22,9 @@
 
 #include "Interfaces/IEntityNotify.h"
 #include "Interfaces/IInstanceQuery.h"
+#include "Interfaces/IFileExtension.h"
+#include "Interfaces/IDataWrite.h"
+#include "Interfaces/IOutputAttribute.h"
 
 #include "Standard/SlStack.h"
 #include "Standard/SlErrorPolicy.h"
@@ -44,7 +47,10 @@ class DB_PERFORMER_API DbPfDatabase : public DbBaseTarget,
                                       public IInstanceNotify,
                                       public ILodNotify,
                                       public IShapeNotify,
-                                      public ISetNotify
+                                      public ISetNotify,
+                                      public IFileExtension,
+                                      public IDataWrite,
+                                      public IOutputAttribute
 {
 public:
 
@@ -65,11 +71,14 @@ public:
   // Tell the target it is done receiving data.
   virtual bool            dataTransferEnd ( IUnknown *caller );
 
-  // Get the file extension.
-  virtual std::string     getFileExtension() const;
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFormatAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-  // Store the data.
-  virtual bool            storeData ( const std::string &filename );
+  // Does the format have the attribute?
+  virtual bool            isAttributeSupported ( const FormatAttribute &attribute ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -143,11 +152,39 @@ public:
   // Start the set.
   virtual bool            startEntity ( SetHandle set, IUnknown *caller );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IFileExtension interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the file extension.
+  virtual std::string     getFileExtension() const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IDataWrite interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Write the data.
+  virtual bool            writeData ( const std::string &filename );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputAttribute interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the output attribute.
+  virtual bool            setOutputAttribute ( const FormatAttribute &attribute );
+
 protected:
 
-  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > ErrorPolicy;
-  typedef SlStack < pfGroup *, ErrorPolicy > GroupStack;
+  typedef CadKit::ErrorPolicy::Throw < std::out_of_range > StackErrorPolicy;
+  typedef SlStack < pfGroup *, StackErrorPolicy > GroupStack;
   std::auto_ptr<GroupStack> _groupStack;
+  FormatAttribute _outputAttribute;
 
   virtual ~DbPfDatabase();
 

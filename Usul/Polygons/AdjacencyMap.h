@@ -86,8 +86,16 @@ public:
   typedef typename VertexSequence::size_type SizeType;
   typedef typename VertexSequence::const_iterator VertexIterator;
   typedef SharedVertex < Polygon, VertexType > SharedVertex;
+  typedef typename SharedVertex::Ptr SharedVertexPtr;
   typedef std::vector < Polygon > Polygons;
-  typedef std::map < VertexType, SharedVertex, Compare > Map;
+  typedef std::map < VertexType, SharedVertexPtr, Compare > Map;
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor
+  //
+  ///////////////////////////////////////////////////////////////////////////////
 
   AdjacencyMap() :
     _sharedVertsMap(),
@@ -96,6 +104,12 @@ public:
     USUL_ASSERT_SAME_TYPE ( VertexType, typename Polygon::VertexType );
     USUL_ASSERT_SAME_TYPE ( VertexType, typename SharedVertex::ValueType );
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor with comparision predicate
+  //
+  ///////////////////////////////////////////////////////////////////////////////
 
   AdjacencyMap( const Compare& c ) :
     _sharedVertsMap( c ),
@@ -216,17 +230,17 @@ public:
         if( iter == _sharedVertsMap.end() )
         {
           //Add a shared vertex to te map
-          _sharedVertsMap.insert( Map::value_type( key, SharedVertex() ) );
+          _sharedVertsMap.insert( Map::value_type( key, new SharedVertex( key ) ) );
 
           //Reset the iterator
           iter = _sharedVertsMap.find( key );
         }
 
         //add the shared vertex to the polygon
-        p.append ( &iter->second );
+        p.append ( iter->second.get() );
 
         //add the polygon to the shared vertex
-        iter->second.append( &p );
+        iter->second->append( &p );
       }
 
       //Set the polygon's index and go to the next polygon
@@ -238,6 +252,11 @@ public:
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Walk the graph.  TODO move to own function
+  //
+  ///////////////////////////////////////////////////////////////////////////////
 
   template < class Functor, class IndexSequence, class UpdateFunctor, class CancelFunctor >
   void walkPolygons ( IndexSequence& answer, UpdateFunctor& updater, const CancelFunctor& cancel, unsigned int selectedPolygon )
@@ -287,15 +306,22 @@ public:
     updater ( answer, true );
   }
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the polygons and shared verts to not visited.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
   void setAllUnvisited()
   {
     for( Polygons::iterator iter = _polygons.begin(); iter != _polygons.end(); ++iter )
       iter->visited( false );
 
     for( Map::iterator i = _sharedVertsMap.begin(); i != _sharedVertsMap.end(); ++i )
-      i->second.visited( false );
+      i->second->visited( false );
   }
 
+  //combined size
   unsigned int size() const
   {
     return _polygons.size() + _sharedVertsMap.size();

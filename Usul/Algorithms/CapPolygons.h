@@ -16,11 +16,19 @@ namespace Algorithms {
 
 namespace Detail {
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Visit a polygon
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template < class Polygons, class IndexSequence, class Loop, class Polygon >
 void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon& p )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
 
+  //Return now if already visited
   if( p.visited() )
     return;
 
@@ -46,6 +54,13 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   p.visited( true );
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Visit a shared vertex
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template < class Polygons, class IndexSequence, class Loop, class SharedVertex >
 void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, SharedVertex& sv )
 {
@@ -53,25 +68,47 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
   typedef typename Polygons::value_type Polygon;
 
   PolygonList p1 ( sv.polygons() );
+
+  //Loop through the shared vertex's polygons
   for( PolygonList::iterator poly = p1.begin(); poly != p1.end(); ++poly )
   {
+    //If we haven't visited already...
     if( !(*poly)->visited() )
     {
-      if( std::binary_search( uncapped.begin(), uncapped.end(), (*poly)->index() ) )
+      //Used below
+      const unsigned index ( (*poly)->index() );
+
+      //Is the index in the list of candidates?
+      if( std::binary_search( uncapped.begin(), uncapped.end(), index ) )
       {
-        loop.push_back( (*poly)->index() );
-        uncapped.remove ( (*poly)->index() );
-        Polygon p ( polygons.at( (*poly)->index() ) );
+        //Add the index to the current loop
+        loop.push_back( Loop::value_type ( index, sv.value() ) );
+
+        //Remove it from candidates so we don't add it again
+        uncapped.remove ( index );
+
+        //Get the polygon
+        Polygon p ( polygons.at( index ) );
+
+        //Visit this polygon
         visitPolygon( polygons, uncapped, loop, p );
       }
-      (*poly)->visited( true );
+      //(*poly)->visited( true );
     }
   }
+
+  //Mark the shared vertex as visited
   sv.visited( true );
 }
 
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Walk the graph and find all polygons that need to be capped.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 template
 <
@@ -90,16 +127,18 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
   typedef typename SharedVertex::PolygonList PolygonList;
   typedef typename Loops::value_type Loop;
 
-  Polygons polygons ( map.polygons() );
-
   map.setAllUnvisited();
+
+  Polygons polygons ( map.polygons() );
 
   //Walk through all the polygons
   for( Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
   { 
+    //Return now if we need to cancel
     if( cancel() )
       return;
-
+    
+    //Get list of neighbors that share one point
     PolygonList neighbors ( iter->getNeighbors() );
 
     PolygonList adjacentPolygons;
@@ -111,7 +150,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
       if( iter->index() != (*i)->index() )
       {
         //If these two polygons are adjacent...
-        if( adjacent ( &*iter, *i ) )
+        if( adjacent ( *iter, *(*i) ) )
           adjacentPolygons.push_back( *i );
       }
     }
@@ -136,13 +175,13 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
     //Create a cluster
     Loop loop;
-    loop.push_back( *i );
+    //loop.push_back( Loop::value_type ( *i,  );
 
     //Get the polygon
     Polygon p ( polygons.at( *i ) );
     
     //No longer needed, remove so we don't come back
-    uncapped.erase( i );
+    //uncapped.erase( i );
 
     //this will loop around the gap and build the proper loop
     Detail::visitPolygon( polygons, uncapped, loop, p );

@@ -31,10 +31,11 @@ namespace Polygons {
 template < class VertexType_ > class Triangle
 {
 public:
-
   typedef VertexType_ VertexType;
   typedef SharedVertex < Triangle, VertexType > SharedVertex;
+  typedef typename SharedVertex::RefPtr SharedVertexPtr;
 
+  //Constructor
   Triangle() : 
   _index( 0 ), 
   _v1( 0x0 ), 
@@ -43,6 +44,7 @@ public:
   _visited( false ) 
   {  }
 
+  //Set all three vertices
   void setVertices ( SharedVertex* v1, SharedVertex* v2, SharedVertex* v3 )
   {
     _v1 = v1;
@@ -50,6 +52,7 @@ public:
     _v3 = v3;
   }
 
+  //Append a shared vertex
   void append ( SharedVertex *v )
   {
     if( _v1 == 0x0 )
@@ -60,24 +63,24 @@ public:
       _v3 = v;
   }
 
-  SharedVertex * vertex1() { return _v1; }
-  SharedVertex * vertex2() { return _v2; }
-  SharedVertex * vertex3() { return _v3; }
+  SharedVertex * vertex1() { return _v1.get(); }
+  SharedVertex * vertex2() { return _v2.get(); }
+  SharedVertex * vertex3() { return _v3.get(); }
 
-  const SharedVertex * vertex1() const { return _v1; }
-  const SharedVertex * vertex2() const { return _v2; }
-  const SharedVertex * vertex3() const { return _v3; }
+  const SharedVertex * vertex1() const { return _v1.get(); }
+  const SharedVertex * vertex2() const { return _v2.get(); }
+  const SharedVertex * vertex3() const { return _v3.get(); }
   
   //Has this triangle been visited?
   bool visited () const   { return _visited; }
   void visited ( bool v ) { _visited = v; }
 
-  //Get the index
+  //Get/Set the index
   unsigned int index() const           { return _index; }
   void         index( unsigned int i ) { _index = i; }
 
   //Get all the neighbors of this triangle
-  std::list< Triangle* > getNeighbors() const
+  std::list< Triangle* > getNeighbors()
   {
     typedef std::list< Triangle* > Triangles;
     Triangles triangles;
@@ -118,9 +121,9 @@ public:
 
 private:
   unsigned int _index;
-  SharedVertex * _v1;
-  SharedVertex * _v2;
-  SharedVertex * _v3;
+  SharedVertexPtr _v1;
+  SharedVertexPtr _v2;
+  SharedVertexPtr _v3;
   bool _visited;
 };
 
@@ -131,19 +134,20 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class IndexSequence >
+template < class IndexSequence, class Vertex >
 struct TriangleFunctor
 {
   typedef std::vector< TriangleFunctor > TodoStack;
-  typedef Triangle::SharedVertex SharedVertex;
+  typedef typename Triangle<Vertex>::SharedVertex SharedVertex;
+  typedef typename SharedVertex::Ptr SharedVertexPtr;
 
   //Construct with a triangle
-  TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, Triangle *t ) :
+  TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, Triangle<Vertex> *t ) :
   _answer( answer ),
   _todoStack( todoStack ),
   _triangle ( t ),
   _sharedVertex( 0x0 )
-  { }
+  { } 
 
   //Construct with a shared vertex
   TriangleFunctor ( IndexSequence& answer, TodoStack& todoStack, SharedVertex *sv ) :
@@ -158,28 +162,28 @@ struct TriangleFunctor
     //If we have a triangle...
     if ( _triangle )
     {
-      SharedVertex* v1 ( _triangle->vertex1() );
-      SharedVertex* v2 ( _triangle->vertex2() );
-      SharedVertex* v3 ( _triangle->vertex3() );
+      SharedVertexPtr v1 ( _triangle->vertex1() );
+      SharedVertexPtr v2 ( _triangle->vertex2() );
+      SharedVertexPtr v3 ( _triangle->vertex3() );
 
       //Have we visited v1 yet?
       if( !v1->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v1 ) );
+        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v1 ) );
         v1->visited( true );
       }
 
       //Have we visited v2 yet?
       if( !v2->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v2 ) );
+        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v2 ) );
         v2->visited( true );
       }
 
       //Have we visited v3 yet?
       if( !v3->visited() )
       {
-        _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, v3 ) );
+        _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, v3 ) );
         v3->visited( true );
       }
       
@@ -197,7 +201,7 @@ struct TriangleFunctor
         if( !(*triangle)->visited() )
         {
           //Add the functor to the todo statck
-          _todoStack.push_back( TriangleFunctor < IndexSequence > ( _answer, _todoStack, *triangle ) );
+          _todoStack.push_back( TriangleFunctor < IndexSequence, Vertex > ( _answer, _todoStack, *triangle ) );
           (*triangle)->visited ( true );
         }
       }
@@ -213,10 +217,10 @@ struct TriangleFunctor
     return true;
   }
 private:
-  IndexSequence &      _answer;
-  TodoStack &          _todoStack;
-  Triangle *           _triangle;
-  SharedVertex *       _sharedVertex;
+  IndexSequence &       _answer;
+  TodoStack &           _todoStack;
+  Triangle< Vertex > *  _triangle;
+  SharedVertexPtr       _sharedVertex;
 };
 
 
@@ -230,16 +234,17 @@ struct TriangleTest
 {
   template < class TriangleType > bool operator () ( const TriangleType &t1, const TriangleType &t2 ) const
   {
-    typedef Triangle::SharedVertex SharedVertex;
+    typedef typename TriangleType::SharedVertex SharedVertex;
+    typedef typename const SharedVertex* SharedVertexPtr;
     unsigned int count ( 0 );
 
-    const SharedVertex* t1v1 ( t1.vertex1() );
-    const SharedVertex* t1v2 ( t1.vertex2() );
-    const SharedVertex* t1v3 ( t1.vertex3() );
+    SharedVertexPtr t1v1 ( t1.vertex1() );
+    SharedVertexPtr t1v2 ( t1.vertex2() );
+    SharedVertexPtr t1v3 ( t1.vertex3() );
 
-    const SharedVertex* t2v1 ( t2.vertex1() );
-    const SharedVertex* t2v2 ( t2.vertex2() );
-    const SharedVertex* t2v3 ( t2.vertex3() );
+    SharedVertexPtr t2v1 ( t2.vertex1() );
+    SharedVertexPtr t2v2 ( t2.vertex2() );
+    SharedVertexPtr t2v3 ( t2.vertex3() );
 
     if( t1v1 != t2v1 && t1v1 != t2v2 && t1v1 != t2v3 )
       ++count;

@@ -19,6 +19,10 @@
 #include "NcCreate.h"
 #include "NcCurve.h"
 
+#include "Standard/SlVec4.h"
+#include "Standard/SlVec3.h"
+#include "Standard/SlVec2.h"
+
 
 namespace CadKit
 {

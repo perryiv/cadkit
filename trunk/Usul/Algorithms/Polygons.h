@@ -217,7 +217,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
 }
 
 template < class KeeperIter, class Iter, class VertexSequence, class IndexSequence, class AdjacentTest >
-bool findAdjacentPolygon ( KeeperIter& keeperItr,
+bool isPolygonAdjacent ( KeeperIter& keeperItr,
                            Iter& indexItr,
                            const VertexSequence& vertices,
                            IndexSequence& keepers,
@@ -249,10 +249,10 @@ void removeFromIndexSequence(IndexSequence &indices, Iter& iter)
 }
 
 template < >
-void removeFromIndexSequence< std::list< unsigned int > , std::list<unsigned int>::reverse_iterator> 
-(std::list< unsigned int > &indices, std::list< unsigned int >::reverse_iterator& iter)
+void removeFromIndexSequence < std::list< unsigned int> , std::list< unsigned int>::reverse_iterator> 
+( std::list< unsigned int> &indices, std::list< unsigned int>::reverse_iterator& iter)
 {
-  std::list< unsigned int >::iterator temp ( iter.base() );
+  std::list< unsigned int>::iterator temp ( iter.base() );
   --iter;
   indices.erase ( temp );
 }
@@ -274,7 +274,7 @@ Iter searchPolygonList   ( Iter& keeperItr,
   {
     if( rIter != indices.rend() )
     {
-      if ( findAdjacentPolygon ( keeperItr, rIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
+      if ( isPolygonAdjacent ( keeperItr, rIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
       {
         ++rIter;
         return rIter.base();
@@ -284,7 +284,7 @@ Iter searchPolygonList   ( Iter& keeperItr,
      
     if( fIter != indices.end() )
     {
-      if ( findAdjacentPolygon ( keeperItr, fIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
+      if ( isPolygonAdjacent ( keeperItr, fIter, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount) )
       {
         ++fIter;
         return fIter;
@@ -295,6 +295,43 @@ Iter searchPolygonList   ( Iter& keeperItr,
       break;
   }
   return indices.end();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Input:
+//
+//     adjacentTest:  Predicate that determines if two polygons are adjacent.
+//         vertices:  Sequence of vertices that define polygons.
+//  numVertsPerPoly:  Number of vertices in a polygon. Triangle = 3.
+//
+//  Output:
+//
+//     adjacentList:  Vector of Lists that are the polygons that are adjacent
+//                    to the index that the list resides in.
+//
+///////////////////////////////////////////////////////////////////////////////
+template < class VertexSequence, class AdjacentList, class AdjacentTest >
+void buildAdjacentList( AdjacentList& adjacentList, const VertexSequence& vertices, const AdjacentTest& adjacentTest, unsigned int numVertsPerPoly )
+{
+  //TODO add error checking
+
+  unsigned int numPolygons ( vertices.size() / numVertsPerPoly );
+  adjacentList.resize( numPolygons );
+
+  for( AdjacentList::iterator i = adjacentList.begin(); i != adjacentList.end() !=; ++i )
+  {
+    for( AdjacentList::iterator j = i + 1; j != adjacentList.end(); ++j )
+    {
+      if( i->size() == numVertsPerPoly)
+        break;
+      if( true == adjacentTest ( vertices, *i * numVertsPerPoly, *j * numVertsPerPoly ) )
+      {
+        i->push_back( *j );
+        j->push_back( *i );
+      }
+    }
+  }
 }
 
 }; // namespace Polygons

@@ -9,36 +9,39 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for redrawing
+//  Interface for getting trackball information
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_REDRAW_H_
-#define _USUL_INTERFACE_REDRAW_H_
+#ifndef _USUL_INTERFACE_TRACKBALL_H_
+#define _USUL_INTERFACE_TRACKBALL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
+
+namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; };
 
 namespace Usul {
 namespace Interfaces {
 
-
-struct IRedraw : public Usul::Interfaces::IUnknown
+struct ITrackball : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IRedraw );
+  USUL_DECLARE_QUERY_POINTERS ( ITrackball );
 
   /// Id for this interface.
-  enum { IID = 1101930131u };
+  enum { IID = 1102018737u };
 
-  virtual void redraw() = 0;
-  virtual void setStatsDisplay ( bool ) = 0;
-  virtual void addChoreRedraw() = 0;
-  virtual void removeChoreRedraw() = 0;
+  virtual osg::Vec3 getCenter() = 0;
+  virtual float getDistance() = 0;
+  virtual osg::Quat getRotation() = 0;
 
-}; // class IRedraw
+  virtual void setTrackball ( const osg::Vec3&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo ) = 0;
+
+}; // class ITrackball
+
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_REDRAW_H_
+#endif // _USUL_INTERFACE_TRACKBALL_H_

@@ -30,7 +30,7 @@ namespace Usul
       virtual std::string   menuText() const = 0;
 
       //build the menu
-      virtual void buildMenu( FX::FXMenuPane*  ) = 0;
+      virtual void buildMenu( Usul::Interfaces::IUnknown *caller, FX::FXMenuPane*  ) = 0;
 
     }; // class IFoxMenuPane
   }; //namespace Usul

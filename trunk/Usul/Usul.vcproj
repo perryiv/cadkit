@@ -321,10 +321,16 @@
 					RelativePath=".\Interfaces\IActiveView.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IAnimate.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IClassFactory.h">
 				</File>
 				<File
 					RelativePath="Interfaces\ICommand.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFoxApp.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFoxEvent.h">
@@ -379,6 +385,9 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IToolCommand.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITrackball.h">
 				</File>
 				<File
 					RelativePath="Interfaces\IUndo.h">

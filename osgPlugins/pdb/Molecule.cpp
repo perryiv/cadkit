@@ -24,6 +24,8 @@
 #include <vector>
 #include <iostream>
 
+//#define COMPILE_FOR_SCREEN_SHOT
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -32,16 +34,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf ) : 
-  _atoms(),
-  _bonds(),
-  _maxDistanceFactor ( 10 ),
-  _lastRangeMax ( std::numeric_limits<float>::max() ),
-  _numLodChildren ( 5 ),
-  _stepFactor( 10 ),
-  _lodDistancePower ( 2 ),
-  _materialChooser ( mc ),
-  _sphereFactory ( sf ),
-  _cylinderFactory ( cf )
+  _atoms             (),
+  _bonds             (),
+  _maxDistanceFactor ( 200 ),
+  _lastRangeMax      ( std::numeric_limits<float>::max() ),
+  _numLodChildren    ( 10 ),
+  _stepFactor        ( 10 ),
+  _lodDistancePower  (  3 ),
+  _materialChooser   ( mc ),
+  _sphereFactory     ( sf ),
+  _cylinderFactory   ( cf ),
+  _minNumSegsLat     (  3 ),
+  _maxNumSegsLat     ( 50 ),
+  _minNumSegsLong    (  6 ),
+  _maxNumSegsLong    ( 50 )
 {
 }
 
@@ -113,7 +119,9 @@ osg::Group *Molecule::_build() const
   for ( Bonds::const_iterator i = _bonds.begin(); i != _bonds.end(); ++i )
   {
     // Add the node for this bond.
+#ifdef COMPILE_FOR_SCREEN_SHOT
     root->addChild ( this->_makeBond ( *i ) );
+#endif
   }
 
   std::cout << "Number of Atoms: " << _atoms.size() << std::endl;
@@ -155,6 +163,13 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
 
   return lod.release();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a cylinder.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const
 {
@@ -218,15 +233,18 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
   lod->setName ( atom.toString() );
 
   // Add several spheres.
-  for ( unsigned int i = 0; i < _numLodChildren - 1; ++i )
+  float denominator ( _numLodChildren - 1 );
+  for ( unsigned int i = 0; i < _numLodChildren; ++i )
   {
-    float detail ( ::pow ( 1.0f - (float) i / ( _numLodChildren - 2 ), _lodDistancePower ) );
-    lod->addChild ( this->_makeSphere ( center, radius, detail ) );
+    float loop ( i );
+    float detail ( ::pow ( 1.0f - loop / denominator, _lodDistancePower ) );
+    //lod->addChild ( this->_makeSphere ( center, radius, detail ) );
     //lod->addChild ( this->_makeSphere ( center, radius, _numLodChildren - i - 1 ) );
+    lod->addChild ( this->_makeSphere ( center, radius, osg::Vec2 ( detail, detail ) ) );
   }
 
-  // Last child is a cube.
-  //lod->addChild ( this->_makeCube ( center, radius * 1.5 ) );
+  // Last child.
+  lod->addChild ( this->_makeCube  ( center, radius * 1.5 ) );
 
   // Set the centers and ranges.
   this->_setCentersAndRanges ( lod.get() );
@@ -267,13 +285,58 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make a sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const
+{
+  // Make a translation.
+  osg::Matrixd T;
+  T.makeTranslate ( center );
+
+  // Random rotation.
+  osg::Matrixd R;
+  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
+  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
+  axis.normalize();
+  R.makeRotate ( angle, axis );
+
+  // Make a matrix-transform.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( R * T );
+
+  // Determine the number of latitudinal and longitudinal segments.
+  unsigned int latitude  ( _minNumSegsLat  + detail[0] * ( _maxNumSegsLat  - _minNumSegsLat  ) );
+  unsigned int longitude ( _minNumSegsLong + detail[1] * ( _maxNumSegsLong - _minNumSegsLong ) );
+
+  // Make a sphere.
+  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( radius, latitude, longitude ) );
+
+  // TODO, make this an option. Display lists crash with really big files.
+  geometry->setUseDisplayList ( true );
+
+  // Add the geometry to a geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
+
+  // Add the geode to the matrix-transform.
+  mt->addChild ( geode.get() );
+
+  // Return the matrix-transform.
+  return mt.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Make a subdivided sphere.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsigned int div ) const
 {
-  // Make a transmation.
+  // Make a translation.
   osg::Matrixd T;
   T.makeTranslate ( center );
 
@@ -312,17 +375,34 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsign
 
 osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
 {
+  // Make a translation.
+  osg::Matrixd T;
+  T.makeTranslate ( center );
+
+  // Random rotation.
+  osg::Matrixd R;
+  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
+  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
+  axis.normalize();
+  R.makeRotate ( angle, axis );
+
+  // Make a matrix-transform.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( R * T );
+
   // Make the sphere.
-  osg::ref_ptr<osg::Box> cube ( new osg::Box ( center, size ) );
+  osg::ref_ptr<osg::Box> cube ( new osg::Box ( osg::Vec3 ( 0, 0, 0 ), size ) );
   osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( cube.get() ) );
 
   // Add the cube to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( drawable.get() );
 
-  // Return the geode.
-  return geode.release();
+  // Add the geode to the matrix-transform.
+  mt->addChild ( geode.get() );
 
+  // Return the matrix-transform.
+  return mt.release();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

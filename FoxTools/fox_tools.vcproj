@@ -249,6 +249,9 @@
 				Name="Dialogs"
 				Filter="">
 				<File
+					RelativePath=".\Dialogs\Dialogs.h">
+				</File>
+				<File
 					RelativePath=".\Dialogs\FileDialog.cpp">
 				</File>
 				<File

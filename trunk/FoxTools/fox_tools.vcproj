@@ -212,6 +212,12 @@
 				Name="Functions"
 				Filter="">
 				<File
+					RelativePath=".\Functions\Check.cpp">
+				</File>
+				<File
+					RelativePath=".\Functions\Check.h">
+				</File>
+				<File
 					RelativePath=".\Functions\Delete.cpp">
 				</File>
 				<File

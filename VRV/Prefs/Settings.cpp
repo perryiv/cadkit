@@ -49,6 +49,8 @@ Settings::Settings()  : BaseClass(),
                         _statusMatrix   (),
                         _menuHidesScene ( false ),
                         _statusVisible  ( false ),
+                        _statusBgColor  ( 0.6f, 0.6f, 0.6f, 1.0f ),
+                        _statusTxtColor ( 0.0f, 0.0f, 0.0f, 1.0f ),
                         _transSpeed     ( 0.05f ), // percent / second
                         _rotSpeed       ( 30 ),    // degrees / second
                         _scaleSpeed     ( 0.05f ),

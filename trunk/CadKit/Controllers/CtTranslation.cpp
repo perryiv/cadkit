@@ -340,14 +340,24 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
     sourceLodOption->setLodProcessOption ( _lodOption );
 
   // See if we can set the zero range.
-  SlQueryPtr<IZeroRangeFloat> sourceZeroRange ( source );
-  if ( sourceZeroRange.isValid() )
-    sourceZeroRange->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
+  SlQueryPtr<IZeroRangeFloat> sourceZeroRangeFloat ( source );
+  if ( sourceZeroRangeFloat.isValid() )
+    sourceZeroRangeFloat->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeDouble> sourceZeroRangeDouble ( source );
+  if ( sourceZeroRangeDouble.isValid() )
+    sourceZeroRangeDouble->setZeroRange ( _zeroRange[NEGATIVE_ZERO_INDEX], _zeroRange[POSITIVE_ZERO_INDEX] );
 
   // See if we can set the zero range.
   SlQueryPtr<IZeroRangeFloat> targetZeroRange ( target );
   if ( targetZeroRange.isValid() )
     targetZeroRange->setZeroRange ( static_cast<float> ( _zeroRange[NEGATIVE_ZERO_INDEX] ), static_cast<float> ( _zeroRange[POSITIVE_ZERO_INDEX] ) );
+
+  // See if we can set the zero range.
+  SlQueryPtr<IZeroRangeDouble> targetZeroRangeDouble ( target );
+  if ( targetZeroRangeDouble.isValid() )
+    targetZeroRangeDouble->setZeroRange ( _zeroRange[NEGATIVE_ZERO_INDEX], _zeroRange[POSITIVE_ZERO_INDEX] );
 
   // Make sure the source supports the interface we need.
   SlQueryPtr<IDataSource> ds ( source );

@@ -1,37 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  BSD License
-//  http://www.opensource.org/licenses/bsd-license.html
-//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//
-//  Redistribution and use in source and binary forms, with or without 
-//  modification, are permitted provided that the following conditions are met:
-//
-//  - Redistributions of source code must retain the above copyright notice, 
-//    this list of conditions and the following disclaimer. 
-//
-//  - Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
-//
-//  - Neither the name of the CAD Toolkit nor the names of its contributors may
-//    be used to endorse or promote products derived from this software without
-//    specific prior written permission. 
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//  POSSIBILITY OF SUCH DAMAGE.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -47,10 +19,14 @@
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlStringFunctions.h"
+#include "Standard/SlQueryPtr.h"
+#include "Standard/SlMessageIds.h"
 
 #include "Interfaces/IErrorNotify.h"
 #include "Interfaces/IWarningNotify.h"
 #include "Interfaces/IProgressNotify.h"
+#include "Interfaces/IAssemblyNotify.h"
+#include "Interfaces/IGroupNotify.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -76,7 +52,6 @@ void _incrementPointerReferenceCount ( eaiEntity *p );
 void _decrementPointerReferenceCount ( eaiEntity *p );
 };
 
-
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtDatabase, SlRefBase );
 
 
@@ -87,17 +62,19 @@ SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : SlRefBase ( 0 ),
-  _flags ( 0 ),
-  _clients ( new Clients ),
   _target ( NULL ),
   _controller ( NULL ),
   _customerId ( customerId ),
   _initialized ( false ),
   _assemblyLoadOption ( INSTANCE_ASSEMBLY ),
   _brepLoadOption ( TESS_ONLY ),
-  _shapeLoadOption ( ALL_LODS )
+  _shapeLoadOption ( ALL_LODS ),
+  _assemblies ( new Assemblies ),
+  _currentPart ( NULL ),
+  _currentInstance ( NULL )
 {
   SL_PRINT2 ( "In DbJtDatabase::DbJtDatabase(), this = %X\n", this );
+  SL_ASSERT ( NULL != _assemblies.get() );
 }
 
 
@@ -127,8 +104,10 @@ IUnknown *DbJtDatabase::queryInterface ( const unsigned long &iid )
   {
   case IDataSource::IID:
     return static_cast<IDataSource *>(this);
-  case IController::IID:
-    return static_cast<IController *>(this);
+  case IControlled::IID:
+    return static_cast<IControlled *>(this);
+  case CadKit::IUnknown::IID:
+    return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
     return NULL;
   }
@@ -208,17 +187,17 @@ bool DbJtDatabase::_init()
   // Get the customer number.
   const unsigned int &customer = this->_getCustomerId();
 
-  if ( false == PROGRESS ( FORMAT ( "Attempting to register customer number %d... ", customer ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", customer ) ) )
     return false;
 
   // Register the customer.
   if ( eai_ERROR == eaiEntityFactory::registerCustomer ( customer ) )
   {
-    ERROR ( FORMAT ( "Failed to register customer number: %d.", customer ), 0 );
+    ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", customer ), 0 );
     return false;
   }
 
-  if ( false == PROGRESS ( "Done registering customer." ) )
+  if ( false == PROGRESS ( "Done registering DirectModel Data Toolkit customer." ) )
     return false;
 
   // We are now initialized.
@@ -233,10 +212,10 @@ bool DbJtDatabase::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::loadData ( const char *filename )
+bool DbJtDatabase::loadData ( const std::string &filename )
 {
-  SL_PRINT3 ( "In DbJtDatabase::setDataTarget(), this = %X, name = %s\n", this, ( filename ) ? filename : "" );
-  SL_ASSERT ( filename );
+  SL_PRINT3 ( "In DbJtDatabase::loadData(), this = %X, name = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
 
   // Try to traverse.
   try
@@ -252,7 +231,7 @@ bool DbJtDatabase::loadData ( const char *filename )
   // Catch any exceptions.
   catch ( ... )
   {
-    ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename ), 0 );
+    ERROR ( FORMAT ( "Exception generated when traversing '%s'", filename.c_str() ), 0 );
     return false;
   }
 }
@@ -264,10 +243,10 @@ bool DbJtDatabase::loadData ( const char *filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_traverse ( const char *filename )
+bool DbJtDatabase::_traverse ( const std::string &filename )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_traverse(), this = %X, filename = %s\n", this, filename );
-  SL_ASSERT ( filename );
+  SL_PRINT3 ( "In DbJtDatabase::_traverse(), this = %X, filename = %s\n", this, filename.c_str() );
+  SL_ASSERT ( filename.size() );
 
   // Initialize.
 //  _currentNode = NULL;
@@ -323,18 +302,18 @@ bool DbJtDatabase::_traverse ( const char *filename )
     return false;
   }
 
-  if ( false == PROGRESS ( FORMAT ( "Done registering traversal callbacks.\nImporting database: %s", filename ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Done registering traversal callbacks.\nImporting database: %s", filename.c_str() ) ) )
     return false;
 
   // Import the database. Note: returned pointer has ref-count of one.
-  SlRefPtr<eaiHierarchy> root = importer->import ( filename );
+  SlRefPtr<eaiHierarchy> root = importer->import ( filename.c_str() );
   if ( root.isNull() )
   {
-    ERROR ( FORMAT ( "Failed to import database: %s", filename ), 0 );
+    ERROR ( FORMAT ( "Failed to import database: %s", filename.c_str() ), 0 );
     return false;
   }
 
-  if ( false == PROGRESS ( FORMAT ( "Done importing database: %s\nStarting the traversal.", filename ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Done importing database: %s\nStarting the traversal.", filename.c_str() ) ) )
     return false;
 
   // There doesn't appear to be a way to get a pointer to this instance inside 
@@ -351,7 +330,7 @@ bool DbJtDatabase::_traverse ( const char *filename )
   // Reset this.
   _traverser = NULL;
 
-  if ( false == PROGRESS ( FORMAT ( "Done traversing: %s", filename ) ) )
+  if ( false == PROGRESS ( FORMAT ( "Done traversing: %s", filename.c_str() ) ) )
     return false;
 
   // TODO: It throws an exception when I allow this to be unref'd (and deleted).
@@ -368,13 +347,13 @@ bool DbJtDatabase::_traverse ( const char *filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *node, int level )
+int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalCallback(), node = %X, level = %d\n", node, level );
+  SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );
 
   // Call the other one.
-  return eai_OK == _traverser->_preActionTraversalNotify ( node, level );
+  return ( true == _traverser->_preActionTraversalNotify ( hierarchy, level ) ) ? eai_OK : eai_ERROR;
 }
 
 
@@ -384,13 +363,13 @@ int DbJtDatabase::_preActionTraversalCallback ( eaiHierarchy *node, int level )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *node, int level )
+int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *hierarchy, int level )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalCallback(), node = %X, level = %d\n", node, level );
+  SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalCallback(), hierarchy = %X, level = %d\n", hierarchy, level );
   SL_ASSERT ( _traverser );
 
   // Call the other one.
-  return eai_OK == _traverser->_postActionTraversalNotify ( node, level );
+  return ( true == _traverser->_postActionTraversalNotify ( hierarchy, level ) ) ? eai_OK : eai_ERROR;
 }
 
 
@@ -400,10 +379,59 @@ int DbJtDatabase::_postActionTraversalCallback ( eaiHierarchy *node, int level )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *node, int level )
+bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int level )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalNotify(), node = %X, level = %d\n", node, level );
-  return true;
+  SL_PRINT3 ( "In DbJtDatabase::_preActionTraversalNotify(), hierarchy = %X, level = %d\n", hierarchy, level );
+
+  // Check the level.
+  if ( level < 0 )
+  {
+    SL_ASSERT ( 0 ); // Corrupt database?
+    return ERROR ( FORMAT ( "Traverser reported eaiHierarchy at level: %2d, name: %s", level, hierarchy->name() ), 0 );
+  }
+
+  // Initialize.
+  bool result ( false );
+
+  // Determine the type.
+  switch ( hierarchy->typeID() )
+  {
+  case eaiHierarchy::eaiASSEMBLY:
+
+    // Save this assembly.
+    this->_pushAssembly ( (eaiAssembly *) hierarchy );
+
+    // Start the assembly.
+    result = this->_startAssembly ( (unsigned int) level, (eaiAssembly *) hierarchy );
+    break;
+
+  case eaiHierarchy::eaiPART:
+
+    // Save this part.
+    this->_setCurrentPart ( (eaiPart *) hierarchy );
+
+    // Start the part.
+    result = this->_startPart ( (unsigned int) level, (eaiPart *) hierarchy );
+    break;
+
+  case eaiHierarchy::eaiINSTANCE:
+
+    // Save this instance.
+    this->_setCurrentInstance ( (eaiInstance *) hierarchy );
+
+    // Start the instance.
+    result = this->_startInstance ( (unsigned int) level, (eaiInstance *) hierarchy );
+    break;
+
+  default:
+
+    SL_ASSERT ( 0 ); // What entity type is this?
+    result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
+    break;
+  }
+
+  // Return the result.
+  return result;
 }
 
 
@@ -413,9 +441,203 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *node, int level )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *node, int level )
+bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int level )
 {
-  SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalNotify(), node = %X, level = %d\n", node, level );
+  SL_PRINT3 ( "In DbJtDatabase::_postActionTraversalNotify(), hierarchy = %X, level = %d\n", hierarchy, level );
+
+  // Check the level.
+  if ( level < 0 )
+  {
+    SL_ASSERT ( 0 ); // Corrupt database?
+    return ERROR ( FORMAT ( "Traverser reported eaiHierarchy at level: %2d, name: %s", level, hierarchy->name() ), 0 );
+  }
+
+  // Initialize.
+  bool result ( false );
+
+  // Determine the type.
+  switch ( hierarchy->typeID() )
+  {
+  case eaiHierarchy::eaiASSEMBLY:
+
+    // End the assembly.
+    result = this->_endAssembly ( (unsigned int) level, (eaiAssembly *) hierarchy );
+
+    // Done with this assembly.
+    this->_popAssembly();
+    break;
+
+  case eaiHierarchy::eaiPART:
+
+    // End the part.
+    result = this->_endPart ( (unsigned int) level, (eaiPart *) hierarchy );
+
+    // No more part.
+    this->_setCurrentPart ( NULL );
+    break;
+
+  case eaiHierarchy::eaiINSTANCE:
+
+    // End the instance.
+    result = this->_endInstance ( (unsigned int) level, (eaiInstance *) hierarchy );
+
+    // No more instance.
+    this->_setCurrentInstance ( NULL );
+    break;
+
+  default:
+
+    SL_ASSERT ( 0 ); // What entity type is this?
+    result = ERROR ( FORMAT ( "Unknown entity type %d, level %2d, name: %s", hierarchy->typeID(), level, hierarchy->name() ), 0 );
+    break;
+  }
+
+  // Return the result.
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start an assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_startAssembly ( const unsigned int &level, eaiAssembly *entity )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_startAssembly(), assembly = %X, level = %d\n", entity, level );
+
+  if ( false == PROGRESS ( FORMAT ( "assembly, level %2d, name: %s", level, entity->name() ) ) )
+    return false;
+
+  // Needed below.
+  SlRefPtr<CadKit::IUnknown> thisUnknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
+
+  // See if the target has the assembly interface.
+  SlQueryPtr<IAssemblyNotify> assembly ( IAssemblyNotify::IID, _target );
+  if ( assembly.isValid() )
+  {
+    // Let the target know we have a new assembly.
+    if ( false == assembly->startAssembly ( thisUnknown ) )
+      return ERROR ( FORMAT ( "Failed to start assembly '%s' at level %d\n\tCall to IAssemblyNotify::startAssembly() returned false", entity->name(), level ), 0 );
+
+    // It worked.
+    return true;
+  }
+
+  // Try a group interface next.
+  SlQueryPtr<IGroupNotify> group ( IGroupNotify::IID, _target );
+  if ( group.isValid() )
+  {
+    // Let the target know we have a new group.
+    if ( false == group->startGroup ( thisUnknown ) )
+      return ERROR ( FORMAT ( "Failed to start group '%s' at level %d\n\tCall to IGroupNotify::startGroup() returned false", entity->name(), level ), 0 );
+
+    // It worked.
+    return true;
+  }
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), CadKit::NO_INTERFACE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End an assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_endAssembly ( const unsigned int &level, eaiAssembly *entity )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_endAssembly(), entity = %X, level = %d\n", entity, level );
+
+  // Needed below.
+  SlRefPtr<CadKit::IUnknown> thisUnknown ( this->queryInterface ( CadKit::IUnknown::IID ) );
+
+  // See if the target has the assembly interface.
+  SlQueryPtr<IAssemblyNotify> assembly ( IAssemblyNotify::IID, _target );
+  if ( assembly.isValid() )
+  {
+    // Let the target know we have a new assembly.
+    if ( false == assembly->endAssembly ( thisUnknown ) )
+      return ERROR ( FORMAT ( "Failed to end assembly '%s' at level %d\n\tCall to IAssemblyNotify::endAssembly() returned false", entity->name(), level ), 0 );
+
+    // It worked.
+    return true;
+  }
+
+  // Try a group interface next.
+  SlQueryPtr<IGroupNotify> group ( IGroupNotify::IID, _target );
+  if ( group.isValid() )
+  {
+    // Let the target know we have a new group.
+    if ( false == group->endGroup ( thisUnknown ) )
+      return ERROR ( FORMAT ( "Failed to end group '%s' at level %d\n\tCall to IGroupNotify::endGroup() returned false", entity->name(), level ), 0 );
+
+    // It worked.
+    return true;
+  }
+
+  // If we get here then we couldn't find an appropriate interface.
+  // We let the target decide whether or not to continue.
+  return ERROR ( FORMAT ( "Failed to process assembly '%s' at level %d.\n\tNo known interface available from target.", entity->name(), level ), CadKit::NO_INTERFACE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start a part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_startPart ( const unsigned int &level, eaiPart *part )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_startPart(), hierarchy = %X, level = %d\n", hierarchy, level );
+
+  return PROGRESS ( FORMAT ( "    part, level %2d, name: %s", level, part->name() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End a part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_endPart ( const unsigned int &level, eaiPart *part )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_endPart(), hierarchy = %X, level = %d\n", hierarchy, level );
+
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start an instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_startInstance ( const unsigned int &level, eaiInstance *instance )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_startInstance(), hierarchy = %X, level = %d\n", hierarchy, level );
+
+  return PROGRESS ( FORMAT ( "instance, level %2d, name: %s", level, instance->name() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End an instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_endInstance ( const unsigned int &level, eaiInstance *instance )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_endInstance(), hierarchy = %X, level = %d\n", hierarchy, level );
+
   return true;
 }
 
@@ -445,7 +667,7 @@ void DbJtDatabase::setController ( IUnknown *controller )
 {
   SL_PRINT3 ( "In DbJtDatabase::setController(), this = %X, controller = %X\n", this, controller );
 
-  // Set the target, it may be null.
+  // Set the controller, it may be null.
   _controller = controller;
 }
 
@@ -484,15 +706,15 @@ bool DbJtDatabase::_notifyError ( const std::string &message, const unsigned lon
 {
   SL_PRINT4 ( "In DbJtDatabase::_notifyError(), this = %X, id = %d, message = \n", this, id, message.c_str() );
 
-  // See if the target supports the proper interface.
-  SlRefPtr<IErrorNotify> target = static_cast<IErrorNotify *> ( _target->queryInterface ( IErrorNotify::IID ) );
+  // See if the controller supports the proper interface.
+  SlQueryPtr<IErrorNotify> controller ( IErrorNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
-  if ( target.isNull() )
+  if ( controller.isNull() )
     return true;
 
-  // Let the target know.
-  return target->errorNotify ( message, id );
+  // Let the controller know.
+  return controller->errorNotify ( message, id );
 }
 
 
@@ -506,15 +728,15 @@ bool DbJtDatabase::_notifyProgress ( const std::string &message )
 {
   SL_PRINT3 ( "In DbJtDatabase::_notifyProgress(), this = %X, message = \n", this, message.c_str() );
 
-  // See if the target supports the proper interface.
-  SlRefPtr<IProgressNotify> target = static_cast<IProgressNotify *> ( _target->queryInterface ( IProgressNotify::IID ) );
+  // See if the controller supports the proper interface.
+  SlQueryPtr<IProgressNotify> controller ( IProgressNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
-  if ( target.isNull() )
+  if ( controller.isNull() )
     return true;
 
-  // Let the target know.
-  return target->progressNotify ( message );
+  // Let the controller know.
+  return controller->progressNotify ( message );
 }
 
 
@@ -528,15 +750,15 @@ bool DbJtDatabase::_notifyWarning ( const std::string &message, const unsigned l
 {
   SL_PRINT4 ( "In DbJtDatabase::_notifyWarning(), this = %X, id = %d, message = \n", this, id, message.c_str() );
 
-  // See if the target supports the proper interface.
-  SlRefPtr<IWarningNotify> target = static_cast<IWarningNotify *> ( _target->queryInterface ( IWarningNotify::IID ) );
+  // See if the controller supports the proper interface.
+  SlQueryPtr<IWarningNotify> controller ( IWarningNotify::IID, _controller );
 
   // If the interface is not implemented then return true to proceed.
-  if ( target.isNull() )
+  if ( controller.isNull() )
     return true;
 
-  // Let the target know.
-  return target->warningNotify ( message, id );
+  // Let the controller know.
+  return controller->warningNotify ( message, id );
 }
 
 
@@ -589,4 +811,88 @@ void DbJtDatabase::setShapeLoadOption ( const ShapeLoadOption &option )
 
   // Set the option.
   _shapeLoadOption = option;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Push the assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_pushAssembly ( eaiAssembly *assembly )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_pushAssembly(), this = %X, assembly = %X\n", this, assembly );
+  SL_ASSERT ( assembly );
+
+  // Push it onto our stack.
+  _assemblies->push ( assembly );
+
+  // Reference it.
+  assembly->ref();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pop the assembly.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_popAssembly()
+{
+  SL_PRINT2 ( "In DbJtDatabase::_popAssembly(), this = %X\n", this );
+  SL_ASSERT ( false == _assemblies->empty() );
+
+  // Unreference the top one.
+  _assemblies->top()->unref();
+
+  // Pop it off of our stack.
+  _assemblies->pop();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current part.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_setCurrentPart ( eaiPart *part )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setCurrentPart(), this = %X, part = %X\n", this, part );
+
+  // Release the old one if valid.
+  if ( _currentPart )
+    _currentPart->unref();
+
+  // Set the new one.
+  _currentPart = part;
+
+  // Reference the new one if valid.
+  if ( _currentPart )
+    _currentPart->ref();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbJtDatabase::_setCurrentInstance ( eaiInstance *instance )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setCurrentInstance(), this = %X, instance = %X\n", this, instance );
+
+  // Release the old one if valid.
+  if ( _currentInstance )
+    _currentInstance->unref();
+
+  // Set the new one.
+  _currentInstance = instance;
+
+  // Reference the new one if valid.
+  if ( _currentInstance )
+    _currentInstance->ref();
 }

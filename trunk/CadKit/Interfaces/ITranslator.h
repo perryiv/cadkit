@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IProgressNotify: Interface for reporting progress.
+//  ITranslator: Interface for a translator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
-#define _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_TRANSLATOR_H_
+#define _CADKIT_INTERFACE_TRANSLATOR_H_
 
 #include "IUnknown.h"
 
@@ -25,17 +25,17 @@
 
 namespace CadKit
 {
-class IProgressNotify : public IUnknown
+class ITranslator : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032645618 };
+  enum { IID = 1032754104 };
 
-  // Report progress. Return true if the caller should continue.
-  virtual bool            progressNotify ( const std::string &message ) const = 0;
+  // Translate the database.
+  virtual bool            translate ( const std::string &mane, IUnknown *source, IUnknown *target ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_WARNING_H_
+#endif // _CADKIT_INTERFACE_TRANSLATOR_H_

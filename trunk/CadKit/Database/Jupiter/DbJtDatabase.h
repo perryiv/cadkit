@@ -1,37 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  BSD License
-//  http://www.opensource.org/licenses/bsd-license.html
-//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//
-//  Redistribution and use in source and binary forms, with or without 
-//  modification, are permitted provided that the following conditions are met:
-//
-//  - Redistributions of source code must retain the above copyright notice, 
-//    this list of conditions and the following disclaimer. 
-//
-//  - Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
-//
-//  - Neither the name of the CAD Toolkit nor the names of its contributors may
-//    be used to endorse or promote products derived from this software without
-//    specific prior written permission. 
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//  POSSIBILITY OF SUCH DAMAGE.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -47,21 +19,27 @@
 #include "DbJtApi.h"
 
 #include "Interfaces/IDataSource.h"
-#include "Interfaces/IController.h"
+#include "Interfaces/IControlled.h"
 #include "Interfaces/ILoadOptions.h"
 
 #include "Standard/SlRefBase.h"
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlBitmask.h"
+#include "Standard/SlStack.h"
 
 #include <vector>
+
+class eaiAssembly;
+class eaiHierarchy;
+class eaiInstance;
+class eaiPart;
 
 
 namespace CadKit
 {
 class DB_JT_API DbJtDatabase : public SlRefBase, 
                                public IDataSource,
-                               public IController,
+                               public IControlled,
                                public ILoadOptions
 {
 public:
@@ -93,14 +71,14 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Load the data.
-  virtual bool            loadData ( const char *filename );
+  virtual bool            loadData ( const std::string &filename );
 
   // Set the data target.
   virtual void            setDataTarget ( IUnknown *target );
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  IController interface.
+  //  IControlled interface.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -124,10 +102,8 @@ public:
 
 protected:
 
-  typedef std::vector<SlRefPtr<IUnknown> > Clients;
+  typedef SlStack<eaiAssembly *> Assemblies;
 
-  unsigned int _flags;
-  std::auto_ptr<Clients> _clients;
   SlRefPtr<IUnknown> _target;
   SlRefPtr<IUnknown> _controller;
   unsigned int _customerId;
@@ -135,9 +111,18 @@ protected:
   AssemblyLoadOption _assemblyLoadOption;
   BrepLoadOption _brepLoadOption;
   ShapeLoadOption _shapeLoadOption;
+  std::auto_ptr<Assemblies> _assemblies;
+  eaiPart *_currentPart;
+  eaiInstance *_currentInstance;
 
   virtual ~DbJtDatabase();
 
+  bool                    _endAssembly ( const unsigned int &level, eaiAssembly *assembly );
+  bool                    _endInstance ( const unsigned int &level, eaiInstance *instance );
+  bool                    _endPart     ( const unsigned int &level, eaiPart *part );
+
+  const eaiAssembly *     _getCurrentAssembly() const;
+  eaiAssembly *           _getCurrentAssembly();
   const unsigned int &    _getCustomerId();
 
   bool                    _init();
@@ -146,15 +131,25 @@ protected:
   bool                    _notifyProgress ( const std::string &message );
   bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
 
-  bool                    _traverse ( const char *filename );
-  static int              _preActionTraversalCallback ( eaiHierarchy *node, int level );
-  static int              _postActionTraversalCallback ( eaiHierarchy *node, int level );
-  bool                    _preActionTraversalNotify ( eaiHierarchy *node, int level );
-  bool                    _postActionTraversalNotify ( eaiHierarchy *node, int level );
+  static int              _preActionTraversalCallback ( eaiHierarchy *hierarchy, int level );
+  static int              _postActionTraversalCallback ( eaiHierarchy *hierarchy, int level );
+  bool                    _preActionTraversalNotify ( eaiHierarchy *hierarchy, int level );
+  bool                    _postActionTraversalNotify ( eaiHierarchy *hierarchy, int level );
+
+  void                    _pushAssembly ( eaiAssembly *assembly );
+  void                    _popAssembly();
+
+  void                    _setCurrentPart ( eaiPart *part );
+  void                    _setCurrentInstance ( eaiInstance *instance );
+
+  bool                    _startAssembly ( const unsigned int &level, eaiAssembly *assembly );
+  bool                    _startInstance ( const unsigned int &level, eaiInstance *instance );
+  bool                    _startPart     ( const unsigned int &level, eaiPart *part );
+
+  bool                    _traverse ( const std::string &filename );
 
   SL_DECLARE_REFCOUNT_TYPE ( DbJtDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbJtDatabase, 1032628516 );
-  SL_DECLARE_BITMASK_FUNCTIONS ( Flags, unsigned int, _flags );
 };
 
 }; // namespace CadKit

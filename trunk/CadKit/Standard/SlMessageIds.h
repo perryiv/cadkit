@@ -37,39 +37,19 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  SlDeclareConst: For declaring constant numbers on different platforms.
+//  SlMessageIds: All the common message ids (error, warning, etc.).
+//  depending on the context.
 //
 //////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
-#define _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#ifndef _CADKIT_STANDARD_LIBRARY_ERROR_IDS_H_
+#define _CADKIT_STANDARD_LIBRARY_ERROR_IDS_H_
 
 
-//////////////////////////////////////////////////////////////////////////
-//
-// Macros used for declaring integer constants.
-//
-//////////////////////////////////////////////////////////////////////////
+namespace CadKit
+{
+const unsigned long NO_INTERFACE          ( 1032730909 );
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
-# define SL_CONST_INT64(n)  n
-# define SL_CONST_UINT64(n) n
-# define SL_CONST_INT32(n)  n
-# define SL_CONST_UINT32(n) n
-#elif __GNUC__
-# ifdef _64_BIT_MACHINE
-#  define SL_CONST_INT64(n)  n##L
-#  define SL_CONST_UINT64(n) n##UL
-# else // 32 bit machines.
-#  define SL_CONST_INT64(n)  n##LL
-#  define SL_CONST_UINT64(n) n##ULL
-# endif // 64/32 bit linux.
-# define SL_CONST_UINT32(n) n##U
-# define SL_CONST_UINT16(n) n##U
-# define SL_CONST_UINT8(n)  n##U
-#else
-TODO
-#endif
+}; // namespace CadKit
 
-
-#endif // _CADKIT_STANDARD_LIBRARY_DECLARE_CONSTANTS_H_
+#endif // _CADKIT_STANDARD_LIBRARY_ERROR_IDS_H_

@@ -120,14 +120,6 @@ SOURCE=.\DbJtDatabase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DbJtTargets.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\DbJtTargets.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\DbJtTraverser.cpp
 # End Source File
 # Begin Source File

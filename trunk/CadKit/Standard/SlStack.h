@@ -44,6 +44,8 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_STACK_H_
 #define _CADKIT_STANDARD_LIBRARY_STACK_H_
 
+#include "SlAssert.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stack>
 #endif

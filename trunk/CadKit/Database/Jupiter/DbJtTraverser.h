@@ -89,17 +89,16 @@ public:
   };
 
   // Possible entity types.
-  enum EntityType
-  {
-    NONE = 0, BREP, REGION, SHELL, FACE, LOOP, COEDGE, EDGE, VERTEX, 
-    NURBS_SURFACE, UV_CURVE, XYZ_CURVE, TRI_STRIP_SET, TRI_FAN_SET, POINT_SET, 
-    LINE_STRIP_SET, POLYGON_SET, POINT, LIGHT_SET, MATERIAL, TRANSFORM, 
-    TEX_IMAGE, POINT_LIGHT, INFINITE_LIGHT, PROPERTY, ASSEMBLY, PART, INSTANCE, 
-    PLACE_HOLDER, MOTION_PART, CLIENT_DATA, WIRE, CAD_EXPORTER, CAD_IMPORTER,
-    ENTITY_STACK, STACK, ENTITY_TABLE, MOTION_EXPORTER, PART_TABLE, 
-    PROPERTY_FILTER, TRAVERSER, WREP, HARNESS, WREP_WIRE, BUNDLE, SEGMENT, 
-    BOX_SET, CYLINDER_SET, PYRAMID_SET, SPHERE_SET, TRI_PRISM_SET
-  };
+  typedef unsigned int EntityType;
+  static const EntityType ASSEMBLY;
+  static const EntityType PART;
+  static const EntityType INSTANCE;
+  static const EntityType LINE_STRIP_SET;
+  static const EntityType POINT_SET;
+  static const EntityType POLYGON_SET;
+  static const EntityType TRI_STRIP_SET;
+  static const EntityType TRI_FAN_SET;
+  static const EntityType UNKNOWN;
 
   // Shape components.
   enum

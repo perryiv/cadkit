@@ -9,33 +9,29 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  IProgressNotify: Interface for reporting progress.
+//  IControlled: Interface for an object that is controlled by another.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
-#define _CADKIT_INTERFACE_PROGRESS_NOTIFY_H_
+#ifndef _CADKIT_INTERFACE_CONTROLLED_H_
+#define _CADKIT_INTERFACE_CONTROLLED_H_
 
 #include "IUnknown.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-#endif
 
 
 namespace CadKit
 {
-class IProgressNotify : public IUnknown
+class IControlled : public IUnknown
 {
 public:
 
   // Id for this interface.
-  enum { IID = 1032645618 };
+  enum { IID = 1032634450 };
 
-  // Report progress. Return true if the caller should continue.
-  virtual bool            progressNotify ( const std::string &message ) const = 0;
+  // Set the controller.
+  virtual void            setController ( IUnknown *controller ) = 0;
 };
 
 }; // namespace CadKit
 
-#endif // _CADKIT_INTERFACE_WARNING_H_
+#endif // _CADKIT_INTERFACE_CONTROLLER_H_

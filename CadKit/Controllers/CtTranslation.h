@@ -47,21 +47,8 @@ public:
 
   CtTranslation();
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IUnknown interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the reference count.
-  virtual unsigned long   getRefCount() const;
-
-  // See if the interface is supported.
-  virtual IUnknown *      queryInterface ( const unsigned long &iid );
-
-  // Reference/unreference this instance.
-  virtual void            ref();
-  virtual void            unref();
+  // IUnknown interface.
+  CADKIT_DECLARE_IUNKNOWN_MEMBERS;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -131,7 +118,7 @@ protected:
 
   bool                    _messageNotify ( const std::string &type, const std::string &message, const unsigned long &id ) const;
 
-  SL_DECLARE_REFCOUNT_TYPE ( CtTranslation );
+  SL_DECLARE_REFERENCE_POINTER ( CtTranslation );
   SL_DECLARE_DYNAMIC_CLASS ( CtTranslation, 1032745026 );
 };
 

@@ -63,9 +63,9 @@ SlRefBase::~SlRefBase()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SlRefBase::_incrementReferenceCount()
+void SlRefBase::ref()
 {
-  SL_PRINT4 ( "SlRefBase::_incrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::ref(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
   SL_ASSERT ( this );
 
   // Increment the reference count.
@@ -79,9 +79,9 @@ void SlRefBase::_incrementReferenceCount()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SlRefBase::_decrementReferenceCount()
+void SlRefBase::unref()
 {
-  SL_PRINT4 ( "SlRefBase::_decrementReferenceCount(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
+  SL_PRINT4 ( "SlRefBase::unref(), this = %X, _refCount = %d, class name = %s\n", this, _refCount, this->getClassName() );
   SL_ASSERT ( this );
 
   // Decrement the reference count.
@@ -91,59 +91,3 @@ void SlRefBase::_decrementReferenceCount()
   if ( 0 == _refCount ) 
     delete this;
 }
-
-
-namespace CadKit {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  This function makes SlRefBase work with SlRefPtr.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _incrementPointerReferenceCount ( SlRefBase *p )
-{
-  p->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  This function makes SlRefBase work with SlRefPtr.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _decrementPointerReferenceCount ( SlRefBase *p )
-{
-  p->_decrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Safely reference the pointer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void safeReference ( SlRefBase *p )
-{
-  if ( p )
-    p->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Safely unreference the pointer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void safeDereference ( SlRefBase *p )
-{
-  if ( p )
-    p->_decrementReferenceCount();
-}
-
-
-}; // namespace CadKit

@@ -34,18 +34,9 @@ public:
   /// Get the reference count.
   unsigned long   getRefCount() const { return _refCount; }
 
-  /// Increment/decrement the reference count. These functions break the 
-  /// naming convention of using "_" to prefix protected/private members. 
-  /// I do this because:
-  /// 1. I want the client to overload these and pick names that are intuitive 
-  ///    for the usage. For example, ref()/unref() for a scene graph, and 
-  ///    AddRef()/Release() for a COM object.
-  /// 2. I want these to be callable from _incrementPointerReferenceCount() 
-  ///    and _decrementPointerReferenceCount(), which are declared in namespace
-  ///    CadKit. The client can overload these functions so that SlRefPtr will
-  ///    work with their class.
-  void            _incrementReferenceCount();
-  void            _decrementReferenceCount();
+  /// Increment/decrement the reference count.
+  void            ref();
+  void            unref();
 
 protected:
 
@@ -59,30 +50,36 @@ protected:
 
   virtual ~SlRefBase();
 
-  SL_DECLARE_CLASS(SlRefBase,0x00000002);
+  SL_DECLARE_CLASS ( SlRefBase, 1032912262 );
 };
 
 
-/// These are for class SlRefPtr. The client can overload these functions to
-/// use SlRefPtr with another kind of pointer (like IUnknown). By making 
-/// SlRefPtr call these functions instead of it's contained pointer's
-/// ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
-/// API of it's contained pointer.
-void _incrementPointerReferenceCount ( SlRefBase *p );
-void _decrementPointerReferenceCount ( SlRefBase *p );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  These are for class SlRefPtr. The client can overload these functions to
+//  use SlRefPtr with another kind of pointer (like IUnknown). By making 
+//  SlRefPtr call these functions instead of it's contained pointer's
+//  ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
+//  API of it's contained pointer. To use SlRefPtr with a pointer type 
+//  that does not have "ref/unref" members, make a specific (non-template) 
+//  overload of these functions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
+template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
 
 
-/// Safely reference/unreference the pointer. Provided as a convenience.
-void safeReference   ( SlRefBase *ptr );
-void safeDereference ( SlRefBase *ptr );
-
+// Safely reference/unreference the pointer. Provided as a convenience.
+template <class T> inline void safeRef   ( T *ptr ) { if ( ptr ) ptr->ref(); }
+template <class T> inline void safeUnref ( T *ptr ) { if ( ptr ) ptr->unref(); }
 
 
 }; // namespace CadKit
 
 
 // Declare a typecast for SlRefPtr. Put this in your class declaration.
-#define SL_DECLARE_REFCOUNT_TYPE(class_name) \
+#define SL_DECLARE_REFERENCE_POINTER(class_name) \
   public: \
   typedef SlRefPtr < class_name > Ptr
 

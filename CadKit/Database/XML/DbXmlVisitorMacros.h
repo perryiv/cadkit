@@ -56,7 +56,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_DECLARE_VISITOR(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE(class_name); \
+  SL_DECLARE_REFERENCE_POINTER(class_name); \
   SL_DECLARE_CLASS(class_name, id)
 
 
@@ -67,7 +67,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DB_XML_DECLARE_DYNAMIC_VISITOR(class_name, id) \
-  SL_DECLARE_REFCOUNT_TYPE(class_name); \
+  SL_DECLARE_REFERENCE_POINTER(class_name); \
   SL_DECLARE_DYNAMIC_CLASS(class_name, id)
 
 

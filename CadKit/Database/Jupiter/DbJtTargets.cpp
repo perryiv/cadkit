@@ -52,7 +52,8 @@
 
 using namespace CadKit;
 
-SL_IMPLEMENT_DYNAMIC_CLASS(DbJtTargets,SlRefBase);
+SL_IMPLEMENT_DYNAMIC_CLASS ( DbJtTargets, SlRefBase );
+CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbJtTargets, SlRefBase );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,45 +98,6 @@ IUnknown *DbJtTargets::queryInterface ( const unsigned long &iid )
   default:
     return NULL;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the reference count.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned long DbJtTargets::getRefCount() const
-{
-  SL_PRINT2 ( "In DbJtTargets::getRefCount(), this = %X\n", this );
-  return SlRefBase::getRefCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtTargets::ref()
-{
-  SL_PRINT2 ( "In DbJtTargets::ref(), this = %X\n", this );
-  this->_incrementReferenceCount();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DbJtTargets::unref()
-{
-  SL_PRINT2 ( "In DbJtTargets::unref(), this = %X\n", this );
-  this->_decrementReferenceCount();
 }
 
 

@@ -40,21 +40,8 @@ public:
 
   DbOsgDatabase();
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  IUnknown interface.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the reference count.
-  virtual unsigned long   getRefCount() const;
-
-  // See if the interface is supported.
-  virtual IUnknown *      queryInterface ( const unsigned long &iid );
-
-  // Reference/unreference this instance.
-  virtual void            ref();
-  virtual void            unref();
+  // IUnknown interface.
+  CADKIT_DECLARE_IUNKNOWN_MEMBERS;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -92,7 +79,7 @@ protected:
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();
 
-  SL_DECLARE_REFCOUNT_TYPE ( DbOsgDatabase );
+  SL_DECLARE_REFERENCE_POINTER ( DbOsgDatabase );
   SL_DECLARE_DYNAMIC_CLASS ( DbOsgDatabase, 1032736074 );
 };
 

@@ -85,7 +85,7 @@ protected:
 
   virtual ~DbXmlGroup();
 
-  DB_XML_DECLARE_DYNAMIC_NODE(DbXmlGroup,0x00001016);
+  DB_XML_DECLARE_DYNAMIC_NODE ( DbXmlGroup, 1032912327 );
 };
 };
 

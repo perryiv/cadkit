@@ -186,18 +186,6 @@ template <class T> inline void SlRefPtr<T>::setValue ( const SlRefPtr<T> &p )
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  So that SlRefPtr works with type T. To use SlRefPtr with a pointer type 
-//  that does not have "ref/unref" members, make a specific (non-template) 
-//  overload of this function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
-template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
-
-
 }; // namespace CadKit
 
 #endif // _CADKIT_STANDARD_LIBRARY_SMART_REFERENCE_POINTER_CLASS_H_

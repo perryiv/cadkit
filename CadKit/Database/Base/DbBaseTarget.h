@@ -32,8 +32,8 @@
 namespace CadKit
 {
 class DB_BASE_API DbBaseTarget : public SlRefBase, 
-                             public IDataTarget,
-                             public IControlled
+                                 public IDataTarget,
+                                 public IControlled
 {
 public:
 
@@ -75,7 +75,7 @@ protected:
   bool                    _notifyProgress ( const std::string &message );
   bool                    _notifyWarning  ( const std::string &message, const unsigned long &id );
 
-  SL_DECLARE_REFCOUNT_TYPE ( DbBaseTarget );
+  SL_DECLARE_REFERENCE_POINTER ( DbBaseTarget );
   SL_DECLARE_CLASS ( DbBaseTarget, 1032736074 );
 };
 

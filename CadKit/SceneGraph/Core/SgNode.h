@@ -88,10 +88,6 @@ public:
   // Set the data members from the given node.
   void                      setValue ( const SgNode &node );
 
-  // Reference/unreference the node.
-  void                      ref()   { this->_incrementReferenceCount(); }
-  void                      unref() { this->_decrementReferenceCount(); }
-
 protected:
 
   #ifdef _DEBUG

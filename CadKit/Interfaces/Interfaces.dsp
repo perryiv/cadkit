@@ -420,5 +420,9 @@ SOURCE=.\IUnknown.h
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=.\IZeroRange.h
+# End Source File
 # End Target
 # End Project

@@ -50,6 +50,7 @@
 #include "TrJt2Xml.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Database/XML/DbXmlGroup.h"
 # include "Database/XML/DbXmlLeaf.h"
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
@@ -118,7 +119,10 @@ bool TrJt2Xml::init()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Translate.
+//  Translate. Note: we return a bool instead of a DbXmlGroup pointer because, 
+//  this way if the translation fails part way through, the client can decide 
+//  whether or not to use the partially formed XML tree. If we didn't return
+//  a bool they would get all or nothing (a complete tree or NULL).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -398,14 +402,14 @@ bool TrJt2Xml::_addColor ( const unsigned int &valid,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DbXmlGroup::Ptr TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity )
+DbXmlGroup *TrJt2Xml::_createGroup ( const char *groupName, DbJtTraverser::EntityHandle entity )
 {
   SL_PRINT4 ( "In TrJt2Xml::_createGroup(), this = %X, groupName = %s, entity = %X\n", this, groupName, entity );
   SL_ASSERT ( groupName );
 
   // Make a new group.
-  DbXmlGroup::Ptr group = new DbXmlGroup ( groupName );
-  if ( group.isNull() )
+  DbXmlGroup *group = new DbXmlGroup ( groupName );
+  if ( NULL == group )
     return NULL;
 
   // Add some properties to the group.

@@ -47,14 +47,18 @@
 #include "TrJt2PfApi.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Database/Jupiter/DbJtTraverser.h"
 # include <list>
 # include <string>
 # include <vector>
 #endif
 
+class pfGroup;
+
+
 namespace CadKit
 {
+class DbJtTraverser;
+
 class TR_JT_2_PF_API TrJt2Pf
 {
 public:
@@ -63,7 +67,7 @@ public:
   ~TrJt2Pf();
 
   // Get the last error.
-  const SlAString &       getLastError() const { return _error; }
+  const std::string &     getLastError() const { return _error; }
 
   // Initialize. Call this before doing anything else.
   bool                    init();
@@ -73,11 +77,9 @@ public:
 
 protected:
 
-  typedef std::list<DbXmlGroup *> XmlGroupStack;
-  DbJtTraverser::Ptr _jtTraverser;
-  DbXmlWrite::Ptr _xmlWrite;
-  DbXmlGroup::Ptr _xmlRoot;
-  SlAString _error;
+  typedef std::list<pfGroup *> XmlGroupStack;
+  SlRefPtr<DbJtTraverser> _jtTraverser;
+  std::string _error;
   XmlGroupStack _groupStack;
 
   bool                    _addArray      ( const unsigned int &valid, const unsigned int &which, const std::vector<float> &array, const char *arrayName, DbXmlGroup &set );

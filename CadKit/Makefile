@@ -1,12 +1,13 @@
 # List these in the order that they need to be compiled.
 SUBDIRS = \
 	Standard \
-	SceneGraph/Core \
-	SceneGraph/OpenGL \
-	Database/XML \
 	Database/Jupiter \
+	Database/XML \
 	Translators/Jupiter2Xml \
-	Demos/Jt2Xml
+	Demos/Jt2Xml \
+	Translators/Jupiter2Performer
+#	SceneGraph/Core \
+#	SceneGraph/OpenGL \
 #	Examples/BoundingBox \
 #	Examples/Matrix4 \
 #	Examples/Pathname \

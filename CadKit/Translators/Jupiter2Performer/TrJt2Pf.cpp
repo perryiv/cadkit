@@ -50,6 +50,7 @@
 #include "TrJt2Pf.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Database/Jupiter/DbJtTraverser.h"
 # include "Database/XML/DbXmlLeaf.h"
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
@@ -69,8 +70,6 @@ using namespace CadKit;
 
 TrJt2Pf::TrJt2Pf() :
   _jtTraverser ( NULL ),
-  _xmlWrite ( NULL ),
-  _xmlRoot ( NULL ),
   _error ( "" )
 {
   SL_PRINT ( "In TrJt2Pf::TrJt2Pf(), this = %X,\n", this );
@@ -101,9 +100,7 @@ bool TrJt2Pf::init()
 
   // Allocate.
   _jtTraverser = new DbJtTraverser;
-  _xmlWrite = new DbXmlWrite;
-  _xmlRoot = new DbXmlGroup;
-  if ( _jtTraverser.isNull() || _xmlWrite.isNull() || _xmlRoot.isNull() )
+  if ( _jtTraverser.isNull() )
   {
     _error.format ( "Failed to allocate memory." );
     return false;
@@ -115,9 +112,6 @@ bool TrJt2Pf::init()
   // Set the callback function.
   _jtTraverser->setCallback ( &TrJt2Pf::_traverseCallback, this );
 
-  // Name the root node.
-  _xmlRoot->setName ( "jt2xml" );
-
   // It worked.
   return true;
 }
@@ -125,21 +119,21 @@ bool TrJt2Pf::init()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Translate.
+//  Translate. Note: we return a bool instead of a pfGroup pointer because, 
+//  this way if the translation fails part way through, the client can decide 
+//  whether or not to use the partially formed scene. If we didn't return
+//  a bool they would get all or nothing (a complete scene or NULL).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TrJt2Pf::translate ( const char *filename )
+bool TrJt2Pf::translate ( const char *filename, pfGroup &root )
 {
   SL_PRINT ( "In TrJt2Pf::translate(), this = %X, filename = %s\n", this, filename );
-  SL_ASSERT ( _jtTraverser.isValid() && _xmlWrite.isValid() && _xmlRoot.isValid() );
-
-  // Make sure the XML tree is empty.
-  _xmlRoot->removeAllChildren();
+  SL_ASSERT ( _jtTraverser.isValid() );
 
   // Make sure we have just one group on the stack.
   _groupStack.clear();
-  _groupStack.push_back ( _xmlRoot );
+  _groupStack.push_back ( &root );
 
   // Tell the traverser to traverse the database.
   if ( false == _jtTraverser->traverse ( filename ) )
@@ -151,7 +145,7 @@ bool TrJt2Pf::translate ( const char *filename )
   // The database traversal stops when the last child is parsed, which may be 
   // deep in the heiarchy.
   SL_ASSERT ( _groupStack.size() >= 1 );
-  SL_ASSERT ( _xmlRoot == _groupStack.front() );
+  SL_ASSERT ( root == _groupStack.front() );
 
   // Write the file.
   SlAPathname out ( filename );
@@ -797,33 +791,6 @@ bool TrJt2Pf::_endCurrentGroup()
   return true;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the XML tree to file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TrJt2Pf::_write ( std::string &filename )
-{
-  SL_PRINT ( "In TrJt2Pf::_write(), this = %X, filename = %s\n", this, filename.c_str() );
-
-  // Open the file.
-  std::ofstream out ( filename.c_str() );
-  if ( false == out.is_open() )
-  {
-    _error.format ( "Failed to open file '%s' for writing.", filename.c_str() );
-    return false;
-  }
-
-//#ifdef _DEBUG
-//  // Write only the names (no values) to the file.
-//  _xmlWrite->setMode ( DbXmlWrite::WRITE_NAME_ONLY );
-//#endif
-
-  // Write the file.
-  return _xmlWrite->write ( *_xmlRoot, out );
-}
 
 /*
 TODO

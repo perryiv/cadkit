@@ -38,7 +38,7 @@ struct IRead : public Usul::Interfaces::IUnknown
   enum { IID = 2584851569u };
 
   /// Read the data from the named source.
-  virtual Unknown *     read ( const std::string &source, Unknown *data, Unknown *caller ) = 0;
+  virtual Unknown *     read ( const std::string &source, Unknown *caller ) = 0;
 };
 
 

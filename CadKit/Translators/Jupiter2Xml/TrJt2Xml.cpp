@@ -534,7 +534,7 @@ bool TrJt2Xml::_addPart ( DbJtTraverser::EntityHandle entity )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add the LOD groups. A Level-of-Detail (LOD) is a group, and each part 
-//  has a group of LODs.
+//  has one or more LODs.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -550,30 +550,15 @@ bool TrJt2Xml::_addLODs ( DbJtTraverser::EntityHandle entity, DbXmlGroup &part )
   // Should be true.
   SL_ASSERT ( numLODs > 0 );
 
-  // Make a new group for the LODs.
-  DbXmlGroup::Ptr lods = new DbXmlGroup ( "lods" );
-  if ( lods.isNull() )
-    return false;
-
   // Loop through the LODs.
   for ( unsigned int i = 0; i < numLODs; ++i )
   {
     // Add the LOD.
-    this->_addLOD ( entity, i, *lods );
+    this->_addLOD ( entity, i, part );
   }
 
-  // If we added any children...
-  if ( lods->getNumChildren() > 0 )
-  {
-    // Add the LODs group to the part group.
-    part.addChild ( lods );
-
-    // It worked.
-    return true;
-  }
-
-  // It didn't work.
-  return false;
+  // It worked.
+  return true;
 }
 
 
@@ -598,7 +583,7 @@ bool TrJt2Xml::_addLOD ( DbJtTraverser::EntityHandle entity,
   SL_ASSERT ( numShapes > 0 );
 
   // Make a new group for the LOD.
-  DbXmlGroup::Ptr lod = new DbXmlGroup ( "lod" ); // Notice it's not "lods".
+  DbXmlGroup::Ptr lod = new DbXmlGroup ( "lod" );
   if ( lod.isNull() )
     return false;
 

@@ -31,17 +31,18 @@ MenuController::MenuController(osg::Group* g,const std::string& f): BaseClass(),
   if( font.valid() )
     skin->font( font.get() );
 
-  osg::Vec4 red(1.0,0.0,0.0,1.0);
-  osg::Vec4 white(0.0,0.0,1.0,1.0);
-  osg::Vec4 darkgrey(0.5,0.5,0.5,1.0);
+  osg::Vec4 blue(0.0,0.0,1.0,1.0);
+  osg::Vec4 lightblue(0.4,0.4,1.0,1.0);
   osg::Vec4 lightgrey(0.7,0.7,0.7,1.0);
 
   MenuKit::OSG::osg_color_theme ct;
   MenuKit::OSG::osg_color_map norm=ct.get_map();
   MenuKit::OSG::osg_color_map hi=ct.get_map();
-  hi["text"] = red;
+  hi["horizontal_background"] = lightblue;
+  hi["vertical_background"] = lightblue;
+  hi["border"] = blue;
   MenuKit::OSG::osg_color_map dis=ct.get_map();
-  dis["text"] = white;
+  dis["text"] = lightgrey;
 
   typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
   DMTMAP dmtmap;

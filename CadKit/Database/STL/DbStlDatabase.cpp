@@ -21,8 +21,7 @@
 
 #include "DbStlPrecompiled.h"
 #include "DbStlDatabase.h"
-#include "DbStlFunctions.h"
-#include "DbStlInline.h"
+
 
 #include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/IShapeQuery.h"
@@ -246,9 +245,6 @@ bool DbStlDatabase::startEntity ( PartHandle part, IUnknown *caller )
     _fmgr.pushTransform ( matrix );
 
   // It worked
-  return true;
-
-  // It worked.
   return true;
 }
 

@@ -171,7 +171,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::_read ( const std::string &file, const 
   this->_configure ( options );
 
   // Make sure we handle files with this extension.
-  if ( !acceptsExtension ( osgDB::getFileExtension ( file ) ) )
+  if ( !this->acceptsExtension ( osgDB::getFileExtension ( file ) ) )
     return ReadResult::FILE_NOT_HANDLED;
 
   // Open the file.

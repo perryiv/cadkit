@@ -20,6 +20,7 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+# pragma warning(disable:4786) // Truncated debug names.
 #include "SceneGraph/OpenGL/SgglClientHeaders.h"
 #include "SceneGraph/MFC/SgMfcClientHeaders.h"
 

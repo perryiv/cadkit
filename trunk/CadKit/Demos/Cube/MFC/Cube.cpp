@@ -1,6 +1,7 @@
 // Cube.cpp : Defines the class behaviors for the application.
 //
 
+# pragma warning(disable:4786) // Truncated debug names.
 #include "stdafx.h"
 #include "Cube.h"
 

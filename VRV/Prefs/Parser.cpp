@@ -116,7 +116,7 @@ void Parser::_read ( const std::string &filename )
   typedef XML::Reader < MemFun, XML::ValueCB, ErrorPolicy > XmlReader;
 
   // Make some member function adaptors.
-  MemFun setNumGridBloaks  ( this, &Parser::_setNumGridBloaks  );
+  MemFun setNumGridBlocks  ( this, &Parser::_setNumGridBlocks  );
   MemFun setGridScale      ( this, &Parser::_setGridScale      );
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
   MemFun setNearClip       ( this, &Parser::_setNearClip       );
@@ -149,7 +149,7 @@ void Parser::_read ( const std::string &filename )
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
-  Helper::add ( reader, start, "grid/num_blocks",          setNumGridBloaks  );
+  Helper::add ( reader, start, "grid/num_blocks",          setNumGridBlocks  );
   Helper::add ( reader, start, "grid/scale",               setGridScale      );
   Helper::add ( reader, start, "grid/color",               setGridColor      );
   Helper::add ( reader, start, "clipping_plane/near",      setNearClip       );
@@ -260,7 +260,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Parser::_setNumGridBloaks ( const std::string &s )
+void Parser::_setNumGridBlocks ( const std::string &s )
 {
   ErrorChecker ( 1083817587u, !s.empty() );
   _settings->numGridBlocks ( Helper::ToVec<Settings::Vec2ui>::convert ( s ) );

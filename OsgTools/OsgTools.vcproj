@@ -179,6 +179,12 @@
 					RelativePath="Grid.h">
 				</File>
 				<File
+					RelativePath=".\Mesh.cpp">
+				</File>
+				<File
+					RelativePath=".\Mesh.h">
+				</File>
+				<File
 					RelativePath="Ray.cpp">
 				</File>
 				<File

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <sstream>
 
 #include "atom.h"
 
@@ -40,15 +41,15 @@ Atom::Atom(char *atomString, std::string type) {
 	strncpy(num, atomString + 12, 4);
 	_name = num;
 	//get center point
-    memset(num, 0, 9 * sizeof(char));
-    strncpy(num, atomString+30, 8);
-    _x = (float) atof(num);
-    memset(num, 0, 9 * sizeof(char));
-    strncpy(num, atomString+38, 8);
-    _y = (float) atof(num);
-    memset(num, 0, 9 * sizeof(char));
-    strncpy(num, atomString+46, 8);
-    _z = (float) atof(num);
+  memset(num, 0, 9 * sizeof(char));
+  strncpy(num, atomString+30, 8);
+  _point[0] = (float) atof(num);
+  memset(num, 0, 9 * sizeof(char));
+  strncpy(num, atomString+38, 8);
+  _point[1] = (float) atof(num);
+  memset(num, 0, 9 * sizeof(char));
+  strncpy(num, atomString+46, 8);
+  _point[2] = (float) atof(num);
 	//set radius
 	_r = 0.5f;
 	_type = type;
@@ -57,6 +58,6 @@ Atom::Atom(char *atomString, std::string type) {
 std::string Atom::toString() const
 {
 	std::ostringstream out;
-	out << _type << _id << _name << _x << _y << _z;
+	out << _type <<" " << _id << " " << _name << " " << _x << " " <<  _y << " " <<  _z;
 	return std::string(out.str());
 }

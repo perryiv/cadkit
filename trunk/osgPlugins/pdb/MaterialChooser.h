@@ -16,7 +16,8 @@
 #include <string>
 #include <map>
 
-class MaterialChooser {
+class MaterialChooser 
+{
 public:
 	typedef osg::ref_ptr<osg::Material> Material;
 	typedef std::pair< std::string, osg::ref_ptr<osg::Material> > pair;
@@ -25,6 +26,7 @@ public:
 	MaterialChooser() { srand(0); }
 	MaterialChooser(unsigned int seed) { srand(seed); }
 	osg::ref_ptr<osg::Material> getMaterial (const std::string) const;
+  void clear() { _materialMap.clear(); }
 	//bool addColor(std::string, Color) { return false; }
 private:
 	Material addMaterial(std::string) const;

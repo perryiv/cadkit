@@ -158,6 +158,9 @@
 				RelativePath=".\Atom.cpp">
 			</File>
 			<File
+				RelativePath=".\Bond.cpp">
+			</File>
+			<File
 				RelativePath=".\MaterialChooser.cpp">
 			</File>
 			<File
@@ -169,6 +172,9 @@
 			Filter="h;hpp;hxx;hm;inl">
 			<File
 				RelativePath=".\Atom.h">
+			</File>
+			<File
+				RelativePath=".\Bond.h">
 			</File>
 			<File
 				RelativePath=".\MaterialChooser.h">

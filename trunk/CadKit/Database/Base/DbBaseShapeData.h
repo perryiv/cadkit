@@ -33,10 +33,10 @@ template <SDTA> class DbBaseShapeData
 {
 public:
 
-  typedef SlPartitionedVector<unsigned int,VertexType>   Vertices;
-  typedef SlPartitionedVector<unsigned int,NormalType>   Normals;
-  typedef SlPartitionedVector<unsigned int,ColorType>    Colors;
-  typedef SlPartitionedVector<unsigned int,TexCoordType> TexCoords;
+  typedef SlPartitionedVector < unsigned int, unsigned int, VertexType >   Vertices;
+  typedef SlPartitionedVector < unsigned int, unsigned int, NormalType >   Normals;
+  typedef SlPartitionedVector < unsigned int, unsigned int, ColorType >    Colors;
+  typedef SlPartitionedVector < unsigned int, unsigned int, TexCoordType > TexCoords;
 
   DbBaseShapeData ( const TokenType &token );
   ~DbBaseShapeData(){}
@@ -139,7 +139,7 @@ inline bool calculateBindings ( const PartitionedVector &vertices,
   }
 
   // If we have per-primitive binding...
-  else if ( vertices.getIndices().size() == attribute.getData().size() )
+  else if ( vertices.getSizes().size() == attribute.getData().size() )
   {
     binding = BINDING_PER_PRIMITIVE;
     return true;

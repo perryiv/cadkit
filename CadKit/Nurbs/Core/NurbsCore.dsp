@@ -136,6 +136,10 @@ SOURCE=.\NcSplineIO.h
 
 SOURCE=.\NcInternalMacros.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\NcWork.h
+# End Source File
 # End Group
 # Begin Group "Algorithms"
 
@@ -147,6 +151,10 @@ SOURCE=.\NcAlgorithm.h
 # Begin Source File
 
 SOURCE=.\NcBasisFunctions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\NcEvaluate.h
 # End Source File
 # Begin Source File
 

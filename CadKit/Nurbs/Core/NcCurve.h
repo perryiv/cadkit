@@ -37,6 +37,7 @@ public:
 
   /// Calculate the basis functions.
   void                          basisFunctions ( const ParameterType &u, ParameterType *N ) const { NcSpline<NCSDCA>::basisFunctions ( 0, u, N ); }
+  void                          basisFunctions ( const ParameterType &u, const IndexType &span, ParameterType *N ) const { NcSpline<NCSDCA>::basisFunctions ( 0, u, span, N ); }
 
   /// Find the span in the knot vector given the parameter.
   IndexType                     findSpan ( const ParameterType &u ) const { return this->findSpan ( u, this->getDegree() ); }
@@ -50,6 +51,9 @@ public:
 
   /// Get the last knot.
   ParameterType                 getLastKnot() const { return NcSpline<NCSDCA>::getLastKnot ( 0 ); }
+
+  /// Get the order.
+  IndexType                     getOrder() const { return NcSpline<NCSDCA>::getOrder ( 0 ); }
 
   /// Assignment operator.
   NcCurve &                     operator = ( const NcCurve &sd ) { this->setValue ( sd ); return *this; }

@@ -58,7 +58,8 @@ public:
   DataArray &             getData()       { return _data; }
 
   // Get a pointer to the start of the data.
-  const DataType *        getDataPointer ( const IndexType &partition ) const;
+  const DataType *        getDataPointer ( const IndexType &offset ) const { return this->_getDataPointer ( offset ); }
+  DataType *              getDataPointer ( const IndexType &offset );
 
   // Equality test.
   bool                    isEqual    ( const SlPartitionedVector &pv ) const;
@@ -86,6 +87,8 @@ protected:
 
   IndexArray _indices;
   DataArray _data;
+
+  const DataType *        _getDataPointer ( const IndexType &offset ) const;
 };
 
 
@@ -242,19 +245,25 @@ template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::getDataPointer ( const IndexType &partition ) const
+template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::_getDataPointer ( const IndexType &offset ) const
 {
-  SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
-  SL_ASSERT ( partition < _indices.size() );
+  SL_ASSERT ( offset == 0 || offset > 0 ); // Make g++ happy.
+  SL_ASSERT ( offset < _data.size() );
 
-  // Get the index.
-  IndexType index = _indices[partition];
+  // Return the address at the requested offset.
+  return &(_data[offset]);
+}
 
-  // Should be true.
-  SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
-  SL_ASSERT ( index < _data.size() );
 
-  return &(_data[index]);
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a pointer to the start of the data. This one is unsafe.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<SLPVTA> inline DataType *SlPartitionedVector<SLPVCA>::getDataPointer ( const IndexType &offset )
+{
+  return ( const_cast<DataType *> ( this->_getDataPointer ( offset ) ) );
 }
 
 

@@ -23,7 +23,12 @@
 #endif
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-#endif // _CADKIT_USE_PRECOMPILED_HEADERS
+# ifdef __CYGWIN__
+#  include <numeric>
+# else
+#  include <limits>
+# endif
+#endif
 
 
 namespace CadKit
@@ -156,6 +161,62 @@ template<class T> inline const T &maximum ( const T &a, const T &b )
 template<class T> inline const T &minimum ( const T &a, const T &b )
 {
   return ( a < b ) ? a : b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum element in the array.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline const T maximum ( const I &num, const T *array )
+{
+  SL_ASSERT ( num > 0 );
+  SL_ASSERT ( array );
+
+  // Initialize.
+  T theMax ( std::numeric_limits<T>::min() );
+
+  // Loop through.
+  for ( I i = 0; i < num; ++i )
+  {
+    if ( array[i] > theMax )
+    {
+      theMax = array[i];
+    }
+  }
+
+  // Return the max.
+  return theMax;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum element in the array.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T, class I> inline const T &minimum ( const I &num, const T *array )
+{
+  SL_ASSERT ( num > 0 );
+  SL_ASSERT ( array );
+
+  // Initialize.
+  T theMin ( numeric_limits<T>::max() );
+
+  // Loop through.
+  for ( I i = 0; i < num; ++i )
+  {
+    if ( array[i] < theMin )
+    {
+      theMin = array[i];
+    }
+  }
+
+  // Return the min.
+  return theMin;
 }
 
 

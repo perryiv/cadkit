@@ -16,11 +16,10 @@
 #ifndef _CADKIT_NURBS_CORE_LIBRARY_SPLINE_CLASS_H_
 #define _CADKIT_NURBS_CORE_LIBRARY_SPLINE_CLASS_H_
 
+#include "NcWork.h"
 #include "NcFindSpan.h"
 #include "NcBasisFunctions.h"
 
-#include "Standard/SlPartitionedVector.h"
-#include "Standard/SlAssert.h"
 #include "Standard/SlBitmask.h"
 
 
@@ -42,11 +41,12 @@ public:
   ~NcSpline(){}
 
   /// Calculate the basis functions.
-  void                          basisFunctions ( const ParameterType &u, ParameterType *N ) const;
+  void                          basisFunctions ( const IndexType &whichIndepVar, const ParameterType &u, ParameterType *N ) const;
+  void                          basisFunctions ( const IndexType &whichIndepVar, const ParameterType &u, const IndexType &span, ParameterType *N ) const;
 
   /// Find the span in the knot vector given the parameter.
-  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u ) const { this->findSpan ( whichDepVar, u, this->getDegree ( whichDepVar ) ); }
-  IndexType                     findSpan ( const IndexType &whichDepVar, const ParameterType &u, const IndexType &low ) const;
+  IndexType                     findSpan ( const IndexType &whichIndepVar, const ParameterType &u ) const { return this->findSpan ( whichIndepVar, u, this->getDegree ( whichIndepVar ) ); }
+  IndexType                     findSpan ( const IndexType &whichIndepVar, const ParameterType &u, const IndexType &low ) const;
 
   /// Get the control point.
   ControlPointType              getControlPoint ( const IndexType &whichDepVar, const IndexType &whichControlPoint ) const { return _ctrPts ( whichDepVar, whichControlPoint ); }
@@ -64,15 +64,18 @@ public:
   /// Get the first knot.
   ParameterType                 getFirstKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, 0 ); }
 
-  /// Get the last knot.
-  ParameterType                 getLastKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
-
   /// Get the knot.
   ParameterType                 getKnot ( const IndexType &whichIndepVar, const IndexType &whichKnot ) const { return _knots ( whichIndepVar, whichKnot ); }
+
+  /// Get the knot vector data.
+  const ParameterType *         getKnotsArray ( const IndexType &whichIndepVar ) const { return _knots.getDataPointer ( whichIndepVar ); }
 
   /// Get the knot vector.
   const ParameterArray &        getKnotVector() const { return _knots; }
   ParameterArray &              getKnotVector()       { return _knots; }
+
+  /// Get the last knot.
+  ParameterType                 getLastKnot ( const IndexType &whichIndepVar ) const { return this->getKnot ( whichIndepVar, this->getNumKnots ( whichIndepVar ) - 1 ); }
 
   /// Get the number of bytes for the types.
   static unsigned int           getNumBytesIndexType()        { return sizeof ( IndexType ); }
@@ -139,6 +142,8 @@ protected:
   ParameterArray    _knots;
   ControlPointArray _ctrPts;
 
+  mutable NcWork<NCSDCA> _work;
+
   SL_DECLARE_BITMASK_FUNCTIONS ( Flags, BitMaskType, _flags );
 };
 
@@ -171,7 +176,8 @@ template<NCSDTA> inline NcSpline<NCSDCA>::NcSpline ( const NcSpline<NCSDCA> &spl
   _order        ( spline._order ),
   _numCtrPts    ( spline._numCtrPts ),
   _knots        ( spline._knots ),
-  _ctrPts       ( spline._ctrPts )
+  _ctrPts       ( spline._ctrPts ),
+  _work         ( spline._work )
 {
   // Empty.
 }
@@ -192,6 +198,7 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setValue ( const NcSpline<NCSDCA>
   _numCtrPts       = spline._numCtrPts;
   _knots.setValue  ( spline._knots );
   _ctrPts.setValue ( spline._ctrPts );
+  _work.setValue   ( spline._work );
 }
 
 
@@ -257,18 +264,18 @@ template<NCSDTA> inline void NcSpline<NCSDCA>::setRational ( const bool &state )
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline IndexType NcSpline<NCSDCA>::findSpan ( 
-  const IndexType &whichDepVar, 
+  const IndexType &whichIndepVar, 
   const ParameterType &u, 
   const IndexType &low ) const
 {
   SL_ASSERT ( false == _knots.getData().empty() );
-  SL_ASSERT ( low > this->getDegree ( whichDepVar ) || low == this->getDegree ( whichDepVar ) );
+  SL_ASSERT ( low > this->getDegree ( whichIndepVar ) || low == this->getDegree ( whichIndepVar ) );
 
   // Get the start of the knot vector.
-  const ParameterType *knots = _knots.getDataPointer ( whichDepVar );
+  const ParameterType *knots = this->getKnotsArray ( whichIndepVar );
 
   // Get the number of controls points.
-  IndexType numCtrPtr ( this->getNumControlPoints ( whichDepVar ) );
+  const IndexType numCtrPtr ( this->getNumControlPoints ( whichIndepVar ) );
 
   // Call the function to find the span.
   return NcFindSpan<NCSDCA>::find ( knots, numCtrPtr, u, low );
@@ -282,10 +289,47 @@ template<NCSDTA> inline IndexType NcSpline<NCSDCA>::findSpan (
 ///////////////////////////////////////////////////////////////////////////////
 
 template<NCSDTA> inline void NcSpline<NCSDCA>::basisFunctions ( 
+  const IndexType &whichIndepVar, 
+  const ParameterType &u, 
+  const IndexType &span, 
+  ParameterType *N ) const
+{
+  SL_ASSERT ( u >= this->getFirstKnot ( whichIndepVar ) );
+  SL_ASSERT ( u <= this->getLastKnot  ( whichIndepVar ) );
+  SL_ASSERT ( span >= this->getDegree ( whichIndepVar ) );
+  SL_ASSERT ( span <= this->getNumControlPoints ( whichIndepVar ) );
+
+  // Get the start of the knot vector.
+  const ParameterType *knots = this->getKnotsArray ( whichIndepVar );
+
+  // Get the order.
+  const IndexType order ( this->getOrder ( whichIndepVar ) );
+
+  // Space for the algorithm.
+  ParameterType *left  = _work.getBasisFunctionLeft  ( whichIndepVar );
+  ParameterType *right = _work.getBasisFunctionRight ( whichIndepVar );
+
+  // Call the algorithm.
+  NcBasisFunctions<NCSDCA>::basis ( knots, order, span, u, left, right, N );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///
+/// Calculate the basis functions.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+template<NCSDTA> inline void NcSpline<NCSDCA>::basisFunctions ( 
+  const IndexType &whichIndepVar, 
   const ParameterType &u, 
   ParameterType *N ) const
 {
-  // TODO
+  // Find the span.
+  const IndexType span = this->findSpan ( whichIndepVar, u );
+
+  // Call the other one.
+  this->basisFunctions ( whichIndepVar, u, span, N );
 }
 
 
@@ -394,6 +438,9 @@ template<NCSDTA> inline bool NcSpline<NCSDCA>::resize (
 
   // Check allocation.
   NC_CHECK_ALLOCATION ( size == _ctrPts.getData().size() );
+
+  // Resize the work space.
+  _work.resize ( numIndepVars, order );
 
   // It worked.
   return true;

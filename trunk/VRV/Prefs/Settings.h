@@ -141,6 +141,14 @@ public:
   bool                  statusBarVisibleAtStartup() const { return _statusVisible; }
   void                  statusBarVisibleAtStartup ( bool state ) { _statusVisible = state; }
 
+  // Set/get the status bar colors
+  const Color&          statusBgColor () const { return _statusBgColor; }
+  void                  statusBgColor ( const Color &c ) { _statusBgColor = c; }
+  void                  statusBgColor ( float r, float g, float b, float a ) { _statusBgColor.set ( r, g, b, a ); }
+  const Color&          statusTxtColor () const {return _statusTxtColor; }
+  void                  statusTxtColor ( const Color &c ) { _statusTxtColor = c; }
+  void                  statusTxtColor ( float r, float g, float b, float a ) { _statusTxtColor.set ( r, g, b, a ); }
+
   // Set/get the relative translation speed.
   float                 translationSpeed() const { return _transSpeed; }
   void                  translationSpeed ( float s ) { _transSpeed = s; }
@@ -193,6 +201,8 @@ private:
   Matrix _statusMatrix;
   bool _menuHidesScene;
   bool _statusVisible;
+  Color _statusBgColor;
+  Color _statusTxtColor;
   float _transSpeed;
   float _rotSpeed;
   float _scaleSpeed;

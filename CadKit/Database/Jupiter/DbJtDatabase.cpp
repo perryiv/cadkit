@@ -853,6 +853,14 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, const int &whichSet )
   SL_ASSERT ( UNSET_INDEX != _current->getShape() );
   SL_ASSERT ( whichSet == _current->getSet() );
 
+//#ifdef _DEBUG
+//  ISetNotify *temp = _target->queryInterface ( ISetNotify::IID );
+//  SL_ASSERT ( temp );
+//  temp->ref();
+  // do something here.
+//  temp->unref();
+//#endif
+
   // Try this interface.
   SlQueryPtr<ISetNotify> notify ( _target );
   if ( notify.isValid() )

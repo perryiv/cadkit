@@ -32,6 +32,12 @@ public:
   // Id for this interface.
   enum { IID = 1032674768 };
 
+  // Tell the target it is about to receive data.
+  virtual bool            dataTransferStart ( IUnknown *caller ) = 0;
+
+  // Tell the target it is done receiving data.
+  virtual bool            dataTransferEnd ( IUnknown *caller ) = 0;
+
   // Get the file extension.
   virtual std::string     getFileExtension() const = 0;
 

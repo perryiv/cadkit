@@ -21,6 +21,7 @@
 
 #include "Interfaces/IMessageNotify.h" // VC++ internal compiler error if
 #include "Interfaces/IEntityNotify.h"  // if these are after SlInline.h
+#include "Interfaces/IDataTarget.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
@@ -313,6 +314,12 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   if ( false == PROGRESS ( FORMAT ( "Done importing database: %s\nStarting the traversal.", filename.c_str() ) ) )
     return false;
 
+  // Inform the target that it is about to receive data.
+  SlQueryPtr<IDataTarget> target ( _target );
+  if ( target.isValid() )
+    if ( false == target->dataTransferStart ( THIS_UNKNOWN ) )
+      return false;
+
   // There doesn't appear to be a way to get a pointer to this instance inside 
   // the callback function. So I have to use this work-around.
   _traverser = this;
@@ -326,6 +333,11 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
 
   // Reset this.
   _traverser = NULL;
+
+  // Inform the target that it is done receiving data.
+  if ( target.isValid() )
+    if ( false == target->dataTransferEnd ( THIS_UNKNOWN ) )
+      return false;
 
   // Once again, clear the client data.
   this->_clearClientDataMaps();

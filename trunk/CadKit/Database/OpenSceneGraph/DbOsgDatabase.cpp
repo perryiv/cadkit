@@ -63,17 +63,15 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbOsgDatabase, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbOsgDatabase::DbOsgDatabase() : DbBaseTarget(),
-  _root ( new osg::Group ),
   _groupStack ( new GroupStack ),
   _groupMap ( new GroupMap )
 {
   SL_PRINT2 ( "In DbOsgDatabase::DbOsgDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
   SL_ASSERT ( NULL != _groupMap.get() );
-  SL_ASSERT ( NULL != _root );
 
-  // Push the root onto the stack. This will reference it.
-  this->_pushGroup ( _root );
+  // Push a new group onto stack.
+  this->_pushGroup ( new osg::Group );
 }
 
 
@@ -88,7 +86,80 @@ DbOsgDatabase::~DbOsgDatabase()
   SL_PRINT2 ( "In DbOsgDatabase::~DbOsgDatabase(), this = %X\n", this );
 
   // The stack should just be holding the root.
-  SL_ASSERT ( _root == _groupStack->top() );
+  SL_ASSERT ( 1 == _groupStack->size() );
+
+  // If the client has referenced the root then the count will be greater 
+  // than two. There should be no less than two though, one for the initial 
+  // reference in the constructor, and one for the initial push onto the stack.
+  SL_ASSERT ( this->_getRoot()->referenceCount() >= 2 );
+
+  // Pop the root off the stack.
+  this->_popGroup();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tell the target it is about to receive data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::dataTransferStart ( IUnknown *caller )
+{
+  SL_PRINT3 ( "In DbOsgDatabase::dataTransferStart(), this = %X, caller = %X\n", this, caller );
+
+  // Should be true.
+  SL_ASSERT ( 1 == _groupStack->size() );
+
+  // Clear the group map.
+  _groupMap->clear();
+
+  // Clear the group stack.
+  this->_clearGroupStack();
+
+  // Push a group onto the stack.
+  this->_pushGroup ( new osg::Group );
+
+  // Clear the client-data maps.
+  this->_clearClientDataMaps();
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tell the target it is done receiving data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::dataTransferEnd ( IUnknown *caller )
+{
+  SL_PRINT3 ( "In DbOsgDatabase::dataTransferEnd(), this = %X, caller = %X\n", this, caller );
+
+  // Should be true.
+  SL_ASSERT ( 1 == _groupStack->size() );
+  SL_ASSERT ( this->_getRoot()->referenceCount() >= 1 );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the group stack.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbOsgDatabase::_clearGroupStack()
+{
+  SL_PRINT2 ( "In DbOsgDatabase::_clearGroupStack(), this = %X\n", this );
+
+  // Pop all the groups off the stack.
+  while ( _groupStack->size() )
+    this->_popGroup();
 }
 
 
@@ -145,10 +216,10 @@ bool DbOsgDatabase::storeData ( const std::string &filename )
 {
   SL_PRINT3 ( "In DbOsgDatabase::storeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
-  SL_ASSERT ( NULL != _root );
+  SL_ASSERT ( NULL != this->_getRoot() );
 
-  // Write the _root to file.
-  return osgDB::writeNodeFile ( *_root, filename );
+  // Write the root to file.
+  return osgDB::writeNodeFile ( *(this->_getRoot()), filename );
 }
 
 
@@ -163,11 +234,6 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
-
-  // If our stack is just holding the root (i.e., this is the first assembly) 
-  // then clear the group map. Take this out when you add a traversal-start/end interface.
-  if ( _root == _groupStack->top() )
-    _groupMap->clear();
 
   // Get the interface we need from the caller.
   SlQueryPtr<IAssemblyQueryFloat> query ( caller );
@@ -224,11 +290,6 @@ bool DbOsgDatabase::startEntity ( PartHandle part, IUnknown *caller )
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, part = %X, caller = %X\n", this, part, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
-
-  // If there is no assembly then there must be only one part. So clear the
-  // group map. Take this out when you add a traversal-start/end interface.
-  if ( _groupStack->empty() )
-    _groupMap->clear();
 
   // Get the interface we need from the caller.
   SlQueryPtr<IPartQueryFloat> query ( caller );
@@ -854,6 +915,21 @@ void DbOsgDatabase::_pushGroup ( osg::Group *group )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group *DbOsgDatabase::_getRoot() const
+{
+  SL_PRINT2 ( "In DbOsgDatabase::_getRoot(), this = %X\n", this );
+
+  // If the stack is empty then the root is null.
+  return ( _groupStack->size() ) ? _groupStack->top() : NULL;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Pop the group.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -866,7 +942,7 @@ void DbOsgDatabase::_popGroup()
   // Unreference the top one.
   _groupStack->top()->unref();
 
-  // Pop it off of our stack.
+  // Pop it off our stack.
   _groupStack->pop();
 }
 

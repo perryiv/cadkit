@@ -34,7 +34,7 @@ namespace Usul
 
       enum { IID = 1100623970u };
 
-      virtual void execute( Unknown* caller, const FX::FXEvent &event) = 0;
+      virtual bool execute( Unknown* caller, const FX::FXEvent &event) = 0;
 
     };//class IToolCommand
   }; //namespace Interfaces

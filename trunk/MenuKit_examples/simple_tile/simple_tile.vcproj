@@ -23,7 +23,8 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="1"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -32,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgTextd.lib osgProducerd.lib Producerd.lib MenuKitd.lib MenuKitOsgd.lib"
+				AdditionalDependencies="OsgToolsd.lib osgd.lib osgTextd.lib osgProducerd.lib Producerd.lib MenuKitd.lib MenuKitOsgd.lib"
 				OutputFile="$(OutDir)/simple_tile.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
@@ -71,7 +72,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="4"
+				RuntimeLibrary="0"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -80,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgText.lib osgProducer.lib Producer.lib MenuKit.lib MenuKitOsg.lib"
+				AdditionalDependencies="OsgTools.lib osg.lib osgText.lib osgProducer.lib Producer.lib MenuKit.lib MenuKitOsg.lib"
 				OutputFile="$(OutDir)/simple_tile.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"

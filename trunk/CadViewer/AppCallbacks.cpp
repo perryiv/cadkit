@@ -47,10 +47,12 @@
 #include "osg/Matrix"
 #include "osg/LineSegment"
 #include "osgUtil/IntersectVisitor"
+#include "osgDB/ReadFile"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/State.h"
 #include "OsgTools/Visitor.h"
+#include "OsgTools/Axes.h"
 
 #include "Usul/Functors/Pair.h"
 #include "Usul/Functors/If.h"
@@ -335,6 +337,19 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizTrans;
+      horizTrans.state( OsgTools::Axes::POSITIVE_X |
+                        OsgTools::Axes::NEGATIVE_X );
+      _cursorActiveWithRot->addChild( horizTrans() );
+    }
+  }
 }
 
 
@@ -358,6 +373,19 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizTrans;
+      horizTrans.state( OsgTools::Axes::POSITIVE_X |
+                        OsgTools::Axes::NEGATIVE_X );
+      _cursorActiveNoRot->addChild( horizTrans() );
+    }
+  }
 }
 
 
@@ -381,6 +409,19 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizTrans;
+      horizTrans.state( OsgTools::Axes::POSITIVE_X |
+                        OsgTools::Axes::NEGATIVE_X );
+      _cursorActiveWithRot->addChild( horizTrans() );
+    }
+  }
 }
 
 
@@ -404,6 +445,19 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizTrans;
+      horizTrans.state( OsgTools::Axes::POSITIVE_X |
+                        OsgTools::Axes::NEGATIVE_X );
+      _cursorActiveNoRot->addChild( horizTrans() );
+    }
+  }
 }
 
 
@@ -427,6 +481,19 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Y |
+                       OsgTools::Axes::NEGATIVE_Y );
+      _cursorActiveWithRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -450,6 +517,19 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+                       OsgTools::Axes::NEGATIVE_Z );
+      _cursorActiveWithRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -473,6 +553,19 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+                       OsgTools::Axes::NEGATIVE_Z );
+      _cursorActiveNoRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -496,6 +589,19 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+                       OsgTools::Axes::NEGATIVE_Z );
+      _cursorActiveWithRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -519,6 +625,19 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+                       OsgTools::Axes::NEGATIVE_Z );
+      _cursorActiveNoRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -542,6 +661,18 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizRot;
+      horizRot.state( OsgTools::Axes::ROTATE_Y );
+      _cursorActiveWithRot->addChild( horizRot() );
+    }
+  }
 }
 
 
@@ -565,6 +696,18 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorH.valid() && id == _navigatorH->id() )
+    {
+      OsgTools::Axes horizRot;
+      horizRot.state( OsgTools::Axes::ROTATE_Y );
+      _cursorActiveNoRot->addChild( horizRot() );
+    }
+  }
 }
 
 
@@ -588,6 +731,19 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( _prefs->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _navigatorV.valid() && id == _navigatorV->id() )
+    {
+      OsgTools::Axes vertTrans;
+      vertTrans.state( OsgTools::Axes::POSITIVE_Y |
+                       OsgTools::Axes::NEGATIVE_Y );
+      _cursorActiveNoRot->addChild( vertTrans() );
+    }
+  }
 }
 
 
@@ -966,6 +1122,16 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
+    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
+    if ( _sceneTool.valid() && id == _sceneTool->id() )
+    {
+      _cursorActiveNoRot->addChild( _cursor_zoom.get() );
+    }
+  }
 }
 
 

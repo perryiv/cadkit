@@ -286,6 +286,7 @@ protected:
   bool                          _handleNavigationEvent( const unsigned long event_request = 0 );
   bool                          _handleToolEvent();
   bool                          _handleCancelEvent();
+  void                          _removeCursorChildren();
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();
@@ -347,8 +348,8 @@ protected:
   void                          _selected ( CV::Functors::Tool::Transforms &vt );
 
   // Set the cursor and its matrix functor.
-  void                          _setCursor ( unsigned int );
-  void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
+  //void                          _setCursor ( unsigned int );
+  //void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -444,6 +445,7 @@ protected:
   typedef std::auto_ptr<Parser>                         ParserPtr;
   typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
   typedef osg::ref_ptr<osg::Group>                      GroupPtr;
+  typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef CV::Functors::BaseFunctor::RefPtr             FunctorPtr;
   typedef USUL_VALID_REF_POINTER(vrjGA::ButtonGroup)    ButtonsPtr;
@@ -471,6 +473,19 @@ protected:
   MatTransPtr       _models;
   MatTransPtr       _gridBranch;
   MatTransPtr       _cursor;
+  MatTransPtr       _cursorActiveWithRot;
+  MatTransPtr       _cursorRedWithRot;
+  MatTransPtr       _cursorYellowWithRot;
+  MatTransPtr       _cursorGreenWithRot;
+  MatTransPtr       _cursorBlueWithRot;
+  MatTransPtr       _cursorTriggerWithRot;
+  MatTransPtr       _cursorActiveNoRot;
+  MatTransPtr       _cursorRedNoRot;
+  MatTransPtr       _cursorYellowNoRot;
+  MatTransPtr       _cursorGreenNoRot;
+  MatTransPtr       _cursorBlueNoRot;
+  MatTransPtr       _cursorTriggerNoRot;
+  NodePtr           _cursor_zoom;
   MatTransPtr       _menuBranch;
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;

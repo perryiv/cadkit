@@ -58,7 +58,7 @@ DbBaseSource::~DbBaseSource()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbBaseSource::queryInterface ( const unsigned long &iid )
+IUnknown *DbBaseSource::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbBaseSource::queryInterface(), this = %X\n", this );
 

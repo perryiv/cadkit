@@ -99,7 +99,7 @@ DbSgDatabase::~DbSgDatabase()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbSgDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbSgDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbSgDatabase::queryInterface(), this = %X\n", this );
 

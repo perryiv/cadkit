@@ -104,7 +104,7 @@ bool DbItriDatabase::dataTransferEnd ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbItriDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbItriDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbItriDatabase::queryInterface(), this = %X\n", this );
 

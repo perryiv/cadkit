@@ -57,7 +57,7 @@ DbBaseTarget::~DbBaseTarget()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbBaseTarget::queryInterface ( const unsigned long &iid )
+IUnknown *DbBaseTarget::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbBaseTarget::queryInterface(), this = %X\n", this );
 

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_TRIANGLE_FACET_H_
-#define _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_TRIANGLE_FACET_H_
+#ifndef _CADKIT_DATABASE_ITRI_LIBRARY_TRIANGLE_FACET_H_
+#define _CADKIT_DATABASE_ITRI_LIBRARY_TRIANGLE_FACET_H_
 
 
 #include "Standard/SlVec3.h"
@@ -81,4 +81,4 @@ private:
 }; // namespace CadKit
 
 
-#endif // _CADKIT_DATABASE_STEREO_LITHOGRAPHY_LIBRARY_TRIANGLE_FACET_H_
+#endif // _CADKIT_DATABASE_ITRI_LIBRARY_TRIANGLE_FACET_H_

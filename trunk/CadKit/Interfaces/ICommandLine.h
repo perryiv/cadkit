@@ -39,6 +39,9 @@ public:
   // Check the arguments.
   virtual bool            checkArguments ( const int &argc, const char **argv ) const = 0;
 
+  // Parse the command-line arguments and execute.
+  virtual bool            execute ( int argc, char **argv, IUnknown *source, IUnknown *target ) = 0;
+
   // Get the usage string.
   virtual std::string     getUsageString ( const std::string &program, const std::string &ext, bool extended ) const = 0;
 

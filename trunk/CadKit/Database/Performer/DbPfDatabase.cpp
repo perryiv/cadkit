@@ -172,7 +172,7 @@ void DbPfDatabase::_clearGroupStack()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbPfDatabase::queryInterface ( const unsigned long &iid )
+IUnknown *DbPfDatabase::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbPfDatabase::queryInterface(), this = %X\n", this );
 

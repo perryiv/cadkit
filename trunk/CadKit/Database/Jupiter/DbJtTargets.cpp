@@ -88,7 +88,7 @@ DbJtTargets::~DbJtTargets()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IUnknown *DbJtTargets::queryInterface ( const unsigned long &iid )
+IUnknown *DbJtTargets::queryInterface ( unsigned long iid )
 {
   SL_PRINT2 ( "In DbJtTargets::queryInterface(), this = %X\n", this );
 

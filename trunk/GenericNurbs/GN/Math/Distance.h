@@ -1,0 +1,185 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2004, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Distance formula.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _GENERIC_NURBS_LIBRARY_MATH_DISTANCE_FORMULA_H_
+#define _GENERIC_NURBS_LIBRARY_MATH_DISTANCE_FORMULA_H_
+
+#include "GN/Macros/ErrorCheck.h"
+
+
+namespace GN {
+namespace Math {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the distance between two n-dimensional vectors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class CurveType > struct Distance
+{
+  typedef typename CurveType::Vector Vector;
+  typedef typename CurveType::Vec2 Vec2;
+  typedef typename CurveType::Vec3 Vec3;
+  typedef typename CurveType::Vec4 Vec4;
+  typedef typename CurveType::SquareRoot SquareRoot;
+  typedef typename CurveType::ControlPointType RealType;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+
+private:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Generic definition.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class V > struct Helper;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  For n-dimensional vectors.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template <> struct Helper < Vector >
+  {
+    typedef typename Vector::const_iterator Iterator;
+
+    static RealType squared ( const Vector &a, const Vector &b )
+    {
+      GN_ERROR_CHECK ( a.size() == b.size() );
+      RealType dist ( 0 ), diff;
+      Iterator i = a.begin();
+      Iterator j = b.begin();
+      while ( i != a.end() && j != b.end() )
+      {
+        diff = (*i) - (*j);
+        dist += diff * diff;
+        ++i;
+        ++j;
+      }
+      return dist;
+    }
+
+    static RealType get ( const Vector &a, const Vector &b )
+    {
+      return SquareRoot::calculate ( squared ( a, b ) );
+    }
+  };
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  For 4-dimensional vectors.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template <> struct Helper < Vec4 >
+  {
+    static RealType squared ( const Vec4 &a, const Vec4 &b )
+    {
+      return 
+        ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+        ( a[1] - b[1] ) * ( a[1] - b[1] ) +
+        ( a[2] - b[2] ) * ( a[2] - b[2] ) +
+        ( a[3] - b[3] ) * ( a[3] - b[3] );
+    }
+
+    static RealType get ( const Vec4 &a, const Vec4 &b )
+    {
+      return SquareRoot::calculate ( squared ( a, b ) );
+    }
+  };
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  For 3-dimensional vectors.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template <> struct Helper < Vec3 >
+  {
+    static RealType squared ( const Vec3 &a, const Vec3 &b )
+    {
+      return 
+        ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+        ( a[1] - b[1] ) * ( a[1] - b[1] ) +
+        ( a[2] - b[2] ) * ( a[2] - b[2] );
+    }
+
+    static RealType get ( const Vec3 &a, const Vec3 &b )
+    {
+      return SquareRoot::calculate ( squared ( a, b ) );
+    }
+  };
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  For 3-dimensional vectors.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template <> struct Helper < Vec2 >
+  {
+    static RealType squared ( const Vec2 &a, const Vec2 &b )
+    {
+      return 
+        ( a[0] - b[0] ) * ( a[0] - b[0] ) +
+        ( a[1] - b[1] ) * ( a[1] - b[1] );
+    }
+
+    static RealType get ( const Vec2 &a, const Vec2 &b )
+    {
+      return SquareRoot::calculate ( squared ( a, b ) );
+    }
+  };
+
+public:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the distance squared.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class V > static RealType squared ( const V &a, const V &b )
+  {
+    return Helper<V>::squared ( a, b );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the distance squared.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  static RealType get ( const Vec2 &a, const Vec2 &b )
+  {
+    return Helper<V>::get ( a, b );
+  }
+};
+
+
+}; // namespace Math
+}; // namespace GN
+
+
+#endif // _GENERIC_NURBS_LIBRARY_MATH_DISTANCE_FORMULA_H_

@@ -247,6 +247,14 @@ SOURCE=.\SlString.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlStringCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlStringCompare.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlStringFunctions.h
 # End Source File
 # Begin Source File
@@ -408,6 +416,10 @@ SOURCE=.\SlRefPtr.h
 # Begin Source File
 
 SOURCE=.\SlFileStats.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlFileVerify.h
 # End Source File
 # Begin Source File
 

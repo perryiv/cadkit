@@ -4,6 +4,7 @@
 
 #include "Standard/SlString.h"
 #include "Standard/SlStringFunctions.h"
+#include "Standard/SlStringCase.h"
 #include "Standard/SlStringIO.h"
 #include <iostream>
 #include <vector>

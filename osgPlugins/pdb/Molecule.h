@@ -15,7 +15,9 @@
 #include "MaterialChooser.h"
 
 #include "osg/Referenced"
-#include "osg/Group"
+
+
+namespace osg { class Group; class LOD; class Geode; }
 
 #include <map>
 #include <list>

@@ -20,6 +20,7 @@
 
 #include "MaterialChooser.h"
 #include "Molecule.h"
+#include "PeriodicTable.h"
 
 namespace osg { class Group; class LOD; class Geode; };
 
@@ -41,14 +42,10 @@ public:
   virtual Result          readNode ( const std::string &filename, const Options * );
 
 protected:
-
   osg::Group *            _build() const;
-
   void                    _init();
-
   Result                  _read ( const std::string &, const Options * );
   void                    _parse ( std::ifstream &in );
-
   Molecule*               _getCurrentMolecule();
 
 private:
@@ -56,6 +53,7 @@ private:
   Molecules _molecules; 
   MaterialChooser _materialChooser;
   Molecule *_currentMolecule;
+  PeriodicTable _periodicTable;
 };
 
 

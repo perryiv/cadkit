@@ -34,7 +34,8 @@
 ReaderWriterPDB::ReaderWriterPDB() :
   _molecules(),
   _materialChooser(),
-  _currentMolecule(NULL)
+  _currentMolecule(NULL),
+  _periodicTable()
 {
 }
 
@@ -236,13 +237,13 @@ void ReaderWriterPDB::_parse ( std::ifstream &in )
     else if ( "ATOM" == type )
     {
       molecule = this->_getCurrentMolecule();
-		  Atom atom(buf, type);
+		  Atom atom(buf, type, _periodicTable);
       molecule->addAtom(atom);
     }
 	  else if( type == "HETATM") 
     {
       molecule = this->_getCurrentMolecule();
-		  Atom atom(buf, type);
+		  Atom atom(buf, type, _periodicTable);
       molecule->addAtom(atom);
 	  }
 	  else if( type == "CONECT")

@@ -14,9 +14,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 Element::Element(int en, std::string e, float r) : 
-  _elementNumber(en) ,  
+  _atomicNumber(en) ,  
   _element(e),
   _radius(r)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+Element::Element()
 {
 }
 
@@ -26,7 +35,7 @@ Element::Element(int en, std::string e, float r) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 Element::Element(const Element &element) :
-  _elementNumber(element.getElementNumber()),
+  _atomicNumber(element.getAtomicNumber()),
   _element(element.getElement()),
   _radius(element.getRadius())
 {
@@ -39,7 +48,7 @@ Element::Element(const Element &element) :
 ///////////////////////////////////////////////////////////////////////////////
 Element& Element::operator =(const Element& element)
 {
-  this->_elementNumber = element.getElementNumber();
+  this->_atomicNumber = element.getAtomicNumber();
   this->_element = element.getElement();
   this->_radius = element.getRadius();
   return *this;

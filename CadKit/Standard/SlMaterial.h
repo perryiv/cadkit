@@ -56,11 +56,11 @@ public:
   // Flags for the valid colors.
   enum
   {
-    AMBIENT   = (1<<0),
-    DIFFUSE   = (1<<1),
-    SPECULAR  = (1<<2),
-    EMISSIVE  = (1<<3),
-    SHININESS = (1<<4),
+    AMBIENT   = 1,
+    DIFFUSE   = 2,
+    SPECULAR  = 4,
+    EMISSIVE  = 8,
+    SHININESS = 16,
     ALL       = 0xFFFFFFFF
   };
 

@@ -56,7 +56,7 @@ const DbJtTraverser::EntityType DbJtTraverser::LINE_STRIP_SET ( eaiEntity::eaiLI
 const DbJtTraverser::EntityType DbJtTraverser::POINT_SET      ( eaiEntity::eaiPOINTSET );
 const DbJtTraverser::EntityType DbJtTraverser::POLYGON_SET    ( eaiEntity::eaiPOLYGONSET );
 const DbJtTraverser::EntityType DbJtTraverser::TRI_STRIP_SET  ( eaiEntity::eaiTRISTRIPSET );
-const DbJtTraverser::EntityType DbJtTraverser::TRI_FAN_SET    ( eaiEntity::eaiTRIFANSET );
+//const DbJtTraverser::EntityType DbJtTraverser::TRI_FAN_SET    ( eaiEntity::eaiTRIFANSET );
 const DbJtTraverser::EntityType DbJtTraverser::UNKNOWN        ( eaiEntity::eaiNONE );
 
 
@@ -256,8 +256,8 @@ bool DbJtTraverser::_traverse ( const char *filename )
   NOTIFY << "Done creating CAD importer." << std::endl;
 
   // We want all the levels of detail.
-  importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
-  //importer->setShapeLoadOption ( eaiCADImporter::eaiHIGH_LOD );
+  //importer->setShapeLoadOption ( eaiCADImporter::eaiALL_LODS );
+  importer->setShapeLoadOption ( eaiCADImporter::eaiHIGH_LOD );
 
   // We only want tessellations for now (default is eaiBREP_ONLY).
   importer->setBrepLoadOption ( eaiCADImporter::eaiTESS_ONLY );
@@ -607,10 +607,10 @@ eaiMaterial *DbJtTraverser::_getMaterial ( EntityHandle theHandle ) const
     ((eaiPolygonSet *) entity)->getMaterial ( material );
     break;
 
-  case eaiEntity::eaiTRIFANSET:
-
-    ((eaiTriFanSet *) entity)->getMaterial ( material );
-    break;
+//  case eaiEntity::eaiTRIFANSET:
+//
+//    ((eaiTriFanSet *) entity)->getMaterial ( material );
+//    break;
 
   case eaiEntity::eaiTRISTRIPSET:
 

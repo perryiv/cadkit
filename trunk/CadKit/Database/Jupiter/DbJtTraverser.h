@@ -69,7 +69,7 @@ public:
   static const EntityType POINT_SET;
   static const EntityType POLYGON_SET;
   static const EntityType TRI_STRIP_SET;
-  static const EntityType TRI_FAN_SET;
+//  static const EntityType TRI_FAN_SET;
   static const EntityType UNKNOWN;
 
   // Shape components.

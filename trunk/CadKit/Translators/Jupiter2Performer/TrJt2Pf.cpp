@@ -800,8 +800,8 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
     gset->setPrimType ( PFGS_LINESTRIPS );
   else if ( DbJtTraverser::POINT_SET == type )
     gset->setPrimType ( PFGS_POINTS );
-  else if ( DbJtTraverser::TRI_FAN_SET == type )
-    gset->setPrimType ( PFGS_TRIFANS );
+//  else if ( DbJtTraverser::TRI_FAN_SET == type )
+//    gset->setPrimType ( PFGS_TRIFANS );
   else
   {
     SL_ASSERT ( 0 ); // Heads up.

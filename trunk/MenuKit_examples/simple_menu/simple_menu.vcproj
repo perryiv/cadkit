@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="simple_tile"
-	ProjectGUID="{8D1B6DCD-65ED-4DFF-86BF-8337E02E8F63}"
+	Name="simple_menu"
+	ProjectGUID="{E287670A-B62B-49AD-B178-B59A19E51882}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -19,11 +19,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -33,12 +33,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="MenuKitd.lib osgd.lib osgTextd.lib osgProducerd.lib osgGAd.lib osgDBd.lib osgUtild.lib Producerd.lib MenuKitOsgd.lib"
-				OutputFile="$(OutDir)/simple_tile.exe"
+				AdditionalDependencies="OsgToolsd.lib Producerd.lib osgProducerd.lib MenuKitd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib osgTextd.lib"
+				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/simple_tile.pdb"
+				ProgramDatabaseFile="$(OutDir)/simple_menu.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -70,9 +70,9 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OSGTOOLS_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(MENUKIT_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -82,10 +82,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="MenuKit.lib osg.lib osgText.lib osgProducer.lib osgGA.lib osgDB.lib osgUtil.lib Producer.lib MenuKitOsg.lib"
-				OutputFile="$(OutDir)/simple_tile.exe"
+				AdditionalDependencies="OsgTools.lib Producer.lib osgProducer.lib MenuKit.lib osg.lib osgGA.lib osgUtil.lib osgDB.lib osgText.lib"
+				OutputFile="$(OutDir)/simple_menu.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSGTOOLS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"

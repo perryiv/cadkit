@@ -73,7 +73,7 @@ public:
   // Possible flags.
   enum
   {
-    VERBOSE = (1<<0L) // Print progress and errors to stdout. Default is off.
+    VERBOSE = 1 // Print progress and errors to stdout. Default is off.
   };
 
   // Possible messages.
@@ -103,10 +103,10 @@ public:
   // Shape components.
   enum
   {
-    SHAPE_ARRAY_VERTICES = (1<<0L),
-    SHAPE_ARRAY_NORMALS  = (1<<1L),
-    SHAPE_ARRAY_COLORS   = (1<<2L),
-    SHAPE_ARRAY_TEXTURE  = (1<<3L)
+    SHAPE_ARRAY_VERTICES = 1,
+    SHAPE_ARRAY_NORMALS  = 2,
+    SHAPE_ARRAY_COLORS   = 4,
+    SHAPE_ARRAY_TEXTURE  = 8
   };
 
   typedef bool DbJtTraverserCB ( const DbJtTraverser::Message &message, const DbJtTraverser &traverser, const void *clientData );

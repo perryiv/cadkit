@@ -133,6 +133,29 @@ std::string DbItriDatabase::getFileExtension() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Does the format have the attribute?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbItriDatabase::isAttributeSupported ( const FormatAttribute &attribute ) const
+{
+  SL_PRINT3 ( "In DbItriDatabase::isAttributeSupported(), this = %X, attribute = %d\n", this, attribute );
+
+  switch ( attribute )
+  {
+  case FORMAT_ATTRIBUTE_BINARY:
+    return false;
+  case FORMAT_ATTRIBUTE_ASCII:
+    return true;
+  default:
+    SL_ASSERT ( 0 ); // What format is this?
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Store the data.
 //
 ///////////////////////////////////////////////////////////////////////////////

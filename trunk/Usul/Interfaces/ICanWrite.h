@@ -37,7 +37,7 @@ struct ICanWrite : public Usul::Interfaces::IUnknown
 
   /// See if the extension is supported. The string can be just the 
   /// extension or the whole filename.
-  virtual bool canWrite ( const std::string &name, Unknown *caller ) = 0;
+  virtual bool canWrite ( const std::string &name ) = 0;
 };
 
 

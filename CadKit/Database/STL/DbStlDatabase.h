@@ -139,6 +139,9 @@ public:
   // Start the set.
   virtual bool            startEntity ( SetHandle set, IUnknown *caller );
 
+//****//  void addLod( ) {/*makeLodIndex*/}
+
+
 protected:
 
   DbStlFacetManager _fmgr;

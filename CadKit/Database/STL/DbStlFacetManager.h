@@ -46,6 +46,7 @@ namespace CadKit
 typedef SlPartitionedVector<unsigned int, SlVec3f> Vertices;
 typedef SlPartitionedVector<unsigned int, SlVec3f> Normals;
 
+
 //  typedef SlStack<SlMatrix44f> DbStlStackM44f
   
 
@@ -119,7 +120,7 @@ protected:
 //  DbStlFacetManager member class "DbStlNormalSetter"
 //  
 //  We are using this class exclusively as an interface
-//  to data source IQueryShapeVerticesVec3f... it has no data members of its
+//  to data source IQueryShapeNormalsVec3f... it has no data members of its
 //  own.  It operates on normal buffer _nbuf which is owned by parent class
 //  DbStlFacetManager.  It is responsible solely for fetching normal data
 //  from data source and placing that data into _nbuf.  Any other manipulation
@@ -145,7 +146,26 @@ protected:
   Normals *_normals;
 };
 
+/*class DbOsgNormalSetter : public IQueryShapeNormalsVec3f::NormalSetter
+{
+public:
+  
+  typedef osg::Geometry::AttributeBinding Binding;
 
+  DbOsgNormalSetter ( const VertexBinding &binding ) : _binding ( CadKit::getBinding ( binding ) ), _normals ( new osg::Vec3Array ){}
+
+  osg::Vec3Array *      getNormals() { return _normals.get(); }
+  Binding               getBinding() { return _binding; }
+
+  virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
+  virtual bool          setSize ( const unsigned int &size );
+
+protected:
+
+  Binding _binding;
+  osg::ref_ptr<osg::Vec3Array> _normals;
+};
+*/
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  DbStlFacetManager.
@@ -242,11 +262,12 @@ protected:
 
   Facets _facets;
 	TransformStack _transforms;
+/*DEBUG*/int _tnv, _tns;
 
   Vertices _vbuf;
   Normals _nbuf;
   // interfaces and buffers for fetching vertices and normals from data source
-  DbStlVertexSetter _vSetter; // Eric, does this need to be a member?
+  DbStlVertexSetter _vSetter; 
   DbStlNormalSetter _nSetter; // Eric, does this need to be a member? It needs a default constructor if that is the case. Otherwise, make it a pointer and pass in the argument(s) to the constructor in the constructor's initializer list (that I commented out).
 //  Binding _binding; //TODO
 };

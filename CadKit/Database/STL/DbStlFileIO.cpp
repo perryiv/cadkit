@@ -22,7 +22,7 @@
 #include <fstream>
 
 using namespace CadKit;
-#define true 1
+//#define true 1
 
 
 

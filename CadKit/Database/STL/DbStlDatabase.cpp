@@ -23,7 +23,7 @@
 #include "DbStlPrecompiled.h"
 #include "DbStlDatabase.h"
 
-
+/*DEBUG*/ #include <iostream>
 #include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/IShapeQuery.h"
 #include "Interfaces/IQueryVertices.h"
@@ -55,7 +55,7 @@ using namespace CadKit;
 SL_IMPLEMENT_DYNAMIC_CLASS ( DbStlDatabase, DbBaseTarget );
 CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbStlDatabase, SlRefBase );
 
-
+/*DEBUG*/std::ofstream stl_out( "d:/temp/stlout.txt", std::ios_base::out | std::ios_base::trunc );
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -67,7 +67,20 @@ DbStlDatabase::DbStlDatabase() : DbBaseTarget()
   SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
 }
 
+/*
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+DbStlDatabase::DbStlDatabase( int argc, char **argv ) : DbBaseTarget()
+{
+  SL_PRINT2 ( "In DbStlDatabase::DbStlDatabase(), this = %X\n", this );
+  
+}
+
+*/
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Destructor.
@@ -81,7 +94,89 @@ DbStlDatabase::~DbStlDatabase()
 //TODO make sure we clean up
 }
 
+/*
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTranslation::Args &args )
+{
+  SL_PRINT3 ( "In CtTranslation::parseArguments(), this = %X, argc = %d\n", this, argc );
+  SL_ASSERT ( argc >= MIN_NUM_ARGS );
+  SL_ASSERT ( argv );
+
+  // Initialize.
+  args.clear();
+
+  // Get the arguments.
+  for ( int i = 1; i < argc; ++i )
+  {
+    // Grab the current argument.
+    std::string arg ( argv[i] );
+
+    //
+    // See if this argument is one of our flags.
+    //
+
+    if ( arg == "-pp" || arg == "--print-progress" )
+    {
+      // Get the next argument, if there is one.
+      std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );
+
+      // See if the option string is an integer.
+      if ( true == CadKit::isUnsignedInteger ( option ) )
+      {
+        this->setOutputStream ( &(std::cout) );
+        this->_setProgressPrintLevel ( CadKit::toUnsignedInteger ( option ) );
+
+        // Increment the loop index.
+        ++i;
+      }
+
+      // Otherwise return false.
+      else
+        return false;
+    }
+
+    else if ( arg == "-pe" || arg == "--print-errors" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
+    }
+
+    else if ( arg == "-pw" || arg == "--print-warnings" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
+    }
+
+    else if ( arg == "-pi" || arg == "--print-info" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
+    }
+
+    else if ( arg == "-v" || arg == "--verbose" )
+    {
+      this->setOutputStream ( &(std::cout) );
+      this->_setProgressPrintLevel ( 1 );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_ERRORS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_WARNINGS );
+      _printFlags = CadKit::addBits ( _printFlags, (unsigned int) _PRINT_INFO );
+    }
+
+    // Otherwise just save the argument.
+    else
+      args.push_back ( argv[i] );
+  }
+
+  // It worked.
+  return true;
+}
+
+*/
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Tell the target it is about to receive data.
@@ -177,8 +272,8 @@ bool DbStlDatabase::storeData ( const std::string &filename )
   SL_ASSERT ( filename.size() );
 
   // Write the root to file.
-//  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
-  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_BINARY_FILE_MODE );
+  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_ASCII_FILE_MODE );
+//  return _fmgr.storeData( filename.c_str(), DbStlFacetManager::STL_BINARY_FILE_MODE );
   //TODO - flag for choosing binary or ascii
 }
 
@@ -331,6 +426,7 @@ bool DbStlDatabase::startEntity ( LodHandle lod, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbStlDatabase::startEntity(), this = %X, lod = %d, caller = %X\n", this, lod, caller );
   SL_ASSERT ( caller );
+  /*DEBUG*/stl_out << "***Starting LOD(" << lod << ")***" << std::endl;
 
   // Nothing to do.
   return true;
@@ -376,11 +472,13 @@ bool DbStlDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   if ( lodQuery.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", NO_INTERFACE );
 
-  PartHandle p( lodQuery->getParent( shapeQuery->getParent( shape ) ) );
-  if ( p ) // check for null
-    if ( _partLodCheck.find( p ) == _partLodCheck.end() ) // only procede if no entry for part
+/*DEBUG*/LodHandle lod( shapeQuery->getParent( shape ) );
+//  PartHandle p( lodQuery->getParent( shapeQuery->getParent( shape ) ) );
+//  /*DEBUG*/stl_out << "Starting shape("<< shape << ") for LOD(" << lod << "), Part(" << p << ")" << std::endl;
+//  if ( p ) // check for null
+    if ( (int)lod == 1/*DEBUG _partLodCheck.find( p ) == _partLodCheck.end()*/ ) // only process first LOD for part
     {
-      _partLodCheck.insert( p ); // create entry so we don't process another lod for this part
+      //_partLodCheck.insert( p ); // create entry so we don't process another lod for this part
 
       // Add the vertices and normals. 
       if ( false == _fmgr.fetchVerticesPerShape( caller, shape ) )

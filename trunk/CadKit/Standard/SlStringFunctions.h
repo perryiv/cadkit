@@ -76,6 +76,76 @@ template <class StringType> inline bool isUnsignedInteger ( const StringType &s 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if the given string is a number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class StringType> inline bool isNumber ( const StringType &s )
+{
+  // Empty strings are not numbers. This is important because it will most 
+  // likely convert to zero below (although I didn't test that).
+  if ( s.empty() )
+    return false;
+
+  // Used below.
+  unsigned char c;
+  bool foundPeriod, foundExponent;
+  unsigned int numDigitsFound = 0;
+
+  // Initialize the start of the string.
+  StringType::const_iterator start = s.begin();
+
+  // Increment the start if the first character is a sign.
+  if ( '-' == s[0] || '+' == s[0] )
+    ++start;
+
+  // Loop through the string.
+  for ( StringType::const_iterator i = start; i != s.end(); ++i )
+  {
+    // Get the character.
+    c = static_cast<unsigned char>(*i);
+
+    // See if it is a period.
+    if ( '.' == c )
+    {
+      // If we already found a period...
+      if ( true == foundPeriod )
+        return false;
+
+      // Otherwise, set the flag.
+      foundPeriod = true;
+    }
+
+    // Otherwise, see if it is an exponent.
+    else if ( 'e' == c || 'E' == c )
+    {
+      // If we already found an exponent or a period...
+      if ( true == foundExponent || true == foundPeriod )
+        return false;
+
+      // Otherwise, set the flag.
+      foundExponent = true;
+    }
+
+    // Otherwise, see if it is a digit.
+    else if ( 0 != ::isdigit ( c ) )
+    {
+      // Increment the number of digits found.
+      ++numDigitsFound;
+    }
+
+    // Otherwise, it is an invalid character.
+    else
+      return false;
+  }
+
+  // If we get to here make sure we found at least one digit.
+  return numDigitsFound > 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Convert the given string to an unsigned integer.
 //
 ///////////////////////////////////////////////////////////////////////////////

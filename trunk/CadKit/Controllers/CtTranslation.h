@@ -24,6 +24,7 @@
 #include "Interfaces/IOutputStream.h"
 
 #include "Standard/SlRefBase.h"
+#include "Standard/SlVec2.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <iostream>
@@ -101,6 +102,7 @@ protected:
   unsigned int _progressPrintLevel;
   unsigned int _printFlags;
   LodProcessOption _lodOption;
+  SlVec2d _zeroRange;
 
   virtual ~CtTranslation();
 

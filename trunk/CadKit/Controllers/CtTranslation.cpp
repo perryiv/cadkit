@@ -39,6 +39,8 @@
 
 #define PRINT if ( _out ) (*_out)
 #define MIN_NUM_ARGS 2
+#define NEGATIVE_ZERO_INDEX 0
+#define POSITIVE_ZERO_INDEX 1
 
 // Don't bother formatting the string if the controller won't print it.
 #define PRINT_LEVEL(priority)\
@@ -61,7 +63,8 @@ CtTranslation::CtTranslation() : SlRefBase ( 0 ),
   _out ( NULL ),
   _progressPrintLevel ( 0 ),
   _printFlags ( 0 ),
-  _lodOption ( CadKit::PROCESS_ALL_LODS )
+  _lodOption ( CadKit::PROCESS_ALL_LODS ),
+  _zeroRange ( 0.0, 0.0 )
 {
   SL_PRINT2 ( "In CtTranslation::CtTranslation(), this = %X\n", this );
 }
@@ -139,7 +142,7 @@ bool CtTranslation::checkArguments ( const int &argc, const char **argv ) const
   -al               Where applicable, translate all of the Levels-of-Detail (LODs)'.\n\
   -hl               Where applicable, translate only the highest Level-of-Detail (LOD)'.\n\
   -ll               Where applicable, translate only the lowest Level-of-Detail (LOD)'.\n\
-  -z <zero>         Any number in the range [-<zero>,<zero>'] is set to 0.\n\
+  -z <low> <high>   Any number in the range [low,high] is set to 0.\n\
   --print-progress  Same as '-pp'.\n\
   --print-errors    Same as '-pe'.\n\
   --print-warnings  Same as '-pw'.\n\
@@ -274,22 +277,29 @@ bool CtTranslation::parseArguments ( const int &argc, const char **argv, CtTrans
 
     else if ( arg == "-z" || arg == "--zero" )
     {
-//      // Get the next argument, if there is one.
-//      std::string option ( ( i + 1 == argc ) ? "" : argv[i+1] );
-//
-//      // See if the option string is a number.
-//      if ( true == CadKit::isUnsignedInteger ( option ) )
-//      {
-//        this->setOutputStream ( &(std::cout) );
-//        this->_setProgressPrintLevel ( CadKit::toUnsignedInteger ( option ) );
-//
-//        // Increment the loop index.
-//        ++i;
-//      }
-//
-//      // Otherwise return false.
-//      else
-//        return false;
+      // Get the next two arguments, if there are any.
+      std::string negative  ( ( i + 1 == argc ) ? "" : argv[i+1] );
+      std::string positive ( ( i + 2 == argc ) ? "" : argv[i+2] );
+
+      // See if the strings are a numbers.
+      if ( true == CadKit::isNumber ( negative ) && true == CadKit::isNumber ( positive ) )
+      {
+        // Set the zero value.
+        _zeroRange[NEGATIVE_ZERO_INDEX] = ::atof ( negative.c_str() );
+        _zeroRange[POSITIVE_ZERO_INDEX] = ::atof ( positive.c_str() );
+
+#ifdef _DEBUG
+        std::cout << _zeroRange[NEGATIVE_ZERO_INDEX] << " " << _zeroRange[POSITIVE_ZERO_INDEX] << std::endl;
+        ::exit ( 0 );
+#endif
+
+        // Increment the loop index.
+        i += 2;
+      }
+
+      // Otherwise return false.
+      else
+        return false;
     }
 
     // Otherwise just save the argument.

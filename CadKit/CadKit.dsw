@@ -1,0 +1,164 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "BoundingBox"=.\Examples\BoundingBox\BoundingBox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Cube"=.\Demos\Cube\MFC\Cube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphMfc
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Matrix4"=.\Examples\Matrix4\Matrix4.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Pathname"=.\Examples\Pathname\Pathname.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "SceneGraphCore"=.\SceneGraph\Core\SceneGraphCore.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphMfc"=.\SceneGraph\Mfc\SceneGraphMfc.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphOpenGL"=.\SceneGraph\OpenGL\SceneGraphOpenGL.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Standard"=.\Standard\Standard.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "String"=.\Examples\String\String.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Vector"=.\Examples\Vector\Vector.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

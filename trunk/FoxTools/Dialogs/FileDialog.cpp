@@ -14,19 +14,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Dialogs/FileDialog.h"
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXString.h"
-#include "FXRegistry.h"
-#include "FXSize.h"
-#include "FXPoint.h"
-#include "FXRectangle.h"
-#include "FXThread.h"
-#include "FXApp.h"
-#include "FXFileDialog.h"
+#include "FoxTools/Headers/FileDialog.h"
+#include "FoxTools/Headers/App.h"
 
 #include "Usul/Bits/Bits.h"
 

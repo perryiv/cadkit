@@ -18,7 +18,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgFox { namespace Documents { class Document; } }
 
 namespace Usul {
 namespace Interfaces {

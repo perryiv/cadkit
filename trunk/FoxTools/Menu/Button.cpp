@@ -15,21 +15,12 @@
 
 #include "FoxTools/Menu/Button.h"
 #include "FoxTools/Icons/Factory.h"
+#include "FoxTools/Headers/Button.h"
+#include "FoxTools/Headers/ToolBar.h"
+#include "FoxTools/Headers/ToggleButton.h"
+#include "FoxTools/Headers/Icon.h"
 
 #include <memory>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXSize.h"
-#include "FXPoint.h"
-#include "FXRectangle.h"
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXToolBar.h"
-#include "FXIcon.h"
-#include "FXButton.h"
-#include "FXToggleButton.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

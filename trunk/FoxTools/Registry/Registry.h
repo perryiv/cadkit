@@ -16,10 +16,7 @@
 #ifndef _FOX_TOOLS_REGISTRY_FUNCTIONS_H_
 #define _FOX_TOOLS_REGISTRY_FUNCTIONS_H_
 
-#include "OsgFox/Declarations.h"
-#include "osg/Vec2d"
-#include "osg/Vec4f"
-#include "osg/Vec4d"
+#include "FoxTools/Headers/Registry.h"
 
 
 namespace FoxTools {

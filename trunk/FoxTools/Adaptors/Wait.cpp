@@ -15,19 +15,7 @@
 
 #include "Wait.h"
 
-#include <cstdarg>
-
-#include "fxver.h"
-#include "fxdefs.h"
-#include "FXString.h"
-#include "FXHash.h"
-#include "FXStream.h"
-#include "FXSize.h"
-#include "FXPoint.h"
-#include "FXRectangle.h"
-#include "FXRegistry.h"
-#include "FXThread.h"
-#include "FXApp.h"
+#include "FoxTools/Headers/App.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Adaptors;

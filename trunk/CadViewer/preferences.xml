@@ -60,26 +60,26 @@
       </comment>
       <scale>      0.25  0.25  1.0 </scale>
       <translate> -2.0   6.0  -4.0 </translate>
+      <color>
+        <comment>customizable menu color scheme</comment>
+
+	<bg_norm>      0.6 0.6 0.6 1.0</bg_norm>
+	<bg_highlight> 0.4 0.4 0.4 1.0</bg_highlight>
+	<bg_disabled>  0.6 0.6 0.6 1.0</bg_disabled>
+	<txt_norm>     0.0 0.0 0.0 1.0</txt_norm>
+	<txt_highlight>0.0 0.0 0.0 1.0</txt_highlight>
+	<txt_disabled> 0.3 0.3 0.3 1.0</txt_disabled>
+
+        <comment>
+	<bg_norm>      1.0 1.0 1.0 1.0</bg_norm>
+	<bg_highlight> 1.0 0.0 0.0 1.0</bg_highlight>
+	<bg_disabled>  0.0 0.0 0.0 1.0</bg_disabled>
+	<txt_norm>     0.0 0.0 1.0 1.0</txt_norm>
+	<txt_highlight>1.0 1.0 1.0 1.0</txt_highlight>
+	<txt_disabled> 0.0 1.0 0.0 1.0</txt_disabled>
+        </comment> 
+      </color>
     </menu>
-    <menu_color>
-	  <comment>customizable menu color scheme</comment>
-	  
-	  <bg_norm>      0.6 0.6 0.6 1.0</bg_norm>
-	  <bg_highlight> 0.4 0.4 0.4 1.0</bg_highlight>
-	  <bg_disabled>  0.6 0.6 0.6 1.0</bg_disabled>
-	  <txt_norm>     0.0 0.0 0.0 1.0</txt_norm>
-	  <txt_highlight>0.0 0.0 0.0 1.0</txt_highlight>
-	  <txt_disabled> 0.3 0.3 0.3 1.0</txt_disabled>
-	  
-	  <comment>
-	  <bg_norm>      1.0 1.0 1.0 1.0</bg_norm>
-	  <bg_highlight> 1.0 0.0 0.0 1.0</bg_highlight>
-	  <bg_disabled>  0.0 0.0 0.0 1.0</bg_disabled>
-	  <txt_norm>     0.0 0.0 1.0 1.0</txt_norm>
-	  <txt_highlight>1.0 1.0 1.0 1.0</txt_highlight>
-	  <txt_disabled> 0.0 1.0 0.0 1.0</txt_disabled>
-	  </comment>
-    </menu_color>
     <status_bar>
       <comment>
         This is the translation and scale of the status-bar.

@@ -44,7 +44,8 @@ RSC=rc.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgGlPrecompiled.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../" /D "_MBCS" /D "_USRDLL" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /Fr /YX"SgGlPrecompiled.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../" /D "_MBCS" /D "_USRDLL" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /YX"SgGlPrecompiled.h" /FD /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -71,7 +72,8 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgGlPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /D "_USRDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /Fr /YX"SgGlPrecompiled.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /D "_USRDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /YX"SgGlPrecompiled.h" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"

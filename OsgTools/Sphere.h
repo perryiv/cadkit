@@ -18,14 +18,10 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+#include "osg/Vec4"
+#include "osg/BoundingSphere"
+
 // forward declarations
-namespace osg
-{
-  class TessellationHints;
-  class Material;
-  class ShapeDrawable;
-  class PolygonMode;
-}
 
 namespace OsgTools
 {
@@ -33,34 +29,27 @@ namespace OsgTools
   class OSG_TOOLS_EXPORT Sphere
   {
   public:
-    // constructors
-    Sphere();
+    Sphere(float r=1.0,
+           const osg::Vec4& c=osg::Vec4(1.0,0.0,0.0,1.0) );
+    Sphere(const osg::BoundingSphere&,
+           const osg::Vec4& c=osg::Vec4(1.0,0.0,0.0,1.0));
     Sphere(const Sphere&);
     Sphere& operator = (const Sphere&);
     virtual ~Sphere();
 
-    Sphere(const osg::Vec3&, float);
-    Sphere(const osg::BoundingSphere&);
+    osg::Geode* operator()();
 
-  protected:
-    void _init();
+    void radius(float r) { _radius = r; }
+    float radius() const { return _radius; }
 
-  public:
-    // methods
-    osg::Geode* operator() ();  // accessing method
+    void color(const osg::Vec4& c) { _color = c; }
+    const osg::Vec4& color() const { return _color; }
 
   private:
-    // member data
-    osg::ref_ptr<osg::TessellationHints> _hints;
-    osg::ref_ptr<osg::Sphere> _sphere;
-    osg::ref_ptr<osg::Material> _material;
-    osg::ref_ptr<osg::StateSet> _stateset;
-    osg::ref_ptr<osg::ShapeDrawable> _shapedrawable;
-    osg::ref_ptr<osg::PolygonMode> _polygonmode;
+    float _radius;
     osg::Vec4 _color;
   };
 
 };
     
-
 #endif

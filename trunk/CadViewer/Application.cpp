@@ -120,6 +120,10 @@ namespace CV
   const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
   const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
 #endif
+  const unsigned long NAVIGATE_NO_NAV = BUTTON_BLUE;
+  const unsigned long NAVIGATE_FLY    = BUTTON_RED;
+  const unsigned long NAVIGATE_WALK   = BUTTON_YELLOW;
+  const unsigned long NAVIGATE_POLE   = BUTTON_GREEN;
 };
 
 
@@ -135,13 +139,14 @@ namespace CV
   enum
   {
     NO_NAVIGATION,
-    TRANSLATE_XZ_LOCAL,
-    TRANSLATE_XZ_GLOBAL,
+    TRANSLATE_XZ_LOCAL,       // FLY
+    TRANSLATE_XZ_GLOBAL,      // WALK
+//    ROTATE_Y_TRANS_Y_GLOBAL,  // POLE
     ROTATE_XY_LOCAL,
     ROTATE_XY_GLOBAL,
     INTERSECT_SELECT,
     INTERSECT_SEEK,
-    INTERSECT_HIDE
+    INTERSECT_HIDE,
   };
 };
 
@@ -455,6 +460,7 @@ void Application::_init()
 
   // Turn on navigation.
   //this->_setNavigator(); // This breaks time-based navigation. TODO, fix.
+  this->_handleNavigationCycleEvent( NAVIGATE_NO_NAV );           // activate navigation
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
 
@@ -989,6 +995,9 @@ void Application::_processButtons()
   // Now process the intersector buttons.
   if ( this->_handleIntersectionEvent() )
     return;
+
+  if ( this->_handleNavigationCycleEvent() )
+    return;
 }
 
 
@@ -1077,6 +1086,65 @@ bool Application::_handleIntersectionEvent()
 
   // We didn't handle the event.
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to the Navigation Cycle.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleNavigationCycleEvent( const unsigned long eventRequest )
+{
+  MenuKit::Message cycle_message = MenuKit::MESSAGE_SELECTED; // simulate message/item from MenuKit
+  MenuKit::Item *cycle_item (0x0);                            // NULL b/c it never needed
+  bool handled;
+  unsigned long mode = _buttons->released();
+  if ( eventRequest )                                         // if mode NOT specified with function call ...
+    mode = eventRequest;                                      // ... get information from buttons
+
+  switch ( mode )                                             // which button was used???
+  {
+    case NAVIGATE_FLY :                                       // BUTTON_RED
+      std::cout << "FLY" << std::endl;
+      // Stop navigation first.  This prevents toggling off when already in a nav mode
+      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+      // set (or reset) navigation mode.  Simulated a call from the menu.
+      this->_hvTransWandXZ ( cycle_message, cycle_item );     // activate navigation (FLY)
+      handled = true;                                         // button event has been handled
+      break;
+
+    case NAVIGATE_WALK :                                      // BUTTON_YELLOW
+      std::cout << "WALK" << std::endl;
+      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+      this->_hvTransGlobalXZ ( cycle_message, cycle_item );   // activate navigation (WALK)
+      handled = true;                                         // button event has been handled
+      break;
+
+    case NAVIGATE_POLE :                                      // BUTTON_GREEN
+      std::cout << "POLE" << std::endl;
+      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+      this->_poleNav ( cycle_message, cycle_item );           // activate navigation (POLE)
+      handled = true;                                         // button event has been handled
+      break;
+
+    case NAVIGATE_NO_NAV :                                    // BUTTON_BLUE
+      std::cout << "STOP NAVIGATION" << std::endl;
+      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
+      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
+      handled = true;                                         // button event has been handled
+      break;
+
+    default :
+      handled = false;                                        // button event has NOT been handled
+  };
+
+  return handled;  // if false, button event was not handled (doesn't effect navigation)
 }
 
 

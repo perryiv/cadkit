@@ -1264,8 +1264,8 @@ void Application::_hvTransWandXZ ( MenuKit::Message m, MenuKit::Item *item )
       if ( _navigatorH.valid() && _navigatorV.valid() && 
            id == _navigatorH->id() && id == _navigatorV->id() )
       {
-        _navigatorH = 0x0;
-        _navigatorV = 0x0;
+        _navigatorH = 0x0;          // invalidate the _navigators ...
+        _navigatorV = 0x0;          // ... in other words, toggle them off
       }
 
       // Otherwise, set the navigator.

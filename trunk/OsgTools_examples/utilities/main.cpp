@@ -19,39 +19,35 @@
 #include <osgProducer/Viewer>
 #include "Display.h"
 
-#include "OsgTools/Box.h"
-
 int main(unsigned int argc, char* argv[])
 {
   // make a sample scene
   OsgTools::Sample sample;
   osg::ref_ptr<osg::Node> scene( sample.scene() );
-  //OsgTools::ColorBox box;
-  //osg::ref_ptr<osg::Node> scene = box();
 
   // print out the tree to make sure it is good
   osg::ref_ptr<OsgTools::GraphStreamVisitor> gsv = new OsgTools::GraphStreamVisitor(std::cout);
   scene->accept(*gsv);
 
   // make a viewer, set it up, add the data
-  osg::ref_ptr<osgProducer::Viewer> viewer = new osgProducer::Viewer();
-  viewer->setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
-  viewer->setSceneData( scene.get() );
+  osgProducer::Viewer viewer;
+  viewer.setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
+  viewer.setSceneData( scene.get() );
 
   // make an eventhandler and add it to the viewer
-  //Display controller(viewer.get());
+  Display controller(viewer);
 
   // start the viewing process
-  viewer->realize();
+  viewer.realize();
 
-  while( !viewer->done() )
+  while( !viewer.done() )
   {
-    viewer->sync();
-    viewer->update();
-    viewer->frame();
+    viewer.sync();
+    viewer.update();
+    viewer.frame();
   }
 
-  viewer->sync();
+  viewer.sync();
 
   return 1;
 }

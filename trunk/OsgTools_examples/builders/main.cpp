@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
   viewer->sync();
 
-  return 0;
+  return 1;
 }
 
 osg::Group* create_scene()

@@ -27,7 +27,7 @@ public:
 	osg::ref_ptr<osg::Material> getMaterial (const std::string) const;
 	//bool addColor(std::string, Color) { return false; }
 private:
-	void addMaterial(std::string) const;
+	Material addMaterial(std::string) const;
 	mutable Map _materialMap;
 
 };

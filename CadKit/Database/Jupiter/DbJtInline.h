@@ -16,13 +16,13 @@
 #ifndef _CADKIT_DATABASE_JUPITER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 #define _CADKIT_DATABASE_JUPITER_LIBRARY_INLINE_FUNCTIONS_DATABASE_H_
 
-#include "DbJtPrecompiled.h"
 #include "DbJtVisApiArray.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"
 
 #include "Interfaces/IMessageNotify.h"
+#include "Interfaces/Handles.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "DbJtVisApiHeaders.h"
@@ -31,6 +31,28 @@
 
 namespace CadKit
 {
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the handle from the index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline LodHandle   makeLodHandle   ( const int &index ) { SL_ASSERT ( index >= 0 ); return (LodHandle)   ( index + 1 ); }
+inline ShapeHandle makeShapeHandle ( const int &index ) { SL_ASSERT ( index >= 0 ); return (ShapeHandle) ( index + 1 ); }
+inline SetHandle   makeSetHandle   ( const int &index ) { SL_ASSERT ( index >= 0 ); return (SetHandle)   ( index + 1 ); }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the index from the handle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline int makeLodIndex   ( LodHandle lod )     { SL_ASSERT ( ((int) lod)   > 0 ); return ((int) lod)   - 1; }
+inline int makeShapeIndex ( ShapeHandle shape ) { SL_ASSERT ( ((int) shape) > 0 ); return ((int) shape) - 1; }
+inline int makeSetIndex   ( SetHandle set )     { SL_ASSERT ( ((int) set)   > 0 ); return ((int) set)   - 1; }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Check the type.
@@ -87,21 +109,21 @@ template <class HandleType> inline std::string getName ( HandleType ptr )
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class NotifyType, class HandleType> inline bool handleEntityStart
-  ( NotifyType *notify, HandleType entity, IUnknown *caller, IMessageNotify *controller )
+  ( NotifyType *entityNotify, HandleType entity, IUnknown *caller, IMessageNotify *messageNotify )
 {
-  SL_ASSERT ( NULL != notify );
+  SL_ASSERT ( NULL != entityNotify );
   SL_ASSERT ( NULL != entity );
   SL_ASSERT ( NULL != caller );
 
   // Let the target know we have a new entity.
-  if ( false == notify->startEntity ( entity, caller ) )
+  if ( false == entityNotify->startEntity ( entity, caller ) )
   {
-    // If there is no controller then we failed.
-    if ( NULL == controller )
+    // If there is no messageNotify interface then we failed.
+    if ( NULL == messageNotify )
       return false;
 
-    // Otherwise, ask the controller.
-    return controller->messageNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
+    // Otherwise, ask the messageNotify interface.
+    return messageNotify->messageNotify ( CadKit::getString ( "Failed to start: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
   }
 
   // It worked.
@@ -116,21 +138,21 @@ template <class NotifyType, class HandleType> inline bool handleEntityStart
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class NotifyType, class HandleType> inline bool handleEntityEnd
-  ( NotifyType *notify, HandleType entity, IUnknown *caller, IMessageNotify *controller )
+  ( NotifyType *entityNotify, HandleType entity, IUnknown *caller, IMessageNotify *messageNotify )
 {
-  SL_ASSERT ( NULL != notify );
+  SL_ASSERT ( NULL != entityNotify );
   SL_ASSERT ( NULL != entity );
   SL_ASSERT ( NULL != caller );
 
   // Let the target know we have a new entity.
-  if ( false == notify->endEntity ( entity, caller ) )
+  if ( false == entityNotify->endEntity ( entity, caller ) )
   {
-    // If there is no controller then we failed.
-    if ( NULL == controller )
+    // If there is no messageNotify interface then we failed.
+    if ( NULL == messageNotify )
       return false;
 
-    // Otherwise, ask the controller.
-    return controller->messageNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
+    // Otherwise, ask the messageNotify interface.
+    return messageNotify->messageNotify ( CadKit::getString ( "Failed to end: %s", CadKit::getName ( entity ).c_str() ), FAILED, IMessageNotify::MESSAGE_ERROR );
   }
 
   // It worked.

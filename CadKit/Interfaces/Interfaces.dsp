@@ -97,6 +97,32 @@ SOURCE=.\Handles.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IChildQuery.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IClientData.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\ICommandLine.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -175,19 +201,6 @@ SOURCE=.\IEntityQuery.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\IErrorNotify.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\IInstanceQuery.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
@@ -253,7 +266,85 @@ SOURCE=.\IOutputStream.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\IProgressNotify.h
+SOURCE=.\IQueryArray.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IQueryColors.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IQueryNormals.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IQueryTexCoords.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IQueryVertices.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\IShapeQuery.h
+
+!IF  "$(CFG)" == "Interfaces - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ISubEntityNotify.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 
@@ -292,7 +383,7 @@ SOURCE=.\IUnknown.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\IWarningNotify.h
+SOURCE=.\VertexBindings.h
 
 !IF  "$(CFG)" == "Interfaces - Win32 Release"
 

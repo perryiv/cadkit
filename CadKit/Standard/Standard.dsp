@@ -163,14 +163,6 @@ SOURCE=.\SlInlineMath.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlMessage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMessageIds.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlPathname.h
 # End Source File
 # Begin Source File
@@ -339,6 +331,10 @@ SOURCE=.\SlList.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SlPartitionedVector.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlStack.h
 # End Source File
 # End Group
@@ -352,6 +348,18 @@ SOURCE=.\SlSystem.cpp
 # Begin Source File
 
 SOURCE=.\SlSystem.h
+# End Source File
+# End Group
+# Begin Group "Messages"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SlMessage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlMessageIds.h
 # End Source File
 # End Group
 # End Target

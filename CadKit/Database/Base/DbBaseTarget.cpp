@@ -65,8 +65,6 @@ IUnknown *DbBaseTarget::queryInterface ( const unsigned long &iid )
   {
   case IDataTarget::IID:
     return static_cast<IDataTarget *>(this);
-  case CadKit::IUnknown::IID:
-    return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
     return DbBaseObject::queryInterface ( iid );
   }

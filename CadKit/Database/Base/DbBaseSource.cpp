@@ -66,8 +66,6 @@ IUnknown *DbBaseSource::queryInterface ( const unsigned long &iid )
   {
   case IDataSource::IID:
     return static_cast<IDataSource *>(this);
-  case CadKit::IUnknown::IID:
-    return static_cast<CadKit::IUnknown *>(static_cast<IDataSource *>(this));
   default:
     return DbBaseObject::queryInterface ( iid );
   }

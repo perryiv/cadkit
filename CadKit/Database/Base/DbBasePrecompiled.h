@@ -27,6 +27,8 @@
 // Needed headers.
 #ifdef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
+# include <vector>
+# include <map>
 # include <algorithm> // For std::transform
 # include <string>
 #endif

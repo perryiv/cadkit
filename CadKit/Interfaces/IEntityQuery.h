@@ -16,8 +16,7 @@
 #ifndef _CADKIT_INTERFACE_ENTITY_QUERY_H_
 #define _CADKIT_INTERFACE_ENTITY_QUERY_H_
 
-#include "IUnknown.h"
-#include "Handles.h"
+#include "IChildQuery.h"
 
 #include "Standard/SlMaterial.h"
 #include "Standard/SlMatrix4.h"
@@ -29,31 +28,29 @@
 
 namespace CadKit
 {
-template <const unsigned int id, class EntityHandle, class Real> class IEntityQuery : public IUnknown
+template <const unsigned int id, class EntityHandle, class ParentHandle, class Real> 
+class IEntityQuery : public IChildQuery<id,EntityHandle,ParentHandle>
 {
 public:
 
-  // Id for this interface.
-  enum { IID = id };
-
   // Get the name.
-  virtual std::string     getName ( EntityHandle assembly ) const = 0;
+  virtual std::string     getName ( EntityHandle entity ) const = 0;
 
   // Get the material.
-  virtual bool            getMaterial ( EntityHandle assembly, SlMaterial<Real> &material ) const = 0;
+  virtual bool            getMaterial ( EntityHandle entity, SlMaterial<Real> &material, bool tryParents ) const = 0;
 
   // Get the transformation matrix.
-  virtual bool            getTransform ( EntityHandle assembly, SlMatrix4<Real> &matrix ) const = 0;
+  virtual bool            getTransform ( EntityHandle entity, SlMatrix4<Real> &matrix, bool tryParents ) const = 0;
 };
 
 
 // Common types.
-typedef IEntityQuery<1033021569,AssemblyHandle,float>  IAssemblyQueryFloat;
-typedef IEntityQuery<1033021570,AssemblyHandle,double> IAssemblyQueryDouble;
-typedef IEntityQuery<1033021571,PartHandle,    float>  IPartQueryFloat;
-typedef IEntityQuery<1033021572,PartHandle,    double> IPartQueryDouble;
-typedef IEntityQuery<1033021573,GroupHandle,   float>  IGroupQueryFloat;
-typedef IEntityQuery<1033021574,GroupHandle,   double> IGroupQueryDouble;
+typedef IEntityQuery<1033021569,AssemblyHandle,AssemblyHandle,float>  IAssemblyQueryFloat;
+typedef IEntityQuery<1033021570,AssemblyHandle,AssemblyHandle,double> IAssemblyQueryDouble;
+typedef IEntityQuery<1033021571,PartHandle,    AssemblyHandle,float>  IPartQueryFloat;
+typedef IEntityQuery<1033021572,PartHandle,    AssemblyHandle,double> IPartQueryDouble;
+typedef IEntityQuery<1033021573,GroupHandle,   GroupHandle,   float>  IGroupQueryFloat;
+typedef IEntityQuery<1033021574,GroupHandle,   GroupHandle,   double> IGroupQueryDouble;
 
 
 }; // namespace CadKit

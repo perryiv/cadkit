@@ -22,11 +22,11 @@
 namespace CadKit
 {
 template <const unsigned int id, class Real> 
-class IInstanceQuery : public IEntityQuery<id,InstanceHandle,Real>
+class IInstanceQuery : public IEntityQuery<id,InstanceHandle,AssemblyHandle,Real>
 {
 public:
 
-  // Get the corresponding part or assembly.
+  // Get the corresponding part or assembly that this instance represents.
   virtual HierarchyHandle getCorresponding ( InstanceHandle instance ) const = 0;
 };
 

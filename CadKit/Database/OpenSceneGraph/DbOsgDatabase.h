@@ -26,9 +26,15 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <string>
+# include <map>
 #endif
 
-namespace osg { class Group; };
+namespace osg 
+{
+  class Group;
+  class Geometry;
+  class StateSet;
+};
 
 
 namespace CadKit
@@ -36,7 +42,10 @@ namespace CadKit
 class DB_OSG_API DbOsgDatabase : public DbBaseTarget,
                                  public IAssemblyNotify,
                                  public IPartNotify,
-                                 public IInstanceNotify
+                                 public IInstanceNotify,
+                                 public ILodNotify,
+                                 public IShapeNotify,
+                                 public ISetNotify
 {
 public:
 
@@ -93,14 +102,61 @@ public:
   // Start the instance.
   virtual bool            startEntity ( InstanceHandle assembly, IUnknown *caller );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  ILodNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the lod.
+  virtual bool            endEntity ( LodHandle lod, IUnknown *caller );
+
+  // Start the lod.
+  virtual bool            startEntity ( LodHandle lod, IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IShapeNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the shape.
+  virtual bool            endEntity ( ShapeHandle shape, IUnknown *caller );
+
+  // Start the shape.
+  virtual bool            startEntity ( ShapeHandle shape, IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  ISetNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the set.
+  virtual bool            endEntity ( SetHandle set, IUnknown *caller );
+
+  // Start the set.
+  virtual bool            startEntity ( SetHandle set, IUnknown *caller );
+
 protected:
 
   typedef SlStack<osg::Group *> GroupStack;
+  typedef std::map<const void *, osg::Group *> GroupMap;
 
   osg::Group *_root;
-  std::auto_ptr<GroupStack> _groups;
+  std::auto_ptr<GroupStack> _groupStack;
+  std::auto_ptr<GroupMap> _groupMap;
 
   virtual ~DbOsgDatabase();
+
+  bool                    _addAttributes ( IUnknown *caller, ShapeHandle shape, osg::StateSet *state );
+  bool                    _addDataSets   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+  bool                    _addVertices   ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+  bool                    _addNormals    ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+  bool                    _addColors     ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+  bool                    _addTexCoords  ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+
+  osg::Group *            _findGroup ( const void *key ) const;
 
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();

@@ -48,6 +48,7 @@
 #include "Standard/SlAssert.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <algorithm>
 #endif
 
 using namespace CadKit;

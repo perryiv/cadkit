@@ -24,13 +24,12 @@ class eaiEntity;
 
 namespace CadKit
 {
-// Get the transformation matrix.
-bool getTransform ( eaiEntity *ptr, SlMatrix4f &matrix );
+  // Get the transformation matrix.
+  bool getTransform ( eaiEntity *ptr, SlMatrix4f &matrix );
 
-// Get the material.
-bool getMaterial ( eaiEntity *entity, SlMaterialf &mat );
-
-}; // namespace CadKit
+  // Get the material.
+  bool getMaterial ( eaiEntity *entity, SlMaterialf &mat );
+};
 
 
 #endif // _CADKIT_DATABASE_JUPITER_LIBRARY_HELPER_FUNCTIONS_DATABASE_H_

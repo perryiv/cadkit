@@ -15,6 +15,7 @@
 
 #include "DbBasePrecompiled.h"
 #include "DbBaseObject.h"
+#include "DbBaseInline.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlQueryPtr.h"
@@ -34,7 +35,15 @@ SL_IMPLEMENT_CLASS ( DbBaseObject, SlRefBase );
 ///////////////////////////////////////////////////////////////////////////////
 
 DbBaseObject::DbBaseObject() : SlRefBase ( 0 ),
-  _controller ( NULL )
+  _genericClientDataMap  ( new GenericClientDataMap ),
+  _assemblyClientDataMap ( new AssemblyClientDataMap ),
+  _partClientDataMap     ( new PartClientDataMap ),
+  _instanceClientDataMap ( new InstanceClientDataMap ),
+  _groupClientDataMap    ( new GroupClientDataMap ),
+  _lodClientDataMap      ( new LodClientDataMap ),
+  _shapeClientDataMap    ( new ShapeClientDataMap ),
+  _controller ( NULL ),
+  _messageNotify ( NULL )
 {
   SL_PRINT2 ( "In DbBaseObject::DbBaseObject(), this = %X\n", this );
 }
@@ -66,6 +75,20 @@ IUnknown *DbBaseObject::queryInterface ( const unsigned long &iid )
   {
   case IControlled::IID:
     return static_cast<IControlled *>(this);
+  case IGenericClientData::IID:
+    return static_cast<IGenericClientData *>(this);
+  case IAssemblyClientData::IID:
+    return static_cast<IAssemblyClientData *>(this);
+  case IPartClientData::IID:
+    return static_cast<IPartClientData *>(this);
+  case IInstanceClientData::IID:
+    return static_cast<IInstanceClientData *>(this);
+  case IGroupClientData::IID:
+    return static_cast<IGroupClientData *>(this);
+  case ILodClientData::IID:
+    return static_cast<ILodClientData *>(this);
+  case IShapeClientData::IID:
+    return static_cast<IShapeClientData *>(this);
   case CadKit::IUnknown::IID:
     return static_cast<CadKit::IUnknown *>(static_cast<IControlled *>(this));
   default:
@@ -86,6 +109,11 @@ void DbBaseObject::setController ( IUnknown *controller )
 
   // Set the controller, it may be null.
   _controller = controller;
+
+  // Assign the specific interface pointers. This will query for the 
+  // respective interfaces. If the resulting interface pointer is invalid, it
+  // simply means the interface was not available.
+  _messageNotify = controller;
 }
 
 
@@ -99,15 +127,12 @@ bool DbBaseObject::_notifyMessage ( const std::string &message, const unsigned l
 {
   SL_PRINT5 ( "In DbBaseObject::_notifyMessage(), this = %X, id = %d, type = %d, message = \n", this, id, type, message.c_str() );
 
-  // See if the controller supports the proper interface.
-  SlQueryPtr<IMessageNotify> controller ( IMessageNotify::IID, _controller );
-
   // If the interface is not implemented then return true to proceed.
-  if ( controller.isNull() )
+  if ( _messageNotify.isNull() )
     return true;
 
   // Let the controller know.
-  return controller->messageNotify ( message, id, type );
+  return _messageNotify->messageNotify ( message, id, type );
 }
 
 
@@ -120,3 +145,53 @@ bool DbBaseObject::_notifyMessage ( const std::string &message, const unsigned l
 bool DbBaseObject::_notifyError    ( const std::string &message, const unsigned long &id ) { return this->_notifyMessage ( message, id, IMessageNotify::MESSAGE_ERROR ); }
 bool DbBaseObject::_notifyWarning  ( const std::string &message, const unsigned long &id ) { return this->_notifyMessage ( message, id, IMessageNotify::MESSAGE_WARNING ); }
 bool DbBaseObject::_notifyProgress ( const std::string &message )                          { return this->_notifyMessage ( message, 0,  IMessageNotify::MESSAGE_PROGRESS ); }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the client data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const void *DbBaseObject::getClientData ( void * const key )         const { return CadKit::find ( key, *(_genericClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const AssemblyHandle key ) const { return CadKit::find ( key, *(_assemblyClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const PartHandle key )     const { return CadKit::find ( key, *(_partClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const InstanceHandle key ) const { return CadKit::find ( key, *(_instanceClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const GroupHandle key )    const { return CadKit::find ( key, *(_groupClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const LodHandle key )      const { return CadKit::find ( key, *(_lodClientDataMap.get()) ); }
+const void *DbBaseObject::getClientData ( const ShapeHandle key )    const { return CadKit::find ( key, *(_shapeClientDataMap.get()) ); }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the client data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseObject::setClientData ( void * const key,         const void *data ) { (*_genericClientDataMap)[key]  = data; }
+void DbBaseObject::setClientData ( const AssemblyHandle key, const void *data ) { (*_assemblyClientDataMap)[key] = data; }
+void DbBaseObject::setClientData ( const PartHandle key,     const void *data ) { (*_partClientDataMap)[key]     = data; }
+void DbBaseObject::setClientData ( const InstanceHandle key, const void *data ) { (*_instanceClientDataMap)[key] = data; }
+void DbBaseObject::setClientData ( const GroupHandle key,    const void *data ) { (*_groupClientDataMap)[key]    = data; }
+void DbBaseObject::setClientData ( const LodHandle key,      const void *data ) { (*_lodClientDataMap)[key]      = data; }
+void DbBaseObject::setClientData ( const ShapeHandle key,    const void *data ) { (*_shapeClientDataMap)[key]    = data; }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the client data maps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseObject::_clearClientDataMaps()
+{
+  SL_PRINT2 ( "In DbBaseObject::_clearClientDataMaps(), this = %X\n", this );
+
+  _genericClientDataMap->clear();
+  _assemblyClientDataMap->clear();
+  _partClientDataMap->clear();
+  _instanceClientDataMap->clear();
+  _groupClientDataMap->clear();
+  _lodClientDataMap->clear();
+  _shapeClientDataMap->clear();
+}

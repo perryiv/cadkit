@@ -1,37 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  BSD License
-//  http://www.opensource.org/licenses/bsd-license.html
-//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//
-//  Redistribution and use in source and binary forms, with or without 
-//  modification, are permitted provided that the following conditions are met:
-//
-//  - Redistributions of source code must retain the above copyright notice, 
-//    this list of conditions and the following disclaimer. 
-//
-//  - Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
-//
-//  - Neither the name of the CAD Toolkit nor the names of its contributors may
-//    be used to endorse or promote products derived from this software without
-//    specific prior written permission. 
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//  POSSIBILITY OF SUCH DAMAGE.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -61,7 +33,9 @@ namespace CadKit
 
 template <class T> inline void copy ( const unsigned int &num, const T *array, std::vector<T> &vec )
 {
-  SL_ASSERT ( array );
+  // Handle trivial case.
+  if ( 0 == num || NULL == array )
+    return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
   // to make std::vector::size() returns the correct number.
@@ -81,7 +55,9 @@ template <class T> inline void copy ( const unsigned int &num, const T *array, s
 
 template <class T> inline void append ( const unsigned int &num, const T *array, std::vector<T> &vec )
 {
-  SL_ASSERT ( array );
+  // Handle trivial case.
+  if ( 0 == num || NULL == array )
+    return;
 
   // Get the current size.
   unsigned int size = vec.size();
@@ -109,7 +85,9 @@ template <class T> inline void append ( const unsigned int &num, const T *array,
 
 template <class T> inline void append2D ( const unsigned int &num, const T *array, std::vector<SlVec2<T> > &vec )
 {
-  SL_ASSERT ( array );
+  // Handle trivial case.
+  if ( 0 == num || NULL == array )
+    return;
 
   // Get the current size.
   unsigned int size = vec.size();
@@ -144,7 +122,9 @@ template <class T> inline void append2D ( const unsigned int &num, const T *arra
 
 template <class T> inline void append3D ( const unsigned int &num, const T *array, std::vector<SlVec3<T> > &vec )
 {
-  SL_ASSERT ( array );
+  // Handle trivial case.
+  if ( 0 == num || NULL == array )
+    return;
 
   // Get the current size.
   unsigned int size = vec.size();
@@ -179,7 +159,9 @@ template <class T> inline void append3D ( const unsigned int &num, const T *arra
 
 template <class T> inline void append4D ( const unsigned int &num, const T *array, std::vector<SlVec4<T> > &vec )
 {
-  SL_ASSERT ( array );
+  // Handle trivial case.
+  if ( 0 == num || NULL == array )
+    return;
 
   // Get the current size.
   unsigned int size = vec.size();
@@ -218,6 +200,10 @@ template <class T> inline void append2D ( const std::vector<SlVec2<T> > &from,
   unsigned int sizeFrom = from.size();
   unsigned int sizeTo = to.size();
 
+  // Handle trivial case.
+  if ( 0 == sizeFrom )
+    return;
+
   // Allocate space. Do not use std::vector::reserve() because we also have 
   // to make std::vector::size() returns the correct number.
   to.resize ( sizeTo + sizeFrom * 2 );
@@ -249,6 +235,10 @@ template <class T> inline void append3D ( const std::vector<SlVec3<T> > &from,
   // Get the current sizes.
   unsigned int sizeFrom = from.size();
   unsigned int sizeTo = to.size();
+
+  // Handle trivial case.
+  if ( 0 == sizeFrom )
+    return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
   // to make std::vector::size() returns the correct number.
@@ -282,6 +272,10 @@ template <class T> inline void append4D ( const std::vector<SlVec4<T> > &from,
   // Get the current sizes.
   unsigned int sizeFrom = from.size();
   unsigned int sizeTo = to.size();
+
+  // Handle trivial case.
+  if ( 0 == sizeFrom )
+    return;
 
   // Allocate space. Do not use std::vector::reserve() because we also have 
   // to make std::vector::size() returns the correct number.

@@ -54,8 +54,14 @@ inline bool translate ( CadKit::IUnknown *controller,
     return false;
   }
 
+  // We reference all three interfaces to make sure they aren't deleted as we
+  // loop through the input files. The caller may not have referenced them yet.
+  SlRefPtr<IUnknown> dummy1 ( controller );
+  SlRefPtr<IUnknown> dummy2 ( source );
+  SlRefPtr<IUnknown> dummy3 ( target );
+
   // Get the necessary interface.
-  SlQueryPtr<ICommandLine> commandLine ( ICommandLine::IID, controller );
+  SlQueryPtr<ICommandLine> commandLine ( controller );
   if ( commandLine.isNull() )
   {
     std::cout << "Failed to obtain interface to ICommandLine from given controller." << std::endl;
@@ -74,7 +80,7 @@ inline bool translate ( CadKit::IUnknown *controller,
   commandLine->parseArguments ( argc, (const char **) argv, args );
 
   // Get the necessary interface.
-  SlQueryPtr<ITranslator> translator ( ITranslator::IID, controller );
+  SlQueryPtr<ITranslator> translator ( controller );
   if ( translator.isNull() )
   {
     std::cout << "Failed to obtain interface to ITranslator from given controller." << std::endl;

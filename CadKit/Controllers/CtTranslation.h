@@ -53,7 +53,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   // Notification of a message.
-  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type ) const;
+  virtual bool            messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type );
 
   /////////////////////////////////////////////////////////////////////////////
   //

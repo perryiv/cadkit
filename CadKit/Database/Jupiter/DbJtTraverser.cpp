@@ -468,7 +468,7 @@ bool DbJtTraverser::getType ( EntityHandle entity, DbJtTraverser::EntityType &ty
   eaiHierarchy *node = (eaiHierarchy *) entity;
 
   // Set the type.
-  type = (EntityType) node->typeID();
+  type = (EntityType) node->typeID(); // TODO, bug with 5.0?
 
   // It worked.
   return true;
@@ -877,8 +877,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   SL_ASSERT ( entity );
 
   // Call the other one.
-  std::vector<SlVec3f> v, n;
-  std::vector<SlVec3f> c;
+  std::vector<SlVec3f> v, n, c;
   std::vector<SlVec2f> t;
   if ( false == this->getShapeSet ( entity, whichLOD, whichShape, whichSet, v, n, c, t, valid ) )
     return false;
@@ -927,7 +926,7 @@ bool DbJtTraverser::getShapeSet ( EntityHandle entity,
   SL_ASSERT ( whichSet < (unsigned int) shape->numOfSets() );
 
   // Needed below. Note: the "vertexCount" is not the number of vertices, 
-  // but rather the number of elements in the vertext array. Same for the 
+  // but rather the number of elements in the vertex array. Same for the 
   // other arrays.
   DbJtVisApiArray<float> v, n, c, t;
   int	vertexCount = -1, normalCount = -1, colorCount = -1, textureCount = -1;
@@ -999,7 +998,7 @@ bool DbJtTraverser::getShapeType ( EntityHandle entity,
     return false;
 
   // Set the type.
-  type = (EntityType) shape->typeID();
+  type = (EntityType) shape->typeID(); // TODO, bug with 5.0?
 
   // It worked.
   return true;

@@ -108,11 +108,19 @@ SOURCE=.\DbBasePrecompiled.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\DbBaseInline.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbBaseObject.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\DbBaseObject.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbBaseShapeData.h
 # End Source File
 # Begin Source File
 

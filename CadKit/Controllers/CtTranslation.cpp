@@ -178,7 +178,7 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   SL_ASSERT ( false == filename.empty() );
 
   // Make sure the source supports the interface we need.
-  SlQueryPtr<IDataSource> ds ( IDataSource::IID, source );
+  SlQueryPtr<IDataSource> ds ( source );
   if ( ds.isNull() )
   {
     PRINT << "Failed to get needed interface from the data source." << std::endl;
@@ -189,12 +189,12 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   ds->setDataTarget ( target );
 
   // See if the source can be controlled.
-  SlQueryPtr<IControlled> cs ( IControlled::IID, source );
+  SlQueryPtr<IControlled> cs ( source );
   if ( cs.isValid() )
     cs->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
 
   // See if the target can be controlled.
-  SlQueryPtr<IControlled> ct ( IControlled::IID, target );
+  SlQueryPtr<IControlled> ct ( target );
   if ( ct.isValid() )
     ct->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
 
@@ -206,11 +206,15 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   }
 
   // See if the target should write a file.
-  SlQueryPtr<IDataTarget> dt ( IDataTarget::IID, target );
+  SlQueryPtr<IDataTarget> dt ( target );
   if ( dt.isValid() )
   {
-    // Store the data.
+    // Get the output filename.
     std::string outfile ( dt->getDefaultOutputName ( filename ) );
+
+    PRINT << "Writing: " << outfile.c_str() << std::endl;
+
+    // Store the data.
     if ( false == dt->storeData ( outfile ) )
     {
       PRINT << "Failed to write: " << outfile.c_str() << std::endl;
@@ -229,7 +233,7 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type ) const
+bool CtTranslation::messageNotify ( const std::string &message, const unsigned long &id, const IMessageNotify::Type &type )
 {
   SL_PRINT5 ( "In CtTranslation::messageNotify(), this = %X, id = %d, type = %d, message = %s\n", this, id, type, message.c_str() );
 

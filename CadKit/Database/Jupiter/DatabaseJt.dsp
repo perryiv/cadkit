@@ -132,6 +132,14 @@ SOURCE=.\DbJtInline.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DbJtTraversalState.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtTraversalState.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DbJtTraverser.cpp
 # End Source File
 # Begin Source File

@@ -35,11 +35,11 @@ template <class T> class DbJtVisApiArray
 {
 public:
 
-  DbJtVisApiArray() : _p ( NULL ){}
+  DbJtVisApiArray() : _p ( 0x0 ){}
   DbJtVisApiArray ( T *&p ) : _p ( p ){}
   ~DbJtVisApiArray();
 
-  bool        isValid() const { return NULL != _p; }
+  bool        isValid() const { return 0x0 != _p; }
 
   const T *&  getReference() const { return _p; }
   T *&        getReference()       { return _p; }

@@ -21,7 +21,7 @@
 #include "osg/Geometry"
 
 #include <sstream>
-
+#include <iostream>
 
 ReaderWriterSTL::ReaderWriterSTL() :
 _facets(),
@@ -75,13 +75,33 @@ osg::Group * ReaderWriterSTL::_build() const
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
+  /*osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array ( ) );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array ( ) );*/
+
   for(unsigned int i = 0; i < _facets.size(); ++i)
   {
     osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    osg::ref_ptr< osg::Geometry > geometry ( _facets[i]->getGeometry() );
+    Facet *facet = _facets.at(i);
+    osg::ref_ptr< osg::Geometry > geometry ( facet->getGeometry() );
     geode->addDrawable ( geometry.get() );
     root->addChild ( geode.get() );
+    /*vertices->push_back( _facets[i]->getV1() );
+    vertices->push_back( _facets[i]->getV2() );
+    vertices->push_back( _facets[i]->getV3() );
+
+    normals->push_back( _facets[i]->getNormal() );*/
   }
+
+  /*geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+
+  geode->addDrawable ( geometry.get() );
+  root->addChild ( geode.get() );*/
 
   return root.release();
 }
@@ -96,6 +116,63 @@ void  ReaderWriterSTL::_init()
 
 //TODO detect if stl is binary or ascii format
 void ReaderWriterSTL::_parse ( std::ifstream &in )
+{
+  const unsigned int size ( 512 );
+  char buf[size];
+
+  in.read(buf, 80);
+  buf[80] = 0;
+
+  bool binaryFlag = false;
+  for(unsigned int i = 0; i < 80; ++i)
+  {
+    if(buf[i] == 0x0)
+      binaryFlag = true;
+  }
+  if( binaryFlag )
+  {
+    _parseBinaryFile ( in );
+  }
+  else
+  {
+    in.seekg(0, std::ios_base::beg );
+    _parseAsciiFile( in );
+  }
+}
+
+void ReaderWriterSTL::_parseBinaryFile( std::ifstream &in )
+{
+  const unsigned int size ( 512 );
+  char buf[size];
+
+  int numFacets = 0;
+  
+  in.read(buf, 4);
+
+  memcpy(&numFacets, buf, 4);
+
+  while ( numFacets > 0 )
+  {
+    float f[3];
+
+    _currentFacet = new Facet();
+    in.read(buf, 50);
+    memcpy(f, buf, 12); // copy first 12 bytes for normal
+    _currentFacet->setNormal ( osg::Vec3( f[0], f[1], f[2] ) );
+    memcpy(f, buf+12, 12);  // copy first vertex
+    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    memcpy(f, buf+24, 12);  // copy second vertex
+    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    memcpy(f, buf+36, 12);  // copy third vertex
+    _currentFacet->setVertex ( osg::Vec3( f[0], f[1], f[2] ) );
+    
+    _facets.push_back(_currentFacet);
+    _currentFacet = NULL;
+    numFacets--;
+  }
+}
+  
+void ReaderWriterSTL::_parseAsciiFile( std::ifstream &in )
 {
   const unsigned int size ( 512 );
   char buf[size];
@@ -132,7 +209,7 @@ void ReaderWriterSTL::_parse ( std::ifstream &in )
       in >> n1;
       in >> n2;
       in >> n3;
-      _currentFacet->setVector( osg::Vec3(n1, n2, n3) );
+      _currentFacet->setVertex( osg::Vec3(n1, n2, n3) );
     }
     else if (type == "endloop")
     {

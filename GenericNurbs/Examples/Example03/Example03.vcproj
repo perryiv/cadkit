@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib"
-				OutputFile="../bin/example03d.exe"
+				OutputFile="../../../bin/gn_example_03d.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib"
-				OutputFile="../bin/example03.exe"
+				OutputFile="../../../bin/gn_example_03.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"

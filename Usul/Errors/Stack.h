@@ -22,54 +22,13 @@
 #include <list>
 #include <string>
 #include <exception>
+#include <sstream>
 
 namespace Usul { namespace Threads { class Mutex; }; };
 
 
 namespace Usul {
 namespace Errors {
-
-
-#if 0
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A single error.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct USUL_EXPORT Element : protected std::pair < unsigned int, std::string >
-{
-  // Useful typedefs.
-  typedef std::pair < unsigned int, std::string > BaseClass;
-
-  // Constructors/destructor.
-  Element();
-  Element ( const Element & );
-  Element ( unsigned int, const std::string & );
-  ~Element();
-
-  // Return the id.
-  unsigned int          id() const;
-
-  // Return the message.
-  const std::string &   message() const;
-};
-
-
-class USUL_EXPORT StackAdapter : public std::stack < Usul::Errors::Element >
-{
- public:
-  typedef std::stack < Usul::Errors::Element > BaseClass;
-  
-  StackAdapter() : BaseClass() { }
-  container_type::const_iterator begin() const { return c.begin(); }
-  container_type::const_iterator end() const { return c.end(); }
-};
-
-
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,7 +61,6 @@ public:
   static Stack &      instance();
 
   // Push an error.
-  void                push ( unsigned int id, const std::string &message );
   void                push ( const std::string &message );
 
   // Pop the top error.
@@ -136,11 +94,7 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 0
-#define USUL_EXCEPTION_SAFE_START try {
-#else
-#define USUL_EXCEPTION_SAFE_START
-#endif
+//#define USUL_EXCEPTION_SAFE_START try {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,24 +103,62 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 0
-#define USUL_EXCEPTION_SAFE_END(error_id)\
-}\
+//#define USUL_EXCEPTION_SAFE_END }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Catch and eat cancel-exceptions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_EAT_CANCEL_EXCEPTIONS\
 catch ( const Usul::Exceptions::Canceled & )\
 {\
-}\
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Catch and re-throw cancel-exceptions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_RETHROW_CANCEL_EXCEPTIONS\
+catch ( const Usul::Exceptions::Canceled &e )\
+{\
+  throw e;\
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Catch standard exceptions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_CATCH_STD_EXCEPTIONS(error_id)\
 catch ( const std::exception &e )\
 {\
-  std::string message ( e.what() ? e.what() : "Standard exception caught" );\
-  Usul::Errors::Stack::instance().push ( error_id, message.c_str() );\
-}\
+  std::ostringstream message;\
+  message << "Error " << error_id << ": Standard exception caught";\
+  Usul::Errors::Stack::instance().push ( message.str() );\
+  Usul::Errors::Stack::instance().push ( e.what() );\
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Catch all exceptions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_CATCH_ALL_EXCEPTIONS(error_id)\
 catch ( ... )\
 {\
-  Usul::Errors::Stack::instance().push ( error_id, "Unknown exception caught" );\
+  std::ostringstream message;\
+  message << "Error " << error_id << ": Unknown exception caught";\
+  Usul::Errors::Stack::instance().push ( message.str() );\
 }
-#else
-#define USUL_EXCEPTION_SAFE_END(error_id)
-#endif
+
 
 }; // namespace Errors
 }; // namespace Usul

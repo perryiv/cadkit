@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: GenericNurbs", "GN\gn_library.vcproj", "{1C8F8A43-B135-4301-959A-1ED41708A63F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Generic Nurbs", "GN\gn_library.vcproj", "{1C8F8A43-B135-4301-959A-1ED41708A63F}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -12,10 +12,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GN Test 2", "Examples\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GN Test 3", "Examples\Example03\Example03.vcproj", "{6986B194-B429-4297-9306-781E1FBE048C}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: SceneStats OSG", "Components\gn_components.vcproj", "{9DB4CC8F-C02F-4857-A256-8112E9903DD9}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -41,10 +37,6 @@ Global
 		{6986B194-B429-4297-9306-781E1FBE048C}.Debug.Build.0 = Debug|Win32
 		{6986B194-B429-4297-9306-781E1FBE048C}.Release.ActiveCfg = Release|Win32
 		{6986B194-B429-4297-9306-781E1FBE048C}.Release.Build.0 = Release|Win32
-		{9DB4CC8F-C02F-4857-A256-8112E9903DD9}.Debug.ActiveCfg = Debug|Win32
-		{9DB4CC8F-C02F-4857-A256-8112E9903DD9}.Debug.Build.0 = Debug|Win32
-		{9DB4CC8F-C02F-4857-A256-8112E9903DD9}.Release.ActiveCfg = Release|Win32
-		{9DB4CC8F-C02F-4857-A256-8112E9903DD9}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -208,9 +208,26 @@ inline Iter getMapIter( Map& map, const osg::Vec3& key, std::vector< Value >& va
   return iter;
 }
 
-struct DoNothingFunctor
+namespace Functors
 {
-  bool operator() () { return false; }
+
+struct NoCancelFunctor
+{
+  bool operator() () const { return false; }
+};
+
+template < class IndexSequence >
+struct NoUpdateFunctor
+{
+   void operator () ( const std::string& )
+    {
+    }
+
+    void operator() ( const IndexSequence& keepers, bool b = false )
+    {
+    }
+};
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -326,6 +343,8 @@ inline void walkAdjacencyGraph (
     ++todoIterator;// = todoStack.begin();
     updater ( answer );
   }
+
+  updater ( answer, true );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

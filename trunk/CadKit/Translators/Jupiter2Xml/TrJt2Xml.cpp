@@ -259,27 +259,22 @@ bool TrJt2Xml::_processEntity ( DbJtTraverser::EntityHandle entity )
   SL_VERIFY ( _jtTraverser->getType ( entity, type ) );
 
   // Process the entity types that we are interested in.
-  switch ( type )
+  if ( DbJtTraverser::PART == type )
   {
-  case DbJtTraverser::ASSEMBLY:
-
-    // Add the part to the XML tree.
-    return this->_assemblyStart ( entity );
-    
-  case DbJtTraverser::PART:
-
-    // Add the part to the XML tree.
+    // Add the part to the Performer tree.
     return this->_addPart ( entity );
-    
-  case DbJtTraverser::INSTANCE:
-
+  }
+  
+  else if ( DbJtTraverser::INSTANCE == type )
+  {
     // Add the instance to the XML tree.
     return this->_addInstance ( entity );
+  }
 
-  default:
-
-    // Do nothing.
-    break;
+  else if ( DbJtTraverser::ASSEMBLY == type )
+  {
+    // Add the part to the Performer scene.
+    return this->_assemblyStart ( entity );
   }
 
   // It worked.
@@ -670,17 +665,20 @@ bool TrJt2Xml::_addShape ( DbJtTraverser::EntityHandle entity,
 
   // Determine a proper name for the set.
   std::string name;
-  switch ( type )
+  if ( DbJtTraverser::TRI_STRIP_SET == type )
+    name = "tri_strip";
+  else if ( DbJtTraverser::POLYGON_SET == type )
+    name = "polygon";
+  else if ( DbJtTraverser::LINE_STRIP_SET == type )
+    name = "line_strip";
+  else if ( DbJtTraverser::POINT_SET == type )
+    name = "point_set";
+  else if ( DbJtTraverser::TRI_FAN_SET == type )
+    name = "tri_fan";
+  else
   {
-  case DbJtTraverser::LINE_STRIP_SET: name = "line_strip"; break;
-  case DbJtTraverser::POINT_SET:      name = "point_set";  break;
-  case DbJtTraverser::POLYGON_SET:    name = "polygon";    break;
-  case DbJtTraverser::TRI_FAN_SET:    name = "tri_fan";    break;
-  case DbJtTraverser::TRI_STRIP_SET:  name = "tri_strip";  break;
-  default:
     SL_ASSERT ( 0 ); // Heads up.
-    _jtTraverser->getName ( entity, name );
-    CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, name.c_str(), whichLOD, whichShape );
+    CadKit::format ( _error, "Unknown shape type '%d' for entity = %X, name = %s, LOD = %d, shape = %d", type, entity, _jtTraverser->getName ( entity ).c_str(), whichLOD, whichShape );
     return false;
   }
 

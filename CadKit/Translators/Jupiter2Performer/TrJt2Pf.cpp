@@ -348,12 +348,6 @@ bool TrJt2Pf::_addTransform ( DbJtTraverser::EntityHandle entity, pfDCS &dcs )
     return false;
 
   // Put the SlMatrix into a pfMatrix.
-/*
-  pfMatrix M ( T(0,0), T(0,1), T(0,2), T(0,3),
-               T(1,0), T(1,1), T(1,2), T(1,3),
-               T(2,0), T(2,1), T(2,2), T(2,3),
-               T(3,0), T(3,1), T(3,2), T(3,3) );
-*/
   pfMatrix M ( T(0,0), T(1,0), T(2,0), T(3,0),
                T(0,1), T(1,1), T(2,1), T(3,1),
                T(0,2), T(1,2), T(2,2), T(3,2),
@@ -386,8 +380,8 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
   bool success ( false );
 
   // Make a pfMaterial.
-  pfMaterial *mat = new pfMaterial;
-  if ( NULL == mat )
+  SlRefPtr<pfMaterial> mat = new pfMaterial;
+  if ( mat.isNull() )
     return false;
 
   // Set the properties that are valid.
@@ -403,6 +397,10 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
     const SlVec4f &color = material.getAmbient();
     mat->setColor ( PFMTL_DIFFUSE, color[0], color[1], color[2] );
     success = true;
+
+    // If the diffuse color's alpha is less than 1 then we have a transparency.
+    if ( color[3] < 1.0f )
+      state.setMode ( PFSTATE_TRANSPARENCY, PFTR_ON );
   }
 
   if ( material.isValid ( SlMaterialf::SPECULAR ) )
@@ -421,8 +419,19 @@ bool TrJt2Pf::_setMaterial ( const SlMaterialf &material, pfGeoState &state ) co
 
   if ( material.isValid ( SlMaterialf::SHININESS ) )
   {
+    // Both Jupiter and Performer use the [0,128] scale for shininess.
     mat->setShininess ( material.getShininess() );
     success = true;
+  }
+
+  // If we have a valid material...
+  if ( success )
+  {
+    // Then set the state's material.
+    state.setAttr ( PFSTATE_FRONTMTL, mat );
+
+    // Turn on lighting. 
+    state.setMode ( PFSTATE_ENLIGHTING, PF_ON );
   }
 
   // Did it work?

@@ -7,10 +7,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 #include <sstream>
 
 #include "Atom.h"
+#include "PeriodicTable.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Atom::Atom ( const char *atomString, std::string type )
+Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable )
 {
 	char num[9];
 	//get id number
@@ -47,6 +47,9 @@ Atom::Atom ( const char *atomString, std::string type )
   memset(num, 0, 9 * sizeof(char));
   strncpy(num, atomString + 76, 2);
   _symbol = num;
+  std::istringstream in (_symbol);
+  in >> _symbol;
+  _element = periodicTable.getPointer(_symbol);
 }
 
 
@@ -62,7 +65,8 @@ Atom::Atom(const Atom& atom) :
   _r(atom.getR()),
   _name(atom.getName()),
   _type(atom.getType()),
-  _symbol(atom.getSymbol())
+  _symbol(atom.getSymbol()),
+  _element(atom.getElement())
 {
 }
 
@@ -106,5 +110,13 @@ Atom& Atom::operator =(const Atom& atom)
   this->_r = atom.getR();
   this->_type = atom.getType();
   this->_symbol = atom.getSymbol();
+  this->_element = atom.getElement();
   return *this;
+}
+
+const float Atom::getRadius() const
+{
+  if(_element == NULL)
+    return 0.5f;
+  return _element->getRadius();
 }

@@ -12,7 +12,7 @@
 
 #include "osg/ref_ptr"
 #include "osg/material"
-#include "osg/Vec4"
+
 
 #include <string>
 #include <map>

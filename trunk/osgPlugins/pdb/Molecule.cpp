@@ -14,6 +14,7 @@
 #include "osg/Geometry"
 #include "osg/LineWidth"
 
+#include "osg/Group"
 #include "osg/Geode"
 #include "osg/LOD"
 #include "osg/Shape"
@@ -157,7 +158,7 @@ osg::LOD *Molecule::_makeAtom ( const Atom &atom ) const
 
   // Get the atom's numbers.
   const osg::Vec3 center ( atom.getX(), atom.getY(), atom.getZ() );
-  const float radius ( atom.getR() );
+  const float radius ( atom.getRadius() );
 
   // Name the lod with the data from the atom.
   lod->setName ( atom.toString() );

@@ -22,10 +22,10 @@ public:
   Element(const Element&);
   const float getRadius() const { return _radius; }
   const std::string getElement() const { return _element; }
-  const int getElementNumber() const { return _elementNumber; }
+  const int getAtomicNumber() const { return _atomicNumber; }
   Element& operator=(const Element&);
 private:
-  int _elementNumber;
+  int _atomicNumber;
   std::string _element;
   float _radius;
 };

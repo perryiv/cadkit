@@ -10,20 +10,21 @@
 #ifndef __OSG_PDB_PLUGIN_CYLINDER_H__
 #define __OSG_PDB_PLUGIN_CYLINDER_H__
 
-#include "osg/Geometry"
-#include "osg/ref_ptr"
-#include "osg/Vec3"
-#include "osg/LineWidth"
 
-namespace osg { class Material; }
+
+#include "osg/Vec3"
+
+
+namespace osg { class Material; class Geometry; }
 
 class Cylinder
 {
 public:
-  Cylinder();
   Cylinder(const osg::Vec3&, const osg::Vec3&);
   osg::Geometry * getGeometry(osg::Material *, float) const;
 private:
+  Cylinder();
+  float _getDist(const osg::Vec3&, const osg::Vec3&) const;
   osg::Vec3 _point1, _point2;
 };
 

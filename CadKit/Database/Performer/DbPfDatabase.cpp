@@ -255,7 +255,7 @@ bool DbPfDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   // Create a group (really a DCS).
   SlRefPtr<pfGroup> mt = CadKit::createGroup ( assembly, query.getValue(), (pfGroup *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create pfDCS for assembly.", FAILED );
+    return ERROR ( "Failed to create pfDCS for assembly.", CadKit::FAILED );
 
   // Add this group to the scene.
   _groupStack->top()->addChild ( mt );
@@ -310,12 +310,12 @@ bool DbPfDatabase::startEntity ( PartHandle part, IUnknown *caller )
   // Create a group (really a DCS).
   SlRefPtr<pfGroup> mt = CadKit::createGroup ( part, query.getValue(), (pfGroup *) NULL );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create pfDCS for assembly.", FAILED );
+    return ERROR ( "Failed to create pfDCS for assembly.", CadKit::FAILED );
 
   // Create a LOD.
   SlRefPtr<pfLOD> lod ( new pfLOD );
   if ( lod.isNull() )
-    return ERROR ( "Failed to create pfLOD for given lod handle.", FAILED );
+    return ERROR ( "Failed to create pfLOD for given lod handle.", CadKit::FAILED );
 
   // Give it a name.
   lod->setName ( mt->getName() );
@@ -349,7 +349,7 @@ bool DbPfDatabase::endEntity ( PartHandle part, IUnknown *caller )
   SlRefPtr<pfObject> object ( (pfObject *) ( this->getClientData ( part ) ) );
   SlRefPtr<pfGroup> group ( dynamic_cast<pfGroup *> ( object.getValue() ) );
   if ( group.isNull() )
-    return ERROR ( "Failed to find group for part.", FAILED );
+    return ERROR ( "Failed to find group for part.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( 1 == group->getNumChildren() );
@@ -357,7 +357,7 @@ bool DbPfDatabase::endEntity ( PartHandle part, IUnknown *caller )
   // Get the lod from the group.
   SlRefPtr<pfLOD> lod ( dynamic_cast<pfLOD *> ( group->getChild ( 0 ) ) );
   if ( lod.isNull() )
-    return ERROR ( "Failed to find lod to set ranges for.", FAILED );
+    return ERROR ( "Failed to find lod to set ranges for.", CadKit::FAILED );
 
   // Set the lod center and ranges.
   this->_setLodParameters ( lod );
@@ -443,13 +443,13 @@ bool DbPfDatabase::startEntity ( InstanceHandle instance, IUnknown *caller )
   // Find the group associated with the corresponding part or assembly.
   pfGroup *group = this->_findGroup ( instance, query );
   if ( NULL == group )
-    return ERROR ( "Failed to find group associated with the corresponding part or assembly.", FAILED );
+    return ERROR ( "Failed to find group associated with the corresponding part or assembly.", CadKit::FAILED );
 
   // Create a group (really a DCS) by making a shallow copy of the given 
   // group. The new group contains all the same children as the given group.
   SlRefPtr<pfGroup> mt = CadKit::createGroup ( instance, query.getValue(), group );
   if ( mt.isNull() )
-    return ERROR ( "Failed to create pfDCS for instance.", FAILED );
+    return ERROR ( "Failed to create pfDCS for instance.", CadKit::FAILED );
 
   // Add this DCS to the scene.
   _groupStack->top()->addChild ( mt );
@@ -494,13 +494,13 @@ bool DbPfDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   // Create a Geode.
   SlRefPtr<pfGeode> geode ( new pfGeode );
   if ( geode.isNull() )
-    return ERROR ( "Failed to create pfGeode for given lod handle.", FAILED );
+    return ERROR ( "Failed to create pfGeode for given lod handle.", CadKit::FAILED );
 
   // Get the pfGroup associated with the lod's parent part.
   SlRefPtr<pfObject> object ( (pfObject *) ( this->getClientData ( query->getParent ( lod ) ) ) );
   SlRefPtr<pfGroup> group ( dynamic_cast<pfGroup *> ( object.getValue() ) );
   if ( group.isNull() )
-    return ERROR ( "Failed to find lod to add geode to.", FAILED );
+    return ERROR ( "Failed to find lod to add geode to.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( 1 == group->getNumChildren() );
@@ -511,7 +511,7 @@ bool DbPfDatabase::startEntity ( LodHandle lod, IUnknown *caller )
   // The lod should be the only child of the group.
   SlRefPtr<pfLOD> pfLod ( dynamic_cast<pfLOD *> ( group->getChild ( 0 ) ) );
   if ( pfLod.isNull() )
-    return ERROR ( "Failed to find lod to add geode to.", FAILED );
+    return ERROR ( "Failed to find lod to add geode to.", CadKit::FAILED );
 
   // Add this Geode to the LOD.
   pfLod->addChild ( geode );
@@ -560,26 +560,26 @@ bool DbPfDatabase::startEntity ( ShapeHandle shape, IUnknown *caller )
   SlRefPtr<pfObject> object ( (pfObject *) ( this->getClientData ( query->getParent ( shape ) ) ) );
   SlRefPtr<pfGeode> geode ( dynamic_cast<pfGeode *> ( object.getValue() ) );
   if ( geode.isNull() )
-    return ERROR ( "Failed to find geode to add shape geometry to.", FAILED );
+    return ERROR ( "Failed to find geode to add shape geometry to.", CadKit::FAILED );
 
   // Create a GeoSet.
   SlRefPtr<pfGeoSet> gset ( new pfGeoSet );
   if ( gset.isNull() )
-    return ERROR ( "Failed to create pfGeoSet for given shape handle.", FAILED );
+    return ERROR ( "Failed to create pfGeoSet for given shape handle.", CadKit::FAILED );
 
   // Create a StateSet.
   SlRefPtr<pfGeoState> state ( new pfGeoState );
   if ( state.isNull() )
-    return ERROR ( "Failed to create pfGeoState for given shape handle.", FAILED );
+    return ERROR ( "Failed to create pfGeoState for given shape handle.", CadKit::FAILED );
 
   // Add the vertices, normals, etc. We have to call this before we add the 
   // attributes (like material) because in Performer, materials take precedence.
   if ( false == this->_addDataSets ( caller, shape, gset ) )
-    return ERROR ( "Failed to add shape sets for given shape.", FAILED );
+    return ERROR ( "Failed to add shape sets for given shape.", CadKit::FAILED );
 
   // Add the material, texture, etc.
   if ( false == this->_addAttributes ( caller, shape, state ) )
-    return ERROR ( "Failed to add shape sets for given shape.", FAILED );
+    return ERROR ( "Failed to add shape sets for given shape.", CadKit::FAILED );
 
   // Set the state of the GeoSet.
   gset->setGState ( state );
@@ -639,7 +639,7 @@ bool DbPfDatabase::_addDataSets ( IUnknown *caller, ShapeHandle shape, pfGeoSet 
   
   // Add the vertices. If we don't add any then we failed.
   if ( false == this->_addVertices ( caller, shape, gset ) )
-    return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+    return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 
   // Add the normals, colors, and texture coordinates, if there are any.
   // It is ok if these fail.
@@ -672,7 +672,7 @@ bool DbPfDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, pfGeoSet 
   // Get the primitive type.
   VertexSetType type;
   if ( false == query->getVertexSetType ( shape, type ) )
-    return ERROR ( "Failed to obtain primitive type.", FAILED );
+    return ERROR ( "Failed to obtain primitive type.", CadKit::FAILED );
 
   // Should be true.
   SL_ASSERT ( CadKit::UNKNOWN != type );
@@ -684,7 +684,7 @@ bool DbPfDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, pfGeoSet 
     // Get the primitive lengths.
     int *lengths = setter.getPrimitiveLengths();
     if ( NULL == lengths )
-      return ERROR ( "Failed to determine lengths of vertex-set primitives.", FAILED );
+      return ERROR ( "Failed to determine lengths of vertex-set primitives.", CadKit::FAILED );
 
     // Set the vertices, the primitive lengths, and the primitive type.
     gset->setPrimType ( setter.getPrimitiveType() );
@@ -697,7 +697,7 @@ bool DbPfDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, pfGeoSet 
   }
 
   // It didn't work.
-  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), FAILED );
+  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 }
 
 
@@ -721,7 +721,7 @@ bool DbPfDatabase::_addNormals ( IUnknown *caller, ShapeHandle shape, pfGeoSet *
   // Get the normal binding.
   VertexBinding binding;
   if ( false == query->getNormalBinding ( shape, binding ) )
-    return ERROR ( "Failed to obtain normal binding.", FAILED );
+    return ERROR ( "Failed to obtain normal binding.", CadKit::FAILED );
 
   // Get the normals.
   DbPfNormalSetter setter ( binding );
@@ -759,7 +759,7 @@ bool DbPfDatabase::_addColors ( IUnknown *caller, ShapeHandle shape, pfGeoSet *g
   // Get the color binding.
   VertexBinding binding;
   if ( false == query->getColorBinding ( shape, binding ) )
-    return ERROR ( "Failed to obtain color binding.", FAILED );
+    return ERROR ( "Failed to obtain color binding.", CadKit::FAILED );
 
   // Get the colors.
   DbPfColorSetter setter ( binding );

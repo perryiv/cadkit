@@ -252,10 +252,16 @@
 					RelativePath=".\Dialogs\Dialogs.h">
 				</File>
 				<File
-					RelativePath=".\Dialogs\FileDialog.cpp">
+					RelativePath=".\Dialogs\FileSelection.cpp">
 				</File>
 				<File
-					RelativePath=".\Dialogs\FileDialog.h">
+					RelativePath=".\Dialogs\FileSelection.h">
+				</File>
+				<File
+					RelativePath=".\Dialogs\Message.cpp">
+				</File>
+				<File
+					RelativePath=".\Dialogs\Message.h">
 				</File>
 			</Filter>
 			<Filter

@@ -42,7 +42,9 @@ Factory *Factory::_instance ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 #define ITERATORS(array_name) array_name, array_name + sizeof ( array_name )
-#define POPULATE(format_type,name_space,image_name) _map.insert ( Value ( ICON_##image_name, Data ( format_type, Array ( ITERATORS ( name_space::IMAGE_##image_name ) ) ) ) )
+#define POPULATE(format_type,name_space,image_name) \
+  _map.insert ( Value ( ICON_##image_name, Data ( format_type, Array \
+    ( ITERATORS ( name_space::IMAGE_##image_name ) ) ) ) )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,7 +118,7 @@ Factory::~Factory()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the one instance.
+//  Return the one instance. TODO, make thread-safe.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

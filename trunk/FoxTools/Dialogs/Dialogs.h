@@ -25,8 +25,7 @@ inline int SaveDialog( FX::FXWindow* owner, const std::string& filename )
   std::ostringstream os;
   os << filename << " is not saved.  Do you want to save?";
 
-  FX::FXMessageBox message ( owner, "Save File?", "Save File?", 0x0, FX::MBOX_YES_NO_CANCEL );
-  return message.warning ( owner, FX::MBOX_YES_NO_CANCEL, "Save File?", os.str().c_str() );
+  return FX::FXMessageBox::warning ( owner, FX::MBOX_YES_NO_CANCEL, "Save File?", os.str().c_str() );
 }
 
 #if 0

@@ -517,11 +517,11 @@ Interfaces::IUnknown *Object::create ( unsigned long iid, const std::string &nam
   }
 
   // Catch all other exceptions.
-  catch ( const std::exception & )
+  catch ( const std::exception &e )
   {
     USUL_ASSERT ( 0 );
     if ( throwUnexpected )
-      throw;
+      throw e;
   }
   catch ( ... )
   {

@@ -324,6 +324,9 @@
 					RelativePath=".\Interfaces\IAnimate.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICanRead.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IClassFactory.h">
 				</File>
 				<File
@@ -391,9 +394,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISequenceManager.h">
-				</File>
-				<File
-					RelativePath=".\Interfaces\IStartup.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IStatusBar.h">
@@ -623,6 +623,16 @@
 				</File>
 				<File
 					RelativePath=".\Animate\SinglePlayer.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="File"
+				Filter="">
+				<File
+					RelativePath=".\File\Find.h">
+				</File>
+				<File
+					RelativePath=".\File\Path.h">
 				</File>
 			</Filter>
 		</Filter>

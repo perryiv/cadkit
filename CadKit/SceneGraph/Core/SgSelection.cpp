@@ -142,7 +142,7 @@ void _selectionDeselectionCB ( SgInternalMessage &message )
   SL_ASSERT ( message.getId() == SG_NODE_FOUND );
 
   // Make it a selection.
-  SgSelection *selection = (SgSelection *) node;
+  //  SgSelection *selection = (SgSelection *) node;
 
   // Deselect it.
 //  selection->_deselect(); TODO
@@ -174,8 +174,8 @@ void SgSelection::_deselectAll ( const SgNode *node )
 
   // Need these variables below.
   const SlType *type = SgSelection::getClassType();
-  bool completeTraversal = true;
-  bool exactType = false;
+  //bool completeTraversal = true;
+  //bool exactType = false;
   SgInternalMessage message;
 
   // Tell the group to call our function when it encounters a selection node.

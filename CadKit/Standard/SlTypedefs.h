@@ -18,7 +18,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <wchar.h>
-# ifdef _SGI_NATIVE_COMPILER
+# ifdef __sgi
 #  include <sgidefs.h>
 # endif
 #endif
@@ -58,7 +58,7 @@ typedef unsigned long long  SlUint64;
 typedef float               SlFloat32;
 typedef double              SlFloat64;
 
-#elif _SGI_NATIVE_COMPILER
+#elif __sgi
 
 // Note: with the various compile options available on irix 
 // (i.e., -n32 and -64), there is no guarantee that an "int" 

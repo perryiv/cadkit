@@ -27,7 +27,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
+#if _WIN32 || __sgi
 # define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_1(function,num) function##l ( num )
 # define _CADKIT_LONG_DOUBLE_STANDARD_MATH_FUNCTION_2(function,num1,num2) function##l ( num1, num2 )
 #elif __GNUC__

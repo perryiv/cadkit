@@ -3,11 +3,11 @@ include $(CADKIT_ROOT_DIR)/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	DbOsgArraySetters.cpp \
-	DbOsgDatabase.cpp \
-	DbOsgDll.cpp \
-	DbOsgFunctions.cpp \
-	DbOsgPrecompiled.cpp
+	DbPfArraySetters.cpp \
+	DbPfDatabase.cpp \
+	DbPfDll.cpp \
+	DbPfFunctions.cpp \
+	DbPfPrecompiled.cpp
 
 # The include path.
 LOCAL_INCLUDE = -I$(OSGHOME)/include
@@ -16,20 +16,14 @@ LOCAL_INCLUDE = -I$(OSGHOME)/include
 LOCAL_LIBS = \
 	-lCkSl_s \
 	-lCkDbBase_s \
-	-L$(OSGHOME)/lib \
-	-losgDB \
-	-losg 
+	-lpfutil \
+	-lpf
 
 # Any flags for the compiler. 
-# Note: not sure how to do an "else if".
-ifeq ($(OS), IRIX)
-	LOCAL_CPP_FLAGS = -woff 3303
-else
-	LOCAL_CPP_FLAGS =
-endif
+OCAL_CPP_FLAGS =
 
 # The name of the thing we are making.
-TARGET = CkDbOsg
+TARGET = CkDbPf
 
 # The common rules for compiling are in here.
 include $(CADKIT_ROOT_DIR)/Make/library.mak

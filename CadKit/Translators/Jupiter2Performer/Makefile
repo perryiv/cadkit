@@ -16,7 +16,8 @@ LOCAL_LIBS = \
 	-lCkSl_s \
 	-lpfutil \
 	-lpf \
-	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk$(DMDTK_VERSION)
+	-L$(DMDTK_DEV_PATH)/lib/$(os) \
+	-lDMDataTk$(DMDTK_VERSION)
 
 # Any flags for the compiler. 
 #LOCAL_CPP_FLAGS = -D_CADKIT_SL_PRINT_DEBUG

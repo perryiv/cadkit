@@ -7,6 +7,7 @@ SUBDIRS = \
 	Database/Base \
 	Database/Jupiter \
 	Database/OpenSceneGraph \
+	Database/Performer \
 	Database/XML \
 	Translators/Jupiter2Performer \
 	Translators/Jupiter2Xml \

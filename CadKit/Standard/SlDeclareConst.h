@@ -23,7 +23,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-#if _WIN32 || _SGI_NATIVE_COMPILER
+#if _WIN32 || __sgi
 # define SL_CONST_INT64(n)  n
 # define SL_CONST_UINT64(n) n
 # define SL_CONST_INT32(n)  n

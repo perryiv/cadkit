@@ -15,7 +15,7 @@ ifeq ($(OS_TYPE), Irix)
 	OS = IRIX
 	Os = Irix
 	os = irix
-	PLATFORM_CPP_FLAGS = -LANG:std -D_SGI_NATIVE_COMPILER
+	PLATFORM_CPP_FLAGS = -LANG:std
 	PLATFORM_LINK_FLAGS = -LANG:std -v
 endif
 

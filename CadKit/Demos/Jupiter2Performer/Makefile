@@ -9,13 +9,14 @@ LOCAL_INCLUDE =
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-lCkTrJt2Pf_s \
+	-lCkDbPf_s \
 	-lCkDbJt_s \
 	-lCkSl_s \
 	-lpfdu \
 	-lpfutil \
 	-lpf \
-	-L$(DMDTK_DEV_PATH)/lib/$(os) -lDMDataTk$(DMDTK_VERSION)
+	-L$(DMDTK_DEV_PATH)/lib/$(os) \
+	-lDMDataTk$(DMDTK_VERSION)
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = 

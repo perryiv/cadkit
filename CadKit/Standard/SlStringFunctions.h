@@ -299,7 +299,7 @@ inline std::basic_string<char> convert ( const std::basic_string<wchar_t> &s )
 }
 
 
-#if defined ( _SGI_NATIVE_COMPILER ) || defined ( __CYGWIN__ )
+#if defined ( __sgi ) || defined ( __CYGWIN__ )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -355,7 +355,7 @@ inline int vsnwprintf2 ( wchar_t *buffer, size_t count, const wchar_t *format, v
 }
 
 
-#endif // _SGI_NATIVE_COMPILER or __CYGWIN__
+#endif // __sgi or __CYGWIN__
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -71,7 +71,7 @@
 # define SL_VSNWPRINTF ::_vsnwprintf
 #elif __linux__
 # define SL_VSNWPRINTF ::vswprintf
-#elif defined ( _SGI_NATIVE_COMPILER ) || defined ( __CYGWIN__ )
+#elif defined ( __sgi ) || defined ( __CYGWIN__ )
 # define SL_VSNWPRINTF CadKit::vsnwprintf2
 #else // ?
 TODO

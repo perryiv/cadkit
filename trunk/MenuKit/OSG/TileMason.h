@@ -1,12 +1,12 @@
-#ifndef _menukit_osg_tilelayer_h_
-#define _menukit_osg_tilelayer_h_
+#ifndef _menukit_osg_tilemason_h_
+#define _menukit_osg_tilemason_h_
 
 // menukit includes
 #include "../Visitor.h"           // the base class
 #include "../WidestItemFinder.h"  // uses the graphics to find the widest menu Item
 #include "../Stack.h"
 
-#include "ColorThemeSkinTile.h"   // included for the typedef
+#include "ColorThemeSkinTile.h"   // included for typedef
 
 // osg includes
 #include "osg/Group"
@@ -21,18 +21,18 @@ namespace MenuKit
   namespace OSG
   {
     /**
-      * TileLayer: a class that uses a
+      * TileMason: a class that uses a
       * tile to produce a menu consisting
       * of multiple menu item tiles.
       */
     template<class TileType>
-    class TileLayer : public Visitor
+    class TileMason : public Visitor
     {
     public:
-      TileLayer(): Visitor(), _tile(), _hori(), _vert(), _scene(0x0) {}
-      TileLayer(Visitor::Mode m): Visitor(m), _tile() {}
+      TileMason(): Visitor(), _tile(), _hori(), _vert(), _scene(0x0) {}
+      TileMason(Visitor::Mode m): Visitor(m), _tile() {}
 
-      MENUKIT_DECLARE_POINTER(TileLayer);
+      MENUKIT_DECLARE_POINTER(TileMason);
 
       osg::Group* scene() { return _scene.release(); }
 
@@ -45,7 +45,7 @@ namespace MenuKit
       // TODO, remove Button and Menu classes,then: virtual void apply(Item&);
 
     protected:
-      virtual ~TileLayer() {}
+      virtual ~TileMason() {}
 
       // TODO: clean up all these overloaded functions
       // TODO: once the Item class has been rewritten
@@ -62,7 +62,7 @@ namespace MenuKit
       osg::ref_ptr<osg::Group> _scene;
     };
 
-  typedef TileLayer<osgTile> osgTileLayer;
+  typedef TileMason<osgTile> osgTileMason;
   };
 
 };
@@ -73,7 +73,7 @@ using namespace MenuKit;
 using namespace OSG;
 
 template<class TileType>
-void TileLayer<TileType>::determine_push(const Menu& m)
+void TileMason<TileType>::determine_push(const Menu& m)
 {
   const Menu* parent = m.parent();
 
@@ -96,7 +96,7 @@ void TileLayer<TileType>::determine_push(const Menu& m)
 }
 
 template<class TileType>
-void TileLayer<TileType>::determine_push(const Button& b)
+void TileMason<TileType>::determine_push(const Button& b)
 {
   // TODO: make sure 'displacement' watches for correct column width
   osg::Vec3 del = displacement( b );
@@ -119,7 +119,7 @@ void TileLayer<TileType>::determine_push(const Button& b)
 }
 
 template<class TileType>
-void TileLayer<TileType>::pop_children(const Menu& m)
+void TileMason<TileType>::pop_children(const Menu& m)
 {
 //  // clear the current stack spots
 //  for(Menu::const_iterator iter=m.begin(); iter!=m.end(); ++iter)
@@ -133,7 +133,7 @@ void TileLayer<TileType>::pop_children(const Menu& m)
 }
 
 template<class TileType>
-osg::Vec3 TileLayer<TileType>::displacement(const Menu& m)
+osg::Vec3 TileMason<TileType>::displacement(const Menu& m)
 {
   osg::Vec3 dv;
 
@@ -179,7 +179,7 @@ osg::Vec3 TileLayer<TileType>::displacement(const Menu& m)
 }
 
 template<class TileType>
-osg::Vec3 TileLayer<TileType>::displacement(const Button& b)
+osg::Vec3 TileMason<TileType>::displacement(const Button& b)
 {
   osg::Vec3 dv;
 
@@ -212,7 +212,7 @@ osg::Vec3 TileLayer<TileType>::displacement(const Button& b)
 }
 
 template<class TileType>
-void OSG::TileLayer<TileType>::apply(Menu& m)
+void OSG::TileMason<TileType>::apply(Menu& m)
 {
   Menu* parent = m.parent();
   if( parent )
@@ -274,7 +274,7 @@ void OSG::TileLayer<TileType>::apply(Menu& m)
 }
 
 template<class TileType>
-void TileLayer<TileType>::apply(Button& b)
+void TileMason<TileType>::apply(Button& b)
 {
   // TODO: is the tile a good place to put this code?
   // TODO: thus simplifying the code here??

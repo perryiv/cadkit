@@ -254,7 +254,7 @@
 				RelativePath=".\Osg\TileFunctor.h">
 			</File>
 			<File
-				RelativePath=".\Osg\TileLayer.h">
+				RelativePath=".\Osg\TileMason.h">
 			</File>
 		</Filter>
 	</Files>

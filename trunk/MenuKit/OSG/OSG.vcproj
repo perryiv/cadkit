@@ -34,11 +34,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="MenuKitd.lib osgd.lib osgTextd.lib"
+				AdditionalDependencies="osgd.lib osgTextd.lib"
 				OutputFile="../../bin/MenuKitOsgd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/MenuKitOsgd.pdb"
 				SubSystem="2"
@@ -86,11 +86,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="MenuKit.lib osg.lib osgText.lib"
+				AdditionalDependencies="osg.lib osgText.lib"
 				OutputFile="../../bin/MenuKitOsg.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;$(MENUKIT_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/MenuKitOsg.pdb"
 				SubSystem="2"
@@ -138,9 +138,6 @@
 			</File>
 			<File
 				RelativePath=".\ColorTheme.h">
-			</File>
-			<File
-				RelativePath=".\ColorThemeTile.cpp">
 			</File>
 			<File
 				RelativePath=".\ColorThemeTile.h">

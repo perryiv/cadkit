@@ -17,12 +17,14 @@
 #ifndef _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_
 #define _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_
 
+#include "Usul/Threads/Mutex.h"
+
 
 namespace Usul {
 namespace Threads {
 
 
-template < class ValueType, class MutexType > struct Variable
+template < class ValueType > struct Variable
 {
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -31,7 +33,7 @@ template < class ValueType, class MutexType > struct Variable
   /////////////////////////////////////////////////////////////////////////////
 
   typedef ValueType value_type;
-  typedef MutexType mutex_type;
+  typedef Usul::Threads::Mutex MutexType;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -40,14 +42,26 @@ template < class ValueType, class MutexType > struct Variable
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Variable() : _value(), _mutex()
+  Variable() : _value(), _mutex ( MutexType::create() )
   {
   }
-  Variable ( const ValueType &v ) : _value ( v ), _mutex()
+  Variable ( const ValueType &v ) : _value ( v ), _mutex ( MutexType::create() )
   {
   }
-  Variable ( const Variable &v ) : _value ( v._value ), _mutex()
+  Variable ( const Variable &v ) : _value ( v._value ), _mutex ( MutexType::create() )
   {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Destructor
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  ~Variable()
+  {
+    delete _mutex;
   }
 
 
@@ -101,14 +115,29 @@ template < class ValueType, class MutexType > struct Variable
 
   MutexType &mutex() const
   {
-    return _mutex;
+    return *_mutex;
   }
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Typecast operator.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  operator ValueType &()
+  {
+    return this->value();
+  }
+  operator const ValueType &() const
+  {
+    return this->value();
+  }
 
 private:
 
   ValueType _value;
-  mutable MutexType _mutex;
+  mutable MutexType *_mutex;
 };
 
 

@@ -46,10 +46,10 @@ template
 struct BasisFunctions
 {
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineType::KnotVector KnotVector;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::KnotArgument KnotArgument;
-  typedef typename SplineType::ControlPointType ControlPointType;
+  typedef typename SplineType::IndependentSequence IndependentSequence;
+  typedef typename SplineType::IndependentArgument IndependentArgument;
+  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::SizeType SizeType;
   typedef typename SplineType::WorkSpace WorkSpace;
 
 
@@ -66,18 +66,18 @@ struct BasisFunctions
   /////////////////////////////////////////////////////////////////////////////
 
   static void calculate ( const SplineType &spline,
-                          UIntType whichIndepVar,
-                          UIntType span,
-                          KnotArgument u,
+                          SizeType whichIndepVar,
+                          SizeType span,
+                          IndependentArgument u,
                           BlendingCoefficients &N )
   {
-    const KnotVector &knots = spline.knotVector ( whichIndepVar );
-    UIntType order ( spline.order ( whichIndepVar ) );
+    const IndependentSequence &knots = spline.knotVector ( whichIndepVar );
+    SizeType order ( spline.order ( whichIndepVar ) );
     GN_ERROR_CHECK ( knots.size() == spline.numControlPoints ( whichIndepVar ) + order );
     GN_ERROR_CHECK ( N.size() >= order );
 
-    UIntType rPlus1, jMinusR, r;
-    ControlPointType saved, temp;
+    SizeType rPlus1, jMinusR, r;
+    DependentType saved, temp;
 
     WorkSpace &left  = spline.work().left;
     WorkSpace &right = spline.work().right;
@@ -277,7 +277,7 @@ struct BasisFunctions
 		}
 		else
 		{
-			 for ( UIntType j = 1; j < order; ++j )
+			 for ( SizeType j = 1; j < order; ++j )
 			 {
 					left[j]  = u - knots[span+1-j];
 					right[j] = knots[span+j] - u;
@@ -322,9 +322,9 @@ struct BasisFunctions
 
 template < class SplineType, class BlendingCoefficients >
 void basisFunctions ( const SplineType &spline,
-                      typename SplineType::UIntType whichIndepVar,
-                      typename SplineType::UIntType span,
-                      typename SplineType::KnotArgument u,
+                      typename SplineType::SizeType whichIndepVar,
+                      typename SplineType::SizeType span,
+                      typename SplineType::IndependentArgument u,
                       BlendingCoefficients &N )
 {
    typedef typename SplineType::SplineClass SC;

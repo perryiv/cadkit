@@ -36,14 +36,12 @@ public:
   typedef ConfigType_                                ConfigType;
   typedef Curve < ConfigType >                       ThisType;
   typedef Spline < ConfigType >                      BaseClass;
-  typedef typename BaseClass::UIntType               UIntType;
-  typedef typename BaseClass::UIntContainer          UIntContainer;
-  typedef typename BaseClass::KnotType               KnotType;
-  typedef typename BaseClass::KnotVectorSizeType     KnotVectorSizeType;
-  typedef typename BaseClass::KnotArgument           KnotArgument;
-  typedef typename BaseClass::ControlPointType       ControlPointType;
-  typedef typename BaseClass::ControlPointContainer  ControlPointContainer;
-  typedef typename BaseClass::UIntContainerSizeType  UIntContainerSizeType;
+  typedef typename BaseClass::SizeType               SizeType;
+  typedef typename BaseClass::SizeContainer          SizeContainer;
+  typedef typename BaseClass::IndependentType        IndependentType;
+  typedef typename BaseClass::IndependentArgument    IndependentArgument;
+  typedef typename BaseClass::DependentType          DependentType;
+  typedef typename BaseClass::DependentContainer     DependentContainer;
   typedef GN::Traits::Curve                          TypeTag;
   typedef BaseClass                                  SplineClass;
 
@@ -98,11 +96,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  UIntType order() const
+  SizeType order() const
   {
     return BaseClass::order ( 0 );
   }
-  UIntType order ( UIntContainerSizeType whichIndepVar ) const
+  SizeType order ( SizeType whichIndepVar ) const
   {
     return BaseClass::order ( whichIndepVar );
   }
@@ -116,11 +114,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  UIntType degree() const
+  SizeType degree() const
   {
     return BaseClass::degree ( 0 );
   }
-  UIntType degree ( UIntContainerSizeType whichIndepVar ) const
+  SizeType degree ( SizeType whichIndepVar ) const
   {
     return BaseClass::degree ( whichIndepVar );
   }
@@ -132,11 +130,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  UIntType numControlPoints() const
+  SizeType numControlPoints() const
   {
     return BaseClass::numControlPoints ( 0 );
   }
-  UIntType numControlPoints ( UIntContainerSizeType whichIndepVar ) const
+  SizeType numControlPoints ( SizeType whichIndepVar ) const
   {
     return BaseClass::numControlPoints ( whichIndepVar );
   }
@@ -148,11 +146,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  UIntType numKnots() const
+  SizeType numKnots() const
   {
     return BaseClass::numKnots ( 0 );
   }
-  UIntType numKnots ( UIntContainerSizeType whichIndepVar ) const
+  SizeType numKnots ( SizeType whichIndepVar ) const
   {
     return BaseClass::numKnots ( whichIndepVar );
   }
@@ -164,22 +162,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const KnotType &knot ( KnotVectorSizeType whichKnot ) const
+  const IndependentType &knot ( SizeType whichKnot ) const
   {
     return BaseClass::knot ( 0, whichKnot );
   }
 
-  KnotType &knot ( KnotVectorSizeType whichKnot )
+  IndependentType &knot ( SizeType whichKnot )
   {
     return BaseClass::knot ( 0, whichKnot );
   }
 
-  const KnotType &knot ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichKnot ) const
+  const IndependentType &knot ( SizeType whichIndepVar, SizeType whichKnot ) const
   {
     return BaseClass::knot ( whichIndepVar, whichKnot );
   }
 
-  KnotType &knot ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichKnot )
+  IndependentType &knot ( SizeType whichIndepVar, SizeType whichKnot )
   {
     return BaseClass::knot ( whichIndepVar, whichKnot );
   }
@@ -191,22 +189,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const KnotType &firstKnot() const
+  const IndependentType &firstKnot() const
   {
     return BaseClass::firstKnot ( 0 );
   }
 
-  KnotType &firstKnot()
+  IndependentType &firstKnot()
   {
     return BaseClass::firstKnot ( 0 );
   }
 
-  const KnotType &firstKnot ( KnotVectorSizeType whichIndepVar ) const
+  const IndependentType &firstKnot ( SizeType whichIndepVar ) const
   {
     return BaseClass::firstKnot ( whichIndepVar );
   }
 
-  KnotType &firstKnot ( KnotVectorSizeType whichIndepVar )
+  IndependentType &firstKnot ( SizeType whichIndepVar )
   {
     return BaseClass::firstKnot ( whichIndepVar );
   }
@@ -218,22 +216,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const KnotType &lastKnot() const
+  const IndependentType &lastKnot() const
   {
     return BaseClass::lastKnot ( 0 );
   }
 
-  KnotType &lastKnot()
+  IndependentType &lastKnot()
   {
     return BaseClass::lastKnot ( 0 );
   }
 
-  const KnotType &lastKnot ( KnotVectorSizeType whichIndepVar ) const
+  const IndependentType &lastKnot ( SizeType whichIndepVar ) const
   {
     return BaseClass::lastKnot ( whichIndepVar );
   }
 
-  KnotType &lastKnot ( KnotVectorSizeType whichIndepVar )
+  IndependentType &lastKnot ( SizeType whichIndepVar )
   {
     return BaseClass::lastKnot ( whichIndepVar );
   }
@@ -253,22 +251,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const KnotType &endKnotLeft ( KnotVectorSizeType whichEndKnot ) const
+  const IndependentType &endKnotLeft ( SizeType whichEndKnot ) const
   {
     return BaseClass::endKnotLeft ( 0, whichEndKnot );
   }
 
-  KnotType &endKnotLeft ( KnotVectorSizeType whichEndKnot )
+  IndependentType &endKnotLeft ( SizeType whichEndKnot )
   {
     return BaseClass::endKnotLeft ( 0, whichEndKnot );
   }
 
-  const KnotType &endKnotLeft ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot ) const
+  const IndependentType &endKnotLeft ( SizeType whichIndepVar, SizeType whichEndKnot ) const
   {
     return BaseClass::endKnotLeft ( whichIndepVar, whichEndKnot );
   }
 
-  KnotType &endKnotLeft ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot )
+  IndependentType &endKnotLeft ( SizeType whichIndepVar, SizeType whichEndKnot )
   {
     return BaseClass::endKnotLeft ( whichIndepVar, whichEndKnot );
   }
@@ -288,22 +286,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const KnotType &endKnotRight ( KnotVectorSizeType whichEndKnot ) const
+  const IndependentType &endKnotRight ( SizeType whichEndKnot ) const
   {
     return BaseClass::endKnotRight ( 0, whichEndKnot );
   }
 
-  KnotType &endKnotRight ( KnotVectorSizeType whichEndKnot )
+  IndependentType &endKnotRight ( SizeType whichEndKnot )
   {
     return BaseClass::endKnotRight ( 0, whichEndKnot );
   }
 
-  const KnotType &endKnotRight ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot ) const
+  const IndependentType &endKnotRight ( SizeType whichIndepVar, SizeType whichEndKnot ) const
   {
     return BaseClass::endKnotRight ( whichIndepVar, whichEndKnot );
   }
 
-  KnotType &endKnotRight ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot )
+  IndependentType &endKnotRight ( SizeType whichIndepVar, SizeType whichEndKnot )
   {
     return BaseClass::endKnotRight ( whichIndepVar, whichEndKnot );
   }
@@ -315,12 +313,12 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  UIntType knotMultiplicity ( KnotArgument u ) const
+  SizeType knotMultiplicity ( IndependentArgument u ) const
   {
     return BaseClass::knotMultiplicity ( 0, u );
   }
 
-  UIntType knotMultiplicity ( KnotVectorSizeType whichIndepVar, KnotArgument u ) const
+  SizeType knotMultiplicity ( SizeType whichIndepVar, IndependentArgument u ) const
   {
     return BaseClass::knotMultiplicity ( whichIndepVar, u );
   }
@@ -332,16 +330,16 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  void resize ( UIntType dimension, 
-                UIntType order, 
-                UIntType numCtrPts, 
+  void resize ( SizeType dimension, 
+                SizeType order, 
+                SizeType numCtrPts, 
                 bool rational )
   {
-    UIntContainer o;
+    SizeContainer o;
     o.resize ( 1 );
     o[0] = order;
 
-    UIntContainer n;
+    SizeContainer n;
     n.resize ( 1 );
     n[0] = numCtrPts;
 

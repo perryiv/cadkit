@@ -43,16 +43,16 @@ namespace Detail {
 template < class SplineType > struct Circle
 {
   typedef typename SplineType::SplineClass SplineClass;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::UIntContainer UIntContainer;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::SizeContainer SizeContainer;
 
-  static void make ( SplineClass &s, UIntType dimension = 3 )
+  static void make ( SplineClass &s, SizeType dimension = 3 )
   {
     GN_CAN_BE_CURVE ( SplineType );
 
     // The specs for a circle.
-    const UIntType numIndepVars ( 1 );
-    UIntContainer numCtrPts, order;
+    const SizeType numIndepVars ( 1 );
+    SizeContainer numCtrPts, order;
     numCtrPts.resize ( numIndepVars );
     order.resize     ( numIndepVars );
     numCtrPts[0]     = 9;
@@ -102,9 +102,9 @@ template < class SplineType > struct Circle
     }
 
     // Fill in all other dimensions.
-    for ( UIntType i = 2; i < dimension; ++i )
+    for ( SizeType i = 2; i < dimension; ++i )
     {
-      for ( UIntType j = 0; j < numCtrPts[0]; ++j )
+      for ( SizeType j = 0; j < numCtrPts[0]; ++j )
       {
         s.controlPoint(i,j) = 0;
       }
@@ -141,7 +141,7 @@ template < class SplineType > struct Circle
 
 template < class SplineType > inline void circle ( 
   SplineType &s, 
-  typename SplineType::UIntType dimension = 3 )
+  typename SplineType::SizeType dimension = 3 )
 {
   GN_CAN_BE_CURVE ( SplineType );
   GN::Create::Detail::Circle<SplineType>::make ( s, dimension );
@@ -157,7 +157,7 @@ template < class SplineType > inline void circle (
 template < class SplineType > inline void circle ( 
   SplineType &s, 
   const typename SplineType::Vec3 &center,
-  typename SplineType::ControlPointType radius )
+  typename SplineType::DependentType radius )
 {
   GN_CAN_BE_CURVE ( SplineType );
   typedef typename SplineType::Matrix44 Matrix44;
@@ -183,7 +183,7 @@ template < class SplineType > inline void circle (
 template < class SplineType > inline void circle ( 
   SplineType &s, 
   const typename SplineType::Vec2 &center,
-  typename SplineType::ControlPointType radius )
+  typename SplineType::DependentType radius )
 {
   GN_CAN_BE_CURVE ( SplineType );
   typedef typename SplineType::Matrix44 Matrix44;

@@ -35,8 +35,8 @@ namespace Detail
   template
   <
     class CurveType, 
-    class IndependentContainer, 
-    class DependentContainer
+    class IndependentSequenceType, 
+    class DependentContainerType
   >
   struct Global
   {
@@ -54,14 +54,14 @@ namespace Detail
 template
 <
   class CurveType, 
-  class IndependentContainer, 
-  class DependentContainer
+  class IndependentSequenceType, 
+  class DependentContainerType
 >
 void global ( const CurveType &curve,
-              const typename CurveType::UIntType &order,
-              const IndependentContainer &params,
-              const IndependentContainer &knots,
-              const DependentContainer &points )
+              const typename CurveType::SizeType &order,
+              const IndependentSequenceType &params,
+              const IndependentSequenceType &knots,
+              const DependentContainerType &points )
 {
   GN_CAN_BE_CURVE ( CurveType );
   // TODO

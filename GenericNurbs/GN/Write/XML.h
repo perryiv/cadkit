@@ -92,9 +92,9 @@ template < class SplineType > struct XML
   typedef typename SplineType::SplineClass SplineClass;
   typedef typename SplineClass::TypeTag TypeTag;
   typedef typename SplineClass::BaseClass BaseClass;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::KnotType KnotType;
-  typedef typename SplineType::ControlPointType ControlPointType;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::IndependentType IndependentType;
+  typedef typename SplineType::DependentType DependentType;
 
   template < class OutType, class StringType >
   static void write ( const SplineClass &s, const StringType &indent, OutType &out )
@@ -103,11 +103,11 @@ template < class SplineType > struct XML
     out << indent << "<spline>\n";
 
     // Needed below.
-    UIntType numIndepVars ( s.numIndepVars() );
-    UIntType numDepVars ( s.numDepVars() );
-    UIntType dimension ( s.dimension() );
-    UIntType totalCtrPts ( s.totalNumControlPoints() );
-    UIntType totalKnots ( s.totalNumKnots() );
+    SizeType numIndepVars ( s.numIndepVars() );
+    SizeType numDepVars ( s.numDepVars() );
+    SizeType dimension ( s.dimension() );
+    SizeType totalCtrPts ( s.totalNumControlPoints() );
+    SizeType totalKnots ( s.totalNumKnots() );
     StringType indent2 ( indent + indent );
     StringType indent3 ( indent + indent2 );
     StringType indent4 ( indent + indent3 );
@@ -126,19 +126,19 @@ template < class SplineType > struct XML
     out << indent2 << "<rational>" << ( ( s.rational() ) ? "true" : "false" ) << "</rational>\n";
     out << indent3 << "<control_points>\n";
     out << indent4 << "<num>" << totalCtrPts << "</num>\n";
-    out << indent4 << "<bytes>" << ( sizeof ( ControlPointType ) ) << "</bytes>\n";
+    out << indent4 << "<bytes>" << ( sizeof ( DependentType ) ) << "</bytes>\n";
     out << indent3 << "</control_points>\n";
     out << indent3 << "<knots>\n";
     out << indent4 << "<num>" << totalKnots << "</num>\n";
-    out << indent4 << "<bytes>" << ( sizeof ( KnotType ) ) << "</bytes>\n";
+    out << indent4 << "<bytes>" << ( sizeof ( IndependentType ) ) << "</bytes>\n";
     out << indent3 << "</knots>\n";
 
     // For each independent variable...
     {
-      for ( UIntType i = 0; i < numIndepVars; ++i )
+      for ( SizeType i = 0; i < numIndepVars; ++i )
       {
         // Data for this iteration.
-        UIntType numKnots ( s.numKnots ( i ) );
+        SizeType numKnots ( s.numKnots ( i ) );
 
         out << indent2 << "<independent which=\"" << i << "\">\n";
         out << indent3 << "<order>" << s.order ( i ) << "</order>\n";
@@ -146,7 +146,7 @@ template < class SplineType > struct XML
         out << indent3 << "<knots count=\"" << numKnots << "\">\n";
 
         // Write all the knots.
-        for ( UIntType j = 0; j < numKnots; ++j )
+        for ( SizeType j = 0; j < numKnots; ++j )
         {
           out << indent4 << "<knot i=\"" << j << "\">" << s.knot(i,j) << "</knot>\n";
         }
@@ -162,12 +162,12 @@ template < class SplineType > struct XML
       char buffer[1024];
 
       // For each control point...
-      for ( UIntType j = 0; j < totalCtrPts; ++j )
+      for ( SizeType j = 0; j < totalCtrPts; ++j )
       {
         out << indent3 << "<point i=\"" << j << "\">";
 
         // Write all of the dependent variables.
-        for ( UIntType i = 0; i < numDepVars; ++i )
+        for ( SizeType i = 0; i < numDepVars; ++i )
         {
           // Note: Linux and Cygwin cannot print long double.
           ::sprintf ( buffer, "%20.15f", double ( s.controlPoint(i,j) ) );

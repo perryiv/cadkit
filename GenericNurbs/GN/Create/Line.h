@@ -41,16 +41,16 @@ namespace Detail {
 template < class SplineType > struct CommonLineCode
 {
   typedef typename SplineType::SplineClass SplineClass;
-  typedef typename SplineType::UIntType UIntType;
-  typedef typename SplineType::UIntContainer UIntContainer;
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::SizeContainer SizeContainer;
 
-  static void set ( SplineClass &s, UIntType dimension )
+  static void set ( SplineClass &s, SizeType dimension )
   {
     GN_CAN_BE_CURVE ( SplineType );
 
     // The specs for a line.
-    const UIntType numIndepVars ( 1 );
-    UIntContainer numCtrPts, order;
+    const SizeType numIndepVars ( 1 );
+    SizeContainer numCtrPts, order;
     numCtrPts.resize ( numIndepVars );
     order.resize     ( numIndepVars );
     numCtrPts[0]     = 2;
@@ -86,8 +86,8 @@ template < class SplineType > struct CommonLineCode
 
 template < class SplineType > inline void line ( 
   SplineType &s, 
-  typename SplineType::ControlPointArgument p0,
-  typename SplineType::ControlPointArgument p1 )
+  typename SplineType::DependentArgument p0,
+  typename SplineType::DependentArgument p1 )
 {
   GN_CAN_BE_CURVE ( SplineType );
   GN::Create::Detail::CommonLineCode<SplineType>::set ( s, 1 );

@@ -201,35 +201,35 @@ public:
   typedef Detail::ThrowingPolicy        ErrorCheckerType;
   typedef GN::Config::Base::StringData  BaseClassType;
 
-  typedef unsigned int UIntType;
-  typedef RealType_    KnotType;
-  typedef RealType_    ControlPointType;
+  typedef unsigned int SizeType;
+  typedef RealType_    IndependentType;
+  typedef RealType_    DependentType;
 
 private:
 
-  typedef std::vector<KnotType>         OneKnotVector;
-  typedef std::vector<ControlPointType> OneCtrPtCoord;
+  typedef std::vector<IndependentType>  IndependentSequence;
+  typedef std::vector<DependentType>    DependentSequence;
 
 public:
 
-  typedef std::vector<UIntType>      UIntContainer;
-  typedef std::vector<OneKnotVector> KnotContainer;
-  typedef std::vector<OneCtrPtCoord> ControlPointContainer;
+  typedef std::vector<SizeType>             SizeContainer;
+  typedef std::vector<IndependentSequence>  IndependentContainer;
+  typedef std::vector<DependentSequence>    DependentContainer;
 
-  typedef std::vector<ControlPointType> Vector;
+  typedef std::vector<DependentType> Vector;
 
-  typedef ::gmtl::Vec<ControlPointType,2>       Vec2;
-  typedef ::gmtl::Vec<ControlPointType,3>       Vec3;
-  typedef ::gmtl::Vec<ControlPointType,4>       Vec4;
-  typedef ::gmtl::Matrix<ControlPointType,4,4>  Matrix44;
+  typedef ::gmtl::Vec<DependentType,2>       Vec2;
+  typedef ::gmtl::Vec<DependentType,3>       Vec3;
+  typedef ::gmtl::Vec<DependentType,4>       Vec4;
+  typedef ::gmtl::Matrix<DependentType,4,4>  Matrix44;
 
-  typedef Detail::FloatTester<KnotType>           KnotTester;
-  typedef Detail::FloatTester<ControlPointType>   ControlPointTester;
-  typedef Detail::Translation<Matrix44,Vec3>      Translation;
-  typedef Detail::Scale<Matrix44,Vec3>            Scale;
-  typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
-  typedef Detail::SquareRoot<ControlPointType>    SquareRoot;
-  typedef Detail::Power<ControlPointType>         Power;
+  typedef Detail::FloatTester<IndependentType> IndependentTester;
+  typedef Detail::FloatTester<DependentType>   DependentTester;
+  typedef Detail::Translation<Matrix44,Vec3>   Translation;
+  typedef Detail::Scale<Matrix44,Vec3>         Scale;
+  typedef Detail::Multiply<Matrix44,Vec4,Vec3> Multiply;
+  typedef Detail::SquareRoot<DependentType>    SquareRoot;
+  typedef Detail::Power<DependentType>         Power;
 };
 
 

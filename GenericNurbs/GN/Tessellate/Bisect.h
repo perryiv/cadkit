@@ -44,22 +44,22 @@ namespace Detail {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParamContainerType > struct Bisector
+template < class CurveType, class IndependentSequenceType > struct Bisector
 {
   typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
-  typedef typename CurveType::KnotArgument KnotArgument;
+  typedef typename CurveType::IndependentArgument IndependentArgument;
+  typedef typename CurveType::IndependentType IndependentType;
+  typedef typename CurveType::IndependentTester IndependentTester;
+  typedef typename CurveType::DependentTester DependentTester;
+  typedef typename CurveType::DependentType DependentType;
+  typedef typename CurveType::DependentArgument DependentArgument;
   typedef typename CurveType::Vector PointType;
-  typedef typename CurveType::KnotTester KnotTester;
-  typedef typename CurveType::ControlPointTester ControlPointTester;
-  typedef typename CurveType::ControlPointType ControlPointType;
-  typedef typename CurveType::ControlPointArgument ControlPointArgument;
-  typedef typename ParamContainerType::value_type ParameterType;
   typedef typename GN::Math::Distance1<CurveType> Distance;
   typedef typename GN::Math::LinearBlend<PointType> LinearBlend;
   typedef typename GN::Predicates::Finite<CurveType> Finite;
-  typedef typename ParamContainerType::const_iterator ParamIterator;
-  typedef typename std::iterator_traits<ParamIterator>::iterator_category ParamIteratorTag;
-  typedef typename GN::Algorithms::Sort<ParamIteratorTag> Sort;
+  typedef typename IndependentSequenceType::const_iterator IndependentIterator;
+  typedef typename std::iterator_traits<IndependentIterator>::iterator_category IndependentIteratorTag;
+  typedef typename GN::Algorithms::Sort<IndependentIteratorTag> Sort;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -70,10 +70,10 @@ template < class CurveType, class ParamContainerType > struct Bisector
   /////////////////////////////////////////////////////////////////////////////
 
   static void tessellate ( const CurveType &curve,
-                           KnotArgument u0, 
-                           KnotArgument u1, 
-                           ControlPointArgument chordHeight, 
-                           ParamContainerType &u )
+                           IndependentArgument u0, 
+                           IndependentArgument u1, 
+                           DependentArgument chordHeight, 
+                           IndependentSequenceType &u )
   {
     GN_CAN_BE_CURVE ( CurveType );
     GN_ERROR_CHECK ( u0 >= curve.firstKnot ( 0 ) );
@@ -109,17 +109,17 @@ private:
   //////////////////////////////////////////////////////////////////////////////
 
   static void _bisect ( const CurveType &curve, 
-                        KnotArgument u0, 
-                        KnotArgument u2, 
+                        IndependentArgument u0, 
+                        IndependentArgument u2, 
                         const PointType &pt0, 
                         const PointType &pt2, 
-                        ControlPointArgument chordHeightSquared, 
-                        ParamContainerType &u )
+                        DependentArgument chordHeightSquared, 
+                        IndependentSequenceType &u )
   {
     GN_CAN_BE_CURVE ( CurveType );
     GN_ERROR_CHECK ( chordHeightSquared > 0 );
-    GN_ERROR_CHECK ( KnotTester::finite ( u0 ) );
-    GN_ERROR_CHECK ( KnotTester::finite ( u2 ) );
+    GN_ERROR_CHECK ( IndependentTester::finite ( u0 ) );
+    GN_ERROR_CHECK ( IndependentTester::finite ( u2 ) );
     GN_ERROR_CHECK ( Finite::check ( pt0 ) );
     GN_ERROR_CHECK ( Finite::check ( pt2 ) );
     GN_ERROR_CHECK ( u0 >= curve.firstKnot ( 0 ) );
@@ -135,10 +135,10 @@ private:
       return;
 
     // Get the parametric middle.
-    ParameterType u1 ( ( u0 + u2 ) * 0.5f );
+    IndependentType u1 ( ( u0 + u2 ) * 0.5f );
 
     // Make sure we're still in the range of good numbers.
-    GN_ERROR_CHECK ( KnotTester::finite ( u1 ) );
+    GN_ERROR_CHECK ( IndependentTester::finite ( u1 ) );
 
     // Evaluate the point at the parametric middle.
     PointType pt1;
@@ -159,10 +159,10 @@ private:
 
     // Get the squared distance between the geometric and 
     // parametric midpoints.
-    ControlPointType dist ( Distance::squared ( mid, pt1 ) );
+    DependentType dist ( Distance::squared ( mid, pt1 ) );
 
     // Make sure it's a valid number.
-    GN_ERROR_CHECK ( ControlPointTester::finite ( dist ) );
+    GN_ERROR_CHECK ( DependentTester::finite ( dist ) );
 
     // If the distance is within tolerance then return now.
     if ( dist < chordHeightSquared )
@@ -191,16 +191,16 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParamContainerType >
+template < class CurveType, class IndependentSequenceType >
 void bisect ( const CurveType &curve,
-              typename CurveType::KnotArgument u0,
-              typename CurveType::KnotArgument u1,
-              typename CurveType::ControlPointArgument chordHeight,
-              ParamContainerType &u )
+              typename CurveType::IndependentArgument u0,
+              typename CurveType::IndependentArgument u1,
+              typename CurveType::DependentArgument chordHeight,
+              IndependentSequenceType &u )
 {
   GN_CAN_BE_CURVE ( CurveType );
   typedef typename CurveType::SplineClass SC;
-  typedef ParamContainerType PCT;
+  typedef IndependentSequenceType PCT;
   return Detail::Bisector<SC,PCT>::tessellate ( curve, u0, u1, chordHeight, u );
 }
 
@@ -211,10 +211,10 @@ void bisect ( const CurveType &curve,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CurveType, class ParamContainerType >
+template < class CurveType, class IndependentSequenceType >
 void bisect ( const CurveType &curve,
-              typename CurveType::ControlPointArgument chordHeight,
-              ParamContainerType &u )
+              typename CurveType::DependentArgument chordHeight,
+              IndependentSequenceType &u )
 {
   GN_CAN_BE_CURVE ( CurveType );
   return bisect ( curve, curve.firstKnot ( 0 ), curve.lastKnot ( 0 ), chordHeight, u );

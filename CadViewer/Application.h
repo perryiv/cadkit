@@ -283,6 +283,7 @@ protected:
   // Handle the events, if any.
   bool                          _handleMenuEvent();
   bool                          _handleIntersectionEvent();
+  bool                          _handleNavigationCycleEvent( const unsigned long event_request = 0 );
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();

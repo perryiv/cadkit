@@ -20,8 +20,6 @@
 
 #include "SceneGraph/OpenGL/SgGlContext.h"
 
-#include "Standard/SlAutoPtr.h"
-
 
 namespace CadKit
 {
@@ -44,7 +42,7 @@ public:
 
 protected:
 
-  SlAutoPtr<SgFoxContextImpl> _context;
+  SgFoxContextImpl *_context;
 
   virtual ~SgFoxContext();
 

@@ -76,7 +76,7 @@ SgNode::SgNode() : SlRefBase ( INITIAL_REF_COUNT ),
 {
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
-  CadKit::threadSafeIncrement ( _numNodes );
+  CadKit::Threads::safeIncrement ( _numNodes );
   _nodeMap[this] = this;
   #endif
 }
@@ -97,7 +97,7 @@ SgNode::SgNode ( const SgNode &node ) : SlRefBase ( INITIAL_REF_COUNT ),
 {
   SL_PRINT2 ( "SgNode::SgNode(), this = %X\n", this );
   #ifdef _DEBUG
-  CadKit::threadSafeIncrement ( _numNodes );
+  CadKit::Threads::safeIncrement ( _numNodes );
   _nodeMap[this] = this;
   #endif
 
@@ -116,7 +116,7 @@ SgNode::~SgNode()
 {
   SL_PRINT2 ( "SgNode::~SgNode(), this = %X\n", this );
   #ifdef _DEBUG
-  CadKit::threadSafeDecrement ( _numNodes );
+  CadKit::Threads::safeDecrement ( _numNodes );
   _nodeMap.erase ( _nodeMap.find ( this ) );
   #endif
 

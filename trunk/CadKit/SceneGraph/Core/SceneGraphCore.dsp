@@ -311,6 +311,14 @@ SOURCE=.\SgShape.cpp
 
 SOURCE=.\SgShape.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SgText.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SgText.h
+# End Source File
 # End Group
 # Begin Group "Groups"
 

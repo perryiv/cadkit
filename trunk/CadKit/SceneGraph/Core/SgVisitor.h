@@ -78,6 +78,7 @@ public:
   virtual bool          visit ( SgLight & ) = 0;
   virtual bool          visit ( SgVertexSet & ) = 0;
   virtual bool          visit ( SgPrimitive & ) = 0;
+  virtual bool          visit ( SgText & ) = 0;
 
   // Push/pop the node. These are called from each node's accept() function.
   // Normal usage does not require calling these, but they have to be public.

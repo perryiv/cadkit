@@ -64,7 +64,7 @@ template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 		u = firstU + u * diffU;
 
     // Print the span.
-    span = NcFindSpan<NCSDCA>::find ( curve, u );
+    span = Nurbs::findSpan ( curve, u );
     std::cout << "C03: i = " << i << ", u = " << u << ", span = " << span << std::endl;
 
     // Print the basis functions.
@@ -89,29 +89,36 @@ template<NCSDTA> void testEvaluation ( NcCurve<NCSDCA> &curve )
 }
 
 
-template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1, 
-                                              const Vec &p2, 
-                                              NcCurve<NCSDCA> &c1, 
-                                              NcCurve<NCSDCA> &c2 )
+template<NCSDTA, class Vec> void testCurve1 ( 
+  const Vec &p1, 
+  const Vec &p2, 
+  NcCurve<NCSDCA> &c1, 
+  NcCurve<NCSDCA> &c2 )
 {
+  NcCurve<NCSDCA>::Parameter knotTol ( SlConstants<NcCurve<NCSDCA>::Parameter>::zero() );
+  NcCurve<NCSDCA>::ControlPoint ctrPtTol ( SlConstants<NcCurve<NCSDCA>::ControlPoint>::zero() );
+
   // Print to stdout.
   std::cout << "A01: p1 = " << p1 << std::endl;
   std::cout << "A02: p2 = " << p2 << std::endl;
   std::cout << "A03: c1 = \n" << c1 << std::endl;
   std::cout << "A04: c2 = \n" << c2 << std::endl;
   std::cout << "A05: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "A06: ( c1.isEqual ( c2 ) = " << ( c1.isEqual ( c2, knotTol, ctrPtTol ) ) << std::endl;
 
   // Construct the curves.
   NcLine<NCSDCA>::create ( p1, p2, c1 );
   NcLine<NCSDCA>::create ( p1, p2, c2 );
-  std::cout << "A06: c1 = \n" << c1 << std::endl;
-  std::cout << "A07: c2 = \n" << c2 << std::endl;
-  std::cout << "A08: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "A07: c1 = \n" << c1 << std::endl;
+  std::cout << "A08: c2 = \n" << c2 << std::endl;
+  std::cout << "A09: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "A10: ( c1.isEqual ( c2 ) = " << ( c1.isEqual ( c2, knotTol, ctrPtTol ) ) << std::endl;
 
   // Make one rational.
   c1.setRational ( true );
-  std::cout << "A09: c1 = \n" << c1 << std::endl;
-  std::cout << "A10: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "A11: c1 = \n" << c1 << std::endl;
+  std::cout << "A12: ( c1 == c2 ) = " << ( c1 == c2 ) << std::endl;
+  std::cout << "A13: ( c1.isEqual ( c2 ) = " << ( c1.isEqual ( c2, knotTol, ctrPtTol ) ) << std::endl;
 
   // Test the evaluation algorithms.
   testEvaluation ( c1 );
@@ -119,11 +126,12 @@ template<NCSDTA, class Vec> void testCurve1 ( const Vec &p1,
 }
 
 
-template<NCSDTA, class Vec> void testCurve2 ( const Vec &center, 
-                                              const Vec &normal, 
-                                              const CtrPtType &radius, 
-                                              NcCurve<NCSDCA> &c1, 
-                                              NcCurve<NCSDCA> &c2 )
+template<NCSDTA, class Vec> void testCurve2 ( 
+  const Vec &center, 
+  const Vec &normal, 
+  const CtrPtType &radius, 
+  NcCurve<NCSDCA> &c1, 
+  NcCurve<NCSDCA> &c2 )
 {
   // Print to stdout.
   std::cout << "B01: center = " << center << std::endl;

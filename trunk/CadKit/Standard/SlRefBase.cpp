@@ -69,7 +69,7 @@ void SlRefBase::ref()
   SL_ASSERT ( this );
 
   // Increment the reference count.
-  CadKit::threadSafeIncrement ( _refCount );
+  CadKit::Threads::safeIncrement ( _refCount );
 }
 
 
@@ -85,7 +85,7 @@ void SlRefBase::unref()
   SL_ASSERT ( this );
 
   // Decrement the reference count.
-  CadKit::threadSafeDecrement ( _refCount );
+  CadKit::Threads::safeDecrement ( _refCount );
 
   // Delete this instance if the count is now zero.
   if ( 0 == _refCount ) 

@@ -160,7 +160,7 @@ template<NCSDTA> inline void NcEvaluate<NCSDCA>::evaluate (
   const IndexType degree ( curve.getDegree() );
 
   // Get the span.
-  const IndexType span ( NcFindSpan<NCSDCA>::find ( curve, u ) );
+  const IndexType span ( Nurbs::findSpan<NCSDCA> ( curve, u ) );
 
   // Get the dimension.
   const IndexType dimension ( curve.getDimension() );

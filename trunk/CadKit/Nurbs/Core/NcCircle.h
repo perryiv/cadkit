@@ -19,8 +19,6 @@
 #include "NcCreate.h"
 #include "NcCurve.h"
 
-#include "Standard/SlConstants.h"
-
 
 namespace CadKit
 {

@@ -35,6 +35,7 @@
 namespace CadKit
 {
 class SgNode;
+class SgGroup;
 
 class SG_API SgViewer : public SlRefBase
 {
@@ -91,6 +92,7 @@ public:
   const long &           getSpinTimerInterval() const { return _spinTimerInterval; }
 
   // Are we in these modes?
+  bool                   isDisplayingModelviewMatrix() const;
   bool                   isPicking() const;
   bool                   isSeeking() const;
   bool                   isSpinning() const;
@@ -141,6 +143,7 @@ public:
   void                   setScene ( SgNode *scene );
 
   // Set the mode.
+  void                   setDisplayOfModelviewMatrix ( const bool &state );
   void                   setPicking ( const bool &state );
   void                   setSeeking ( const bool &state );
   void                   setViewing ( const bool &state );
@@ -166,9 +169,12 @@ public:
 protected:
 
   SlRefPtr<SgNode> _scene;
+  SlRefPtr<SgGroup> _display;
+  SlRefPtr<SgText> _modelviewText;
   SlRefPtr<SgRenderer> _renderer;
   SlRefPtr<SgCamera> _camera;
   unsigned long _internalFlags;
+  unsigned long _displayFlags;
   RotationMethod _rotationMethod;
   SlVec2i _windowMouse;
   SlVec2i _lastWindowMouse;
@@ -177,11 +183,12 @@ protected:
   unsigned long _translateMouseButtons;
   unsigned long _scaleMouseButtons;
   unsigned long _seekMouseButtons;
-  unsigned long _viewingToggleKey;
-  unsigned long _seekingToggleKey;
+  unsigned long _viewingKey;
+  unsigned long _seekingKey;
   unsigned long _rotateKey;
   unsigned long _translateKey;
   unsigned long _scaleKey;
+  unsigned long _displayMatrixKey;
   SlCallback<Callback *, const void *, const void *> _callback;
   long _spinTolerance;
   long _spinTimerInterval;

@@ -18,11 +18,8 @@
 
 #include "NcInternalMacros.h"
 
-#include "Standard/SlMinMax.h"
-
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <vector>
-#endif
+#include <vector>
+#include <algorithm>
 
 
 namespace CadKit
@@ -38,9 +35,9 @@ public:
   ~NcWork(){}
 
   /// Get the basis function work space.
-  ParamType *               getBasisFunctionsLeft  ( const IndexType &whichIndepVar );
-  ParamType *               getBasisFunctionsRight ( const IndexType &whichIndepVar );
-  ParamType *               getBasisFunctions      ( const IndexType &whichIndepVar );
+  ParamType *                   getBasisFunctionsLeft  ( const IndexType &whichIndepVar );
+  ParamType *                   getBasisFunctionsRight ( const IndexType &whichIndepVar );
+  ParamType *                   getBasisFunctions      ( const IndexType &whichIndepVar );
 
   /// Assignment operator.
   NcWork &                      operator = ( const NcWork &work ) { SL_VERIFY ( this->setValue ( work ) ); return *this; }
@@ -164,7 +161,7 @@ template<NCSDTA> inline bool NcWork<NCSDCA>::resize ( const IndexType &numIndepV
   SL_ASSERT ( order );
 
   // Figure out the maximum order.
-  _maxOrder = CadKit::maximum ( numIndepVars, order );
+  _maxOrder = *(std::max_element ( order, order + numIndepVars ));
   SL_ASSERT ( _maxOrder > 1 );
 
   // The new size.

@@ -83,10 +83,11 @@ void Molecule::addAtom(const Atom& atom)
 
 void Molecule::addBond(Atom::ID id1, Atom::ID id2)
 {
-  //find the atoms with given ids
+  // Find the atoms with given ids.
   Map::const_iterator i1 = _atoms.find ( id1 );
   Map::const_iterator i2 = _atoms.find ( id2 );
-  //check to see if the atom ids exist, if so add bond to the list
+
+  // Check to see if the atom ids exist, if so add bond to the list.
   if(_atoms.end() != i1 && _atoms.end() != i2)
     _bonds.push_back( Bond ( i1->second, i2->second, _bonds.size() + 1));
 }
@@ -119,6 +120,10 @@ osg::Group *Molecule::_build() const
     }
   }
 
+  std::cout << "Number of Atoms: " << _atoms.size() << std::endl;
+
+#if 0 // TODO, bonds are not working real well...
+
   // If we are supposed to load the bonds...
   if ( PDB::LOAD_BONDS == ( _flags & PDB::LOAD_BONDS ) )
   {
@@ -130,7 +135,8 @@ osg::Group *Molecule::_build() const
     }
   }
 
-  std::cout << "Number of Atoms: " << _atoms.size() << std::endl;
+#endif
+
   std::cout << "Number of Bonds: " << _bonds.size() << std::endl;
 
   // Return the root.
@@ -153,20 +159,22 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   osg::ref_ptr< osg::Material > m = _materialChooser->getMaterial( "Bond" );
   ss->setAttribute ( m.get() );
 
-  //get Matrix Transform for this bond
+  // Get Matrix Transform for this bond
   osg::ref_ptr<osg::MatrixTransform> mt ( bond.getMatrix() );
   mt->addChild( lod.get() );
 
-  //add several cylinders
+  // Add several cylinders
   for(unsigned int i = 0; i < _numLodChildren  - 1; ++i)
   {
     unsigned int sides = 5 + ( _numLodChildren - i - 2) * (_stepFactor / 2);
     lod->addChild (this->_makeCylinder( bond.getPoint1(), bond.getPoint2(), 0.25f, sides));
   }
 
-  osg::Vec3 center, point1 = bond.getPoint1(), point2 = bond.getPoint2();
+  osg::Vec3 center;
+  osg::Vec3 point1 ( bond.getPoint1() );
+  osg::Vec3 point2 ( bond.getPoint2() );
   
-  //Make last LOD a line
+  // Make last LOD a line.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
   osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
@@ -238,18 +246,16 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
   // Name the lod with the data from the atom.
   lod->setName ( atom.toString() );
 
+  // The matrix-transform holding the atom.
   osg::ref_ptr<osg::MatrixTransform> mt ( atom.getMatrix() );
-  mt->addChild( lod.get() );
+  mt->addChild ( lod.get() );
+
   // Add several spheres.
   float denominator ( _numLodChildren - 1 );
   for ( unsigned int i = 0; i < _numLodChildren; ++i )
   {
-    //unsigned int detail = 3;//(_numLodChildren - i );
-    //lod->addChild ( this->_makeSphere ( center, radius, detail ) );
-
     float loop ( i );
     float detail ( ::pow ( 1.0f - loop / denominator, _lodDistancePower ) );
-    
     lod->addChild ( this->_makeSphere ( center, radius, osg::Vec2 ( detail, detail ) ) );
   }
 
@@ -270,35 +276,6 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float detail ) const
-{
-  // Make the sphere.
-  osg::ref_ptr<osg::Sphere> sphere ( new osg::Sphere ( center, radius ) );
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( sphere.get() ) );
-
-  // Adjust the number of triangles.
-  osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
-  hints->setDetailRatio ( detail );
-  drawable->setTessellationHints ( hints.get() );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  drawable->setUseDisplayList ( false );
-
-  // Add the sphere to a geode.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( drawable.get() );
-
-  // Return the geode.
-  return geode.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make a sphere.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const
 {
   // Determine the number of latitudinal and longitudinal segments.
@@ -306,7 +283,10 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   unsigned int longitude ( _minNumSegsLong + detail[1] * ( _maxNumSegsLong - _minNumSegsLong ) );
 
   // Make a sphere.
-  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( radius, latitude, longitude ) );
+  SphereFactory::MeshSize size ( latitude, longitude );
+  SphereFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
+  SphereFactory::LongitudeRange longRange (  0.0f, 360.0f );
+  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->sphere ( radius, size, latRange, longRange ) );
 
   // TODO, make this an option. Display lists crash with really big files.
   geometry->setUseDisplayList ( true );
@@ -318,41 +298,6 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   return geode.release();
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make a subdivided sphere.
-//
-///////////////////////////////////////////////////////////////////////////////
-/*
-osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsigned int div ) const
-{
-  // Make a translation.
-  osg::Matrixd T;
-  T.makeTranslate ( center );
-
-  // Make a matrix-transform.
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  //mt->setMatrix ( T * S );
-  mt->setMatrix ( T );
-
-  // Make a sphere.
-  osg::ref_ptr<osg::Geometry> geometry ( _sphereFactory->create ( div, radius ) );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( false );
-
-  // Add the geometry to a geode.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( geometry.get() );
-
-  // Add the geode to the matrix-transform.
-  mt->addChild ( geode.get() );
-
-  // Return the matrix-transform.
-  return mt.release();
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -372,6 +317,7 @@ osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
 
   return geode.release();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -420,6 +366,7 @@ void Molecule::_setCentersAndRanges ( osg::LOD *lod ) const
   // Set the range for the last child.
   lod->setRange ( numChildren - 1, rangeMin, _lastRangeMax );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -7,15 +7,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wrapper for random number generators.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __USUL_ADAPTORS_RANDOM_H__
 #define __USUL_ADAPTORS_RANDOM_H__
 
 #include "Usul/Errors/Assert.h"
 
-namespace Usul
-{
-namespace Adaptors
-{
+
+namespace Usul {
+namespace Adaptors {
+
 
 template < class Real > struct Random
 {
@@ -31,13 +37,16 @@ template < class Real > struct Random
     Real number ( static_cast < Real > ( ::rand() ) );
     return _min + _normalize * number;
   }
+
 private:
+
   Real _min;
   Real _normalize;
 };
 
-};//namespace Adaptors
-}; //namespace Usul
 
-#endif //__USUL_ADAPTORS_RANDOM_H__
+}; // namespace Adaptors
+}; // namespace Usul
 
+
+#endif // __USUL_ADAPTORS_RANDOM_H__

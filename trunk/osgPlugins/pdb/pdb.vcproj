@@ -223,12 +223,6 @@
 			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.h">
 			</File>
-			<File
-				RelativePath=".\SphereFactory.cpp">
-			</File>
-			<File
-				RelativePath=".\SphereFactory.h">
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

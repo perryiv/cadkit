@@ -37,7 +37,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  TrJt2Pf: The Jupiter to XML translator.
+//  TrJt2Pf: The Jupiter to Performer translator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -214,7 +214,7 @@ bool TrJt2Pf::_traverseNotify ( const DbJtTraverser::Message &message )
 
   case DbJtTraverser::LEVEL_POP:
 
-    // Pop the XML tree level.
+    // Pop the Performer scene tree level.
     return this->_endCurrentGroup();
 
   case DbJtTraverser::ENTITY:
@@ -252,18 +252,18 @@ bool TrJt2Pf::_processEntity ( DbJtTraverser::EntityHandle entity )
   {
   case DbJtTraverser::ASSEMBLY:
 
-    // Add the part to the XML tree.
+    // Add the part to the Performer scene.
     return this->_assemblyStart ( entity );
     
   case DbJtTraverser::PART:
 
-    // Add the part to the XML tree.
-    //return this->_addPart ( entity );
+    // Add the part to the Performer tree.
+    return this->_addPart ( entity );
     
   case DbJtTraverser::INSTANCE:
 
     // Add the instance to the XML tree.
-    //return this->_addInstance ( entity );
+    return this->_addInstance ( entity );
 
   default:
 
@@ -415,7 +415,7 @@ bool TrJt2Pf::_addColor ( const unsigned int &valid,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create an XML group node and fill in the common properties.
+//  Create a Performer group node and fill in the common properties.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -812,7 +812,7 @@ bool TrJt2Pf::_addInstance ( DbJtTraverser::EntityHandle entity )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Pop the XML tree level.
+//  Pop the Performer scene tree level.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

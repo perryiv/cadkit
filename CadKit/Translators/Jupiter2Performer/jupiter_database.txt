@@ -1,0 +1,44 @@
+Jupiter Database
+	Assembly
+	Assembly
+		Material (optional)
+		Transform (optional)
+		Texture (optional)
+		Part
+	Assembly
+		Part
+		Instance
+			Material (optional)
+			Transformation (optional)
+			Texture (optional)
+			Pointer to a Part or Assembly (just one)
+		Instance
+		Part
+			Material (optional)
+			Transformation (optional)
+			Texture (optional)
+			LOD
+			LOD
+				Shape
+				Shape
+					TriStrip
+					TriStrip
+						Vertices
+						Normals
+						Colors (optional)
+						Texture Coordinates (optional)
+					TriStrip
+				Shape
+			LOD
+			LOD
+		Part
+	Part
+	Assembly
+
+Does every shape under a LOD represent different 
+resolutions of the same geometry, or are they 
+simply groupings of sub-portions of the geometry? 
+
+In the latter case the layer where different 
+branches represent different resolutions of the
+same geometry is at the LODs.

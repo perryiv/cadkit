@@ -132,8 +132,8 @@ namespace Detail
         const osg::Vec3 &center = i->first;
         float size ( i->second.first );
 
-        // Make the shape.
-        ShapeType shape ( size );
+        // Make the shape. Not so many polygons.
+        ShapeType shape ( size, 0.25f );
 
         // Give the shapes materials.
         shape.color_policy().ambient ( ( i->second.second ) ? activeColor : periodicColor );

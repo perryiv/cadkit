@@ -85,6 +85,8 @@ public:
     ICON_RED_X,
     ICON_WRITING,
     ICON_XYZ,
+    ICON_SMALL_DOT,
+    ICON_WRITE,
     LAST
   };
 

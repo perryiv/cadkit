@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/ColorSetter.h"
+#include "ColorSetter.h"
 
 #include "osg/ShapeDrawable"
 #include "osg/Geometry"

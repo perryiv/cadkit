@@ -16,7 +16,7 @@
 #ifndef _OSG_TOOLS_FONT_H_
 #define _OSG_TOOLS_FONT_H_
 
-#include "OsgTools/Export.h"
+#include "Export.h"
 
 #include <string>
 

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Mesh.h"
-#include "OsgTools/ErrorChecker.h"
+#include "Mesh.h"
+#include "ErrorChecker.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"

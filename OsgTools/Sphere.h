@@ -15,8 +15,8 @@
 #ifndef _osg_tools_builder_sphere_
 #define _osg_tools_builder_sphere_
 
-#include "OsgTools/Export.h"
-//#include "OsgTools/ColorPolicyFunctor.h"
+#include "Export.h"
+//#include "ColorPolicyFunctor.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"

@@ -16,8 +16,8 @@
 #ifndef _OSG_TOOLS_GRID_H_
 #define _OSG_TOOLS_GRID_H_
 
-#include "OsgTools/Export.h"
-#include "OsgTools/Declarations.h"
+#include "Export.h"
+#include "Declarations.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Text.h"
-#include "OsgTools/ErrorChecker.h"
+#include "Text.h"
+#include "ErrorChecker.h"
 
 #include "osg/Geode"
 #include "osg/Projection"

@@ -15,8 +15,8 @@
 #ifndef _OSG_TOOLS_TORUS_H_
 #define _OSG_TOOLS_TORUS_H_
 
-#include "OsgTools/Export.h"
-#include "OsgTools/Declarations.h"
+#include "Export.h"
+#include "Declarations.h"
 
 #include <osg/Vec4>
 

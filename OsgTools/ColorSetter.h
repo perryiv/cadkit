@@ -16,6 +16,10 @@
 #ifndef _osg_tools_color_setter_h_
 #define _osg_tools_color_setter_h_
 
+#include "Export.h"
+
+#include "osg/Vec4"
+
 namespace osg
 {
   class ShapeDrawable;
@@ -25,7 +29,7 @@ namespace osg
 namespace OsgTools
 {
 
-  class ColorSetter
+  class OSG_TOOLS_EXPORT ColorSetter
   {
   public:
     ColorSetter(): _color(1.0,0.0,0.0,1.0) {}
@@ -35,6 +39,7 @@ namespace OsgTools
     ColorSetter& operator =(const ColorSetter& cs)
     {
       _color = cs._color;
+      return *this;
     }
 
     void operator ()(osg::ShapeDrawable* sd);

@@ -798,13 +798,6 @@ bool TrJt2Pf::_addShape ( DbJtTraverser::EntityHandle entity,
     return false;
   }
 
-  // The size of the vector should be a multiple of 3.
-  if ( 0 != ( vertices.size() % 3 ) )
-  {
-    SL_ASSERT ( 0 ); // Should never happen.
-    return false;
-  }
-
   // Make sure there are no zero-length vertex sets.
   // TODO: Handle this case, perhaps purge the bad set.
   for ( i = 0; i < numSets; ++i )

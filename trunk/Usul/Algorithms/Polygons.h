@@ -175,8 +175,6 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   }
 
   // Fill the sequence of indices.
-  //typedef std::list< unsigned int>::iterator IndiciesIterator;
-  //std::list< unsigned int > indices;
   IndexSequence indices;
   indices.resize ( numPolygons );
   {
@@ -201,18 +199,14 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
   std::vector < unsigned int > adjacentCount ( numPolygons, 0 );
 
   // While there are still keepers to test...
-  
   while ( keepers.end() != keeperItr )
   {
     // Loop through all polygons
     IndexIterator indexItr = indices.begin();  
     while ( indices.end() != indexItr )
     {
-      //findAdjacentPolygon ( keeperItr, indexItr, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount);
       indexItr = searchPolygonList <IndexIterator, VertexSequence, IndexSequence, AdjacentTest > 
-        ( keeperItr, indexItr, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount);
-      
-      
+        ( keeperItr, indexItr, vertices, keepers, indices, adjacentTest, numVertsPerPoly, adjacentCount); 
     }
 
     // Go to the next keeper.
@@ -224,6 +218,7 @@ void findAdjacent ( const AdjacentTest &adjacentTest,
     ::OutputDebugString ( os.str().c_str() );
 #endif
     updater.update ( percent );
+    updater.setStatus( keepers.size() );
   }
 }
 
@@ -280,9 +275,8 @@ Iter searchPolygonList   ( Iter& keeperItr,
 {
   IndexSequence::reverse_iterator rIter ( indexItr );
   IndexSequence::iterator fIter( indexItr );
-  bool done = false;
 
-  while ( !done )
+  while ( adjacentCount [ *keeperItr ] != numVertsPerPoly )
   {
     if( rIter != indices.rend() )
     {
@@ -303,10 +297,8 @@ Iter searchPolygonList   ( Iter& keeperItr,
       }
       ++fIter;
     }
-    if( adjacentCount [ *keeperItr ] == numVertsPerPoly )
-        break;
     if( rIter == indices.rend() && fIter == indices.end() )
-      done = true;
+      break;
   }
   return indices.end();
 }

@@ -497,7 +497,7 @@ void Message::buttons ( const std::string &b )
     this->buttons().push_back ( std::string ( first, last ) );
 
     // Set for next iteration.
-    first = last;
+    first = ( b.end() == last ) ? last : ++last;
   }
 }
 

@@ -405,6 +405,9 @@
 						RelativePath=".\Interfaces\IDocument.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFlushEvents.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetDocument.h">
 					</File>
 					<File

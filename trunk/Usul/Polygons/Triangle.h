@@ -13,6 +13,8 @@
 #include "Usul/Polygons/SharedVertex.h"
 #include "Usul/Polygons/Predicates.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
 
 
 namespace Usul {
@@ -25,23 +27,30 @@ namespace Polygons {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class VertexType_ > class Triangle
+  template < class VertexType_ > class Triangle : public Usul::Base::Referenced
 {
 public:
+
+  typedef Usul::Base::Referenced BaseClass;
   typedef VertexType_ VertexType;
   typedef SharedVertex < Triangle, VertexType > SharedVertex;
   typedef typename SharedVertex::RefPtr SharedVertexPtr;
 
-  //Constructor
-  Triangle() : 
-  _index( 0 ), 
-  _v1( 0x0 ), 
-  _v2( 0x0 ),
-  _v3( 0x0 ),
-  _visited( false ) 
-  {  }
+  // Smart pointers.
+  USUL_DECLARE_REF_POINTERS ( Triangle );
 
-  //Set all three vertices
+  // Constructor
+  Triangle() : BaseClass(),
+    _index( 0 ), 
+    _v1( 0x0 ), 
+    _v2( 0x0 ),
+    _v3( 0x0 ),
+    _visited( false ),
+    _normal ( 0, 0, 0 )
+  {
+  }
+
+  // Set all three vertices
   void setVertices ( SharedVertex* v1, SharedVertex* v2, SharedVertex* v3 )
   {
     _v1 = v1;
@@ -49,7 +58,7 @@ public:
     _v3 = v3;
   }
 
-  //Append a shared vertex
+  // Append a shared vertex
   void append ( SharedVertex *v )
   {
     if( _v1 == 0x0 )
@@ -103,7 +112,17 @@ public:
     return triangles;
   }
 
-  VertexType normal() const
+  const VertexType &normal() const
+  {
+    return _normal;
+  }
+
+  void normal ( const VertexType &n )
+  {
+    _normal = n;
+  }
+
+  void calculateNormal()
   {
     USUL_ASSERT ( _v1 && _v2 && _v3 );
 
@@ -114,14 +133,32 @@ public:
     const VertexType v12 ( v2 - v1 );
     const VertexType v13 ( v3 - v1 );
 
-    return ( v12 ^ v13 );
+    _normal = v12 ^ v13;
   }
 
+  void flipNormal()
+  {
+    _normal *= -1;
+  }
+
+protected:
+
+  // No copying.
+  Triangle ( const Triangle & );
+  Triangle &operator = ( const Triangle & );
+
+  // Use reference counting
+  virtual ~Triangle()
+  {
+  } 
+
 private:
+
   unsigned int _index;
   SharedVertexPtr _v1;
   SharedVertexPtr _v2;
   SharedVertexPtr _v3;
+  VertexType _normal;
   bool _visited;
 };
 

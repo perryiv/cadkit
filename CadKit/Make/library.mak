@@ -22,6 +22,6 @@ lib: $(OBJECTS)
 	ar -cr lib$(TARGET)_a.a $(OBJECTS)
 	$(CPP) $(LINK_FLAGS) -shared -Wl,-soname,lib$(TARGET)_s.so -o lib$(TARGET)_s.so $(OBJECTS) $(LIBS)
 	mkdir -p $(CADKIT_ROOT_DIR)/bin
-	cp lib$(TARGET)_s.so $(CADKIT_ROOT_DIR)/bin/.
-	cp lib$(TARGET)_a.a $(CADKIT_ROOT_DIR)/bin/.
+	mv lib$(TARGET)_s.so $(CADKIT_ROOT_DIR)/bin/.
+	mv lib$(TARGET)_a.a $(CADKIT_ROOT_DIR)/bin/.
 	echo ----- Target $(TARGET) successfully built! -----

@@ -63,6 +63,7 @@ enum Units { UNKNOWN=0, MICROMETERS, MILLIMETERS, CENTIMETERS, DECIMETERS,
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
+# include "Standard/SlStringFunctions.h"
 #endif
 
 // This is the only way to get a pointer to the traverser from inside the 

@@ -62,7 +62,9 @@ template<class CharType> class SlString
 public:
 
   typedef std::basic_string<CharType> StringType;
-  typedef CharType value_type;
+  typedef CharType                    value_type;
+  typedef const value_type *          const_iterator;
+  typedef value_type *                iterator;
 
   // Constructors.
   SlString(){}
@@ -84,15 +86,15 @@ public:
   void                          clear() { _s.erase ( _s.begin(), _s.end() ); }
 
   // Erase the elements.
-  StringType::iterator          erase ( StringType::iterator first, StringType::iterator last ) { return _s.erase ( first, last ); }
-  StringType::iterator          erase ( StringType::iterator it ) { return _s.erase ( it ); }
+  iterator                      erase ( iterator first, iterator last ) { return _s.erase ( first, last ); }
+  iterator                      erase ( iterator it ) { return _s.erase ( it ); }
   StringType &                  erase ( unsigned int p0 = 0, unsigned int n = StringType::npos ) { return _s.erase ( p0, n ); }
 
   // Iterators.
-  StringType::const_iterator    begin() const { return _s.begin(); }
-  StringType::iterator          begin()       { return _s.begin(); }
-  StringType::const_iterator    end()   const { return _s.end(); }
-  StringType::iterator          end()         { return _s.end(); }
+  const_iterator                begin() const { return _s.begin(); }
+  iterator                      begin()       { return _s.begin(); }
+  const_iterator                end()   const { return _s.end(); }
+  iterator                      end()         { return _s.end(); }
 
   // Get the character.
   const CharType &              getChar ( const unsigned int &index ) const;

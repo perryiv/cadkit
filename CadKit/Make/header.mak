@@ -6,7 +6,9 @@ ifeq ($(OS_TYPE), Irix)
 	os = irix
 	Os = Irix
 	GLOBAL_CPP_FLAGS = -LANG:std -D_SGI_NATIVE_COMPILER -D_DEBUG
+	GLOBAL_LINK_FLAGS = -LANG:std
 else
 	CPP = g++
 	GLOBAL_CPP_FLAGS = -D_DEBUG
+	GLOBAL_LINK_FLAGS =
 endif

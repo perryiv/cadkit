@@ -54,6 +54,7 @@
 # include "Standard/SlAssert.h"
 # include "Standard/SlPrint.h"
 # include "Standard/SlBitmask.h"
+# include "Standard/SlStringFunctions.h"
 # include <fstream>
 #endif
 
@@ -338,7 +339,7 @@ bool TrJt2Xml::_addMaterial ( DbJtTraverser::EntityHandle entity, DbXmlGroup &gr
   this->_addColor ( valid, DbJtTraverser::MATERIAL_COLOR_EMISSIVE, ambient, "emissive", *material );
 
   // Add the shininess.
-  if ( CadKit::hasBits ( valid, DbJtTraverser::MATERIAL_COLOR_SHININESS ) )
+  if ( CadKit::hasBits ( valid, (unsigned int) DbJtTraverser::MATERIAL_COLOR_SHININESS ) )
   {
     // Add a leaf for the shininess.
     SlAString tempString;
@@ -690,7 +691,7 @@ bool TrJt2Xml::_addArray ( const unsigned int &valid,
                            const char *arrayName, 
                            DbXmlGroup &set )
 {
-  SL_PRINT5 ( "In TrJt2Xml::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
+  SL_PRINT6 ( "In TrJt2Xml::_addArray(), this = %X, valid = %d, which = %d, array.size() = %d, arrayName = %s\n", this, valid, which, array.size(), arrayName );
   SL_ASSERT ( arrayName );
 
   // See if the array is valid.
@@ -728,8 +729,8 @@ void TrJt2Xml::_setArrayString ( const std::vector<float> &array, SlAString &s )
 
   // Loop through the array (except the last one) and append to the string.
   SlAString temp;
-  unsigned int stop ( array.size() - 1 );
-  for ( unsigned int i = 0; i < stop; ++i )
+  unsigned int stop ( array.size() - 1 ), i;
+  for ( i = 0; i < stop; ++i )
   {
     // Format the temporary string.
     CadKit::format ( temp, "%f ", array[i] );

@@ -873,6 +873,7 @@ void TrJt2Xml::setVerbose ( bool verbose )
   SL_ASSERT ( _jtTraverser.isValid() );
 
   _jtTraverser->addFlags ( DbJtTraverser::VERBOSE );
+  _verbose = true;
 }
 
 /*

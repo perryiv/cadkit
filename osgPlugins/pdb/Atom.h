@@ -11,6 +11,7 @@
 #ifndef __OSG_PDB_PLUGIN_ATOM_H__
 #define __OSG_PDB_PLUGIN_ATOM_H__
 
+#include "osg/Referenced"
 #include "osg/Vec3"
 #include "osg/MatrixTransform"
 #include "osg/ref_ptr"
@@ -20,10 +21,10 @@
 
 class PeriodicTable;
 
-//TODO inherit from osg::Referenced?
-class Atom 
+class Atom : public osg::Referenced
 {
 public:
+  typedef osg::Referenced BaseClass;
   typedef unsigned int ID;
 
   Atom(const char*, std::string, const PeriodicTable &);

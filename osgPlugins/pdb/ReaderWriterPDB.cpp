@@ -56,10 +56,9 @@
 
 ReaderWriterPDB::ReaderWriterPDB() :
   _molecules(),
-  _materialChooser(),
+  _materialFactory ( new MaterialFactory ),
   _currentMolecule(NULL),
   _shapeFactory ( new ShapeFactory ),
-//  _cylinderFactory ( new CylinderFactory ),
   _periodicTable(),
   _flags ( PDB::SHOW_ATOMS | PDB::SHOW_BONDS | PDB::LOAD_ATOMS | PDB::LOAD_BONDS )
 {
@@ -154,7 +153,7 @@ ReaderWriterPDB::Result ReaderWriterPDB::readNode ( const std::string &file, con
 void ReaderWriterPDB::_init()
 {
   _molecules.clear();
-  _materialChooser.clear();
+  _materialFactory->clear();
   _currentMolecule = NULL;
 }
 
@@ -369,7 +368,7 @@ Molecule* ReaderWriterPDB::_getCurrentMolecule()
 {
   if(_currentMolecule == NULL)
   {
-    _currentMolecule = new Molecule ( &_materialChooser, _shapeFactory.get(), _flags );
+    _currentMolecule = new Molecule ( _materialFactory.get(), _shapeFactory.get(), _flags );
     osg::ref_ptr< Molecule > r ( _currentMolecule );
     _molecules.push_back(r);
   }

@@ -112,7 +112,7 @@
 				OutputFile="$(OSG_BIN_DIR)/osgdb_pdbd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR); "
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug\osgdb_pdbd.pdb"
@@ -182,12 +182,6 @@
 				RelativePath=".\Export.h">
 			</File>
 			<File
-				RelativePath=".\MaterialChooser.cpp">
-			</File>
-			<File
-				RelativePath=".\MaterialChooser.h">
-			</File>
-			<File
 				RelativePath=".\Molecule.cpp">
 			</File>
 			<File
@@ -198,12 +192,6 @@
 			</File>
 			<File
 				RelativePath=".\PeriodicTable.h">
-			</File>
-			<File
-				RelativePath=".\Radii.cpp">
-			</File>
-			<File
-				RelativePath=".\Radii.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\osgPlugins\pdb\ReaderWriterPDB.cpp">

@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 Atom::Atom ( const char *atomString, std::string type, const PeriodicTable &periodicTable ) :
+BaseClass(),
 _type( type ),
 _matrix ( new osg::MatrixTransform )
 {

@@ -185,6 +185,12 @@
 					RelativePath="Grid.h">
 				</File>
 				<File
+					RelativePath=".\MaterialFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\MaterialFactory.h">
+				</File>
+				<File
 					RelativePath=".\Mesh.cpp">
 				</File>
 				<File

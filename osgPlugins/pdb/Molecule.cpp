@@ -32,7 +32,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Molecule::Molecule ( MaterialChooser *mc, ShapeFactory *sf,/* CylinderFactory *cf,*/ unsigned int flags ) : 
+Molecule::Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags ) : 
   _atoms             (),
   _bonds             (),
   _maxDistanceFactor ( 100 ),
@@ -40,9 +40,8 @@ Molecule::Molecule ( MaterialChooser *mc, ShapeFactory *sf,/* CylinderFactory *c
   _numLodChildren    ( 10 ),
   _stepFactor        ( 10 ),
   _lodDistancePower  (  2 ),
-  _materialChooser   ( mc ),
-  _shapeFactory     ( sf ),
-  //_cylinderFactory   ( cf ),
+  _materialFactory   ( mc ),
+  _shapeFactory      ( sf ),
   _minNumSegsLat     (  3 ),
   _maxNumSegsLat     ( 50 ),
   _minNumSegsLong    (  6 ),
@@ -156,8 +155,7 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   
   // Set the lod's material. This will effect all the children.
   osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
-  osg::ref_ptr< osg::Material > m = _materialChooser->getMaterial( "Bond" );
-  ss->setAttribute ( m.get() );
+  ss->setAttribute ( _materialFactory->create( "Bond" ) );
 
   // Get Matrix Transform for this bond
   osg::ref_ptr<osg::MatrixTransform> mt ( bond.getMatrix() );
@@ -210,14 +208,8 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
 osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &point2, float radius, unsigned int sides ) const
 {
   // Make a cylinder of length one with given radius and number of sides.
-  osg::ref_ptr<osg::Geometry> geometry ( _shapeFactory->cylinder ( radius, sides ) );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( true );
-
-  // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( geometry.get() );
+  geode->addDrawable ( _shapeFactory->cylinder ( radius, sides ) );
 
   return geode.release();
 }
@@ -236,19 +228,18 @@ osg::Node *Molecule::_makeAtom ( const Atom &atom ) const
 
   // Set the lod's material. This will effect all the children.
   osg::ref_ptr<osg::StateSet> ss ( lod->getOrCreateStateSet() );
-  osg::ref_ptr<osg::Material> m ( _materialChooser->getMaterial ( atom.getSymbol() ) );
-  ss->setAttribute ( m.get() );
+  ss->setAttribute ( _materialFactory->create ( atom.getSymbol() ) );
 
   // Get the atom's numbers.
   const osg::Vec3 center ( atom.getVec3() );
   const float radius ( atom.getRadius() );
 
-  // Name the lod with the data from the atom.
-  lod->setName ( atom.toString() );
-
   // The matrix-transform holding the atom.
   osg::ref_ptr<osg::MatrixTransform> mt ( atom.getMatrix() );
   mt->addChild ( lod.get() );
+
+  // Name the matrix transform with the data from the atom.
+  mt->setName ( atom.toString() );
 
   // Add several spheres.
   float denominator ( _numLodChildren - 1 );
@@ -286,14 +277,13 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   ShapeFactory::MeshSize size ( latitude, longitude );
   ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
-  osg::ref_ptr<osg::Geometry> geometry ( _shapeFactory->sphere ( radius, size, latRange, longRange ) );
 
   // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( true );
+  //geometry->setUseDisplayList ( true );
 
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( geometry.get() );
+  geode->addDrawable ( _shapeFactory->sphere ( radius, size, latRange, longRange ) );
 
   return geode.release();
 }

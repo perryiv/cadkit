@@ -19,7 +19,6 @@
 #include <iosfwd>
 
 #include "Export.h"
-#include "MaterialChooser.h"
 #include "Molecule.h"
 #include "PeriodicTable.h"
 
@@ -35,6 +34,7 @@ public:
   typedef std::vector< MoleculePtr > Molecules;
   typedef osgDB::ReaderWriter::ReadResult Result;
   typedef osgDB::ReaderWriter::Options Options;
+  typedef Molecule::MaterialFactory MaterialFactory;
   typedef Molecule::ShapeFactory ShapeFactory;
 
   ReaderWriterPDB();
@@ -82,10 +82,9 @@ protected:
 private:
   
   Molecules _molecules; 
-  MaterialChooser _materialChooser;
+  MaterialFactory::Ptr _materialFactory;
   Molecule *_currentMolecule;
   ShapeFactory::Ptr _shapeFactory;
-  //CylinderFactory::Ptr _cylinderFactory;
   PeriodicTable _periodicTable;
   unsigned int _flags;
 };

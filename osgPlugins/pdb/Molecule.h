@@ -12,13 +12,13 @@
 
 #include "Atom.h"
 #include "Bond.h"
-#include "MaterialChooser.h"
+//#include "MaterialChooser.h"
 //#include "CylinderFactory.h"
 
 #include "OsgTools/ShapeFactory.h"
+#include "OsgTools/MaterialFactory.h"
 
 #include "osg/Referenced"
-
 
 namespace osg { class Group; class LOD; class Geode; }
 
@@ -34,8 +34,9 @@ public:
   typedef Map Atoms;
   typedef std::list<Bond> Bonds;
   typedef OsgTools::ShapeFactory ShapeFactory;
+  typedef OsgTools::MaterialFactory MaterialFactory;
 
-  Molecule ( MaterialChooser *mc, ShapeFactory *sf, unsigned int flags );
+  Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags );
   osg::Group* build() const { return _build(); }
   void addAtom(const Atom&);
   void addBond(Atom::ID, Atom::ID);
@@ -62,9 +63,8 @@ private:
   unsigned int _numLodChildren;
   unsigned int _stepFactor;
   float _lodDistancePower;
-  MaterialChooser *_materialChooser;
+  mutable MaterialFactory::Ptr _materialFactory;
   mutable ShapeFactory::Ptr _shapeFactory;
-//  mutable CylinderFactory::Ptr _cylinderFactory;
   unsigned int _minNumSegsLat;
   unsigned int _maxNumSegsLat;
   unsigned int _minNumSegsLong;

@@ -43,7 +43,7 @@ LIBS = $(USUL_LIBS) $(OSG_LIBS)
 TARGET      = osgdb_stl
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}/osgPlugins/
+BIN_DIR     = ${OSG_LIB_DIR}
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)

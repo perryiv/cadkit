@@ -10,10 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  SlPartitionedVector: Encapsulated a vector (array) that is partitioned
-//  into sub-parts. An integer vector stores the partitions. 
-//
-//  Note: it is left up to the client to decide what the indices mean
-//  (the size of each partition, the start of each partition, or whatever).
+//  into sub-parts.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -26,8 +23,8 @@
 # include <vector>
 #endif
 
-#define SLPVTA class IndexType, class DataType
-#define SLPVCA IndexType, DataType
+#define SLPVTA class IndexType, class SizeType, class DataType
+#define SLPVCA IndexType, SizeType, DataType
 
 
 namespace CadKit
@@ -36,28 +33,32 @@ template <SLPVTA> class SlPartitionedVector
 {
 public:
 
-  typedef std::vector<IndexType> IndexArray;
-  typedef std::vector<DataType> DataArray;
+  typedef std::vector<SizeType>  SizeArray;
+  typedef std::vector<IndexType> StartsArray;
+  typedef std::vector<DataType>  DataArray;
 
   SlPartitionedVector(){}
-  SlPartitionedVector ( const SlPartitionedVector &pv ) : _indices ( pv._indices ), _data ( pv._data ){}
+  SlPartitionedVector ( const SlPartitionedVector &pv ) : _sizes ( pv._sizes ), _starts ( pv._starts ), _data ( pv._data ){}
   ~SlPartitionedVector(){}
 
   // Clear both vectors.
-  void                    clear() { _indices.clear(); _data.clear(); }
+  void                    clear() { _sizes.clear(); _starts.clear(); _data.clear(); }
 
-  // Get the vector of indices. This class makes no assumption as to what 
-  // these indices mean, if anything.
-  const IndexArray &      getIndices() const { return _indices; }
-  IndexArray &            getIndices()       { return _indices; }
+  // Get the vector of starting places for the partitions.
+  const StartsArray &     getStarts() const { return _starts; }
+  StartsArray &           getStarts()       { return _starts; }
+
+  // Get the vector of sizes.
+  const SizeArray &       getSizes() const { return _sizes; }
+  SizeArray &             getSizes()       { return _sizes; }
 
   // Get the data vector.
   const DataArray &       getData() const { return _data; }
   DataArray &             getData()       { return _data; }
 
   // Get a pointer to the start of the data.
-  const DataType *        getDataPointer ( const IndexType &offset ) const { return this->_getDataPointer ( offset ); }
-  DataType *              getDataPointer ( const IndexType &offset );
+  const DataType *        getDataPointer ( const SizeType &offset ) const { return this->_getDataPointer ( offset ); }
+  DataType *              getDataPointer ( const SizeType &offset );
 
   // Equality test.
   bool                    isEqual    ( const SlPartitionedVector &pv ) const;
@@ -71,22 +72,26 @@ public:
   SlPartitionedVector &   operator = ( const SlPartitionedVector &pv ) { this->setValue ( pv ); return *this; }
 
   // Parenthesis operator, for accessing as a single array.
-  const DataType &        operator() ( const IndexType &element ) const;
-  DataType &              operator() ( const IndexType &element );
+  const DataType &        operator() ( const SizeType &element ) const;
+  DataType &              operator() ( const SizeType &element );
 
   // Parenthesis operator, for accessing the individual partitions.
-  const DataType &        operator() ( const IndexType &partition, const IndexType &element ) const;
-  DataType &              operator() ( const IndexType &partition, const IndexType &element );
+  const DataType &        operator() ( const SizeType &partition, const SizeType &element ) const;
+  DataType &              operator() ( const SizeType &partition, const SizeType &element );
 
   // Set the value.
-  void                    setValue ( const SlPartitionedVector &pv ) { _indices = pv._indices; _data = pv._data; }
+  void                    setValue ( const SlPartitionedVector &pv ) { _sizes = pv._sizes; _starts = pv._starts; _data = pv._data; }
+
+  // Return the size of the partition.
+  unsigned int            size ( unsigned int partition ) const { return ( _sizes.empty() ) ? 0 : _sizes[partition]; }
 
 protected:
 
-  IndexArray _indices;
+  SizeArray _sizes;
+  StartsArray _starts;
   DataArray _data;
 
-  const DataType *        _getDataPointer ( const IndexType &offset ) const;
+  const DataType *        _getDataPointer ( const SizeType &offset ) const;
 };
 
 
@@ -125,7 +130,7 @@ template<class T> inline bool isEqual ( const std::vector<T> &v1, const std::vec
 
 template<SLPVTA> inline bool SlPartitionedVector<SLPVCA>::isEqual ( const SlPartitionedVector<SLPVCA> &pv ) const
 {
-  return ( _indices == pv._indices && _data == pv._data );
+  return ( _sizes == pv._sizes && _starts == pv._starts && _data == pv._data );
 }
 
 
@@ -137,7 +142,7 @@ template<SLPVTA> inline bool SlPartitionedVector<SLPVCA>::isEqual ( const SlPart
 
 template<SLPVTA> inline bool SlPartitionedVector<SLPVCA>::isEqual ( const SlPartitionedVector<SLPVCA> &pv, const DataType &tol ) const
 {
-  return ( _indices == pv._indices && true == CadKit::isEqual ( _data, pv._data, tol ) );
+  return ( _sizes == pv._sizes && _starts == pv._starts && true == CadKit::isEqual ( _data, pv._data, tol ) );
 }
 
 
@@ -171,7 +176,7 @@ template<SLPVTA> inline bool operator != ( const SlPartitionedVector<SLPVCA> &a,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &element ) const
+template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const SizeType &element ) const
 {
   SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
   SL_ASSERT ( element < _data.size() );
@@ -185,7 +190,7 @@ template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &element )
+template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const SizeType &element )
 {
   SL_ASSERT ( element == 0 || element > 0 ); // Make g++ happy.
   SL_ASSERT ( element < _data.size() );
@@ -199,13 +204,13 @@ template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &partition, const IndexType &element ) const
+template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() ( const SizeType &partition, const SizeType &element ) const
 {
   SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
-  SL_ASSERT ( partition < _indices.size() );
+  SL_ASSERT ( partition < _starts.size() );
 
   // Get the index.
-  IndexType index = _indices[partition] + element;
+  SizeType index = _starts[partition] + element;
 
   // Should be true.
   SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
@@ -221,13 +226,13 @@ template<SLPVTA> inline const DataType &SlPartitionedVector<SLPVCA>::operator() 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const IndexType &partition, const IndexType &element )
+template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( const SizeType &partition, const SizeType &element )
 {
   SL_ASSERT ( partition == 0 || partition > 0 ); // Make g++ happy.
-  SL_ASSERT ( partition < _indices.size() );
+  SL_ASSERT ( partition < _starts.size() );
 
   // Get the index.
-  IndexType index = _indices[partition] + element;
+  SizeType index = _starts[partition] + element;
 
   // Should be true.
   SL_ASSERT ( index == 0 || index > 0 ); // Make g++ happy for unsigned types.
@@ -243,7 +248,7 @@ template<SLPVTA> inline DataType &SlPartitionedVector<SLPVCA>::operator() ( cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::_getDataPointer ( const IndexType &offset ) const
+template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::_getDataPointer ( const SizeType &offset ) const
 {
   SL_ASSERT ( offset == 0 || offset > 0 ); // Make g++ happy.
   SL_ASSERT ( offset < _data.size() );
@@ -259,7 +264,7 @@ template<SLPVTA> inline const DataType *SlPartitionedVector<SLPVCA>::_getDataPoi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<SLPVTA> inline DataType *SlPartitionedVector<SLPVCA>::getDataPointer ( const IndexType &offset )
+template<SLPVTA> inline DataType *SlPartitionedVector<SLPVCA>::getDataPointer ( const SizeType &offset )
 {
   return ( const_cast<DataType *> ( this->_getDataPointer ( offset ) ) );
 }

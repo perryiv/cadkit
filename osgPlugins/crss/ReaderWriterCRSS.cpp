@@ -17,13 +17,36 @@
 #include "osg/Geometry"
 #include "osg/MatrixTransform"
 #include "osg/PolygonMode"
+#include "osg/LOD"
+#include "osg/Material"
 
-#include "OsgTools/Sphere.h"
-#include "OsgTools/Box.h"
+#include "OsgTools/Lod.h"
 
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <limits>
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec4 SPHERE_COLOR_ACTIVE   ( 0.0f, 1.0f, 0.0f, 1.0f );
+const osg::Vec4 SPHERE_COLOR_PERIODIC ( 0.0f, 0.5f, 0.0f, 1.0f );
+const osg::Vec4 CUBE_COLOR_ACTIVE     ( 1.0f, 0.0f, 0.0f, 1.0f );
+const osg::Vec4 CUBE_COLOR_PERIODIC   ( 0.5f, 0.0f, 0.0f, 1.0f );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Lods.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const float MAX_DISTANCE_FACTOR ( 100 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,10 +56,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ReaderWriterCRSS::ReaderWriterCRSS() :
-  _min ( 0, 0, 0 ),
-  _max ( 1, 1, 1 ),
-  _spheres(),
-  _cubes()
+  _min          ( 0, 0, 0 ),
+  _max          ( 1, 1, 1 ),
+  _spheres      (),
+  _cubes        (),
+  _factory      ( new OsgTools::ShapeFactory ),
+  _numLodKids   ( 5 ),
+  _lodDistPower ( 1 ),
+  _segsLat      ( 3, 25 ),
+  _segsLong     ( 6, 25 )
 {
 }
 
@@ -112,48 +140,222 @@ ReaderWriterCRSS::Result ReaderWriterCRSS::readNode ( const std::string &file, c
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Template function to help create geometry.
+//  Set the material.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+void ReaderWriterCRSS::_material ( bool actual, osg::Material *am, osg::Material *pm, osg::Node *node ) const
 {
-  template < class ShapeType, class Sequence > struct Builder
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+  ss->setAttribute ( ( actual ) ? am : pm );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a cube.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterCRSS::_makeCube ( float size ) const
+{
+  // Make a cube.
+  osg::ref_ptr<osg::Geometry> geometry ( _factory->cube ( osg::Vec3 ( size, size, size ) ) );
+
+  // TODO, make this an option. Display lists crash with really big files.
+  geometry->setUseDisplayList ( false );
+
+  // Add the geometry to a geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
+
+  // Return the geode holding all the cube.
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterCRSS::_makeSphere ( float radius, const osg::Vec2 &detail ) const
+{
+  // Determine the number of latitudinal and longitudinal segments.
+  const unsigned int latitude  ( _segsLat[0]  + detail[0] * ( _segsLat[1]  - _segsLat[0]  ) );
+  const unsigned int longitude ( _segsLong[0] + detail[1] * ( _segsLong[1] - _segsLong[0] ) );
+
+  // Define sphere properties.
+  const ShapeFactory::MeshSize size ( latitude, longitude );
+  const ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f ); // Don't close the poles.
+  const ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
+
+  // Make a sphere.
+  osg::ref_ptr<osg::Geometry> geometry ( _factory->sphere ( radius, size, latRange, longRange ) );
+
+  // TODO, make this an option. Display lists crash with really big files.
+  geometry->setUseDisplayList ( false );
+
+  // Add the geometry to a geode.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geometry.get() );
+
+  // Return the geode holding all the spheres.
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make all the spheres under the lod.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterCRSS::_makeSphere ( float radius ) const
+{
+  // Make a lod.
+  osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
+
+  // Add several spheres.
+  const float denominator ( _numLodKids - 1 );
+  for ( unsigned int i = 0; i < _numLodKids; ++i )
   {
-    static osg::Group *build ( const Sequence &shapes, const osg::Vec4 &activeColor, const osg::Vec4 &periodicColor )
-    {
-      // Make a group.
-      osg::ref_ptr<osg::Group> group ( new osg::Group );
+    const float loop ( i );
+    const float detail ( ::pow ( 1.0f - loop / denominator, _lodDistPower ) );
+    lod->addChild ( this->_makeSphere ( radius, osg::Vec2 ( detail, detail ) ) );
+  }
 
-      // Loop through the sequence.
-      for ( Sequence::const_iterator i = shapes.begin(); i != shapes.end(); ++i )
-      {
-        // Shortcuts.
-        const osg::Vec3 &center = i->first;
-        float size ( i->second.first );
+  // Last child.
+  //lod->addChild ( this->_makeCube ( radius * 1.5 ) );
 
-        // Make the shape. Not so many polygons.
-        ShapeType shape ( size, 0.25f );
+  // Set the centers and ranges.
+  float lastRangeMax ( std::numeric_limits<float>::max() );
+  OsgTools::Lod::setCenterAndRanges ( MAX_DISTANCE_FACTOR, lastRangeMax, lod.get() );
 
-        // Give the shapes materials.
-        shape.color_policy().ambient ( ( i->second.second ) ? activeColor : periodicColor );
-        shape.color_policy().diffuse ( shape.color_policy().ambient() );
+  // Return the lod.
+  return lod.release();
+}
 
-        // Move it to the center.
-        osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-        mt->setMatrix ( osg::Matrixf::translate ( center ) );
 
-        // Add sphere to matrix-transform.
-        mt->addChild ( shape() );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the spheres.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-        // Add matrix-transform to group.
-        group->addChild ( mt.get() );
-      }
+osg::Node *ReaderWriterCRSS::_buildSpheres() const
+{
+  // Make the materials.
+  const osg::Material::Face face ( osg::Material::FRONT );
+  osg::ref_ptr<osg::Material> activeMaterial   ( new osg::Material );
+  osg::ref_ptr<osg::Material> periodicMaterial ( new osg::Material );
+  activeMaterial->setAmbient   ( face, SPHERE_COLOR_ACTIVE );
+  activeMaterial->setDiffuse   ( face, SPHERE_COLOR_ACTIVE );
+  periodicMaterial->setAmbient ( face, SPHERE_COLOR_PERIODIC );
+  periodicMaterial->setDiffuse ( face, SPHERE_COLOR_PERIODIC );
 
-      // Return the group.
-      return group.release();
-    }
-  };
+  // The group to hold all spheres.
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+
+  // Loop through the spheres.
+  for ( Spheres::const_iterator i = _spheres.begin(); i != _spheres.end(); ++i )
+  {
+    const bool &actual = i->second.second;
+    const float &radius = i->second.first;
+    const osg::Vec3 &center = i->first;
+
+    // Need a matrix-transform to place it at the center.
+    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+    group->addChild ( mt.get() );
+    mt->setMatrix ( osg::Matrixf::translate ( center ) );
+
+    // Add the sphere.
+    mt->addChild ( this->_makeSphere ( radius ) );
+
+    // Set the material.
+    this->_material ( actual, activeMaterial.get(), periodicMaterial.get(), mt.get() );
+  }
+
+  // Return the group of spheres.
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the cubes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterCRSS::_buildCubes() const
+{
+  // Make the materials.
+  const osg::Material::Face face ( osg::Material::FRONT );
+  osg::ref_ptr<osg::Material> activeMaterial   ( new osg::Material );
+  osg::ref_ptr<osg::Material> periodicMaterial ( new osg::Material );
+  activeMaterial->setAmbient   ( face, CUBE_COLOR_ACTIVE );
+  activeMaterial->setDiffuse   ( face, CUBE_COLOR_ACTIVE );
+  periodicMaterial->setAmbient ( face, CUBE_COLOR_PERIODIC );
+  periodicMaterial->setDiffuse ( face, CUBE_COLOR_PERIODIC );
+
+  // The group to hold all cubes.
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+
+  // Loop through the cubes.
+  for ( Cubes::const_iterator i = _cubes.begin(); i != _cubes.end(); ++i )
+  {
+    const bool &actual = i->second.second;
+    const float &size = i->second.first;
+    const osg::Vec3 &center = i->first;
+
+    // Need a matrix-transform to place it at the center.
+    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+    group->addChild ( mt.get() );
+    mt->setMatrix ( osg::Matrixf::translate ( center ) );
+
+    // Add the cube.
+    mt->addChild ( this->_makeCube ( size ) );
+
+    // Set the material.
+    this->_material ( actual, activeMaterial.get(), periodicMaterial.get(), mt.get() );
+  }
+
+  // Return the group of cubes.
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the boundary.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ReaderWriterCRSS::_buildBounds() const
+{
+  // Determine the size and center.
+  const osg::Vec3 size   ( _max[0] - _min[0], _max[1] - _min[1], _max[2] - _min[2] );
+  const osg::Vec3 hs     ( size * 0.5f );
+  const osg::Vec3 center ( _min[0] + hs[0], _min[1] + hs[1], _min[2] + hs[2] );
+
+  // Position the cube.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrixf::translate ( center ) );
+
+  // Make the cube.
+  osg::ref_ptr<osg::Geode> cube ( new osg::Geode );
+  cube->addDrawable ( _factory->cube ( size ) );
+  mt->addChild ( cube.get() );
+
+  // Make it wire-frame.
+  osg::ref_ptr<osg::StateSet> ss ( cube->getOrCreateStateSet() );
+  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
+  mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE );
+  ss->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+
+  // Return the cube.
+  return mt.release();
 }
 
 
@@ -165,31 +367,18 @@ namespace Detail
 
 osg::Group *ReaderWriterCRSS::_build() const
 {
-  typedef Detail::Builder<OsgTools::MaterialBox,Cubes> CubeBuilder;
-  typedef Detail::Builder<OsgTools::MaterialSphere,Spheres> SphereBuilder;
-
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  // Make the shapes.
-  osg::ref_ptr<osg::Group> cubes   ( CubeBuilder::build   ( _cubes,   osg::Vec4 ( 1, 0, 0, 1 ), osg::Vec4 ( 0.5, 0, 0, 1 ) ) );
-  osg::ref_ptr<osg::Group> spheres ( SphereBuilder::build ( _spheres, osg::Vec4 ( 0, 1, 0, 1 ), osg::Vec4 ( 0, 0.5, 0, 1 ) ) );
+  // Add the spheres.
+  root->addChild ( this->_buildSpheres() );
 
-  // Add the cubes and spheres.
-  root->addChild ( cubes.get()   );
-  root->addChild ( spheres.get() );
-#if 1
-  // Add the wire-frame boundary.
-  OsgTools::MaterialBox cube ( _max[0] - _min[0], _max[1] - _min[1], _max[2] - _min[2] );
-  osg::ref_ptr<osg::Node> boundary ( cube() );
-  osg::ref_ptr<osg::StateSet> ss ( boundary->getOrCreateStateSet() );
-  osg::ref_ptr<osg::PolygonMode> pm ( new osg::PolygonMode );
-  pm->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE );
-  ss->setAttributeAndModes ( pm.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  // Add the cubes.
+  root->addChild ( this->_buildCubes() );
 
   // Add the boundary.
-  root->addChild ( boundary.get() );
-#endif
+  root->addChild ( this->_buildBounds() );
+
   // Return the root.
   return root.release();
 }
@@ -205,6 +394,12 @@ void ReaderWriterCRSS::_init()
 {
   _spheres.clear();
   _cubes.clear();
+
+  // If we release the factory, then the user can close child windows and 
+  // free up memory. If we do not release the factory, then multiple big 
+  // files do not use a lot more memory than a single big file. Not yet sure 
+  // which is best.
+  //_factory->clear();
 }
 
 

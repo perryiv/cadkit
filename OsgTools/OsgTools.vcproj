@@ -279,6 +279,9 @@
 					RelativePath=".\Sample.h">
 				</File>
 				<File
+					RelativePath=".\ScopedOptions.h">
+				</File>
+				<File
 					RelativePath=".\State.cpp">
 				</File>
 				<File

@@ -49,11 +49,12 @@
 #include "TrJt2PfPrecompiled.h"
 #include "TrJt2Pf.h"
 
+#include "Standard/SlAssert.h"
+#include "Standard/SlPrint.h"
+#include "Standard/SlPathname.h"
+#include "Standard/SlBitmask.h"
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlAssert.h"
-# include "Standard/SlPrint.h"
-# include "Standard/SlPathname.h"
-# include "Standard/SlBitmask.h"
 # include "Performer/pf/pfDCS.h"
 # include "Performer/pf/pfLOD.h"
 # include "Performer/pf/pfGeode.h"
@@ -325,9 +326,22 @@ bool TrJt2Pf::_addName ( DbJtTraverser::EntityHandle entity, pfNode &node )
   SL_ASSERT ( entity );
 
   // Query name of the entity, there may not be one.
-  std::string name;
-  if ( false == _jtTraverser->getName ( entity, name ) )
+  SlAString name;
+  if ( false == _jtTraverser->getName ( entity, name.getString() ) )
     return false;
+
+  // Truncate at the first newline character. Performer doesn't like them.
+//  std::string::size_type pos = name.getString().find ( '\n' );
+//  if ( std::string::npos != pos )
+//    name.resize ( pos );
+
+  // Replace the newline characters. Performer doesn't like them.
+  name.replace ( '\n', ' ' );
+  name.replace ( '\r', ' ' );
+
+  // Should be true.
+  SL_ASSERT ( std::string::npos == name.getString().find ( '\n' ) );
+  SL_ASSERT ( std::string::npos == name.getString().find ( '\r' ) );
 
   // Add the name.
   node.setName ( name.c_str() );

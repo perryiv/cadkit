@@ -259,9 +259,9 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
     return false;
 
   // Set the options.
-  importer->setShapeLoadOption ( (eaiCADImporter::ShapeLoadOption) _shapeLoadOption );
-  importer->setBrepLoadOption ( (eaiCADImporter::BrepLoadOption) _brepLoadOption );
-  importer->setAssemblyOption ( (eaiCADImporter::AssemblyOption) _assemblyLoadOption );
+  importer->setShapeLoadOption ( CadKit::convert ( _shapeLoadOption,    _messageNotify ) );
+  importer->setBrepLoadOption  ( CadKit::convert ( _brepLoadOption,     _messageNotify ) );
+  importer->setAssemblyOption  ( CadKit::convert ( _assemblyLoadOption, _messageNotify ) );
 
   if ( false == PROGRESS ( "Creating traverser." ) )
     return false;

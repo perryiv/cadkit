@@ -20,8 +20,11 @@
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlAssert.h"
+#include "Standard/SlStringFunctions.h"
+#include "Standard/SlMessageIds.h"
 
 #include "Interfaces/IMessageNotify.h"
+#include "Interfaces/ILoadOptions.h"
 #include "Interfaces/Handles.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
@@ -31,6 +34,83 @@
 
 namespace CadKit
 {
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline eaiCADImporter::ShapeLoadOption convert ( const ILoadOptions::ShapeLoadOption &option, IMessageNotify *notify )
+{
+  // Have to use case statements and not typecasts because of differences
+  // between DMDTk 4.0 and 5.0.
+  switch ( option )
+  {
+  case ILoadOptions::ALL_LODS:
+    return eaiCADImporter::eaiALL_LODS;
+  case ILoadOptions::HIGH_LOD:
+    return eaiCADImporter::eaiHIGH_LOD;
+  default:
+    SL_ASSERT ( 0 );
+    if ( notify )
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support shape load option '%d', using eaiCADImporter::eaiALL_LODS instead.", option ), UNSUPPORTED, IMessageNotify::MESSAGE_WARNING );
+    return eaiCADImporter::eaiALL_LODS;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline eaiCADImporter::BrepLoadOption convert ( const ILoadOptions::BrepLoadOption &option, IMessageNotify *notify )
+{
+  // Have to use case statements and not typecasts because of differences
+  // between DMDTk 4.0 and 5.0.
+  switch ( option )
+  {
+  case ILoadOptions::TESS_ONLY:
+    return eaiCADImporter::eaiTESS_ONLY;
+  case ILoadOptions::BREP_ONLY:
+    return eaiCADImporter::eaiBREP_ONLY;
+  case ILoadOptions::ALL:
+    return eaiCADImporter::eaiTESS_AND_BREP;
+  default:
+    SL_ASSERT ( 0 );
+    if ( notify )
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support B-rep load option '%d', using eaiCADImporter::eaiTESS_AND_BREP instead.", option ), UNSUPPORTED, IMessageNotify::MESSAGE_WARNING );
+    return eaiCADImporter::eaiTESS_AND_BREP;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline eaiCADImporter::AssemblyOption convert ( const ILoadOptions::AssemblyLoadOption &option, IMessageNotify *notify )
+{
+  // Have to use case statements and not typecasts because of differences
+  // between DMDTk 4.0 and 5.0.
+  switch ( option )
+  {
+  case ILoadOptions::INSTANCE_ASSEMBLY:
+    return eaiCADImporter::eaiINSTANCE_ASSEMBLY;
+  case ILoadOptions::EXPLODE_ASSEMBLY:
+    return eaiCADImporter::eaiEXPLODE_ASSEMBLY;
+  default:
+    SL_ASSERT ( 0 );
+    if ( notify )
+      notify->messageNotify ( CadKit::getString ( "DMDTk does not support assembly load option '%d', using eaiCADImporter::eaiINSTANCE_ASSEMBLY instead.", option ), UNSUPPORTED, IMessageNotify::MESSAGE_WARNING );
+    return eaiCADImporter::eaiINSTANCE_ASSEMBLY;
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the handle from the index.

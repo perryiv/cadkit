@@ -69,7 +69,7 @@ DbOsgDatabase::DbOsgDatabase() : DbBaseTarget(),
   SL_ASSERT ( NULL != _groupMap.get() );
   SL_ASSERT ( NULL != _root );
 
-  // Push the root onto the stack.
+  // Push the root onto the stack. This will reference it.
   this->_pushGroup ( _root );
 }
 

@@ -35,7 +35,26 @@ struct IRedraw : public Usul::Interfaces::IUnknown
   virtual void addChoreRedraw() = 0;
   virtual void removeChoreRedraw() = 0;
 
+  /// Small struct to reset the stats-display state.
+  struct ResetStatsDisplay
+  {
+    ResetStatsDisplay ( IRedraw *r, bool cs, bool fs ) : _r ( r ), _current ( cs ), _final ( fs )
+    {
+      if ( _r.valid() )
+        _r->setStatsDisplay ( _current );
+    }
+    ~ResetStatsDisplay()
+    {
+      if ( _r.valid() )
+        _r->setStatsDisplay ( _final );
+    }
+  protected:
+    IRedraw::RefPtr _r;
+    bool _current;
+    bool _final;
+  };
 }; // class IRedraw
+
 
 }; // namespace Interfaces
 }; // namespace Usul

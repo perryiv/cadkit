@@ -249,6 +249,9 @@
 					RelativePath="Group.h">
 				</File>
 				<File
+					RelativePath=".\Index.h">
+				</File>
+				<File
 					RelativePath=".\KeepFirst.h">
 				</File>
 				<File

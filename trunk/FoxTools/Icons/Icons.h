@@ -25,6 +25,7 @@
 namespace FoxTools {
 namespace Icons {
 
+
 class FOX_ICONS_EXPORT Icons
 {
 public:
@@ -101,7 +102,8 @@ private:
   static Icons *_instance;
 };
 
-  }; //namespace Icons
+
+}; // namespace Icons
 }; // namespace FoxTools
 
 

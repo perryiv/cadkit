@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Sample.h"
+#include "OsgTools/GraphStreamVisitor.h"
 #include "osgProducer/Viewer"
+#include "osg/Node"
 
 int main(unsigned int argc,char* argv[])
 {
@@ -15,8 +17,12 @@ int main(unsigned int argc,char* argv[])
   viewer->setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
 
   OsgTools::Sample sample;
-  viewer->setSceneData( sample.scene() );
+  osg::ref_ptr<osg::Node> scene = sample.scene();
 
+  osg::ref_ptr<OsgTools::GraphStreamVisitor> streamer = new OsgTools::GraphStreamVisitor(std::cout);
+  scene->accept(*streamer);
+
+  viewer->setSceneData( scene.get() );
   viewer->realize();
 
   while( !viewer->done() )

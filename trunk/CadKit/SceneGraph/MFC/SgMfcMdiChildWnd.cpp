@@ -61,7 +61,8 @@ IMPLEMENT_DYNCREATE(SgMfcMdiChildWnd, CMDIChildWnd)
 
 BEGIN_MESSAGE_MAP(SgMfcMdiChildWnd, CMDIChildWnd)
   //{{AFX_MSG_MAP(SgMfcMdiChildWnd)
-  //}}AFX_MSG_MAP
+	ON_WM_DESTROY()
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -121,4 +122,21 @@ BOOL SgMfcMdiChildWnd::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pCont
 
   // We cool.
   return TRUE;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//	Clean up here. If you wait for the destructor then the virtual tables
+//  are no longer valid.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void SgMfcMdiChildWnd::OnDestroy() 
+{
+  // This will release the viewer's pointer and unreference it.
+  _root.setValue ( NULL );
+
+  // Call the base class's function.
+	CMDIChildWnd::OnDestroy();
 }

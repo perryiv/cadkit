@@ -41,6 +41,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "SlPrecompiled.h"
 #include "SlBase.h"
 #include "SlAssert.h"
 #include "SlPrint.h"
@@ -58,7 +59,7 @@ using namespace CadKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const SlType SlBase::typeSlBase = { "SlBase", 0x0, 0x0 };
+const SlType SlBase::typeSlBase = { "SlBase", NULL, NULL };
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,7 +101,7 @@ const char *SlBase::getClassName() const
 
 const SlType *SlBase::getBaseClassType()
 {
-  return 0x0;
+  return NULL;
 }
 
 
@@ -195,7 +196,7 @@ bool SlType::isDerivedFrom ( const SlType *baseClass ) const
 
   const SlType *classType = this;
 
-  while ( classType != 0x0 )
+  while ( NULL != classType )
   {
     if ( classType == baseClass ) return true;
     classType = classType->_baseClass;
@@ -208,12 +209,15 @@ bool SlType::isDerivedFrom ( const SlType *baseClass ) const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Return a new instance of the class that this runtime class is 
-//  associated with.
+//  associated with, or null if there is not create function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 SlBase *SlType::createObject() const
 {
-  SL_ASSERT ( this && _createFunction );
-  return (*_createFunction)();
+  SL_ASSERT ( this );
+
+  // Note: Do not assert here. The client can use this function to determine 
+  // of the class is abstract or concrete.
+  return ( _createFunction ) ? (*_createFunction)() : NULL;
 }

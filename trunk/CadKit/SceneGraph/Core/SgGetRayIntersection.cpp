@@ -331,10 +331,10 @@ bool SgGetRayIntersection::visit ( SgGroup &group )
   bool first = true;
 
   // Get the number of children.
-  IndexGroup numChildren = group.getNumChildren();
+  unsigned int numChildren = group.getNumChildren();
 
   // Loop through all the nodes.
-  for ( IndexGroup i = 0; i < numChildren; ++i )
+  for ( unsigned int i = 0; i < numChildren; ++i )
   {
     // Initialize.
     _node = NULL;

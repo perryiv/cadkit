@@ -50,7 +50,6 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "Standard/SlRefBase.h"
-# include <list>
 #endif
 
 // Declare all the nodes for this class.
@@ -123,11 +122,71 @@ public:
 
 protected:
 
-  typedef std::list<SgNode *> Stack; // Compiler doesn't like SlRefPtr here.
-  Stack _stack;
-
   SgVisitor();
   virtual ~SgVisitor();
+
+  const SgCoordinate *  getCurrentCoordinate()  const { return _currentCoordinate; }
+  const SgCoordinate3 * getCurrentCoordinate3() const { return _currentCoordinate3; }
+  const SgCoordinate4 * getCurrentCoordinate4() const { return _currentCoordinate4; }
+  const SgNormal *      getCurrentNormal()      const { return _currentNormal; }
+  const SgMaterial *    getCurrentMaterial()    const { return _currentMaterial; }
+  const SgBaseColor *   getCurrentBaseColor()   const { return _currentBaseColor; }
+  const SgDrawStyle *   getCurrentDrawStyle()   const { return _currentDrawStyle; }
+
+  SgCoordinate *        getCurrentCoordinate()  { return _currentCoordinate; }
+  SgCoordinate3 *       getCurrentCoordinate3() { return _currentCoordinate3; }
+  SgCoordinate4 *       getCurrentCoordinate4() { return _currentCoordinate4; }
+  SgNormal *            getCurrentNormal()      { return _currentNormal; }
+  SgMaterial *          getCurrentMaterial()    { return _currentMaterial; }
+  SgBaseColor *         getCurrentBaseColor()   { return _currentBaseColor; }
+  SgDrawStyle *         getCurrentDrawStyle()   { return _currentDrawStyle; }
+
+  void                  _pushStateNodes ( const SgSeparator &separator );
+  void                  _pushCoordinate();
+  void                  _pushCoordinate3();
+  void                  _pushCoordinate4();
+  void                  _pushNormal();
+  void                  _pushMaterial();
+  void                  _pushBaseColor();
+  void                  _pushDrawStyle();
+
+  void                  _popStateNodes ( const SgSeparator &separator );
+  void                  _popCoordinate();
+  void                  _popCoordinate3();
+  void                  _popCoordinate4();
+  void                  _popNormal();
+  void                  _popMaterial();
+  void                  _popBaseColor();
+  void                  _popDrawStyle();
+
+  void                  _setCurrentCoordinate  ( SgCoordinate *coordinate );
+  void                  _setCurrentCoordinate3 ( SgCoordinate3 *coordinate3 );
+  void                  _setCurrentCoordinate4 ( SgCoordinate4 *coordinate4 );
+  void                  _setCurrentNormal      ( SgNormal *normal );
+  void                  _setCurrentMaterial    ( SgMaterial *material );
+  void                  _setCurrentBaseColor   ( SgBaseColor *baseColor );
+  void                  _setCurrentDrawStyle   ( SgDrawStyle *drawStyle );
+
+private:
+
+  // Have to hide the actual types because this header is included in SgNode.h,
+  // and in order to define the stacks, we need the definition of the classes.
+  void *_nodeStack;
+  void *_coordinateStack;
+  void *_coordinate3Stack;
+  void *_coordinate4Stack;
+  void *_normalStack;
+  void *_materialStack;
+  void *_baseColorStack;
+  void *_drawStyleStack;
+
+  SgCoordinate *_currentCoordinate;
+  SgCoordinate3 *_currentCoordinate3;
+  SgCoordinate4 *_currentCoordinate4;
+  SgNormal *_currentNormal;
+  SgMaterial *_currentMaterial;
+  SgBaseColor *_currentBaseColor;
+  SgDrawStyle *_currentDrawStyle;
 
   SG_DECLARE_VISITOR ( SgVisitor, 0x00001039 );
 };

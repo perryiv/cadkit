@@ -61,7 +61,8 @@ IMPLEMENT_DYNCREATE(SgMfcFrameWnd, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(SgMfcFrameWnd, CFrameWnd)
   //{{AFX_MSG_MAP(SgMfcFrameWnd)
-  //}}AFX_MSG_MAP
+	ON_WM_DESTROY()
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -93,7 +94,7 @@ SgMfcFrameWnd::~SgMfcFrameWnd()
   // Don't delete _view, it's just a pointer to the view that MFC created.
   // Don't need to do anything with _root, it is a reference-pointer. It's 
   // destructor will unreference the pointer. If that is the last reference 
-  // then the node will die. Since the node is a group, all it it's children 
+  // then the node will die. Since the node is a group, all its children 
   // will be unreferenced.
 }
 
@@ -121,4 +122,21 @@ BOOL SgMfcFrameWnd::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext
 
   // We cool.
   return TRUE;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//	Clean up here. If you wait for the destructor then the virtual tables
+//  are no longer valid.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void SgMfcFrameWnd::OnDestroy() 
+{
+  // This will release the viewer's pointer and unreference it.
+  _root.setValue ( NULL );
+
+  // Call the base class's function.
+	CFrameWnd::OnDestroy();
 }

@@ -75,3 +75,25 @@ SgShading::~SgShading()
 {
   SL_PRINT2 ( "SgShading::~SgShading(), this = %X\n", this );
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgShading::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgShading::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgShading &s = (SgShading &) node;
+
+  // Are they the same?
+  return ( type == s.type && SgAttribute::isEqualVisibleProperties ( node ) );
+}

@@ -60,7 +60,7 @@ public:
   bool              count ( SgNode &scene );
 
   // Get the count for the specified type. Call count() first.
-  IndexGetCount     getCount ( const SlType *type ) const;
+  unsigned int      getCount ( const SlType *type ) const;
 
 protected:
 

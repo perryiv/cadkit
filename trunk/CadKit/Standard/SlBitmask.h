@@ -121,7 +121,7 @@ template<class N, class B> inline N toggleBits ( const N &number, const B &bits 
 #define SL_DECLARE_BITMASK_FUNCTIONS(the_function_name,flag_type,the_flags) \
   public: \
   const flag_type &get##the_function_name() const { return the_flags; } \
-  bool has##the_function_name    ( const flag_type &bits ) { return CadKit::hasBits ( the_flags, bits ); } \
+  bool has##the_function_name    ( const flag_type &bits ) const { return CadKit::hasBits ( the_flags, bits ); } \
   void add##the_function_name    ( const flag_type &bits ) { the_flags = CadKit::addBits ( the_flags, bits ); } \
   void remove##the_function_name ( const flag_type &bits ) { the_flags = CadKit::removeBits ( the_flags, bits ); } \
   void set##the_function_name    ( const flag_type &bits ) { the_flags = bits; } \

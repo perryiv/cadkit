@@ -102,7 +102,7 @@ void SgGroup::addChild ( SgNode *child )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgNode *SgGroup::getChild ( const Index &index ) const
+SgNode *SgGroup::getChild ( const unsigned int &index ) const
 {
   SL_ASSERT ( this && index < this->getNumChildren() );
   return _nodes[index].getValue();
@@ -115,10 +115,10 @@ SgNode *SgGroup::getChild ( const Index &index ) const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgNode *SgGroup::getChildOfType ( const SlType *type, const Index &index ) const
+SgNode *SgGroup::getChildOfType ( const SlType *type, const unsigned int &index ) const
 {
   SL_ASSERT ( this && type && index < this->getNumChildren() );
-  Index count = 0;
+  unsigned int count = 0;
   SgNode *node;
 
   // Loop through all the nodes.
@@ -151,10 +151,10 @@ SgNode *SgGroup::getChildOfType ( const SlType *type, const Index &index ) const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgNode *SgGroup::getChildOfExactType ( const SlType *type, const Index &index ) const
+SgNode *SgGroup::getChildOfExactType ( const SlType *type, const unsigned int &index ) const
 {
   SL_ASSERT ( this && type && index < this->getNumChildren() );
-  Index count = 0;
+  unsigned int count = 0;
   SgNode *node;
 
   // Loop through all the nodes.
@@ -187,12 +187,12 @@ SgNode *SgGroup::getChildOfExactType ( const SlType *type, const Index &index ) 
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgGroup::Index SgGroup::insertChild ( const Index &index, SgNode *child )
+unsigned int SgGroup::insertChild ( const unsigned int &index, SgNode *child )
 {
   SL_ASSERT ( this && child );
 
   // Get the number of children.
-  Index numChildren = this->getNumChildren();
+  unsigned int numChildren = this->getNumChildren();
 
   // Trivial case.
   if ( 0 == numChildren || index >= numChildren )
@@ -300,7 +300,7 @@ bool SgGroup::removeChild ( SgNode *child )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgGroup::removeChild ( const Index &index )
+void SgGroup::removeChild ( const unsigned int &index )
 {
   SL_ASSERT ( this && index < this->getNumChildren() );
 
@@ -319,12 +319,12 @@ void SgGroup::removeChild ( const Index &index )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgGroup::Nodes::iterator SgGroup::_getIterator ( const Index &index )
+SgGroup::Nodes::iterator SgGroup::_getIterator ( const unsigned int &index )
 {
   SL_ASSERT ( this && index < this->getNumChildren() );
 
   // Initialize the counter.
-  Index count = 0;
+  unsigned int count = 0;
 
   // Loop through all the nodes.
   for ( Nodes::iterator i = _nodes.begin(); i != _nodes.end(); ++i )

@@ -57,15 +57,17 @@ class SG_API SgCoordinate4 : public SgCoordinate
 {
 public:
 
-  typedef SgVecSequence<SlVec4f,Index> Points;
+  typedef SgVecSequence<SlVec4f,unsigned int> Points;
 
   SgCoordinate4();
 
-  virtual Index         getNumPoints() const { return _points.getNumElements(); }
+  virtual unsigned int  getNumPoints() const { return _points.getNumElements(); }
 
-  bool					        setNumPoints ( const Index &numPoints ) { return _points.setNumElements ( numPoints ); }
-  bool					        setPoint ( const SlVec4f &point, const Index &index ) { return _points.setElement ( point, index ); }
-	bool					        setPoint ( const float &wx, const float &wy, const float &wz, const float &w, const Index &index ) { return _points.setElement ( SlVec4f ( wx, wy, wz, w ), index ); }
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
+  bool					        setNumPoints ( const unsigned int &numPoints ) { return _points.setNumElements ( numPoints ); }
+  bool					        setPoint ( const SlVec4f &point, const unsigned int &index ) { return _points.setElement ( point, index ); }
+	bool					        setPoint ( const float &wx, const float &wy, const float &wz, const float &w, const unsigned int &index ) { return _points.setElement ( SlVec4f ( wx, wy, wz, w ), index ); }
 
 protected:
 
@@ -73,7 +75,7 @@ protected:
 
   virtual ~SgCoordinate4();
 
-  SG_DECLARE_DYNAMIC_NODE(SgCoordinate4,0x0000100C);
+  SG_DECLARE_DYNAMIC_NODE ( SgCoordinate4, 0x0000100C );
 };
 };
 

@@ -100,7 +100,8 @@ protected:
   afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
   afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-  //}}AFX_MSG
+	afx_msg void OnDestroy();
+	//}}AFX_MSG
 
   //{{AFX_VIRTUAL(SgMfcView)
   virtual void OnDraw ( CDC* pDC );

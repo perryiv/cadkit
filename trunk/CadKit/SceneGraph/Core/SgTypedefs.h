@@ -51,17 +51,6 @@
 
 namespace CadKit
 {
-// Types used throughout the scene graph.
-typedef unsigned long IndexGroup;
-typedef unsigned long IndexCoord;
-typedef unsigned long IndexNormal;
-typedef unsigned long IndexGetCount;
-typedef unsigned long IndexPath;
-
-typedef SlUint32 FlagsNode;
-typedef SlUint32 FlagsSeparator;
-typedef SlUint32 FlagsSelection;
-typedef SlUint32 FlagsUnScale;
 };
 
 

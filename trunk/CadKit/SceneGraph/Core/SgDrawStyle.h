@@ -75,6 +75,8 @@ public:
 
   SgDrawStyle();
 
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
 protected:
 
   virtual ~SgDrawStyle();

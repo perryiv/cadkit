@@ -104,7 +104,7 @@ SG_IMPLEMENT_DYNAMIC_VISITOR(SgGetCount,SgVisitor);
 
 namespace CadKit
 {
-typedef std::map<const SlType *, IndexGetCount> CountMap;
+typedef std::map<const SlType *, unsigned int> CountMap;
 
 inline CountMap *_getCountMap ( void *mapPtr ) 
 {
@@ -176,7 +176,7 @@ bool SgGetCount::count ( SgNode &scene )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IndexGetCount SgGetCount::getCount ( const SlType *type ) const
+unsigned int SgGetCount::getCount ( const SlType *type ) const
 {
   // Look for a corresponding iterator.
   CountMap::const_iterator i = _MAP->find ( type );
@@ -239,13 +239,13 @@ bool SgGetCount::visit ( SgGroup &group )
   this->_incrementCount ( SgGroup::getClassType() );
 
   // Get the number of children.
-  SgGroup::Index numChildren = group.getNumChildren();
+  unsigned int numChildren = group.getNumChildren();
 
   // Initialize the result.
   bool result = true;
 
   // Loop through all the children.
-  for ( SgGroup::Index i = 0; i < numChildren; ++i )
+  for ( unsigned int i = 0; i < numChildren; ++i )
   {
     // Give the i'th child this visitor.
     if ( false == group.getChild ( i )->accept ( *this ) ) 

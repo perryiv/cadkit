@@ -46,8 +46,9 @@
 #include "SgMfcView.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "Standard/SlBitmask.h"
 # include "SceneGraph/Core/SgMessageIds.h"
+# include "Standard/SlBitmask.h"
+# include "Standard/SlSystem.h"
 #endif
 
 #ifdef _DEBUG
@@ -74,7 +75,8 @@ BEGIN_MESSAGE_MAP(SgMfcView, CView)
   ON_WM_RBUTTONDOWN()
   ON_WM_RBUTTONUP()
   ON_WM_SETCURSOR()
-  //}}AFX_MSG_MAP
+	ON_WM_DESTROY()
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -137,9 +139,17 @@ void SgMfcView::setViewer ( SgViewer *viewer )
   // Automatically does a ref/unref.
   _viewer = viewer;
 
-  // Hook up callback.
+  // If we have a good viewer...
   if ( _viewer )
+  {
+    // Hook up callback.
     _viewer->setCallback ( &SgMfcView::_viewerCallback, this );
+
+    // Set the default mouse button interaction.
+    _viewer->setMouseButtonsForRotating    ( SgViewer::MOUSE_LEFT );
+    _viewer->setMouseButtonsForTranslating ( 2 == SlSystem::getNumMouseButtons() ? SgViewer::MOUSE_RIGHT : SgViewer::MOUSE_MIDDLE );
+    _viewer->setMouseButtonsForScaling     ( 2 == SlSystem::getNumMouseButtons() ? SgViewer::MOUSE_LEFT | SgViewer::MOUSE_RIGHT : SgViewer::MOUSE_LEFT | SgViewer::MOUSE_MIDDLE );
+  }
 }
 
 
@@ -537,4 +547,21 @@ void SgMfcView::stopMotion()
 {
   // Kill the timer (may not be one).
   this->KillTimer ( (unsigned int) this );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//	Clean up here. If you wait for the destructor then the virtual tables
+//  are no longer valid.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void SgMfcView::OnDestroy() 
+{
+  // This will release the viewer's pointer and unreference it.
+  _viewer.setValue ( NULL );
+
+  // Call the base class's function.
+	CView::OnDestroy();
 }

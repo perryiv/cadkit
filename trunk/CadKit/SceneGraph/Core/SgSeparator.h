@@ -52,21 +52,21 @@ class SG_API SgSeparator : public SgGroup
 {
 public:
 
-  typedef FlagsSeparator PushPopFlags;
-
   enum
   {
-    PROJECTION =  (1L<<0),    // Save/restore the projection matrix stack.
-    MODELVIEW =   (1L<<1),    // Save/restore the modelview matrix stack.
-    ATTRIBUTES =  (1L<<2),    // Save/restore the attribute stack.
-    NAMES =       (1L<<3),    // Save/restore the names stack.
-    COORDINATES = (1L<<4),    // Save/restore the coordinates.
-    NORMALS =     (1L<<5),    // Save/restore the normals.
-    FONT =        (1L<<6),    // Save/restore the font.
-    ALL =          0xFFFFFFFF // Save/restore everything.
+    PROJECTION    = (1L<<0),    // Save/restore the projection matrix stack.
+    MODELVIEW     = (1L<<1),    // Save/restore the modelview matrix stack.
+    NAMES         = (1L<<2),    // Save/restore the names stack.
+    COORDINATES   = (1L<<3),    // Save/restore the coordinates.
+    NORMALS       = (1L<<4),    // Save/restore the normals.
+    FONT          = (1L<<5),    // Save/restore the font.
+    MATERIAL      = (1L<<6),    // Save/restore the attribute stack.
+    BASE_COLOR    = (1L<<7),    // Save/restore the attribute stack.
+    DRAW_STYLE    = (1L<<8),    // Save/restore the attribute stack.
+    ALL           = 0xFFFFFFFF  // Save/restore everything.
   };
 
-  PushPopFlags _pushPopFlags;  // Default is ALL.
+  unsigned int _pushPopFlags;  // Default is ALL.
 
   SgSeparator();
 
@@ -74,8 +74,8 @@ protected:
 
   virtual ~SgSeparator();
 
-  SG_DECLARE_DYNAMIC_NODE(SgSeparator,0x0000102A);
-  SL_DECLARE_BITMASK_FUNCTIONS(PushPopFlags,PushPopFlags,_pushPopFlags);
+  SG_DECLARE_DYNAMIC_NODE ( SgSeparator, 0x0000102A );
+  SL_DECLARE_BITMASK_FUNCTIONS ( PushPopFlags, unsigned int, _pushPopFlags );
 };
 };
 

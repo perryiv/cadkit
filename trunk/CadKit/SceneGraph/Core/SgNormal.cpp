@@ -76,3 +76,25 @@ SgNormal::~SgNormal()
   SL_PRINT2 ( "SgNormal::~SgNormal(), this = %X\n", this );
   _normals.clear();
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgNormal::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgNormal::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgNormal &n = (SgNormal &) node;
+
+  // Are they the same?
+  return ( _normals.isEqual ( n._normals ) && SgNode::isEqualVisibleProperties ( node ) );
+}

@@ -227,7 +227,7 @@ void SgSelection::setDeselectionCallback ( SgSelectionCB *callback, const void *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SgSelection::selectSelectionNodes ( const SgSelection::Flags &reason, const SgPath *path )
+void SgSelection::selectSelectionNodes ( const unsigned int &reason, const SgPath *path )
 {
   // Loop through all the nodes.
   const SgPath::Nodes *nodes = path->getNodes();

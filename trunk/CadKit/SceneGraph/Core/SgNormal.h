@@ -58,16 +58,17 @@ class SG_API SgNormal : public SgNode
 {
 public:
 
-  typedef IndexNormal Index;
-  typedef SgVecSequence<SlVec3f,Index> Normals;
+  typedef SgVecSequence<SlVec3f,unsigned int> Normals;
 
   SgNormal();
 
-  virtual Index         getNumNormals() const { return _normals.getNumElements(); }
+  virtual unsigned int  getNumNormals() const { return _normals.getNumElements(); }
 
-  bool					        setNumNormals ( const Index &numNormals ) { return _normals.setNumElements ( numNormals ); }
-  bool					        setNormal ( const SlVec3f &normal, const Index &index ) { return _normals.setElement ( normal, index ); }
-	bool					        setNormal ( const float &x, const float &y, const float &z, const Index &index ) { return _normals.setElement ( SlVec3f ( x, y, z ), index ); }
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
+  bool					        setNumNormals ( const unsigned int &numNormals ) { return _normals.setNumElements ( numNormals ); }
+  bool					        setNormal ( const SlVec3f &normal, const unsigned int &index ) { return _normals.setElement ( normal, index ); }
+	bool					        setNormal ( const float &x, const float &y, const float &z, const unsigned int &index ) { return _normals.setElement ( SlVec3f ( x, y, z ), index ); }
 
 protected:
 

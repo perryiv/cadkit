@@ -64,7 +64,9 @@ public:
   SgBaseColor ( const SgBaseColor &baseColor );
   SgBaseColor ( const SlColorf &rgba );
 
-  void          setValue ( const SgBaseColor &baseColor );
+  virtual bool          isEqualVisibleProperties ( const SgNode &node ) const;
+
+  void                  setValue ( const SgBaseColor &baseColor );
 
 protected:
 

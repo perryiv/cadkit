@@ -62,8 +62,6 @@ class SG_API SgSelection : public SgSeparator
 {
 public:
 
-  typedef FlagsSelection SelectionPolicy;
-
   // Possible selection policies.
   enum
   {
@@ -82,7 +80,7 @@ public:
   const void *      getClientSelectionData() const { return _clientSelectionCB.getClientData(); }
   const void *      getClientDeselectionData() const { return _clientDeselectionCB.getClientData(); }
 
-  static void       selectSelectionNodes ( const SgSelection::Flags &reason, const SgPath *path );
+  static void       selectSelectionNodes ( const unsigned int &reason, const SgPath *path );
 
   void              setSelectionCallback ( SgSelectionCB *callback, const void *data );
   void              setDeselectionCallback ( SgSelectionCB *callback, const void *data );
@@ -92,7 +90,7 @@ protected:
   typedef SlCallback<SgSelectionCB *, const void *, const void *> ClientCallback;
   ClientCallback _clientSelectionCB;
   ClientCallback _clientDeselectionCB;
-  SelectionPolicy _selectionPolicy;
+  unsigned int _selectionPolicy;
   bool _isSelected;
 
   virtual ~SgSelection();
@@ -101,8 +99,8 @@ protected:
   static void       _deselectAll ( const SgNode *node );
   void              _selected ( const SgPath *path );
 
-  SG_DECLARE_DYNAMIC_NODE(SgSelection,0x00001029);
-  SL_DECLARE_BITMASK_FUNCTIONS(SelectionPolicy,SelectionPolicy,_selectionPolicy);
+  SG_DECLARE_DYNAMIC_NODE ( SgSelection, 0x00001029 );
+  SL_DECLARE_BITMASK_FUNCTIONS ( SelectionPolicy, unsigned int, _selectionPolicy );
 };
 };
 

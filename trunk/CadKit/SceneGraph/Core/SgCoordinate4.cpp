@@ -76,3 +76,25 @@ SgCoordinate4::~SgCoordinate4()
   SL_PRINT2 ( "SgCoordinate4::~SgCoordinate4(), this = %X\n", this );
   _points.clear();
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does the given node have the same visible properties?
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool SgCoordinate4::isEqualVisibleProperties ( const SgNode &node ) const
+{
+  SL_ASSERT ( this );
+
+  // Make sure we have the right type.
+  if ( false == node.isOfType ( SgCoordinate4::getClassType() ) )
+    return false;
+
+  // Typecast.
+  SgCoordinate4 &c = (SgCoordinate4 &) node;
+
+  // Are they the same?
+  return ( _points.isEqual ( c._points ) && SgCoordinate::isEqualVisibleProperties ( node ) );
+}

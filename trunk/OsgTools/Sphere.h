@@ -29,7 +29,7 @@ namespace OsgTools
   {
   public:
     typedef ColorPolicy CP;
-    Sphere(): _radius(1.0), _cp() {}
+    Sphere(): _radius(0.5), _cp() {}
     Sphere(float r): _radius(r), _cp() {}
     Sphere(const Sphere& s): _radius(s._radius), _cp() {}
     virtual ~Sphere() {}
@@ -38,10 +38,11 @@ namespace OsgTools
 
     virtual osg::Node* operator()()
     {
-      osg::ref_ptr<osg::Sphere> s = new osg::Sphere();
+      osg::ref_ptr<osg::Sphere> s = new osg::Sphere(osg::Vec3(0.0,0.0,0.0),
+                                                    _radius);
       osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable( s.get() );
 
-      _cp( sd.get() );
+      _cp( sd.get() );  // apply the color policy adjustments
       osg::ref_ptr<osg::Geode> node = new osg::Geode();
       node->addDrawable( sd.get() );
       return node.release();

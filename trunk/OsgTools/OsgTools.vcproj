@@ -216,6 +216,9 @@
 				Name="Utilities"
 				Filter="">
 				<File
+					RelativePath=".\Circle.cpp">
+				</File>
+				<File
 					RelativePath=".\ColorSetter.cpp">
 				</File>
 				<File

@@ -20,6 +20,7 @@
 
 class PeriodicTable;
 
+//TODO inherit from osg::Referenced?
 class Atom 
 {
 public:

@@ -172,8 +172,8 @@ osg::Node *Molecule::_makeBond (const Bond &bond ) const
   osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
 
   p->resize ( 2 );
-  (*p)[0] = point1;
-  (*p)[1] = point2;
+  (*p)[0] = osg::Vec3(0.0, 0.0, 0.0);//point1;
+  (*p)[1] = osg::Vec3(0.0, 1.0, 0.0);//point2;
 
   geom->setVertexArray ( p.get() );
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
@@ -301,21 +301,6 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, float 
 
 osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const osg::Vec2 &detail ) const
 {
-  // Make a translation.
-  /*osg::Matrixd T;
-  T.makeTranslate ( center );
-
-  // Random rotation.
-  osg::Matrixd R;
-  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
-  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
-  axis.normalize();
-  R.makeRotate ( angle, axis );
-
-  // Make a matrix-transform.
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( R * T );*/
-
   // Determine the number of latitudinal and longitudinal segments.
   unsigned int latitude  ( _minNumSegsLat  + detail[0] * ( _maxNumSegsLat  - _minNumSegsLat  ) );
   unsigned int longitude ( _minNumSegsLong + detail[1] * ( _maxNumSegsLong - _minNumSegsLong ) );
@@ -344,16 +329,12 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
 //  Make a subdivided sphere.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+/*
 osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsigned int div ) const
 {
   // Make a translation.
   osg::Matrixd T;
   T.makeTranslate ( center );
-
-  // Make a scale.
-  //osg::Matrixd S;
-  //S.makeScale ( radius, radius, radius );
 
   // Make a matrix-transform.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -376,7 +357,7 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsign
   // Return the matrix-transform.
   return mt.release();
 }
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -386,21 +367,6 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, unsign
 
 osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
 {
-  // Make a translation.
-  /*osg::Matrixd T;
-  T.makeTranslate ( center );
-
-  // Random rotation.
-  osg::Matrixd R;
-  float angle ( osg::PI * float ( ::rand() ) / float ( RAND_MAX ) );
-  osg::Vec3 axis ( ::rand(), ::rand(), ::rand() );
-  axis.normalize();
-  R.makeRotate ( angle, axis );
-
-  // Make a matrix-transform.
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( R * T );*/
-
   // Make the sphere.
   osg::ref_ptr<osg::Box> cube ( new osg::Box ( osg::Vec3 ( 0, 0, 0 ), size ) );
   osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable ( cube.get() ) );

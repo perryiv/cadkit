@@ -324,6 +324,12 @@
 					RelativePath=".\Interfaces\IAnimate.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICancelButton.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ICancelNotify.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\ICanRead.h">
 				</File>
 				<File
@@ -378,10 +384,16 @@
 					RelativePath=".\Interfaces\IProgressBar.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IQueryService.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IRead.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IRedraw.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IReportErrors.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISaveFileDialog.h">

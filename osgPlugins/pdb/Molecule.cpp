@@ -35,11 +35,11 @@
 Molecule::Molecule ( MaterialChooser *mc, SphereFactory *sf, CylinderFactory *cf, unsigned int flags ) : 
   _atoms             (),
   _bonds             (),
-  _maxDistanceFactor ( 50 ),
+  _maxDistanceFactor ( 100 ),
   _lastRangeMax      ( std::numeric_limits<float>::max() ),
   _numLodChildren    ( 10 ),
   _stepFactor        ( 10 ),
-  _lodDistancePower  (  3 ),
+  _lodDistancePower  (  2 ),
   _materialChooser   ( mc ),
   _sphereFactory     ( sf ),
   _cylinderFactory   ( cf ),

@@ -46,6 +46,9 @@ protected:
   void                    _parse ( std::ifstream &in );
   Result                  _read ( const std::string &, const Options * );
 
+  WriteResult             _writeAscii  ( const osg::Node& node, const std::string& filename );
+  WriteResult             _writeBinary ( const osg::Node& node, const std::string& filename );
+
   template < class Writer >
   struct GeodeWriter
   {
@@ -53,6 +56,15 @@ protected:
     void writeGeode( osg::Geode * );
   private:
     Writer _writer;
+  };
+
+  struct FacetCounter
+  {
+    FacetCounter() : _numFacets(0) { }
+    void countFacets( osg::Geode * );
+    unsigned int getNumFacets() { return _numFacets; }
+  private:
+    unsigned int _numFacets;
   };
 
   struct AsciiWriter

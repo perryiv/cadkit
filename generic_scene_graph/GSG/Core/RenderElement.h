@@ -24,7 +24,7 @@ namespace GSG {
 
 
 class Material;
-class Primitive;
+class PrimitiveSet;
 class Visitor;
 
 
@@ -52,32 +52,32 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Primitive element class.
+//  PrimitiveSet element class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class GSG_CORE_EXPORT PrimitiveElement : public RenderElement
+class GSG_CORE_EXPORT PrimitiveSetElement : public RenderElement
 {
 public:
 
-  GSG_DECLARE_CLONE ( PrimitiveElement );
-  GSG_DECLARE_LOCAL_TYPEDEFS ( PrimitiveElement, RenderElement );
+  GSG_DECLARE_CLONE ( PrimitiveSetElement );
+  GSG_DECLARE_LOCAL_TYPEDEFS ( PrimitiveSetElement, RenderElement );
 
-  PrimitiveElement ( Primitive * );
-  PrimitiveElement ( const PrimitiveElement & );
+  PrimitiveSetElement ( PrimitiveSet * );
+  PrimitiveSetElement ( const PrimitiveSetElement & );
 
-  const Primitive *primitive() const;
+  const PrimitiveSet *set() const { return _set; }
 
-  GSG_DECLARE_ACCEPT ( PrimitiveElement );
+  GSG_DECLARE_ACCEPT ( PrimitiveSetElement );
 
 protected:
 
-  explicit PrimitiveElement(); // Not implemented by design.
-  virtual ~PrimitiveElement();
+  explicit PrimitiveSetElement(); // Not implemented by design.
+  virtual ~PrimitiveSetElement();
 
 private:
 
-  Primitive *_primitive;
+  PrimitiveSet *_set;
 };
 
 
@@ -164,7 +164,7 @@ public:
   MaterialElement ( const MaterialElement & );
 
   Mode mode() const { return _mode; }
-  const Material *material() const;
+  const Material *material() const { return _material; }
 
   GSG_DECLARE_ACCEPT ( MaterialElement );
 

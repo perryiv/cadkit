@@ -15,7 +15,6 @@
 
 #include "GSG/Core/Precompiled.h"
 #include "GSG/Core/Vec4Pool.h"
-#include "GSG/Core/Container.h"
 
 using namespace GSG;
 
@@ -28,8 +27,8 @@ GSG_IMPLEMENT_CLONE ( Vec4Pool );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec4Pool::Vec4Pool() : Referenced(), 
-  _s()
+Vec4Pool::Vec4Pool() : VecPool(), 
+  _values()
 {
   // Empty.
 }
@@ -41,8 +40,8 @@ Vec4Pool::Vec4Pool() : Referenced(),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Vec4Pool::Vec4Pool ( const Vec4Pool &p ) : Referenced ( p ), 
-  _s ( p._s )
+Vec4Pool::Vec4Pool ( const Vec4Pool &p ) : VecPool ( p ), 
+  _values ( p._values )
 {
   // Empty.
 }
@@ -62,53 +61,25 @@ Vec4Pool::~Vec4Pool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Access to the elements.
+//  Access to the values.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Vec4Pool::value_type &Vec4Pool::operator [] ( Vec4Pool::size_type i ) const
+const Vec4Pool::value_type &Vec4Pool::value ( Vec4Pool::size_type i ) const
 {
-  Lock lock ( this );
-  BoundsChecker ( _s.size(), i );
-  return GSG::constReference ( _s, i );
+  BoundsChecker ( _values.size(), i );
+  return _values[i];
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Access to the elements.
+//  Access to the values.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Vec4Pool::value_type &Vec4Pool::operator [] ( Vec4Pool::size_type i )
+void Vec4Pool::value ( Vec4Pool::size_type i, const Vec4Pool::value_type &v )
 {
-  Lock lock ( this );
-  BoundsChecker ( _s.size(), i );
-  return GSG::reference ( _s, i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Resize the pool.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Vec4Pool::resize ( Vec4Pool::size_type s )
-{
-  Lock lock ( this );
-  _s.resize ( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Vec4Pool::size_type Vec4Pool::size() const
-{
-  Lock lock ( this );
-  return _s.size();
+  BoundsChecker ( _values.size(), i );
+  _values[i] = v;
 }

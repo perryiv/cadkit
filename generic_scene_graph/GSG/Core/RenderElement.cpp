@@ -19,17 +19,17 @@
 #include "GSG/Core/PushPop.h"
 #include "GSG/Core/Material.h"
 #include "GSG/Core/Transform.h"
-#include "GSG/Core/Primitive.h"
+#include "GSG/Core/PrimitiveSet.h"
 
 using namespace GSG;
 
-GSG_IMPLEMENT_ACCEPT_ELEMENT ( PrimitiveElement );
+GSG_IMPLEMENT_ACCEPT_ELEMENT ( PrimitiveSetElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( MatrixLoadElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( MatrixModeElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( MaterialElement );
 GSG_IMPLEMENT_ACCEPT_ELEMENT ( ColorElement );
 
-GSG_IMPLEMENT_CLONE ( PrimitiveElement );
+GSG_IMPLEMENT_CLONE ( PrimitiveSetElement );
 GSG_IMPLEMENT_CLONE ( MatrixLoadElement );
 GSG_IMPLEMENT_CLONE ( MatrixModeElement );
 GSG_IMPLEMENT_CLONE ( MaterialElement );
@@ -45,10 +45,10 @@ GSG_IMPLEMENT_CLONE ( ColorElement );
 RenderElement::RenderElement() : Referenced()
 {
 }
-PrimitiveElement::PrimitiveElement ( Primitive *p ) : RenderElement(), _primitive ( p )
+PrimitiveSetElement::PrimitiveSetElement ( PrimitiveSet *p ) : RenderElement(), _set ( p )
 {
-  ErrorChecker ( 0x0 != _primitive );
-  _primitive->ref();
+  ErrorChecker ( 0x0 != _set );
+  _set->ref();
 }
 MatrixLoadElement::MatrixLoadElement ( const Matrix &m ) : RenderElement(), _matrix ( m )
 {
@@ -75,11 +75,11 @@ ColorElement::ColorElement ( const Color &c ) : RenderElement(), _color ( c )
 RenderElement::RenderElement ( const RenderElement &e )
 {
 }
-PrimitiveElement::PrimitiveElement ( const PrimitiveElement &e ) : RenderElement ( e ), 
-  _primitive ( Primitive::safeClonePrimitive ( e._primitive ) )
+PrimitiveSetElement::PrimitiveSetElement ( const PrimitiveSetElement &e ) : RenderElement ( e ), 
+  _set ( PrimitiveSet::safeClonePrimitiveSet ( e._set ) )
 {
-  ErrorChecker ( 0x0 != _primitive );
-  _primitive->ref();
+  ErrorChecker ( 0x0 != _set );
+  _set->ref();
 }
 MatrixLoadElement::MatrixLoadElement ( const MatrixLoadElement &e ) : RenderElement ( e ), 
   _matrix ( e._matrix )
@@ -111,10 +111,10 @@ ColorElement::ColorElement ( const ColorElement &e ) : RenderElement ( e ),
 RenderElement::~RenderElement()
 {
 }
-PrimitiveElement::~PrimitiveElement()
+PrimitiveSetElement::~PrimitiveSetElement()
 {
-  if ( _primitive )
-    _primitive->unref();
+  if ( _set )
+    _set->unref();
 }
 MatrixLoadElement::~MatrixLoadElement()
 {
@@ -129,20 +129,4 @@ MaterialElement::~MaterialElement()
 }
 ColorElement::~ColorElement()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Access.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Primitive *PrimitiveElement::primitive() const
-{
-  return _primitive;
-}
-const Material *MaterialElement::material() const
-{
-  return _material;
 }

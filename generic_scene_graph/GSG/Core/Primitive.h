@@ -9,16 +9,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A vertex primitive.
+//  A single vertex primitive.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _GENERIC_SCENE_GRAPH_CORE_PRIMITIVE_H_
 #define _GENERIC_SCENE_GRAPH_CORE_PRIMITIVE_H_
 
-#include "GSG/Core/Vec2Pool.h"
-#include "GSG/Core/Vec3Pool.h"
-#include "GSG/Core/Vec4Pool.h"
+#include "GSG/Core/Referenced.h"
 
 
 namespace GSG {
@@ -30,83 +28,71 @@ public:
 
   GSG_DECLARE_CLONE ( Primitive );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Primitive, Referenced );
-  typedef Vec3Pool VertexPool;
-  typedef Vec3Pool NormalPool;
-  typedef Vec4Pool ColorPool;
-  typedef VertexPool::value_type vertex_type;
-  typedef NormalPool::value_type normal_type;
-  typedef ColorPool::value_type color_type;
   typedef Indices::size_type size_type;
-  typedef GSG_PERMUTATION_ITERATOR ( VertexPool, Indices ) VertexIterator;
-  typedef GSG_PERMUTATION_ITERATOR ( NormalPool, Indices ) NormalIterator;
-  typedef GSG_PERMUTATION_ITERATOR ( ColorPool,  Indices ) ColorIterator;
-  typedef GSG_CONST_PERMUTATION_ITERATOR ( VertexPool, Indices ) ConstVertexIterator;
-  typedef GSG_CONST_PERMUTATION_ITERATOR ( NormalPool, Indices ) ConstNormalIterator;
-  typedef GSG_CONST_PERMUTATION_ITERATOR ( ColorPool,  Indices ) ConstColorIterator;
 
+  // The type of primitive.
   enum Type
   {
-    UNKNOWN,
-    TRI_STRIP,
-    LINE_STRIP,
-    POINTS,
-    TRIANGLES,
+    TYPE_UNKNOWN,
+    TYPE_POINTS,
+    TYPE_LINES,
+    TYPE_LINE_STRIP,
+    TYPE_LINE_LOOP,
+    TYPE_TRIANGLES,
+    TYPE_TRIANGLE_STRIP,
+    TYPE_TRIANGLE_FAN,
+    TYPE_QUADS,
+    TYPE_QUAD_STRIP,
+    TYPE_POLYGON
+  };
+
+  // The kind of normal and color binding.
+  enum Binding
+  {
+    BINDING_UNKNOWN,
+    BINDING_PER_VERTEX,
+    BINDING_PER_PRIMITIVE
+  };
+
+  // How to interpret the indices.
+  enum Format
+  {
+    INDICES_UNKNOWN,
+    INDICES_RANDOM, // Each index is for a single vertex.
+    INDICES_SEQUENTIAL_OVERLAPPED, // start1, count1, start2, count2, ...
+    INDICES_SEQUENTIAL_ADJACENT,   // count1, count2, ...
   };
 
   explicit Primitive();
   Primitive ( const Primitive &prim );
 
-  // Set/get the type of primitive this is.
+  // Set/get the type of primitives.
   void                    type ( Type t );
-  Type                    type() const;
+  Type                    type() const { return _type; }
 
-  // Iterators to the vertices.
-  ConstVertexIterator     beginVertices() const;
-  VertexIterator          beginVertices();
-  ConstVertexIterator     endVertices() const;
-  VertexIterator          endVertices();
+  // Set/get the format of the indices.
+  Format                  format() const { return _format; }
+  void                    format ( Format f );
 
-  // Iterators to the normals.
-  ConstNormalIterator     beginNormals() const;
-  NormalIterator          beginNormals();
-  ConstNormalIterator     endNormals() const;
-  NormalIterator          endNormals();
+  // Access the vertices.
+  const Indices &         vertices() const { return _vi; }
+  Indices &               vertices()       { return _vi; }
 
-  // Iterators to the colors.
-  ConstColorIterator      beginColors() const;
-  ColorIterator           beginColors();
-  ConstColorIterator      endColors() const;
-  ColorIterator           endColors();
+  // Access the normals.
+  const Indices &         normals() const { return _ni; }
+  Indices &               normals()       { return _ni; }
 
-  // Access to the vectors.
-  const vertex_type &     vertex ( Index i ) const;
-  const normal_type &     normal ( Index i ) const;
-  const color_type &      color  ( Index i ) const;
+  // Set/get the colors.
+  const Indices &         colors() const { return _ci; }
+  Indices &               colors()       { return _ci; }
 
-  // Get the vector.
-  vertex_type &           vertex ( Index i );
-  normal_type &           normal ( Index i );
-  color_type &            color  ( Index i );
+  // Normal binding.
+  Binding                 normalBinding() const { return _nb; }
+  void                    normalBinding ( Binding nb );
 
-  // Get the number of vectors.
-  size_type               numVertices() const;
-  size_type               numNormals() const;
-  size_type               numColors() const;
-
-  // Set the indices.
-  void                    vertexIndices ( const Indices &vi );
-  void                    normalIndices ( const Indices &ni );
-  void                    colorIndices  ( const Indices &ci );
-
-  // Set the pools.
-  void                    vertexPool ( VertexPool *vp );
-  void                    normalPool ( NormalPool *np );
-  void                    colorPool  ( ColorPool *cp );
-
-  // Bounding sphere.
-  virtual void            calculateBoundingSphere();
-  const BoundingSphere &  boundingSphere() const;
-  void                    boundingSphere ( const BoundingSphere &b );
+  // Color binding.
+  Binding                 colorBinding()  const { return _cb; }
+  void                    colorBinding  ( Binding cb );
 
 protected:
 
@@ -114,14 +100,15 @@ protected:
 
 private:
 
+  Binding _nb;
+  Binding _cb;
   Indices _vi;
   Indices _ni;
   Indices _ci;
-  VertexPool::Ptr _vp;
-  NormalPool::Ptr _np;
-  ColorPool::Ptr _cp;
   Type _type;
-  BoundingSphere _bound;
+  Format _vf;
+  Format _nf;
+  Format _cf; HERE... do you need a different index-format for each array?
 };
 
 

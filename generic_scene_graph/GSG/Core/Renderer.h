@@ -28,7 +28,7 @@ public:
 
   GSG_DECLARE_CLONE ( Renderer );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Renderer, Visitor );
-  typedef GSG_SEQUENCE_CONTAINER_TYPE < Visitor::ValidPtr > Visitors;
+  typedef GSG_BIDIRECTIONAL_CONTAINER < Visitor::ValidPtr > Visitors;
   typedef Visitors::size_type size_type;
   typedef Visitors::iterator iterator;
   typedef Visitors::const_iterator const_iterator;

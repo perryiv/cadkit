@@ -363,12 +363,12 @@ template < class BoundingSphere_, class Pool_ > struct GetBoundOfPoints
 
   void operator () ( size_type i ) const
   {
-    _bound.grow ( (*_pool)[i] );
+    _bound.grow ( _pool->value ( i ) );
   }
 
   void operator () ( size_type i )
   {
-    _bound.grow ( (*_pool)[i] );
+    _bound.grow ( _pool->value ( i ) );
   }
 
   const BSphere &get() const

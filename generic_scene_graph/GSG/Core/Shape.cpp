@@ -32,10 +32,7 @@ GSG_IMPLEMENT_CLONE  ( Shape );
 /////////////////////////////////////////////////////////////////////////////
 
 Shape::Shape() : Node(), 
-  _primitives(),
-  _vb ( UNKNOWN ),
-  _nb ( UNKNOWN ),
-  _cb ( UNKNOWN ),
+  _sets(),
   _attributes ( 0x0 )
 {
   // Empty.
@@ -49,10 +46,7 @@ Shape::Shape() : Node(),
 /////////////////////////////////////////////////////////////////////////////
 
 Shape::Shape ( const Shape &s ) : Node ( s ), 
-  _primitives ( s._primitives ),
-  _vb ( s._vb ),
-  _nb ( s._nb ),
-  _cb ( s._cb ),
+  _sets ( s._sets ),
   _attributes ( s._attributes )
 {
   // Empty.
@@ -77,10 +71,10 @@ Shape::~Shape()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Shape::append ( Primitive *prim )
+void Shape::append ( PrimitiveSet *ps )
 {
   Lock lock ( this );
-  _primitives.insert ( _primitives.end(), Primitive::ValidPtr ( prim ) );
+  _sets.insert ( _sets.end(), PrimitiveSet::ValidPtr ( ps ) );
 }
 
 
@@ -90,10 +84,10 @@ void Shape::append ( Primitive *prim )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Shape::prepend ( Primitive *prim )
+void Shape::prepend ( PrimitiveSet *ps )
 {
   Lock lock ( this );
-  _primitives.insert ( _primitives.begin(), Primitive::ValidPtr ( prim ) );
+  _sets.insert ( _sets.begin(), PrimitiveSet::ValidPtr ( ps ) );
 }
 
 
@@ -103,88 +97,10 @@ void Shape::prepend ( Primitive *prim )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Shape::insert ( Primitives::iterator beforeMe, Primitive *prim )
+void Shape::insert ( Sets::iterator beforeMe, PrimitiveSet *ps )
 {
   Lock lock ( this );
-  _primitives.insert ( beforeMe, Primitive::ValidPtr ( prim ) );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void Shape::vertexBinding ( Binding vb )
-{
-  Lock lock ( this );
-  _vb = vb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void Shape::normalBinding ( Binding nb )
-{
-  Lock lock ( this );
-  _nb = nb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void Shape::colorBinding ( Binding cb )
-{
-  Lock lock ( this );
-  _cb = cb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Shape::Binding Shape::vertexBinding() const
-{
-  Lock lock ( this );
-  return _vb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Shape::Binding Shape::normalBinding() const
-{
-  Lock lock ( this );
-  return _nb;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get the binding.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-Shape::Binding Shape::colorBinding() const
-{
-  Lock lock ( this );
-  return _cb;
+  _sets.insert ( beforeMe, PrimitiveSet::ValidPtr ( ps ) );
 }
 
 
@@ -196,8 +112,7 @@ Shape::Binding Shape::colorBinding() const
 
 const Attributes *Shape::attributes() const
 {
-  Lock lock ( this );
-  return _attributes;
+  return _attributes.get();
 }
 
 
@@ -210,7 +125,7 @@ const Attributes *Shape::attributes() const
 Attributes *Shape::attributes()
 {
   Lock lock ( this );
-  return _attributes;
+  return _attributes.get();
 }
 
 
@@ -233,10 +148,10 @@ void Shape::attributes ( Attributes *a )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Shape::Primitives::const_iterator Shape::begin() const
+Shape::Sets::const_iterator Shape::begin() const
 {
   Lock lock ( this );
-  return _primitives.begin();
+  return _sets.begin();
 }
 
 
@@ -246,10 +161,10 @@ Shape::Primitives::const_iterator Shape::begin() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Shape::Primitives::iterator Shape::begin()
+Shape::Sets::iterator Shape::begin()
 {
   Lock lock ( this );
-  return _primitives.begin();
+  return _sets.begin();
 }
 
 
@@ -259,10 +174,10 @@ Shape::Primitives::iterator Shape::begin()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Shape::Primitives::const_iterator Shape::end() const
+Shape::Sets::const_iterator Shape::end() const
 {
   Lock lock ( this );
-  return _primitives.end();
+  return _sets.end();
 }
 
 
@@ -272,10 +187,10 @@ Shape::Primitives::const_iterator Shape::end() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Shape::Primitives::iterator Shape::end()
+Shape::Sets::iterator Shape::end()
 {
   Lock lock ( this );
-  return _primitives.end();
+  return _sets.end();
 }
 
 
@@ -304,8 +219,15 @@ void Shape::calculateBoundingSphere()
 {
   Lock lock ( this );
 
-  // Accumulate the bounding sphere for all of the primitives.
-  Detail::GetBoundOfObjects < BoundingSphere > gbs;
-  gbs = std::for_each ( _primitives.begin(), _primitives.end(), gbs );
-  this->boundingSphere ( gbs.get() );
+  // Loop through the primitive sets and grow the bounding sphere.
+  BoundingSphere bound;
+  for ( Sets::iterator i = _sets.begin(); i != _sets.end(); ++i )
+  {
+    PrimitiveSet::ValidPtr ps ( *i );
+    ps->calculateBoundingSphere();
+    bound.grow ( ps->boundingSphere() );
+  }
+
+  // Set this instance's sphere.
+  this->boundingSphere ( bound );
 }

@@ -24,7 +24,7 @@ namespace MenuKit
         return (*this);
       }
 
-      void push(const TypeName& data)
+      void push(const value_type& data)
       {
         _data.push_back(data);
       }
@@ -35,7 +35,7 @@ namespace MenuKit
           _data.pop_back();
       }
 
-      const TypeName& top() { return *(--_data.end()); }  // TODO: test
+      const value_type& top() { return *(--_data.end()); }  // TODO: test
 
       void data(const DataVec& d) { _data = d; }
       const DataVec& data() const { return _data; }

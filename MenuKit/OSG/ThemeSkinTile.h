@@ -37,13 +37,13 @@ namespace MenuKit
 
       ThemeSkinTile(): base_class(), _skin(0x0) {}
 
-      virtual float height(const Menu&);
-      virtual float height(const Button&);
-      virtual float height(const Item*);
+      virtual float height(const Menu&) const;
+      virtual float height(const Button&) const;
+      virtual float height(const Item*) const;
 
-      virtual float width(const Menu&);
-      virtual float width(const Button&);
-      virtual float width(const Item* itm);
+      virtual float width(const Menu&) const;
+      virtual float width(const Button&) const;
+      virtual float width(const Item* itm) const;
       // TODO: virtual float width(const Item&);
 
       virtual osg::Node* operator() (const Menu&);
@@ -86,7 +86,7 @@ osg::Node* ThemeSkinTile<T>::operator ()(const Menu& m)
 {
   // configure the skin
   _skin->theme( _proper_theme() );
-  _skin->box( this->box() );
+  _skin->graphic_width( this->box().width() );
 
   // produce the graphic
   return( _skin->operator ()(m) );
@@ -97,48 +97,45 @@ osg::Node* ThemeSkinTile<T>::operator ()(const Button& b)
 {
   // configure the skin
   _skin->theme( _proper_theme() );
-  _skin->box( this->box() );
+  _skin->graphic_width( this->box().width() );
 
   // produce the graphic
   return( _skin->operator ()(b) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Menu& m)
+float ThemeSkinTile<T>::height(const Menu& m) const
 {
   return( _skin->height(m) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Button& b)
+float ThemeSkinTile<T>::height(const Button& b) const
 {
   return( _skin->height(b) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Item* i)
+float ThemeSkinTile<T>::height(const Item* i) const
 {
   return( _skin->height(i) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Menu& m)
+float ThemeSkinTile<T>::width(const Menu& m) const
 {
-  _skin->box().height( this->box().height() );
   return( _skin->width(m) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Button& b)
+float ThemeSkinTile<T>::width(const Button& b) const
 {
-  _skin->box().height( this->box().height() );
   return( _skin->width(b) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Item* i)
+float ThemeSkinTile<T>::width(const Item* i) const
 {
-  _skin->box().height( this->box().height() );
   return( _skin->width(i) );
 }
 

@@ -56,6 +56,7 @@ namespace MenuKit
       */
     class VisualThemeSkin : public ThemeSkin<osg_color_map>
     {
+      ///\todo TODO: should i map depths to the keys of the color map?
     public:
       typedef ThemeSkin<osg_color_map> base_class;
       MENUKIT_DECLARE_POINTER ( VisualThemeSkin );
@@ -72,24 +73,23 @@ namespace MenuKit
         MARKED    = 0x00000040,
       };
 
-      VisualThemeSkin(): base_class(), _margin(0.2), _text(0.8), _border(0.02), _font(new osgText::Font()) {}
+      VisualThemeSkin(): base_class(), _margin(0.1), _border(0.05), _font(new osgText::Font()) {}
 
       virtual osg::Node* operator ()(const Menu& m);
       virtual osg::Node* operator ()(const Button& b);
       // TODO: virtual osg::Node* operator =(const Item& b);
 
-      virtual float height(const Menu& m);
-      virtual float height(const Button& b);
-      virtual float height(const Item* i);
+      virtual float height(const Menu& m) const;
+      virtual float height(const Button& b) const;
+      virtual float height(const Item* i) const;
 
-      virtual float width(const Menu& m);
-      virtual float width(const Button& b);
-      virtual float width(const Item* i);
-      // TODO: virtual float width(const Button& b);
+      virtual float width(const Menu& m) const;
+      virtual float width(const Button& b) const;
+      virtual float width(const Item* i) const;
 
-      void font(osgText::Font* f) { _font = f; }
+      void font(osgText::Font* f)       { _font = f; }
+      osgText::Font* font()             { return _font.get(); }
       const osgText::Font* font() const { return _font.get(); }
-      osgText::Font* font() { return _font.get(); }
 
       void border(float m) { _border=m; }
       float border() const { return _border; }
@@ -97,14 +97,12 @@ namespace MenuKit
       void margin(float m) { _margin=m; }
       float margin() const { return _margin; }
 
-      void text_ratio(float t) { _text=t; }
-      float text_ratio() const { return _text; }
-
     protected:
       virtual ~VisualThemeSkin() {}
 
-      float _word_width(const std::string& word);
-      float _item_width(const std::string& w,const Menu* m);
+      float _total_height() const;
+      float _word_width(const std::string& word) const;
+      float _item_width(const std::string& w,const Menu* m) const;
       osg::Node* _item_graphic(const std::string& txt, const Menu* parent, ItemBits b);
       osg::Node* _separator_graphic();
 
@@ -129,7 +127,6 @@ namespace MenuKit
 
       float _margin,  // distance between box's edge to an add-on
             _border;  ///\todo TODO: rename this // must be an extra width parameter, don't remember
-      float _text;    // percentage of box height
       osg::ref_ptr<osgText::Font> _font;
     };
 
@@ -186,7 +183,7 @@ osg::Node* VisualThemeSkin::operator ()(const Button& b)
 
 VisualThemeSkin::ItemBits VisualThemeSkin::_gather_bits(unsigned int itembits)
 {
-  // TODO: set up any bits necessary
+  // set up any bits necessary
   typedef MenuKit::Bits<unsigned int> cause;
   typedef MenuKit::Bits<ItemBits> effect;
   ItemBits bits = NONE;
@@ -210,7 +207,7 @@ VisualThemeSkin::ItemBits VisualThemeSkin::_gather_bits(unsigned int itembits)
 ///\todo TODO: this needs a lot of clean up
 osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* parent, ItemBits itembits)
 {
-  Detail::Box thebox = this->box();
+  Detail::Box thebox(this->_total_height(),this->graphic_width());
 
   Menu::Layout pl;
   if( parent )
@@ -245,7 +242,7 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
   // make the text graphic functor
   Word word;
-  word.height( _text*(thebox.height()-2.0*_border) );
+  word.height( this->letter_height() );
   word.text( txt );
   word.font( font() );
   if( textiter != scheme.end() )
@@ -342,12 +339,12 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
   if( checker::has(itembits, RADIO) )
   {
-    Disk markdisc(_text*word.height(),0.0);
+    Disk markdisc(this->letter_height(),0.0);
     if( textiter != scheme.end() )
       markdisc.color( textiter->second );
     osg::ref_ptr<osg::Drawable> mddraw = markdisc();
 
-    Disk markopen(_text*markdisc.height(),0.001);
+    Disk markopen(0.75*markdisc.height(),0.001);
     if( middleiter != scheme.end() )
       markopen.color( middleiter->second );
     osg::ref_ptr<osg::Drawable> modraw = markopen();
@@ -359,7 +356,7 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
     if( checker::has(itembits, CHECKED) )
     {
-      Disk markclosed(_text*markopen.height(),0.002);
+      Disk markclosed(0.75*markopen.height(),0.002);
       if( textiter != scheme.end() )
         markclosed.color( textiter->second );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
@@ -423,8 +420,8 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 ///\todo TODO: support vertical separators for horizontal menus, low priority
 osg::Node* VisualThemeSkin::_separator_graphic()
 {
-  FlatBox bgbox(this->separator().height(),
-                this->box().width(),         ///\todo TODO: possible problem area?
+  FlatBox bgbox(this->separator_height(),
+                this->graphic_width(),
                 -0.002);
 
   const base_class::theme_type& scheme = this->theme();
@@ -442,8 +439,8 @@ osg::Node* VisualThemeSkin::_separator_graphic()
   bggeo->addDrawable( bgdraw.get() );
 
   // make the left box
-  FlatBox leftbox(this->separator().height(),
-                  this->box().height()+_border,
+  FlatBox leftbox(this->separator_height(),
+                  this->_total_height()+_border,
                   -0.001);
   if( middleiter != scheme.end() )
     leftbox.color( middleiter->second );
@@ -463,8 +460,8 @@ osg::Node* VisualThemeSkin::_separator_graphic()
                                                           0.0) ) );
 
   // make the colored stripe geometry
-  FlatBox stripe(_text*(this->separator().height()),
-                 this->box().width()-this->box().height()-2.0*_border-_margin,
+  FlatBox stripe(0.5*(this->separator_height()),
+                 this->graphic_width()-leftbox.width()-_margin-_border,
                  -0.001);
   if( textiter != scheme.end() )
     stripe.color( textiter->second );
@@ -481,8 +478,7 @@ osg::Node* VisualThemeSkin::_separator_graphic()
   xs->addChild( stripegeo.get() );
 
   // use the equation for a stripe, offset for the left box
-  xs->setMatrix( osg::Matrix::translate( osg::Vec3(0.5*leftbox.width()+_border+0.5*_margin,
-                                                   0.0,0.0) ) );
+  xs->setMatrix( osg::Matrix::translate( osg::Vec3(0.5*bgbox.width()-0.5*stripe.width(),0.0,0.0) ) );
 
   // add the parts
   osg::MatrixTransform* group = new osg::MatrixTransform();
@@ -498,46 +494,53 @@ osg::Node* VisualThemeSkin::_separator_graphic()
   return group;
 }
 
-float VisualThemeSkin::height(const Menu& m)
+float VisualThemeSkin::height(const Menu& m) const
 {
   if( m.separator() )
-    return( this->separator().height() );
+    return this->separator_height();
   else
-    return( box().height() ); // TODO: is this the best thing to do?
+    return this->_total_height();
 }
 
-float VisualThemeSkin::height(const Button& b)
+float VisualThemeSkin::height(const Button& b) const
 {
   if( b.separator() )
-    return( this->separator().height() );
+    return this->separator_height();
   else
-    return( box().height() ); // TODO: is this the best thing to do?
+    return this->_total_height();
 }
 
-float VisualThemeSkin::height(const Item* i)
+float VisualThemeSkin::height(const Item* i) const
 {
   if( i->separator() )
-    return( this->separator().height() );
+    return this->separator_height();
   else
-    return( box().height() ); // TODO: is this the best thing to do?
+    return this->_total_height();
 }
 
-float VisualThemeSkin::width(const Menu& m)
+/// wraps the equation for the graphic's total height
+float VisualThemeSkin::_total_height() const
+{
+  return( (this->letter_height()) + 2.0*(_border+_margin) );
+}
+
+float VisualThemeSkin::width(const Menu& m) const
 {
   return( _item_width( m.text() , m.parent() ) );
 }
 
-float VisualThemeSkin::width(const Button& b)
+float VisualThemeSkin::width(const Button& b) const
 {
   return( _item_width(b.text(), b.parent()) );
 }
 
-float VisualThemeSkin::width(const Item* i)
+float VisualThemeSkin::width(const Item* i) const
 {
   return( _item_width(i->text(), i->parent()) );
 }
 
-float VisualThemeSkin::_item_width(const std::string& s,const Menu* parent)
+// wraps the equation for the graphic's total width
+float VisualThemeSkin::_item_width(const std::string& s,const Menu* parent) const
 {
   // check for text content
   if( s.empty() )
@@ -558,21 +561,21 @@ float VisualThemeSkin::_item_width(const std::string& s,const Menu* parent)
   if( parent->layout() == Menu::HORIZONTAL )
     return( wordwidth + 2.0*(_margin+_border) );
 
-  /// TODO: When calculating this equation, include more spacing between pieces with _margin for better appearance, and use this new distance for positioning in graphic creation.
+  ///\todo TODO: When calculating this equation, include more spacing between pieces with _margin for better appearance, and use this new distance for positioning in graphic creation.
   // equation for the width of a vertical graphic:
   // 2 side boxes: 2 x _box's width (which is the height of the box - 2 x margin)
   // 1 text box:   1 x  graphic text width
   // 2 margins:    2 x _margin
   else
-    return( 2.0*(this->box().height()+_border+_margin) + wordwidth );
+    return( 2.0*(this->_total_height()+_border+_margin) + wordwidth );
 }
 
-float VisualThemeSkin::_word_width(const std::string& s)
+float VisualThemeSkin::_word_width(const std::string& s) const
 {
   Word word;
-  word.height( _text*(this->box().height()) );
+  word.height( this->letter_height() );
   word.text( s );
-  word.font( font() );
+  word.font( const_cast<osgText::Font*>(_font.get()) );
   word.draw_mode( osgText::Text::BOUNDINGBOX );
 
   // use the functor to make the graphics

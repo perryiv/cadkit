@@ -183,9 +183,6 @@
 				Name="Misc"
 				Filter="">
 				<File
-					RelativePath=".\Accumulate.h">
-				</File>
-				<File
 					RelativePath=".\Algorithms.h">
 				</File>
 				<File

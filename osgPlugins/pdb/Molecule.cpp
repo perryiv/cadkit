@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Molecule.h"
+#include "Cylinder.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Geometry"
@@ -118,61 +119,22 @@ osg::LOD *Molecule::_makeBond (const Bond &bond ) const
 {
   osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
 
-  //get data for bond
-  const osg::Vec3 center (bond.getX(), bond.getY(), bond.getZ());
-  const float height = bond.getH();
-  const float radius = bond.getR();
-  //std::cout << height << std::endl;
-  /*
-  //draw a cylinder
-  osg::ref_ptr<osg::Shape> cylinder ( new osg::Cylinder (center, radius, height));
-  osg::ref_ptr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable(cylinder.get()));
+  Cylinder c(bond.getPoint1(), bond.getPoint2());
 
-  
-  // Not so many triangles.
-  osg::ref_ptr<osg::TessellationHints> hints ( new osg::TessellationHints() );
-  hints->setDetailRatio ( 0.25f ); // TODO, remove hard-coded value.
-  drawable->setTessellationHints ( hints.get() );
-  */  
-  // Add the cylinder to a geode.
-  osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-  //geode->addDrawable ( drawable.get() );
-  
-  
-  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-  osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
+  //add several cylinders
+  for(unsigned int i = 0; i < _numLodChildren; ++i)
+  {
+    float detail = 10.0 + (10 * i);
+    osg::ref_ptr< osg::Geode > geode (new osg::Geode);
+    geode->addDrawable( (c.getGeometry( _materialChooser->getMaterial( "Bond" ).get(), detail) ));
+    lod->addChild(geode.release());
+  }
 
-  p->resize ( 2 );
-  (*p)[0] = bond.getPoint1();
-  (*p)[1] = bond.getPoint2();
-
-  geom->setVertexArray ( p.get() );
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
-
-  osg::ref_ptr<osg::Vec4Array> c ( new osg::Vec4Array );
-  c->resize ( 1 );
-  (*c)[0] = osg::Vec4(1.0, 1.0, 1.0, 1.0);
-
-  geom->setColorArray ( c.get() );
-  geom->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE_SET );
-
-  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
-  lw->setWidth ( 5 );
-
-  osg::ref_ptr<osg::StateSet> state = geom->getOrCreateStateSet();
-  state->setAttribute ( lw.get() );
-  state->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
-
-  geode->addDrawable ( geom.get() );
-
-  // Name the geode with the line from the file.
-  geode->setName ( bond.toString() );
-
-  // Add the geode to the lod.
-  lod->addChild ( geode.get() );
+  lod->setName( bond.toString());
 
   // Set the range.
-  lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
+  //lod->setRange ( 0, 0, std::numeric_limits<float>::max() ); // TODO, use bounding-box to set ranges.
+  this->_setCentersAndRanges ( lod.get() );
 
   return lod.release();
 }

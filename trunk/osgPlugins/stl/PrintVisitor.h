@@ -38,7 +38,8 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write out a geode's geometry to the file
-//  TODO, convert other primitives to triangles.
+//  TODO, convert polygon to triangles.
+//  TODO, handle different normal bindings
 //
 ///////////////////////////////////////////////////////////////////////////////
 template < class Writer >
@@ -55,9 +56,7 @@ void PrintVisitor<Writer>::apply(osg::Geode& geode)
     const osg::Geometry *geometry = drawable->asGeometry();
     if(geometry)
     {
-      const osg::Array *constarray = geometry->getVertexArray();
-      osg::Array *array = const_cast < osg::Array*> ( constarray );
-      osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array*> (array);
+      const osg::Vec3Array *vertices = dynamic_cast< const osg::Vec3Array*> ( geometry->getVertexArray() );
       const osg::Vec3Array *normals = geometry->getNormalArray();
 
       unsigned int numPrimitiveSets ( geometry->getNumPrimitiveSets() );
@@ -74,6 +73,29 @@ void PrintVisitor<Writer>::apply(osg::Geode& geode)
 
           switch ( mode )
           {
+          case osg::PrimitiveSet::POLYGON:
+            //TODO
+            break;
+          case osg::PrimitiveSet::QUAD_STRIP:
+            for(unsigned int k = first; k < count - 3; k ++)
+            {
+              _writer(normals->at(k), vertices->at(k), vertices->at(k+1), vertices->at(k+2));
+              _writer(normals->at(k), vertices->at(k+1), vertices->at(k+2), vertices->at(k+3));
+            }
+            break;
+          case osg::PrimitiveSet::QUADS:
+            for(unsigned int k = first; k < count / 4; k ++)
+            {
+              _writer(normals->at(k), vertices->at(k*4), vertices->at(k*4+1), vertices->at(k*4+2));
+              _writer(normals->at(k), vertices->at(k*4+1), vertices->at(k*4+2), vertices->at(k*4+3));
+            }
+            break;
+          case osg::PrimitiveSet::TRIANGLE_FAN:
+            for(unsigned int k = first + 1; k < count - 1; k ++)
+            {
+              _writer(normals->at(k), vertices->at( first ), vertices->at(k), vertices->at(k+1));
+            }
+            break;
           case osg::PrimitiveSet::TRIANGLE_STRIP:
             for(unsigned int k = first; k < count - 2; k ++)
             {
@@ -86,13 +108,12 @@ void PrintVisitor<Writer>::apply(osg::Geode& geode)
               _writer(normals->at(k), vertices->at(k*3), vertices->at(k*3+1), vertices->at(k*3+2));
             }
             break;
-          };
+          }
         }
       }
     }
   }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //

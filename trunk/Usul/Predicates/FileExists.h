@@ -18,6 +18,7 @@
 #define _USUL_PREDICATES_FILE_EXISTS_H_
 
 #include <string>
+#include <functional>
 
 
 namespace Usul {

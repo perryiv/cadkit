@@ -61,7 +61,6 @@ protected:
   void                    _skipWord ( std::istream &in ) const;
 
   WriteResult             _write ( const osg::Node &node, const std::string &filename, const Options *options );
-  WriteResult             _write ( const std::string &temp, const osg::Node &node, const Options *options );
 
 private:
 

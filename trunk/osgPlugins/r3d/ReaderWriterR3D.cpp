@@ -26,6 +26,7 @@
 #include "Usul/IO/Reader.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Temp.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -293,7 +294,7 @@ void ReaderWriterR3D::_skipLine ( std::istream &in ) const
 //
 //  Note: even though the VTK file holds tri-strip information, there are so 
 //  many of them that, at least with OSG, it will probably be faster to draw 
-//  individual triangles, which will use glDrawArrays() is used internally. 
+//  individual triangles, which will use glDrawArrays() internally. 
 //  Don't think OSG supports packing the tri-strips end-to-end in a single 
 //  osg::Geometry and passing this to OpenGL in an efficient way.
 //
@@ -446,35 +447,10 @@ ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const osg::Node &node, co
     return WriteResult::FILE_NOT_HANDLED;
 
   // Make a temporary file name.
-  static unsigned long count ( 0 );
-  std::ostringstream file;
-  file << Usul::File::directory ( name, true )
-       << "temporary_file_" << count++ << '.'
-       << Usul::File::extension ( name );
+  Usul::File::Temp file ( Usul::File::Temp::BINARY );
 
-  // Call the other one.
-  WriteResult result ( this->_write ( file.str(), node, options ) );
-
-  // Remove the temporary file.
-  ::remove ( file.str().c_str() );
-
-  // Return the result.
-  return result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the R3D file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const std::string &file, const osg::Node &node, const Options *options )
-{
-  // Open file for writing.
-  std::ofstream out ( file.c_str(), std::ofstream::out | std::ofstream::binary );
-  if ( !out.is_open() )
-    return WriteResult::ERROR_IN_WRITING_FILE;
+  // Build collection of unique vertices and triangles.
+  //Usul::Algorithms::Polygons::
 
   // Make a copy of the scene.
   osg::ref_ptr<osg::Node> copy ( dynamic_cast < osg::Node * > ( node.clone ( osg::CopyOp::DEEP_COPY_ALL ) ) );
@@ -491,8 +467,19 @@ ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const std::string &file, 
   optimizer.optimize ( copy.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS | osgUtil::Optimizer::TRISTRIP_GEOMETRY );
 
   // Write the header.
+  file.stream() << "# vtk DataFile Version 3.0\n";
+  file.stream() << "vtk output\n";
+  file.stream() << "BINARY\n";
+  file.stream() << "DATASET POLYDATA\n";
+
 #if 0
-  // Traverse the scene and write the file.
+
+  // Our collection of vertices and indices.
+  typedef std::vector<osg::Vec3f> Vertices;
+  typedef std::vector<unsigned int> Indices;
+
+  // Traverse the scene and collect the vertices and indices.
+  typedef 
   typedef OsgTools::ForEach < WriteR3D, osg::Drawable > Operation;
   typedef OsgTools::Visitor < osg::Geode, Operation > Visitor;
 
@@ -500,8 +487,13 @@ ReaderWriterR3D::WriteResult ReaderWriterR3D::_write ( const std::string &file, 
   WriteR3D write ( out );
   Operation op ( write );
   Visitor::Ptr visitor ( new Visitor ( op ) );
+
 #endif
-  // TODO
+
+  // If we get this far then rename the temporary file.
+  file.rename ( name );
+
+  // Success.
   return WriteResult::FILE_SAVED;
 }
 

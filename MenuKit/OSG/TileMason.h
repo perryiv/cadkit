@@ -73,13 +73,12 @@ namespace MenuKit
     protected:
       virtual ~Mason() {}
 
-      void _do_push(Menu::Layout pl,const Detail::Box& b);
-      void _do_push(Menu::Layout ml, Menu::Layout pl,const Detail::Box& b);
-      void _do_pops(Menu::Layout ml,unsigned int number);
-      void _do_pop(Menu::Layout ml, Menu::Layout pl);
       void _make_graphic(const Menu& m, float dx, float dy);
       void _make_graphic(const Button& b, float dx, float dy);
       float _determine_greatest(const Menu::Items& items, Menu::Layout direction);
+
+      enum Direction { HORIZONTAL, VERTICAL };
+      Direction _determine_pushpop_direction(Menu::Layout menus,Menu::Layout parents);
 
       template<typename ItemType>
       inline void _configure_tile_color(tile_type* t,const ItemType& m)
@@ -161,20 +160,46 @@ namespace MenuKit
       // internal member _tile may be modified
       if( m.expanded() )
       {
-        _do_push( ml, pl, mbox );
+        Direction pushpop = _determine_pushpop_direction(ml,pl);
+
+        // do initial push so that children start in the correct place
+        if( VERTICAL == pushpop )
+          _vert.push(mbox.height());
+        else
+          _hori.push(mbox.width());
+
         traverse( m );
-        _do_pops( ml, m.items().size() );
-        _do_pop( ml, pl );
+
+        // pop for all children
+        if( ml == VERTICAL )
+        {
+          for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
+            _vert.pop();
+        }
+
+        else
+        {
+          for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
+            _vert.pop();
+        }
+
+        // pop off the initial move before traversing childen
+        if( pushpop == VERTICAL )
+          _vert.pop();
+        else
+          _hori.pop();
       }
 
       // push for this graphic so the next menu item will accumulate correctly
-      _do_push( pl , mbox );
+      if( pl == Menu::VERTICAL )
+        _vert.push( mbox.height() );
+      else
+        _hori.push( mbox.width() );
     }
 
     template<typename T>
     void Mason<T>::apply(Button& b)
     {
-      // push for this graphic so the next menu item will accumulate correctly
       Menu* parent = b.parent();
       Menu::Layout pl;
       if( parent )
@@ -195,59 +220,26 @@ namespace MenuKit
         std::accumulate(_hori.data().begin(),_hori.data().end(),0.0),
        -std::accumulate(_vert.data().begin(),_vert.data().end(),0.0) );
 
-      _do_push( pl, _tile->box() );
-    }
-
-    template<typename T>
-    void Mason<T>::_do_pops(Menu::Layout ml,unsigned int number)
-    {
-      if( ml == Menu::HORIZONTAL )
-        for(unsigned int i=0; i<number; ++i)
-          _hori.pop();
-
-      else
-        for(unsigned int i=0; i<number; ++i)
-          _vert.pop();
-    }
-
-    template<typename T>
-    void Mason<T>::_do_push(Menu::Layout pl, const Detail::Box& box)
-    {
+      // push for this graphic so the next menu item will accumulate correctly
       if( pl == Menu::VERTICAL )
-        _vert.push( box.height() );
+        _vert.push( _tile->box().height() );
       else
-        _hori.push( box.width() );
+        _hori.push( _tile->box().width() );
     }
 
     template<typename T>
-    void Mason<T>::_do_push(Menu::Layout ml, Menu::Layout pl, const Detail::Box& box)
+    typename Mason<T>::Direction Mason<T>::_determine_pushpop_direction(Menu::Layout ml, Menu::Layout pl)
     {
       if( pl == Menu::HORIZONTAL )
       {
         if( ml == Menu::VERTICAL )
-          _vert.push( box.height() );
+          return VERTICAL;
         else
-          _vert.push( box.height() ); // a quick fix
-          //_hori.push( box.width() );// this will look terrible
+          return HORIZONTAL;
       }
 
       else  // parent's layout is vertical
-        _hori.push( box.width() );
-    }
-
-    template<typename T>
-    void Mason<T>::_do_pop(Menu::Layout ml, Menu::Layout pl)
-    {
-      if( pl == Menu::HORIZONTAL )
-      {
-        if( ml == Menu::VERTICAL )
-          _vert.pop();
-        else
-          _hori.pop();
-      }
-
-      else
-        _hori.pop();
+          return HORIZONTAL;
     }
 
     template<typename T>

@@ -136,6 +136,9 @@
 			Name="Source"
 			Filter="">
 			<File
+				RelativePath=".\BuildTree.h">
+			</File>
+			<File
 				RelativePath=".\Convert.h">
 			</File>
 			<File
@@ -148,7 +151,16 @@
 				RelativePath=".\File.h">
 			</File>
 			<File
+				RelativePath=".\Filter.h">
+			</File>
+			<File
+				RelativePath=".\Missing.h">
+			</File>
+			<File
 				RelativePath=".\Node.h">
+			</File>
+			<File
+				RelativePath=".\Pointer.h">
 			</File>
 			<File
 				RelativePath=".\Policy.h">
@@ -161,9 +173,6 @@
 			</File>
 			<File
 				RelativePath=".\Reader.h">
-			</File>
-			<File
-				RelativePath=".\Tree.h">
 			</File>
 			<File
 				RelativePath=".\Trim.h">

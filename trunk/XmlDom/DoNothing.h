@@ -33,6 +33,9 @@ template < class StringType > struct DoNothing
   void end ( const String &name )
   {
   }
+  void clear()
+  {
+  }
 };
 
 

@@ -31,7 +31,7 @@ namespace XML {
 
 template < class To > struct Convert
 {
-  template < class From > bool operator () ( const From &from )
+  template < class From > To operator () ( const From &from )
   {
     typedef typename From::value_type CharType;
     std::basic_istringstream<CharType> in ( from );

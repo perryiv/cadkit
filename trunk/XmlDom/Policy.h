@@ -18,7 +18,8 @@
 
 #include "XmlDom/Trim.h"
 #include "XmlDom/Error.h"
-#include "XmlDom/DoNothing.h"
+#include "XmlDom/Missing.h"
+#include "XmlDom/Filter.h"
 
 #include <string>
 
@@ -29,19 +30,21 @@ namespace Config {
 
 template
 <
-  class NodeCallback_ = XML::Callback::DoNothing < std::string >,
-  class TrimPolicy_   = XML::Config::Trim,
-  class StringType_   = std::string,
-  class ErrorPolicy_  = XML::Config::Pair < XML::Config::Assert, XML::Config::Thrower < std::runtime_error > >
+  class TrimPolicy_    = XML::Config::Trim,
+  class StringType_    = std::string,
+  class MissingPolicy_ = XML::Config::CreateMissing,
+  class FilterPolicy_  = XML::Filter::Use2,
+  class ErrorPolicy_   = XML::Config::Pair < XML::Config::Assert, XML::Config::Thrower < std::runtime_error > >
 >
 class Policy
 {
 public:
 
-  typedef NodeCallback_ NodeCallback;
-  typedef TrimPolicy_   TrimPolicy;
-  typedef StringType_   String;
-  typedef ErrorPolicy_  ErrorPolicy;
+  typedef TrimPolicy_     TrimPolicy;
+  typedef StringType_     String;
+  typedef MissingPolicy_  MissingPolicy;
+  typedef FilterPolicy_   FilterPolicy;
+  typedef ErrorPolicy_    ErrorPolicy;
 };
 
 

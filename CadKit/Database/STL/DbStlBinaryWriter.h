@@ -18,6 +18,8 @@
 
 #include "Standard/SlEndian.h"
 
+#include <iostream>
+
 
 namespace CadKit
 {

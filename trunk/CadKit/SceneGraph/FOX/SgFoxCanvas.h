@@ -22,8 +22,8 @@
 # define NOMINMAX // Fox includes <windows.h>
 #endif
 
-#include "fox/fx.h"
-#include "fox/fx3d.h"
+#include <fx.h>
+#include <fx3d.h>
 
 
 namespace CadKit

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: MenuKitOSG"
+	Name="lib: MenuKit OSG"
 	ProjectGUID="{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}"
 	Keyword="Win32Proj">
 	<Platforms>

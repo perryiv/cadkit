@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="DatabaseOpenSg"
+	Name="lib: Database OpenSg"
+	ProjectGUID="{86629361-524B-4AC0-9B69-BD57CC7CBE6E}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

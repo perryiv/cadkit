@@ -33,6 +33,7 @@
 #include "Interfaces/IMessagePriority.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <time.h>
 #endif
 
 #define PRINT if ( _out ) (*_out)
@@ -296,6 +297,10 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
   if ( ct.isValid() )
     ct->setController ( this->queryInterface ( CadKit::IUnknown::IID ) );
 
+  // Print the current time.
+  time_t now = ::time ( NULL );
+  PRINT_LEVEL ( 1 ) << "Start time: " << ::asctime ( localtime ( &now ) ) << std::flush;
+
   // Load the data.
   if ( false == ds->loadData ( filename ) )
   {
@@ -319,6 +324,10 @@ bool CtTranslation::translate ( const std::string &filename, CadKit::IUnknown *s
       return false;
     }
   }
+
+  // Print the current time.
+  now = ::time ( NULL );
+  PRINT_LEVEL ( 1 ) << "End time: " << ::asctime ( localtime ( &now ) ) << std::flush;
 
   // It worked.
   return true;

@@ -17,7 +17,7 @@
 #ifndef _CADKIT_DATABASE_BASE_LIBRARY_SHAPE_DATA_CLASS_H_
 #define _CADKIT_DATABASE_BASE_LIBRARY_SHAPE_DATA_CLASS_H_
 
-#include "Interfaces/VertexBindings.h"
+#include "Interfaces/Enum.h"
 
 #include "Standard/SlPartitionedVector.h"
 #include "Standard/SlAssert.h"

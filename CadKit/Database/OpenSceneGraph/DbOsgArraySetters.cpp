@@ -136,15 +136,15 @@ osg::Primitive::Mode DbOsgVertexSetter::_getPrimitiveMode() const
 {
   switch ( _type )
   {
-  case IQueryShapeVerticesVec3f::LINE_STRIP_SET:
+  case CadKit::LINE_STRIP_SET:
     return osg::Primitive::LINE_STRIP;
-  case IQueryShapeVerticesVec3f::POINT_SET:
+  case CadKit::POINT_SET:
     return osg::Primitive::POINTS;
-  case IQueryShapeVerticesVec3f::POLYGON_SET:
+  case CadKit::POLYGON_SET:
     return osg::Primitive::POLYGON;
-  case IQueryShapeVerticesVec3f::TRI_STRIP_SET:
+  case CadKit::TRI_STRIP_SET:
     return osg::Primitive::TRIANGLE_STRIP;
-  case IQueryShapeVerticesVec3f::TRI_FAN_SET:
+  case CadKit::TRI_FAN_SET:
     return osg::Primitive::TRIANGLE_FAN;
   default:
     SL_ASSERT ( 0 );                      // What type is this?

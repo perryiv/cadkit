@@ -307,6 +307,10 @@ SOURCE=.\SlTrace.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\SlObjectPtr.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlQueryPtr.h
 # End Source File
 # Begin Source File

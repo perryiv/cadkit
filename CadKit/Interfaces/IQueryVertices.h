@@ -28,17 +28,6 @@ class IQueryVertices : public IQueryArray<id,ArrayType>
 {
 public:
 
-  // Possible types of vertex sets.
-  enum Type
-  {
-    LINE_STRIP_SET,
-    POINT_SET,
-    POLYGON_SET,
-    TRI_STRIP_SET,
-    TRI_FAN_SET,
-    UNKNOWN
-  };
-
   // Inherit from this and define the virtual functions.
   class VertexSetter : public IQueryArray<id,ArrayType>::ArraySetter
   {
@@ -48,7 +37,7 @@ public:
   };
 
   // Get the set type.
-  virtual bool            getVertexSetType ( EntityHandle entity, Type &type ) const = 0;
+  virtual bool            getVertexSetType ( EntityHandle entity, VertexSetType &type ) const = 0;
 
   // Get the vertices.
   virtual bool            getVertices ( EntityHandle entity, VertexSetter &setter ) const = 0;

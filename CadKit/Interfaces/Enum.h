@@ -31,6 +31,29 @@ enum MessageType
 };
 
 
+// Possible types of vertex sets.
+enum VertexSetType
+{
+  LINE_STRIP_SET,
+  POINT_SET,
+  POLYGON_SET,
+  TRI_STRIP_SET,
+  TRI_FAN_SET,
+  UNKNOWN
+};
+
+
+// Possible vertex bindings.
+enum VertexBinding
+{
+  BINDING_PER_VERTEX,     // One attribute for every vertex.
+  BINDING_PER_PRIMITIVE,  // One attribute for every primitive.
+  BINDING_OVERALL,        // One attribute for all the vertices.
+  BINDING_OFF,            // No attribute.
+  BINDING_UNDETERMINED    // Either unset or failed to determine.
+};
+
+
 }; // namespace CadKit
 
 

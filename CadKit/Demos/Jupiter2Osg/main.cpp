@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A Jupiter to OSG translator.
+//  A Jupiter to OpenSceneGraph translator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -31,6 +31,9 @@ using namespace CadKit;
 
 int main ( int argc, char **argv )
 {
+  // Translate.
   bool result = CadKit::translate ( new CtTranslation, new DbJtDatabase, new DbOsgDatabase, argc, argv, true );
+
+  // Return the result.
   return ( result ) ? 1 : 0;
 }

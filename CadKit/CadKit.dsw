@@ -69,6 +69,24 @@ Package=<4>
 
 ###############################################################################
 
+Project: "DatabasePf"=.\Database\Performer\DatabasePf.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "DatabaseSg"=.\Database\SceneGraph\DatabaseSg.dsp - Package Owner=<4>
 
 Package=<5>
@@ -130,6 +148,15 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name TranslateJt2Pf
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabasePf
     End Project Dependency
 }}}
 

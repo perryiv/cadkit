@@ -407,18 +407,5 @@ SOURCE=.\IUnknown.h
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\VertexBindings.h
-
-!IF  "$(CFG)" == "Interfaces - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Interfaces - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
 # End Target
 # End Project

@@ -18,7 +18,7 @@
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <math.h>
-#endif // _CADKIT_USE_PRECOMPILED_HEADERS
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

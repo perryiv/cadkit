@@ -16,7 +16,7 @@
 #ifndef _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_HELPER_FUNCTIONS_H_
 #define _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_HELPER_FUNCTIONS_H_
 
-#include "Interfaces/VertexBindings.h"
+#include "Interfaces/Enum.h"
 
 #include "Standard/SlMaterial.h"
 

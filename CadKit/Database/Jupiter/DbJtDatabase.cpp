@@ -1896,7 +1896,7 @@ bool DbJtDatabase::getTextureCoords ( ShapeHandle shape, IQueryShapeTexCoordsVec
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, IQueryShapeVerticesVec3f::Type &type ) const
+bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, VertexSetType &type ) const
 {
   SL_PRINT3 ( "In DbJtDatabase::getVertexSetType(), this = %X, shape = %X\n", this, sh );
 
@@ -1913,32 +1913,32 @@ bool DbJtDatabase::getVertexSetType ( ShapeHandle sh, IQueryShapeVerticesVec3f::
   {
   case eaiEntity::eaiLINESTRIPSET:
 
-    type = IQueryShapeVerticesVec3f::LINE_STRIP_SET;
+    type = CadKit::LINE_STRIP_SET;
     break;
 
   case eaiEntity::eaiPOINTSET:
 
-    type = IQueryShapeVerticesVec3f::POINT_SET;
+    type = CadKit::POINT_SET;
     break;
 
   case eaiEntity::eaiPOLYGONSET:
 
-    type = IQueryShapeVerticesVec3f::POLYGON_SET;
+    type = CadKit::POLYGON_SET;
     break;
 
 //  case eaiEntity::eaiTRIFANSET:
 //
-//    type = IQueryShapeVerticesVec3f::TRI_FAN_SET;
+//    type = CadKit::TRI_FAN_SET;
 //    break;
 
   case eaiEntity::eaiTRISTRIPSET:
 
-    type = IQueryShapeVerticesVec3f::TRI_STRIP_SET;
+    type = CadKit::TRI_STRIP_SET;
     break;
 
   default:
 
-    type = IQueryShapeVerticesVec3f::UNKNOWN;
+    type = CadKit::UNKNOWN;
     SL_ASSERT ( 0 ); // Heads up.
     return false;
   }

@@ -70,6 +70,23 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   virtual void hideProgressBar () = 0;
 }; // struct IProgressBar
 
+//TODO where is a good place for this?
+namespace Helper {
+//Helper function to get an update functor depending on if the caller implements IProgressBar
+inline IProgressBar::NoUpdate* getUpdateFunctor ( Usul::Interfaces::IUnknown* caller )
+{
+  //The progress bar
+  IProgressBar::QueryPtr progress ( caller );
+  
+  //if progressBar is valid set update functor
+  if( progress.valid() )
+    return new IProgressBar::Update ( progress.get(), 0, 100 );
+  
+  //Create a no update functor
+  return new IProgressBar::NoUpdate;
+}
+
+} //namespace Helper
 
 }; // namespace Interfaces
 }; // namespace Usul

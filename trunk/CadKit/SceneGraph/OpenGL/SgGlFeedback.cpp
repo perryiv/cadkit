@@ -77,7 +77,7 @@ SgGlFeedback::SgGlFeedback() : SgGlRenderer(),
   _buffer ( NULL ),
   _flags ( 0 )
 {
-  SL_PRINT ( "SgGlFeedback::SgGlFeedback(), this = %X\n", this );
+  SL_PRINT2 ( "SgGlFeedback::SgGlFeedback(), this = %X\n", this );
 }
 
 
@@ -89,7 +89,7 @@ SgGlFeedback::SgGlFeedback() : SgGlRenderer(),
 
 SgGlFeedback::~SgGlFeedback()
 {
-  SL_PRINT ( "SgGlFeedback::~SgGlFeedback(), this = %X\n", this );
+  SL_PRINT2 ( "SgGlFeedback::~SgGlFeedback(), this = %X\n", this );
 
   // Delete the arrays.
   this->_deleteBuffer();

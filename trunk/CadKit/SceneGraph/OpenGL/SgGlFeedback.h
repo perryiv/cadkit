@@ -44,7 +44,7 @@
 #ifndef _CADKIT_SCENEGRAPH_OPENGL_FEEDBACK_RENDERER_H_
 #define _CADKIT_SCENEGRAPH_OPENGL_FEEDBACK_RENDERER_H_
 
-#include "SgGlRenderer.h"
+#include "SgGlRenderer.h"y
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <stdlib.h>

@@ -56,6 +56,7 @@ long SgNode::_numNodes = 0;
 #endif
 
 #ifdef _DEBUG
+#include <map>
 typedef std::map<SgNode *, SgNode *> NodeMap;
 NodeMap _nodeMap;
 #endif

@@ -116,7 +116,7 @@ bool DbOsgVertexSetter::setPrimitiveRange ( const unsigned int &index, const uns
       return false;
 
   // Map our type to osg's mode.
-  osg::PrimitiveSet::Mode mode = this->_getPrimitiveMode();
+  osg::Primitive::Mode mode = this->_getPrimitiveMode();
 
   // Set the primitive.
   _primitives[index] = new osg::DrawArrays ( mode, start, length );
@@ -132,23 +132,23 @@ bool DbOsgVertexSetter::setPrimitiveRange ( const unsigned int &index, const uns
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::PrimitiveSet::Mode DbOsgVertexSetter::_getPrimitiveMode() const
+osg::Primitive::Mode DbOsgVertexSetter::_getPrimitiveMode() const
 {
   switch ( _type )
   {
   case IQueryShapeVerticesVec3f::LINE_STRIP_SET:
-    return osg::PrimitiveSet::LINE_STRIP;
+    return osg::Primitive::LINE_STRIP;
   case IQueryShapeVerticesVec3f::POINT_SET:
-    return osg::PrimitiveSet::POINTS;
+    return osg::Primitive::POINTS;
   case IQueryShapeVerticesVec3f::POLYGON_SET:
-    return osg::PrimitiveSet::POLYGON;
+    return osg::Primitive::POLYGON;
   case IQueryShapeVerticesVec3f::TRI_STRIP_SET:
-    return osg::PrimitiveSet::TRIANGLE_STRIP;
+    return osg::Primitive::TRIANGLE_STRIP;
   case IQueryShapeVerticesVec3f::TRI_FAN_SET:
-    return osg::PrimitiveSet::TRIANGLE_FAN;
+    return osg::Primitive::TRIANGLE_FAN;
   default:
     SL_ASSERT ( 0 );                      // What type is this?
-    return osg::PrimitiveSet::LINE_STRIP; // Play it safe.
+    return osg::Primitive::LINE_STRIP; // Play it safe.
   }
 }
 

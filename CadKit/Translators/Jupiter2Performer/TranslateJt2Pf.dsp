@@ -131,17 +131,5 @@ SOURCE=.\TrJt2PfApi.h
 SOURCE=.\TrJt2PfDll.cpp
 # End Source File
 # End Group
-# Begin Group "Notes"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\jupiter_database.txt
-# End Source File
-# Begin Source File
-
-SOURCE=.\performer_scene.txt
-# End Source File
-# End Group
 # End Target
 # End Project

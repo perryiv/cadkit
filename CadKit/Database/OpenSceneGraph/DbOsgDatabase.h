@@ -60,6 +60,12 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
+  // Tell the target it is about to receive data.
+  virtual bool            dataTransferStart ( IUnknown *caller );
+
+  // Tell the target it is done receiving data.
+  virtual bool            dataTransferEnd ( IUnknown *caller );
+
   // Get the file extension.
   virtual std::string     getFileExtension() const;
 
@@ -143,7 +149,6 @@ protected:
   typedef SlStack<osg::Group *> GroupStack;
   typedef std::map<const void *, osg::Group *> GroupMap;
 
-  osg::Group *_root;
   std::auto_ptr<GroupStack> _groupStack;
   std::auto_ptr<GroupMap> _groupMap;
 
@@ -156,7 +161,11 @@ protected:
   bool                    _addColors     ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addTexCoords  ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
 
+  void                    _clearGroupStack();
+
   osg::Group *            _findGroup ( const void *key ) const;
+
+  osg::Group *            _getRoot() const;
 
   bool                    _hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) const;
 

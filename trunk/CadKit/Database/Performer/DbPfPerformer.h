@@ -11,7 +11,7 @@
 //
 //  DbPfPerformer.h: 
 //  The Performer headers are unsafe and produce tons of warnings (at least 
-//  with with VC6).
+//  with VC6).
 //
 ///////////////////////////////////////////////////////////////////////////////
 

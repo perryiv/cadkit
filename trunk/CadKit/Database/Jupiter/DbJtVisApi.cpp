@@ -15,9 +15,9 @@
 
 #include "DbJtVisApi.h"
 #include "DbJtVisApiHeaders.h"
+#include "DbJtVisApiVersion.h"
 
 #include "Standard/SlAssert.h"
-
 
 using namespace CadKit;
 

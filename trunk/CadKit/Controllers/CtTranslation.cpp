@@ -368,41 +368,41 @@ bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown 
 
   std::string message;
 
-  try
-  {
+//  try
+//  {
     this->_execute ( argc, argv, source, target );
     return true;
-  }
-
-  catch ( const std::exception &e )
-  {
-    message = e.what();
-  }
-
-  catch ( const std::string &s )
-  {
-    message = s;
-  }
-
-  catch ( const char *s )
-  {
-    message = s;
-  }
-
-  catch ( ... )
-  {
-    PRINT << "Unknown exception caught." << std::endl;
-  }
-
-  PRINT << "Error: " << message;
-
-  // Do we need a newline character?
-  if ( message.size() && '\n' == message[message.size()-1] )
-    PRINT << std::flush;
-  else
-    PRINT << std::endl;
-
-  return false;
+//  }
+//
+//  catch ( const std::exception &e )
+//  {
+//    message = e.what();
+//  }
+//
+//  catch ( const std::string &s )
+//  {
+//    message = s;
+//  }
+//
+//  catch ( const char *s )
+//  {
+//    message = s;
+//  }
+//
+//  catch ( ... )
+//  {
+//    PRINT << "Unknown exception caught." << std::endl;
+//  }
+//
+//  PRINT << "Error: " << message;
+//
+//  // Do we need a newline character?
+//  if ( message.size() && '\n' == message[message.size()-1] )
+//    PRINT << std::flush;
+//  else
+//    PRINT << std::endl;
+//
+//  return false;
 }
 
 

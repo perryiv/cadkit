@@ -162,6 +162,14 @@ SOURCE=.\DbJtVisApiArray.h
 
 SOURCE=.\DbJtVisApiHeaders.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\DbJtVisApiVersion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbJtVisApiVersion.h
+# End Source File
 # End Group
 # Begin Group "DLL"
 

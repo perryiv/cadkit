@@ -5,7 +5,7 @@
 #include "MenuKit/StreamVisitor.h"
 #include <iostream>
 
-#include "MenuKit/OSG/TileMason.h"
+#include "MenuKit/TileMason.h"
 
 #include "osgProducer/Viewer"
 #include "osgUtil/Optimizer"
@@ -30,7 +30,7 @@ int main(unsigned int argc, char* argv[])
   osg::Vec4 lightblue(0.5,0.5,1.0,1.0);
 
   // highlight theme
-  MenuKit::OSG::osgColor hil;
+  MenuKit::OSG::osgColorTheme hil;
   hil.text(black);
   hil.middle(lightblue);
   hil.back(lightblue);
@@ -39,7 +39,7 @@ int main(unsigned int argc, char* argv[])
   hil.special(blue);
 
   // normal theme
-  MenuKit::OSG::osgColor nor;
+  MenuKit::OSG::osgColorTheme nor;
   nor.text(black);
   nor.middle(darkgrey);
   nor.back(lightgrey);
@@ -48,7 +48,7 @@ int main(unsigned int argc, char* argv[])
   nor.special(blue);
 
   // disabled theme
-  MenuKit::OSG::osgColor dis(darkgrey,darkgrey,lightgrey,lightgrey,blue,lightblue);
+  MenuKit::OSG::osgColorTheme dis(darkgrey,darkgrey,lightgrey,lightgrey,blue,lightblue);
 
   // make a tile mason
   MenuKit::OSG::osgTileMason::Ptr mason = new MenuKit::OSG::osgTileMason();

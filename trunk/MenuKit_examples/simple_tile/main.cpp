@@ -8,7 +8,7 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
-#include "MenuKit/OSG/ColorThemeSkinTile.h"
+#include "MenuKit/ColorThemeSkinTile.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   osg::ref_ptr<osgText::Font> font = osgText::readFontFile("fonts/arial.ttf");
 
   // make a skin
-  MenuKit::OSG::osgSkin osgskin;
+  MenuKit::OSG::osgColorThemeSkin osgskin;
   osgskin.font( font.get() );
 
   // define some colors
@@ -28,26 +28,26 @@ int main(int argc, char* argv[])
   osg::Vec4 transwhite(1.0,1.0,1.0,0.5);
 
   // define some themes
-  MenuKit::OSG::osgColor redblue;
+  MenuKit::OSG::osgColorTheme redblue;
   redblue.text( blue );
   redblue.middle( white );
   redblue.back( red );
 
-  MenuKit::OSG::osgColor redgreen;
+  MenuKit::OSG::osgColorTheme redgreen;
   redgreen.text( green  );
   redgreen.middle( black );
   redgreen.back( red );
 
-  MenuKit::OSG::osgColor blackwhite;
+  MenuKit::OSG::osgColorTheme blackwhite;
   blackwhite.back( black );
   blackwhite.middle( red );
   blackwhite.text( transwhite );
 
   // define a skin
-  MenuKit::OSG::osgSkin skinner;
+  MenuKit::OSG::osgColorThemeSkin skinner;
 
   // define a tile
-  MenuKit::OSG::osgTile tile;
+  MenuKit::OSG::osgColorThemeSkinTile tile;
   tile.skin( skinner );
   tile.normal( blackwhite);
   tile.highlight( redgreen );

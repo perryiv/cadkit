@@ -71,7 +71,7 @@ namespace MenuKit
       float _text;           // percentages
     };
 
-    typedef ColorThemeSkin<osgColor> BasicSkin;
+    typedef ColorThemeSkin<osgColor> osgSkin;
   };
 
 };

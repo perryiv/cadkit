@@ -2,6 +2,7 @@
 #define _menukit_osg_themeskin_h_
 
 #include "osgText/Font"
+#include "../Box.h"
 
 namespace osg
 {

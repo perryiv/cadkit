@@ -84,7 +84,7 @@ namespace MenuKit
       DisplayMode _mode;
     };
 
-    typedef SkinTile<osgColor,BasicSkin> BasicTile;
+    typedef SkinTile<osgColor,osgSkin> osgTile;
   };
 
 };

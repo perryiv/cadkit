@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <set>
 //#include "Standard/SlVec2.h"
 #include "Standard/SlVec3.h"
 //#include "Standard/SlVec4.h"
@@ -42,10 +43,13 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class /*DB_STL_API*/ DbStlFacetManager
+class DB_STL_API DbStlFacetManager
 {
 public:
 
+  // for convenience/readability
+  typedef SlPartitionedVector<unsigned int, SlVec3f> Vertices;
+  typedef SlPartitionedVector<unsigned int, SlVec3f> Normals;
 
   enum StlFileMode
   {
@@ -53,58 +57,42 @@ public:
     STL_BINARY_FILE_MODE
   };
 
-/* 
-  class triangle
-  {
-  public:
-    SlVec3<float> vertices[3];
-    triangle( SlVec3<float> v[3] )
- */ 
-  
-  
+  DbStlFacetManager ( );
+  ~DbStlFacetManager ( );
+
+
+  /////////////////////////////////////////////////////////////////////////////
+	// DbStlFacetManager member class "facet"
+	// This class organizes geometry data into triangular facets w/ normals
+  /////////////////////////////////////////////////////////////////////////////
+
   class facet
   {
   public:
-    facet( ) { }
-    facet( const SlVec3<float> vertices[3], const SlVec3<float> &normal );
-    void setNormal( const SlVec3<float> &normal );
-    void setVertices( const SlVec3<float> vertices[3] );
-    void setValue( const SlVec3<float> vertices[3], const SlVec3<float> &normal );
-    void getNormal( SlVec3<float> &normal );
-    void getVertices( SlVec3<float> vertices[3] );
+    facet( );
+    facet( const SlVec3f vertices[3], const SlVec3f &normal );
+    facet( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
+    void setNormal( const SlVec3f &normal );
+    void setVertices( const SlVec3f vertices[3] );
+    void setVertices( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 );
+    void setValue( const SlVec3f vertices[3], const SlVec3f &normal );
+    void setValue( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
+    void getNormal( SlVec3f &normal );
+    void getVertices( SlVec3f &vertex1, SlVec3f &vertex2, SlVec3f &vertex3 );
+    void getVertices( SlVec3f vertices[3] );
   
   protected:
-		SlVec3<float> _vertices[3];
-		SlVec3<float> _normal;
+		SlVec3f _vertices[3];
+		SlVec3f _normal;
   };
 
 
   // For convenience
   typedef std::list<facet> Facets;
-  SlRefPtr<SlVec3f> _vertices;
   
-  // using this as a passthrough so we can use existing IQueryShapeVerticesVec3f interface
-  // the functions operate on parent class's data
-  class DbStlVertexSetter : public IQueryShapeVerticesVec3f::VertexSetter
-  {
-  public:
-
-    DbStlVertexSetter ( const VertexSetType &type ) : _type ( type ) { }
-
-    virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
-    virtual bool          setSize ( const unsigned int &size );
-
-    // don't need primitives... these are just here to satisfy the interface requirements
-    virtual bool          setNumPrimitives  ( const unsigned int &num ) { return true }
-    virtual bool          setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { return true }
-
-  protected:
-    VertexSetType _type;
-  };
-
 
   /////////////////////////////////////////////////////////////////////////////
-	// TransMatStack
+	// DbStlFacetManager member class "TransformStack"
 	//
 	// This is a stack which stores the "current" transformation matrix
 	// for the points.  This class is basically the same as SlStack with
@@ -114,37 +102,113 @@ public:
 	// operating on.
   /////////////////////////////////////////////////////////////////////////////
 
-	class TransMatStack : public SlStack<SlMatrix44f>
+	class TransformStack : public SlStack<SlMatrix44f>
 	{
 	public:
 		
-		//  Override the default push function so that the new matrix is multiplied
+    TransformStack( ) : SlStack<SlMatrix44f>::SlStack() { } // constructor
+
+    //  Override the default push function so that the new matrix is multiplied
 		//  by the matrix on top of the stack.
-		void push( );
+    void init( ) { clear(); push( SlMatrix44f id( bool identity( true ) ) ); } // clear and push identity
+    void push( );
 		void push ( const SlMatrix44f &val );
   };
 
-
-//	DbStlFacetManager ( ) : _facets ( new Facets ), _transmat ( new TransMatStack ){}
-//  ~DbStlFacetManager ( ) { delete _facets; delete _transmat; }
-  DbStlFacetManager ( ) { }
-  ~DbStlFacetManager ( ) { }
+  /////////////////////////////////////////////////////////////////////////////
+	// DbStlFacetManager member functions
+  /////////////////////////////////////////////////////////////////////////////
 
   // Store the data.
   bool storeData ( const char *filename, const StlFileMode &mode );
 
-  void addFacet ( SlVec3<float> vertices[3], SlVec3<float> &normal );
-  void clearFacets ( ) { if ( !_facets.empty() ) _facets.erase( _facets.begin(), _facets.end() ); };
-  long getNumFacets ( ) { return _facets.size(); }
+  // Clear all data structures
+  void clearAll( );
+
+  // Clear all data structures
+  void init( );
+
+  // Fetch all vertices for a given shape and use to populate _facets list
+  bool fetchVerticesPerShape( IUnknown *caller, ShapeHandle shape );
+
+  // Add a facet - pick your flavor
+  void addFacet ( SlVec3f vertices[3], const SlVec3f &normal );
+  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3 );
+  void addFacet ( const SlVec3f &vertex1, const SlVec3f &vertex2, const SlVec3f &vertex3, const SlVec3f &normal );
+
+  // Clear facets
+  void clearFacets ( ) { _facets.clear(); };
+
+  // Get number of facets
+  int getNumFacets ( ) { return _facets.size(); }
+
+
+
+
 
 protected:
 
-	Facets _facets;
-	TransMatStack _transmat;
+  ///////////////////////////////////////////////////////////////////////////////
+  //  DbStlFacetManager member class "DbStlVertexSetter"
+  //
+  //  We are using this class exclusively as an interface
+  //  to data source IQueryShapeVerticesVec3f... it has no data members of its
+  //  own.  It operates on vertex buffer _vbuf which is owned by parent class
+  //  DbStlFacetManager.  It is responsible solely for fetching vertex data
+  //  from data source and placing that data into _vbuf.  Any other manipulation
+  //  of _vbuf is the sole responsibility of the parent class DbStlFacetManager.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  class DbStlVertexSetter : public IQueryShapeVerticesVec3f::VertexSetter
+  {
+  public:
+
+    DbStlVertexSetter ( ) { }
+
+    bool setData ( const unsigned int &index, const SlVec3f &vec );
+    bool setSize ( const unsigned int &size );
+
+    bool setNumPrimitives  ( const unsigned int &num );
+    bool setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length );
+  };
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  DbStlFacetManager member class "DbStlNormalSetter"
+  //  
+  //  We are using this class exclusively as an interface
+  //  to data source IQueryShapeVerticesVec3f... it has no data members of its
+  //  own.  It operates on normal buffer _nbuf which is owned by parent class
+  //  DbStlFacetManager.  It is responsible solely for fetching normal data
+  //  from data source and placing that data into _nbuf.  Any other manipulation
+  //  of _nbuf is the sole responsibility of the parent class DbStlFacetManager.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  class DbStlNormalSetter : public IQueryShapeNormalsVec3f::NormalSetter
+  {
+  public:
+
+    DbStlNormalSetter ( const VertexBinding &binding ) : _binding ( CadKit::getBinding ( binding ) ) { /* TODO */ }
+
+    bool setData ( const unsigned int &index, const SlVec3f &vec ) { /* TODO */ }
+    bool setSize ( const unsigned int &size ) { /* TODO */ }
+
+    bool setNumPrimitives  ( const unsigned int &num ) { /* TODO */ }
+    bool setPrimitiveRange ( const unsigned int &index, const unsigned int &start, const unsigned int &length ) { /* TODO */ }
+  };
+
+
+  Facets _facets;
+	TransformStack _transforms;
+
+  // interfaces and buffers for fetching vertices and normals from data source
+  DbStlVertexSetter _vSetter;
+  DbStlNormalSetter _nSetter;
+  Vertices _vbuf;
+  Normals _nbuf;
+  Binding _binding; //TODO
 };
-
-
-
 
 
 }; // namespace CadKit

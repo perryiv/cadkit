@@ -152,7 +152,7 @@ int Socket::listen()
 int Socket::_read(void *buf, int len) const 
 {
 #if defined(_MSC_VER)
-  return ::recv(_sd, (char*) buf, len, 0); // windows lacks the read() call
+  return ::recv( _sd, (char*) buf, len, 0 ); // windows lacks the read() call
 #else
   return ::read(_sd, buf, len);
 #endif
@@ -169,54 +169,69 @@ int Socket::_read(void *buf, int len) const
 int Socket::_write(const void *buf, int len)  const
 {
 #if defined(_MSC_VER)
-  return ::send(_sd, (const char*) buf, len, 0);  // windows lacks the write() call
+  return ::send( _sd, (const char*) buf, len, 0 );  // windows lacks the write() call
 #else
   return ::write(_sd, buf, len);
 #endif
 }
 
-int Socket::_selectRead( int seconds ) const
+bool Socket::_selectRead( int seconds ) const
 {
   fd_set rfd;
   struct timeval tv;
   int rc;
  
+  //clear file descriptor set
   FD_ZERO(&rfd);
+
+  //set the file descriptor field to _sd
   FD_SET(_sd, &rfd);
+
   memset((void *)&tv, 0, sizeof(struct timeval));
   tv.tv_sec = seconds;
   do {
     rc = select(_sd + 1, &rfd, 0x0, 0x0, &tv);
   } while (rc < 0 && errno == EINTR);
-  return rc;
+  
+  //If FD_ISSET returns zero, then _sd is not ready for reading
+  return (FD_ISSET(_sd, &rfd ) != 0 );
 }
 
-int Socket::_selectWrite( int seconds ) const
+bool Socket::_selectWrite( int seconds ) const
 {
   fd_set wfd;
   struct timeval tv;
   int rc;
  
+  //clear file descriptor set
   FD_ZERO(&wfd);
+
+  //set the file descriptor field to _sd
   FD_SET(_sd, &wfd);
+
   memset((void *)&tv, 0, sizeof(struct timeval));
   tv.tv_sec = seconds;
   do {
     rc = select(_sd + 1, 0x0, &wfd, 0x0, &tv);
   } while (rc < 0 && errno == EINTR);
-  return rc;
+  
+  //If FD_ISSET returns zero, then _sd is not ready for writing
+  return (FD_ISSET(_sd, &wfd ) != 0 );
 }
 
 
 bool Socket::read ( Buffer &buf, bool wait, int seconds ) const
 {
   if( wait )
-    if ( this->_selectRead( seconds ) != 1 )
+    if ( !this->_selectRead( seconds )  )
       return false;
 
   int numRead( 0 );
   int numLeft( buf.requested() );
   char *buffer ( buf.buffer() );
+
+  if( !this->_canRead() )
+    return false;
 
   while ( numLeft > 0 )
   {
@@ -236,7 +251,7 @@ bool Socket::read ( Buffer &buf, bool wait, int seconds ) const
 bool Socket::write ( Buffer &buf, bool wait, int seconds ) const
 {
   if( wait )
-    if ( this->_selectWrite( seconds ) != 1 )
+    if ( !this->_selectWrite( seconds ) )
       return false;
 
   int numRead( 0 );
@@ -258,4 +273,23 @@ bool Socket::write ( Buffer &buf, bool wait, int seconds ) const
   return true;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there data to be read on the socket?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Socket::_canRead() const 
+{
+  char c;
+  int data;
+
+  data = ::recv(_sd, &c, 1, MSG_PEEK);
+
+  if( data > 0 )
+    return true;
+  return false;
+
+}
 

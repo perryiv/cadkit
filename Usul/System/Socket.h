@@ -99,8 +99,10 @@ protected:
   int _read(void *buf, int len) const;
   int _write(const void *buf, int len) const;
 
-  int _selectRead( int seconds ) const;
-  int _selectWrite ( int seconts ) const;
+  bool _selectRead( int seconds ) const;
+  bool _selectWrite ( int seconts ) const;
+
+  bool _canRead() const;
 
 private:
   void _init();

@@ -175,7 +175,7 @@ PeriodicTable::PeriodicTable() :
 //  Get a pointer to the element for the given element symbol.
 //
 ///////////////////////////////////////////////////////////////////////////////
-const Element* PeriodicTable::getPointer(std::string element) const 
+const Element* PeriodicTable::getPointer(const std::string& element) const 
 {
   MapElements::const_iterator i = _mapElements.find(element);
   if(_mapElements.end() != i)

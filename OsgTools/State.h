@@ -25,6 +25,10 @@ namespace OsgTools {
 
 struct OSG_TOOLS_EXPORT State
 {
+  // Set/get the lighting state
+  static bool         getLighting  ( osg::Node *node );
+  static void         setLighting  ( osg::Node *node, bool state );
+
   // Set/get the normalization state.
   static bool         getNormalize ( osg::Node *node );
   static void         setNormalize ( osg::Node *node, bool state );

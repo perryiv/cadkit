@@ -16,20 +16,20 @@
 #include "Circle.h"
 
 #include "osg/Math"
-#include "osg/Vec2"
+#include "osg/Vec3"
 //#include "math.h"
 
 using namespace OsgTools;
 
-osg::Vec2Array* Circle::operator ()() const
+osg::Vec3Array* Circle::operator ()() const
 {
-  osg::Vec2Array* pts = new osg::Vec2Array();
+  osg::Vec3Array* pts = new osg::Vec3Array();
   for(unsigned int i=0; i<_points; i++)
   {
     float angle = float(i)*(float(2.0*osg::PI) / float(_points));
     float x = _radius*cosf( angle );
     float y = _radius*sinf( angle );
-    pts->push_back( osg::Vec2(x,y) );
+    pts->push_back( osg::Vec3(x,y,0.0) );
   }
 
   return pts;

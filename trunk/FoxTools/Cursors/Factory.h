@@ -9,21 +9,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Cursor class.
+//  Cursor factory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_BINDING_CURSOR_H_
-#define _FOX_BINDING_CURSOR_H_
+#ifndef _FOX_TOOLS_CURSOR_FACTORY_H_
+#define _FOX_TOOLS_CURSOR_FACTORY_H_
 
-#include "FoxTools/FoxToolsDll.h"
+#include "FoxTools/Export/Export.h"
 
-namespace FX { class FXApp; class FXCursor; }
+namespace FX { class FXCursor; class FXApp; };
 
 namespace FoxTools {
-namespace Images {
+namespace Cursors {
 
-class FOX_TOOLS_EXPORT Cursor
+
+class FOX_TOOLS_EXPORT Factory
 {
 public:
 
@@ -62,9 +63,9 @@ public:
                                        FX::FXApp *app );
 };
 
-}; //namespace Tools
 
+}; // namespace Cursors
 }; // namespace FoxTools
 
 
-#endif
+#endif // _FOX_TOOLS_CURSOR_FACTORY_H_

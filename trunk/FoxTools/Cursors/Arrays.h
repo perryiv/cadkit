@@ -13,12 +13,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_BINDING_CURSOR_ARRAYS_H_
-#define _FOX_BINDING_CURSOR_ARRAYS_H_
+#ifndef _FOX_TOOLS_CURSOR_ARRAYS_H_
+#define _FOX_TOOLS_CURSOR_ARRAYS_H_
 
 
 namespace FoxTools {
 namespace Cursors {
+namespace Arrays {
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -258,8 +260,10 @@ const unsigned char _gunSightCursorArrayCUR[]=
   0x7f,0xff,0xff,0xff,0x7f,0xff
 };
 
+
+}; // namespace Arrays
 }; // namespace Cursors
 }; // namespace FoxTools
 
 
-#endif // _FOX_BINDING_CURSOR_ARRAYS_H_
+#endif // _FOX_TOOLS_CURSOR_ARRAYS_H_

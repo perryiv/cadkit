@@ -324,7 +324,13 @@
 					RelativePath="Interfaces\ICommand.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFoxEvent.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IMenuEntry.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IModeStack.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\INotify.h">
@@ -333,10 +339,22 @@
 					RelativePath=".\Interfaces\IOpenSceneGraph.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\IProgressBar.h">
+				</File>
+				<File
 					RelativePath="Interfaces\IRead.h">
 				</File>
 				<File
+					RelativePath=".\Interfaces\ISequence.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISequenceManager.h">
+				</File>
+				<File
 					RelativePath=".\Interfaces\IStartup.h">
+				</File>
+				<File
+					RelativePath=".\Interfaces\IStatusBar.h">
 				</File>
 				<File
 					RelativePath=".\Interfaces\IToolCommand.h">

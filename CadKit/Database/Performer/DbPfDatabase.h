@@ -24,11 +24,11 @@
 #include "Interfaces/IInstanceQuery.h"
 
 #include "Standard/SlStack.h"
+#include "Standard/SlErrorPolicy.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <string>
-# include <map>
-#endif
+#include <string>
+#include <map>
+#include <stdexcept>
 
 class pfGroup;
 class pfLOD;
@@ -145,7 +145,8 @@ public:
 
 protected:
 
-  typedef SlStack<pfGroup *> GroupStack;
+  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > ErrorPolicy;
+  typedef SlStack < pfGroup *, ErrorPolicy > GroupStack;
   std::auto_ptr<GroupStack> _groupStack;
 
   virtual ~DbPfDatabase();

@@ -26,9 +26,8 @@
 
 #include "SceneGraph/Core/SgAllNodes.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <limits>
-#endif
+#include <limits>
+
 
 using namespace CadKit;
 

@@ -337,13 +337,47 @@ bool CtTranslation::execute ( int argc, char **argv, IUnknown *source, IUnknown 
 {
   SL_PRINT5 ( "In CtTranslation::execute(), this = %X, argc = %d, source = %X, target = %X\n", this, argc, source, target );
 
+  try
+  {
+    return this->_execute ( argc, argv, source, target );
+  }
+
+  catch ( std::exception &e )
+  {
+    PRINT << "Exception caught: " << e.what() << std::endl;
+  }
+
+  catch ( const char *s )
+  {
+    PRINT << "Exception caught: " << s << std::endl;
+  }
+
+  catch ( ... )
+  {
+    PRINT << "Unknown exception caught." << std::endl;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line arguments and execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown *target )
+{
+  SL_PRINT5 ( "In CtTranslation::_execute(), this = %X, argc = %d, source = %X, target = %X\n", this, argc, source, target );
+
   // Set this instance's target and source. The destructor will reset them 
   // to their original value (which should be null).
   SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp1 ( _target, target );
   SlScopedSet<SlRefPtr<IUnknown>, IUnknown *> temp2 ( _source, source );
 
   // Make sure we have the necessary interfaces.
-  SlQueryPtr<IDataSource> ds ( source );
+  SlQueryPtr<IDataSource,IUnknown,Private::DoNothing> ds ( source );
   if ( ds.isNull() )
   {
     PRINT << "Failed to get IDataSource interface from the data source." << std::endl;

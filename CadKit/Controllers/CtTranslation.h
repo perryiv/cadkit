@@ -111,6 +111,8 @@ protected:
 
   virtual ~CtTranslation();
 
+  bool                    _execute ( int argc, char **argv, IUnknown *source, IUnknown *target );
+
   bool                    _messageNotify ( const std::string &type, const std::string &message, const unsigned long &id ) const;
 
   void                    _setProgressPrintLevel ( const unsigned int &level );

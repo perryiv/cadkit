@@ -22,10 +22,14 @@
 #include "Standard/SlMatrix44.h"
 #include "Standard/SlStack.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include <map>
-# include <memory>
-#endif
+#include <stdexcept> // VC6 wants these before SlErrorPolicy.h
+#include <string>
+
+#include "Standard/SlErrorPolicy.h"
+
+#include <map>
+#include <memory>
+#include <stdexcept>
   
 
 namespace CadKit
@@ -77,7 +81,8 @@ public:
 protected:
 
   typedef std::map<unsigned int,bool> StateMap;
-  typedef SlStack<SlMatrix44f> MatrixStack;
+  typedef CadKit::ErrorPolicy::Throw < std::runtime_error > ErrorPolicy;
+  typedef SlStack < SlMatrix44f, ErrorPolicy > MatrixStack;
 
   MatrixMode _matrixMode;
   std::auto_ptr<MatrixStack> _modelviewStack;

@@ -59,7 +59,7 @@ template<class StringType> inline void replaceSubStrings (
   StringType &string )
 {
   // Initialize.
-  StringType::size_type position = 0;
+  typename StringType::size_type position ( 0 );
 
   // Loop forever.
   while ( true )

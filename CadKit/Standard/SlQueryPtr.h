@@ -36,6 +36,9 @@ namespace Private {
 //  Safely query for the interface. The template parameter NoInterfacePolicy
 //  defines what happens when the interface is not found.
 //
+//  Note: gcc does not like NoInterfacePolicy to be passed by reference
+//  when declared like this "NoInterfacePolicy()" when called.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 template
@@ -44,7 +47,7 @@ template
   class InterfaceType, 
   class NoInterfacePolicy
 >
-inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, NoInterfacePolicy &policy )
+inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, NoInterfacePolicy policy )
 {
   // Overload this for specific types.
   InterfaceType *answer = CadKit::queryInterface ( iid, unknown );
@@ -65,6 +68,7 @@ inline InterfaceType *queryInterface ( InterfaceID iid, InterfaceType *unknown, 
 
 struct DoNothing
 {
+  DoNothing(){}
   void operator() ( const void * ){}
 };
 
@@ -82,7 +86,7 @@ template
 <
   class NewInterfaceType, 
   class OldInterfaceType = CadKit::IUnknown,
-  class NoInterfacePolicy = Private::DoNothing
+  class NoInterfacePolicy = CadKit::Private::DoNothing
 >
 class SlQueryPtr : public SlRefPtr<NewInterfaceType>
 {

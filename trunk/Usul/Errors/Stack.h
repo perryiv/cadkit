@@ -54,8 +54,8 @@ public:
   bool                empty() const;
 
   // Format the errors into single string.
-  void                format ( std::string &s ) const;
-  std::string         format() const;
+  void                format ( const std::string &prefix, std::string &s ) const;
+  std::string         format ( const std::string &prefix = std::string() ) const;
 
   // It's a singleton.
   static Stack &      instance();
@@ -86,24 +86,6 @@ private:
   Mutex *_m;
   static Stack *_instance;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro for starting an exception-safe block of code.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//#define USUL_EXCEPTION_SAFE_START try {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro for ending an exception-safe block of code.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//#define USUL_EXCEPTION_SAFE_END }
 
 
 ///////////////////////////////////////////////////////////////////////////////

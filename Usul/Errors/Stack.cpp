@@ -176,12 +176,12 @@ std::string Stack::top() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Stack::format ( std::string &s ) const
+void Stack::format ( const std::string &prefix, std::string &s ) const
 {
   Guard guard ( *_m );
   std::ostringstream temp;
   for ( StringList::const_iterator i = _s.begin(); i != _s.end(); ++i )
-    temp << *i << '\n';
+    temp << prefix << *i << '\n';
   s = temp.str();
 }
 
@@ -192,9 +192,9 @@ void Stack::format ( std::string &s ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Stack::format() const
+std::string Stack::format ( const std::string &prefix ) const
 {
   std::string s;
-  this->format ( s );
+  this->format ( prefix, s );
   return s;
 }

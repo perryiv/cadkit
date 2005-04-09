@@ -1,59 +1,54 @@
+/** \file main.cpp
+  * \title Tile Example
+  * \description This example shows how to use the Tile class
+  * to generate a graphic for a MenuKit::Item
+  */
 
-//#ifdef _WIN32
-//# pragma warning ( disable : 4541 ) // warning about multiple inheritance within osg
-//#endif
-
+#include "osg/Group"
+#include "osg/Projection"
 #include "osg/MatrixTransform"
+#include "osg/Matrix"
 #include "osgProducer/Viewer"
 #include "osgDB/FileUtils"
+#include "osgText/Font"
+
+#include "MenuKit/OSG/VisualThemeSkin.h"
+#include "MenuKit/OSG/ThemeSkinTile.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
-#include "MenuKit/OSG/osg_types.h"
-#include "MenuKit/OSG/VisualThemeSkin.h"
+
+#include "MenuKit/Box.h"
 
 int main(int argc, char* argv[])
 {
+  //--- allocate a skin ---//
+  typedef MenuKit::OSG::VisualThemeSkin aSkin;
+  aSkin::Ptr skin = new aSkin();
+  skin->letter_height( 50.0f );
+
+  //--- setup the skin ---//
   // load font for skin
   std::string fontfile("");
   if( argc > 1 && osgDB::fileExists(argv[1]) )
     fontfile = argv[1];
   else
     fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\arial.ttf";
-
   osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
-
-  // define some themes
-  osg::Vec4 red(1.0,0.0,0.0,1.0);
-  osg::Vec4 green(0.0,1.0,0.0,1.0);
-  MenuKit::OSG::osg_color_theme ct;
-  MenuKit::OSG::osg_color_map hi(ct.get_map()),
-                              norm(ct.get_map()),
-                              dis(ct.get_map());
-  hi["text"] = red;
-  dis["text"] = green;
-
-  // allocate & setup a skin
-  MenuKit::OSG::VisualThemeSkin::Ptr skin = new MenuKit::OSG::VisualThemeSkin();
   if( font.valid() )
     skin->font( font.get() );
+  //--- --------------- ---//
 
-  // allocate a tile
-  MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
+  //--- allocate a tile ---//
+  typedef MenuKit::OSG::SkinTile<aSkin::base_class> aTile;
+  aTile::Ptr tile = new aTile();
 
-  // set up the tile
-  // these setup steps are extremely important
-  // the keys inserted will be used by a Mason is traversing a menu
-  tile->skin( skin.get() );
+  //--- setup the tile ---//
+  tile->skin( skin.get() );  // no more skin code after here
+  tile->mode(MenuKit::OSG::Tile::NORMAL);
+  //--- --------------- ---//
 
-  typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
-  DMTMAP dmtmap;
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
-  tile->theme_map( dmtmap );
-
-  // define a menu item
+  //--- define a menu item ---//
   MenuKit::Menu::Ptr file = new MenuKit::Menu("File","",MenuKit::Menu::VERTICAL);
   file->expanded( true );
   //MenuKit::Menu::Ptr button = new MenuKit::Menu("Open","",MenuKit::Menu::VERTICAL);
@@ -65,37 +60,56 @@ int main(int argc, char* argv[])
   button->enabled( false );
   file->append( button.get() );
 
+  //--- generate the graphic for the item ---//
   // set the size for the tile
   tile->box( Detail::Box(tile->height(*button), tile->width(*button)) );
-  //skin->graphic_width( skin->width(*button) );
-  MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap::const_iterator iter;
-  iter = dmtmap.find( MenuKit::OSG::TileFunctor::DISABLED );
-  if( iter != dmtmap.end() )
-    tile->mode( iter->first );
-    //skin->theme( iter->second );
-  else
-    tile->mode( iter->first );
-    //skin->theme( norm );
-
-  // generate the graphic for the item
   osg::ref_ptr<osg::Node> scene = tile->operator ()( *button );
-  //osg::ref_ptr<osg::Node> scene = skin->operator ()(*button);
+  //--- --------------------------------- ---//
 
-  // place menu gfx into scene
-  osg::ref_ptr<osg::MatrixTransform> root = new osg::MatrixTransform();
-  root->addChild( scene.get() );
+  // screen dimensions to be used for menu display
+  MenuKit::Detail::Box area(1024.0,1280.0);
 
-  // spin the model
-  root->setMatrix( osg::Matrix::rotate( osg::DegreesToRadians(90.0),
-                                        osg::Vec3(1.0,0.0,0.0)) );
+  //--- place menu graphics into the environment ---//
+  // make a transform node for attaching the menu graphics
+  osg::ref_ptr<osg::MatrixTransform> xform = new osg::MatrixTransform();
+  xform->addChild( scene.get() );
+  osg::Matrix rotate(osg::Matrix::rotate(osg::PI_2, osg::Vec3(1.0f,0.0f,0.0f)));
+  osg::Matrix translate(osg::Matrix::translate(osg::Vec3(-0.5*area.width(),0.5*area.height(),0.0)));
+  xform->setMatrix( /*translate**/rotate );
+
+  // attach the transform node to the HUD
+  osg::ref_ptr<osg::Projection> hud = new osg::Projection();
+  hud->setMatrix( osg::Matrix::ortho2D(-0.5*area.width(),0.5*area.width(),-0.5*area.height(),0.5*area.height()) );
+  hud->addChild( xform.get() );
+
+  // configure the OpenGL settings for this menu node
+  osg::ref_ptr<osg::StateSet> ss = hud->getOrCreateStateSet();
+  ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+  ss->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
+  ss->setRenderBinDetails(10,"RenderBin"); // a high number makes it render last
+
+  // make some background graphics to fight osgProducer::Viewer's auto-centering
+  MenuKit::OSG::Border border( MenuKit::Detail::Box(1.1*area.height(),1.1*area.width()), area, -1.0 );
+  border.color( osg::Vec4(1.0,0.0,0.0,1.0) );
+  osg::ref_ptr<osg::Node> brdr = border();
+  osg::ref_ptr<osg::MatrixTransform> bg = new osg::MatrixTransform();
+  bg->addChild( brdr.get() );
+  bg->setMatrix( osg::Matrix::rotate( osg::PI_2, osg::Vec3(1.0,0.0,0.0) ) );
+
+  // attach the absolute transform node to the scene root
+  osg::ref_ptr<osg::Group> root = new osg::Group();
+  root->addChild( hud.get() );
+  root->addChild( bg.get() );
 
   // make a viewer
   osg::ref_ptr<osgProducer::Viewer> viewer = new osgProducer::Viewer();
   viewer->setUpViewer(osgProducer::Viewer::STANDARD_SETTINGS);
 
+  // add the scene root to the viewer's data
   viewer->setSceneData( root.get() );
-  viewer->realize();
 
+  // begin the render loop
+  viewer->realize();
   while( !viewer->done() )
   {
     viewer->sync();

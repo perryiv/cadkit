@@ -11,12 +11,19 @@
 #include "osgGA/GUIEventAdapter"
 #include "osgGA/GUIActionAdapter"
 
-#include "osgProducer/OsgCameraGroup"
+#include "osgText/Font"
+
 #include "MenuKit/Behavior.h"
-#include "MenuKit/OSG/osg_types.h"
+#include "MenuKit/OSG/TileFunctor.h"
+#include "MenuKit/OSG/TileMason.h"
 
 #include <map>
 #include <string>
+
+namespace osg
+{
+  class Group;
+};
 
 /** MenuController
   * MenuController is a osgGA::GUIEventHandler that
@@ -28,8 +35,9 @@ class MenuController : public osgGA::GUIEventHandler
 public:
   typedef osgGA::GUIEventHandler BaseClass;
   typedef std::map<int,MenuKit::Behavior::Direction> KeyboardDirectionMap;
+  typedef MenuKit::OSG::Mason<MenuKit::OSG::Tile> TileMason;
 
-  MenuController(osg::Group* g, const std::string& fontfile);
+  MenuController();
 
   /// takes user input and possibly modifies the scene
   virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& us);
@@ -40,9 +48,9 @@ public:
   const MenuKit::Behavior* behavior() const { return _behavior.get(); }
   MenuKit::Behavior* behavior() { return _behavior.get(); }
 
-  void mason(MenuKit::OSG::osgMason* m) { _mason = m; }
-  const MenuKit::OSG::osgMason* mason() const { return _mason.get(); }
-  MenuKit::OSG::osgMason* mason() { return _mason.get(); }
+  void mason(TileMason* m) { _mason = m; }
+  const TileMason* mason() const { return _mason.get(); }
+  TileMason* mason() { return _mason.get(); }
 
   void attach_node(osg::Group* v) { _attach = v; }
   const osg::Group* attach_node() const { return _attach.get(); }
@@ -50,20 +58,14 @@ public:
   void keyboard_direction_map(const KeyboardDirectionMap& m) { _kdm = m; }
   const KeyboardDirectionMap& keyboard_direction_map() const { return _kdm; }
 
-  void font_file(const std::string& f) { _fontfile = f; }
-  const std::string& font_file() const { return _fontfile; }
-
 protected:
   virtual ~MenuController();
 
 private:
-  MenuController();   // not implemented by design
-
-  MenuKit::Behavior::Ptr _behavior;
-  MenuKit::OSG::osgMason::Ptr _mason;
   osg::ref_ptr<osg::Group> _attach;  // can not be a ref_ptr from circular reference problem
+  TileMason::Ptr _mason;
+  MenuKit::Behavior::Ptr _behavior;
   KeyboardDirectionMap _kdm;
-  std::string _fontfile;
 };
 
 #endif

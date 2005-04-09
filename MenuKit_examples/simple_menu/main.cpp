@@ -1,3 +1,8 @@
+/** \file main.cpp
+  * \title Menu Example
+  * This example shows how to use the Mason class
+  * to generate a graphical representation of a MenuKit::Menu
+  */
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -6,87 +11,93 @@
 #include "MenuKit/OSG/TileMason.h"        // for mason
 
 #include "MenuKit/StreamVisitor.h"
+#include "MenuKit/SampleMenu.h"
 
 #include "osgProducer/Viewer"
 #include "osgUtil/Optimizer"
 #include "osgDB/FileUtils"
+#include "osg/Projection"
 
-// prototypes
-MenuKit::Menu* create_menu();
 
 int main(unsigned int argc, char* argv[])
 {
+  //--- allocate a skin ---//
+  typedef MenuKit::OSG::VisualThemeSkin aSkin;
+  aSkin::Ptr skin = new aSkin();
+  skin->letter_height( 50.0f );
+
+  //--- setup the skin ---//
   // load font for skin
   std::string fontfile("");
   if( argc > 1 && osgDB::fileExists(argv[1]) )
     fontfile = argv[1];
   else
     fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\arial.ttf";
-
   osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
-
-  // make a skin
-  MenuKit::OSG::VisualThemeSkin::Ptr skin = new MenuKit::OSG::VisualThemeSkin();
   if( font.valid() )
     skin->font( font.get() );
+  //--- --------------- ---//
 
-  // make some color schemes
-  osg::Vec4 white(1.0,1.0,1.0,1.0);
-  osg::Vec4 darkgrey(0.3,0.3,0.3,1.0);
-  osg::Vec4 lightgrey(0.8,0.8,0.8,1.0);
-  osg::Vec4 black(0.0,0.0,0.0,1.0);
-  osg::Vec4 red(1.0,0.0,0.0,1.0);
-  osg::Vec4 blue(0.0,0.0,1.0,1.0);
-  osg::Vec4 green(0.0,1.0,0.0,1.0);
-  osg::Vec4 lightblue(0.5,0.5,1.0,1.0);
+  //--- allocate a tile ---//
+  typedef MenuKit::OSG::SkinTile<aSkin::base_class> aTile;
+  aTile::Ptr tile = new aTile();
 
-  MenuKit::OSG::osg_color_theme ct;
-  MenuKit::OSG::osg_color_map norm=ct.get_map();
-  MenuKit::OSG::osg_color_map hi=ct.get_map();
-  MenuKit::OSG::osg_color_map dis=ct.get_map();
-
-  norm["text"] = blue;
-  hi["text"] = red;
-  dis["text"] = green;
-
-  // give the themes to the tile
-  typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
-  DMTMAP dmtmap;
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
-
-  // make a tile
-  MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
-  tile->theme_map( dmtmap );
-  tile->skin( skin.get() );
+  //--- setup the tile ---//
+  tile->skin( skin.get() );  // no more skin code after here
+  //tile->mode(MenuKit::OSG::Tile::NORMAL);
+  //--- --------------- ---//
 
   // produce the menu
-  MenuKit::Menu::Ptr menu = create_menu();
+  MenuKit::SampleMenu sample;
+  MenuKit::Menu::Ptr menu = sample();
 
   // output menu to stream
-  MenuKit::StreamVisitor::Ptr streamer = new MenuKit::StreamVisitor(std::cout);
-  menu->accept( *streamer );
+  //MenuKit::StreamVisitor::Ptr streamer = new MenuKit::StreamVisitor(std::cout);
+  //menu->accept( *streamer );
 
   // make a mason
-  MenuKit::OSG::osgMason::Ptr mason = new MenuKit::OSG::osgMason();
+  typedef MenuKit::OSG::Mason<MenuKit::OSG::Tile> TileMason;
+  TileMason::Ptr mason = new TileMason();
   mason->tile( tile.get() );
 
   // create the scene representing the menu
   menu->accept( *mason );
   osg::ref_ptr<osg::Node> scene = mason->scene();
 
-  // optimize the menu
-  osgUtil::Optimizer mizer;
-  mizer.optimize( scene.get() );
+  // screen dimensions to be used for menu display
+  MenuKit::Detail::Box area(1024.0,1280.0);
 
-  // place menu graphics into scene
-  osg::ref_ptr<osg::MatrixTransform> root = new osg::MatrixTransform();
-  root->addChild( scene.get() );
+  //--- place menu graphics into the environment ---//
+  // make a transform node for attaching the menu graphics
+  osg::ref_ptr<osg::MatrixTransform> xform = new osg::MatrixTransform();
+  xform->addChild( scene.get() );
+  osg::Matrix rotate(osg::Matrix::rotate(osg::PI_2, osg::Vec3(1.0f,0.0f,0.0f)));
+  osg::Matrix translate(osg::Matrix::translate(osg::Vec3(-0.5*area.width(),0.5*area.height(),0.0)));
+  xform->setMatrix( translate*rotate );
 
-  // (un)spin the model, Viewer class imposes a 'spin' on data
-  root->setMatrix( osg::Matrix::rotate( osg::DegreesToRadians(90.0),
-                                        osg::Vec3(1.0,0.0,0.0)) );
+  // attach the transform node to the HUD
+  osg::ref_ptr<osg::Projection> hud = new osg::Projection();
+  hud->setMatrix( osg::Matrix::ortho2D(-0.5*area.width(),0.5*area.width(),-0.5*area.height(),0.5*area.height()) );
+  hud->addChild( xform.get() );
+
+  // configure the OpenGL settings for this menu node
+  osg::ref_ptr<osg::StateSet> ss = hud->getOrCreateStateSet();
+  ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+  ss->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
+  ss->setRenderBinDetails(10,"RenderBin"); // a high number makes it render last
+
+  // make some background graphics to fight osgProducer::Viewer's auto-centering
+  MenuKit::OSG::Border border( MenuKit::Detail::Box(1.1*area.height(),1.1*area.width()), area, -1.0 );
+  border.color( osg::Vec4(1.0,0.0,0.0,1.0) );
+  osg::ref_ptr<osg::Node> brdr = border();
+  osg::ref_ptr<osg::MatrixTransform> bg = new osg::MatrixTransform();
+  bg->addChild( brdr.get() );
+  bg->setMatrix( osg::Matrix::rotate( osg::PI_2, osg::Vec3(1.0,0.0,0.0) ) );
+
+  // attach the absolute transform node to the scene root
+  osg::ref_ptr<osg::Group> root = new osg::Group();
+  root->addChild( hud.get() );
+  root->addChild( bg.get() );
 
   // make a viewer
   osg::ref_ptr<osgProducer::Viewer> viewer = new osgProducer::Viewer();
@@ -105,108 +116,4 @@ int main(unsigned int argc, char* argv[])
   viewer->sync();
 
   return 1;
-}
-
-MenuKit::Menu* create_menu()
-{
-  // creation
-  MenuKit::Menu* top = new MenuKit::Menu;
-  top->layout( MenuKit::Menu::HORIZONTAL );
-  top->text( "" );
-  top->expanded( true );
-
-  MenuKit::Menu::Ptr file = new MenuKit::Menu();
-  file->layout( MenuKit::Menu::VERTICAL );
-  file->text( "File" );
-  file->expanded( false );
-
-  MenuKit::Menu::Ptr edit = new MenuKit::Menu();
-  edit->layout( MenuKit::Menu::VERTICAL );
-  edit->text( "Edit" );
-  edit->expanded( true );
-
-  MenuKit::Menu::Ptr tools = new MenuKit::Menu();
-  tools->layout( MenuKit::Menu::VERTICAL );
-  tools->text( "Toolsxxxxxxx" );
-  tools->expanded( false );
-
-  MenuKit::Menu::Ptr help = new MenuKit::Menu();
-  help->layout( MenuKit::Menu::VERTICAL );
-  help->text( "Help" );
-  help->expanded( false );
-
-  MenuKit::Menu::Ptr move = new MenuKit::Menu();
-  move->layout( MenuKit::Menu::VERTICAL );
-  move->text( "Move" );
-  move->expanded( true );
-
-  MenuKit::Button::Ptr open = new MenuKit::Button();
-  open->text( "Open" );
-
-  MenuKit::Button::Ptr exit = new MenuKit::Button();
-  exit->text( "Exit" );
-
-  MenuKit::Button::Ptr cut = new MenuKit::Button();
-  cut->text( "Cut" );
-
-  MenuKit::Button::Ptr paste = new MenuKit::Button();
-  paste->text( "Pastexxxxxx" );
-
-  MenuKit::Button::Ptr spacer = new MenuKit::Button();
-  spacer->separator( true );
-
-  MenuKit::Button::Ptr search = new MenuKit::Button();
-  search->text( "Search" );
-
-  MenuKit::Button::Ptr index = new MenuKit::Button();
-  index->text( "Index" );
-
-  MenuKit::Button::Ptr about = new MenuKit::Button();
-  about->text( "About" );
-
-  MenuKit::Button::Ptr xyz = new MenuKit::Button();
-  xyz->text( "XYZ" );
-  xyz->checked( false );
-  xyz->marked( true );
-  xyz->toggle( true );
-
-  MenuKit::Button::Ptr rotate = new MenuKit::Button();
-  rotate->text( "Rotate" );
-  rotate->toggle( true );
-  rotate->checked( true );
-
-  MenuKit::Button::Ptr free = new MenuKit::Button();
-  free->text( "Free" );
-  free->enabled( false );
-  //free->toggle( true );
-
-  MenuKit::Button::Ptr scale = new MenuKit::Button();
-  scale->text( "Scale" );
-  scale->toggle( true );
-
-  // organize
-  top->append( file.get() );
-  top->append( edit.get() );
-  top->append( tools.get() );
-  top->append( help.get() );
-
-  file->append( open.get() );
-  file->append( exit.get() );
-
-  edit->append( move.get() );
-  edit->append( spacer.get() );
-  edit->append( cut.get() );
-  edit->append( paste.get() );
-
-  tools->append( search.get() );
-
-  help->append( index.get() );
-  help->append( about.get() );
-
-  move->append( xyz.get() );
-  move->append( rotate.get() );
-  move->append( free.get() );
-  move->append( scale.get() );
-
-  return( top );
 }

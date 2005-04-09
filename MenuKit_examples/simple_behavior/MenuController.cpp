@@ -1,16 +1,12 @@
 #include "MenuController.h"
 
-#include "MenuKit/OSG/VisualThemeSkin.h"
-
 #include "osgProducer/EventAdapter"
-#include "osgText/Font"
 
-MenuController::MenuController(osg::Group* g,const std::string& f): BaseClass(),
-  _behavior(new MenuKit::Behavior()),
-  _mason(new MenuKit::OSG::osgMason()),
-  _attach(g),
-  _kdm(),
-  _fontfile(f)
+MenuController::MenuController(/*osg::Group* g*/): BaseClass(),
+  _attach(0x0/*g*/),
+  _mason(0x0/*new TileMason()*/),
+  _behavior(0x0/*new MenuKit::Behavior()*/),
+  _kdm()
 {
   // --- map the keyboard commands to the behavior class --- //
   typedef KeyboardDirectionMap KDM;
@@ -21,40 +17,33 @@ MenuController::MenuController(osg::Group* g,const std::string& f): BaseClass(),
   _kdm.insert( KDM::value_type(oPEA::KEY_Left,MKB::LEFT) );
   _kdm.insert( KDM::value_type(oPEA::KEY_Right,MKB::RIGHT) );
 
-  // --- make the graphics objects --- //
+  //--- allocate a skin ---//
+  //typedef MenuKit::OSG::VisualThemeSkin aSkin;
+  //aSkin::Ptr skin = new aSkin();
+  //skin->letter_height( 50.0f );
 
-  // load a skin
-  osg::ref_ptr<osgText::Font> font = osgText::readFontFile( _fontfile );
+  //--- setup the skin ---//
+  // load font for skin
+  //std::string fontfile("");
+  //if( argc > 1 && osgDB::fileExists(argv[1]) )
+  //  fontfile = argv[1];
+  //else
+  //  fontfile = "C:\\sdk\\share\\OpenSceneGraph-Data\\fonts\\arial.ttf";
+  //osg::ref_ptr<osgText::Font> font = osgText::readFontFile( fontfile );
+  //if( font.valid() )
+  //  skin->font( font.get() );
+  //--- --------------- ---//
 
-  // make a skin
-  MenuKit::OSG::VisualThemeSkin::Ptr skin = new MenuKit::OSG::VisualThemeSkin();
-  if( font.valid() )
-    skin->font( font.get() );
+  //--- allocate a tile ---//
+  //typedef MenuKit::OSG::SkinTile<aSkin::base_class> aTile;
+  //aTile::Ptr tile = new aTile();
 
-  osg::Vec4 blue(0.0,0.0,1.0,1.0);
-  osg::Vec4 lightblue(0.4,0.4,1.0,1.0);
-  osg::Vec4 lightgrey(0.7,0.7,0.7,1.0);
+  //--- setup the tile ---//
+  //tile->skin( skin.get() );  // no more skin code after here
+  //--- --------------- ---//
 
-  MenuKit::OSG::osg_color_theme ct;
-  MenuKit::OSG::osg_color_map norm=ct.get_map();
-  MenuKit::OSG::osg_color_map hi=ct.get_map();
-  hi["horizontal_background"] = lightblue;
-  hi["vertical_background"] = lightblue;
-  hi["border"] = blue;
-  MenuKit::OSG::osg_color_map dis=ct.get_map();
-  dis["text"] = lightgrey;
-
-  typedef MenuKit::OSG::osgThemeSkinTile::DisplayModeThemeMap DMTMAP;
-  DMTMAP dmtmap;
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::NORMAL,norm) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::HIGHLIGHT,hi) );
-  dmtmap.insert( DMTMAP::value_type(MenuKit::OSG::TileFunctor::DISABLED,dis) );
-
-  MenuKit::OSG::osgThemeSkinTile::Ptr tile = new MenuKit::OSG::osgThemeSkinTile();
-  tile->theme_map( dmtmap );
-  tile->skin( skin.get() );
-
-  _mason->tile( tile.get() );
+  // make a mason
+  //_mason->tile( tile.get() );
 }
 
 MenuController::~MenuController()
@@ -71,7 +60,7 @@ bool MenuController::handle(const osgGA::GUIEventAdapter& ea,
       KeyboardDirectionMap::iterator iter = _kdm.find(ea.getKey());
       if( _kdm.end() != iter )
       {
-        // use the behavior class to modify the menu
+         // use the behavior class to modify the menu
         _behavior->moveFocused( iter->second );
 
         // build a new scene

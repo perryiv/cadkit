@@ -3,6 +3,7 @@
 
 #include "MenuKit/OSG/DrawableFunctor.h"
 #include "MenuKit/OSG/FlatBox.h"
+#include "MenuKit/Box.h"
 
 #include "osg/Geode"
 #include "osg/MatrixTransform"

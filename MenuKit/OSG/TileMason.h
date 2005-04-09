@@ -83,8 +83,8 @@ namespace MenuKit
       Detail::Box _determine_tile_size(const Menu& m,Menu::Layout parent_layout);
       Detail::Box _determine_tile_size(const Button& b,Menu::Layout parent_layout);
 
-      typename tile_type::display_mode _determine_tile_display_mode(const Button& m);
-      typename tile_type::display_mode _determine_tile_display_mode(const Menu& m);
+      typename tile_type::DisplayMode _determine_tile_display_mode(const Button& m);
+      typename tile_type::DisplayMode _determine_tile_display_mode(const Menu& m);
 
     private:
       ///\todo TODO: evaluate if this class is copyable
@@ -113,10 +113,36 @@ namespace MenuKit
         pl = parent->layout();
       else
       {
-        ///\todo TODO: implement a 'switch' to be the initialization event
+        /**\todo TODO: implement a 'switch' to be the initialization event.
+          * FIX: This will cause problems if any Item other than the top Item
+          * is initially traversed.
+          */
+
         _scene = new osg::Group();  // NULL parent is the initialization event
         _scene->setName( _scene_name );
+
         pl = Menu::HORIZONTAL;  // designates as horizontal layout
+ 
+        if( m.text().empty() )
+        {
+          traverse(m);
+
+          Menu::Layout ml = m.layout();
+          // pop for all children
+          if( ml == Menu::VERTICAL )
+          {
+            for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
+              _vert.pop();
+          }
+
+          else
+          {
+            for(Menu::Items::const_iterator iter=m.items().begin(); iter!=m.items().end(); iter++)
+              _hori.pop();
+          }
+
+          return;
+        }
       }
 
       // configure the tile
@@ -324,9 +350,9 @@ namespace MenuKit
     }
 
     template<typename T>
-    typename Mason<T>::tile_type::display_mode Mason<T>::_determine_tile_display_mode(const Menu& m)
+    typename Mason<T>::tile_type::DisplayMode Mason<T>::_determine_tile_display_mode(const Menu& m)
     {
-      tile_type::display_mode dm( tile_type::NORMAL );
+      tile_type::DisplayMode dm( tile_type::NORMAL );
       if( m.marked() || m.expanded() )
         dm = tile_type::HIGHLIGHT;
       if( !m.enabled() )
@@ -336,9 +362,9 @@ namespace MenuKit
     }
 
     template<typename T>
-    typename Mason<T>::tile_type::display_mode Mason<T>::_determine_tile_display_mode(const Button& b)
+    typename Mason<T>::tile_type::DisplayMode Mason<T>::_determine_tile_display_mode(const Button& b)
     {
-      tile_type::display_mode dm( tile_type::NORMAL );
+      tile_type::DisplayMode dm( tile_type::NORMAL );
       if( b.marked() || b.expanded() )
         dm = tile_type::HIGHLIGHT;
       if( !b.enabled() )

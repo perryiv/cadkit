@@ -6,7 +6,7 @@
 #ifndef _menukit_osg_skintile_h_
 #define _menukit_osg_skintile_h_
 
-#include "MenuKit/OSG/ThemeTile.h"      // base class
+#include "MenuKit/OSG/TileFunctor.h"      // base class
 
 #include "osg/Node"
 
@@ -26,16 +26,18 @@ namespace MenuKit
       * object for a Menu Item.
       */
     template<typename SkinType>
-    class ThemeSkinTile : public ThemeTile<typename SkinType::theme_type>
+    class SkinTile : public Tile
     {
     public:
-      typedef ThemeTile<typename SkinType::theme_type> base_class;
+      typedef Tile base_class;
       typedef SkinType skin_type;
       typedef typename skin_type::Ptr skin_ptr;
-      typedef ThemeSkinTile<SkinType> thisclass;
+      typedef SkinTile<skin_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 
-      ThemeSkinTile(): base_class(), _skin(0x0) {}
+      ///\todo require skin_type::node_type
+
+      SkinTile(): base_class(), _skin(0x0) {}
 
       virtual float height(const Menu&) const;
       virtual float height(const Button&) const;
@@ -55,16 +57,15 @@ namespace MenuKit
       const skin_type* skin() const { return _skin.get(); }
 
     protected:
-      virtual ~ThemeSkinTile() {}
+      virtual ~SkinTile() {}
 
     private:
       ///\todo TODO: evaluate if this class is copyable
-      // not implemented by design
-      ThemeSkinTile(const ThemeSkinTile& tt);//:
-      //  base_class(tt), _skin(tt._skin)
-      //{}
 
-      ThemeSkinTile& operator =(const ThemeSkinTile& tt);
+      // not implemented by design
+      SkinTile(const SkinTile& tt);//: base_class(tt), _skin(tt._skin) {}
+
+      SkinTile& operator =(const SkinTile& tt);
       //{
       //  base_class::operator=(tt);
       //  _skin = tt._skin;
@@ -82,10 +83,10 @@ using namespace MenuKit;
 using namespace OSG;
 
 template<typename T>
-osg::Node* ThemeSkinTile<T>::operator ()(const Menu& m)
+osg::Node* SkinTile<T>::operator ()(const Menu& m)
 {
   // configure the skin
-  _skin->theme( this->_proper_theme() );
+  _skin->mode( this->mode() );
   _skin->graphic_width( this->box().width() );
 
   // produce the graphic
@@ -93,10 +94,10 @@ osg::Node* ThemeSkinTile<T>::operator ()(const Menu& m)
 }
 
 template<typename T>
-osg::Node* ThemeSkinTile<T>::operator ()(const Button& b)
+osg::Node* SkinTile<T>::operator ()(const Button& b)
 {
   // configure the skin
-  _skin->theme( this->_proper_theme() );
+  _skin->mode( this->mode() );
   _skin->graphic_width( this->box().width() );
 
   // produce the graphic
@@ -104,37 +105,37 @@ osg::Node* ThemeSkinTile<T>::operator ()(const Button& b)
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Menu& m) const
+float SkinTile<T>::height(const Menu& m) const
 {
   return( _skin->height(m) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Button& b) const
+float SkinTile<T>::height(const Button& b) const
 {
   return( _skin->height(b) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::height(const Item* i) const
+float SkinTile<T>::height(const Item* i) const
 {
   return( _skin->height(i) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Menu& m) const
+float SkinTile<T>::width(const Menu& m) const
 {
   return( _skin->width(m) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Button& b) const
+float SkinTile<T>::width(const Button& b) const
 {
   return( _skin->width(b) );
 }
 
 template<typename T>
-float ThemeSkinTile<T>::width(const Item* i) const
+float SkinTile<T>::width(const Item* i) const
 {
   return( _skin->width(i) );
 }

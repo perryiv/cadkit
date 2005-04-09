@@ -21,7 +21,6 @@ namespace MenuKit
       * is still meant to be extended by implementing      
       * the 'width' and 'height' memeber functions.
       */
-    template<typename ThemeMap>
     class ThemeTile : public TileFunctor
     {
     public:
@@ -64,7 +63,7 @@ namespace MenuKit
       //  _thememap = tt._thememap;
       //}
 
-      DisplayModeThemeMap _thememap;
+      DisplayMode _mode;
     };
 
   };

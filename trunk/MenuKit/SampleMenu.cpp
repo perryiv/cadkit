@@ -79,6 +79,7 @@ Menu* SampleMenu::operator ()()
   Button::Ptr debugspacer = new Button("DebugSpacer","");
   debugspacer->separator( true );
   Button::Ptr stepinto = new Button("Step Into","");
+  stepinto->marked( true );
   Button::Ptr stepover = new Button("Step Over","");
   Button::Ptr debugspacer2 = new Button("DebugSpacer2","");
   debugspacer2->separator( true );
@@ -91,6 +92,8 @@ Menu* SampleMenu::operator ()()
   debug->append( stepover.get() );
   debug->append( debugspacer2.get() );
   debug->append( newbreakpoint.get() );
+  debug->expanded( true );
+  debug->marked( true );
 
   Button::Ptr customize = new Button("Customize...","");
   Button::Ptr options = new Button("Options...","");
@@ -144,5 +147,6 @@ Menu* SampleMenu::operator ()()
   top->append( tools.get() );
   top->append( window.get() );
   top->append( help.get() );
+  top->expanded( true );
   return top;
 }

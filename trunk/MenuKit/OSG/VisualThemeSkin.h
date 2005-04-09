@@ -1,5 +1,5 @@
-#ifndef _menukit_osg_colorthemeskin_h_
-#define _menukit_osg_colorthemeskin_h_
+#ifndef _menukit_osg_visual_themeskin_h_
+#define _menukit_osg_visual_themeskin_h_
 
 #include "MenuKit/OSG/ThemeSkin.h"   // the base class
 #include "MenuKit/OSG/Border.h"      // graphics helpers
@@ -23,8 +23,6 @@
 
 #include <string>
 
-#include "MenuKit/OSG/osg_types.h"
-
 /**\todo
   FIX: make this diagram correct.
   TODO: make the implementation reflect it!
@@ -45,7 +43,13 @@ namespace MenuKit
   namespace OSG
   {
 
-    /** VisualThemeSkin
+    /**\todo
+      * define a base_class::ModeMap functor and use that
+      * to initialize the base_class constructor
+      */
+
+    /** @class VisualThemeSkin
+      *
       * The VisualThemeSkin class is a simple implementation
       * of the ThemeSkin base class.  Its goal is to provide
       * Menu Items with a similar appearance to the Menu Items
@@ -55,11 +59,59 @@ namespace MenuKit
       * It is intended to be a leaf class, which has many
       * OSG specific methods.
       */
-    class VisualThemeSkin : public MenuKit::OSG::osgThemeSkin
+
+    typedef std::map<std::string,osg::Vec4> VTSColorMap;
+    struct VTSModeMapFunctor
     {
-      ///\todo TODO: should i map depths to the keys of the color map?
+      typedef MenuKit::OSG::ThemeSkin<VTSColorMap>::ModeMap return_type;
+
+      return_type operator ()()
+      {
+        osg::Vec4 red(1.0f,0.0f,0.0f,1.0f);
+        osg::Vec4 black(0.0f,0.0f,0.0f,1.0f);
+        osg::Vec4 blue(0.0f,0.0f,1.0f,1.0f);
+        osg::Vec4 gray(0.5f,0.5f,0.5f,1.0f);
+        osg::Vec4 brightgray(0.9f,0.9f,0.9f,1.0f);
+        osg::Vec4 darkgray(0.2f,0.2f,0.6f,1.0f);
+
+        // make 3 ModeMap::value_types for 3 ModeMap::key_types
+        VTSColorMap normal;
+        normal["text"] = black;
+        normal["middle"] = gray;
+        normal["border"] = blue;
+        normal["horizontal_background"] = brightgray;
+        normal["vertical_background"] = brightgray;
+        normal["special"] = darkgray;
+
+        VTSColorMap hilight;
+        hilight["text"] = black;
+        hilight["middle"] = gray;
+        hilight["border"] = blue;
+        hilight["horizontal_background"] = brightgray;
+        hilight["vertical_background"] = brightgray;
+        hilight["special"] = darkgray;
+
+        VTSColorMap disabled;
+        disabled["text"] = red;
+        disabled["middle"] = gray;
+        disabled["border"] = blue;
+        disabled["horizontal_background"] = brightgray;
+        disabled["vertical_background"] = brightgray;
+        disabled["special"] = darkgray;
+
+        return_type mm;
+        mm[Tile::DISABLED] = disabled;
+        mm[Tile::HIGHLIGHT] = hilight;
+        mm[Tile::NORMAL] = normal;
+
+        return mm;
+      }
+    };
+
+    class VisualThemeSkin : public MenuKit::OSG::ThemeSkin<VTSColorMap>
+    {
     public:
-      typedef ThemeSkin<osg_color_map> base_class;
+      typedef ThemeSkin<VTSColorMap> base_class;
       MENUKIT_DECLARE_POINTER ( VisualThemeSkin );
 
       enum ItemBits
@@ -74,7 +126,11 @@ namespace MenuKit
         MARKED    = 0x00000040,
       };
 
-      VisualThemeSkin(): base_class(), _margin(0.1), _border(0.025), _font(new osgText::Font()) {}
+      VisualThemeSkin(): base_class(), _margin(1.4), _border(0.8)
+      {
+        VTSModeMapFunctor mmf;
+        this->mode_map( mmf() );
+      }
 
       virtual osg::Node* operator ()(const Menu& m);
       virtual osg::Node* operator ()(const Button& b);
@@ -87,9 +143,6 @@ namespace MenuKit
       virtual float width(const Menu& m) const;
       virtual float width(const Button& b) const;
       virtual float width(const Item* i) const;
-
-      void font(const osg::ref_ptr<osgText::Font> f) { _font = f; }
-      const osg::ref_ptr<osgText::Font> font() const { return _font; }
 
       void border(float m) { _border=m; }
       float border() const { return _border; }
@@ -110,9 +163,10 @@ namespace MenuKit
 
     private:
       ///\todo TODO: evaluate if this class is copyable
+
       // not implemented by design
       VisualThemeSkin(const VisualThemeSkin& s);//: base_class(s),
-      //  _margin(s._margin), _text(s._text), _border(s._border), _font(ts._font)
+      //  _margin(s._margin), _text(s._text), _border(s._border)
       //{}
 
       VisualThemeSkin& operator= (const VisualThemeSkin& ct);
@@ -121,13 +175,11 @@ namespace MenuKit
       //  _margin = ct._margin;
       //  _text = ct._text;
       //  _border = ct._border;
-      //  _font = ts._font;
       //  return( *this );
       //}
 
       float _margin,  // distance between box's edge to an add-on
             _border;  // distance from the margin to the graphic's edge
-      osg::ref_ptr<osgText::Font> _font;
     };
 
   };
@@ -235,7 +287,16 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
     pl = Menu::HORIZONTAL;
   }
 
-  const base_class::theme_type& scheme = this->theme();
+  const base_class::ModeMap& mmap = this->mode_map();
+  base_class::ModeMap::const_iterator modeiter = mmap.find( this->mode() );
+
+  if( modeiter == mmap.end() )
+  {
+    ///\todo implement exception code here
+  }
+  base_class::ModeMap::value_type modetheme = *modeiter;
+  base_class::ModeMap::value_type::second_type scheme = modetheme.second;
+
   base_class::theme_type::const_iterator middleiter = scheme.find("middle");
   base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
   base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
@@ -263,12 +324,12 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
   // make the text graphic functor
   Word word;
+  word.draw_mode( osgText::Text::TEXT /*|osgText::Text::BOUNDINGBOX | osgText::Text::ALIGNMENT*/);
   word.height( this->letter_height() );
   word.text( txt );
   word.font( font() );
   if( textiter != scheme.end() )
     word.color( textiter->second );
-  word.draw_mode( osgText::Text::TEXT );
   osg::ref_ptr<osg::Drawable> worddrawable = word();
 
   // make a boundingbox for convenience, used below, to move the word
@@ -285,9 +346,9 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->setName("MK_OSG_CTS_word_xform");
   wordmt->addChild( wordgeode.get() );
-  osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin,-0.5*wordheight,0.0);
+  osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin, -0.5*thebox.height(), 0.0f );
   if( pl==Menu::HORIZONTAL )
-    wordcorrection[0] = -0.5*wordwidth;
+    wordcorrection[0] = -0.5*wordwidth;//+_border+_margin;
   wordmt->setMatrix( osg::Matrix::translate(wordcorrection) );
 
   osg::ref_ptr<osg::Group> group = new osg::Group();
@@ -461,11 +522,22 @@ osg::Node* VisualThemeSkin::_separator_graphic(MenuKit::Menu::Layout pl)
                 this->graphic_width(),
                 -0.002);
 
-  const base_class::theme_type& scheme = this->theme();
-  base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
-  base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
+  const base_class::ModeMap& mmap = this->mode_map();
+  base_class::ModeMap::const_iterator modeiter = mmap.find( this->mode() );
+
+  if( modeiter == mmap.end() )
+  {
+    ///\todo implement exception code here
+  }
+  base_class::ModeMap::value_type modetheme = *modeiter;
+  base_class::ModeMap::value_type::second_type scheme = modetheme.second;
+
   base_class::theme_type::const_iterator middleiter = scheme.find("middle");
+  base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
+  base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
   base_class::theme_type::const_iterator textiter = scheme.find("text");
+  //base_class::theme_type::const_iterator specialiter = scheme.find("special");
+  //base_class::theme_type::const_iterator borderiter = scheme.find("border");
 
   if( pl==MenuKit::Menu::HORIZONTAL )
   {
@@ -596,24 +668,28 @@ float VisualThemeSkin::_item_width(const std::string& s,const Menu* parent) cons
   float wordwidth = this->_word_width( s );
 
   // check for top-level item
+  Menu::Layout pl;
   if( !parent )
-    return( wordwidth + 2.0*(_margin+_border) );
+    pl = Menu::HORIZONTAL;
+  else
+    pl = parent->layout();
 
   // --- LAYOUT correcting --- //
 
   // the eqation for the width of a horizontal graphic
   // 2 margins,   2 x _margin
+  // 2 borders,   2 x _border
   // 1 text box,  1 x graphic text width
-  if( parent->layout() == Menu::HORIZONTAL )
-    return( wordwidth + 2.0*(_margin+_border) );
+  if( pl == Menu::HORIZONTAL )
+    return( wordwidth + 2.0*(_margin+2.0*_border) );
 
   ///\todo TODO: When calculating this equation, include more spacing between pieces with _margin for better appearance, and use this new distance for positioning in graphic creation.
   // equation for the width of a vertical graphic:
-  // 2 side boxes: 2 x _box's width (which is the height of the box - 2 x margin)
+  // 2 side boxes: 2 x _box's width (which is the height of the box + 2 x border)
   // 1 text box:   1 x  graphic text width
   // 2 margins:    2 x _margin
   else
-    return( 2.0*(this->_total_height()+_border+_margin) + wordwidth );
+    return( 2.0*(this->_total_height()+2.0*_border+_margin) + wordwidth );
 }
 
 float VisualThemeSkin::_word_width(const std::string& s) const
@@ -621,7 +697,10 @@ float VisualThemeSkin::_word_width(const std::string& s) const
   Word word;
   word.height( this->letter_height() );
   word.text( s );
-  word.font( const_cast<osgText::Font*>(_font.get()) );
+  const osgText::Font* cf = this->font();
+  osgText::Font* f = const_cast<osgText::Font*>( cf );
+  if( f )
+    word.font( f );
   word.draw_mode( osgText::Text::BOUNDINGBOX );
 
   // use the functor to make the graphics

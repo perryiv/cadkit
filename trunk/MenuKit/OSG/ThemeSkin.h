@@ -1,10 +1,11 @@
 #ifndef _menukit_osg_themeskin_h_
 #define _menukit_osg_themeskin_h_
 
-#include "MenuKit/Menu.h"
-#include "MenuKit/Button.h"
+#include "MenuKit/Menu.h"     // for request support
+#include "MenuKit/Button.h"   // for request support
+#include "MenuKit/OSG/TileFunctor.h" // for map typedef
 
-#include "MenuKit/Box.h"
+#include "osgText/Font"
 
 namespace osg
 {
@@ -16,18 +17,16 @@ namespace MenuKit
 
   namespace OSG
   {
-    /** ThemeSkin
+    /** @class ThemSkin
       * 
       * This is an abstract base class for implementing classes
-      * that want to take advantage of a "theme" member.  The
-      * Box and MapType members are template requirements for
-      * the ColorThemeSkinTile class.
+      * that want to take advantage of a Tile's 'DisplayMode' member.
       *
       * Imlementing classes will need to manufacture graphic
       * objects.  Derived classes will most likey use the
       * MapType member for color designation.
       */
-    template<typename MapType>
+    template<typename ThemeType>
     class ThemeSkin : public Referenced
     {
       /**\todo TODO: have skins support their own theme maps.
@@ -43,11 +42,14 @@ namespace MenuKit
         */
     public:
       typedef Referenced base_class;
-      typedef MapType theme_type;
+
+      typedef ThemeType theme_type;
       typedef ThemeSkin<theme_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 
-      ThemeSkin(): base_class(), _theme(), _letter_height(0.75f), _separator_height(0.2f), _graphic_width(0.0f) {}
+      typedef std::map<Tile::DisplayMode,theme_type> ModeMap;
+
+      ThemeSkin(ModeMap m=ModeMap()): base_class(), _font(new osgText::Font()), _modemap(m), _mode(Tile::NORMAL), _letter_height(0.75f), _separator_height(0.2f), _graphic_width(0.0f) {}
 
       virtual osg::Node* operator ()(const Menu& menu)=0;
       virtual osg::Node* operator ()(const Button& butn)=0;
@@ -62,6 +64,10 @@ namespace MenuKit
       virtual float width(const Item* item) const=0;
       // TODO: virtual float width(const Item& menu);
 
+      void font(osgText::Font* f)       { _font = f; }
+      osgText::Font* font()             { return _font.get(); }
+      const osgText::Font* font() const { return _font.get(); }
+
       void graphic_width(float w) { _graphic_width = w; }
       float graphic_width() const { return _graphic_width; }
 
@@ -71,31 +77,26 @@ namespace MenuKit
       void separator_height(float w) { _separator_height = w; }
       float separator_height() const { return _separator_height; }
 
-      void theme(const theme_type& t) { _theme = t; }
-      const theme_type& theme() const { return _theme; }
-      theme_type& theme() { return _theme; }
+      void mode_map(const ModeMap& t) { _modemap = t; }
+      const ModeMap& mode_map() const { return _modemap; }
+      ModeMap& mode_map() { return _modemap; }
+
+      void mode(Tile::DisplayMode m) { _mode=m; }
+      Tile::DisplayMode mode() const { return _mode; }
 
     protected:
       virtual ~ThemeSkin() {}
 
     private:
       ///\todo TODO: evaluate if this class is copyable
+
       // not implemented by design
-      ThemeSkin(const ThemeSkin& ts);//: base_class(ts)
-      //  _box(ts._box), _separator(ts._separator), _theme(ts._theme)
-      //{}
-
+      ThemeSkin(const ThemeSkin& ts);
       ThemeSkin& operator =(const ThemeSkin& ts);
-      //{
-      //  base_class::operator =(ts);
-      //  _box = ts._box;
-      //  _separator = ts._separator;
-      //  _theme = ts._theme;
-      //  return( *this );
-      //}
 
-      //Detail::Box _box, _separator;  // 2 boxes that define the size of the total graphic
-      theme_type _theme;
+      osg::ref_ptr<osgText::Font> _font;
+      ModeMap _modemap;
+      Tile::DisplayMode _mode;  // current mode state
       float _letter_height,     // height of the printed-type
             _separator_height,  // height of the separator
             _graphic_width;     // horizontal distance to be honored when rendering

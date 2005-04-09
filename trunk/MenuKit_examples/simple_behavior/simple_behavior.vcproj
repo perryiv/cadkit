@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib osgDB.lib MenuKit.lib"
+				AdditionalDependencies="Producer.lib osgText.lib osg.lib osgGA.lib osgProducer.lib osgDB.lib MenuKitd.lib"
 				OutputFile="$(OutDir)/simple_behavior.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(MENUKIT_LIB_DIR)&quot;"
@@ -120,9 +120,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
-			<File
-				RelativePath=".\GraphStreamVisitor.h">
-			</File>
 			<File
 				RelativePath=".\main.cpp">
 			</File>

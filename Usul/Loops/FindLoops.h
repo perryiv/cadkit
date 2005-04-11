@@ -32,24 +32,12 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   if( p->visited() )
     return;
 
-  SharedVertex *v1 ( p->vertex1() );
+  
+  visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
 
-  if( !v1->visited() )
-  {
-    visitSharedVertex( polygons, uncapped, loop, v1 );
-  }
-
-  SharedVertex *v2 ( p->vertex2() );
-  if( !v2->visited() )
-  {
-    visitSharedVertex( polygons, uncapped, loop, v2 );
-  }
-
-  SharedVertex *v3 ( p->vertex3() );
-  if( !v3->visited() )
-  {
-    visitSharedVertex( polygons, uncapped, loop, v3 );
-  }
+  visitSharedVertex( polygons, uncapped, loop, p->vertex2() );
+  
+  visitSharedVertex( polygons, uncapped, loop, p->vertex3() );
 
   p->visited( true );
 }
@@ -66,6 +54,17 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
 {
   typedef typename SharedVertex::PolygonList PolygonList;
   typedef typename Polygons::value_type PolygonPtr;
+
+  //Return now if already visited
+  if( sv->visited() )
+    return;
+
+  //Return now if not on edge
+  if( !sv->onEdge() )
+    return;
+
+  //Mark the shared vertex as visited
+  sv->visited( true );
 
   PolygonList p1 ( sv->polygons() );
 
@@ -93,12 +92,54 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
         //Visit this polygon
         visitPolygon( polygons, uncapped, loop, p.get() );
       }
-      //(*poly)->visited( true );
     }
   }
 
-  //Mark the shared vertex as visited
-  sv->visited( true );
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Mark the shared vertices as on edge if they don't share two adjacent polygons
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class PolygonList, class Polygon >
+void findEdge ( PolygonList& polygons, Polygon* check )
+{
+  typedef typename Polygon::SharedVertex SharedVertex;
+
+  SharedVertex *v1 ( check->vertex1() );
+  SharedVertex *v2 ( check->vertex2() );
+  SharedVertex *v3 ( check->vertex3() );
+
+  unsigned int v1Count( 0 );
+  unsigned int v2Count( 0 );
+  unsigned int v3Count( 0 );
+
+  for( typename PolygonList::iterator i = polygons.begin(); i != polygons.end(); ++i )
+  {
+    if( *i != check )
+    {
+      SharedVertex *t1 ( (*i)->vertex1() );
+      SharedVertex *t2 ( (*i)->vertex2() );
+      SharedVertex *t3 ( (*i)->vertex3() );
+
+      if( v1 == t1 || v1 == t2 || v1 == t3 )
+        ++v1Count;
+      if( v2 == t1 || v2 == t2 || v2 == t3 )
+        ++v2Count;
+      if( v3 == t1 || v3 == t2 || v3 == t3 )
+        ++v3Count;
+    }
+  }
+
+  if( v1Count < 2 )
+    v1->onEdge( true );
+  if( v2Count < 2 )
+    v2->onEdge( true );
+  if( v3Count < 2 )
+    v3->onEdge( true );
 }
 
 }
@@ -153,7 +194,8 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
     //If we don't have the right number of adjacent polygons...
     if( adjacentPolygons.size() < vertsPerPoly )
     {
-      uncapped.push_back( (*iter)->index() );  
+      uncapped.push_back( (*iter)->index() );
+      Detail::findEdge( adjacentPolygons, iter->get() );
     }
 
     //Send a progress upate
@@ -162,6 +204,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
   updater( uncapped, true );
 
+  //Sort for binary search
   uncapped.sort( std::less<unsigned int>() );
   
   while( !uncapped.empty() )
@@ -170,17 +213,14 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
     //Create a cluster
     Loop loop;
-    //loop.push_back( Loop::value_type ( *i,  );
 
     //Get the polygon
     Polygon p ( polygons.at( *i ) );
-    
-    //No longer needed, remove so we don't come back
-    //uncapped.erase( i );
 
     //this will loop around the gap and build the proper loop
     Detail::visitPolygon( polygons, uncapped, loop, p.get() );
 
+    //Push the loop onto the answer
     loops.push_back( loop );
   }
 }

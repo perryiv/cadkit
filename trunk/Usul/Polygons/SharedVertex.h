@@ -12,6 +12,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Bits/Bits.h"
 
 #include <list>
 
@@ -38,13 +39,21 @@ public:
   typedef typename PolygonList::iterator Iterator;
   typedef ValueType_ ValueType;
 
+  enum
+  {
+    VISITED  = 0x01,
+    ON_EDGE  = 0x02,
+    DELETED  = 0x04,
+    SELECTED = 0x08
+  };
+
   // Smart pointers.
   USUL_DECLARE_REF_POINTERS ( SharedVertex );
 
   SharedVertex ( const ValueType &v ) : BaseClass(),
     _polygons(), 
     _value ( v ), 
-    _visited ( false )
+    _flags ( 0x0 )
   {
   }
 
@@ -54,41 +63,75 @@ public:
     _polygons.push_back ( p );
   }
 
+  //Iterator to the begining of the polygon list
   Iterator begin()
   {
     return _polygons.begin();
   }
 
+  //Iterator to the end of the polygon list
   Iterator end()
   {
     return _polygons.end();
   }
 
+  unsigned char flags () const
+  {
+    return _flags;
+  }
+
+  void flags ( unsigned char f )
+  {
+    _flags = f;
+  }
+
+  //Has this polygon been visited?
   bool visited() const
   {
-    return _visited;
+    return Usul::Bits::has ( _flags, VISITED );
   }
 
+  //Set the visited flag
   void visited ( bool v )
   {
-    _visited = v;
+    if( v )
+      _flags = Usul::Bits::add ( _flags, VISITED );
+    else
+      _flags = Usul::Bits::remove ( _flags, VISITED );
   }
 
+  bool onEdge() const
+  {
+    return Usul::Bits::has( _flags, ON_EDGE );
+  }
+
+  void onEdge( bool e )
+  {
+    if( e )
+      _flags = Usul::Bits::add ( _flags, ON_EDGE );
+    else
+      _flags = Usul::Bits::remove ( _flags, ON_EDGE );
+  }
+
+  //Get the polygon list
   const PolygonList &polygons() const
   {
     return _polygons;
   }
 
+  //Get the value of this shared vertex
   const ValueType &value() const
   {
     return _value;
   }
 
+  //Set the value of this shared vertex
   void value ( const ValueType &v )
   {
     _value = v;
   }
 
+  //Calculate the normal.  Not normalized
   ValueType normal() const
   {
     ValueType n ( 0, 0, 0 );
@@ -114,8 +157,7 @@ protected:
 private:
   PolygonList _polygons;
   ValueType _value;
-  bool _visited;
-  //Possibly have the normal so the geometry can be built right from the Adjacency Map
+  unsigned char _flags;
 
 }; //class SharedVertex
 

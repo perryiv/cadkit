@@ -180,9 +180,6 @@
 				Name="Algorithms"
 				Filter="">
 				<File
-					RelativePath=".\Algorithms\CapPolygons.h">
-				</File>
-				<File
 					RelativePath="Algorithms\Extract.h">
 				</File>
 				<File
@@ -734,19 +731,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="MPL"
-				Filter="">
-				<File
-					RelativePath=".\Mpl\SameType.h">
-				</File>
-				<File
-					RelativePath="MPL\StaticAssert.h">
-				</File>
-				<File
-					RelativePath=".\Mpl\TypeWrap.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="Cast"
 				Filter="">
 				<File
@@ -853,6 +837,29 @@
 				</File>
 				<File
 					RelativePath=".\State\Busy.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="MPL"
+				Filter="">
+				<File
+					RelativePath=".\Mpl\SameType.h">
+				</File>
+				<File
+					RelativePath="MPL\StaticAssert.h">
+				</File>
+				<File
+					RelativePath=".\Mpl\TypeWrap.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Loops"
+				Filter="">
+				<File
+					RelativePath=".\Loops\FillLoop.h">
+				</File>
+				<File
+					RelativePath=".\Loops\FindLoops.h">
 				</File>
 			</Filter>
 		</Filter>

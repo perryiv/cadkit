@@ -517,6 +517,9 @@
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFlipNormals.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetAnimationTime.h">
 					</File>
 					<File

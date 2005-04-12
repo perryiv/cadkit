@@ -47,7 +47,8 @@ namespace MenuKit
       typedef ThemeSkin<theme_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 
-      typedef std::map<Tile::DisplayMode,theme_type> ModeMap;
+      typedef Tile tile_type;
+      typedef std::map<tile_type::DisplayMode,theme_type> ModeMap;
 
       ThemeSkin(ModeMap m=ModeMap()): base_class(), _font(new osgText::Font()), _modemap(m), _mode(Tile::NORMAL), _letter_height(0.75f), _separator_height(0.2f), _graphic_width(0.0f) {}
 

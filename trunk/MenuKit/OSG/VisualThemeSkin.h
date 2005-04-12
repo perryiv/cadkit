@@ -23,18 +23,19 @@
 
 #include <string>
 
-/**\todo
-  FIX: make this diagram correct.
-  TODO: make the implementation reflect it!
----------------------------------------------|
-| m a r g i n              b                 |
-| a ----------             o ----------      |
-| r |        |             r |        |      |
-| g | MIDDLE |   T E X T   d | MIDDLE |      |
-| i |        |             e |        |      |
-| n ----------             r ----------      |
-|             background                     |
-|--------------------------------------------|
+/*
+-------------------------------------------|
+|b o r d e r                               |
+|o                                         |
+|r                                         |
+|d    ---------- m a r g i n    ---------- |
+|e    |        | a |---------|  |        | |
+|r    | MIDDLE | r | T E X T |  | MIDDLE | |
+|     |        | g |---------|  |        | |
+|     ---------- i              ---------- |
+|                n                         |
+|           b a c k g r o u n d            |
+|------------------------------------------|
 */
 
 namespace MenuKit
@@ -58,51 +59,61 @@ namespace MenuKit
       * This class is done with only an OSG implementation.
       * It is intended to be a leaf class, which has many
       * OSG specific methods.
+      *
+      * @param _margin Margin is the distance buffering the text.
+      * @param _border Border is the distance sourrounding any placeable attributes.
       */
 
     typedef std::map<std::string,osg::Vec4> VTSColorMap;
     struct VTSModeMapFunctor
     {
       typedef MenuKit::OSG::ThemeSkin<VTSColorMap>::ModeMap return_type;
+      typedef MenuKit::OSG::ThemeSkin<VTSColorMap>::tile_type tile_type;
 
       return_type operator ()()
       {
+        osg::Vec4 yellow(1.0f,1.0f,0.0f,1.0f);
         osg::Vec4 red(1.0f,0.0f,0.0f,1.0f);
-        osg::Vec4 black(0.0f,0.0f,0.0f,1.0f);
+        osg::Vec4 green(0.0f,0.0f,1.0f,1.0f);
+        osg::Vec4 teal(0.0f,1.0f,1.0f,1.0f);
+
         osg::Vec4 blue(0.0f,0.0f,1.0f,1.0f);
-        osg::Vec4 gray(0.5f,0.5f,0.5f,1.0f);
-        osg::Vec4 brightgray(0.9f,0.9f,0.9f,1.0f);
+        osg::Vec4 faintblue(0.7f,0.7f,1.0f,1.0f);
+
+        osg::Vec4 black(0.0f,0.0f,0.0f,1.0f);
+        osg::Vec4 gray(0.7f,0.7f,0.7f,1.0f);
+        osg::Vec4 lightgray(0.9f,0.9f,0.9f,1.0f);
         osg::Vec4 darkgray(0.2f,0.2f,0.6f,1.0f);
 
         // make 3 ModeMap::value_types for 3 ModeMap::key_types
         VTSColorMap normal;
         normal["text"] = black;
         normal["middle"] = gray;
-        normal["border"] = blue;
-        normal["horizontal_background"] = brightgray;
-        normal["vertical_background"] = brightgray;
-        normal["special"] = darkgray;
+        normal["border"] = red;
+        normal["horizontal_background"] = gray;
+        normal["vertical_background"] = lightgray;
+        normal["special"] = red;
 
         VTSColorMap hilight;
         hilight["text"] = black;
         hilight["middle"] = gray;
         hilight["border"] = blue;
-        hilight["horizontal_background"] = brightgray;
-        hilight["vertical_background"] = brightgray;
-        hilight["special"] = darkgray;
+        hilight["horizontal_background"] = faintblue;
+        hilight["vertical_background"] = faintblue;
+        hilight["special"] = red;
 
         VTSColorMap disabled;
-        disabled["text"] = red;
+        disabled["text"] = gray;
         disabled["middle"] = gray;
-        disabled["border"] = blue;
-        disabled["horizontal_background"] = brightgray;
-        disabled["vertical_background"] = brightgray;
-        disabled["special"] = darkgray;
+        disabled["border"] = red;
+        disabled["horizontal_background"] = gray;
+        disabled["vertical_background"] = lightgray;
+        disabled["special"] = red;
 
         return_type mm;
-        mm[Tile::DISABLED] = disabled;
-        mm[Tile::HIGHLIGHT] = hilight;
-        mm[Tile::NORMAL] = normal;
+        mm[tile_type::DISABLED] = disabled;
+        mm[tile_type::HIGHLIGHT] = hilight;
+        mm[tile_type::NORMAL] = normal;
 
         return mm;
       }
@@ -126,7 +137,7 @@ namespace MenuKit
         MARKED    = 0x00000040,
       };
 
-      VisualThemeSkin(): base_class(), _margin(1.4), _border(0.8)
+      VisualThemeSkin(): base_class(), _margin(6.0f), _border(0.0f)
       {
         VTSModeMapFunctor mmf;
         this->mode_map( mmf() );
@@ -301,7 +312,7 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
   base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
   base_class::theme_type::const_iterator textiter = scheme.find("text");
-  base_class::theme_type::const_iterator specialiter = scheme.find("special");
+  //base_class::theme_type::const_iterator specialiter = scheme.find("special");
   base_class::theme_type::const_iterator borderiter = scheme.find("border");
 
   // make the background box(es)
@@ -346,7 +357,9 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   osg::ref_ptr<osg::MatrixTransform> wordmt = new osg::MatrixTransform();
   wordmt->setName("MK_OSG_CTS_word_xform");
   wordmt->addChild( wordgeode.get() );
-  osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin, -0.5*thebox.height(), 0.0f );
+  osg::Vec3 wordcorrection(-0.5*thebox.width()+thebox.height()+_border+_margin,
+                           -0.5*thebox.height()+_border+_margin,
+                           0.0f );
   if( pl==Menu::HORIZONTAL )
     wordcorrection[0] = -0.5*wordwidth;//+_border+_margin;
   wordmt->setMatrix( osg::Matrix::translate(wordcorrection) );
@@ -409,16 +422,16 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
     Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);
     Detail::Box inny(outy.height()-2.0*_border,outy.height()-2.0*_border);
     Border brdr(outy,inny,0.001);
-    if( specialiter != scheme.end() )
-      brdr.color( specialiter->second );
+    if( borderiter != scheme.end() )
+      brdr.color( borderiter->second );
 
     lgmt->addChild( brdr() );
 
     if( checker::has(itembits, CHECKED) )
     {
       FlatBox markclosed(0.5*inny.height(),0.5*inny.width(),0.002);
-      if( specialiter != scheme.end() )
-        markclosed.color( specialiter->second );
+      if( borderiter != scheme.end() )
+        markclosed.color( borderiter->second );
       osg::ref_ptr<osg::Drawable> mcdraw = markclosed();
       osg::ref_ptr<osg::Geode> mbgeo = new osg::Geode();
       mbgeo->setName("MK_OSG_CTS_markbox");

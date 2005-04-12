@@ -22,12 +22,19 @@
 
 int main(int argc, char* argv[])
 {
+  // screen dimensions to be used for menu display
+  MenuKit::Detail::Box screen(768.0,1024.0);
+
   //--- allocate a skin ---//
   typedef MenuKit::OSG::VisualThemeSkin aSkin;
   aSkin::Ptr skin = new aSkin();
-  skin->letter_height( 50.0f );
 
   //--- setup the skin ---//
+  // adjust some default values
+  skin->letter_height( 0.04*screen.height() );
+  skin->margin( 0.3*skin->letter_height() );
+  skin->border( 0.05*skin->letter_height() );
+
   // load font for skin
   std::string fontfile("");
   if( argc > 1 && osgDB::fileExists(argv[1]) )
@@ -66,20 +73,17 @@ int main(int argc, char* argv[])
   osg::ref_ptr<osg::Node> scene = tile->operator ()( *button );
   //--- --------------------------------- ---//
 
-  // screen dimensions to be used for menu display
-  MenuKit::Detail::Box area(1024.0,1280.0);
-
   //--- place menu graphics into the environment ---//
   // make a transform node for attaching the menu graphics
   osg::ref_ptr<osg::MatrixTransform> xform = new osg::MatrixTransform();
   xform->addChild( scene.get() );
   osg::Matrix rotate(osg::Matrix::rotate(osg::PI_2, osg::Vec3(1.0f,0.0f,0.0f)));
-  osg::Matrix translate(osg::Matrix::translate(osg::Vec3(-0.5*area.width(),0.5*area.height(),0.0)));
+  osg::Matrix translate(osg::Matrix::translate(osg::Vec3(-0.5*screen.width(),0.5*screen.height(),0.0)));
   xform->setMatrix( /*translate**/rotate );
 
   // attach the transform node to the HUD
   osg::ref_ptr<osg::Projection> hud = new osg::Projection();
-  hud->setMatrix( osg::Matrix::ortho2D(-0.5*area.width(),0.5*area.width(),-0.5*area.height(),0.5*area.height()) );
+  hud->setMatrix( osg::Matrix::ortho2D(-0.5*screen.width(),0.5*screen.width(),-0.5*screen.height(),0.5*screen.height()) );
   hud->addChild( xform.get() );
 
   // configure the OpenGL settings for this menu node
@@ -89,7 +93,7 @@ int main(int argc, char* argv[])
   ss->setRenderBinDetails(10,"RenderBin"); // a high number makes it render last
 
   // make some background graphics to fight osgProducer::Viewer's auto-centering
-  MenuKit::OSG::Border border( MenuKit::Detail::Box(1.1*area.height(),1.1*area.width()), area, -1.0 );
+  MenuKit::OSG::Border border( screen, MenuKit::Detail::Box(0.8*screen.height(),0.8*screen.width()), 0.0 );
   border.color( osg::Vec4(1.0,0.0,0.0,1.0) );
   osg::ref_ptr<osg::Node> brdr = border();
   osg::ref_ptr<osg::MatrixTransform> bg = new osg::MatrixTransform();

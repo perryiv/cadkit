@@ -19,7 +19,7 @@
 #include <algorithm>
 
 namespace Usul {
-namespace Algorithms {
+namespace Loops {
 
 namespace Detail {
 
@@ -74,12 +74,6 @@ inline bool greaterThan( const Vertex &v0, const Vertex &v1 )
 }
 
 template < class Vertex >
-inline bool equalTo( const Vertex &v0, const Vertex &v1 )
-{
-  return (  v0.y() == v1.y()  && v0.x() == v1.x() );
-}
-
-template < class Vertex >
 inline bool greaterThanEqualTo( const Vertex & v0, const Vertex & v1 )
 {
   if (v0.y() > v1.y() )
@@ -116,6 +110,11 @@ struct Point
 
   double & x() { return _x; }
   double & y() { return _y; }
+
+  bool operator==( const Point& that )
+  {
+    return ( this->_y == that._y  && this->_x == that._x );
+  }
 
 private:
   double _x, _y;
@@ -299,41 +298,7 @@ double log2( double n )
   return log( n ) / log ( (double) 2 );
 }
 
-static int choose_idx = 0;
-static std::vector < int > permute;
 
-
-/* Generate a random permutation of the segments 1..n */
-void generate_random_ordering( int n )
-{
-  permute.clear();
-
-  //3186504610
-  permute.resize( n + 1 );
-
-  //3186504610
-  choose_idx = 1;
-
-  //Seed the random number generator
-  srand( time(0) );
-
-  //3186504610
-  for (int i = 1; i <= n; i++ )
-  {
-    permute.at( i ) = i;
-  }
-
-  //3186504610
-  std::random_shuffle ( permute.begin() + 1, permute.end() );
-}
-
-  
-/* Return the next segment in the generated random ordering of all the */
-/* segments in S */
-int choose_segment()
-{
-  return permute[choose_idx++];
-}
 
 
 /* Get log*n for given n */
@@ -477,48 +442,48 @@ int init_query_structure( int segnum, std::vector < Node > &qs, std::vector < Tr
  * have the same y--cood, etc.
  */
 
-bool is_left_of( int segnum, Point *v, std::vector< Segment > &seg )
+bool is_left_of( int segnum, const Point &v, std::vector< Segment > &seg )
 {
   Segment *s = &seg.at( segnum );
   double area;
   
   if ( greaterThan( s->v1, s->v0) ) /* seg. going upwards */
   {
-    if ( s->v1.y() == v->y() )
+    if ( s->v1.y() == v.y() )
 	  {
-	    if ( v->x() < s->v1.x() )
+	    if ( v.x() < s->v1.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
-    else if ( s->v0.y() == v->y() )
+    else if ( s->v0.y() == v.y() )
 	  {
-	    if (v->x() < s->v0.x() )
+	    if (v.x() < s->v0.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
     else
-	    area = CROSS(s->v0, s->v1, (*v));
+	    area = CROSS( s->v0, s->v1, v );
   }
   else				/* v0 > v1 */
   {
-    if (  s->v1.y() == v->y() )
+    if (  s->v1.y() == v.y() )
 	  {
-	    if (v->x() < s->v1.x() )
+	    if (v.x() < s->v1.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
-    else if ( s->v0.y() == v->y() )
+    else if ( s->v0.y() == v.y() )
 	  {
-	    if (v->x() < s->v0.x() )
+	    if (v.x() < s->v0.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
     else
-	    area = CROSS(s->v1, s->v0, (*v));
+	    area = CROSS( s->v1, s->v0, v );
   }
   
   if (area > 0.0)
@@ -545,7 +510,7 @@ bool inserted( int segnum, int whichpt, std::vector< Segment > &seg )
  * point v lie in. The return value is the trapezoid number. 
  */
 
-int locate_endpoint( Point *v, Point *vo, int r, std::vector< Node > &qs, std::vector< Segment >& seg )
+int locate_endpoint( Point &v, Point &vo, int r, std::vector< Node > &qs, std::vector< Segment >& seg )
 {
   Node *rptr = &qs.at(r);
   
@@ -556,11 +521,11 @@ int locate_endpoint( Point *v, Point *vo, int r, std::vector< Node > &qs, std::v
       
   case Node::T_Y:
     {
-      if ( greaterThan( *v, rptr->yval ) ) /* above */
+      if ( greaterThan( v, rptr->yval ) ) /* above */
 	      return locate_endpoint(v, vo, rptr->right, qs, seg );
-      else if ( equalTo( *v, rptr->yval ) ) /* the point is already */
+      else if ( v == rptr->yval ) /* the point is already */
 	    {			          /* inserted. */
-	      if ( greaterThan( *vo, rptr->yval)) /* above */
+	      if ( greaterThan( vo, rptr->yval)) /* above */
 	        return locate_endpoint(v, vo, rptr->right, qs, seg );
 	      else 
 	        return locate_endpoint(v, vo, rptr->left, qs, seg ); /* below */	    
@@ -569,11 +534,11 @@ int locate_endpoint( Point *v, Point *vo, int r, std::vector< Node > &qs, std::v
 	      return locate_endpoint(v, vo, rptr->left, qs, seg ); /* below */
     }
   case Node::T_X:
-      if ( equalTo( *v, seg.at( rptr->segnum ).v0) || equalTo( *v, seg.at( rptr->segnum ).v1 ) )
+      if ( v == seg.at( rptr->segnum ).v0 || v == seg.at( rptr->segnum ).v1 )
 	    {
-	      if ( v->y() == vo->y() ) /* horizontal segment */
+	      if ( v.y() == vo.y() ) /* horizontal segment */
 	      {
-	        if (vo->x() < v->x() )
+	        if (vo.x() < v.x() )
 		        return locate_endpoint(v, vo, rptr->left, qs, seg ); /* left */
 	        else
 		        return locate_endpoint(v, vo, rptr->right, qs, seg ); /* right */
@@ -700,7 +665,7 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
   {
     int tmp_d;
 
-    tu = locate_endpoint(&s.v0, &s.v1, s.root0, qs, seg );
+    tu = locate_endpoint( s.v0, s.v1, s.root0, qs, seg );
     tl = newtrap( tr );		/* tl is the new lower trapezoid */
     tr.at(tl).valid( true );
     tr.at(tl) = tr.at(tu);
@@ -748,7 +713,7 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
   }
   else				/* v0 already present */
   {       /* Get the topmost intersecting trapezoid */
-    tfirst = locate_endpoint(&s.v0, &s.v1, s.root0, qs, seg );
+    tfirst = locate_endpoint( s.v0, s.v1, s.root0, qs, seg );
     tritop = 1;
   }
 
@@ -757,7 +722,7 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
   {
     int tmp_d;
 
-    tu = locate_endpoint(&s.v1, &s.v0, s.root1, qs, seg );
+    tu = locate_endpoint( s.v1, s.v0, s.root1, qs, seg );
 
     tl = newtrap( tr );		/* tl is the new lower trapezoid */
     tr.at(tl).valid( true );
@@ -806,7 +771,7 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
   }
 else				/* v1 already present */
     {       /* Get the lowermost intersecting trapezoid */
-      tlast = locate_endpoint(&s.v1, &s.v0, s.root1, qs, seg );
+      tlast = locate_endpoint( s.v1, s.v0, s.root1, qs, seg );
       tribot = 1;
     }
   
@@ -840,7 +805,7 @@ else				/* v1 already present */
 
       if (t == tfirst)
 	      tfirstr = tn;
-      if ( equalTo( tr.at( t ).lo, tr.at ( tlast ).lo))
+      if ( tr.at( t ).lo == tr.at ( tlast ).lo)
 	      tlastr = tn;
 
       tr.at( tn ) = tr.at( t );
@@ -906,7 +871,7 @@ else				/* v1 already present */
 		  ((td1 = tr[tmp_u].d1) > 0))
 		{		/* upward cusp */
 		  if ((tr[td0].rseg > 0) &&
-		      !is_left_of(tr[td0].rseg, &s.v1, seg ))
+		      !is_left_of(tr[td0].rseg, s.v1, seg ))
 		    {
 		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
 		      tr[tr[tn].u0].d1 = tn;
@@ -932,7 +897,7 @@ else				/* v1 already present */
 	      else
 		tmptriseg = seg.at(segnum).next;
 	      
-	      if ((tmptriseg > 0) && is_left_of(tmptriseg, &s.v0, seg ))
+	      if ((tmptriseg > 0) && is_left_of(tmptriseg, s.v0, seg ))
 		{
 				/* L-R downward cusp */
 		  tr[tr[t].d0].u0 = t;
@@ -1012,7 +977,7 @@ else				/* v1 already present */
 	      if (((td0 = tr[tmp_u].d0) > 0) && 
 		  ((td1 = tr[tmp_u].d1) > 0))
 		{		/* upward cusp */
-		  if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, &s.v1, seg))
+		  if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, s.v1, seg))
 		    {
 		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
 		      tr[tr[tn].u0].d1 = tn;
@@ -1039,7 +1004,7 @@ else				/* v1 already present */
 	      else
 		tmptriseg = seg.at(segnum).next;
 
-	  if ((tmpseg > 0) && is_left_of(tmpseg, &s.v0, seg ))
+	  if ((tmpseg > 0) && is_left_of(tmpseg, s.v0, seg ))
 		{
 		  /* L-R downward cusp */
 		  tr[tr[t].d1].u0 = t;
@@ -1150,7 +1115,7 @@ else				/* v1 already present */
 	    int td0, td1;
 	    if (((td0 = tr[tmp_u].d0) > 0) &&  ((td1 = tr[tmp_u].d1) > 0))
 		  {		/* upward cusp */
-		    if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, &s.v1, seg ))
+		    if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, s.v1, seg ))
 		    {
 		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
 		      tr[tr[tn].u0].d1 = tn;
@@ -1248,10 +1213,10 @@ int find_new_roots( int segnum, std::vector< Node > &qs, std::vector< Segment > 
   if (s->is_inserted)
     return 0;
 
-  s->root0 = locate_endpoint(&s->v0, &s->v1, s->root0, qs, seg );
+  s->root0 = locate_endpoint( s->v0, s->v1, s->root0, qs, seg );
   s->root0 = tr.at(s->root0).sink;
 
-  s->root1 = locate_endpoint(&s->v1, &s->v0, s->root1, qs, seg );
+  s->root1 = locate_endpoint( s->v1, s->v0, s->root1, qs, seg );
   s->root1 = tr.at(s->root1).sink;  
   return 0;
 }
@@ -1261,13 +1226,35 @@ int find_new_roots( int segnum, std::vector< Node > &qs, std::vector< Segment > 
   /* Main routine to perform trapezoidation */
 void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trapezoid > &tr, std::vector < Segment > &seg )
 {
-  register int i;
-  int root, h;
+  int i ( 1 );
+  int h ( 1 );
+
+  int choose_idx ( 0 );
+  std::vector < int > permute;
+
+  //3186504610
+  permute.resize( nseg + 1 );
+
+  //3186504610
+  choose_idx = 1;
+
+  //Seed the random number generator
+  srand( time(0) );
+
+  //3186504610
+  for (i = 1; i <= nseg; i++ )
+  {
+    permute.at( i ) = i;
+  }
+
+  //3186504610
+  std::random_shuffle ( permute.begin() + 1, permute.end() );
+
   
   /* Add the first segment and get the query structure and trapezoid */
   /* list initialised */
 
-  root = init_query_structure( choose_segment(), qs, tr, seg  );
+  int root ( init_query_structure( choose_idx++, qs, tr, seg  ) );
 
   //3186504610
   for (i = 1; i <= nseg; i++)
@@ -1276,16 +1263,16 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
   for (h = 1; h <= math_logstar_n(nseg); h++)
   {
     for (i = math_N(nseg, h -1) + 1; i <= math_N(nseg, h); i++)
-	    add_segment(choose_segment(), qs, tr, seg );
+	    add_segment(choose_idx++, qs, tr, seg );
       
-      /* Find a new root for each of the segment endpoints */
+    /* Find a new root for each of the segment endpoints */
     //3186504610
     for (i = 1; i <= nseg; i++)
 	    find_new_roots(i, qs, seg, tr );
   }
   
   for (i = math_N(nseg, math_logstar_n(nseg)) + 1; i <= nseg; i++)
-    add_segment( choose_segment(), qs, tr, seg );
+    add_segment( choose_idx++, qs, tr, seg );
 
 }
 
@@ -1636,7 +1623,7 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
 	}
       else			/* only downward cusp */
 	{
-	  if ( equalTo( t->lo, seg.at(t->lseg).v1))
+	  if ( t->lo == seg.at(t->lseg).v1)
 	    {
 	      v0 = tr.at(t->u0).rseg;
 	      v1 = seg.at(t->lseg).next;
@@ -1689,7 +1676,7 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
     {
       if ((t->d0 > 0) && (t->d1 > 0)) /* only upward cusp */
 	{
-	  if ( equalTo( t->hi, seg.at (t->lseg).v0))
+	  if ( t->hi == seg.at (t->lseg).v0 )
 	    {
 	      v0 = tr.at(t->d1).lseg;
 	      v1 = t->lseg;
@@ -1739,7 +1726,7 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
 	}
       else			/* no cusp */
 	{
-	  if ( equalTo( t->hi, seg.at(t->lseg).v0) && equalTo( t->lo, seg.at(t->rseg).v0))
+	  if ( t->hi == seg.at(t->lseg).v0 && t->lo == seg.at(t->rseg).v0 )
 	    {
 	      v0 = t->rseg;
 	      v1 = t->lseg;
@@ -1762,7 +1749,7 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
 		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
 		}
 	    }
-	  else if ( equalTo( t->hi, seg.at(t->rseg).v1) && equalTo( t->lo, seg.at(t->lseg).v1))
+	  else if ( t->hi == seg.at(t->rseg).v1 && t->lo == seg.at(t->lseg).v1)
 	    {
 	      v0 = seg.at(t->rseg).next;
 	      v1 = seg.at(t->lseg).next;
@@ -1954,7 +1941,7 @@ void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op,
     else			/* triangulate the polygon */
 	  {
 	    v = mchain.at( mchain.at ( posmax ).next ).vnum;
-	    if ( equalTo( vert.at(v).pt, ymin))
+	    if ( vert.at(v).pt == ymin )
 	    {			/* LHS is a single line */
 	      if( !triangulate_single_polygon(nvert, posmax, TRI_LHS, op, mchain, vert )  )
           return;
@@ -2067,7 +2054,7 @@ void triangulate_polygon( int ncontours, int cntr[], const VertexSequence &verti
     ccount++;
   }
 
-  Detail::generate_random_ordering( numVerts );
+  //Detail::generate_random_ordering( numVerts );
 
   //Make the trapezoids
   Detail::construct_trapezoids( numVerts, qs, tr, seg );

@@ -11,11 +11,79 @@
 #define __USUL_ALGORITHMS_CAP_POLYGONS_H__
 
 namespace Usul {
-namespace Algorithms {
+namespace Loops {
 
 
 namespace Detail {
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Predicate for finding a vertex in a stl container
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Vertex >
+struct findVertex
+{
+  findVertex ( const Vertex &v ) : _vertex ( v ) { }
+
+  template < class Iter >
+  bool operator () ( Iter &i ) const
+  {
+    return i.second == _vertex;
+  }
+
+private:
+  Vertex _vertex;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Does the loop already contain this vertex
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Loop, class Vertex >
+bool containsVertex ( const Loop& loop, const Vertex& vertex )
+{
+  findVertex < Vertex > find ( vertex );
+
+  return ( std::find_if ( loop.begin(), loop.end(), find ) != loop.end() );
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Find which vertex doesn't have any other polygons connected to it
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Polygons, class IndexSequence, class Loop, class Polygon, class SharedVertex >
+void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p, SharedVertex *v1, SharedVertex *v2 )
+{
+  //Polygon list will always contain at least one polygon
+  if( v1->polygons().size() == 1 )
+  {
+    //Add the index to the current loop
+    loop.push_back( typename Loop::value_type ( p->index(), v1->value() ) );
+
+    v1->visited ( true );
+
+    visitSharedVertex( polygons, uncapped, loop, v2 );
+  }
+
+  else if( v2->polygons().size() == 1 )
+  {
+    //Add the index to the current loop
+    loop.push_back( typename Loop::value_type ( p->index(), v2->value() ) );
+
+    v2->visited( true );
+
+    visitSharedVertex( polygons, uncapped, loop, v1 );
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -27,17 +95,44 @@ template < class Polygons, class IndexSequence, class Loop, class Polygon >
 void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
+  typedef typename SharedVertex::ValueType Vertex;
 
   //Return now if already visited
   if( p->visited() )
     return;
 
-  
-  visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
+  SharedVertex *v1 ( p->vertex1() );
+  SharedVertex *v2 ( p->vertex2() );
+  SharedVertex *v3 ( p->vertex3() );
 
-  visitSharedVertex( polygons, uncapped, loop, p->vertex2() );
-  
-  visitSharedVertex( polygons, uncapped, loop, p->vertex3() );
+  //Check to see if all three shared vertices are on the edge
+  if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
+  {
+    //Check to see if v1 was added already
+    if( containsVertex ( loop, v1->value() ) )
+    {
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
+    }
+    //Check to see if v2 was added already
+    else if( containsVertex ( loop, v2->value() ) )
+    {
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
+    }
+    //Check to see if v3 was added already
+    else if( containsVertex ( loop, v3->value() ) )
+    {
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
+    }
+
+  }
+  else
+  {
+    visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
+
+    visitSharedVertex( polygons, uncapped, loop, p->vertex2() );
+    
+    visitSharedVertex( polygons, uncapped, loop, p->vertex3() );
+  }
 
   p->visited( true );
 }

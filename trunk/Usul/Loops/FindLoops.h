@@ -106,26 +106,26 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   SharedVertex *v3 ( p->vertex3() );
 
   //Check to see if all three shared vertices are on the edge
-  if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
+  //if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
   {
     //Check to see if v1 was added already
-    if( containsVertex ( loop, v1->value() ) )
+    //if( containsVertex ( loop, v1->value() ) )
     {
-      findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
+      //findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
     }
     //Check to see if v2 was added already
-    else if( containsVertex ( loop, v2->value() ) )
+    //else if( containsVertex ( loop, v2->value() ) )
     {
-      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
+      //findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
     }
     //Check to see if v3 was added already
-    else if( containsVertex ( loop, v3->value() ) )
+    //else if( containsVertex ( loop, v3->value() ) )
     {
-      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
+     // findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
     }
 
   }
-  else
+  //else
   {
     visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
 
@@ -264,7 +264,10 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
   map.setAllUnvisited();
 
-  Polygons polygons ( map.polygons() );
+  Polygons &polygons ( map.polygons() );
+
+  //Needed for user feedback
+  const unsigned int size ( polygons.size() );
 
   //Walk through all the polygons
   for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
@@ -295,6 +298,10 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
     //Send a progress upate
     updater ( uncapped );
+
+    unsigned int current ( iter - polygons.begin() );
+
+    updater ( current, size );
   }
 
   updater( uncapped, true );
@@ -317,6 +324,8 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
 
     //Push the loop onto the answer
     loops.push_back( loop );
+
+    updater( loops.size() );
   }
 }
 

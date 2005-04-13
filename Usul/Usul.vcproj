@@ -451,6 +451,9 @@
 					Name="Scene"
 					Filter="">
 					<File
+						RelativePath=".\Interfaces\IAddFrame.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h">
 					</File>
 					<File
@@ -507,9 +510,6 @@
 				<Filter
 					Name="Misc"
 					Filter="">
-					<File
-						RelativePath=".\Interfaces\ICancelNotify.h">
-					</File>
 					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
 					</File>

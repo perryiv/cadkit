@@ -23,12 +23,15 @@ namespace Loops {
 
 namespace Detail {
 
-//TODO Is a tolerance value needed for making all decisions about collinearity ?
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum of the two points into the yval structure
+//
+///////////////////////////////////////////////////////////////////////////////
 
-/* Return the maximum of the two points into the yval structure */
 template < class Vertex >
-inline void getMaximumVertex ( Vertex &yval, Vertex &v0, Vertex &v1 )
+inline void getMaximumVertex ( Vertex &yval, const Vertex &v0, const Vertex &v1 )
 {
   if (v0.y() > v1.y() )
     yval = v0;
@@ -44,9 +47,14 @@ inline void getMaximumVertex ( Vertex &yval, Vertex &v0, Vertex &v1 )
 }
 
 
-/* Return the minimum of the two points into the yval structure */
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum of the two points into the yval structure
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template < class Vertex >
-inline void getMinimumVertex ( Vertex &yval, Vertex &v0, Vertex &v1 )
+inline void getMinimumVertex ( Vertex &yval, const Vertex &v0, const Vertex &v1 )
 {
   if (v0.y() < v1.y() )
     yval = v0;
@@ -95,15 +103,36 @@ inline bool lessThan( const Vertex & v0, const Vertex & v1 )
     return ( v0.x() < v1.x() );
 }
 
+template < class Vertex >
+inline double crossSine (const Vertex &v0, const Vertex &v1)
+{
+  return ((v0).x() * (v1).y() - (v1).x() * (v0).y() );
+}
+
+template < class Vertex >
+inline double cross( const Vertex &v0, const Vertex &v1, const Vertex &v2)
+{
+  return ( v1.x() - v0.x() ) * 
+         ( v2.y() - v0.y() ) - ( v1.y() - v0.y() ) *
+         ( v2.x() - v0.x() );
+}
 
 
 struct Point
 {
   Point() { }
+  Point( double x, double y ) : _x( x ), _y ( y ) { }
 
-  double length () const { return ::sqrt( ( _x * _x ) + ( _y * _y ) ); }
+  double length () const 
+  { 
+    return ::sqrt( ( _x * _x ) + ( _y * _y ) ); 
+  }
 
-  void set ( double x, double y ) { _x = x; _y = y; }
+  void set ( double x, double y ) 
+  { 
+    _x = x; 
+    _y = y; 
+  }
 
   double x() const { return _x; }
   double y() const { return _y; }
@@ -111,7 +140,14 @@ struct Point
   double & x() { return _x; }
   double & y() { return _y; }
 
-  bool operator==( const Point& that )
+  //Return the dot product
+  double dot( const Point& rhs ) const
+  {
+    return _x * rhs._x + _y * rhs._y;
+  }
+
+  //Equality operator
+  bool operator==( const Point& that ) const
   {
     return ( this->_y == that._y  && this->_x == that._x );
   }
@@ -160,12 +196,12 @@ typedef Segment_< Point > Segment;
 
 struct Trapezoid
 {
-  int lseg, rseg;		/* two adjoining segments */
-  Point hi, lo;		/* max/min y-values */
+  int lseg, rseg;		// two adjoining segments
+  Point hi, lo;		// max/min y-values 
   int u0, u1;
   int d0, d1;
-  int sink;			/* pointer to corresponding in Q */
-  int usave, uside;		/* I forgot what this means */
+  int sink;			// index to corresponding in Q 
+  int usave, uside;		// I forgot what this means 
 
   Trapezoid() :
   lseg ( -1 ),
@@ -284,12 +320,6 @@ struct Vertexchain
 
 #define TRI_LHS 1
 #define TRI_RHS 2
-
-
-#define CROSS(v0, v1, v2) (((v1).x() - (v0).x() )*((v2).y() - (v0).y() ) - \
-			   ((v1).y() - (v0).y() )*((v2).x() - (v0).x()))
-
-#define DOT(v0, v1) ((v0).x() * (v1).x() + (v0).y() * (v1).y() )
 
 
 
@@ -442,48 +472,49 @@ int init_query_structure( int segnum, std::vector < Node > &qs, std::vector < Tr
  * have the same y--cood, etc.
  */
 
-bool is_left_of( int segnum, const Point &v, std::vector< Segment > &seg )
+bool is_left_of( int segnum, const Point &v, const std::vector< Segment > &seg )
 {
-  Segment *s = &seg.at( segnum );
-  double area;
+  const Segment &s ( seg.at( segnum ) );
+
+  double area ( 0.0 );
   
-  if ( greaterThan( s->v1, s->v0) ) /* seg. going upwards */
+  if ( greaterThan( s.v1, s.v0) ) /* seg. going upwards */
   {
-    if ( s->v1.y() == v.y() )
+    if ( s.v1.y() == v.y() )
 	  {
-	    if ( v.x() < s->v1.x() )
+	    if ( v.x() < s.v1.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
-    else if ( s->v0.y() == v.y() )
+    else if ( s.v0.y() == v.y() )
 	  {
-	    if (v.x() < s->v0.x() )
+	    if (v.x() < s.v0.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
     else
-	    area = CROSS( s->v0, s->v1, v );
+	    area = cross( s.v0, s.v1, v );
   }
   else				/* v0 > v1 */
   {
-    if (  s->v1.y() == v.y() )
+    if ( s.v1.y() == v.y() )
 	  {
-	    if (v.x() < s->v1.x() )
+	    if (v.x() < s.v1.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
-    else if ( s->v0.y() == v.y() )
+    else if ( s.v0.y() == v.y() )
 	  {
-	    if (v.x() < s->v0.x() )
+	    if (v.x() < s.v0.x() )
 	      area = 1.0;
 	    else
 	      area = -1.0;
 	  }
     else
-	    area = CROSS( s->v1, s->v0, v );
+	    area = cross( s.v1, s.v0, v );
   }
   
   if (area > 0.0)
@@ -510,48 +541,48 @@ bool inserted( int segnum, int whichpt, std::vector< Segment > &seg )
  * point v lie in. The return value is the trapezoid number. 
  */
 
-int locate_endpoint( Point &v, Point &vo, int r, std::vector< Node > &qs, std::vector< Segment >& seg )
+int locate_endpoint( const Point &v, const Point &vo, int r, const std::vector< Node > &qs, const std::vector< Segment >& seg )
 {
-  Node *rptr = &qs.at(r);
+  const Node &node ( qs.at( r ) );
   
-  switch ( rptr->nodetype )
+  switch ( node.nodetype )
   {
   case Node::T_SINK:
-    return rptr->trnum;
+    return node.trnum;
       
   case Node::T_Y:
     {
-      if ( greaterThan( v, rptr->yval ) ) /* above */
-	      return locate_endpoint(v, vo, rptr->right, qs, seg );
-      else if ( v == rptr->yval ) /* the point is already */
+      if ( greaterThan( v, node.yval ) ) /* above */
+	      return locate_endpoint(v, vo, node.right, qs, seg );
+      else if ( v == node.yval ) /* the point is already */
 	    {			          /* inserted. */
-	      if ( greaterThan( vo, rptr->yval)) /* above */
-	        return locate_endpoint(v, vo, rptr->right, qs, seg );
+	      if ( greaterThan( vo, node.yval)) /* above */
+	        return locate_endpoint(v, vo, node.right, qs, seg );
 	      else 
-	        return locate_endpoint(v, vo, rptr->left, qs, seg ); /* below */	    
+	        return locate_endpoint(v, vo, node.left, qs, seg ); /* below */	    
 	    }
       else
-	      return locate_endpoint(v, vo, rptr->left, qs, seg ); /* below */
+	      return locate_endpoint(v, vo, node.left, qs, seg ); /* below */
     }
   case Node::T_X:
-      if ( v == seg.at( rptr->segnum ).v0 || v == seg.at( rptr->segnum ).v1 )
+      if ( v == seg.at( node.segnum ).v0 || v == seg.at( node.segnum ).v1 )
 	    {
 	      if ( v.y() == vo.y() ) /* horizontal segment */
 	      {
 	        if (vo.x() < v.x() )
-		        return locate_endpoint(v, vo, rptr->left, qs, seg ); /* left */
+		        return locate_endpoint(v, vo, node.left, qs, seg ); /* left */
 	        else
-		        return locate_endpoint(v, vo, rptr->right, qs, seg ); /* right */
+		        return locate_endpoint(v, vo, node.right, qs, seg ); /* right */
 	      }
-	      else if (is_left_of( rptr->segnum, vo, seg ))
-	        return locate_endpoint(v, vo, rptr->left, qs, seg ); /* left */
+	      else if (is_left_of( node.segnum, vo, seg ))
+	        return locate_endpoint(v, vo, node.left, qs, seg ); /* left */
 	      else
-	        return locate_endpoint(v, vo, rptr->right, qs, seg ); /* right */
+	        return locate_endpoint(v, vo, node.right, qs, seg ); /* right */
 	    }
-      else if (is_left_of(rptr->segnum, v, seg ))
-	      return locate_endpoint(v, vo, rptr->left, qs, seg ); /* left */
+      else if (is_left_of(node.segnum, v, seg ))
+	      return locate_endpoint(v, vo, node.left, qs, seg ); /* left */
       else
-	      return locate_endpoint(v, vo, rptr->right, qs, seg ); /* right */	
+	      return locate_endpoint(v, vo, node.right, qs, seg ); /* right */	
 
     default:
       throw std::runtime_error ("Error 3397215586: Should not be here." );
@@ -570,11 +601,12 @@ int locate_endpoint( Point &v, Point &vo, int r, std::vector< Node > &qs, std::v
 
 void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector< Node > &qs, std::vector< Trapezoid> &tr  )
 {
-  int t = 0, tnext = 0, cond = 0;
-  int ptnext = 0;
+  int tnext ( 0 );
+  int cond  ( 0 );
+  int ptnext ( 0 );
 
   /* First merge polys on the LHS */
-  t = tfirst;
+  int t ( tfirst );
   while ((t > 0) && greaterThanEqualTo( tr.at(t).lo, tr.at(tlast).lo))
   {
     if (side == S_LEFT)
@@ -597,7 +629,6 @@ void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector<
 	      
 	      
 	      /* Change the upper neighbours of the lower trapezoids */
-	      
 	      if ((tr.at(t).d0 = tr.at(tnext).d0) > 0)
         {
 		      if (tr.at(tr.at(t).d0).u0 == tnext)
@@ -637,9 +668,8 @@ void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector<
  * the  lower trapezoid dividing all the trapezoids in between .
  */
 
-int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg  )
+void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg  )
 {
-  Segment *so = &seg.at(segnum);
   int tu, tl, sk, tfirst, tlast;
   int tfirstr = 0, tlastr = 0, tfirstl = 0, tlastl = 0;
   int i1, i2, t, tn;
@@ -648,6 +678,7 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
   bool is_swapped ( false );
   int tmptriseg;
 
+  //Make a copy
   Segment s ( seg.at(segnum) );
 
   if ( greaterThan( s.v1, s.v0) ) /* Get higher vertex in v0 */
@@ -678,11 +709,13 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
 
     if (((tmp_d = tr.at(tl).d0) > 0) && (tr.at(tmp_d).u0 == tu))
       tr.at(tmp_d).u0 = tl;
+
     if (((tmp_d = tr.at(tl).d0) > 0) && (tr.at(tmp_d).u1 == tu))
       tr.at(tmp_d).u1 = tl;
 
     if (((tmp_d = tr.at(tl).d1) > 0) && (tr.at(tmp_d).u0 == tu))
       tr.at(tmp_d).u0 = tl;
+
     if (((tmp_d = tr.at(tl).d1) > 0) && (tr.at(tmp_d).u1 == tu))
       tr.at(tmp_d).u1 = tl;
 
@@ -769,11 +802,11 @@ int add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid >
     tr.at(tl).sink = i2;
     tlast = tu;
   }
-else				/* v1 already present */
-    {       /* Get the lowermost intersecting trapezoid */
-      tlast = locate_endpoint( s.v1, s.v0, s.root1, qs, seg );
-      tribot = 1;
-    }
+  else				/* v1 already present */
+  {       /* Get the lowermost intersecting trapezoid */
+    tlast = locate_endpoint( s.v1, s.v0, s.root1, qs, seg );
+    tribot = 1;
+  }
   
   /* Thread the segment into the query tree creating a new X-node */
   /* First, split all the trapezoids which are intersected by s into */
@@ -781,290 +814,292 @@ else				/* v1 already present */
 
   t = tfirst;			/* topmost trapezoid */
   
-  while ((t > 0) && greaterThanEqualTo( tr.at( t ).lo, tr.at( tlast ).lo))
-				/* traverse from top to bot */
-    {
-      int t_sav, tn_sav;
-      sk = tr.at( t ).sink;
-      i1 = newnode();		/* left trapezoid sink */
-      i2 = newnode();		/* right trapezoid sink */
+  while ((t > 0) && greaterThanEqualTo( tr.at( t ).lo, tr.at( tlast ).lo)) /* traverse from top to bot */
+  {
+    int t_sav, tn_sav;
+    sk = tr.at( t ).sink;
+    i1 = newnode();		/* left trapezoid sink */
+    i2 = newnode();		/* right trapezoid sink */
+    
+    qs.at ( sk ).nodetype = Node::T_X;
+    qs.at ( sk ).segnum = segnum;
+    qs.at ( sk ).left = i1;
+    qs.at ( sk ).right = i2;
+
+    qs.at ( i1 ).nodetype = Node::T_SINK;	/* left trapezoid (use existing one) */
+    qs.at ( i1 ).trnum = t;
+    qs.at ( i1 ).parent = sk;
+
+    qs.at ( i2 ).nodetype = Node::T_SINK;	/* right trapezoid (allocate new) */
+    qs.at ( i2 ).trnum = tn = newtrap( tr );
+    tr.at( tn ).valid( true );
+    qs.at ( i2 ).parent = sk;
+
+    if (t == tfirst)
+	    tfirstr = tn;
+    if ( tr.at( t ).lo == tr.at ( tlast ).lo)
+	    tlastr = tn;
+
+    tr.at( tn ) = tr.at( t );
+    tr.at(t).sink = i1;
+    tr.at(tn).sink = i2;
+    t_sav = t;
+    tn_sav = tn;
+
+    /* error */
+
+    if ((tr.at(t).d0 <= 0) && (tr.at(t).d1 <= 0)) /* case cannot arise */
+	  {
+      throw std::runtime_error ( "add_segment: error\n");
+	    break;
+	  }
       
-      qs.at ( sk ).nodetype = Node::T_X;
-      qs.at ( sk ).segnum = segnum;
-      qs.at ( sk ).left = i1;
-      qs.at ( sk ).right = i2;
-
-      qs.at ( i1 ).nodetype = Node::T_SINK;	/* left trapezoid (use existing one) */
-      qs.at ( i1 ).trnum = t;
-      qs.at ( i1 ).parent = sk;
-
-      qs.at ( i2 ).nodetype = Node::T_SINK;	/* right trapezoid (allocate new) */
-      qs.at ( i2 ).trnum = tn = newtrap( tr );
-      tr.at( tn ).valid( true );
-      qs.at ( i2 ).parent = sk;
-
-      if (t == tfirst)
-	      tfirstr = tn;
-      if ( tr.at( t ).lo == tr.at ( tlast ).lo)
-	      tlastr = tn;
-
-      tr.at( tn ) = tr.at( t );
-      tr.at(t).sink = i1;
-      tr.at(tn).sink = i2;
-      t_sav = t;
-      tn_sav = tn;
-
-      /* error */
-
-      if ((tr.at(t).d0 <= 0) && (tr.at(t).d1 <= 0)) /* case cannot arise */
-	{
-    throw std::runtime_error ( "add_segment: error\n");
-	  break;
-	}
+    /* only one trapezoid below. partition t into two and make the */
+    /* two resulting trapezoids t and tn as the upper neighbours of */
+    /* the sole lower trapezoid */
       
-      /* only one trapezoid below. partition t into two and make the */
-      /* two resulting trapezoids t and tn as the upper neighbours of */
-      /* the sole lower trapezoid */
-      
-      else if ((tr[t].d0 > 0) && (tr[t].d1 <= 0))
-	{			/* Only one trapezoid below */
-	  if ((tr[t].u0 > 0) && (tr[t].u1 > 0))
+    else if ((tr.at( t ).d0 > 0) && (tr.at( t ).d1 <= 0))
+	  {			/* Only one trapezoid below */
+	    if ((tr.at( t ).u0 > 0) && (tr.at( t ).u1 > 0))
 	    {			/* continuation of a chain from abv. */
-	      if (tr[t].usave > 0) /* three upper neighbours */
-		{
-		  if (tr[t].uside == S_LEFT)
+	      if (tr.at( t ).usave > 0) /* three upper neighbours */
 		    {
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = -1;
-		      tr[tn].u1 = tr[t].usave;
-		      
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;
-		      tr[tr[tn].u1].d0 = tn;
-		    }
-		  else		/* intersects in the right */
-		    {
-		      tr[tn].u1 = -1;
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = tr[t].u0;
-		      tr[t].u0 = tr[t].usave;
+		      if (tr.at( t ).uside == S_LEFT)
+		        {
+		          tr.at( tn ).u0 = tr.at( t ).u1;
+		          tr.at( t ).u1 = -1;
+		          tr.at( tn ).u1 = tr.at( t ).usave;
+    		      
+		          tr.at( tr.at( t ).u0 ).d0 = t;
+		          tr.at( tr.at( tn ).u0 ).d0 = tn;
+		          tr.at( tr.at( tn ).u1 ).d0 = tn;
+		        }
+		        else		/* intersects in the right */
+		        {
+		          tr.at( tn ).u1 = -1;
+		          tr.at( tn ).u0 = tr.at( t ).u1;
+		          tr.at( t ).u1 = tr.at( t ).u0;
+		          tr.at( t ).u0 = tr.at( t ).usave;
 
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[t].u1].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;		      
-		    }
+		          tr.at( tr.at( t ).u0 ).d0 = t;
+		          tr.at( tr.at( t ).u1 ).d0 = t;
+		          tr.at( tr.at( tn ).u0 ).d0 = tn;		      
+		        }
 		  
-		  tr[t].usave = tr[tn].usave = 0;
-		}
+		        tr.at( t ).usave = tr.at( tn ).usave = 0;
+		    }
 	      else		/* No usave.... simple case */
-		{
-		  tr[tn].u0 = tr[t].u1;
-		  tr[t].u1 = tr[tn].u1 = -1;
-		  tr[tr[tn].u0].d0 = tn;
-		}
-	    }
-	  else 
-	    {			/* fresh seg. or upward cusp */
-	      int tmp_u = tr[t].u0;
-	      int td0, td1;
-	      if (((td0 = tr[tmp_u].d0) > 0) && 
-		  ((td1 = tr[tmp_u].d1) > 0))
-		{		/* upward cusp */
-		  if ((tr[td0].rseg > 0) &&
-		      !is_left_of(tr[td0].rseg, s.v1, seg ))
 		    {
-		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
-		      tr[tr[tn].u0].d1 = tn;
+		      tr.at( tn ).u0 = tr.at( t ).u1;
+		      tr.at( t ).u1 = tr.at( tn ).u1 = -1;
+		      tr.at( tr.at( tn ).u0 ).d0 = tn;
 		    }
-		  else		/* cusp going leftwards */
-		    { 
-		      tr[tn].u0 = tr[tn].u1 = tr[t].u1 = -1;
-		      tr[tr[t].u0].d0 = t;
+	    }
+	    else 
+	    {			/* fresh seg. or upward cusp */
+	      int tmp_u ( tr.at( t ).u0 );
+	      int td0 ( tr.at( tmp_u ).d0 );
+        int td1 ( tr.at( tmp_u ).d1 );
+
+	      if ( td0 > 0 && td1 > 0 )
+		    {		/* upward cusp */
+		      if ((tr.at( td0 ).rseg > 0) && !is_left_of(tr.at( td0 ).rseg, s.v1, seg ))
+		      {
+		        tr.at( t ).u0 = tr.at( t ).u1 = tr.at( tn ).u1 = -1;
+		        tr.at( tr.at( tn ).u0 ).d1 = tn;
+		      }
+		      else		/* cusp going leftwards */
+		      { 
+		        tr.at( tn ).u0 = tr.at( tn ).u1 = tr.at( t ).u1 = -1;
+		        tr.at( tr.at( t ).u0 ).d0 = t;
+		      }
 		    }
-		}
 	      else		/* fresh segment */
-		{
-		  tr[tr[t].u0].d0 = t;
-		  tr[tr[t].u0].d1 = tn;
-		}	      
+		    {
+		      tr.at( tr.at( t ).u0 ).d0 = t;
+		      tr.at( tr.at( t ).u0 ).d1 = tn;
+		    }	      
 	    }
 	  
-	  if ( ( tr[t].lo.y() == tr[tlast].lo.y() && tr[t].lo.x() == tr[tlast].lo.x() ) && tribot)
-	    {		/* bottom forms a triangle */
-
-	      if (is_swapped)	
-		tmptriseg = seg.at(segnum).prev;
-	      else
-		tmptriseg = seg.at(segnum).next;
+	  //if ( ( tr.[t].lo.y() == tr[tlast].lo.y() && tr[t].lo.x() == tr[tlast].lo.x() ) && tribot)
+    if ( ( tr.at( t ).lo == tr.at( tlast ).lo ) && tribot)
+	  {		/* bottom forms a triangle */
+      if (is_swapped)	
+		    tmptriseg = seg.at(segnum).prev;
+	    else
+		    tmptriseg = seg.at(segnum).next;
 	      
-	      if ((tmptriseg > 0) && is_left_of(tmptriseg, s.v0, seg ))
-		{
-				/* L-R downward cusp */
-		  tr[tr[t].d0].u0 = t;
-		  tr[tn].d0 = tr[tn].d1 = -1;
-		}
-	      else
-		{
+	    if ((tmptriseg > 0) && is_left_of(tmptriseg, s.v0, seg ))
+		  {
+			  	/* L-R downward cusp */
+		    tr.at( tr.at( t ).d0 ).u0 = t;
+		    tr.at( tn ).d0 = tr.at( tn ).d1 = -1;
+		  }
+	    else
+		  {
 				/* R-L downward cusp */
-		  tr[tr[tn].d0].u1 = tn;
-		  tr[t].d0 = tr[t].d1 = -1;
-		}
-	    }
+		    tr.at( tr.at( tn ).d0 ).u1 = tn;
+		    tr.at( t ).d0 = tr.at( t ).d1 = -1;
+		  }
+	  }
 	  else
-	    {
-	      if ((tr[tr[t].d0].u0 > 0) && (tr[tr[t].d0].u1 > 0))
-		{
-		  if (tr[tr[t].d0].u0 == t) /* passes thru LHS */
+	  {
+	    if ((tr.at( tr.at( t ).d0 ).u0 > 0) && ( tr.at( tr.at( t ).d0 ).u1 > 0) )
+		  {
+		    if (tr.at( tr.at( t ).d0 ).u0 == t) /* passes thru LHS */
 		    {
-		      tr[tr[t].d0].usave = tr[tr[t].d0].u1;
-		      tr[tr[t].d0].uside = S_LEFT;
+		      tr.at( tr.at( t ).d0 ).usave = tr.at( tr.at( t ).d0 ).u1;
+		      tr.at( tr.at( t ).d0 ).uside = S_LEFT;
 		    }
-		  else
+		    else
 		    {
-		      tr[tr[t].d0].usave = tr[tr[t].d0].u0;
-		      tr[tr[t].d0].uside = S_RIGHT;
+		      tr.at( tr.at( t ).d0 ).usave = tr.at( tr.at( t ).d0 ).u0;
+		      tr.at( tr.at( t ).d0 ).uside = S_RIGHT;
 		    }		    
-		}
-	      tr[tr[t].d0].u0 = t;
-	      tr[tr[t].d0].u1 = tn;
-	    }
+		  }
+	      
+      tr.at( tr.at( t ).d0 ).u0 = t;
+	    tr.at( tr.at( t ).d0 ).u1 = tn;
+	  }
 	  
-	  t = tr[t].d0;
+	  t = tr.at( t ).d0;
 	}
-
-
-      else if ((tr[t].d0 <= 0) && (tr[t].d1 > 0))
+  
+  else if ((tr.at( t ).d0 <= 0) && (tr.at( t ).d1 > 0))
 	{			/* Only one trapezoid below */
-	  if ((tr[t].u0 > 0) && (tr[t].u1 > 0))
-	    {			/* continuation of a chain from abv. */
-	      if (tr[t].usave > 0) /* three upper neighbours */
-		{
-		  if (tr[t].uside == S_LEFT)
+	  if ((tr.at( t ).u0 > 0) && (tr.at( t ).u1 > 0))
+	  {			/* continuation of a chain from abv. */
+	    if (tr.at( t ).usave > 0) /* three upper neighbours */
+		  {
+		    if (tr.at( t ).uside == S_LEFT)
 		    {
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = -1;
-		      tr[tn].u1 = tr[t].usave;
+		      tr.at( tn ).u0 = tr.at( t ).u1;
+		      tr.at( t ).u1 = -1;
+		      tr.at( tn ).u1 = tr.at( t ).usave;
 		      
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;
-		      tr[tr[tn].u1].d0 = tn;
+		      tr.at( tr.at( t ).u0 ).d0 = t;
+		      tr.at( tr.at( tn ).u0 ).d0 = tn;
+		      tr.at( tr.at( tn ).u1 ).d0 = tn;
 		    }
-		  else		/* intersects in the right */
+		    else		/* intersects in the right */
 		    {
-		      tr[tn].u1 = -1;
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = tr[t].u0;
-		      tr[t].u0 = tr[t].usave;
+		      tr.at( tn ).u1 = -1;
+		      tr.at( tn ).u0 = tr.at( t ).u1;
+		      tr.at( t ).u1 = tr.at( t ).u0;
+		      tr.at( t ).u0 = tr.at( t ).usave;
 
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[t].u1].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;		      
+		      tr.at( tr.at( t ).u0 ).d0 = t;
+		      tr.at( tr.at( t ).u1 ).d0 = t;
+		      tr.at( tr.at( tn ).u0 ).d0 = tn;		      
 		    }
 		  
-		  tr[t].usave = tr[tn].usave = 0;
-		}
-	      else		/* No usave.... simple case */
-		{
-		  tr[tn].u0 = tr[t].u1;
-		  tr[t].u1 = tr[tn].u1 = -1;
-		  tr[tr[tn].u0].d0 = tn;
-		}
-	    }
+		    tr.at( t ).usave = tr.at( tn ).usave = 0;
+		  }
+	    else		/* No usave.... simple case */
+		  {
+		    tr.at( tn ).u0 = tr.at( t ).u1;
+		    tr.at( t ).u1 = tr.at( tn ).u1 = -1;
+		    tr.at( tr.at( tn ).u0 ).d0 = tn;
+		  }
+	  }
 	  else 
-	    {			/* fresh seg. or upward cusp */
-	      int tmp_u = tr[t].u0;
-	      int td0, td1;
-	      if (((td0 = tr[tmp_u].d0) > 0) && 
-		  ((td1 = tr[tmp_u].d1) > 0))
-		{		/* upward cusp */
-		  if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, s.v1, seg))
+	  {			/* fresh seg. or upward cusp */
+	    int tmp_u ( tr.at( t ).u0 );
+	    int td0 ( tr.at( tmp_u ).d0 );
+      int td1 ( tr.at( tmp_u ).d1 );
+	    if ( td0 > 0 && td1 > 0 )
+		  {		/* upward cusp */
+		    if ((tr.at( td0 ).rseg > 0) && !is_left_of(tr.at( td0 ).rseg, s.v1, seg))
 		    {
-		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
-		      tr[tr[tn].u0].d1 = tn;
+		      tr.at( t ).u0 = tr.at( t ).u1 = tr.at( tn ).u1 = -1;
+		      tr.at( tr.at( tn ).u0 ).d1 = tn;
 		    }
-		  else 
+		    else 
 		    {
-		      tr[tn].u0 = tr[tn].u1 = tr[t].u1 = -1;
-		      tr[tr[t].u0].d0 = t;
+		      tr.at( tn ).u0 = tr.at( tn ).u1 = tr.at( t ).u1 = -1;
+		      tr.at( tr.at( t ).u0 ).d0 = t;
 		    }
-		}
-	      else		/* fresh segment */
-		{
-		  tr[tr[t].u0].d0 = t;
-		  tr[tr[t].u0].d1 = tn;
-		}
-	    }
+		  }
+	    else		/* fresh segment */
+		  {
+		    tr.at( tr.at( t ).u0 ).d0 = t;
+		    tr.at( tr.at( t ).u0 ).d1 = tn;
+		  }
+	  }
 	  
-	  if ( (tr[t].lo.y() == tr[tlast].lo.y()) && (tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
-	    {		/* bottom forms a triangle */
-	      int tmpseg = 0;
+	  //if ( (tr[t].lo.y() == tr[tlast].lo.y()) && (tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
+    if ( tr.at( t ).lo == tr.at( tlast ).lo && tribot )
+	  {		/* bottom forms a triangle */
+	    int tmpseg = 0;
 
-	      if (is_swapped)	
-		tmptriseg = seg.at(segnum).prev;
-	      else
-		tmptriseg = seg.at(segnum).next;
+	    if (is_swapped)	
+		    tmptriseg = seg.at(segnum).prev;
+	    else
+		    tmptriseg = seg.at(segnum).next;
 
-	  if ((tmpseg > 0) && is_left_of(tmpseg, s.v0, seg ))
-		{
-		  /* L-R downward cusp */
-		  tr[tr[t].d1].u0 = t;
-		  tr[tn].d0 = tr[tn].d1 = -1;
-		}
-	      else
-		{
-		  /* R-L downward cusp */
-		  tr[tr[tn].d1].u1 = tn;
-		  tr[t].d0 = tr[t].d1 = -1;
-		}
-	    }		
+	    if ((tmpseg > 0) && is_left_of(tmpseg, s.v0, seg ))
+		  {
+		    /* L-R downward cusp */
+		    tr.at( tr.at( t ).d1 ).u0 = t;
+		    tr.at( tn ).d0 = tr.at( tn ).d1 = -1;
+		  }
+	    else
+		  {
+		    /* R-L downward cusp */
+		    tr.at( tr.at( tn ).d1 ).u1 = tn;
+		    tr.at( t ).d0 = tr.at( t ).d1 = -1;
+		  }
+	  }		
 	  else
-	    {
-	      if ((tr[tr[t].d1].u0 > 0) && (tr[tr[t].d1].u1 > 0))
-		{
-		  if (tr[tr[t].d1].u0 == t) /* passes thru LHS */
+	  {
+	    if ((tr.at(tr.at( t ).d1 ).u0 > 0) && (tr.at( tr.at( t ).d1 ).u1 > 0))
+		  {
+		    if (tr.at( tr.at( t ).d1 ).u0 == t) /* passes thru LHS */
 		    {
-		      tr[tr[t].d1].usave = tr[tr[t].d1].u1;
-		      tr[tr[t].d1].uside = S_LEFT;
+		      tr.at( tr.at( t ).d1 ).usave = tr.at( tr.at( t ).d1 ).u1;
+		      tr.at( tr.at( t ).d1 ).uside = S_LEFT;
 		    }
-		  else
+		    else
 		    {
-		      tr[tr[t].d1].usave = tr[tr[t].d1].u0;
-		      tr[tr[t].d1].uside = S_RIGHT;
+		      tr.at( tr.at( t ).d1 ).usave = tr.at( tr.at( t ).d1 ).u0;
+		      tr.at( tr.at( t ).d1 ).uside = S_RIGHT;
 		    }		    
-		}
-	      tr[tr[t].d1].u0 = t;
-	      tr[tr[t].d1].u1 = tn;
-	    }
+		  }
 	  
-	  t = tr[t].d1;
+      tr.at( tr.at( t ).d1 ).u0 = t;
+	    tr.at( tr.at( t ).d1 ).u1 = tn;
+	  
+    }
+	  
+	  t = tr.at( t ).d1;
 	}
 
       /* two trapezoids below. Find out which one is intersected by */
       /* this segment and proceed down that one */
       
-      else
+  else
 	{
-	  int tmpseg = tr[tr[t].d0].rseg;
+	  int tmpseg ( tr.at( tr.at( t ).d0 ).rseg );
 	  double y0, yt;
 	  Point tmppt;
 	  int tnext;
     bool i_d0 ( false );
     bool i_d1 ( false );
 
-	  if ( tr[t].lo.y() == s.v0.y() )
+	  if ( tr.at( t ).lo.y() == s.v0.y() )
 	  {
-	    if (tr[t].lo.x() > s.v0.x() )
+	    if (tr.at( t ).lo.x() > s.v0.x() )
 	      i_d0 = true;
 	    else
 	      i_d1 = true;
 	  }
 	  else
 	  {
-	    tmppt.y() = y0 = tr[t].lo.y();
+	    tmppt.y() = y0 = tr.at( t ).lo.y();
 	    yt = (y0 - s.v0.y())/(s.v1.y() - s.v0.y());
 	    tmppt.x() = s.v0.x() + yt * (s.v1.x() - s.v0.x());
 	    
-	    if ( lessThan( tmppt, tr[t].lo))
+	    if ( lessThan( tmppt, tr.at( t ).lo))
 		    i_d0 = true;
 	    else
 		    i_d1 = true;
@@ -1073,118 +1108,121 @@ else				/* v1 already present */
 	  /* check continuity from the top so that the lower-neighbour */
 	  /* values are properly filled for the upper trapezoid */
 
-	  if ((tr[t].u0 > 0) && (tr[t].u1 > 0))
+	  if ((tr.at( t ).u0 > 0) && (tr.at( t ).u1 > 0))
 	  {			/* continuation of a chain from abv. */
-	    if (tr[t].usave > 0) /* three upper neighbours */
+	    if (tr.at( t ).usave > 0) /* three upper neighbours */
 		  {
-		    if (tr[t].uside == S_LEFT)
+		    if (tr.at( t ).uside == S_LEFT)
 		    {
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = -1;
-		      tr[tn].u1 = tr[t].usave;
+		      tr.at( tn ).u0 = tr.at( t ).u1;
+		      tr.at( t ).u1 = -1;
+		      tr.at( tn ).u1 = tr.at( t ).usave;
 		      
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;
-		      tr[tr[tn].u1].d0 = tn;
+		      tr.at( tr.at( t ).u0 ).d0 = t;
+		      tr.at( tr.at( tn ).u0 ).d0 = tn;
+		      tr.at( tr.at( tn ).u1 ).d0 = tn;
 		    }
 		    else		/* intersects in the right */
 		    {
-		      tr[tn].u1 = -1;
-		      tr[tn].u0 = tr[t].u1;
-		      tr[t].u1 = tr[t].u0;
-		      tr[t].u0 = tr[t].usave;
+		      tr.at( tn ).u1 = -1;
+		      tr.at( tn ).u0 = tr.at( t ).u1;
+		      tr.at( t ).u1 = tr.at( t ).u0;
+		      tr.at( t ).u0 = tr.at( t ).usave;
 
-		      tr[tr[t].u0].d0 = t;
-		      tr[tr[t].u1].d0 = t;
-		      tr[tr[tn].u0].d0 = tn;		      
+		      tr.at( tr.at( t ).u0 ).d0 = t;
+		      tr.at( tr.at( t ).u1 ).d0 = t;
+		      tr.at( tr.at( tn ).u0 ).d0 = tn;		      
 		    }
 		  
-		    tr[t].usave = tr[tn].usave = 0;
+		    tr.at( t ).usave = tr.at( tn ).usave = 0;
 		  }
 	    else		/* No usave.... simple case */
 		  {
-		    tr[tn].u0 = tr[t].u1;
-		    tr[tn].u1 = -1;
-		    tr[t].u1 = -1;
-		    tr[tr[tn].u0].d0 = tn;
+		    tr.at( tn ).u0 = tr.at( t ).u1;
+		    tr.at( tn ).u1 = -1;
+		    tr.at( t ).u1 = -1;
+		    tr.at( tr.at( tn ).u0 ).d0 = tn;
 		  }
 	  }
 	  else 
 	  {			/* fresh seg. or upward cusp */
-	    int tmp_u = tr[t].u0;
-	    int td0, td1;
-	    if (((td0 = tr[tmp_u].d0) > 0) &&  ((td1 = tr[tmp_u].d1) > 0))
+	    int tmp_u = tr.at( t ).u0;
+	    int td0 ( tr.at(tmp_u).d0 );
+      int td1 ( tr.at(tmp_u).d1 );
+	    if ( td0 > 0 && td1 > 0 )
 		  {		/* upward cusp */
-		    if ((tr[td0].rseg > 0) && !is_left_of(tr[td0].rseg, s.v1, seg ))
+		    if ((tr.at( td0 ).rseg > 0) && !is_left_of(tr.at( td0 ).rseg, s.v1, seg ))
 		    {
-		      tr[t].u0 = tr[t].u1 = tr[tn].u1 = -1;
-		      tr[tr[tn].u0].d1 = tn;
+		      tr.at( t ).u0 = tr.at( t ).u1 = tr.at( tn ).u1 = -1;
+		      tr.at( tr.at( tn ).u0 ).d1 = tn;
 		    }
 		    else 
 		    {
-		      tr[tn].u0 = tr[tn].u1 = tr[t].u1 = -1;
-		      tr[tr[t].u0].d0 = t;
+		      tr.at( tn ).u0 = tr.at( tn ).u1 = tr.at( t ).u1 = -1;
+		      tr.at( tr.at( t ).u0 ).d0 = t;
 		    }
 		  }
 	    else		/* fresh segment */
 		  {
-		    tr[tr[t].u0].d0 = t;
-		    tr[tr[t].u0].d1 = tn;
+		    tr.at( tr.at( t ).u0 ).d0 = t;
+		    tr.at( tr.at( t ).u0 ).d1 = tn;
 		  }
 	  }
 	  
-	  if ( (tr[t].lo.y() == tr[tlast].lo.y()) && ( tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
+	  //if ( (tr[t].lo.y() == tr[tlast].lo.y()) && ( tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
+    if ( tr.at( t ).lo == tr.at( tlast ).lo && tribot )
 	  {
 	    /* this case arises only at the lowest trapezoid.. i.e.
 		tlast, if the lower endpoint of the segment is
 		already inserted in the structure */
 	    
-	    tr[tr[t].d0].u0 = t;
-	    tr[tr[t].d0].u1 = -1;
-	    tr[tr[t].d1].u0 = tn;
-	    tr[tr[t].d1].u1 = -1;
+	    tr.at( tr.at( t ).d0 ).u0 = t;
+	    tr.at( tr.at( t ).d0 ).u1 = -1;
+	    tr.at( tr.at( t ).d1 ).u0 = tn;
+	    tr.at( tr.at( t ).d1 ).u1 = -1;
 
-	    tr[tn].d0 = tr[t].d1;
-	    tr[t].d1 = tr[tn].d1 = -1;
+	    tr.at( tn ).d0 = tr.at( t ).d1;
+	    tr.at( t ).d1 = tr.at( tn ).d1 = -1;
 	    
-	    tnext = tr[t].d1;	      
+	    tnext = tr.at( t ).d1;	      
 	  }
 	  else if (i_d0)
 				/* intersecting d0 */
 	  {
-	    tr[tr[t].d0].u0 = t;
-	    tr[tr[t].d0].u1 = tn;
-	    tr[tr[t].d1].u0 = tn;
-	    tr[tr[t].d1].u1 = -1;
+	    tr.at( tr.at( t ).d0 ).u0 = t;
+	    tr.at( tr.at( t ).d0 ).u1 = tn;
+	    tr.at( tr.at( t ).d1 ).u0 = tn;
+	    tr.at( tr.at( t ).d1 ).u1 = -1;
 	    
 	    /* new code to determine the bottom neighbours of the */
 	    /* newly partitioned trapezoid */
 	    
-	    tr[t].d1 = -1;
+	    tr.at( t ).d1 = -1;
 
-	    tnext = tr[t].d0;
+	    tnext = tr.at( t ).d0;
 	  }
 	  else			/* intersecting d1 */
 	  {
-	    tr[tr[t].d0].u0 = t;
-	    tr[tr[t].d0].u1 = -1;
-	    tr[tr[t].d1].u0 = t;
-	    tr[tr[t].d1].u1 = tn;
+	    tr.at( tr.at( t ).d0 ).u0 = t;
+	    tr.at( tr.at( t ).d0 ).u1 = -1;
+	    tr.at( tr.at( t ).d1 ).u0 = t;
+	    tr.at( tr.at( t ).d1 ).u1 = tn;
 
 	    /* new code to determine the bottom neighbours of the */
 	    /* newly partitioned trapezoid */
 	    
-	    tr[tn].d0 = tr[t].d1;
-	    tr[tn].d1 = -1;
+	    tr.at( tn ).d0 = tr.at( t ).d1;
+	    tr.at( tn ).d1 = -1;
 	    
-	    tnext = tr[t].d1;
+	    tnext = tr.at( t ).d1;
 	  }	    
 	  
 	  t = tnext;
 	}
       
-      tr.at(t_sav).rseg = tr.at(tn_sav).lseg  = segnum;
-    } /* end-while */
+  tr.at(t_sav).rseg = tr.at(tn_sav).lseg  = segnum;
+  
+  } /* end-while */
   
   /* Now combine those trapezoids which share common segments. We can */
   /* use the pointers to the parent to connect these together. This */
@@ -1197,7 +1235,7 @@ else				/* v1 already present */
   merge_trapezoids(segnum, tfirstr, tlastr, S_RIGHT, qs, tr );
 
   seg.at(segnum).is_inserted = true;
-  return 0;
+
 }
 
 
@@ -1206,18 +1244,18 @@ else				/* v1 already present */
  * This is done to speed up the location-query for the endpoint when
  * the segment is inserted into the trapezoidation subsequently
  */
-int find_new_roots( int segnum, std::vector< Node > &qs, std::vector< Segment > &seg, std::vector< Trapezoid > &tr  )
+int find_new_roots( int segnum, const std::vector< Node > &qs, std::vector< Segment > &seg, const std::vector< Trapezoid > &tr  )
 {
-  Segment *s = &seg.at(segnum);
+  Segment &s ( seg.at(segnum) );
   
-  if (s->is_inserted)
+  if (s.is_inserted)
     return 0;
 
-  s->root0 = locate_endpoint( s->v0, s->v1, s->root0, qs, seg );
-  s->root0 = tr.at(s->root0).sink;
+  s.root0 = locate_endpoint( s.v0, s.v1, s.root0, qs, seg );
+  s.root0 = tr.at(s.root0).sink;
 
-  s->root1 = locate_endpoint( s->v1, s->v0, s->root1, qs, seg );
-  s->root1 = tr.at(s->root1).sink;  
+  s.root1 = locate_endpoint( s.v1, s.v0, s.root1, qs, seg );
+  s.root1 = tr.at(s.root1).sink;  
   return 0;
 }
 
@@ -1229,26 +1267,27 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
   int i ( 1 );
   int h ( 1 );
 
-  int choose_idx ( 0 );
-  std::vector < int > permute;
+  //3186504610
+  int choose_idx ( 1 );
+
+  //Is this needed?
+  //std::vector < int > permute;
 
   //3186504610
-  permute.resize( nseg + 1 );
+  //permute.resize( nseg + 1 );
 
-  //3186504610
-  choose_idx = 1;
 
   //Seed the random number generator
-  srand( time(0) );
+  //srand( time(0) );
 
   //3186504610
-  for (i = 1; i <= nseg; i++ )
-  {
-    permute.at( i ) = i;
-  }
+  //for (i = 1; i <= nseg; i++ )
+  //{
+  //  permute.at( i ) = i;
+  //}
 
   //3186504610
-  std::random_shuffle ( permute.begin() + 1, permute.end() );
+  //std::random_shuffle ( permute.begin() + 1, permute.end() );
 
   
   /* Add the first segment and get the query structure and trapezoid */
@@ -1257,9 +1296,15 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
   int root ( init_query_structure( choose_idx++, qs, tr, seg  ) );
 
   //3186504610
-  for (i = 1; i <= nseg; i++)
-    seg.at(i).root0 = seg.at(i).root1 = root;
+  //for (i = 1; i <= nseg; i++)
+  for( std::vector< Segment >::iterator iter = seg.begin(); iter != seg.end(); ++iter )
+  {
+    iter->root0 = root;
+    iter->root1 = root;
+    //seg.at(i).root0 = seg.at(i).root1 = root;
+  }
   
+  //Is all this really needed?
   for (h = 1; h <= math_logstar_n(nseg); h++)
   {
     for (i = math_N(nseg, h -1) + 1; i <= math_N(nseg, h); i++)
@@ -1276,83 +1321,88 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
 
 }
 
-#define CROSS_SINE(v0, v1) ((v0).x() * (v1).y() - (v1).x() * (v0).y() )
-
-
-static int chain_idx = 0;
-static int mon_idx = 0;
 
 
 
-int traverse_polygon(int, int, int, int, 
-                     std::vector < Trapezoid > &, 
-                     std::vector < Segment > &,
-                     std::vector < Monchain > &mchain, 
-                     std::vector < Vertexchain > &vert,
-                     std::vector < int > &mon,
-                     std::vector< bool > &visited);
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function returns true if the trapezoid lies inside the polygon
+//
+///////////////////////////////////////////////////////////////////////////////
 
-/* Function returns true if the trapezoid lies inside the polygon */
-bool inside_polygon( Trapezoid *t, std::vector < Segment > &seg )
+bool inside_polygon( const Trapezoid &trap, const std::vector < Segment > &seg )
 {
-  int rseg = t->rseg;
+  int rseg ( trap.rseg );
 
   //Return false if not valid
-  if ( !t->valid() )
+  if ( !trap.valid() )
     return false;
 
-  if ((t->lseg <= 0) || (t->rseg <= 0))
+  if ((trap.lseg <= 0) || (trap.rseg <= 0))
     return false;
   
-  if (((t->u0 <= 0) && (t->u1 <= 0)) || ((t->d0 <= 0) && (t->d1 <= 0))) /* triangle */
+  if (((trap.u0 <= 0) && (trap.u1 <= 0)) || ((trap.d0 <= 0) && (trap.d1 <= 0))) /* triangle */
     return ( greaterThan( seg.at(rseg).v1, seg.at(rseg).v0));
   
   return false;
 }
 
 
-/* return a new mon structure from the table */
+static int mon_idx = 0;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  return a new mon structure from the table
+//
+///////////////////////////////////////////////////////////////////////////////
+
 int newmon()
 {
   return ++mon_idx;
 }
 
+static int chain_idx = 0;
 
-/* return a new chain element from the table */
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  return a new chain element from the table
+//
+///////////////////////////////////////////////////////////////////////////////
+
 int new_chain_element()
 {
   return ++chain_idx;
 }
 
 
-double get_angle( Point *vp0, Point *vpnext, Point *vp1 )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the angle between vp0 and vp1
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Vertex >
+double get_angle( const Vertex &vp0, const Vertex &vpnext, const Vertex &vp1 )
 {
-  Point v0, v1;
-  
-  v0.x() = vpnext->x() - vp0->x();
-  v0.y() = vpnext->y() - vp0->y();
+  Vertex v0 ( vpnext.x() - vp0.x(), vpnext.y() - vp0.y() );
+  Vertex v1 ( vp1.x() - vp0.x(), vp1.y() - vp0.y() );
 
-  v1.x() = vp1->x() - vp0->x();
-  v1.y() = vp1->y() - vp0->y();
-
-  if (CROSS_SINE(v0, v1) >= 0)	/* sine is positive */
-    return DOT(v0, v1)/v0.length()/v1.length();
+  if (crossSine(v0, v1) >= 0)	/* sine is positive */
+    return v0.dot ( v1 )/v0.length()/v1.length();
   else
-    return (-1.0 * DOT(v0, v1)/v0.length()/v1.length() - 2);
+    return (-1.0 * v0.dot( v1 )/v0.length()/v1.length() - 2);
 }
 
 
 /* (v0, v1) is the new diagonal to be added to the polygon. Find which */
 /* chain to use and return the positions of v0 and v1 in p and q */ 
-void get_vertex_positions(int v0, int v1, int &ip, int &iq, std::vector < Vertexchain > &vert )
+int get_vertex_positions( const Vertexchain &vp0, const Vertexchain &vp1, std::vector < Vertexchain > &vert )
 {
-  double temp ( 0.0 );
-  int tp ( 0 );
-  int tq ( 0 );
-
-  Vertexchain *vp0 ( &vert.at ( v0 ) );
-  Vertexchain *vp1 ( &vert.at ( v1 ) );
+  int p ( 0 );
+  //int tq ( 0 );
   
   /* p is identified as follows. Scan from (v0, v1) rightwards till */
   /* you hit the first segment starting from v0. That chain is the */
@@ -1361,32 +1411,38 @@ void get_vertex_positions(int v0, int v1, int &ip, int &iq, std::vector < Vertex
   double angle ( -4.0 );
   for (int i = 0; i < 4; i++)
   {
-    if (vp0->vnext[i] <= 0)
+    if ( vp0.vnext[i] <= 0 ) //3186504610 Not sure about this one
 	    continue;
-    if ((temp = get_angle(&vp0->pt, &(vert.at( vp0->vnext[i] ).pt), &vp1->pt)) > angle)
+
+    double temp ( get_angle( vp0.pt, vert.at( vp0.vnext[i] ).pt, vp1.pt ) );
+    if ( temp > angle )
 	  {
 	    angle = temp;
-	    tp = i;
+	    p = i;
 	  }
   }
 
-  ip = tp;
+  //ip = tp;
+  return p;
 
   /* Do similar actions for q */
-
+  /*
   angle = -4.0;
   for (int i = 0; i < 4; i++)
   {
-    if (vp1->vnext[i] <= 0)
-	    continue;      
-    if ((temp = get_angle(&vp1->pt, &(vert.at ( vp1->vnext[i] ).pt), &vp0->pt)) > angle)
+    if ( vp1.vnext[i] <= 0 ) //3186504610 Not sure about this one
+	    continue;
+
+    double temp ( get_angle( vp1.pt, vert.at ( vp1.vnext[i] ).pt, vp0.pt ) );
+
+    if ( temp > angle )
 	  {
 	    angle = temp;
 	    tq = i;
 	  }
   }
 
-  iq = tq;
+  iq = tq;*/
 
 }
 
@@ -1397,15 +1453,15 @@ void get_vertex_positions(int v0, int v1, int &ip, int &iq, std::vector < Vertex
  */
 int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &mchain, std::vector < Vertexchain > &vert, std::vector < int > &mon )
 {
-  Vertexchain *vp0 ( &vert.at( v0 ) );
-  Vertexchain *vp1 ( &vert.at( v1 ) );
+  Vertexchain &vp0 ( vert.at( v0 ) );
+  Vertexchain &vp1 ( vert.at( v1 ) );
 
-  int ip ( 0 );
-  int iq ( 0 );
-  get_vertex_positions(v0, v1, ip, iq, vert );
+  int ip ( get_vertex_positions( vp0, vp1, vert ) );
+  int iq ( get_vertex_positions( vp1, vp0, vert ) );
+  //get_vertex_positions( vp0, vp1, ip, iq, vert );
 
-  int p ( vp0->vpos[ip] );
-  int q ( vp1->vpos[iq] );
+  int p ( vp0.vpos[ip] );
+  int q ( vp1.vpos[iq] );
 
   /* At this stage, we have got the positions of v0 and v1 in the */
   /* desired chain. Now modify the linked lists */
@@ -1426,18 +1482,18 @@ int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &
   mchain.at( p ).next = q;
   mchain.at( q ).prev = p;
 
-  int nf0 ( vp0->nextfree );
-  int nf1 ( vp1->nextfree );
+  int nf0 ( vp0.nextfree );
+  int nf1 ( vp1.nextfree );
 
-  vp0->vnext[ip] = v1;
+  vp0.vnext[ip] = v1;
 
-  vp0->vpos[nf0] = i;
-  vp0->vnext[nf0] = mchain.at( mchain.at( i ).next ).vnum;
-  vp1->vpos[nf1] = j;
-  vp1->vnext[nf1] = v0;
+  vp0.vpos[nf0] = i;
+  vp0.vnext[nf0] = mchain.at( mchain.at( i ).next ).vnum;
+  vp1.vpos[nf1] = j;
+  vp1.vnext[nf1] = v0;
 
-  vp0->nextfree++;
-  vp1->nextfree++;
+  vp0.nextfree++;
+  vp1.nextfree++;
 
   int mnew ( newmon() );
 
@@ -1447,75 +1503,19 @@ int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &
   return mnew;
 }
 
-/* Main routine to get monotone polygons from the trapezoidation of 
- * the polygon.
- */
-
-int monotonate_trapezoids( int n, std::vector < Trapezoid > &tr, std::vector < Segment > &seg, 
-                     std::vector < Monchain > &mchain, 
-                     std::vector < Vertexchain > &vert,
-                     std::vector < int > &mon,
-                     std::vector< bool > &visited )
-{
-  int tr_start = 0;
-
-  
-  /* First locate a trapezoid which lies inside the polygon */
-  /* and which is triangular */
-  for ( unsigned int i = 0; i < tr.size(); i++)
-  {
-    if (inside_polygon(&tr.at(i), seg ))
-    {
-      tr_start = i;
-      break;
-    }
-  }
-  
-  
-  /* Initialise the mon data-structure and start spanning all the */
-  /* trapezoids within the polygon */
-
-  //3186504610
-  for (int i = 1; i <= n; i++)
-  {
-    mchain.at(i).prev = seg.at(i).prev;
-    mchain.at(i).next = seg.at(i).next;
-    mchain.at(i).vnum = i;
-    vert.at(i).pt = seg.at(i).v0;
-    vert.at(i).vnext[0] = seg.at(i).next; /* next vertex */
-    vert.at(i).vpos[0] = i;	/* locn. of next vertex */
-    vert.at(i).nextfree = 1;
-  }
-
-  chain_idx = n;
-  mon_idx = 0;
-  mon.at(0) = 1;			// position of any vertex in the first chain  
-
-  
-  /* traverse the polygon */
-  if (tr.at(tr_start).u0 > 0)
-    traverse_polygon(0, tr_start, tr.at(tr_start).u0, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-  else if (tr.at(tr_start).d0 > 0)
-    traverse_polygon(0, tr_start, tr.at(tr_start).d0, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-  
-  /* return the number of polygons created */
-  return newmon();
-}
-
-
 /* recursively visit all the trapezoids */
 int traverse_polygon( int mcur, int trnum, int from, int dir, 
-                     std::vector < Trapezoid > &tr, 
-                     std::vector < Segment > &seg, 
+                     const std::vector < Trapezoid > &tr, 
+                     const std::vector < Segment > &seg, 
                      std::vector < Monchain > &mchain, 
                      std::vector < Vertexchain > &vert,
                      std::vector < int > &mon,
                      std::vector< bool > &visited )
 {
-  if( ( trnum <= 0 ) || visited[trnum] )
+  if( ( trnum <= 0 ) || visited.at(trnum) )
     return 0;
 
-  Trapezoid *t = &tr.at(trnum);
+  const Trapezoid &trap ( tr.at(trnum) );
   int mnew ( -1 );
   int v0 ( -1 );
   int v1 ( -1 );
@@ -1535,257 +1535,313 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
 
   /* special cases for triangles with cusps at the opposite ends. */
   /* take care of this first */
-  if ((t->u0 <= 0) && (t->u1 <= 0))
+  if ((trap.u0 <= 0) && (trap.u1 <= 0))
   {
-    if ((t->d0 > 0) && (t->d1 > 0)) /* downward opening triangle */
+    if ((trap.d0 > 0) && (trap.d1 > 0)) /* downward opening triangle */
 	  {
-	    v0 = tr.at(t->d1).lseg;
-	    v1 = t->lseg;
-	    if (from == t->d1)
+	    v0 = tr.at( trap.d1 ).lseg;
+	    v1 = trap.lseg;
+
+	    if (from == trap.d1)
 	    {
 	      do_switch = true;
 	      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon );
-	      traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	    
+	      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	    
 	    }
 	    else
 	    {
 	      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-	      traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
 	    }
 	  }
     else
 	  {
 	    retval = SP_NOSPLIT;	/* Just traverse all neighbours */
-	    traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
 	  }
   }
   
-  else if ((t->d0 <= 0) && (t->d1 <= 0))
+  else if ((trap.d0 <= 0) && (trap.d1 <= 0))
   {
-    if ((t->u0 > 0) && (t->u1 > 0)) /* upward opening triangle */
+    if ((trap.u0 > 0) && (trap.u1 > 0)) /* upward opening triangle */
 	  {
-	    v0 = t->rseg;
-	    v1 = tr.at(t->u0).rseg;
-	    if (from == t->u1)
+	    v0 = trap.rseg;
+	    v1 = tr.at(trap.u0).rseg;
+	    if (from == trap.u1)
 	    {
 	      do_switch = true;
 	      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-	      traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );	    
+	      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );	    
 	    }
 	    else
 	    {
 	      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-	      traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
 	    }
 	  }
     else
 	  {
 	    retval = SP_NOSPLIT;	/* Just traverse all neighbours */
-	    traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	    traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	    traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
 	  }
   }
   
-  else if ((t->u0 > 0) && (t->u1 > 0)) 
-    {
-      if ((t->d0 > 0) && (t->d1 > 0)) /* downward + upward cusps */
-	{
-	  v0 = tr.at(t->d1).lseg;
-	  v1 = tr.at(t->u0).rseg;
-	  retval = SP_2UP_2DN;
-	  if (((dir == TR_FROM_DN) && (t->d1 == from)) ||
-	      ((dir == TR_FROM_UP) && (t->u1 == from)))
+  else if ((trap.u0 > 0) && (trap.u1 > 0)) 
+  {
+    if ((trap.d0 > 0) && (trap.d1 > 0)) /* downward + upward cusps */
+	  {
+	    v0 = tr.at(trap.d1).lseg;
+	    v1 = tr.at(trap.u0).rseg;
+
+	    retval = SP_2UP_2DN;
+	    if (((dir == TR_FROM_DN) && (trap.d1 == from)) || ((dir == TR_FROM_UP) && (trap.u1 == from)))
 	    {
 	      do_switch = true;
 	      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-	      traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
 	    }
-	  else
+	    else
 	    {
 	      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-	      traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      
+	      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      
 	    }
-	}
-      else			/* only downward cusp */
-	{
-	  if ( t->lo == seg.at(t->lseg).v1)
+	  }
+    else			/* only downward cusp */
+	  {
+	    if ( trap.lo == seg.at( trap.lseg ).v1)
 	    {
-	      v0 = tr.at(t->u0).rseg;
-	      v1 = seg.at(t->lseg).next;
+	      v0 = tr.at(trap.u0).rseg;
+	      v1 = seg.at(trap.lseg).next;
 
 	      retval = SP_2UP_LEFT;
-	      if ((dir == TR_FROM_UP) && (t->u0 == from))
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon );
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+	      if ((dir == TR_FROM_UP) && (trap.u0 == from))
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon );
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		    }
 	    }
-	  else
+	    else
 	    {
-	      v0 = t->rseg;
-	      v1 = tr.at(t->u0).rseg;	
+	      v0 = trap.rseg;
+	      v1 = tr.at(trap.u0).rseg;	
 	      retval = SP_2UP_RIGHT;
-	      if ((dir == TR_FROM_UP) && (t->u1 == from))
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		}
+	      if ((dir == TR_FROM_UP) && (trap.u1 == from))
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		    }
 	    }
-	}
-    }
-  else if ((t->u0 > 0) || (t->u1 > 0)) /* no downward cusp */
-    {
-      if ((t->d0 > 0) && (t->d1 > 0)) /* only upward cusp */
-	{
-	  if ( t->hi == seg.at (t->lseg).v0 )
+	  }
+  }
+  else if ((trap.u0 > 0) || (trap.u1 > 0)) /* no downward cusp */
+  {
+    if ((trap.d0 > 0) && (trap.d1 > 0)) /* only upward cusp */
+	  {
+	    if ( trap.hi == seg.at (trap.lseg).v0 )
 	    {
-	      v0 = tr.at(t->d1).lseg;
-	      v1 = t->lseg;
+	      v0 = tr.at(trap.d1).lseg;
+	      v1 = trap.lseg;
 	      retval = SP_2DN_LEFT;
-	      if (!((dir == TR_FROM_DN) && (t->d0 == from)))
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+	      if (!((dir == TR_FROM_DN) && (trap.d0 == from)))
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      
+		    }
 	    }
-	  else
+	    else
 	    {
-	      v0 = tr.at(t->d1).lseg;
-	      v1 = seg.at(t->rseg).next;
+	      v0 = tr.at(trap.d1).lseg;
+	      v1 = seg.at(trap.rseg).next;
 
 	      retval = SP_2DN_RIGHT;	    
-	      if ((dir == TR_FROM_DN) && (t->d1 == from))
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+	      if ((dir == TR_FROM_DN) && (trap.d1 == from))
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	    }
-	}
-      else			/* no cusp */
-	{
-	  if ( t->hi == seg.at(t->lseg).v0 && t->lo == seg.at(t->rseg).v0 )
+	  }
+    else			/* no cusp */
+	  {
+	    if ( trap.hi == seg.at(trap.lseg).v0 && trap.lo == seg.at(trap.rseg).v0 )
 	    {
-	      v0 = t->rseg;
-	      v1 = t->lseg;
+	      v0 = trap.rseg;
+	      v1 = trap.lseg;
 	      retval = SP_SIMPLE_LRDN;
 	      if (dir == TR_FROM_UP)
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		    }
 	    }
-	  else if ( t->hi == seg.at(t->rseg).v1 && t->lo == seg.at(t->lseg).v1)
+	    else if ( trap.hi == seg.at(trap.rseg).v1 && trap.lo == seg.at(trap.lseg).v1 )
 	    {
-	      v0 = seg.at(t->rseg).next;
-	      v1 = seg.at(t->lseg).next;
+	      v0 = seg.at(trap.rseg).next;
+	      v1 = seg.at(trap.lseg).next;
 
 	      retval = SP_SIMPLE_LRUP;
 	      if (dir == TR_FROM_UP)
-		{
-		  do_switch = true;
-		  mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
-		  traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      do_switch = true;
+		      mnew = make_new_monotone_poly(mcur, v1, v0, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		    }
 	      else
-		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
-		  traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		  traverse_polygon(mnew, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-		}
+		    {
+		      mnew = make_new_monotone_poly(mcur, v0, v1, mchain, vert, mon);
+		      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		      traverse_polygon(mnew, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+		    }
 	    }
-	  else			/* no split possible */
+	    else			/* no split possible */
 	    {
 	      retval = SP_NOSPLIT;
-	      traverse_polygon(mcur, t->u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mcur, t->d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mcur, t->u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
-	      traverse_polygon(mcur, t->d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      	      
+	      traverse_polygon(mcur, trap.u0, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.d0, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.u1, trnum, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+	      traverse_polygon(mcur, trap.d1, trnum, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );	      	      
 	    }
-	}
-    }
+	  }
+  }
 
   return retval;
 }
+
+/* Main routine to get monotone polygons from the trapezoidation of 
+ * the polygon.
+ */
+
+int monotonate_trapezoids( int n, std::vector < Trapezoid > &tr, std::vector < Segment > &seg, 
+                     std::vector < Monchain > &mchain, 
+                     std::vector < Vertexchain > &vert,
+                     std::vector < int > &mon,
+                     std::vector< bool > &visited )
+{
+  int tr_start ( 0 );
+
+  //First locate a trapezoid which lies inside the polygon and which is triangular
+  for ( unsigned int i = 0; i < tr.size(); i++)
+  {
+    if (inside_polygon( tr.at(i), seg ))
+    {
+      tr_start = i;
+      break;
+    }
+  }
+  
+  // Initialise the mon data-structure and start spanning all the trapezoids within the polygon
+
+  //3186504610
+  for (int i = 1; i <= n; i++)
+  {
+    mchain.at(i).prev = seg.at(i).prev;
+    mchain.at(i).next = seg.at(i).next;
+    mchain.at(i).vnum = i;
+
+    vert.at(i).pt = seg.at(i).v0;
+    vert.at(i).vnext[0] = seg.at(i).next; // next vertex
+    vert.at(i).vpos[0] = i;	              // locn. of next vertex 
+    vert.at(i).nextfree = 1;
+  }
+
+  chain_idx = n;
+  mon_idx = 0;
+
+  //3186504610 ?
+  mon.at(0) = 1;			// position of any vertex in the first chain  
+
+  
+  /* traverse the polygon */
+  if (tr.at(tr_start).u0 > 0)
+    traverse_polygon(0, tr_start, tr.at(tr_start).u0, TR_FROM_UP, tr, seg, mchain, vert, mon, visited );
+  else if (tr.at(tr_start).d0 > 0)
+    traverse_polygon(0, tr_start, tr.at(tr_start).d0, TR_FROM_DN, tr, seg, mchain, vert, mon, visited );
+  
+  /* return the number of polygons created */
+  return newmon();
+}
+
 
 /* A greedy corner-cutting algorithm to triangulate a y-monotone 
  * polygon in O(n) time.
@@ -1793,8 +1849,8 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
  */
 template < class Triangles >
 bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
-                     std::vector < Monchain > &mchain, 
-                     std::vector < Vertexchain > &vert )
+                     const std::vector < Monchain > &mchain, 
+                     const std::vector < Vertexchain > &vert )
 {
   typedef typename Triangles::value_type Triangle;
 
@@ -1838,7 +1894,7 @@ bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
 
     if (ri > 0)		// reflex chain is non-empty 
 	  {
-	    if (CROSS(vert.at( v ).pt, vert.at( rc.at(ri - 1) ).pt, vert.at( rc.at(ri) ).pt) > 0 ) // convex corner: cut if off 
+	    if ( cross (vert.at( v ).pt, vert.at( rc.at(ri - 1) ).pt, vert.at( rc.at(ri) ).pt) > 0 ) // convex corner: cut if off 
 	    {			
         //Add a new triangle
         Triangle t ( rc.at(ri - 1), rc.at(ri), v );
@@ -1879,7 +1935,7 @@ bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
 
 template < class Triangles >
 void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op, 
-                     std::vector < Monchain > &mchain, 
+                     std::vector < Monchain > &mchain,
                      std::vector < Vertexchain > &vert,
                      std::vector < int > &mon )
 {
@@ -1981,8 +2037,8 @@ void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op,
  * this routine
  */
 
-template < class VertexSequence, class Triangles >
-void triangulate_polygon( int ncontours, int cntr[], const VertexSequence &vertices, Triangles &triangles )
+template < class Sizes, class VertexSequence, class Triangles >
+void triangulate_polygon( const Sizes &sizes, const VertexSequence &vertices, Triangles &triangles )
 {
   /*
   See 3186504610 for places that I think will need to be changed to make vertices start at 0 instead of 1.
@@ -1990,7 +2046,7 @@ void triangulate_polygon( int ncontours, int cntr[], const VertexSequence &verti
   */
 
   
-  int numVerts ( vertices.size() - 1 );
+  int numVerts ( vertices.size() - 1 ); //3186504610
 
   const unsigned int segSize ( numVerts * 2);
   const unsigned int trSize  ( segSize * 4 );
@@ -2017,19 +2073,17 @@ void triangulate_polygon( int ncontours, int cntr[], const VertexSequence &verti
   std::vector <bool>           visited ( trSize, false );
 
 
-  //3186504610
-  int i ( 1 );
-  int ccount ( 0 );
+  int i ( 1 ); //3186504610
   
-  while (ccount < ncontours)
+  //while (ccount < ncontours)
+  for( typename Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
   {
-    int npoints ( cntr[ccount] );
+    const int npoints ( *iter );
     int first ( i );
     int last  ( first + npoints - 1 ); //3186504610
     for (int j = 0; j < npoints; j++, i++)
 	  {
-	    seg.at (i).v0.x() = vertices[i][0];
-    	seg.at (i).v0.y() = vertices[i][1];
+      seg.at( i ).v0.set ( vertices[i][0], vertices[i][1] );
 
 	    if (i == last)
 	    {
@@ -2050,8 +2104,7 @@ void triangulate_polygon( int ncontours, int cntr[], const VertexSequence &verti
 	      seg.at(i-1).v1 = seg.at(i).v0;
 	    }
 	  }
-      
-    ccount++;
+
   }
 
   //Detail::generate_random_ordering( numVerts );

@@ -17,12 +17,9 @@
 #define _USUL_ERROR_STACK_H_
 
 #include "Usul/Export/Export.h"
-#include "Usul/Exceptions/Canceled.h"
 
 #include <list>
 #include <string>
-#include <exception>
-#include <sstream>
 
 namespace Usul { namespace Threads { class Mutex; }; };
 
@@ -62,6 +59,7 @@ public:
 
   // Push an error.
   void                push ( const std::string &message );
+  void                push ( const char *message );
 
   // Pop the top error.
   void                pop();
@@ -86,60 +84,6 @@ private:
   Mutex *_m;
   static Stack *_instance;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Catch and eat cancel-exceptions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_EAT_CANCEL_EXCEPTIONS\
-catch ( const Usul::Exceptions::Canceled & )\
-{\
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Catch and re-throw cancel-exceptions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_RETHROW_CANCEL_EXCEPTIONS\
-catch ( const Usul::Exceptions::Canceled &e )\
-{\
-  throw e;\
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Catch standard exceptions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_CATCH_STD_EXCEPTIONS(error_id)\
-catch ( const std::exception &e )\
-{\
-  std::ostringstream message;\
-  message << "Error " << error_id << ": Standard exception caught";\
-  Usul::Errors::Stack::instance().push ( message.str() );\
-  Usul::Errors::Stack::instance().push ( e.what() );\
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Catch all exceptions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_CATCH_ALL_EXCEPTIONS(error_id)\
-catch ( ... )\
-{\
-  std::ostringstream message;\
-  message << "Error " << error_id << ": Unknown exception caught";\
-  Usul::Errors::Stack::instance().push ( message.str() );\
-}
 
 
 }; // namespace Errors

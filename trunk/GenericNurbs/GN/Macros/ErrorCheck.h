@@ -18,7 +18,7 @@
 
 
 #ifndef GN_ERROR_CHECK
-#define GN_ERROR_CHECK(state) ErrorCheckerType ( __FILE__, __LINE__, state );
+#define GN_ERROR_CHECK(state) ErrorCheckerType ( __FILE__, __LINE__, state, #state );
 #endif
 
 

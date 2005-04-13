@@ -93,8 +93,16 @@ Temp::~Temp()
     }
   }
 
-  USUL_CATCH_STD_EXCEPTIONS ( 2355835989u )
-  USUL_CATCH_ALL_EXCEPTIONS ( 2036890444u )
+  catch ( const std::exception &e )
+  {
+    Usul::Errors::Stack::instance().push ( e.what() );
+    Usul::Errors::Stack::instance().push ( "Error 2355835989: Standard exception caught while removing temporary file: " + _name );
+  }
+
+  catch ( ... )
+  {
+    Usul::Errors::Stack::instance().push ( "Error 2036890444: Unknown exception caught while removing temporary file: " + _name );
+  }
 }
 
 

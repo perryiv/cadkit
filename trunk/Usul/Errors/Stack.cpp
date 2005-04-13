@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Errors/Stack.h"
-#include "Usul/Errors/Assert.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -140,6 +139,20 @@ void Stack::push ( const std::string &message )
 {
   Guard guard ( *_m );
   _s.push_front ( message );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Push an error.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Stack::push ( const char *message )
+{
+  Guard guard ( *_m );
+  if ( message )
+    _s.push_front ( std::string ( message ) );
 }
 
 

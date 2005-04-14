@@ -49,6 +49,7 @@ Menu* SampleMenu::operator ()()
   standardtoolbar->toggle( true );
   MenuKit::Button::Ptr texteditortoolbar = new MenuKit::Button("Text Editor","");
   texteditortoolbar->toggle( true );
+  texteditortoolbar->checked( true );
   MenuKit::Menu::Ptr toolbars = new MenuKit::Menu("Toolbars","",MenuKit::Menu::VERTICAL);
   toolbars->append( standardtoolbar.get() );
   toolbars->append( texteditortoolbar.get() );

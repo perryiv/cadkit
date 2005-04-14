@@ -89,7 +89,7 @@ namespace MenuKit
         VTSColorMap normal;
         normal["text"] = black;
         normal["middle"] = gray;
-        normal["border"] = red;
+        normal["border"] = blue;
         normal["horizontal_background"] = gray;
         normal["vertical_background"] = lightgray;
         normal["special"] = red;
@@ -312,7 +312,6 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
   base_class::theme_type::const_iterator hbgiter = scheme.find("horizontal_background");
   base_class::theme_type::const_iterator vbgiter = scheme.find("vertical_background");
   base_class::theme_type::const_iterator textiter = scheme.find("text");
-  //base_class::theme_type::const_iterator specialiter = scheme.find("special");
   base_class::theme_type::const_iterator borderiter = scheme.find("border");
 
   // make the background box(es)
@@ -416,7 +415,7 @@ osg::Node* VisualThemeSkin::_item_graphic(const std::string& txt,const Menu* par
 
   ///\todo TODO: add graphics for each supported bit! , Feb 20, 2005: finished now?
   typedef MenuKit::Bits<unsigned int> checker;
-  if( checker::has(itembits, TOGGLE) )
+  if( checker::has(itembits, VisualThemeSkin::TOGGLE) )
   {
     // the border
     Detail::Box outy(thebox.height()-2.0*_border,thebox.height()-2.0*_border);

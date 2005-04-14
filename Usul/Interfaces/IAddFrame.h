@@ -28,6 +28,7 @@ struct IAddFrame : public Usul::Interfaces::IUnknown
   enum { IID = 2362918641u };
 
   virtual void addFrame( const std::string& groupName, const osg::Vec3& center, float distance, const osg::Quat& rotation ) = 0;
+  virtual void clear   ( const std::string& groupName ) = 0;
 
 }; 
 

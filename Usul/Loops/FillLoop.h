@@ -671,7 +671,7 @@ void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector<
 void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg  )
 {
   int tu, tl, sk, tfirst, tlast;
-  int tfirstr = 0, tlastr = 0, tfirstl = 0, tlastl = 0;
+  int tfirstr = -1, tlastr = -1, tfirstl = -1, tlastl = -1;
   int i1, i2, t, tn;
   Point tpt;
   int tritop = 0, tribot = 0; 
@@ -700,8 +700,10 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
     tl = newtrap( tr );		/* tl is the new lower trapezoid */
     tr.at(tl).valid( true );
     tr.at(tl) = tr.at(tu);
-    tr.at(tu).lo.y() = tr.at(tl).hi.y() = s.v0.y();
-    tr.at(tu).lo.x() = tr.at(tl).hi.x() = s.v0.x();
+
+    tr.at(tu).lo.set( s.v0.x(), s.v0.y() );
+    tr.at(tl).hi.set( s.v0.x(), s.v0.y() ); 
+    
     tr.at(tu).d0 = tl;      
     tr.at(tu).d1 = 0;
     tr.at(tl).u0 = tu;
@@ -719,11 +721,10 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
     if (((tmp_d = tr.at(tl).d1) > 0) && (tr.at(tmp_d).u1 == tu))
       tr.at(tmp_d).u1 = tl;
 
-      /* Now update the query structure and obtain the sinks for the */
-      /* two trapezoids */ 
+      // Now update the query structure and obtain the sinks for the two trapezoids
       
-    i1 = newnode();		/* Upper trapezoid sink */
-    i2 = newnode();		/* Lower trapezoid sink */
+    i1 = newnode();		// Upper trapezoid sink 
+    i2 = newnode();		// Lower trapezoid sink 
     sk = tr.at(tu).sink;
     
     qs.at ( sk ).nodetype = Node::T_Y;
@@ -760,8 +761,10 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
     tl = newtrap( tr );		/* tl is the new lower trapezoid */
     tr.at(tl).valid( true );
     tr.at(tl) = tr.at(tu);
-    tr.at(tu).lo.y() = tr.at(tl).hi.y() = s.v1.y();
-    tr.at(tu).lo.x() = tr.at(tl).hi.x() = s.v1.x();
+
+    tr.at(tu).lo.set( s.v1.x(), s.v1.y() );
+    tr.at(tl).hi.set( s.v1.x(), s.v1.y() );
+    
     tr.at(tu).d0 = tl;      
     tr.at(tu).d1 = 0;
     tr.at(tl).u0 = tu;
@@ -812,25 +815,25 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
   /* First, split all the trapezoids which are intersected by s into */
   /* two */
 
-  t = tfirst;			/* topmost trapezoid */
+  t = tfirst;			// topmost trapezoid 
   
-  while ((t > 0) && greaterThanEqualTo( tr.at( t ).lo, tr.at( tlast ).lo)) /* traverse from top to bot */
+  while ((t > 0) && greaterThanEqualTo( tr.at( t ).lo, tr.at( tlast ).lo)) // traverse from top to bot 
   {
     int t_sav, tn_sav;
     sk = tr.at( t ).sink;
-    i1 = newnode();		/* left trapezoid sink */
-    i2 = newnode();		/* right trapezoid sink */
+    i1 = newnode();		// left trapezoid sink 
+    i2 = newnode();		// right trapezoid sink 
     
     qs.at ( sk ).nodetype = Node::T_X;
     qs.at ( sk ).segnum = segnum;
     qs.at ( sk ).left = i1;
     qs.at ( sk ).right = i2;
 
-    qs.at ( i1 ).nodetype = Node::T_SINK;	/* left trapezoid (use existing one) */
+    qs.at ( i1 ).nodetype = Node::T_SINK;	// left trapezoid (use existing one) 
     qs.at ( i1 ).trnum = t;
     qs.at ( i1 ).parent = sk;
 
-    qs.at ( i2 ).nodetype = Node::T_SINK;	/* right trapezoid (allocate new) */
+    qs.at ( i2 ).nodetype = Node::T_SINK;	// right trapezoid (allocate new) 
     qs.at ( i2 ).trnum = tn = newtrap( tr );
     tr.at( tn ).valid( true );
     qs.at ( i2 ).parent = sk;
@@ -862,7 +865,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 	  {			/* Only one trapezoid below */
 	    if ((tr.at( t ).u0 > 0) && (tr.at( t ).u1 > 0))
 	    {			/* continuation of a chain from abv. */
-	      if (tr.at( t ).usave > 0) /* three upper neighbours */
+	      if (tr.at( t ).usave > 0) // three upper neighbours 
 		    {
 		      if (tr.at( t ).uside == S_LEFT)
 		        {
@@ -874,7 +877,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 		          tr.at( tr.at( tn ).u0 ).d0 = tn;
 		          tr.at( tr.at( tn ).u1 ).d0 = tn;
 		        }
-		        else		/* intersects in the right */
+		        else		// intersects in the right 
 		        {
 		          tr.at( tn ).u1 = -1;
 		          tr.at( tn ).u0 = tr.at( t ).u1;
@@ -888,7 +891,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 		  
 		        tr.at( t ).usave = tr.at( tn ).usave = 0;
 		    }
-	      else		/* No usave.... simple case */
+	      else		// No usave.... simple case 
 		    {
 		      tr.at( tn ).u0 = tr.at( t ).u1;
 		      tr.at( t ).u1 = tr.at( tn ).u1 = -1;
@@ -908,20 +911,20 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 		        tr.at( t ).u0 = tr.at( t ).u1 = tr.at( tn ).u1 = -1;
 		        tr.at( tr.at( tn ).u0 ).d1 = tn;
 		      }
-		      else		/* cusp going leftwards */
+		      else		// cusp going leftwards
 		      { 
 		        tr.at( tn ).u0 = tr.at( tn ).u1 = tr.at( t ).u1 = -1;
 		        tr.at( tr.at( t ).u0 ).d0 = t;
 		      }
 		    }
-	      else		/* fresh segment */
+	      else		// fresh segment 
 		    {
 		      tr.at( tr.at( t ).u0 ).d0 = t;
 		      tr.at( tr.at( t ).u0 ).d1 = tn;
 		    }	      
 	    }
 	  
-	  //if ( ( tr.[t].lo.y() == tr[tlast].lo.y() && tr[t].lo.x() == tr[tlast].lo.x() ) && tribot)
+	  //if ( ( tr.at(t).lo.y() == tr.at(tlast).lo.y() && tr.at(t).lo.x() == tr.at(tlast).lo.x() ) && tribot)
     if ( ( tr.at( t ).lo == tr.at( tlast ).lo ) && tribot)
 	  {		/* bottom forms a triangle */
       if (is_swapped)	
@@ -931,13 +934,13 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 	      
 	    if ((tmptriseg > 0) && is_left_of(tmptriseg, s.v0, seg ))
 		  {
-			  	/* L-R downward cusp */
+			  // L-R downward cusp
 		    tr.at( tr.at( t ).d0 ).u0 = t;
 		    tr.at( tn ).d0 = tr.at( tn ).d1 = -1;
 		  }
 	    else
 		  {
-				/* R-L downward cusp */
+				// R-L downward cusp 
 		    tr.at( tr.at( tn ).d0 ).u1 = tn;
 		    tr.at( t ).d0 = tr.at( t ).d1 = -1;
 		  }
@@ -946,7 +949,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 	  {
 	    if ((tr.at( tr.at( t ).d0 ).u0 > 0) && ( tr.at( tr.at( t ).d0 ).u1 > 0) )
 		  {
-		    if (tr.at( tr.at( t ).d0 ).u0 == t) /* passes thru LHS */
+		    if (tr.at( tr.at( t ).d0 ).u0 == t) // passes thru LHS 
 		    {
 		      tr.at( tr.at( t ).d0 ).usave = tr.at( tr.at( t ).d0 ).u1;
 		      tr.at( tr.at( t ).d0 ).uside = S_LEFT;
@@ -1027,7 +1030,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 		  }
 	  }
 	  
-	  //if ( (tr[t].lo.y() == tr[tlast].lo.y()) && (tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
+	  //if ( (tr.at(t).lo.y() == tr.at(tlast).lo.y()) && (tr.at(t).lo.x() == tr.at(tlast).lo.x()) && tribot)
     if ( tr.at( t ).lo == tr.at( tlast ).lo && tribot )
 	  {		/* bottom forms a triangle */
 	    int tmpseg = 0;
@@ -1039,13 +1042,13 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 
 	    if ((tmpseg > 0) && is_left_of(tmpseg, s.v0, seg ))
 		  {
-		    /* L-R downward cusp */
+		    // L-R downward cusp 
 		    tr.at( tr.at( t ).d1 ).u0 = t;
 		    tr.at( tn ).d0 = tr.at( tn ).d1 = -1;
 		  }
 	    else
 		  {
-		    /* R-L downward cusp */
+		    // R-L downward cusp 
 		    tr.at( tr.at( tn ).d1 ).u1 = tn;
 		    tr.at( t ).d0 = tr.at( t ).d1 = -1;
 		  }
@@ -1054,7 +1057,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 	  {
 	    if ((tr.at(tr.at( t ).d1 ).u0 > 0) && (tr.at( tr.at( t ).d1 ).u1 > 0))
 		  {
-		    if (tr.at( tr.at( t ).d1 ).u0 == t) /* passes thru LHS */
+		    if (tr.at( tr.at( t ).d1 ).u0 == t) // passes thru LHS 
 		    {
 		      tr.at( tr.at( t ).d1 ).usave = tr.at( tr.at( t ).d1 ).u1;
 		      tr.at( tr.at( t ).d1 ).uside = S_LEFT;
@@ -1169,7 +1172,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
 		  }
 	  }
 	  
-	  //if ( (tr[t].lo.y() == tr[tlast].lo.y()) && ( tr[t].lo.x() == tr[tlast].lo.x()) && tribot)
+	  //if ( (tr.at(t).lo.y() == tr.at(tlast).lo.y()) && ( tr.at(t).lo.x() == tr.at(tlast).lo.x()) && tribot)
     if ( tr.at( t ).lo == tr.at( tlast ).lo && tribot )
 	  {
 	    /* this case arises only at the lowest trapezoid.. i.e.
@@ -1262,7 +1265,7 @@ int find_new_roots( int segnum, const std::vector< Node > &qs, std::vector< Segm
 
 
   /* Main routine to perform trapezoidation */
-void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trapezoid > &tr, std::vector < Segment > &seg )
+int construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trapezoid > &tr, std::vector < Segment > &seg )
 {
   int i ( 1 );
   int h ( 1 );
@@ -1270,30 +1273,53 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
   //3186504610
   int choose_idx ( 1 );
 
-  //Is this needed?
-  //std::vector < int > permute;
+  //This is needed
+  std::vector < int > permute;
 
   //3186504610
-  //permute.resize( nseg + 1 );
-
+  permute.resize( nseg + 1 );
 
   //Seed the random number generator
-  //srand( time(0) );
+  srand( time(0) );
+
+#if 1
+  //3186504610
+  for (i = 1; i <= nseg; i++ )
+  {
+    permute.at( i ) = i;
+  }
 
   //3186504610
-  //for (i = 1; i <= nseg; i++ )
-  //{
-  //  permute.at( i ) = i;
-  //}
+  std::random_shuffle ( permute.begin() + 1, permute.end() );
 
-  //3186504610
-  //std::random_shuffle ( permute.begin() + 1, permute.end() );
+#else
+  int m, *st, *p;
 
+  st = new int[ permute.size() + 1 ];
   
-  /* Add the first segment and get the query structure and trapezoid */
-  /* list initialised */
+  choose_idx = 1;
+  //gettimeofday(&tval, &tzone);
+  //srand48(tval.tv_sec);
+  srand( time(0 ) );
 
-  int root ( init_query_structure( choose_idx++, qs, tr, seg  ) );
+  for (i = 0; i <= nseg; i++)
+    st[i] = i;
+
+  p = st;
+  for (i = 1; i <= nseg; i++, p++)
+  {
+    m = rand() % (nseg + 1 - i) + 1;
+    permute.at( i ) = p[m];
+    if (m != 1)
+	    p[m] = p[1];
+  }
+    
+    delete [] st;
+#endif
+  
+  // Add the first segment and get the query structure and trapezoid list initialised
+
+  int root ( init_query_structure( permute.at( choose_idx++ ), qs, tr, seg  ) );
 
   //3186504610
   //for (i = 1; i <= nseg; i++)
@@ -1304,20 +1330,23 @@ void construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trap
     //seg.at(i).root0 = seg.at(i).root1 = root;
   }
   
-  //Is all this really needed?
+  //This is needed
+
   for (h = 1; h <= math_logstar_n(nseg); h++)
   {
     for (i = math_N(nseg, h -1) + 1; i <= math_N(nseg, h); i++)
-	    add_segment(choose_idx++, qs, tr, seg );
+	    add_segment( permute.at( choose_idx++ ), qs, tr, seg );
       
-    /* Find a new root for each of the segment endpoints */
+    // Find a new root for each of the segment endpoints
     //3186504610
     for (i = 1; i <= nseg; i++)
 	    find_new_roots(i, qs, seg, tr );
   }
   
   for (i = math_N(nseg, math_logstar_n(nseg)) + 1; i <= nseg; i++)
-    add_segment( choose_idx++, qs, tr, seg );
+    add_segment( permute.at( choose_idx++ ) , qs, tr, seg );
+
+  return choose_idx;
 
 }
 
@@ -2110,7 +2139,7 @@ void triangulate_polygon( const Sizes &sizes, const VertexSequence &vertices, Tr
   //Detail::generate_random_ordering( numVerts );
 
   //Make the trapezoids
-  Detail::construct_trapezoids( numVerts, qs, tr, seg );
+  int numSegs ( Detail::construct_trapezoids( numVerts, qs, tr, seg ) );
 
   //Make the monotone trapezoids
   int nmonpoly ( Detail::monotonate_trapezoids( numVerts, tr, seg, mchain, vert, mon, visited ) );

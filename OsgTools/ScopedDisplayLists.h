@@ -18,9 +18,9 @@ namespace OsgTools {
 
 struct ScopedDisplayLists
 {
-  ScopedDisplayLists( osg::Drawable* draw, bool orig, bool final ) :
-  _drawable( draw ),
-  _final ( final )
+  ScopedDisplayLists ( osg::Drawable* draw, bool orig, bool final ) :
+    _drawable( draw ),
+    _final ( final )
   {
     _drawable->setUseDisplayList( orig );
   }
@@ -31,6 +31,10 @@ struct ScopedDisplayLists
   }
 
 private:
+
+  ScopedDisplayLists ( const ScopedDisplayLists & );
+  ScopedDisplayLists &operator = ( const ScopedDisplayLists & );
+
   osg::ref_ptr< osg::Drawable > _drawable;
   bool _final;
 };

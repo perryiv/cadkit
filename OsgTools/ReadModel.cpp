@@ -43,12 +43,11 @@ osg::Node* OsgTools::readModel ( const std::string& filename, const std::string&
   
   // Make the error message.
   std::ostringstream message;
-  message << "Error 3896128824, failed to load file"
-          << "\n\tFile: " << filename;
+  message << "Error 3896128824: Failed to load: " << filename;
 
   // Add any error reported by the reader.
   if ( rr.error() )
-    message << "\n\tReason: " << rr.message();
+    message << ", Reason: " << rr.message();
 
   // Report the error.
   throw std::runtime_error ( message.str() );

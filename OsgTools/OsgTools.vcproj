@@ -264,6 +264,12 @@
 					RelativePath=".\Index.h">
 				</File>
 				<File
+					RelativePath=".\Jitter.cpp">
+				</File>
+				<File
+					RelativePath=".\Jitter.h">
+				</File>
+				<File
 					RelativePath=".\KeepFirst.h">
 				</File>
 				<File
@@ -295,6 +301,9 @@
 				</File>
 				<File
 					RelativePath=".\ScopedOptions.h">
+				</File>
+				<File
+					RelativePath=".\ScopedProjection.h">
 				</File>
 				<File
 					RelativePath=".\SetDataVariance.h">

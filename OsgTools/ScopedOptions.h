@@ -62,6 +62,9 @@ protected:
 
 private:
 
+  ScopedOptions ( const ScopedOptions & );
+  ScopedOptions &operator = ( const ScopedOptions & );
+
   osg::ref_ptr<Options> _original;
 };
 

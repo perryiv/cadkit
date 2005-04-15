@@ -26,6 +26,9 @@ namespace osg
   class LOD;
   class PrimitiveSet;
   class Transform;
+  class Viewport;
+  class Matrixf;
+  class Matrixd;
 };
 
 namespace osgText

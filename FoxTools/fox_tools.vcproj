@@ -224,6 +224,12 @@
 					RelativePath=".\Functions\Check.h">
 				</File>
 				<File
+					RelativePath=".\Functions\Child.cpp">
+				</File>
+				<File
+					RelativePath=".\Functions\Child.h">
+				</File>
+				<File
 					RelativePath=".\Functions\Delete.cpp">
 				</File>
 				<File

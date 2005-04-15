@@ -58,15 +58,23 @@ FX::FXGLVisual *FoxTools::Functions::visual()
     throw std::runtime_error ( error );
   }
 
-  // There is an app, so if not visual, create it.
+  // If there is no visual...
   if ( 0x0 == Detail::_visual )
   {
-    Detail::_visual = new FX::FXGLVisual ( app, FX::VISUAL_DOUBLEBUFFER );
+    // Allocate it.
+    Detail::_visual = new FX::FXGLVisual ( app, FX::VISUAL_DOUBLEBUFFER | FX::VISUAL_BEST );
     if ( 0x0 == Detail::_visual )
     {
       std::string error ( "Error 3008872053: Allocation of visual failed" );
       throw std::runtime_error ( error );
     }
+
+    // Set reasonable defaults for accumulation buffer. Have to do this 
+    // before it is created.
+    Detail::_visual->setAccumRedSize   ( 8 );
+    Detail::_visual->setAccumGreenSize ( 8 );
+    Detail::_visual->setAccumBlueSize  ( 8 );
+    Detail::_visual->setAccumAlphaSize ( 8 );
   }
 
   // If we get to here then return the visual.

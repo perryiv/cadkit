@@ -62,7 +62,7 @@ FX::FXGLVisual *FoxTools::Functions::visual()
   if ( 0x0 == Detail::_visual )
   {
     // Allocate it.
-    Detail::_visual = new FX::FXGLVisual ( app, FX::VISUAL_DOUBLEBUFFER | FX::VISUAL_BEST );
+    Detail::_visual = new FX::FXGLVisual ( app, FX::VISUAL_DOUBLEBUFFER | FX::VISUAL_BEST | FX::VISUAL_STEREO );
     if ( 0x0 == Detail::_visual )
     {
       std::string error ( "Error 3008872053: Allocation of visual failed" );

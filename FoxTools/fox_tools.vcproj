@@ -370,6 +370,9 @@
 					RelativePath=".\Headers\GLVisual.h">
 				</File>
 				<File
+					RelativePath=".\Headers\GroupBox.h">
+				</File>
+				<File
 					RelativePath=".\Headers\HorizontalFrame.h">
 				</File>
 				<File
@@ -434,6 +437,9 @@
 				</File>
 				<File
 					RelativePath=".\Headers\Registry.h">
+				</File>
+				<File
+					RelativePath=".\Headers\ScrollPane.h">
 				</File>
 				<File
 					RelativePath=".\Headers\Separator.h">

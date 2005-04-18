@@ -93,13 +93,13 @@ void FoxTools::Menu::addButton ( FX::FXToolBar *parent,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxTools::Menu::addToggle ( FX::FXToolBar *parent, 
-                                 const std::string &text, 
-                                 unsigned int checkedIconId, 
-                                 unsigned int uncheckedIconId, 
-                                 FX::FXObject *target,
-                                 unsigned int commandId,
-                                 void *userData )
+FX::FXToggleButton * FoxTools::Menu::addToggle ( FX::FXToolBar *parent, 
+                                                 const std::string &text, 
+                                                 unsigned int checkedIconId, 
+                                                 unsigned int uncheckedIconId, 
+                                                 FX::FXObject *target,
+                                                 unsigned int commandId,
+                                                 void *userData )
 {
   // Make the icon.
   std::auto_ptr<FX::FXIcon> checkIcon   ( FoxTools::Icons::Factory::instance()->icon ( checkedIconId   ) );
@@ -120,4 +120,6 @@ void FoxTools::Menu::addToggle ( FX::FXToolBar *parent,
   // Release the icons, the button owns them.
   checkIcon.release();
   uncheckIcon.release();
+
+  return toggle;
 }

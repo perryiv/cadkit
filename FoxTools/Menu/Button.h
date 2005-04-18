@@ -20,7 +20,7 @@
 
 #include <string>
 
-namespace FX { class FXToolBar; class FXObject; };
+namespace FX { class FXToolBar; class FXObject; class FXToggleButton; }
 
 
 namespace FoxTools {
@@ -44,13 +44,13 @@ FOX_TOOLS_EXPORT void addButton ( FX::FXToolBar *parent,
 
 
 // Add a toggle button to the tool-bar.
-FOX_TOOLS_EXPORT void addToggle ( FX::FXToolBar *parent, 
-                                  const std::string &text, 
-                                  unsigned int checkedIconId, 
-                                  unsigned int uncheckedIconId, 
-                                  FX::FXObject *target,
-                                  unsigned int commandId,
-                                  void *userdata = 0x0 );
+FOX_TOOLS_EXPORT FX::FXToggleButton * addToggle ( FX::FXToolBar *parent, 
+                                                  const std::string &text, 
+                                                  unsigned int checkedIconId, 
+                                                  unsigned int uncheckedIconId, 
+                                                  FX::FXObject *target,
+                                                  unsigned int commandId,
+                                                  void *userdata = 0x0 );
 
 
 }; // namespace Menu

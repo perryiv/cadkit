@@ -859,6 +859,9 @@
 				Name="Loops"
 				Filter="">
 				<File
+					RelativePath=".\Loops\Direction.h">
+				</File>
+				<File
 					RelativePath=".\Loops\FillLoop.h">
 				</File>
 				<File

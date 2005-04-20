@@ -35,7 +35,7 @@ osg::Node* OsgTools::readModel ( const std::string& filename, const std::string&
   reg->setOptions ( options.get() );
 
   // Read the file.
-  osgDB::ReaderWriter::ReadResult rr ( reg->readNode ( filename, reg->getUseObjectCacheHint() ) );
+  osgDB::ReaderWriter::ReadResult rr ( reg->readNode ( filename, options.get() ) );
 
   //Throw if it did not work
   if ( rr.validNode() )

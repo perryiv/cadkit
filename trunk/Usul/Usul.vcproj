@@ -747,6 +747,9 @@
 					RelativePath=".\Containers\Array.h">
 				</File>
 				<File
+					RelativePath=".\Containers\Hash.h">
+				</File>
+				<File
 					RelativePath=".\Containers\OctTree.h">
 				</File>
 				<File

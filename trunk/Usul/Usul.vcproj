@@ -876,12 +876,6 @@
 				<File
 					RelativePath=".\Loops\FindLoops.h">
 				</File>
-				<File
-					RelativePath=".\Loops\Inside.h">
-				</File>
-				<File
-					RelativePath=".\Loops\Loop.h">
-				</File>
 			</Filter>
 		</Filter>
 	</Files>

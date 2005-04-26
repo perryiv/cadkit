@@ -454,7 +454,13 @@
 						RelativePath=".\Interfaces\IAddFrame.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IAnimate.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGroup.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IOpenSceneGraph.h">
@@ -869,6 +875,12 @@
 				</File>
 				<File
 					RelativePath=".\Loops\FindLoops.h">
+				</File>
+				<File
+					RelativePath=".\Loops\Inside.h">
+				</File>
+				<File
+					RelativePath=".\Loops\Loop.h">
 				</File>
 			</Filter>
 		</Filter>

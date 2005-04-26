@@ -9,8 +9,10 @@
 #ifndef _osgtools_sample_h_
 #define _osgtools_sample_h_
 
+#include "OsgTools/Export.h"
+
 #include "osg/Node"
-#include "Export.h"
+
 
 namespace OsgTools
 {

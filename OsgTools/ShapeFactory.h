@@ -10,7 +10,7 @@
 #ifndef _OPEN_SCENE_GRAPH_TOOLS_SHAPE_FACTORY_H_
 #define _OPEN_SCENE_GRAPH_TOOLS_SHAPE_FACTORY_H_
 
-#include "Export.h"
+#include "OsgTools/Export.h"
 
 #include "osg/Geometry"
 

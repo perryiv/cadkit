@@ -328,10 +328,35 @@
 				Name="Misc"
 				Filter="">
 				<File
+					RelativePath=".\AdjacencyConfig.h">
+				</File>
+				<File
 					RelativePath="Declarations.h">
 				</File>
 				<File
 					RelativePath="Export.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Triangles"
+				Filter="">
+				<File
+					RelativePath=".\Triangles\SharedVertex.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\SharedVertex.h">
+				</File>
+				<File
+					RelativePath=".\Triangles\Triangle.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Triangle.h">
+				</File>
+				<File
+					RelativePath=".\Triangles\TriangleSet.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\TriangleSet.h">
 				</File>
 			</Filter>
 		</Filter>

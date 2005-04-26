@@ -16,8 +16,8 @@
 #ifndef _OSG_TOOLS_SCENE_STATISTICS_H_
 #define _OSG_TOOLS_SCENE_STATISTICS_H_
 
-#include "Export.h"
-#include "Declarations.h"
+#include "OsgTools/Export.h"
+#include "OsgTools/Declarations.h"
 
 #include <map>
 

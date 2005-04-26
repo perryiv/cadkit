@@ -753,6 +753,9 @@
 					RelativePath=".\Containers\Array.h">
 				</File>
 				<File
+					RelativePath=".\Containers\DynamicArray.h">
+				</File>
+				<File
 					RelativePath=".\Containers\Hash.h">
 				</File>
 				<File

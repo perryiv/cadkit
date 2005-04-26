@@ -15,7 +15,7 @@
 #ifndef _osg_tools_color_setter_h_
 #define _osg_tools_color_setter_h_
 
-#include "Export.h"
+#include "OsgTools/Export.h"
 
 #include "osg/Vec4"
 

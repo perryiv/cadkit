@@ -10,7 +10,7 @@
 #ifndef __OSG_TOOLS_MATERIAL_FACTORY_H__
 #define __OSG_TOOLS_MATERIAL_FACTORY_H__
 
-#include "Export.h"
+#include "OsgTools/Export.h"
 
 #include "osg/Referenced"
 #include "osg/ref_ptr"

@@ -28,8 +28,13 @@ namespace Interfaces {
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
-  /// Typedefs.
-  typedef std::pair<std::string,bool> Filename;
+  /// Format-format enumerations.
+  enum Format
+  {
+    FILE_FORMAT_ASCII,
+    FILE_FORMAT_BINARY,
+    FILE_FORMAT_UNKNOWN
+  };
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IDocument );
@@ -37,13 +42,18 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
-  virtual void                         modified ( bool m ) = 0;
-  virtual bool                         modified() const = 0;
+  virtual Format                        fileFormat() const = 0;
+  virtual void                          fileFormat ( const Format & ) = 0;
 
-  virtual const Filename &             filename() const = 0;
-  virtual void                         filename ( const std::string &f, bool valid = true ) = 0;
-  
-}; // class IDocument
+  virtual void                          fileName ( const std::string &f ) = 0;
+  virtual const std::string &           fileName() const = 0;
+
+  virtual bool                          fileValid() const = 0;
+  virtual void                          fileValid ( bool ) = 0;
+
+  virtual bool                          modified() const = 0;
+  virtual void                          modified ( bool ) = 0;
+};
 
 
 }; // namespace Interfaces

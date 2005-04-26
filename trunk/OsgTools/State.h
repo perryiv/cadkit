@@ -16,8 +16,8 @@
 #ifndef _OSG_TOOLS_STATE_CLASS_H_
 #define _OSG_TOOLS_STATE_CLASS_H_
 
-#include "Export.h"
-#include "Declarations.h"
+#include "OsgTools/Export.h"
+#include "OsgTools/Declarations.h"
 
 
 namespace OsgTools {

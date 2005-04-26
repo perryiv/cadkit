@@ -175,8 +175,8 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
       //Is the index in the list of candidates?
       if( std::binary_search( uncapped.begin(), uncapped.end(), index ) )
       {
-        //Add the index to the current loop
-        loop.push_back( typename Loop::value_type ( index, sv->value() ) );
+        //Add the vertex to the current loop
+        loop.push_back( sv->value() );
 
         //Remove it from candidates so we don't add it again
         uncapped.remove ( index );

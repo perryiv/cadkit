@@ -34,13 +34,16 @@ public:
   typedef unsigned char ReferenceCount;
 
   // Construction & destruction.
-  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2 );
+  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Triangle );
 
   // Sets all vertices to null.
   void                        clear();
+
+  //Get this Triangle's index
+  unsigned int                index() const { return _index; }
 
   // Reference this instance.
   void                        ref();
@@ -78,6 +81,7 @@ private:
   SharedVertex *_v0;
   SharedVertex *_v1;
   SharedVertex *_v2;
+  unsigned int _index;
   unsigned char _flags;
   ReferenceCount _ref;
 };

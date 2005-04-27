@@ -22,6 +22,10 @@
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
 
+#include "osg/Group"
+#include "osg/Geode"
+#include "osg/Geometry"
+
 #include <algorithm>
 #include <functional>
 
@@ -42,16 +46,28 @@ TriangleSet::TriangleSet() : BaseClass(),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
   _colors    ( new osg::Vec4Array ),
+  _indices   ( new osg::UIntArray ),
   _dirty     ( true ),
-  _geometry  ( new osg::Geometry );
+  _geometry  ( new osg::Geometry )
 {
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _indices        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
-  USUL_STATIC_ASSERT ( 60 == sizeof ( TriangleSet     ) ); // Why?
+  USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
+  USUL_STATIC_ASSERT ( 68 == sizeof ( TriangleSet     ) ); // Why?
+
+  // Add the vertices
+  _geometry->setVertexArray( _vertices.get() );
+
+  // Add the indices
+  _geometry->setVertexIndices( _indices.get() );
+
+  // Add the DrawArrays
+  _geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, 0 ) );
 }
 
 
@@ -195,7 +211,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
 
   // Make the new triangle.
-  Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2 ) );
+  Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2, _triangles.size() ) );
 
   // Append it to the list.
   _triangles.push_back ( t.get() );
@@ -320,98 +336,121 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *TriangleSet::buildScene ( const BaseClass::Options &opt, Unknown *caller )
+osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options &opt, Unknown *caller )
 {
   // Make copy of the options.
-  Options options ( opt );
+  OsgFox::Documents::Document::Options options ( opt );
 
   // User feedback.
-  this->setStatusBar ( "Building Scene ...", caller );
+  this->_setStatusBar ( "Building Scene ...", caller );
 
   // Start at zero.
-  this->setProgressBar ( true, 0, 100, caller );
+  this->_setProgressBar ( true, 0, 100, caller );
 
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
-#if 0
+
   // A single geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   root->addChild ( geode.get() );
 
   // Make geometry and add to geode.
-  osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
-  geode->addDrawable ( geom.get() );  
-
-  // Make vertices and normals for the geometry.
-  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
-
-  // Set vertices and normals.
-  geom->setVertexArray ( vertices.get() );
-  geom->setNormalArray ( normals.get() );
-
-  // Need per-vertex normals for osg::Geometry's "fast path".
-  geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-
-  // Make space.
-  const unsigned int numPoints ( _triangles->size() * 3 );
-  vertices->reserve ( numPoints );
-  normals->reserve  ( numPoints );
-
-  // Shortcut to triangles.
-  const Triangles::Polygons &triangles = _triangles->polygons();
-
-  // Interpret every three osg::Vec3 as a triangle.
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, 3 * triangles.size() ) );
+  geode->addDrawable ( _geometry.get() );  
 
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );
 
-  // Initialize counter for progress.
-  unsigned int count ( 0 );
-
-  // Update progress bar every second.
-  Usul::Policies::TimeBased elapsed ( 1000 );
-
-  // Loop through the triangles.
-  for ( Triangles::Polygons::const_iterator i = triangles.begin(); i != triangles.end(); ++i )
+  if( _dirty )
   {
-    // Shortcuts to the triangle.
-    const Triangle::ValidRefPtr triangle ( *i );
+    //Clear what I have
+    this->_normalsPerVertex().clear();
+    _indices->clear();
 
-    // Get the vertices.
-    const SharedVertex *v1 ( triangle->vertex1() );
-    const SharedVertex *v2 ( triangle->vertex2() );
-    const SharedVertex *v3 ( triangle->vertex3() );
+    // Make space.
+    const unsigned int numPoints ( _triangles.size() * 3 );
+    this->_normalsPerVertex().reserve ( numPoints );
+    _indices->reserve ( numPoints );
 
-    // Make sure we have good pointers.
-    if ( !v1 || !v2 || !v3 )
-      throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
+    // Initialize counter for progress.
+    unsigned int count ( 0 );
 
-    // Set the vertex values.
-    vertices->push_back ( v1->value() );
-    vertices->push_back ( v2->value() );
-    vertices->push_back ( v3->value() );
+    // Update progress bar every second.
+    Usul::Policies::TimeBased elapsed ( 1000 );
 
-    // Get the normals.
-    NormalType n1 ( ( average ) ? v1->normal() : triangle->normal() );
-    NormalType n2 ( ( average ) ? v2->normal() : triangle->normal() );
-    NormalType n3 ( ( average ) ? v3->normal() : triangle->normal() );
+    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
 
-    // Make sure they are normalized.
-    n1.normalize();
-    n2.normalize();
-    n3.normalize();
+    // Loop through the triangles.
+    for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
+    {
+      // Shortcuts to the triangle.
+      const Triangle::ValidRefPtr triangle ( i->get() );
 
-    // Set the normal values.
-    normals->push_back ( n1 );
-    normals->push_back ( n2 );
-    normals->push_back ( n3 );
+      // Get the vertices.
+      const SharedVertex *v1 ( triangle->vertex0() );
+      const SharedVertex *v2 ( triangle->vertex1() );
+      const SharedVertex *v3 ( triangle->vertex2() );
 
-    // Show progress.
-    this->setProgressBar ( elapsed(), count, triangles.size(), caller );
-    ++count;
+      // Make sure we have good pointers.
+      if ( !v1 || !v2 || !v3 )
+        throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
+
+      _indices->push_back ( v1->index() );
+      _indices->push_back ( v2->index() );
+      _indices->push_back ( v3->index() );
+
+      //If we are suppose to add averaged normals...
+      if( average )
+      {
+        // Get the normals.
+        osg::Vec3 n1 ( this->_averageNormal ( v1 ) );
+        osg::Vec3 n2 ( this->_averageNormal ( v2 ) );
+        osg::Vec3 n3 ( this->_averageNormal ( v3 ) );
+
+        // Make sure they are normalized.
+        n1.normalize();
+        n2.normalize();
+        n3.normalize();
+
+        // Set the normal values.
+        normals->push_back ( n1 );
+        normals->push_back ( n2 );
+        normals->push_back ( n3 );
+      }
+
+      // Show progress.
+      this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );
+      ++count;
+    }
+
+    _dirty = false;
   }
+
+  //Set the right number of normals
+  if( average )
+  {
+    //Set the normals
+    _geometry->setNormalArray ( &this->_normalsPerVertex() );
+
+    // Need per-vertex normals for osg::Geometry's "fast path".
+    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  }
+  else
+  {
+    //Delete are per facet normals
+    this->_normalsPerVertex().clear();
+
+    //Set the normals
+    _geometry->setNormalArray ( &this->_normalsPerFacet() );
+
+    //Set the normal binding
+    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  }
+
+  //Get the draw arrays
+  osg::ref_ptr<osg::DrawArrays> draw ( dynamic_cast < osg::DrawArrays * > ( _geometry->getPrimitiveSet ( 0 ) ) );
+
+  //Set the new count
+  draw->setCount ( _indices->size() );
 
   // Return the root.
   return root.release();
@@ -424,7 +463,7 @@ osg::Node *TriangleSet::buildScene ( const BaseClass::Options &opt, Unknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::setStatusBar ( const std::string &text, Unknown *caller )
+void TriangleSet::_setStatusBar ( const std::string &text, Unknown *caller )
 {
   Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
   if ( status.valid() )
@@ -438,7 +477,7 @@ void TriangleSet::setStatusBar ( const std::string &text, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller )
+void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller )
 {
   // If we should...
   if ( state )
@@ -459,3 +498,23 @@ void TriangleSet::setProgressBar ( bool state, unsigned int numerator, unsigned 
       flush->flushEventQueue();
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the averaged normal for the shared vertex
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
+{
+  osg::Vec3 normal;
+
+  for ( SharedVertex::ConstTriangleItr i = sv->begin(); i != sv->end(); ++i )
+  {
+    normal += this->_normalsPerFacet().at( (*i)->index() );
+  }
+
+  return normal;
+}
+

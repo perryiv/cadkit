@@ -52,19 +52,21 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2 ) : 
+Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index ) : 
   _v0    ( v0 ),
   _v1    ( v1 ),
   _v2    ( v2 ),
+  _index ( index ),
   _flags ( 0  ),
   _ref   ( 0  )
 {
   USUL_STATIC_ASSERT (  4 == sizeof ( _v0       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _v1       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _v2       ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _index    ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _flags    ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref      ) );
-  USUL_STATIC_ASSERT ( 16 == sizeof ( Triangle  ) ); // Why?
+  USUL_STATIC_ASSERT ( 20 == sizeof ( Triangle  ) ); // Why?
 
   Detail::reference ( _v0 );
   Detail::reference ( _v1 );

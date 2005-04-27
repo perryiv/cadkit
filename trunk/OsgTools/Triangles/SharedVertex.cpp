@@ -110,3 +110,4 @@ void SharedVertex::unref()
   if ( 0 == --_ref )
     delete this;
 }
+

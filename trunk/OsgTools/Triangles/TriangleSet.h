@@ -23,8 +23,12 @@
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
 
+#include "OsgFox/Documents/Document.h"
+
 #include "osg/Geometry"
 #include "osg/ref_ptr"
+
+namespace osg { class Node; }
 
 #include <vector>
 #include <map>
@@ -43,6 +47,7 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > Triangles;
+  typedef Usul::Interfaces::IUnknown Unknown;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -59,6 +64,9 @@ public:
 
   // Add a triangle.
   void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n );
+
+  /// Build the scene
+  osg::Node*              buildScene ( const OsgFox::Documents::Document::Options &opt, Unknown *caller );
 
   // Clear existing data.
   void                    clear();
@@ -99,18 +107,23 @@ protected:
 
   SharedVertex *          _sharedVertex ( const osg::Vec3f &v );
 
+  //Get the averaged normal for the shared vertex
+  osg::Vec3               _averageNormal ( const SharedVertex * );
+
 private:
 
-  typedef osg::ref_ptr<osg::Vec3Array> VerticesPtr;
-  typedef osg::ref_ptr<osg::Vec3Array> NormalsPtr;
-  typedef osg::ref_ptr<osg::Vec4Array> ColorsPtr;
-  typedef std::pair<NormalsPtr,NormalsPtr> Normals;
+  typedef osg::ref_ptr<osg::Vec3Array>        VerticesPtr;
+  typedef osg::ref_ptr<osg::Vec3Array>        NormalsPtr;
+  typedef osg::ref_ptr<osg::Vec4Array>        ColorsPtr;
+  typedef osg::ref_ptr<osg::UIntArray>        IndicesPtr;
+  typedef std::pair<NormalsPtr,NormalsPtr>    Normals;
 
   SharedVertices _shared;
   Triangles _triangles;
   VerticesPtr _vertices;
   Normals _normals;
   ColorsPtr _colors;
+  IndicesPtr _indices;
   bool _dirty;
   osg::ref_ptr<osg::Geometry> _geometry;
 };

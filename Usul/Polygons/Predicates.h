@@ -10,6 +10,7 @@
 #ifndef __USUL_POLYGONS_PREDICATES_H__
 #define __USUL_POLYGONS_PREDICATES_H__
 
+#include <functional>
 
 
 namespace Usul {

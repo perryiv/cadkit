@@ -20,6 +20,7 @@
 
 #include "Usul/Pointers/Pointers.h"
 
+#include <list>
 
 namespace OsgTools {
 namespace Triangles {
@@ -32,6 +33,7 @@ public:
 
   // Typedefs.
   typedef unsigned char ReferenceCount;
+  typedef OsgTools::Triangles::SharedVertex SharedVertex;
 
   // Construction & destruction.
   Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
@@ -39,8 +41,21 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Triangle );
 
+  typedef std::list< Triangle::ValidRefPtr > PolygonList;
+
+  //Possible flags
+  enum
+  {
+    VISITED  = 0x01,
+    ON_EDGE  = 0x02,
+    DELETED  = 0x04,
+    SELECTED = 0x08
+  };
+
   // Sets all vertices to null.
   void                        clear();
+
+  void                        getNeighbors( PolygonList& ) const;
 
   //Get this Triangle's index
   unsigned int                index() const { return _index; }
@@ -66,6 +81,10 @@ public:
   void                        vertex0 ( SharedVertex *v );
   void                        vertex1 ( SharedVertex *v );
   void                        vertex2 ( SharedVertex *v );
+
+  //Get/Set the visited flag
+  bool                        visited() const;
+  void                        visited ( bool v );
 
 protected:
 

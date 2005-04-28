@@ -341,6 +341,12 @@
 				Name="Triangles"
 				Filter="">
 				<File
+					RelativePath=".\Triangles\Loop.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Loop.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\SharedVertex.cpp">
 				</File>
 				<File

@@ -29,13 +29,10 @@ struct IAddFrame : public Usul::Interfaces::IUnknown
 
   virtual void addFrame( const std::string& groupName, const osg::Vec3& center, float distance, const osg::Quat& rotation ) = 0;
   virtual void clear   ( const std::string& groupName ) = 0;
-
 }; 
 
 }
-
 }
-
 
 #endif // __USUL_INTERFACES_ADD_FRAME_H__
 

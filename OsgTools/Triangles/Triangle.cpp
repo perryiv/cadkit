@@ -18,8 +18,12 @@
 
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Bits/Bits.h"
+
+#include "Usul/Polygons/Predicates.h"
 
 #include <limits>
+#include <algorithm>
 
 using namespace OsgTools::Triangles;
 
@@ -171,4 +175,46 @@ void Triangle::unref()
   USUL_ASSERT ( _ref > 0 );
   if ( 0 == --_ref )
     delete this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Has this triangle been visited?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::visited() const
+{
+  return Usul::Bits::has ( _flags, VISITED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visited flag
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::visited ( bool v )
+{
+  if( v )
+    _flags = Usul::Bits::add ( _flags, VISITED );
+  else
+    _flags = Usul::Bits::remove ( _flags, VISITED );
+}
+
+void Triangle::getNeighbors( PolygonList& triangles ) const
+{
+  //Insert each shared vertex's list of polygons
+  triangles.insert ( triangles.end(), _v0->begin(), _v0->end() );
+  triangles.insert ( triangles.end(), _v1->begin(), _v1->end() );
+  triangles.insert ( triangles.end(), _v2->begin(), _v2->end() );
+
+  //Sort them in ascending order
+  triangles.sort ( Usul::Polygons::PolyLess< Triangle >() );
+
+  //Remove all unique polygons
+  triangles.unique( Usul::Polygons::PolyEqual < Triangle >() );
+  
 }

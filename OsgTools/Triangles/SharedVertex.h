@@ -40,6 +40,15 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SharedVertex );
 
+  //Possible flags
+  enum
+  {
+    VISITED  = 0x01,
+    ON_EDGE  = 0x02,
+    DELETED  = 0x04,
+    SELECTED = 0x08
+  };
+
   // Construction.
   SharedVertex ( unsigned int index );
 
@@ -60,6 +69,10 @@ public:
   // Get the number of triangles.
   SizeType              numTriangles() const { return _triangles.size(); }
 
+  //Get/Set on edge flag
+  bool                  onEdge() const;
+  void                  onEdge( bool e );
+
   // Reference this instance.
   void                  ref();
 
@@ -71,6 +84,26 @@ public:
 
   // Unreference this instance.
   void                  unref();
+
+  //Get/Set the visited flag
+  bool                  visited() const;
+  void                  visited ( bool v );
+
+
+  //  Predicate for finding a vertex in a stl container
+  struct findVertex
+  {
+    findVertex ( SharedVertex *v ) : _vertex ( v ) { }
+
+    bool operator () ( const SharedVertex::ValidRefPtr &i ) const
+    {
+      return i == _vertex;
+    }
+
+  private:
+    SharedVertex::ValidRefPtr _vertex;
+  };
+
 
 protected:
 

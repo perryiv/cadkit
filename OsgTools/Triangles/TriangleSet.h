@@ -64,6 +64,7 @@ public:
 
   // Add a triangle.
   void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n );
+  void                    addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n );
 
   /// Build the scene
   osg::Node*              buildScene ( const OsgFox::Documents::Document::Options &opt, Unknown *caller );
@@ -74,11 +75,17 @@ public:
   // Flip the normal vectors.
   void                    flipNormals();
 
+  // Get the vertex at the index
+  const osg::Vec3f&             getVertex( unsigned int index ) const;
+
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
 
   // Make space for the triangles.
   void                    reserve ( unsigned int );
+
+  // Set all triangles and shared vertices to unvisited
+  void                    setAllUnvisited();
 
   // Return the number of triangles.
   unsigned int            size() const { return _triangles.size(); }
@@ -88,6 +95,9 @@ public:
   const osg::Vec3f &      vertex1 ( unsigned int ) const;
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
 
+  const Triangles&        triangles() const { return _triangles; }
+  Triangles&              triangles()       { return _triangles; }
+
 protected:
 
   // Do not copy.
@@ -96,6 +106,8 @@ protected:
 
   // Use reference counting.
   virtual ~TriangleSet();
+
+  void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n );
 
   const osg::Vec3Array &  _normalsPerFacet()  const { return *_normals.second; }
   osg::Vec3Array &        _normalsPerFacet()        { return *_normals.second; }

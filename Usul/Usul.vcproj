@@ -435,6 +435,9 @@
 						RelativePath=".\Interfaces\ISelectionBox.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISendMessage.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISetCursor.h">
 					</File>
 					<File
@@ -517,22 +520,34 @@
 					Name="Misc"
 					Filter="">
 					<File
+						RelativePath=".\Interfaces\IAddTriangle.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
 					</File>
 					<File
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFlipNormals.h">
+						RelativePath=".\Interfaces\IDeleteTriangle.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetAnimationTime.h">
+						RelativePath=".\Interfaces\IFindLoops.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFlipNormals.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetHeight.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGetLoops.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetPosition.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetVertex.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetWidth.h">

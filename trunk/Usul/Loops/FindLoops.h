@@ -28,10 +28,9 @@ struct findVertex
 {
   findVertex ( const Vertex &v ) : _vertex ( v ) { }
 
-  template < class Iter >
-  bool operator () ( Iter &i ) const
+  bool operator () ( const Vertex &i ) const
   {
-    return i.second == _vertex;
+    return i == _vertex;
   }
 
 private:
@@ -67,7 +66,7 @@ void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& l
   if( v1->polygons().size() == 1 )
   {
     //Add the index to the current loop
-    loop.push_back( typename Loop::value_type ( p->index(), v1->value() ) );
+    loop.push_back( typename Loop::value_type ( v1->value() ) );
 
     v1->visited ( true );
 
@@ -77,7 +76,7 @@ void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& l
   else if( v2->polygons().size() == 1 )
   {
     //Add the index to the current loop
-    loop.push_back( typename Loop::value_type ( p->index(), v2->value() ) );
+    loop.push_back( typename Loop::value_type ( v2->value() ) );
 
     v2->visited( true );
 
@@ -106,26 +105,44 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   SharedVertex *v3 ( p->vertex3() );
 
   //Check to see if all three shared vertices are on the edge
-  //if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
+  if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
   {
     //Check to see if v1 was added already
-    //if( containsVertex ( loop, v1->value() ) )
+    if( containsVertex ( loop, v1->value() ) )
     {
-      //findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
     }
     //Check to see if v2 was added already
-    //else if( containsVertex ( loop, v2->value() ) )
+    else if( containsVertex ( loop, v2->value() ) )
     {
-      //findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
     }
     //Check to see if v3 was added already
-    //else if( containsVertex ( loop, v3->value() ) )
+    else if( containsVertex ( loop, v3->value() ) )
     {
-     // findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
+      findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
+    }
+    //No shared vertices added yet
+    else
+    {
+      //Polygon list will always contain at least one polygon
+      if( v1->polygons().size() != 1 )
+      {
+        visitSharedVertex( polygons, uncapped, loop, v1 );
+      }
+
+      else if( v2->polygons().size() != 1 )
+      {
+        visitSharedVertex( polygons, uncapped, loop, v2 );
+      }
+      else if( v3->polygons().size() != 1 )
+      {
+        visitSharedVertex( polygons, uncapped, loop, v3 );
+      }
     }
 
   }
-  //else
+  else
   {
     visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
 
@@ -322,8 +339,11 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
     //this will loop around the gap and build the proper loop
     Detail::visitPolygon( polygons, uncapped, loop, p.get() );
 
-    //Push the loop onto the answer
-    loops.push_back( loop );
+    if( !loop.empty() )
+    {
+      //Push the loop onto the answer
+      loops.push_back( loop );
+    }
 
     updater( loops.size() );
   }

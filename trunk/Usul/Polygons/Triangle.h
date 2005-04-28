@@ -276,13 +276,13 @@ struct TriangleTest
     typedef const SharedVertex* SharedVertexPtr;
     unsigned int count ( 0 );
 
-    SharedVertexPtr t1v1 ( t1.vertex1() );
-    SharedVertexPtr t1v2 ( t1.vertex2() );
-    SharedVertexPtr t1v3 ( t1.vertex3() );
+    SharedVertexPtr t1v1 ( t1.vertex0() );
+    SharedVertexPtr t1v2 ( t1.vertex1() );
+    SharedVertexPtr t1v3 ( t1.vertex2() );
 
-    SharedVertexPtr t2v1 ( t2.vertex1() );
-    SharedVertexPtr t2v2 ( t2.vertex2() );
-    SharedVertexPtr t2v3 ( t2.vertex3() );
+    SharedVertexPtr t2v1 ( t2.vertex0() );
+    SharedVertexPtr t2v2 ( t2.vertex1() );
+    SharedVertexPtr t2v3 ( t2.vertex2() );
 
     if( t1v1 != t2v1 && t1v1 != t2v2 && t1v1 != t2v3 )
       ++count;

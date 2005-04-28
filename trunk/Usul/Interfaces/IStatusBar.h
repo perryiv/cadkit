@@ -38,6 +38,30 @@ struct IStatusBar : public Usul::Interfaces::IUnknown
   // Set the status bar text.
   virtual void setStatusBarText ( const std::string &text, bool force ) = 0;
 
+  //  Helper to update the status bar.
+  struct UpdateStatusBar
+  {
+    template < class T > UpdateStatusBar ( T *t ) :
+    _statusBar ( t )
+    {
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //  Displays a text message on the status bar.
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    void operator () ( const std::string& message, bool force = false )
+    {
+      if ( _statusBar.valid() )
+        _statusBar->setStatusBarText ( message, force );
+    }
+
+  private:
+    IStatusBar::QueryPtr _statusBar;
+  };
+
 }; // class IStatusBar
 
 }; // namespace Interfaces

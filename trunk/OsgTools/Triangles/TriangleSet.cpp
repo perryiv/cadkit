@@ -210,6 +210,36 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv1 ( this->_sharedVertex ( v1 ) );
   SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
 
+  //Add the triangle
+  this->_addTriangle( sv0, sv1, sv2, n );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n )
+{
+  SharedVertex *sv0 ( const_cast < SharedVertex * > ( &v0 ) );
+  SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
+  SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
+
+  //Add the triangle
+  this->_addTriangle( sv0, sv1, sv2, n );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n )
+{
   // Make the new triangle.
   Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2, _triangles.size() ) );
 
@@ -227,7 +257,6 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   // Need to rebuild per-vertex normals and indices.
   _dirty = true;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -331,8 +360,7 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene. TODO: use indexed arrays.
-//  See http://www.nps.navy.mil/cs/sullivan/osgtutorials/osgGeometry.html
+//  Build the scene. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -518,3 +546,32 @@ osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
   return normal;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set all polyons and shared vertices as unvisited
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::setAllUnvisited()
+{
+  for( Triangles::iterator i = _triangles.begin(); i != _triangles.end(); ++ i )
+  {
+    (*i)->visited( false );
+    (*i)->vertex0()->visited( false );
+    (*i)->vertex1()->visited( false );
+    (*i)->vertex2()->visited( false );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertex at the index
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f& TriangleSet::getVertex( unsigned int index ) const
+{
+  return _vertices->at( index );
+}

@@ -18,6 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include "Usul/Interfaces/IFlushEvents.h"
 
 namespace Usul {
 namespace Interfaces {
@@ -60,8 +61,60 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
       if ( _progress.valid() )
         _progress->hideProgressBar();
     }
+
   private:
     IProgressBar::QueryPtr _progress;
+  };
+
+
+  //  Helper to update the progress bar.
+  struct UpdateProgressBar
+  {
+    template < class T > UpdateProgressBar( double start, double finish, T *t ) :
+    _start( start ),
+    _finish ( finish ),
+    _progressBar ( t ),
+    _flush( t )
+    {
+      //Show the progress bar if we have one
+      if( _progressBar.valid() )
+      {
+        _progressBar->updateProgressBar( 0 );
+        _progressBar->setTotalProgressBar( 100 );
+        _progressBar->showProgressBar();
+      }
+    }
+
+   ~UpdateProgressBar()
+    {
+      //Hide the progress bar if we have one
+      if( _progressBar.valid() )
+        _progressBar->hideProgressBar();
+    }
+
+    //Send an update to the progress bar
+    void operator () ( unsigned int current, unsigned int total )
+    {
+      double percent ( (double) current / total );
+      percent *= _finish - _start;
+      percent += _start;
+
+      if( _progressBar.valid() )
+      {
+        //Update the progress bar
+        _progressBar->updateProgressBar ( static_cast < unsigned int > ( percent * 100 ) );
+
+        //Flush the event queue.  Makes application responsive
+        _flush->flushEventQueue();
+      }
+    }
+
+  private:
+    double _start;
+    double _finish;
+
+    IProgressBar::QueryPtr                   _progressBar;
+    Usul::Interfaces::IFlushEvents::QueryPtr _flush;
   };
 };
 

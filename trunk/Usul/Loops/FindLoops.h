@@ -19,35 +19,14 @@ namespace Detail {
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//  Predicate for finding a vertex in a stl container
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Vertex >
-struct findVertex
-{
-  findVertex ( const Vertex &v ) : _vertex ( v ) { }
-
-  bool operator () ( const Vertex &i ) const
-  {
-    return i == _vertex;
-  }
-
-private:
-  Vertex _vertex;
-};
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
 //  Does the loop already contain this vertex
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Loop, class Vertex >
-bool containsVertex ( const Loop& loop, const Vertex& vertex )
+bool containsVertex ( const Loop& loop, Vertex* vertex )
 {
-  findVertex < Vertex > find ( vertex );
+  typename Vertex::findVertex find ( vertex );
 
   return ( std::find_if ( loop.begin(), loop.end(), find ) != loop.end() );
 }
@@ -63,20 +42,20 @@ template < class Polygons, class IndexSequence, class Loop, class Polygon, class
 void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p, SharedVertex *v1, SharedVertex *v2 )
 {
   //Polygon list will always contain at least one polygon
-  if( v1->polygons().size() == 1 )
+  if( v1->numTriangles() == 1 )
   {
-    //Add the index to the current loop
-    loop.push_back( typename Loop::value_type ( v1->value() ) );
+    //Add the shared vertex to the current loop
+    loop.push_back( v1 );
 
     v1->visited ( true );
 
     visitSharedVertex( polygons, uncapped, loop, v2 );
   }
 
-  else if( v2->polygons().size() == 1 )
+  else if( v2->numTriangles() == 1 )
   {
-    //Add the index to the current loop
-    loop.push_back( typename Loop::value_type ( v2->value() ) );
+    //Add the shared vertex to the current loop
+    loop.push_back( v2 );
 
     v2->visited( true );
 
@@ -94,31 +73,30 @@ template < class Polygons, class IndexSequence, class Loop, class Polygon >
 void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
-  typedef typename SharedVertex::ValueType Vertex;
 
   //Return now if already visited
   if( p->visited() )
     return;
 
-  SharedVertex *v1 ( p->vertex1() );
-  SharedVertex *v2 ( p->vertex2() );
-  SharedVertex *v3 ( p->vertex3() );
+  SharedVertex *v1 ( p->vertex0() );
+  SharedVertex *v2 ( p->vertex1() );
+  SharedVertex *v3 ( p->vertex2() );
 
   //Check to see if all three shared vertices are on the edge
   if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
   {
     //Check to see if v1 was added already
-    if( containsVertex ( loop, v1->value() ) )
+    if( containsVertex ( loop, v1 ) )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
     }
     //Check to see if v2 was added already
-    else if( containsVertex ( loop, v2->value() ) )
+    else if( containsVertex ( loop, v2 ) )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
     }
     //Check to see if v3 was added already
-    else if( containsVertex ( loop, v3->value() ) )
+    else if( containsVertex ( loop, v3 ) )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
     }
@@ -126,16 +104,16 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
     else
     {
       //Polygon list will always contain at least one polygon
-      if( v1->polygons().size() != 1 )
+      if( v1->numTriangles() != 1 )
       {
         visitSharedVertex( polygons, uncapped, loop, v1 );
       }
 
-      else if( v2->polygons().size() != 1 )
+      else if( v2->numTriangles() != 1 )
       {
         visitSharedVertex( polygons, uncapped, loop, v2 );
       }
-      else if( v3->polygons().size() != 1 )
+      else if( v3->numTriangles() != 1 )
       {
         visitSharedVertex( polygons, uncapped, loop, v3 );
       }
@@ -144,11 +122,11 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
   }
   else
   {
-    visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
+    visitSharedVertex( polygons, uncapped, loop, p->vertex0() );
 
-    visitSharedVertex( polygons, uncapped, loop, p->vertex2() );
+    visitSharedVertex( polygons, uncapped, loop, p->vertex1() );
     
-    visitSharedVertex( polygons, uncapped, loop, p->vertex3() );
+    visitSharedVertex( polygons, uncapped, loop, p->vertex2() );
   }
 
   p->visited( true );
@@ -164,7 +142,7 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
 template < class Polygons, class IndexSequence, class Loop, class SharedVertex >
 void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, SharedVertex* sv )
 {
-  typedef typename SharedVertex::PolygonList PolygonList;
+  typedef typename SharedVertex::TriangleSequence PolygonList;
   typedef typename Polygons::value_type PolygonPtr;
 
   //Return now if already visited
@@ -178,10 +156,10 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
   //Mark the shared vertex as visited
   sv->visited( true );
 
-  PolygonList p1 ( sv->polygons() );
+  //PolygonList p1 ( sv->polygons() );
 
   //Loop through the shared vertex's polygons
-  for( typename PolygonList::iterator poly = p1.begin(); poly != p1.end(); ++poly )
+  for( typename PolygonList::iterator poly = sv->begin(); poly != sv->end(); ++poly )
   {
     //If we haven't visited already...
     if( !(*poly)->visited() )
@@ -193,7 +171,7 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
       if( std::binary_search( uncapped.begin(), uncapped.end(), index ) )
       {
         //Add the vertex to the current loop
-        loop.push_back( sv->value() );
+        loop.push_back( sv );
 
         //Remove it from candidates so we don't add it again
         uncapped.remove ( index );
@@ -221,9 +199,9 @@ void findEdge ( PolygonList& polygons, Polygon* check )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
 
-  SharedVertex *v1 ( check->vertex1() );
-  SharedVertex *v2 ( check->vertex2() );
-  SharedVertex *v3 ( check->vertex3() );
+  SharedVertex *v1 ( check->vertex0() );
+  SharedVertex *v2 ( check->vertex1() );
+  SharedVertex *v3 ( check->vertex2() );
 
   unsigned int v1Count( 0 );
   unsigned int v2Count( 0 );
@@ -231,11 +209,11 @@ void findEdge ( PolygonList& polygons, Polygon* check )
 
   for( typename PolygonList::iterator i = polygons.begin(); i != polygons.end(); ++i )
   {
-    if( *i != check )
+    if( i->get() != check )
     {
-      SharedVertex *t1 ( (*i)->vertex1() );
-      SharedVertex *t2 ( (*i)->vertex2() );
-      SharedVertex *t3 ( (*i)->vertex3() );
+      SharedVertex *t1 ( (*i)->vertex0() );
+      SharedVertex *t2 ( (*i)->vertex1() );
+      SharedVertex *t3 ( (*i)->vertex2() );
 
       if( v1 == t1 || v1 == t2 || v1 == t3 )
         ++v1Count;
@@ -259,29 +237,83 @@ void findEdge ( PolygonList& polygons, Polygon* check )
 
 //////////////////////////////////////////////////////////////////////////////
 //
+//  Functor to find all polygons that need to be capped
+//
+///////////////////////////////////////////////////////////////////////////////
+template
+<
+  class Polygon
+>
+struct CapPolygonFunctor
+{
+  typedef std::list< unsigned int > IndexSequence;
+
+  CapPolygonFunctor ( IndexSequence& uncapped ) :
+  _uncapped( uncapped )
+  {
+  }
+
+  void operator () ( Polygon& polygon )
+  {
+    typedef typename Polygon::PolygonList PolygonList;
+    typedef typename Polygon::AdjacencyTest AdjacencyTest;
+
+    AdjacencyTest adjacent;
+
+    //Get list of neighbors that share one point
+    PolygonList neighbors ( polygon.getNeighbors() );
+
+    PolygonList adjacentPolygons;
+
+    //Loop through all this polygon's neighbors
+    for( typename PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
+    {
+      //Self check...
+      if( polygon.index() != (*i)->index() )
+      {
+        //If these two polygons are adjacent...
+        if( adjacent ( polygon, *(*i) ) )
+          adjacentPolygons.push_back( *i );
+      }
+    }
+
+    //If we don't have the right number of adjacent polygons...
+    if( adjacentPolygons.size() < vertsPerPoly )
+    {
+      uncapped.push_back( polygon.index() );
+      Detail::findEdge( adjacentPolygons, &polygon );
+    }
+
+  }
+
+private:
+  IndexSequence &_uncapped;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+//
 //  Walk the graph and find all polygons that need to be capped.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template
 <
-  class AdjacencyMap,
+  class Polygons,
   class IndexSequence, 
   class Loops, 
   class AdjacencyTest,
   class UpdateFunctor
 >
-inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
+inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
 {
-  typedef typename AdjacencyMap::Polygons Polygons;
-  typedef typename Polygons::value_type Polygon;
-  typedef typename AdjacencyMap::SharedVertex SharedVertex;
-  typedef typename SharedVertex::PolygonList PolygonList;
+  typedef typename Polygons::value_type PolygonPtr;
+  typedef typename PolygonPtr::element_type Polygon;
+  typedef typename Polygon::PolygonList PolygonList;
   typedef typename Loops::value_type Loop;
 
-  map.setAllUnvisited();
+  //map.setAllUnvisited();
 
-  Polygons &polygons ( map.polygons() );
+  //Polygons &polygons ( map.polygons() );
 
   //Needed for user feedback
   const unsigned int size ( polygons.size() );
@@ -290,7 +322,9 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
   for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
   { 
     //Get list of neighbors that share one point
-    PolygonList neighbors ( (*iter)->getNeighbors() );
+    PolygonList neighbors; 
+    
+    (*iter)->getNeighbors( neighbors );
 
     PolygonList adjacentPolygons;
 
@@ -334,7 +368,7 @@ inline void capPolygons ( AdjacencyMap& map, IndexSequence& uncapped, Loops& loo
     Loop loop;
 
     //Get the polygon
-    Polygon p ( polygons.at( *i ) );
+    PolygonPtr p ( polygons.at( *i ) );
 
     //this will loop around the gap and build the proper loop
     Detail::visitPolygon( polygons, uncapped, loop, p.get() );

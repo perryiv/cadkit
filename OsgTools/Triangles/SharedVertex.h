@@ -90,7 +90,7 @@ public:
   void                  visited ( bool v );
 
 
-  //  Predicate for finding a vertex in a stl container
+  //  Predicate for finding a shared vertex in an stl container
   struct findVertex
   {
     findVertex ( SharedVertex *v ) : _vertex ( v ) { }

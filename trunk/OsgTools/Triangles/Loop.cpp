@@ -24,6 +24,13 @@
 
 using namespace OsgTools::Triangles;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Loop::Loop() : 
 _loop(),
 _innerLoops(),
@@ -33,16 +40,25 @@ _numTriangles ( 0 )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Loop::~Loop()
+{
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Trianglulate loop.  Add results to vec3arrays
+//  Trianglulate loop.  Add results to Document
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Loop::triangulate( Usul::Interfaces::IUnknown *caller )
 {
-  _caller = caller;
 
   //Algorithm will fill this data structure with indices for the triangles
   Triangles triangles;
@@ -153,30 +169,35 @@ void Loop::_buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &poin
     std::reverse( points.begin(), points.end() );
   }
 
-#if 0
   //Go through any inner loops
   for( std::list< Points >::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++ i )
   {
-    //Inner loops need to be clock-wise
-    if( Usul::Loops::isCounterClockwise( i->begin(), i->end() - 1 ) )
-      std::reverse( i->begin(), i->end() );
+    osg::ref_ptr <osg::Vec2Array> tPoints ( new osg::Vec2Array );
 
     sizes.push_back( i->size() );
 
     for( const_iterator j = i->begin(); j != i->end(); ++j )
     {
-      osg::Vec3 v ( *j );
+      SharedVertexPtr sv ( *j );
+
+      osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
 
       v = v * mat;
 
-      points.push_back ( osg::Vec2 ( v[0], v[1] ) );
-
-      //need to add to loop so that proper triangles are built later
-      _loop.push_back( v );
-
+      tPoints->push_back ( osg::Vec2 ( v[0], v[1] ) );
     }
+
+    //Inner loops need to be clock-wise
+    if( Usul::Loops::isCounterClockwise( tPoints->begin(), tPoints->end() - 1 ) )
+    {
+      std::reverse( tPoints->begin(), tPoints->end() );
+      std::reverse( i->begin(), i->end() );
+    }
+
+    points.insert( points.end(), tPoints->begin(), tPoints->end() );
+    _loop.insert( _loop.end(), i->begin(), i->end() );
+
   }
-#endif
 }
 
 
@@ -213,16 +234,26 @@ void Loop::_triangulate ( Triangles &triangles, Usul::Interfaces::IUnknown *call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Loop::pointInside( const osg::Vec3 &point ) const
+bool Loop::pointInside( const osg::Vec3 &point, Usul::Interfaces::IUnknown *caller ) const
 {
-#if 0
   //This shouldn't be true, but just in case...
   if( _loop.size() < 3 )
     return false;
 
+  Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
+
+  SharedVertexPtr sv1 ( _loop.at( 0 ) );
+  SharedVertexPtr sv2 ( _loop.at( 1 ) );
+  SharedVertexPtr sv3 ( _loop.at( 2 ) );
+  
+  //Get three vertices
+  osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
+  osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
+  osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
+
   //first check to see if point is in the same plane
-  osg::Plane planeOne ( _loop.at( 0 ), _loop.at( 1 ), _loop.at ( 2 ) );
-  osg::Plane planeTwo ( _loop.at( 0 ), _loop.at( 1 ), point );
+  osg::Plane planeOne ( v1, v2, v3 );
+  osg::Plane planeTwo ( v1, v2, point );
 
   //We are probably going to need some tolerence here
   if( planeOne != planeTwo )
@@ -243,8 +274,11 @@ bool Loop::pointInside( const osg::Vec3 &point ) const
   //Copy and shift so pt is the origin
   for( Loop::const_iterator iter = _loop.begin(); iter != _loop.end(); ++iter )
   {
+    // Get the vertex
+    osg::Vec3 t ( getVertex->getVertex( (*iter)->index() ) );
+
     //Translate point into proper plane
-    osg::Vec3 v ( *iter * matrix );
+    osg::Vec3 v ( t * matrix );
 
     //Move so that pt is the origin
     v = v - pt;
@@ -258,7 +292,7 @@ bool Loop::pointInside( const osg::Vec3 &point ) const
   // For each edge e=(i-1,i), see if crosses ray.
   for( osg::Vec3Array::const_iterator iter = copy->begin(); iter != copy->end(); ++iter ) 
   {
-    /* First see if q=(0,0) is a vertex. */
+    // First see if q=(0,0) is a vertex. 
     if ( iter->x() == 0 && iter->y() == 0 ) 
       return false;
 
@@ -282,7 +316,6 @@ bool Loop::pointInside( const osg::Vec3 &point ) const
   if( (rCross % 2) == 1 )
     return true;
 
-#endif
   //if we get here return false
   return false;
 }
@@ -439,6 +472,13 @@ void Loop::undo()
   _numTriangles = 0;
 #endif
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the ith vertex
+//
+///////////////////////////////////////////////////////////////////////////////
 
 const osg::Vec3f& Loop::vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const
 {

@@ -204,6 +204,13 @@ void Triangle::visited ( bool v )
     _flags = Usul::Bits::remove ( _flags, VISITED );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this triangle's neighbors
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Triangle::getNeighbors( PolygonList& triangles ) const
 {
   //Insert each shared vertex's list of polygons

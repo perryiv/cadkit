@@ -204,8 +204,8 @@ struct Trapezoid
   int usave, uside;		// I forgot what this means 
 
   Trapezoid() :
-  lseg ( -1 ),
-  rseg ( -1 ),
+  lseg ( 0 ),
+  rseg ( 0 ),
   hi(),
   lo(),
   u0 ( 0 ),

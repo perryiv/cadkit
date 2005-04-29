@@ -382,6 +382,9 @@
 					RelativePath=".\Headers\Label.h">
 				</File>
 				<File
+					RelativePath=".\Headers\List.h">
+				</File>
+				<File
 					RelativePath=".\Headers\MainWindow.h">
 				</File>
 				<File

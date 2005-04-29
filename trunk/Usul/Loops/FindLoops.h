@@ -373,7 +373,8 @@ inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& lo
     //this will loop around the gap and build the proper loop
     Detail::visitPolygon( polygons, uncapped, loop, p.get() );
 
-    if( !loop.empty() )
+    //Only add if the loop's size is greater than or equal to 3
+    if( loop.size() >= 3 )
     {
       //Push the loop onto the answer
       loops.push_back( loop );

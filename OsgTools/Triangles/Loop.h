@@ -38,6 +38,7 @@ public:
   typedef Points::const_iterator const_iterator;
 
   Loop();
+  ~Loop();
 
   void push_back( const value_type& v ) { _loop.push_back( v ); }
 
@@ -56,7 +57,7 @@ public:
   unsigned int size() const { return _loop.size(); }
 
   //Check to see if the given point is inside this loop
-  bool pointInside( const osg::Vec3 & ) const;
+  bool pointInside( const osg::Vec3 &, Usul::Interfaces::IUnknown *caller ) const;
 
   //Add a loop to the list of inner loops
   void addInnerLoop ( const Loop& loop ) { _innerLoops.push_back( loop._loop ); }
@@ -96,8 +97,6 @@ private:
   Points _loop;
 
   std::list< Points > _innerLoops;
-
-  Usul::Interfaces::IUnknown::QueryPtr _caller;
 
   //Our starting location in the vertex sequence
   unsigned int _start;

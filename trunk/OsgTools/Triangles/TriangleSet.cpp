@@ -227,6 +227,22 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
+#if 0
+  //This is my first attempt at making sure the normal is in the same direction as it's neighbors
+  //Make a copy
+  osg::Vec3f copy ( n );
+
+  osg::Vec3f test ( this->normal( (*sv0->begin())->index() ) );
+
+  float dot ( test * copy );
+
+  float arccos ( ::acos ( dot ) );
+
+  float angle ( (float) ( arccos * (float) 180 ) / (float) 3.14159265 );
+
+  if( angle > 180 )
+    copy = -copy;
+#endif
   //Add the triangle
   this->_addTriangle( sv0, sv1, sv2, n );
 }
@@ -396,7 +412,7 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
 
     // Make space.
     const unsigned int numPoints ( _triangles.size() * 3 );
-    this->_normalsPerVertex().reserve ( numPoints );
+    this->_normalsPerVertex().resize ( _vertices->size() );
     _indices->reserve ( numPoints );
 
     // Initialize counter for progress.
@@ -440,10 +456,12 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
         n3.normalize();
 
         // Set the normal values.
-        normals->push_back ( n1 );
-        normals->push_back ( n2 );
-        normals->push_back ( n3 );
+        normals->at( v1->index() ) = n1; //push_back ( n1 );
+        normals->at( v2->index() ) = n2; //push_back ( n2 );
+        normals->at( v3->index() ) = n3; //push_back ( n3 );
       }
+
+      _geometry->setNormalIndices ( _indices.get() );
 
       // Show progress.
       this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );

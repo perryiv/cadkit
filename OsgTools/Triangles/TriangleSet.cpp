@@ -46,28 +46,25 @@ TriangleSet::TriangleSet() : BaseClass(),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
   _colors    ( new osg::Vec4Array ),
-  _indices   ( new osg::UIntArray ),
   _dirty     ( true ),
-  _geometry  ( new osg::Geometry )
+  _geometry  ( new osg::Geometry ),
+  _primitiveSet ( new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 ) )
 {
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _indices        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
   USUL_STATIC_ASSERT ( 68 == sizeof ( TriangleSet     ) ); // Why?
 
   // Add the vertices
   _geometry->setVertexArray( _vertices.get() );
 
-  // Add the indices
-  _geometry->setVertexIndices( _indices.get() );
-
-  // Add the DrawArrays
-  _geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, 0 ) );
+  // Add the PrimitiveSet
+  _geometry->addPrimitiveSet( _primitiveSet.get() );
 }
 
 
@@ -406,14 +403,12 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
 
   if( _dirty )
   {
-    //Clear what I have
-    this->_normalsPerVertex().clear();
-    _indices->clear();
+    //How many points do we have    
+    const unsigned int numPoints ( _triangles.size() * 3 );
 
     // Make space.
-    const unsigned int numPoints ( _triangles.size() * 3 );
     this->_normalsPerVertex().resize ( _vertices->size() );
-    _indices->reserve ( numPoints );
+    _primitiveSet->resize( numPoints );
 
     // Initialize counter for progress.
     unsigned int count ( 0 );
@@ -421,6 +416,7 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
     // Update progress bar every second.
     Usul::Policies::TimeBased elapsed ( 1000 );
 
+    //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
 
     // Loop through the triangles.
@@ -438,9 +434,11 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
       if ( !v1 || !v2 || !v3 )
         throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
 
-      _indices->push_back ( v1->index() );
-      _indices->push_back ( v2->index() );
-      _indices->push_back ( v3->index() );
+      const unsigned int triNum ( count * 3 );
+
+      _primitiveSet->at( triNum )     = ( v1->index() );
+      _primitiveSet->at( triNum + 1 ) = ( v2->index() );
+      _primitiveSet->at( triNum + 2 ) = ( v3->index() );
 
       //If we are suppose to add averaged normals...
       if( average )
@@ -461,7 +459,7 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
         normals->at( v3->index() ) = n3; //push_back ( n3 );
       }
 
-      _geometry->setNormalIndices ( _indices.get() );
+      //_geometry->setNormalIndices ( _indices.get() );
 
       // Show progress.
       this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );
@@ -485,18 +483,15 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
     //Delete are per facet normals
     this->_normalsPerVertex().clear();
 
+    // Unset the geometry's normal indices
+    _geometry->setNormalIndices( 0x0 );
+
     //Set the normals
     _geometry->setNormalArray ( &this->_normalsPerFacet() );
 
     //Set the normal binding
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
-
-  //Get the draw arrays
-  osg::ref_ptr<osg::DrawArrays> draw ( dynamic_cast < osg::DrawArrays * > ( _geometry->getPrimitiveSet ( 0 ) ) );
-
-  //Set the new count
-  draw->setCount ( _indices->size() );
 
   // Return the root.
   return root.release();

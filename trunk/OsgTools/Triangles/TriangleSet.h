@@ -135,9 +135,9 @@ private:
   VerticesPtr _vertices;
   Normals _normals;
   ColorsPtr _colors;
-  IndicesPtr _indices;
   bool _dirty;
   osg::ref_ptr<osg::Geometry> _geometry;
+  osg::ref_ptr<osg::DrawElementsUInt> _primitiveSet;
 };
 
 

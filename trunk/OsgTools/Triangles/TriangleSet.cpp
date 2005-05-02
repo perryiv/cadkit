@@ -239,9 +239,12 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
 
   if( angle > 180 )
     copy = -copy;
-#endif
+
+  this->_addTriangle( sv0, sv1, sv2, copy );
+#else
   //Add the triangle
   this->_addTriangle( sv0, sv1, sv2, n );
+#endif
 }
 
 
@@ -377,10 +380,10 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options &opt, Unknown *caller )
+osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 {
   // Make copy of the options.
-  OsgFox::Documents::Document::Options options ( opt );
+  Options options ( opt );
 
   // User feedback.
   this->_setStatusBar ( "Building Scene ...", caller );
@@ -403,12 +406,15 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
 
   if( _dirty )
   {
+    //For convienence
+    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
+
     //How many points do we have    
     const unsigned int numPoints ( _triangles.size() * 3 );
 
     // Make space.
-    this->_normalsPerVertex().resize ( _vertices->size() );
-    _primitiveSet->resize( numPoints );
+    normals->resize       ( _vertices->size() );
+    _primitiveSet->resize ( numPoints );
 
     // Initialize counter for progress.
     unsigned int count ( 0 );
@@ -416,16 +422,13 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
     // Update progress bar every second.
     Usul::Policies::TimeBased elapsed ( 1000 );
 
-    //For convienence
-    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
-
     // Loop through the triangles.
     for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
     {
       // Shortcuts to the triangle.
       const Triangle::ValidRefPtr triangle ( i->get() );
 
-      // Get the vertices.
+      // Get the vertices.5
       const SharedVertex *v1 ( triangle->vertex0() );
       const SharedVertex *v2 ( triangle->vertex1() );
       const SharedVertex *v3 ( triangle->vertex2() );
@@ -436,11 +439,12 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
 
       const unsigned int triNum ( count * 3 );
 
+      // Add the indices to the primitive set
       _primitiveSet->at( triNum )     = ( v1->index() );
       _primitiveSet->at( triNum + 1 ) = ( v2->index() );
       _primitiveSet->at( triNum + 2 ) = ( v3->index() );
 
-      //If we are suppose to add averaged normals...
+      // If we are suppose to add averaged normals...
       if( average )
       {
         // Get the normals.
@@ -454,12 +458,10 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
         n3.normalize();
 
         // Set the normal values.
-        normals->at( v1->index() ) = n1; //push_back ( n1 );
-        normals->at( v2->index() ) = n2; //push_back ( n2 );
-        normals->at( v3->index() ) = n3; //push_back ( n3 );
+        normals->at( v1->index() ) = n1;
+        normals->at( v2->index() ) = n2;
+        normals->at( v3->index() ) = n3;
       }
-
-      //_geometry->setNormalIndices ( _indices.get() );
 
       // Show progress.
       this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );
@@ -480,11 +482,8 @@ osg::Node *TriangleSet::buildScene ( const OsgFox::Documents::Document::Options 
   }
   else
   {
-    //Delete are per facet normals
+    //Delete the per vertex normals
     this->_normalsPerVertex().clear();
-
-    // Unset the geometry's normal indices
-    _geometry->setNormalIndices( 0x0 );
 
     //Set the normals
     _geometry->setNormalArray ( &this->_normalsPerFacet() );
@@ -551,11 +550,13 @@ osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
 {
   osg::Vec3 normal;
 
+  //Add the normal of all triangles connected to this shared vertex
   for ( SharedVertex::ConstTriangleItr i = sv->begin(); i != sv->end(); ++i )
   {
     normal += this->_normalsPerFacet().at( (*i)->index() );
   }
 
+  //Return the normal.  Do not normalize
   return normal;
 }
 
@@ -568,6 +569,7 @@ osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
 
 void TriangleSet::setAllUnvisited()
 {
+  //Go to each triangle and it's shared vertices and set the visited flag to false
   for( Triangles::iterator i = _triangles.begin(); i != _triangles.end(); ++ i )
   {
     (*i)->visited( false );
@@ -588,3 +590,56 @@ const osg::Vec3f& TriangleSet::getVertex( unsigned int index ) const
 {
   return _vertices->at( index );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete triangle at given index
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::deleteTriangle( unsigned int index )
+{
+  //Get the triangle to remove
+  Triangles::iterator doomed ( _triangles.begin() + index );
+
+  // Decrement the index of all triangles after doomed.
+  for( Triangles::iterator i = doomed + 1; i != _triangles.end(); ++i  )
+  {
+    unsigned int t ( (*i)->index() - 1 );
+    (*i)->index( t );
+  }
+
+  // Get the shared vertices.
+  SharedVertex *sv0 ( (*doomed)->vertex0() );
+  SharedVertex *sv1 ( (*doomed)->vertex1() );
+  SharedVertex *sv2 ( (*doomed)->vertex2() );
+
+  //Remove the triangle from the shared vertices
+  sv0->remove( doomed->get() );
+  sv1->remove( doomed->get() );
+  sv2->remove( doomed->get() );
+
+  // Unref doomed.  Not needed, but can't hurt
+  (*doomed) = 0x0;
+
+  // Remove doomed from our vector of triangles
+  _triangles.erase( doomed );
+
+  //Remove the normal
+  this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + index ) );
+
+  // Positions of the indices of doomed
+  osg::DrawElementsUInt::iterator first ( _primitiveSet->begin() + ( index * 3 ) );
+  osg::DrawElementsUInt::iterator last  ( _primitiveSet->begin() + ( index * 3 ) + 3 );
+
+  //Remove the indices from the primitive set
+  _primitiveSet->erase( first, last );
+
+  //Display lists need to be recalculated
+  _geometry->dirtyDisplayList();
+
+  //Scene needs to be rebuilt
+  _dirty = true;
+}
+

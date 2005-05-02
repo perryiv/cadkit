@@ -23,8 +23,6 @@
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
 
-#include "OsgFox/Documents/Document.h"
-
 #include "osg/Geometry"
 #include "osg/ref_ptr"
 
@@ -48,6 +46,7 @@ public:
   typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > Triangles;
   typedef Usul::Interfaces::IUnknown Unknown;
+  typedef std::map<std::string,std::string>     Options;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -67,16 +66,19 @@ public:
   void                    addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n );
 
   /// Build the scene
-  osg::Node*              buildScene ( const OsgFox::Documents::Document::Options &opt, Unknown *caller );
+  osg::Node*              buildScene ( const Options &opt, Unknown *caller );
 
   // Clear existing data.
   void                    clear();
+
+  // Delete triangle at given index
+  void                    deleteTriangle( unsigned int index );
 
   // Flip the normal vectors.
   void                    flipNormals();
 
   // Get the vertex at the index
-  const osg::Vec3f&             getVertex( unsigned int index ) const;
+  const osg::Vec3f&       getVertex( unsigned int index ) const;
 
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
@@ -109,6 +111,9 @@ protected:
 
   void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n );
 
+  //Get the averaged normal for the shared vertex
+  osg::Vec3               _averageNormal ( const SharedVertex * );
+
   const osg::Vec3Array &  _normalsPerFacet()  const { return *_normals.second; }
   osg::Vec3Array &        _normalsPerFacet()        { return *_normals.second; }
   const osg::Vec3Array &  _normalsPerVertex() const { return *_normals.first; }
@@ -118,9 +123,6 @@ protected:
   void                    _setStatusBar ( const std::string &text, Unknown *caller );
 
   SharedVertex *          _sharedVertex ( const osg::Vec3f &v );
-
-  //Get the averaged normal for the shared vertex
-  osg::Vec3               _averageNormal ( const SharedVertex * );
 
 private:
 

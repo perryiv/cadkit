@@ -55,10 +55,16 @@ public:
   // Sets all vertices to null.
   void                        clear();
 
+  //Get/Set the deleted flag
+  bool                        deleted() const;
+  void                        deleted( bool );
+
+  //Get the neighbors of this Triangle
   void                        getNeighbors( PolygonList& ) const;
 
-  //Get this Triangle's index
-  unsigned int                index() const { return _index; }
+  //Get?set this Triangle's index
+  unsigned int                index() const           { return _index; }
+  void                        index( unsigned int i ) { _index = i; }
 
   // Reference this instance.
   void                        ref();

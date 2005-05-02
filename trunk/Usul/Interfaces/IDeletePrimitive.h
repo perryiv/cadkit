@@ -9,38 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Delete a triangle
+//  Delete a primitive
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_DELETE_TRIANGLE_H_
-#define _USUL_INTERFACE_DELETE_TRIANGLE_H_
+#ifndef _USUL_INTERFACE_DELETE_PRIMITIVE_H_
+#define _USUL_INTERFACE_DELETE_PRIMITIVE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-#include <vector>
-
-namespace OsgTools { namespace Triangles { class Loop; }  }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IDeleteTriangle : public Usul::Interfaces::IUnknown
+struct IDeletePrimitive : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDeleteTriangle );
+  USUL_DECLARE_QUERY_POINTERS ( IDeletePrimitive );
 
   /// Id for this interface.
   enum { IID = 1744889731u };
 
-  virtual void deleteTriangle ( unsigned int num ) = 0;
+  virtual void deletePrimitive ( unsigned int num ) = 0;
 
-}; // struct IDeleteTriangle
+}; // struct IDeletePrimitive
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_DELETE_TRIANGLE_H_
+#endif // _USUL_INTERFACE_DELETE_PRIMITIVE_H_

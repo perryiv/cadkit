@@ -225,3 +225,31 @@ void Triangle::getNeighbors( PolygonList& triangles ) const
   triangles.unique( Usul::Polygons::PolyEqual < Triangle >() );
   
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Has this triangle been deleted?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::deleted() const
+{
+  return Usul::Bits::has ( _flags, DELETED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the deleted flag
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::deleted( bool d )
+{
+  if( d )
+    _flags = Usul::Bits::add ( _flags, DELETED );
+  else
+    _flags = Usul::Bits::remove ( _flags, DELETED );
+}
+

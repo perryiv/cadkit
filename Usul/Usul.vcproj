@@ -529,7 +529,7 @@
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDeleteTriangle.h">
+						RelativePath=".\Interfaces\IDeletePrimitive.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFindLoops.h">

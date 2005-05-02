@@ -59,7 +59,6 @@ Loop::~Loop()
 
 bool Loop::triangulate( Usul::Interfaces::IUnknown *caller )
 {
-
   //Algorithm will fill this data structure with indices for the triangles
   Triangles triangles;
 

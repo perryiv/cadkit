@@ -833,16 +833,7 @@
 				Name="Polygons"
 				Filter="">
 				<File
-					RelativePath=".\Polygons\AdjacencyMap.h">
-				</File>
-				<File
-					RelativePath=".\Polygons\Polygons.h">
-				</File>
-				<File
 					RelativePath=".\Polygons\Predicates.h">
-				</File>
-				<File
-					RelativePath=".\Polygons\SharedVertex.h">
 				</File>
 				<File
 					RelativePath=".\Polygons\Triangle.h">

@@ -7,33 +7,28 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_ALGORITHMS_CAP_POLYGONS_H__
-#define __USUL_ALGORITHMS_CAP_POLYGONS_H__
+#ifndef __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
+#define __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
+
 
 namespace Usul {
 namespace Algorithms {
 
 
-
 template
 <
-  class AdjacencyMap,
+  class Polygons,
   class IndexSequence, 
   class Functor,
   class UpdateFunctor
 >
-inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater )
+inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater )
 {
-  typedef typename AdjacencyMap::Polygons Polygons;
   typedef typename Polygons::value_type Polygon;
-  typedef typename AdjacencyMap::SharedVertex SharedVertex;
   typedef typename IndexSequence::iterator IndexIterator;
   typedef std::vector< Functor > TodoStack;
   typedef typename TodoStack::iterator TodoStackItr;
 
-  map.setAllUnvisited();
-
-  Polygons polygons ( map.polygons() );
 
   //Is the selected polygon outside of _polygons' range?
   if ( selectedPolygon >= polygons.size() )
@@ -47,11 +42,11 @@ inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigne
   TodoStack todoStack;
 
   //Reserve enough room
-  todoStack.reserve( map.size() );
+  todoStack.reserve( polygons.size() * 2 );
 
   //put the functor for the selected polygon on the stack
-  polygons.at( selectedPolygon ).visited ( true );
-  todoStack.push_back( Functor ( answer, todoStack, &polygons.at( selectedPolygon ) ) );
+  polygons.at( selectedPolygon )->visited ( true );
+  todoStack.push_back( Functor ( answer, todoStack, polygons.at( selectedPolygon ).get() ) );
 
   TodoStackItr todoIterator ( todoStack.begin() );
 
@@ -76,5 +71,5 @@ inline void findAllConnected ( AdjacencyMap& map, IndexSequence& answer, unsigne
 
 }
 
-#endif //__USUL_ALGORITHMS_CAP_POLYGONS_H__
+#endif //__USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
 

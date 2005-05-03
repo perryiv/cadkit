@@ -237,61 +237,6 @@ void findEdge ( PolygonList& polygons, Polygon* check )
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//  Functor to find all polygons that need to be capped
-//
-///////////////////////////////////////////////////////////////////////////////
-template
-<
-  class Polygon
->
-struct CapPolygonFunctor
-{
-  typedef std::list< unsigned int > IndexSequence;
-
-  CapPolygonFunctor ( IndexSequence& uncapped ) :
-  _uncapped( uncapped )
-  {
-  }
-
-  void operator () ( Polygon& polygon )
-  {
-    typedef typename Polygon::PolygonList PolygonList;
-    typedef typename Polygon::AdjacencyTest AdjacencyTest;
-
-    AdjacencyTest adjacent;
-
-    //Get list of neighbors that share one point
-    PolygonList neighbors ( polygon.getNeighbors() );
-
-    PolygonList adjacentPolygons;
-
-    //Loop through all this polygon's neighbors
-    for( typename PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
-    {
-      //Self check...
-      if( polygon.index() != (*i)->index() )
-      {
-        //If these two polygons are adjacent...
-        if( adjacent ( polygon, *(*i) ) )
-          adjacentPolygons.push_back( *i );
-      }
-    }
-
-    //If we don't have the right number of adjacent polygons...
-    if( adjacentPolygons.size() < vertsPerPoly )
-    {
-      uncapped.push_back( polygon.index() );
-      Detail::findEdge( adjacentPolygons, &polygon );
-    }
-
-  }
-
-private:
-  IndexSequence &_uncapped;
-};
-
-//////////////////////////////////////////////////////////////////////////////
-//
 //  Walk the graph and find all polygons that need to be capped.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -310,10 +255,6 @@ inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& lo
   typedef typename PolygonPtr::element_type Polygon;
   typedef typename Polygon::PolygonList PolygonList;
   typedef typename Loops::value_type Loop;
-
-  //map.setAllUnvisited();
-
-  //Polygons &polygons ( map.polygons() );
 
   //Needed for user feedback
   const unsigned int size ( polygons.size() );

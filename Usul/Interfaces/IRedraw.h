@@ -37,7 +37,7 @@ struct IRedraw : public Usul::Interfaces::IUnknown
   /// Small struct to reset the stats-display state.
   struct ResetStatsDisplay
   {
-    ResetStatsDisplay ( IRedraw *r, bool cs, bool fs ) : _r ( r ), _current ( cs ), _final ( fs )
+    template < class T > ResetStatsDisplay ( T *t, bool cs, bool fs ) : _r ( t ), _current ( cs ), _final ( fs )
     {
       if ( _r.valid() )
         _r->setStatsDisplay ( _current );
@@ -48,11 +48,11 @@ struct IRedraw : public Usul::Interfaces::IUnknown
         _r->setStatsDisplay ( _final );
     }
   protected:
-    IRedraw::RefPtr _r;
+    IRedraw::QueryPtr _r;
     bool _current;
     bool _final;
   };
-}; // class IRedraw
+}; // struct IRedraw
 
 
 }; // namespace Interfaces

@@ -71,8 +71,21 @@ public:
   // Clear existing data.
   void                    clear();
 
+  // Turn on color and set all trianlges to given color
+  void                    colorOn ( const osg::Vec4& color );
+
+  // Color the ith triangle with given color
+  void                    color ( unsigned int index, const osg::Vec4& color );
+
+  //Turn off color
+  void                    colorOff ();
+
   // Delete triangle at given index
   void                    deleteTriangle( unsigned int index );
+
+  // Get/Set the display list flag
+  bool                    displayList () const; 
+  void                    displayList ( bool ); 
 
   // Flip the normal vectors.
   void                    flipNormals();
@@ -80,8 +93,14 @@ public:
   // Get the vertex at the index
   const osg::Vec3f&       getVertex( unsigned int index ) const;
 
+  // Keep only these triangles
+  void                    keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );
+
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
+
+  // Remove these triangles
+  void                    remove ( std::vector<unsigned int>& remove, Usul::Interfaces::IUnknown *caller );
 
   // Make space for the triangles.
   void                    reserve ( unsigned int );
@@ -92,13 +111,14 @@ public:
   // Return the number of triangles.
   unsigned int            size() const { return _triangles.size(); }
 
+  // Get the triangles
+  const Triangles&        triangles() const { return _triangles; }
+  Triangles&              triangles()       { return _triangles; }
+
   // Get the vertices of the i'th triangle.
   const osg::Vec3f &      vertex0 ( unsigned int ) const;
   const osg::Vec3f &      vertex1 ( unsigned int ) const;
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
-
-  const Triangles&        triangles() const { return _triangles; }
-  Triangles&              triangles()       { return _triangles; }
 
 protected:
 

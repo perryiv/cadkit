@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2004, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,37 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for intersecting a scene
+//  Delete all primitives connected to seed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SCENE_INTERSECT_H_
-#define _USUL_INTERFACE_SCENE_INTERSECT_H_
+#ifndef _USUL_INTERFACE_DELETE_ALL_CONNECTED_H_
+#define _USUL_INTERFACE_DELETE_ALL_CONNECTED_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Node; };
-namespace osgUtil { class Hit; };
-namespace FX { struct FXEvent; };
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct ISceneIntersect : public Usul::Interfaces::IUnknown
+struct IDeleteAllConnected : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ISceneIntersect );
+  USUL_DECLARE_QUERY_POINTERS ( IDeleteAllConnected );
 
   /// Id for this interface.
-  enum { IID = 1101086294u };
+  enum { IID = 1313723240u };
 
-  virtual bool intersect ( const FX::FXEvent &event, osgUtil::Hit &hit ) = 0;
-}; // class ISceneIntersect
+  virtual void deleteAllConnected ( Usul::Interfaces::IUnknown* caller, unsigned int seed ) = 0;
+
+}; // struct IDeleteAllConnected
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SCENE_INTERSECT_H_
+#endif // _USUL_INTERFACE_DELETE_ALL_CONNECTED_H_

@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2004, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,35 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interfaces for getting FOX window.
+//  Keep all primitives connected to seed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_FOX_WINDOW_H_
-#define _USUL_INTERFACE_FOX_WINDOW_H_
+#ifndef _USUL_INTERFACE_KEEP_ALL_CONNECTED_H_
+#define _USUL_INTERFACE_KEEP_ALL_CONNECTED_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace FX { class FXWindow; }
 
 namespace Usul {
 namespace Interfaces {
 
-struct IFoxWindow : public Usul::Interfaces::IUnknown
+
+struct IKeepAllConnected : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IFoxWindow );
+  USUL_DECLARE_QUERY_POINTERS ( IKeepAllConnected );
 
   /// Id for this interface.
-  enum { IID = 2463843388u };
+  enum { IID = 3312125481u };
 
-  virtual FX::FXWindow* getFoxWindow() = 0;
+  virtual void keepAllConnected ( Usul::Interfaces::IUnknown* caller, unsigned int seed ) = 0;
 
-}; // class IFoxWindow
+}; // struct IKeepAllConnected
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_FOX_WINDOW_H_
+#endif // _USUL_INTERFACE_KEEP_LOOPS_H_

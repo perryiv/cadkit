@@ -350,9 +350,6 @@
 						RelativePath=".\Interfaces\IFoxAddTab.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxApp.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IFoxDockBar.h">
 					</File>
 					<File
@@ -529,6 +526,9 @@
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IDeleteAllConnected.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IDeletePrimitive.h">
 					</File>
 					<File
@@ -551,6 +551,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetWidth.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IModeStack.h">

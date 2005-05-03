@@ -643,3 +643,175 @@ void TriangleSet::deleteTriangle( unsigned int index )
   _dirty = true;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Keep only these triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller )
+{
+  //Make a copy of the triangles
+  Triangles triangles ( _triangles );
+
+  //Make a copy of the normals
+  NormalsPtr normals ( new osg::Vec3Array ( this->_normalsPerFacet().size() ) );
+  std::copy ( this->_normalsPerFacet().begin(), this->_normalsPerFacet().end(), normals->begin() );
+
+  //Make a copy of the vertices
+  VerticesPtr vertices ( new osg::Vec3Array ( _vertices->size() ) );
+  std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
+
+  // Clear every thing we have.  Don't use this->clear because triangles ref count is not 1
+  _triangles.clear();
+  _vertices->clear();
+  this->_normalsPerVertex().clear();
+  this->_normalsPerFacet().clear();
+  _colors->clear();
+
+  // Make enough room
+  this->reserve( keepers.size() );
+
+  // Initialize the shared vertex map
+  this->addStart( caller );
+
+  this->_setStatusBar( "Adding Triangles...", caller );
+
+  Usul::Policies::TimeBased update ( 1000 );
+
+  // Go through the triangles that we need to keep
+  for( std::vector<unsigned int>::const_iterator i = keepers.begin(); i != keepers.end(); ++i )
+  {
+    // Get the triangle
+    Triangle::ValidRefPtr t ( triangles.at( *i ) );
+
+    // Get it's vertices
+    osg::Vec3f v0 ( vertices->at( t->vertex0()->index() ) );
+    osg::Vec3f v1 ( vertices->at( t->vertex1()->index() ) );
+    osg::Vec3f v2 ( vertices->at( t->vertex2()->index() ) );
+
+    // Get it's normal
+    osg::Vec3f n ( normals->at( t->index() ) );
+
+    // Add the triangle
+    this->addTriangle( v0, v1, v2, n );
+
+    // Let the user know how much we have done
+    this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size(), caller );
+  }
+
+  // Don't with the shared vertex map
+  this->addFinish( caller );
+
+  //The scene needs to be rebuilt
+  _dirty = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove these triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::remove ( std::vector<unsigned int>& remove, Usul::Interfaces::IUnknown *caller )
+{
+  // Sort sequence
+  std::sort( remove.begin(), remove.end(), std::less_equal< unsigned int >() );
+
+  //Our current position in remove
+  std::vector<unsigned int>::const_iterator current ( remove.begin() );
+
+  //We are going to keep these one
+  std::vector< unsigned int > keep;
+  
+  //Reserve enough room
+  keep.reserve( _triangles.size() - remove.size() );
+
+  //Go through each index and decide if we are going to keep or not
+  for( unsigned int i = 0; i < _triangles.size(); ++i )
+  {
+    //If i is not going to be removed...
+    if( i != *current )
+      keep.push_back( i );
+    //If i is going to be remove, don't add to keepers and move to next triangle to be removed
+    else
+      ++current;
+  }
+
+  //It's faster to rebuild than remove
+  this->keep( keep, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Turn on color and set all trianlges to given color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::colorOn( const osg::Vec4& color )
+{
+  _geometry->setColorArray( _colors.get() );
+
+  _colors->resize ( _triangles.size() );
+  std::fill ( _colors->begin(), _colors->end(), color );
+      
+  _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+  _geometry->dirtyDisplayList();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Color the ith triangle with given color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
+{
+  _colors->at( index ) = color;
+
+  _geometry->dirtyDisplayList();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Turn off color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::colorOff ()
+{
+  _geometry->setColorArray( 0x0 );
+
+  _geometry->dirtyDisplayList();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the display list flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleSet::displayList ( ) const
+{
+  return _geometry->getUseDisplayList ( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the display list flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::displayList ( bool b )
+{
+  _geometry->setUseDisplayList ( b );
+}
+

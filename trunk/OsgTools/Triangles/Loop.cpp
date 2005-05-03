@@ -364,18 +364,6 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
   //Normalize the normal
   normal.normalize();
 
-  osg::Matrix mat;
-
-  osg::Vec3 z (  0.0, 0.0, 1.0 );
-
-  mat.makeRotate( z, normal );
-
-  z = z * mat;
-
-  //Rotate along the normal
-  osg::Quat rot ( 0.0, z );
-  rotation = rot;
-
   float max ( std::numeric_limits< float >::min() );
   
   //Find the maximium distance from the center
@@ -391,6 +379,14 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
 
   //Back up from the center
   distance = 3 * max;
+
+  osg::Vec3 eye ( center + ( normal * distance ) );
+
+  osg::Matrix mat;
+
+  mat.makeLookAt( eye, center, normal );
+
+  rotation.set( mat );
 }
 
 

@@ -313,9 +313,9 @@ void TriangleSet::addStart ( Usul::Interfaces::IUnknown *caller )
     const unsigned int i2 ( sv2->index() );
 
     // Set the map's key to the shared vertex.
-    _shared[_vertices->at(i0)] = sv0;
-    _shared[_vertices->at(i1)] = sv1;
-    _shared[_vertices->at(i2)] = sv2;
+    _shared.insert( SharedVertices::value_type ( _vertices->at(i0), sv0.get() ) );
+    _shared.insert( SharedVertices::value_type ( _vertices->at(i1), sv1.get() ) );
+    _shared.insert( SharedVertices::value_type ( _vertices->at(i2), sv2.get() ) );
 
     // Feedback.
     if ( progress.valid() && update() )
@@ -467,6 +467,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );
       ++count;
     }
+
+    _geometry->dirtyBound();
+    _geometry->dirtyDisplayList();
 
     _dirty = false;
   }

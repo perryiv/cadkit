@@ -62,6 +62,8 @@ public:
   //Add a loop to the list of inner loops
   void addInnerLoop ( const Loop& loop ) { _innerLoops.push_back( loop._loop ); }
 
+  bool hasInnerLoop ( ) const { return !_innerLoops.empty(); }
+
   //Build frame data from this loop
   void getFrameData ( osg::Vec3&, float &, osg::Quat&, Usul::Interfaces::IUnknown *caller ) const;
 

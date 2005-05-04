@@ -30,7 +30,7 @@ namespace Strings {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  inline void lowerCase ( const std::string &in, std::string &out )
+inline void lowerCase ( const std::string &in, std::string &out )
 {
   out = in;
   std::transform ( out.begin(), out.end(), out.begin(), ::tolower );
@@ -57,7 +57,7 @@ inline std::string lowerCase ( const std::string &in )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  inline void upperCase ( const std::string &in, std::string &out )
+inline void upperCase ( const std::string &in, std::string &out )
 {
   out = in;
   std::transform ( out.begin(), out.end(), out.begin(), ::toupper );

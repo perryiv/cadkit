@@ -133,7 +133,7 @@ bool SharedVertex::visited() const
 
 void SharedVertex::visited ( bool v )
 {
-  if( v )
+  if ( v )
     _flags = Usul::Bits::add ( _flags, VISITED );
   else
     _flags = Usul::Bits::remove ( _flags, VISITED );
@@ -158,9 +158,9 @@ bool SharedVertex::onEdge() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::onEdge( bool e )
+void SharedVertex::onEdge ( bool e )
 {
-  if( e )
+  if ( e )
     _flags = Usul::Bits::add ( _flags, ON_EDGE );
   else
     _flags = Usul::Bits::remove ( _flags, ON_EDGE );

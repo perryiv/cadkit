@@ -13,7 +13,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #ifdef __sgi
 #define _CPP_CMATH 1
 #endif
@@ -48,7 +47,7 @@ Factory *Factory::_instance ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 #define ITERATORS(array_name) array_name, array_name + sizeof ( array_name )
-#define POPULATE(format_type,name_space,image_name) \
+#define MAP_INSERT(format_type,name_space,image_name) \
   _map.insert ( Value ( ICON_##image_name, Data ( format_type, Array \
     ( ITERATORS ( name_space::IMAGE_##image_name ) ) ) ) )
 
@@ -71,55 +70,56 @@ Factory::Factory() : _map()
   typedef Map::value_type Value;
 
   // Populate the map.
-  POPULATE ( png, PNG, ABOUT    );
-  POPULATE ( gif, GIF, OPEN     );
-  POPULATE ( gif, GIF, COPY     );
-  POPULATE ( gif, GIF, CUT      );
-  POPULATE ( gif, GIF, DELETE   );
-  POPULATE ( gif, GIF, ERROR    );
-  POPULATE ( gif, GIF, FRONT    );
-  POPULATE ( gif, GIF, BACK     );
-  POPULATE ( gif, GIF, TOP      );
-  POPULATE ( gif, GIF, BOTTOM   );
-  POPULATE ( gif, GIF, LEFT     );
-  POPULATE ( gif, GIF, RIGHT    );
-  POPULATE ( gif, GIF, INFO     );
-  POPULATE ( gif, GIF, NEW      );
-  POPULATE ( gif, GIF, PASTE    );
-  POPULATE ( gif, GIF, PRINT    );
-  POPULATE ( gif, GIF, QUESTION );
-  POPULATE ( gif, GIF, SAVE     );
-  POPULATE ( gif, GIF, TUX      );
-  POPULATE ( gif, GIF, WARNING  );
-  POPULATE ( gif, GIF, CAMERA   );
-  POPULATE ( gif, GIF, SEEK     );
-  POPULATE ( gif, GIF, TOOL_SELECTION     );
-  POPULATE ( gif, GIF, TRIANGLE           );
-  POPULATE ( gif, GIF, DELETE_CONNECTED   );
-  POPULATE ( gif, GIF, KEEP_CONNECTED     );
-  POPULATE ( gif, GIF, ARROW              );
-  POPULATE ( gif, GIF, EYE                );
-  POPULATE ( gif, GIF, HAND               );
-  POPULATE ( gif, GIF, HOME               );
-  POPULATE ( gif, GIF, FILLED             );
-  POPULATE ( gif, GIF, LINES              );
-  POPULATE ( gif, GIF, POINTS             );
-  POPULATE ( gif, GIF, STOP               );
-  POPULATE ( gif, GIF, PAUSE              );
-  POPULATE ( gif, GIF, PLAY               );
-  POPULATE ( gif, GIF, PLAY_BACKWARDS     );
-  POPULATE ( gif, GIF, FORWARD_ARROW      );
-  POPULATE ( gif, GIF, FORWARD_ARROW_BAR  );
-  POPULATE ( gif, GIF, BACKWARD_ARROW     );
-  POPULATE ( gif, GIF, BACKWARD_ARROW_BAR );
-  POPULATE ( gif, GIF, RED_CIRCLE );
-  POPULATE ( gif, GIF, RED_X );
-  POPULATE ( gif, GIF, WRITING );
-  POPULATE ( gif, GIF, XYZ );
-  POPULATE ( gif, GIF, SMALL_DOT );
-  POPULATE ( gif, GIF, WRITE );
-  POPULATE ( gif, GIF, LOGO );
-  POPULATE ( bmp, BMP, SET_HOME );
+  MAP_INSERT ( png, PNG, ABOUT    );
+  MAP_INSERT ( gif, GIF, OPEN     );
+  MAP_INSERT ( gif, GIF, COPY     );
+  MAP_INSERT ( gif, GIF, CUT      );
+  MAP_INSERT ( gif, GIF, DELETE   );
+  MAP_INSERT ( gif, GIF, ERROR    );
+  MAP_INSERT ( gif, GIF, FRONT    );
+  MAP_INSERT ( gif, GIF, BACK     );
+  MAP_INSERT ( gif, GIF, TOP      );
+  MAP_INSERT ( gif, GIF, BOTTOM   );
+  MAP_INSERT ( gif, GIF, LEFT     );
+  MAP_INSERT ( gif, GIF, RIGHT    );
+  MAP_INSERT ( gif, GIF, INFO     );
+  MAP_INSERT ( gif, GIF, NEW      );
+  MAP_INSERT ( gif, GIF, PASTE    );
+  MAP_INSERT ( gif, GIF, PRINT    );
+  MAP_INSERT ( gif, GIF, QUESTION );
+  MAP_INSERT ( gif, GIF, SAVE     );
+  MAP_INSERT ( gif, GIF, TUX      );
+  MAP_INSERT ( gif, GIF, WARNING  );
+  MAP_INSERT ( gif, GIF, CAMERA   );
+  MAP_INSERT ( gif, GIF, SEEK     );
+  MAP_INSERT ( gif, GIF, TOOL_SELECTION     );
+  MAP_INSERT ( gif, GIF, TRIANGLE           );
+  MAP_INSERT ( gif, GIF, DELETE_CONNECTED   );
+  MAP_INSERT ( gif, GIF, KEEP_CONNECTED     );
+  MAP_INSERT ( gif, GIF, ARROW              );
+  MAP_INSERT ( gif, GIF, EYE                );
+  MAP_INSERT ( gif, GIF, HAND               );
+  MAP_INSERT ( gif, GIF, HOME               );
+  MAP_INSERT ( gif, GIF, POLYGONS_FILLED    );
+  MAP_INSERT ( gif, GIF, POLYGONS_WIRE      );
+  MAP_INSERT ( gif, GIF, POLYGONS_HIDDEN    );
+  MAP_INSERT ( gif, GIF, POLYGONS_POINTS    );
+  MAP_INSERT ( gif, GIF, STOP               );
+  MAP_INSERT ( gif, GIF, PAUSE              );
+  MAP_INSERT ( gif, GIF, PLAY               );
+  MAP_INSERT ( gif, GIF, PLAY_BACKWARDS     );
+  MAP_INSERT ( gif, GIF, FORWARD_ARROW      );
+  MAP_INSERT ( gif, GIF, FORWARD_ARROW_BAR  );
+  MAP_INSERT ( gif, GIF, BACKWARD_ARROW     );
+  MAP_INSERT ( gif, GIF, BACKWARD_ARROW_BAR );
+  MAP_INSERT ( gif, GIF, RED_CIRCLE );
+  MAP_INSERT ( gif, GIF, RED_X      );
+  MAP_INSERT ( gif, GIF, WRITING    );
+  MAP_INSERT ( gif, GIF, XYZ        );
+  MAP_INSERT ( gif, GIF, SMALL_DOT  );
+  MAP_INSERT ( gif, GIF, WRITE      );
+  MAP_INSERT ( gif, GIF, LOGO       );
+  MAP_INSERT ( bmp, BMP, SET_HOME   );
 }
 
 

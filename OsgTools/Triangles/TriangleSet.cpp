@@ -666,7 +666,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   VerticesPtr vertices ( new osg::Vec3Array ( _vertices->size() ) );
   std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
 
-  // Clear every thing we have.  Don't use this->clear because triangles ref count is not 1
+  // Clear every thing we have.  Don't use this->clear() because triangles ref count is not 1
   _triangles.clear();
   _vertices->clear();
   this->_normalsPerVertex().clear();

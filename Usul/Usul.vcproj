@@ -457,6 +457,9 @@
 						RelativePath=".\Interfaces\IAnimate.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IClippingPlanes.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h">
 					</File>
 					<File

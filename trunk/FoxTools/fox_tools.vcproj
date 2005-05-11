@@ -448,6 +448,9 @@
 					RelativePath=".\Headers\Separator.h">
 				</File>
 				<File
+					RelativePath=".\Headers\Slider.h">
+				</File>
+				<File
 					RelativePath=".\Headers\Spinner.h">
 				</File>
 				<File

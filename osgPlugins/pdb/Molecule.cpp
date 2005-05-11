@@ -25,6 +25,7 @@
 #include <iostream>
 #include <stdexcept>
 #if _DEBUG
+#define NOMINMAX
 #include <windows.h>
 #include <sstream>
 #include <ctime>
@@ -44,11 +45,7 @@ Molecule::Molecule ( MaterialFactory *mc, ShapeFactory *sf, unsigned int flags, 
   _atoms             (),
   _bonds             (),
   _maxDistanceFactor ( 100 ),
-#if _DEBUG
-  _lastRangeMax      ( FLT_MAX ), 
-#else
   _lastRangeMax      ( std::numeric_limits<float>::max() ),
-#endif
   _numLodChildren    ( 5 ),
   _stepFactor        ( 10 ),
   _lodDistancePower  (  2 ),

@@ -392,6 +392,11 @@ void ReaderWriterR3D::_parse (  const std::string& filename, const Usul::Adaptor
     }
   }
 
+  typedef std::vector < osg::Vec3f > Vectors;
+
+  Vectors vertices;
+  Vectors normals;
+
   // Size the vertices.
   const unsigned int numVertices ( numTriangles * 3 );
   _vertices.resize ( numVertices );

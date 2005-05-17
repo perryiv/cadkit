@@ -390,6 +390,9 @@
 					Name="GUI"
 					Filter="">
 					<File
+						RelativePath=".\Interfaces\IActiveDocument.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IActiveView.h">
 					</File>
 					<File
@@ -556,10 +559,10 @@
 						RelativePath=".\Interfaces\IGetWidth.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IKeepAllConnected.h">
+						RelativePath=".\Interfaces\IImageList.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IModeStack.h">
+						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\INotify.h">

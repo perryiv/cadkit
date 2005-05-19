@@ -33,7 +33,7 @@ namespace File {
 
 template < class Stream, class Container > inline void contents ( Stream &in, Container &container )
 {
-  while ( !in.eof() )
+  while ( EOF != in.peek() )
     container.push_back ( in.get() );
 }
 

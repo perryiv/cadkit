@@ -180,7 +180,7 @@
 				Name="Cursors"
 				Filter="">
 				<File
-					RelativePath=".\Cursors\Arrays.h">
+					RelativePath=".\Cursors\CUR.h">
 				</File>
 				<File
 					RelativePath=".\Cursors\Factory.cpp">
@@ -361,6 +361,9 @@
 					RelativePath=".\Headers\FileDialog.h">
 				</File>
 				<File
+					RelativePath=".\Headers\GIFCursor.h">
+				</File>
+				<File
 					RelativePath=".\Headers\GIFIcon.h">
 				</File>
 				<File
@@ -467,6 +470,9 @@
 				</File>
 				<File
 					RelativePath=".\Headers\TabItem.h">
+				</File>
+				<File
+					RelativePath=".\Headers\Text.h">
 				</File>
 				<File
 					RelativePath=".\Headers\TextField.h">

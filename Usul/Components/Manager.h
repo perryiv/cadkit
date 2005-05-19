@@ -33,6 +33,7 @@ class USUL_EXPORT Manager
 public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::set < IUnknown::ValidRefPtr >  UnknownSet;
+  typedef std::list < std::string > Strings;
 
   static Manager* instance();
 
@@ -41,6 +42,9 @@ public:
 
   //do we have any unknowns?
   bool empty () const { return _unknowns.empty(); }
+
+  // Return list of plugin names. This queries each unknown pointer for IPlugin.
+  Strings names() const;
 
   //return the unknowns
   UnknownSet& unknowns ()  { return _unknowns; }

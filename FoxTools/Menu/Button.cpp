@@ -83,7 +83,6 @@ void FoxTools::Menu::addButton ( FX::FXToolBar *parent,
   // Set the userdata if valid.
   if ( userData )
     button->setUserData ( userData );
-
 }
 
 

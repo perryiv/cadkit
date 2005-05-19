@@ -86,7 +86,8 @@ Temp::~Temp()
     // Remove the temporary file if we should.
     if ( _remove )
     {
-      if ( 0 != ::remove ( _name.c_str() ) )
+      const int result ( ::remove ( _name.c_str() ) );
+      if ( result != 0 )
       {
         Usul::Errors::Stack::instance().push ( "Failed to remove temporary file: " + _name );
       }

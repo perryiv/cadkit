@@ -832,6 +832,9 @@
 					RelativePath=".\Io\Reader.h">
 				</File>
 				<File
+					RelativePath=".\Io\Redirect.h">
+				</File>
+				<File
 					RelativePath=".\Io\Writer.h">
 				</File>
 			</Filter>

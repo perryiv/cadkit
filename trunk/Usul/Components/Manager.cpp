@@ -8,8 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Components/Manager.h"
-
 #include "Usul/Components/Object.h"
+
+#include "Usul/Interfaces/IPlugin.h"
 
 using namespace Usul;
 using namespace Usul::Components;
@@ -56,18 +57,19 @@ _unknowns()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load( unsigned long iid, const std::list<std::string> &plugins  )
+void Manager::load ( unsigned long iid, const std::list<std::string> &plugins )
 {
   typedef std::list<std::string>::const_iterator Iterator;
 
-  for( Iterator i = plugins.begin(); i != plugins.end(); ++ i)
+  for ( Iterator i = plugins.begin(); i != plugins.end(); ++i )
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( Usul::Components::Object::create ( iid, *i, true, true ) );
+    // Load plugin file.
+    const std::string name ( *i );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( Usul::Components::Object::create ( iid, name, true, true ) );
 
     // Insert into set of plugins.
-    if( unknown.valid() )
+    if ( unknown.valid() )
       _unknowns.insert ( unknown.get() );
-   
   }
 }
 
@@ -146,3 +148,22 @@ Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long i
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return list of plugin names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::Strings Manager::names() const
+{
+  Manager::Strings names;
+  UnknownSet unknowns ( _unknowns );
+  for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+  {
+    Usul::Interfaces::IPlugin::QueryPtr plugin ( *i );
+    if ( plugin.valid() )
+      names.push_back ( plugin->getPluginName() );
+  }
+  names.sort();
+  return names;
+}

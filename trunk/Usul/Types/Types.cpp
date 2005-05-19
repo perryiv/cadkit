@@ -23,16 +23,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 1
-
 void _testSizes()
 {
-  USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Uint64 ) );
-  USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Uint32 ) );
-  USUL_STATIC_ASSERT ( 2 == sizeof ( Usul::Types::Uint16 ) );
-  USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Int64  ) );
-  USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Int32  ) );
-  USUL_STATIC_ASSERT ( 2 == sizeof ( Usul::Types::Int16  ) );
+  USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Uint64  ) );
+  USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Uint32  ) );
+  USUL_STATIC_ASSERT ( 2 == sizeof ( Usul::Types::Uint16  ) );
+  USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Int64   ) );
+  USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Int32   ) );
+  USUL_STATIC_ASSERT ( 2 == sizeof ( Usul::Types::Int16   ) );
+  USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Float64 ) );
+  USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Float32 ) );
 };
-
-#endif

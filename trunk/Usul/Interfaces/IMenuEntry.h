@@ -41,6 +41,9 @@ struct IMenuEntry : public Usul::Interfaces::IUnknown
 
   // Get the status-bar text.
   virtual std::string   statusBarText() const = 0;
+
+  // Get the group for this menu entry
+  virtual std::string   menuGroup() const = 0;
 };
 
 

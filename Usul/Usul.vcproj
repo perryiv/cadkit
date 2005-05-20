@@ -510,6 +510,9 @@
 					Name="Base"
 					Filter="">
 					<File
+						RelativePath=".\Interfaces\IClassesFactory.h">
+					</File>
+					<File
 						RelativePath="Interfaces\IClassFactory.h">
 					</File>
 					<File

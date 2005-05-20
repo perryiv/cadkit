@@ -19,6 +19,7 @@
 #include "Usul/Export/Export.h"
 
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IClassFactory.h"
 
 #include <string>
 #include <set>
@@ -37,7 +38,7 @@ public:
 
   static Manager* instance();
 
-  void load  ( unsigned long iid, const std::list<std::string> &plugins );
+  void load  ( unsigned long iid, const std::list<std::string> &plugins, bool keepGoingIfException = true );
   void clear ();
 
   //do we have any unknowns?
@@ -58,8 +59,11 @@ public:
 
 private:
   typedef UnknownSet::iterator UnknownItr;
+  typedef Usul::Interfaces::IClassFactory Factory;
 
   Manager();
+
+  Factory*  _factory ( const std::string &filename );
 
   UnknownSet _unknowns;
 

@@ -365,6 +365,37 @@
 					RelativePath=".\Triangles\TriangleSet.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Images"
+				Filter="">
+				<File
+					RelativePath=".\Images\Grayscale.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Grayscale.h">
+				</File>
+				<File
+					RelativePath=".\Images\Histogram.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Histogram.h">
+				</File>
+				<File
+					RelativePath=".\Images\Matrix.h">
+				</File>
+				<File
+					RelativePath=".\Images\Morphology.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Morphology.h">
+				</File>
+				<File
+					RelativePath=".\Images\Threshold.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Threshold.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

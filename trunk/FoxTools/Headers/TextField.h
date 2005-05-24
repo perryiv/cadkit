@@ -13,6 +13,7 @@
 
 #include "FoxTools/Headers/Definitions.h"
 
+#include "FXFont.h"
 #include "FXTextField.h"
 
 

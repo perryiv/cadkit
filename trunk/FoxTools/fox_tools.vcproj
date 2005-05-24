@@ -508,6 +508,16 @@
 					RelativePath=".\Headers\Window.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Widgets"
+				Filter="">
+				<File
+					RelativePath=".\Widgets\SliderTextField.cpp">
+				</File>
+				<File
+					RelativePath=".\Widgets\SliderTextField.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

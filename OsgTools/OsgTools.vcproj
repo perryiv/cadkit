@@ -381,6 +381,18 @@
 					RelativePath=".\Images\Histogram.h">
 				</File>
 				<File
+					RelativePath=".\Images\Image3d.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Image3d.h">
+				</File>
+				<File
+					RelativePath=".\Images\Invert.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Invert.h">
+				</File>
+				<File
 					RelativePath=".\Images\Matrix.h">
 				</File>
 				<File
@@ -388,6 +400,12 @@
 				</File>
 				<File
 					RelativePath=".\Images\Morphology.h">
+				</File>
+				<File
+					RelativePath=".\Images\Scale.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\Scale.h">
 				</File>
 				<File
 					RelativePath=".\Images\Threshold.cpp">

@@ -14,7 +14,6 @@
 
 namespace osg { class Image; }
 
-#include "OsgTools/Export.h"
 
 namespace OsgTools {
 namespace Images {

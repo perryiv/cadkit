@@ -123,6 +123,8 @@ Factory::Factory() : _map()
   MAP_INSERT ( gif, GIF, LIGHTING_ON        );
   MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_OFF );
   MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_ON  );
+  MAP_INSERT ( gif, GIF, NO_LIGHTNING_BOLT       );
+  MAP_INSERT ( gif, GIF, LIGHTNING_BOLT       );
   MAP_INSERT ( bmp, BMP, SET_HOME   );
 }
 

@@ -119,6 +119,10 @@ Factory::Factory() : _map()
   MAP_INSERT ( gif, GIF, SMALL_DOT  );
   MAP_INSERT ( gif, GIF, WRITE      );
   MAP_INSERT ( gif, GIF, LOGO       );
+  MAP_INSERT ( gif, GIF, LIGHTING_OFF       );
+  MAP_INSERT ( gif, GIF, LIGHTING_ON        );
+  MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_OFF );
+  MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_ON  );
   MAP_INSERT ( bmp, BMP, SET_HOME   );
 }
 

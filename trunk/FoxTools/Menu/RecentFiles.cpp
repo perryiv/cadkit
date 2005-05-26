@@ -120,9 +120,13 @@ void RecentFiles::_build ( FX::FXComposite *parent )
   for ( FileList::reverse_iterator i = files.rbegin(); i != files.rend(); ++i )
     _recentFiles->appendFile ( i->c_str() );
 
+#if 0
+  // Is this really needed?  Doesn't seem to change the behavior
   FX::FXMenuSeparator *sep = new FX::FXMenuSeparator ( parent );
   sep->setTarget ( _recentFiles );
   sep->setSelector ( FXRecentFiles::ID_ANYFILES );
+#endif
+
   for ( unsigned int i = FXRecentFiles::ID_FILE_1; i <= FXRecentFiles::ID_FILE_10; ++i )
   {
     _commands.push_back ( new FX::FXMenuCommand ( parent, 0x0, 0x0, _recentFiles, i ) );

@@ -9,14 +9,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Button class for menus.
+//  Radio button class for menus.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FoxTools/Menu/Button.h"
-#include "FoxTools/Menu/Group.h"
-#include "FoxTools/Functions/Enable.h"
-#include "FoxTools/Headers/MenuCommand.h"
+#include "FoxTools/Menu/RadioButton.h"
+#include "FoxTools/Functions/Check.h"
+#include "FoxTools/Headers/MenuRadio.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Menu;
@@ -28,8 +27,7 @@ using namespace FoxTools::Menu;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( unsigned int token ) : BaseClass ( token ),
-  _command ( 0x0 )
+RadioButton::RadioButton ( unsigned int token ) : BaseClass ( token )
 {
 }
 
@@ -40,9 +38,8 @@ Button::Button ( unsigned int token ) : BaseClass ( token ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
-  BaseClass ( name, target, selector, token ),
-  _command ( 0x0 )
+RadioButton::RadioButton ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
+  BaseClass ( name, target, selector, token )
 {
 }
 
@@ -53,14 +50,13 @@ Button::Button ( const std::string &name, FX::FXObject *target, unsigned int sel
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, 
+RadioButton::RadioButton ( const std::string &name, 
                  const std::string &hotKeys, 
                  const std::string &description, 
                  FX::FXObject *target, 
                  unsigned int selector, 
                  unsigned int token ) : 
-  BaseClass ( name, hotKeys, description, target, selector, token ),
-  _command ( 0x0 )
+  BaseClass ( name, hotKeys, description, target, selector, token )
 {
 }
 
@@ -71,22 +67,8 @@ Button::Button ( const std::string &name,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::~Button()
+RadioButton::~RadioButton()
 {
-  delete _command;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clear the button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Button::clear()
-{
-  delete _command;
-  _command = 0x0;
 }
 
 
@@ -96,49 +78,24 @@ void Button::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_build ( FX::FXComposite *parent )
+void RadioButton::_build ( FX::FXComposite *parent )
 {
   if ( 0x0 == this->_button() )
   {
     std::ostringstream text;
     text << this->name() << '\t' << this->hotKeys() << '\t' << this->description();
-    this->_button ( new FX::FXMenuCommand ( parent, text.str().c_str(), 0x0, this->target(), this->selector() ) );
+    this->_button ( new FX::FXMenuRadio ( parent, text.str().c_str(), this->target(), this->selector() ) );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enable/disable the internal FOX window.
+//  Set the check.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::enable ( bool state )
+void RadioButton::check ( bool state )
 {
-  FoxTools::Functions::enable ( state, _command );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the button-command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Button::_button ( FX::FXMenuCommand *b )
-{
-  this->clear();
-  _command = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the button-command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-FX::FXMenuCommand *Button::_button()
-{
-  return _command;
+  FoxTools::Functions::check ( state, this->_button() );
 }

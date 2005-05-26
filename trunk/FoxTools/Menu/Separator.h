@@ -9,16 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Button class for menus.
+//  Separator class for menus.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_MENU_BUTTON_CLASS_H_
-#define _FOX_TOOLS_MENU_BUTTON_CLASS_H_
+#ifndef _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_
+#define _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_
 
 #include "FoxTools/Menu/Command.h"
 
-namespace FX { class FXMenuCommand; }
+namespace FX { class FXMenuSeparator; }
 
 
 namespace FoxTools {
@@ -26,7 +26,7 @@ namespace Menu {
 
 class Group;
 
-class FOX_TOOLS_EXPORT Button : public FoxTools::Menu::Command
+class FOX_TOOLS_EXPORT Separator : public FoxTools::Menu::Command
 {
 public:
 
@@ -34,37 +34,31 @@ public:
   typedef FoxTools::Menu::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Button );
+  USUL_DECLARE_REF_POINTERS ( Separator );
 
   // Constructors.
-  Button ( unsigned int token = 0 );
-  Button ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token = 0 );
-  Button ( const std::string &name, const std::string &hotKeys, const std::string &description, FX::FXObject *target, unsigned int selector, unsigned int token = 0 );
+  Separator ( unsigned int token = 0 );
 
   // Clear the button.
   virtual void          clear();
 
-  // Enable/disable the internal FOX window.
-  void                  enable ( bool );
-
 protected:
 
   // Use reference counting.
-  virtual ~Button();
+  virtual ~Separator();
 
+  // Build the button.
   virtual void          _build ( FX::FXComposite *parent );
-  FX::FXMenuCommand *   _button();
-  void                  _button ( FX::FXMenuCommand * );
 
 private:
 
   // No copying.
-  Button ( const Button & );
-  Button &operator = ( const Button & );
+  Separator ( const Separator & );
+  Separator &operator = ( const Separator & );
 
   friend class Group;
 
-  FX::FXMenuCommand *_command;
+  FX::FXMenuSeparator *_separator;
 };
 
 
@@ -72,4 +66,4 @@ private:
 }; // namespace FoxTools
 
 
-#endif // _FOX_TOOLS_MENU_BUTTON_CLASS_H_
+#endif // _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_

@@ -9,14 +9,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Button class for menus.
+//  Base class for all menu items.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FoxTools/Menu/Button.h"
-#include "FoxTools/Menu/Group.h"
-#include "FoxTools/Functions/Enable.h"
-#include "FoxTools/Headers/MenuCommand.h"
+#include "FoxTools/Menu/Item.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Menu;
@@ -28,8 +25,9 @@ using namespace FoxTools::Menu;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( unsigned int token ) : BaseClass ( token ),
-  _command ( 0x0 )
+Item::Item() : BaseClass(), 
+  _name(),
+  _data ( 0x0 )
 {
 }
 
@@ -40,9 +38,9 @@ Button::Button ( unsigned int token ) : BaseClass ( token ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
-  BaseClass ( name, target, selector, token ),
-  _command ( 0x0 )
+Item::Item ( const std::string &n ) : BaseClass(), 
+  _name ( n ),
+  _data ( 0x0 )
 {
 }
 
@@ -53,14 +51,9 @@ Button::Button ( const std::string &name, FX::FXObject *target, unsigned int sel
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, 
-                 const std::string &hotKeys, 
-                 const std::string &description, 
-                 FX::FXObject *target, 
-                 unsigned int selector, 
-                 unsigned int token ) : 
-  BaseClass ( name, hotKeys, description, target, selector, token ),
-  _command ( 0x0 )
+Item::Item ( const Item &i ) : BaseClass ( i ), 
+  _name ( i._name ),
+  _data ( 0x0 )
 {
 }
 
@@ -71,74 +64,66 @@ Button::Button ( const std::string &name,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::~Button()
+Item::~Item()
 {
-  delete _command;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clear the button.
+//  Get the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::clear()
+const std::string &Item::name() const
 {
-  delete _command;
-  _command = 0x0;
+  return _name;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the button.
+//  Set the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_build ( FX::FXComposite *parent )
+void Item::name ( const std::string &n )
 {
-  if ( 0x0 == this->_button() )
-  {
-    std::ostringstream text;
-    text << this->name() << '\t' << this->hotKeys() << '\t' << this->description();
-    this->_button ( new FX::FXMenuCommand ( parent, text.str().c_str(), 0x0, this->target(), this->selector() ) );
-  }
+  _name = n;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enable/disable the internal FOX window.
+//  Get the user-data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::enable ( bool state )
+const Item::UserData *Item::userData() const
 {
-  FoxTools::Functions::enable ( state, _command );
+  return _data;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the button-command.
+//  Get the user-data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_button ( FX::FXMenuCommand *b )
+Item::UserData *Item::userData()
 {
-  this->clear();
-  _command = b;
+  return _data;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the button-command.
+//  Set the user-data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXMenuCommand *Button::_button()
+void Item::userData ( Item::UserData *data )
 {
-  return _command;
+  _data = data;
 }

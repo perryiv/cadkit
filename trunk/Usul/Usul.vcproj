@@ -901,6 +901,13 @@
 					RelativePath=".\Loops\FindLoops.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Properties"
+				Filter="">
+				<File
+					RelativePath=".\Properties\Attribute.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

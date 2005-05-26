@@ -36,6 +36,16 @@ public:
     return _array.at( r * _r + c );
   }
 
+  T& operator () ( unsigned int r, unsigned int c )
+  {
+    return _array.at( r * _r + c );
+  }
+
+  const T& operator () ( unsigned int r, unsigned int c ) const
+  {
+    return _array.at( r * _r + c );
+  }
+
   unsigned int rows () const { return _r; }
 
   unsigned int columns () const { return _c; }

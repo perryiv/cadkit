@@ -12,8 +12,6 @@
 #include "osg/Image"
 #include "osg/ref_ptr"
 
-#include <iostream>
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Is this image already in grayscale
@@ -79,8 +77,6 @@ osg::Image* OsgTools::Images::rgbToGrayscale ( osg::Image* image )
     break;
   case ( GL_RGBA ):
     {
-      std::cout << "Converting from RGBA to Grayscale with alpha." << std::endl;
-
       newImage->allocateImage(width, height, 1, GL_LUMINANCE_ALPHA, image->getDataType());
 
       for(int t=0;t<height;++t)

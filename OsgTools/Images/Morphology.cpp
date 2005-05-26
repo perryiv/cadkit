@@ -23,22 +23,26 @@ void OsgTools::Images::erode ( osg::Image& image, unsigned int r, unsigned int c
   osg::ref_ptr< osg::Image > copy ( new osg::Image ( image, osg::CopyOp::DEEP_COPY_ALL ) );
 
   const unsigned int centerX ( r/2 );
-  const unsigned int centerY ( r/2 );
+  const unsigned int centerY ( c/2 );
 
-  for( int i = 0; i < copy->s(); ++ i )
+  for( int i = 1; i < copy->s() - 1; ++ i )
   {
-    for ( int j = 0; j < copy->t(); ++j )
+    for ( int j = 1; j < copy->t() - 1; ++j )
     {
-      int value ( 0 );
-      if ( *copy->data( i - 1, j - 1 ) != 0 &&
-          *copy->data( i,     j - 1 ) != 0 &&
-          *copy->data( i + 1, j - 1 ) != 0 &&
-          *copy->data( i - 1, j )     != 0 &&
-          *copy->data( i,     j )     != 0 &&
-          *copy->data( i + 1, j )     != 0 &&
-          *copy->data( i - 1, j + 1 ) != 0 &&
-          *copy->data( i,     j + 1 ) != 0 &&
-          *copy->data( i + 1, j + 1 ) != 0 )
+      if ( *copy->data( i - 1, j - 1 ) == 0 &&
+          *copy->data( i,     j - 1 ) == 0 &&
+          *copy->data( i + 1, j - 1 ) == 0 &&
+          *copy->data( i - 1, j )     == 0 &&
+          *copy->data( i,     j )     == 0 &&
+          *copy->data( i + 1, j )     == 0 &&
+          *copy->data( i - 1, j + 1 ) == 0 &&
+          *copy->data( i,     j + 1 ) == 0 &&
+          *copy->data( i + 1, j + 1 ) == 0 )
+      {
+        *image.data( i, j ) = 0;
+        
+      }
+      else
       {
         *image.data( i, j ) = 255;
       }
@@ -50,6 +54,7 @@ void OsgTools::Images::erode ( osg::Image& image, unsigned int r, unsigned int c
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Dilate the image
+//  TODO should have option on whether or not to expand the borders
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -58,24 +63,16 @@ void OsgTools::Images::dilate ( osg::Image& image, unsigned int r, unsigned int 
   // make a copy to work from
   osg::ref_ptr< osg::Image > copy ( new osg::Image ( image, osg::CopyOp::DEEP_COPY_ALL ) );
 
-  const unsigned int centerX ( 1 );
-  const unsigned int centerY ( 1 );
+  const int centerX ( r/2 );
+  const int centerY ( c/2 );
 
-  for( int i = 0; i < copy->s(); ++ i )
+  for( int i = centerX; i < copy->s() - centerX; ++ i )
   {
-    for ( int j = 0; j < copy->t(); ++j )
+    for ( int j = centerY; j < copy->t() - centerY; ++j )
     {
-      int value ( 0 );
-      if ( *copy->data( i - 1, j - 1 ) == 0 &&
-          *copy->data( i,     j - 1 ) == 0 &&
-          *copy->data( i + 1, j - 1 ) == 0 &&
-          *copy->data( i - 1, j )     == 0 &&
-          *copy->data( i,     j )     == 0 &&
-          *copy->data( i + 1, j )     == 0 &&
-          *copy->data( i - 1, j + 1 ) == 0 &&
-          *copy->data( i,     j + 1 ) == 0 &&
-          *copy->data( i + 1, j + 1 ) == 0 )
+      if ( *copy->data( i, j ) == 0 )
       {
+#if 0
         *image.data( i - 1, j - 1 ) = 0;
         *image.data( i,     j - 1 ) = 0;
         *image.data( i + 1, j - 1 ) = 0;
@@ -85,6 +82,14 @@ void OsgTools::Images::dilate ( osg::Image& image, unsigned int r, unsigned int 
         *image.data( i - 1, j + 1 ) = 0;
         *image.data( i,     j + 1 ) = 0;
         *image.data( i + 1, j + 1 ) = 0;
+#endif
+        for( int s = -centerX; s < centerX; ++s )
+        {
+          for( int t = -centerY; t < centerY; ++t )
+          {
+            *image.data( i + s, j + t )     = 0;
+          }
+        }
       }
     }
   }

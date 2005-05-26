@@ -13,6 +13,9 @@
 
 #include "FoxTools/Headers/Definitions.h"
 
+#include "FXString.h"
+#include "FXHash.h"
+#include "FXStream.h"
 #include "FXMenuCommand.h"
 
 

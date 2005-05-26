@@ -293,13 +293,13 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Menu"
+				Name="ToolBar"
 				Filter="">
 				<File
-					RelativePath=".\Menu\Button.cpp">
+					RelativePath=".\ToolBar\Button.cpp">
 				</File>
 				<File
-					RelativePath=".\Menu\Button.h">
+					RelativePath=".\ToolBar\Button.h">
 				</File>
 			</Filter>
 			<Filter
@@ -506,6 +506,76 @@
 				</File>
 				<File
 					RelativePath=".\Headers\Window.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Menu"
+				Filter="">
+				<File
+					RelativePath=".\Menu\Bar.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\Bar.h">
+				</File>
+				<File
+					RelativePath=".\Menu\Button.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Menu\Button.h">
+				</File>
+				<File
+					RelativePath=".\Menu\CheckButton.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\CheckButton.h">
+				</File>
+				<File
+					RelativePath=".\Menu\Command.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\Command.h">
+				</File>
+				<File
+					RelativePath=".\Menu\Group.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\Group.h">
+				</File>
+				<File
+					RelativePath=".\Menu\Item.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\Item.h">
+				</File>
+				<File
+					RelativePath=".\Menu\RadioButton.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\RadioButton.h">
+				</File>
+				<File
+					RelativePath=".\Menu\RecentFiles.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\RecentFiles.h">
+				</File>
+				<File
+					RelativePath=".\Menu\Separator.cpp">
+				</File>
+				<File
+					RelativePath=".\Menu\Separator.h">
 				</File>
 			</Filter>
 			<Filter

@@ -16,12 +16,13 @@
 #ifndef __USUL_INTERFACES_FOX_MENU_PANE_H__
 #define __USUL_INTERFACES_FOX_MENU_PANE_H__
 
+namespace FoxTools { namespace Menu { class Bar; } }
 
-namespace FX { class FXWindow; class FXMenuBar; }
 
-namespace Usul  {
-namespace Interfaces  {
+namespace Usul {
+namespace Interfaces {
     
+
 struct IFoxMenuPane : public Usul::Interfaces::IUnknown
 {
   // Smart-pointer definitions.
@@ -29,11 +30,13 @@ struct IFoxMenuPane : public Usul::Interfaces::IUnknown
 
   enum { IID = 1101919453u };
 
-  //build the menu
-  virtual void buildMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow*, FX::FXMenuBar* ) = 0;
+  // Build the menu
+  virtual void buildMenu ( Usul::Interfaces::IUnknown *caller, FoxTools::Menu::Bar *menuBar ) = 0;
+};
 
-}; // class IFoxMenuPane
-}; //namespace Usul
-}; // namespace Interfaces
+
+} // namespace Usul
+} // namespace Interfaces
+
 
 #endif // __USUL_INTERFACES_FOX_MENU_PANE_H__

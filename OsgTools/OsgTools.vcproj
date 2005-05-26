@@ -328,9 +328,6 @@
 				Name="Misc"
 				Filter="">
 				<File
-					RelativePath=".\AdjacencyConfig.h">
-				</File>
-				<File
 					RelativePath="Declarations.h">
 				</File>
 				<File

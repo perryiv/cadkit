@@ -20,6 +20,8 @@
 
 namespace FX { class FXWindow; class FXMenuPane; }
 
+namespace FoxTools { namespace Menu { class Group; } }
+
 namespace Usul  {
 namespace Interfaces   {
     
@@ -31,7 +33,7 @@ struct IFoxSubMenu : public Usul::Interfaces::IUnknown
   enum { IID = 1102691747u };
 
   //build the menu
-  virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow *owner, FX::FXMenuPane *menuPane  ) = 0;
+  virtual void buildSubMenu( Usul::Interfaces::IUnknown *caller, FX::FXWindow *owner, FoxTools::Menu::Group *menuPane  ) = 0;
 
 }; // class IFoxSubMenu
 

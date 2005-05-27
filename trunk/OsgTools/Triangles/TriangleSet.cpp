@@ -22,6 +22,10 @@
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
 
+#include "Usul/Resources/ProgressBar.h"
+#include "Usul/Resources/StatusBar.h"
+#include "Usul/Resources/EventQueue.h"
+
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -280,14 +284,14 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addStart ( Usul::Interfaces::IUnknown *caller )
+void TriangleSet::addStart (  )
 {
   typedef Usul::Interfaces::IProgressBar IProgressBar;
   typedef Usul::Interfaces::IStatusBar IStatusBar;
 
   // Get the interfaces.
-  IProgressBar::QueryPtr progress ( caller );
-  IStatusBar::QueryPtr status ( caller );
+  IProgressBar::QueryPtr progress ( Usul::Resources::progressBar() );
+  IStatusBar::QueryPtr   status   ( Usul::Resources::statusBar()  );
 
   // Update every second.
   Usul::Policies::TimeBased update ( 1000 );
@@ -330,11 +334,11 @@ void TriangleSet::addStart ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addFinish ( Usul::Interfaces::IUnknown *caller )
+void TriangleSet::addFinish (  )
 {
   // Get the interface.
   typedef Usul::Interfaces::IStatusBar IStatusBar;
-  IStatusBar::QueryPtr status ( caller );
+  IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
 
   // Set status bar.
   if ( status.valid() )
@@ -386,10 +390,10 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   Options options ( opt );
 
   // User feedback.
-  this->_setStatusBar ( "Building Scene ...", caller );
+  this->_setStatusBar ( "Building Scene ..." );
 
   // Start at zero.
-  this->_setProgressBar ( true, 0, 100, caller );
+  this->_setProgressBar ( true, 0, 100 );
 
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
@@ -464,7 +468,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       }
 
       // Show progress.
-      this->_setProgressBar ( elapsed(), count, _triangles.size(), caller );
+      this->_setProgressBar ( elapsed(), count, _triangles.size() );
       ++count;
     }
 
@@ -506,9 +510,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_setStatusBar ( const std::string &text, Unknown *caller )
+void TriangleSet::_setStatusBar ( const std::string &text )
 {
-  Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
+  Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
   if ( status.valid() )
     status->setStatusBarText ( text, true );
 }
@@ -520,13 +524,13 @@ void TriangleSet::_setStatusBar ( const std::string &text, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller )
+void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned int denominator )
 {
   // If we should...
   if ( state )
   {
     // Report progress.
-    Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+    Usul::Interfaces::IProgressBar::QueryPtr progress ( Usul::Resources::progressBar() );
     if ( progress.valid() )
     {
       float n ( static_cast < float > ( numerator ) );
@@ -536,7 +540,7 @@ void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned
     }
 
     // Give user opportunity to cancel.
-    Usul::Interfaces::IFlushEvents::QueryPtr flush ( caller );
+    Usul::Interfaces::IFlushEvents::QueryPtr flush ( Usul::Resources::flushEvents() );
     if ( flush.valid() )
       flush->flushEventQueue();
   }
@@ -677,9 +681,9 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->reserve( keepers.size() );
 
   // Initialize the shared vertex map
-  this->addStart( caller );
+  this->addStart(  );
 
-  this->_setStatusBar( "Adding Triangles...", caller );
+  this->_setStatusBar( "Adding Triangles..." );
 
   Usul::Policies::TimeBased update ( 1000 );
 
@@ -701,11 +705,11 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
     this->addTriangle( v0, v1, v2, n );
 
     // Let the user know how much we have done
-    this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size(), caller );
+    this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size() );
   }
 
   // Don't with the shared vertex map
-  this->addFinish( caller );
+  this->addFinish( );
 
   //The scene needs to be rebuilt
   _dirty = true;

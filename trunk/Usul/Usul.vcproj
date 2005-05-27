@@ -912,16 +912,31 @@
 				Name="Resources"
 				Filter="">
 				<File
+					RelativePath=".\Resources\CancelButton.cpp">
+				</File>
+				<File
 					RelativePath=".\Resources\CancelButton.h">
+				</File>
+				<File
+					RelativePath=".\Resources\EventQueue.cpp">
 				</File>
 				<File
 					RelativePath=".\Resources\EventQueue.h">
 				</File>
 				<File
+					RelativePath=".\Resources\ProgressBar.cpp">
+				</File>
+				<File
 					RelativePath=".\Resources\ProgressBar.h">
 				</File>
 				<File
+					RelativePath=".\Resources\ReportErrors.cpp">
+				</File>
+				<File
 					RelativePath=".\Resources\ReportErrors.h">
+				</File>
+				<File
+					RelativePath=".\Resources\StatusBar.cpp">
 				</File>
 				<File
 					RelativePath=".\Resources\StatusBar.h">

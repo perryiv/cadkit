@@ -27,7 +27,7 @@ namespace FoxTools {
 namespace Functions {
 
 
-// Get/set pointer to main window.
+// Get/set pointer to the application.
 FOX_TOOLS_EXPORT FX::FXApp *    application();
 FOX_TOOLS_EXPORT void           application ( FX::FXApp * );
 

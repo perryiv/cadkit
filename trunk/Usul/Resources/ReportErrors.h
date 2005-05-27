@@ -10,7 +10,22 @@
 #ifndef __USUL_RESOURCES_REPORT_ERRORS_H___
 #define __USUL_RESOURCES_REPORT_ERRORS_H___
 
+#include "Usul/Export/Export.h"
 
+namespace Usul { namespace Interfaces { struct IReportErrors; } }
+
+
+namespace Usul {
+namespace Resources {
+
+
+// Get/set pointer to report errors
+USUL_EXPORT Usul::Interfaces::IReportErrors*    reportErrors();
+USUL_EXPORT void                                reportErrors ( Usul::Interfaces::IReportErrors * );
+
+
+} // namespace Resources
+} // namespace Usul
 
 
 

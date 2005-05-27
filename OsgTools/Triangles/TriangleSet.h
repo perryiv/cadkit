@@ -58,8 +58,8 @@ public:
   TriangleSet();
 
   // Delimit the start & finish of adding triangles.
-  void                    addStart  ( Usul::Interfaces::IUnknown *caller );
-  void                    addFinish ( Usul::Interfaces::IUnknown *caller );
+  void                    addStart  ( );
+  void                    addFinish ( );
 
   // Add a triangle.
   void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n );
@@ -139,8 +139,8 @@ protected:
   const osg::Vec3Array &  _normalsPerVertex() const { return *_normals.first; }
   osg::Vec3Array &        _normalsPerVertex()       { return *_normals.first; }
 
-  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller );
-  void                    _setStatusBar ( const std::string &text, Unknown *caller );
+  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
+  void                    _setStatusBar ( const std::string &text );
 
   SharedVertex *          _sharedVertex ( const osg::Vec3f &v );
 

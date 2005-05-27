@@ -350,10 +350,16 @@
 						RelativePath=".\Interfaces\IFoxAddTab.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFoxClientArea.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFoxDockBar.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFoxEvent.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFoxMDIMenu.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFoxMenuPane.h">
@@ -381,9 +387,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFoxTreeList.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFoxWindow.h">
 					</File>
 				</Filter>
 				<Filter
@@ -500,10 +503,7 @@
 						RelativePath=".\Interfaces\IFileSelectionFilters.h">
 					</File>
 					<File
-						RelativePath="Interfaces\IRead.h">
-					</File>
-					<File
-						RelativePath="Interfaces\IWrite.h">
+						RelativePath=".\Interfaces\IRead.h">
 					</File>
 				</Filter>
 				<Filter
@@ -527,6 +527,15 @@
 					Filter="">
 					<File
 						RelativePath=".\Interfaces\IAddTriangle.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IBuildScene.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICanClose.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICanInsert.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
@@ -554,6 +563,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetPosition.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetTitle.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetVertex.h">

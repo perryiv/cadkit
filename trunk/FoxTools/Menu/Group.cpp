@@ -104,9 +104,11 @@ void Group::clear()
 
 void Group::_deleteWindows()
 {
-  delete _pane;
+  if( _pane )
+    delete _pane;
   _pane = 0x0;
-  delete _caption;
+  if( _caption )
+    delete _caption;
   _caption = 0x0;
 }
 

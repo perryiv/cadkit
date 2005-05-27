@@ -73,7 +73,8 @@ Button::Button ( const std::string &name,
 
 Button::~Button()
 {
-  delete _command;
+  if( _command )
+    delete _command;
 }
 
 
@@ -85,7 +86,8 @@ Button::~Button()
 
 void Button::clear()
 {
-  delete _command;
+  if( _command )
+    delete _command;
   _command = 0x0;
 }
 
@@ -103,6 +105,7 @@ void Button::_build ( FX::FXComposite *parent )
     std::ostringstream text;
     text << this->name() << '\t' << this->hotKeys() << '\t' << this->description();
     this->_button ( new FX::FXMenuCommand ( parent, text.str().c_str(), 0x0, this->target(), this->selector() ) );
+    this->_button()->setUserData ( this );
   }
 }
 

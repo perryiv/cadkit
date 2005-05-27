@@ -182,7 +182,12 @@ void Bar::create()
 {
   // Create the menu-bar if we can.
   if ( _bar && !_bar->id() )
+  {
     _bar->create();
+    _bar->setUserData( this );
+  }
+
+
 
   // Create all the groups.
   std::for_each ( _groups.begin(), _groups.end(), std::mem_fun ( &Group::create ) );

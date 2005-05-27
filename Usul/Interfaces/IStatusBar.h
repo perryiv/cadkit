@@ -32,9 +32,6 @@ struct IStatusBar : public Usul::Interfaces::IUnknown
   // Id for this interface.
   enum { IID = 1100880943u };
 
-  // Get the status bar text.
-  virtual const std::string& getStatusBarText() = 0;
-
   // Set the status bar text.
   virtual void setStatusBarText ( const std::string &text, bool force ) = 0;
 

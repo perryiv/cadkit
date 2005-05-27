@@ -120,16 +120,28 @@ void RecentFiles::_build ( FX::FXComposite *parent )
   for ( FileList::reverse_iterator i = files.rbegin(); i != files.rend(); ++i )
     _recentFiles->appendFile ( i->c_str() );
 
-#if 0
-  // Is this really needed?  Doesn't seem to change the behavior
+  // This separator only shows up of recent-files is not empty.
   FX::FXMenuSeparator *sep = new FX::FXMenuSeparator ( parent );
   sep->setTarget ( _recentFiles );
   sep->setSelector ( FXRecentFiles::ID_ANYFILES );
-#endif
 
+  // Create a command for each recent file.
   for ( unsigned int i = FXRecentFiles::ID_FILE_1; i <= FXRecentFiles::ID_FILE_10; ++i )
   {
     _commands.push_back ( new FX::FXMenuCommand ( parent, 0x0, 0x0, _recentFiles, i ) );
   }
   _commands.push_back ( new FX::FXMenuCommand ( parent, this->name().c_str(), NULL, _recentFiles, FXRecentFiles::ID_CLEAR ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append a file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RecentFiles::appendFile ( const std::string &file )
+{
+  if ( _recentFiles && !file.empty() )
+    _recentFiles->appendFile ( file.c_str() );
 }

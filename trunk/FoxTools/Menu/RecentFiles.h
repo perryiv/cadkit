@@ -42,6 +42,9 @@ public:
   RecentFiles ( unsigned int token = 0 );
   RecentFiles ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token = 0 );
 
+  // Append a file to the list.
+  void                  appendFile ( const std::string & );
+
   // Clear the button.
   virtual void          clear();
 

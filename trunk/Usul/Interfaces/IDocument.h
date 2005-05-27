@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 
+namespace FX { class FXWindow; }
 
 namespace Usul {
 namespace Interfaces {
@@ -42,6 +43,9 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
+  virtual void                          addWindow   ( FX::FXWindow *window ) = 0;
+  virtual void                          addListener ( FX::FXWindow *window ) = 0;
+
   virtual Format                        fileFormat() const = 0;
   virtual void                          fileFormat ( const Format & ) = 0;
 
@@ -53,6 +57,11 @@ struct IDocument : public Usul::Interfaces::IUnknown
 
   virtual bool                          modified() const = 0;
   virtual void                          modified ( bool ) = 0;
+
+  virtual void                          removeWindow   ( FX::FXWindow *window ) = 0;
+  virtual void                          removeListener ( FX::FXWindow *window ) = 0;
+
+  virtual const std::string&            typeName() const = 0;
 };
 
 

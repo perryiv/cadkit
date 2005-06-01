@@ -366,6 +366,12 @@
 				Name="Images"
 				Filter="">
 				<File
+					RelativePath=".\Images\EdgeDetect.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\EdgeDetect.h">
+				</File>
+				<File
 					RelativePath=".\Images\Grayscale.cpp">
 				</File>
 				<File
@@ -382,6 +388,12 @@
 				</File>
 				<File
 					RelativePath=".\Images\Image3d.h">
+				</File>
+				<File
+					RelativePath=".\Images\ImageOr.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\ImageOr.h">
 				</File>
 				<File
 					RelativePath=".\Images\Invert.cpp">

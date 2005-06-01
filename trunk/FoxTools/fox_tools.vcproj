@@ -180,6 +180,9 @@
 				Name="Cursors"
 				Filter="">
 				<File
+					RelativePath=".\Cursors\Arrays.h">
+				</File>
+				<File
 					RelativePath=".\Cursors\CUR.h">
 				</File>
 				<File

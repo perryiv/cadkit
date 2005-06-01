@@ -72,17 +72,6 @@ void OsgTools::Images::dilate ( osg::Image& image, unsigned int r, unsigned int 
     {
       if ( *copy->data( i, j ) == 0 )
       {
-#if 0
-        *image.data( i - 1, j - 1 ) = 0;
-        *image.data( i,     j - 1 ) = 0;
-        *image.data( i + 1, j - 1 ) = 0;
-        *image.data( i - 1, j )     = 0;
-        *image.data( i,     j )     = 0;
-        *image.data( i + 1, j )     = 0;
-        *image.data( i - 1, j + 1 ) = 0;
-        *image.data( i,     j + 1 ) = 0;
-        *image.data( i + 1, j + 1 ) = 0;
-#endif
         for( int s = -centerX; s < centerX; ++s )
         {
           for( int t = -centerY; t < centerY; ++t )
@@ -170,6 +159,45 @@ void OsgTools::Images::convolve ( osg::Image& image, const Matrix<int>& mask )
 
 void OsgTools::Images::smooth    ( osg::Image& image, const Matrix<int>& mask )
 {
+  // make a copy to work from
+  osg::ref_ptr< osg::Image > copy ( new osg::Image ( image, osg::CopyOp::DEEP_COPY_ALL ) );
+
+  const unsigned int centerX ( 1 );
+  const unsigned int centerY ( 1 );
+
+  int sum ( 0 );
+
+  for( unsigned int i = 0; i < mask.rows(); ++ i )
+  {
+    for ( unsigned int j = 0; j < mask.columns(); ++j )
+    {
+      sum += mask( i, j );
+    }
+  }
+
+  // Resize the image
+  image.scaleImage( image.s() - centerX, image.t() - centerY, image.r(), image.getDataType() );
+
+  for( int i = 1; i < copy->s() - 1; ++ i )
+  {
+    for ( int j = 1; j < copy->t() - 1; ++j )
+    {
+      int value ( 0 );
+      value += mask.at(0,0) * *copy->data( i - 1, j - 1 );
+      value += mask.at(1,0) * *copy->data( i,     j - 1 );
+      value += mask.at(2,0) * *copy->data( i + 1, j - 1 );
+
+      value += mask.at(0,1) * *copy->data( i - 1, j );
+      value += mask.at(1,1) * *copy->data( i,     j );
+      value += mask.at(2,1) * *copy->data( i + 1, j );
+
+      value += mask.at(0,2) * *copy->data( i - 1, j + 1 );
+      value += mask.at(1,2) * *copy->data( i,     j + 1 );
+      value += mask.at(2,2) * *copy->data( i + 1, j + 1 );
+
+      *image.data( i - 1, j - 1 ) = value / sum;
+    }
+  }
 }
 
 

@@ -69,5 +69,9 @@ void Separator::clear()
 void Separator::_build ( FX::FXComposite *parent )
 {
   if ( !_separator )
+  {
     _separator = new FX::FXMenuSeparator ( parent );
+    _separator->setTarget   ( this->target()   );
+    _separator->setSelector ( this->selector() );
+  }
 }

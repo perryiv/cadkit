@@ -40,24 +40,14 @@ public:
     CURSOR_GUN_SIGHT
   };
 
-  enum Format // Array format.
-  {
-    CURSOR_XBM = 1,
-    CURSOR_CUR,
-  };
+  // Create a cursor. Calls "make" then FX::FXCursor::create().
+  static FX::FXCursor *       create ( Type type );
 
-  // Create a standard cursor.
-  static FX::FXCursor *       create ( Type type, bool createIt );
+  // Make the cursor. Does not create.
+  static FX::FXCursor *       make ( Type type );
 
-  // Create a cursor from the given source and mask arrays.
-  static FX::FXCursor *       create ( const unsigned char *source, 
-                                       const unsigned char *mask, 
-                                       int width, 
-                                       int height, 
-                                       int hotSpotX, 
-                                       int hotSpotY, 
-                                       Format arrayFormat,
-                                       bool createIt );
+protected:
+
 };
 
 

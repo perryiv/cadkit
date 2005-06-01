@@ -18,6 +18,8 @@
 #include "FoxTools/Headers/MenuBar.h"
 #include "FoxTools/Headers/ToolBarGrip.h"
 #include "FoxTools/Headers/MainWindow.h"
+#include "FoxTools/Headers/MdiButton.h"
+#include "FoxTools/Headers/MdiChild.h"
 
 #include "Usul/Errors/Assert.h"
 
@@ -38,7 +40,9 @@ Bar::Bar ( FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : BaseCl
   _groups       (),
   _bar          ( 0x0 ),
   _dockedSite   ( dockedSite ),
-  _undockedSite ( undockedSite )
+  _undockedSite ( undockedSite ),
+  _clientArea   ( 0x0 ),
+  _mdiMenu      ( 0x0 )
 {
 }
 
@@ -112,6 +116,15 @@ void Bar::build()
   // Build every group.
   for ( Groups::iterator i = _groups.begin(); i != _groups.end(); ++i )
     (*i)->_build ( FoxTools::Functions::mainWindow(), _bar );
+
+  if( _mdiMenu && _clientArea )
+  {
+    // MDI buttons in menu.
+    new FX::FXMDIWindowButton   ( _bar, _mdiMenu, _clientArea, FXMDIClient::ID_MDI_MENUWINDOW, LAYOUT_LEFT );
+    new FX::FXMDIDeleteButton   ( _bar, _clientArea, FXMDIClient::ID_MDI_MENUCLOSE,    FRAME_RAISED | LAYOUT_RIGHT );
+    new FX::FXMDIRestoreButton  ( _bar, _clientArea, FXMDIClient::ID_MDI_MENURESTORE,  FRAME_RAISED | LAYOUT_RIGHT );
+    new FX::FXMDIMinimizeButton ( _bar, _clientArea, FXMDIClient::ID_MDI_MENUMINIMIZE, FRAME_RAISED | LAYOUT_RIGHT );
+  }
 }
 
 
@@ -191,4 +204,20 @@ void Bar::create()
 
   // Create all the groups.
   std::for_each ( _groups.begin(), _groups.end(), std::mem_fun ( &Group::create ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert group before given group name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Bar::insert ( const std::string& name, Group *group )
+{
+  Item::IsEqual equal ( name );
+
+  Groups::iterator i = std::find_if ( _groups.begin(), _groups.end(), equal );
+
+  _groups.insert( i, group );
 }

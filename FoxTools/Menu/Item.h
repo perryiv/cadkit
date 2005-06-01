@@ -51,6 +51,46 @@ public:
   const UserData *      userData() const;
   void                  userData ( UserData * );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Predicate to determine if another item is equal to this
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct IsEqual
+  {
+    IsEqual( const std::string& name ) :
+    _name ( name )
+    { }
+
+    template < class T > bool operator() ( const T& item ) const
+    {
+      // Make copies
+      std::string thisCopy ( _name );
+      std::string itemCopy ( item->_name );
+
+      // Remove any & from the this copy
+      std::string::iterator end = std::remove ( thisCopy.begin(), thisCopy.end(), '&' );
+      thisCopy.resize( end - thisCopy.begin() );
+
+      // Remove any & from the item copy
+      end = std::remove ( itemCopy.begin(), itemCopy.end(), '&' );
+      itemCopy.resize( end - itemCopy.begin() );
+
+      // Make lower case
+      std::transform ( thisCopy.begin(), thisCopy.end(), thisCopy.begin(), ::tolower );
+      std::transform ( itemCopy.begin(), itemCopy.end(), itemCopy.begin(), ::tolower );
+
+      // Are they equal?
+      return thisCopy == itemCopy;
+    }
+
+  private:
+    IsEqual();
+
+    std::string _name;
+  };
+
 protected:
 
   // Constructors.

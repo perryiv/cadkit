@@ -494,13 +494,13 @@
 					Name="File"
 					Filter="">
 					<File
-						RelativePath=".\Interfaces\ICanHandleFile.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IDocumentCreate.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFileSelectionFilters.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\INewDocumentCreate.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IRead.h">

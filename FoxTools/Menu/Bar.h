@@ -20,7 +20,7 @@
 
 #include <vector>
 
-namespace FX { class FXObject; class FXComposite; class FXMenuBar; }
+namespace FX { class FXObject; class FXComposite; class FXMenuBar; class FXMDIClient; class FXMDIMenu; }
 
 
 namespace FoxTools {
@@ -50,6 +50,9 @@ public:
   // Clear the menus.
   virtual void          clear();
 
+  // Set the client area
+  void                  clientArea ( FX::FXMDIClient* clientArea ) { _clientArea = clientArea; }
+
   // Create the windows.
   virtual void          create();
 
@@ -58,6 +61,12 @@ public:
 
   // Find the child that made the given object.
   Item *                find ( FX::FXObject * );
+
+  // Insert group before given group name.
+  void                  insert ( const std::string&, Group * );
+
+  // Set the mdi ment
+  void                  mdiMenu ( FX::FXMDIMenu *mdiMenu ) { _mdiMenu = mdiMenu; }
 
   // Purge all commands with given token.
   virtual void          purge ( unsigned int token );
@@ -82,6 +91,9 @@ private:
   FX::FXMenuBar *_bar;
   FX::FXComposite *_dockedSite;
   FX::FXComposite *_undockedSite;
+
+  FX::FXMDIClient * _clientArea;
+  FX::FXMDIMenu *   _mdiMenu;
 };
 
 

@@ -385,6 +385,12 @@
 					RelativePath=".\Headers\Icon.h">
 				</File>
 				<File
+					RelativePath=".\Headers\Image.h">
+				</File>
+				<File
+					RelativePath=".\Headers\ImageView.h">
+				</File>
+				<File
 					RelativePath=".\Headers\Label.h">
 				</File>
 				<File

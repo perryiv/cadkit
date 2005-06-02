@@ -359,6 +359,9 @@
 						RelativePath=".\Interfaces\IFoxEvent.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFoxImage.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFoxMDIMenu.h">
 					</File>
 					<File

@@ -574,6 +574,9 @@
 						RelativePath=".\Interfaces\IGetWidth.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IImage.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IImageList.h">
 					</File>
 					<File

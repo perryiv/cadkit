@@ -1,41 +1,42 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2004, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-///
-///  Interface for querying for a service
-///
+//
+//  Interface for to see if Unknown is handled
+//
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_QUERY_SERVICE_H_
-#define _USUL_INTERFACE_QUERY_SERVICE_H_
+#ifndef _USUL_INTERFACE_HANDLE_H_
+#define _USUL_INTERFACE_HANDLE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace Usul {
 namespace Interfaces {
 
-struct IQueryService : public Usul::Interfaces::IUnknown
+
+struct IHandle : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IQueryService );
+  USUL_DECLARE_QUERY_POINTERS ( IHandle );
 
   /// Id for this interface.
-  enum { IID = 1103227793u };
+  enum { IID = 3506136566u };
 
-  virtual Usul::Interfaces::IUnknown* queryService( unsigned int iid ) = 0;
+  virtual bool doesHandle( Usul::Interfaces::IUnknown* ) = 0;
 
-}; //  IQueryService
+}; // struct IHandle
+
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_QUERY_SERVICE_H_
-
+#endif // _USUL_INTERFACE_HANDLE_H_

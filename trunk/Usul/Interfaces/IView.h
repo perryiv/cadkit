@@ -30,7 +30,8 @@ struct IView : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2923712104u };
 
-  virtual Usul::Interfaces::IUnknown* getView() = 0;
+  virtual Usul::Interfaces::IUnknown* view() = 0;
+
 }; // class IView
 
 

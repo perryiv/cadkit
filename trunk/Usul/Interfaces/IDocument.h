@@ -43,8 +43,14 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
+  // Make your self active
+  virtual void                          active      ( ) = 0;
+
   virtual void                          addWindow   ( FX::FXWindow *window ) = 0;
   virtual void                          addListener ( FX::FXWindow *window ) = 0;
+
+  // The following window is closing
+  virtual void                          closing     ( FX::FXWindow *window ) = 0;
 
   virtual Format                        fileFormat() const = 0;
   virtual void                          fileFormat ( const Format & ) = 0;

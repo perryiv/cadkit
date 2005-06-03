@@ -9,36 +9,38 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the scene
+//  Interface for changing the background of a view
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SCENE_H_
-#define _USUL_INTERFACE_SCENE_H_
+#ifndef _USUL_INTERFACE_BACKGROUND_H_
+#define _USUL_INTERFACE_BACKGROUND_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Node; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IScene : public Usul::Interfaces::IUnknown
+struct IBackground : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IScene );
+  USUL_DECLARE_QUERY_POINTERS ( IBackground );
 
   /// Id for this interface.
-  enum { IID = 2543180277u };
+  enum { IID = 1910338179u };
 
-  virtual void setScene( osg::Node* ) = 0;
-  virtual osg::Node* getScene() = 0;
-}; // class IScene
+  // Edit the background color.
+  virtual void            editBackground() = 0;
+
+  // Set the background color to the default
+  virtual void            defaultBackground() = 0;
+
+}; // class IBackground
 
 
 }; // namespace Interfaces
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_SCENE_H_
+#endif // _USUL_INTERFACE_BACKGROUND_H_

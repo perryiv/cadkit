@@ -396,22 +396,10 @@
 					Name="GUI"
 					Filter="">
 					<File
-						RelativePath=".\Interfaces\IActiveDocument.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IActiveView.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\ICancelButton.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDocument.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IFlushEvents.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IGetDocument.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ILoadFileDialog.h">
@@ -421,9 +409,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IMenuEntry.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IOsgFoxDocument.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IPreferencesManager.h">
@@ -441,9 +426,6 @@
 						RelativePath=".\Interfaces\ISelectionBox.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISendMessage.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\ISetCursor.h">
 					</File>
 					<File
@@ -451,9 +433,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IUpdateTreeControls.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IView.h">
 					</File>
 				</Filter>
 				<Filter
@@ -479,9 +458,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IRedraw.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IScene.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISceneIntersect.h">
@@ -535,12 +511,6 @@
 						RelativePath=".\Interfaces\IBuildScene.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICanClose.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\ICanInsert.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
 					</File>
 					<File
@@ -568,13 +538,13 @@
 						RelativePath=".\Interfaces\IGetPosition.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetTitle.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IGetVertex.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetWidth.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IHandle.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IImage.h">
@@ -590,9 +560,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\INotifyClose.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IQueryService.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISetTool.h">
@@ -612,6 +579,53 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IPsfFile.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Document"
+					Filter="">
+					<File
+						RelativePath=".\Interfaces\IActiveDocument.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICanClose.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICanInsert.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IDocument.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetDocument.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetTitle.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOsgFoxDocument.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISendMessage.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="View"
+					Filter="">
+					<File
+						RelativePath=".\Interfaces\IActiveView.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IBackground.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOpenGLState.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOsgFoxView.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IView.h">
 					</File>
 				</Filter>
 			</Filter>

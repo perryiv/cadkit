@@ -15,6 +15,8 @@
 
 #include "FXHash.h"
 #include "FXStream.h"
+#include "FXString.h"
+struct FXEvent;
 #include "FXImageView.h"
 
 

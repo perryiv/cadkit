@@ -384,6 +384,9 @@
 					RelativePath=".\Images\Histogram.h">
 				</File>
 				<File
+					RelativePath=".\Images\Hough.h">
+				</File>
+				<File
 					RelativePath=".\Images\Image3d.cpp">
 				</File>
 				<File

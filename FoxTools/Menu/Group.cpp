@@ -148,7 +148,7 @@ void Group::_build ( FX::FXWindow *paneParent, FX::FXComposite *captionParent )
 
     // Otherwise, punt.
     else
-      throw std::invalid_argument ( "Error 3554345192: caption parent is not a pane or enu bar" );
+      throw std::invalid_argument ( "Error 3554345192: caption parent is not a pane or menu bar" );
   }
 
   // Loop through the items.

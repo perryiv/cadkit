@@ -9,38 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the image
+//  Interface for getting the view
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_IMAGE_H_
-#define _USUL_INTERFACE_IMAGE_H_
+#ifndef _USUL_INTERFACE_REFRESH_VIEW_H_
+#define _USUL_INTERFACE_REFRESH_VIEW_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Image; }
 
 namespace Usul {
 namespace Interfaces {
 
+struct IViewer;
 
-struct IImage : public Usul::Interfaces::IUnknown
+struct IRefreshView : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IImage );
+  USUL_DECLARE_QUERY_POINTERS ( IRefreshView );
 
   /// Id for this interface.
-  enum { IID = 1708090928u };
+  enum { IID = 4246412733u };
+
+  virtual void refreshView ( Usul::Interfaces::IViewer* ) = 0;
+
+}; // struct IRefreshView
 
 
-  virtual osg::Image* getImage() = 0;
-  virtual void        setImage ( osg::Image* ) = 0;
-
-}; // struct IImage
+} // namespace Interfaces
+} // namespace Usul
 
 
-}; // namespace Interfaces
-}; // namespace Usul
-
-
-#endif // _USUL_INTERFACE_IMAGE_H_
+#endif // _USUL_INTERFACE_REFRESH_VIEW_H_

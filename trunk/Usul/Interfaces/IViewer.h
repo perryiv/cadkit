@@ -9,38 +9,42 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the image
+//  Interface for getting the view
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_IMAGE_H_
-#define _USUL_INTERFACE_IMAGE_H_
+#ifndef _USUL_INTERFACE_VIEWER_H_
+#define _USUL_INTERFACE_VIEWER_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Image; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IImage : public Usul::Interfaces::IUnknown
+struct IViewer : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IImage );
+  USUL_DECLARE_QUERY_POINTERS ( IViewer );
 
   /// Id for this interface.
-  enum { IID = 1708090928u };
+  enum { IID = 3739984930u };
+
+  virtual void render() = 0;
+
+  virtual void clear() = 0;
+
+  // These may be moved to own interface
+  virtual void x() = 0;
+  virtual void y() = 0;
+  virtual void height() = 0;
+  virtual void width() = 0;
+
+}; // struct IViewer
 
 
-  virtual osg::Image* getImage() = 0;
-  virtual void        setImage ( osg::Image* ) = 0;
-
-}; // struct IImage
+} // namespace Interfaces
+} // namespace Usul
 
 
-}; // namespace Interfaces
-}; // namespace Usul
-
-
-#endif // _USUL_INTERFACE_IMAGE_H_
+#endif // _USUL_INTERFACE_VIEWER_H_

@@ -128,6 +128,8 @@ void OsgTools::Images::convolve ( osg::Image& image, const Matrix<int>& mask )
   // Resize the image
   image.scaleImage( image.s() - centerX, image.t() - centerY, image.r(), image.getDataType() );
 
+  ::memset( image.data(), 0, image.s() * image.t() );
+
   for( int i = 1; i < copy->s() - 1; ++ i )
   {
     for ( int j = 1; j < copy->t() - 1; ++j )

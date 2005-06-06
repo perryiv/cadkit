@@ -112,6 +112,9 @@ void TriangleSet::clear()
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
+
+  _primitiveSet = 0x0;
+  _geometry = 0x0;
 }
 
 
@@ -386,6 +389,22 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 
 osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 {
+  if ( !_primitiveSet.valid() )
+  {
+     _primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
+  }
+
+  if ( !_geometry.valid() )
+  {
+    _geometry = new osg::Geometry;
+
+    // Add the vertices
+    _geometry->setVertexArray( _vertices.get() );
+
+    // Add the PrimitiveSet
+    _geometry->addPrimitiveSet( _primitiveSet.get() );
+  }
+
   // Make copy of the options.
   Options options ( opt );
 

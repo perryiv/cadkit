@@ -18,6 +18,9 @@
 
 #include "osg/Geometry"
 
+#include <algorithm>
+
+
 
 namespace OsgTools {
 

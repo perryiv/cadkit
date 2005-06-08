@@ -10,6 +10,12 @@ SOURCE = \
 	Errors/Stack.cpp \
 	File/Temp.cpp \
 	ID/GUID.cpp \
+	Resources/CancelButton.cpp \
+	Resources/EventQueue.cpp \
+	Resources/ProgressBar.cpp \
+	Resources/ReportErrors.cpp \
+	Resources/StatusBar.cpp \
+	State/Busy.cpp \
 	System/LastError.cpp \
 	System/Host.cpp \
 	System/Screen.cpp \

@@ -12,7 +12,17 @@ SOURCE = \
 	Functions/MainWindow.cpp \
 	Functions/Mouse.cpp \
 	Icons/Factory.cpp \
-	Menu/Button.cpp
+	Menu/Bar.cpp \
+	Menu/Button.cpp \
+	Menu/CheckButton.cpp \
+	Menu/Command.cpp \
+	Menu/Group.cpp \
+	Menu/Item.cpp \
+	Menu/RadioButton.cpp \
+	Menu/RecentFiles.cpp \
+	Menu/Separator.cpp \
+	ToolBar/Button.cpp \
+	Widgets/SliderTextField.cpp
 
 OS := $(shell uname)
 OS_COMP_FLAGS =

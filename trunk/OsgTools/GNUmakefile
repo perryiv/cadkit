@@ -56,7 +56,11 @@ OBJS=\
 	$(BUILD)/State.o \
 	$(BUILD)/Statistics.o \
 	$(BUILD)/Text.o \
-	$(BUILD)/Torus.o
+	$(BUILD)/Torus.o \
+	$(BUILD)/Loop.o \
+	$(BUILD)/SharedVertex.o \
+	$(BUILD)/Triangle.o \
+	$(BUILD)/TriangleSet.o 
 
 shared_lib: $(OBJS)
 	$(CXX) $(OS_LINK_FLAGS) -shared -g $(OBJS) -o $(BUILD)/$(shared_libname) $(libs)
@@ -79,3 +83,4 @@ clean:
 mvlibs:
 	mkdir -p $(MOVE_LOCATION)
 	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)
+ 

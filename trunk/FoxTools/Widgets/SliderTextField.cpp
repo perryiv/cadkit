@@ -14,6 +14,7 @@
 #include "FoxTools/Headers/Label.h"
 
 #include <sstream>
+#include <stdexcept>
 
 using namespace FoxTools::Widgets;
 

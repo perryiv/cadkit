@@ -30,7 +30,7 @@ namespace Loops {
   }
 
 template < class Iter >
-bool isCounterClockwise ( Iter& begin, Iter& end )
+bool isCounterClockwise ( Iter begin, Iter end )
 {
   if( *begin == *end )
     throw std::logic_error ( "Error 3524416433: Beginning point must not equal ending point." );

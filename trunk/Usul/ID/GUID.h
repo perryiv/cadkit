@@ -16,10 +16,9 @@
 #ifndef _USUL_GUID_CLASS_H_
 #define _USUL_GUID_CLASS_H_
 
-#include "Usul/Types/Types.h"
-
 #include <string>
 
+#include "Usul/Types/Types.h"
 
 namespace Usul {
 namespace ID {

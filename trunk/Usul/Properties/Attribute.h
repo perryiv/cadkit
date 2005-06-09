@@ -36,7 +36,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Attribute );
 
   // Constructors
-  explicit Attribute() : BaseClass{}
+  explicit Attribute() : BaseClass()  {}
   Attribute ( const Attribute &m ) : BaseClass ( m ), _value ( m._value ){}
   Attribute ( const T &t ) : BaseClass(), _value ( t ){}
 

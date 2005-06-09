@@ -30,7 +30,7 @@ struct IClassesFactory : public IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IClassesFactory );
 
   /// Id for this interface.
-  enum { IID = 3653177759 };
+  enum { IID = 3653177759u };
 
   typedef std::list < IUnknown * > Unknowns;
 

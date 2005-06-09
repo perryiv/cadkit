@@ -12,6 +12,8 @@
 
 #include "osg/Image"
 
+#include <stdexcept>
+
 void OsgTools::Images::scale( osg::Image& image, unsigned int scale )
 {
 

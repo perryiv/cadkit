@@ -18,8 +18,8 @@
 #include "FoxTools/Headers/MenuBar.h"
 #include "FoxTools/Headers/ToolBarGrip.h"
 #include "FoxTools/Headers/MainWindow.h"
-#include "FoxTools/Headers/MdiButton.h"
-#include "FoxTools/Headers/MdiChild.h"
+#include "FoxTools/Headers/MDIButton.h"
+#include "FoxTools/Headers/MDIChild.h"
 
 #include "Usul/Errors/Assert.h"
 
@@ -137,7 +137,7 @@ void Bar::build()
 void Bar::purge ( unsigned int token )
 {
   // Purge all the groups.
-  std::for_each ( _groups.begin(), _groups.end(), std::bind2nd ( std::mem_fun1 ( &Group::purge ), token ) );
+  std::for_each ( _groups.begin(), _groups.end(), std::bind2nd ( std::mem_fun ( &Group::purge ), token ) );
 
   // Remove empty groups.
   Groups::iterator end ( std::remove_if ( _groups.begin(), _groups.end(), std::mem_fun ( &Group::empty ) ) );

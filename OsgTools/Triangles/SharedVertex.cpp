@@ -43,7 +43,7 @@ SharedVertex::SharedVertex ( unsigned int index ) :
   USUL_STATIC_ASSERT (  4 == sizeof ( _index        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _flags        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref          ) );
-#ifdef __WIN32
+#ifdef _WIN32
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles    ) );
   USUL_STATIC_ASSERT ( 24 == sizeof ( SharedVertex  ) ); // Why?
 #else

@@ -61,8 +61,8 @@ TriangleSet::TriangleSet() : BaseClass(),
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
-#ifdef __WIN32
-  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) ;)
+#ifdef _WIN32
+  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT ( 68 == sizeof ( TriangleSet     ) ); // Why?
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );

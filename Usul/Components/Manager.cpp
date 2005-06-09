@@ -310,7 +310,7 @@ Manager::Strings Manager::names() const
   UnknownSet unknowns ( _unknowns );
   for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
   {
-    Usul::Interfaces::IPlugin::QueryPtr plugin ( *i );
+    Usul::Interfaces::IPlugin::QueryPtr plugin ( i->get() );
     if ( plugin.valid() )
       names.push_back ( plugin->getPluginName() );
   }

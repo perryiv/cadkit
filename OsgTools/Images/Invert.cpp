@@ -11,6 +11,8 @@
 
 #include "osg/Image"
 
+#include <stdexcept>
+
 void OsgTools::Images::invert( osg::Image& image )
 {
 

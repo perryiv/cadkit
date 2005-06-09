@@ -26,11 +26,12 @@ endif
 libs = \
 	-L$(OSG_LIB_DIR) -losg \
 	-L$(USUL_LIB_DIR) -lUsul_s \
-	-L${OPENTHREADS_LIB_DIR} -lOpenThreads
+	-L$(OPENTHREADS_LIB_DIR) -lOpenThreads
 
 includes = \
 	-I$(OSG_INC_DIR) \
-	-I$(USUL_INC_DIR)
+	-I$(USUL_INC_DIR) \
+	-I$(OPENTHREADS_INC_DIR)
 
 flags = -D_COMPILING_OSG_TOOLS
 
@@ -45,6 +46,7 @@ OBJS=\
 	$(BUILD)/Font.o \
 	$(BUILD)/Grid.o \
 	$(BUILD)/Group.o \
+	$(BUILD)/Jitter.o \
 	$(BUILD)/Lod.o \
 	$(BUILD)/MaterialFactory.o \
 	$(BUILD)/MaterialSetter.o \
@@ -57,10 +59,18 @@ OBJS=\
 	$(BUILD)/Statistics.o \
 	$(BUILD)/Text.o \
 	$(BUILD)/Torus.o \
-	$(BUILD)/Loop.o \
-	$(BUILD)/SharedVertex.o \
-	$(BUILD)/Triangle.o \
-	$(BUILD)/TriangleSet.o 
+	$(BUILD)/Images/EdgeDetect.o \
+	$(BUILD)/Images/Grayscale.o \
+	$(BUILD)/Images/Histogram.o \
+	$(BUILD)/Images/Image3d.o \
+	$(BUILD)/Images/Invert.o \
+	$(BUILD)/Images/Morphology.o \
+	$(BUILD)/Images/Scale.o \
+	$(BUILD)/Images/Threshold.o \
+	$(BUILD)/Triangles/Loop.o \
+	$(BUILD)/Triangles/SharedVertex.o \
+	$(BUILD)/Triangles/Triangle.o \
+	$(BUILD)/Triangles/TriangleSet.o 
 
 shared_lib: $(OBJS)
 	$(CXX) $(OS_LINK_FLAGS) -shared -g $(OBJS) -o $(BUILD)/$(shared_libname) $(libs)

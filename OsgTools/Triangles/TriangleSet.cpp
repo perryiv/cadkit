@@ -55,14 +55,19 @@ TriangleSet::TriangleSet() : BaseClass(),
   _primitiveSet ( new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 ) )
 {
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
-  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
+#ifdef __WIN32
+  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) ;)
   USUL_STATIC_ASSERT ( 68 == sizeof ( TriangleSet     ) ); // Why?
+#else
+  USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );
+  USUL_STATIC_ASSERT ( 64 == sizeof ( TriangleSet     ) ); // Why?
+#endif
 
   // Add the vertices
   _geometry->setVertexArray( _vertices.get() );
@@ -98,7 +103,7 @@ void TriangleSet::clear()
 
   // Because shared vertices and triangles reference each other, we have to 
   // explicitely tell each triangle to unreference its vertices.
-  std::for_each ( _triangles.begin(), _triangles.end(), std::mem_fun ( Triangle::clear ) );
+  std::for_each ( _triangles.begin(), _triangles.end(), std::mem_fun ( &Triangle::clear ) );
 
   // All triangles should have a reference count of one.
   for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )

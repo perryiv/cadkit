@@ -19,7 +19,7 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
-#include "usul/Math/Vector2.h"
+#include "Usul/Math/Vector2.h"
 
 #include <vector>
 

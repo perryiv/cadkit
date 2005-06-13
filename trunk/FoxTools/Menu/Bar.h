@@ -27,12 +27,12 @@ namespace FoxTools {
 namespace Menu {
 
 
-class FOX_TOOLS_EXPORT Bar : public FoxTools::Menu::Item
+class FOX_TOOLS_EXPORT Bar : public FoxTools::Items::Item
 {
 public:
 
   // Typedefs.
-  typedef FoxTools::Menu::Item BaseClass;
+  typedef FoxTools::Items::Item BaseClass;
   typedef std::vector<Group::ValidRefPtr> Groups;
 
   // Smart-pointer definitions.

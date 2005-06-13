@@ -13,40 +13,42 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
-#define _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
+#ifndef _FOX_TOOLS_TOOLBAR_COMBO_BOX_H_
+#define _FOX_TOOLS_TOOLBAR_COMBO_BOX_H_
 
 #include "FoxTools/Export/Export.h"
 #include "FoxTools/Items/Command.h"
 
 #include <string>
 
-namespace FX { class FXButton; }
+namespace FX { class FXComboBox; }
 
 
 namespace FoxTools {
 namespace ToolBar {
 
-
 class Bar;
 
-class FOX_TOOLS_EXPORT Button : public FoxTools::Items::Command
+class FOX_TOOLS_EXPORT ComboBox : public FoxTools::Items::Command
 {
 public:
   typedef FoxTools::Items::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Button );
+  USUL_DECLARE_REF_POINTERS ( ComboBox );
 
-  Button ( const std::string &name, const std::string &description, unsigned int iconId, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
+  ComboBox ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
 
   // Clear the button
-  virtual void clear();
+  virtual void      clear();
+
+  // Get the combo box
+  FX::FXComboBox*   comboBox() { return _comboBox; }
 
 protected:
 
   // Use reference counting.
-  virtual ~Button();
+  virtual ~ComboBox();
 
   virtual void          _build ( FX::FXComposite *parent );
 
@@ -55,11 +57,11 @@ private:
   friend class Bar;
 
   // No copying.
-  Button ( const Button & );
-  Button &operator = ( const Button & );
+  ComboBox ( const ComboBox & );
+  ComboBox &operator = ( const ComboBox & );
 
-  FX::FXButton *_button;
-  unsigned int _iconId;
+  FX::FXComboBox *_comboBox;
+
 };
 
 
@@ -67,5 +69,5 @@ private:
 } // namespace FoxTools
 
 
-#endif // _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
+#endif // _FOX_TOOLS_TOOLBAR_COMBO_BOX_H_
 

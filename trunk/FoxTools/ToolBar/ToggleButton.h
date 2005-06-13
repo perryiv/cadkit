@@ -9,36 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Functions to work with menu buttons.
+//  Toolbar Toggle Button
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
-#define _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
+#ifndef _FOX_TOOLS_TOOLBAR_TOGGLE_BUTTON_H_
+#define _FOX_TOOLS_TOOLBAR_TOGGLE_BUTTON_H_
 
 #include "FoxTools/Export/Export.h"
 #include "FoxTools/Items/Command.h"
 
 #include <string>
 
-namespace FX { class FXButton; }
+namespace FX { class FXToggleButton; }
 
 
 namespace FoxTools {
 namespace ToolBar {
 
-
 class Bar;
 
-class FOX_TOOLS_EXPORT Button : public FoxTools::Items::Command
+class FOX_TOOLS_EXPORT ToggleButton : public FoxTools::Items::Command
 {
 public:
   typedef FoxTools::Items::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Button );
+  USUL_DECLARE_REF_POINTERS ( ToggleButton );
 
-  Button ( const std::string &name, const std::string &description, unsigned int iconId, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
+  ToggleButton ( const std::string &name, const std::string &description, unsigned int checkedIconId, unsigned int uncheckedIconId, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
 
   // Clear the button
   virtual void clear();
@@ -46,7 +45,7 @@ public:
 protected:
 
   // Use reference counting.
-  virtual ~Button();
+  virtual ~ToggleButton();
 
   virtual void          _build ( FX::FXComposite *parent );
 
@@ -55,11 +54,12 @@ private:
   friend class Bar;
 
   // No copying.
-  Button ( const Button & );
-  Button &operator = ( const Button & );
+  ToggleButton ( const ToggleButton & );
+  ToggleButton &operator = ( const ToggleButton & );
 
-  FX::FXButton *_button;
-  unsigned int _iconId;
+  FX::FXToggleButton *_button;
+  unsigned int _checkedIconId;
+  unsigned int _uncheckedIconId;
 };
 
 
@@ -67,5 +67,5 @@ private:
 } // namespace FoxTools
 
 
-#endif // _FOX_TOOLS_MENU_BUTTON_FUNCTIONS_H_
+#endif // _FOX_TOOLS_TOOLBAR_TOGGLE_BUTTON_H_
 

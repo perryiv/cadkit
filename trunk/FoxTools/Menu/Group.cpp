@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FoxTools/Menu/Group.h"
-#include "FoxTools/Menu/Command.h"
+#include "FoxTools/Items/Command.h"
 #include "FoxTools/Headers/MenuPane.h"
 #include "FoxTools/Headers/MenuTitle.h"
 #include "FoxTools/Headers/MenuCascade.h"
@@ -29,6 +29,9 @@
 
 using namespace FoxTools;
 using namespace FoxTools::Menu;
+
+// Typedefs
+typedef FoxTools::Items::Command Command;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -182,7 +185,7 @@ namespace Detail
 {
   struct HasToken
   {
-    typedef FoxTools::Menu::Command MenuCommand;
+    typedef FoxTools::Items::Command MenuCommand;
     HasToken ( unsigned int token ) : _token ( token ){}
     template < class ItemPtr > bool operator () ( ItemPtr item )
     {

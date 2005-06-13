@@ -299,10 +299,82 @@
 				Name="ToolBar"
 				Filter="">
 				<File
+					RelativePath=".\ToolBar\Bar.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\ToolBar\Bar.h">
+				</File>
+				<File
 					RelativePath=".\ToolBar\Button.cpp">
 				</File>
 				<File
 					RelativePath=".\ToolBar\Button.h">
+				</File>
+				<File
+					RelativePath=".\ToolBar\ComboBox.cpp">
+				</File>
+				<File
+					RelativePath=".\ToolBar\ComboBox.h">
+				</File>
+				<File
+					RelativePath=".\ToolBar\DockSite.cpp">
+				</File>
+				<File
+					RelativePath=".\ToolBar\DockSite.h">
+				</File>
+				<File
+					RelativePath=".\ToolBar\Factory.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\ToolBar\Factory.h">
+				</File>
+				<File
+					RelativePath=".\ToolBar\Separator.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\ToolBar\Separator.h">
+				</File>
+				<File
+					RelativePath=".\ToolBar\ToggleButton.cpp">
+				</File>
+				<File
+					RelativePath=".\ToolBar\ToggleButton.h">
 				</File>
 			</Filter>
 			<Filter
@@ -445,6 +517,9 @@
 					RelativePath=".\Headers\ProgressBar.h">
 				</File>
 				<File
+					RelativePath=".\Headers\RadioButton.h">
+				</File>
+				<File
 					RelativePath=".\Headers\RealSpinner.h">
 				</File>
 				<File
@@ -551,22 +626,10 @@
 					RelativePath=".\Menu\CheckButton.h">
 				</File>
 				<File
-					RelativePath=".\Menu\Command.cpp">
-				</File>
-				<File
-					RelativePath=".\Menu\Command.h">
-				</File>
-				<File
 					RelativePath=".\Menu\Group.cpp">
 				</File>
 				<File
 					RelativePath=".\Menu\Group.h">
-				</File>
-				<File
-					RelativePath=".\Menu\Item.cpp">
-				</File>
-				<File
-					RelativePath=".\Menu\Item.h">
 				</File>
 				<File
 					RelativePath=".\Menu\RadioButton.cpp">
@@ -595,6 +658,22 @@
 				</File>
 				<File
 					RelativePath=".\Widgets\SliderTextField.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Items"
+				Filter="">
+				<File
+					RelativePath=".\Items\Command.cpp">
+				</File>
+				<File
+					RelativePath=".\Items\Command.h">
+				</File>
+				<File
+					RelativePath=".\Items\Item.cpp">
+				</File>
+				<File
+					RelativePath=".\Items\Item.h">
 				</File>
 			</Filter>
 		</Filter>

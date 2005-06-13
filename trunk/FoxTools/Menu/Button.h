@@ -16,7 +16,7 @@
 #ifndef _FOX_TOOLS_MENU_BUTTON_CLASS_H_
 #define _FOX_TOOLS_MENU_BUTTON_CLASS_H_
 
-#include "FoxTools/Menu/Command.h"
+#include "FoxTools/Items/Command.h"
 
 namespace FX { class FXMenuCommand; }
 
@@ -26,12 +26,12 @@ namespace Menu {
 
 class Group;
 
-class FOX_TOOLS_EXPORT Button : public FoxTools::Menu::Command
+class FOX_TOOLS_EXPORT Button : public FoxTools::Items::Command
 {
 public:
 
   // Typedefs.
-  typedef FoxTools::Menu::Command BaseClass;
+  typedef FoxTools::Items::Command BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Button );

@@ -16,7 +16,7 @@
 #ifndef _FOX_TOOLS_MENU_GROUP_CLASS_H_
 #define _FOX_TOOLS_MENU_GROUP_CLASS_H_
 
-#include "FoxTools/Menu/Item.h"
+#include "FoxTools/Items/Item.h"
 
 #include <vector>
 
@@ -28,12 +28,12 @@ namespace Menu {
 
 class Bar;
 
-class FOX_TOOLS_EXPORT Group : public FoxTools::Menu::Item
+class FOX_TOOLS_EXPORT Group : public FoxTools::Items::Item
 {
 public:
 
   // Typedefs.
-  typedef FoxTools::Menu::Item BaseClass;
+  typedef FoxTools::Items::Item BaseClass;
   typedef std::vector<BaseClass::ValidRefPtr> Items;
 
   // Smart-pointer definitions.

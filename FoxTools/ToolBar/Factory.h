@@ -22,6 +22,10 @@ namespace ToolBar {
 class FOX_TOOLS_EXPORT Factory
 {
 public:
+  //Typedefs
+  typedef std::map< std::string, Bar::ValidRefPtr > Toolbars;
+  typedef Toolbars::const_iterator ConstIterator;
+
   // Get the instance
   static Factory& instance();
 
@@ -60,12 +64,15 @@ public:
   // Show all
   void            show();
 
+  ConstIterator   begin() const { return _toolbars.begin(); }
+  ConstIterator   end() const   { return _toolbars.end(); }
+
 protected:
   Factory();
   ~Factory();
 
 private:
-  typedef std::map< std::string, Bar::ValidRefPtr > Toolbars;
+  
   typedef FoxTools::ToolBar::DockSite::ValidAccessRefPtr DockSitePtr;
 
   Toolbars _toolbars;

@@ -57,6 +57,12 @@ public:
   // Find command by name
   Command*        find ( const std::string& );
 
+  // Is this toolbar showing
+  bool            shown() const;
+  
+  void            show();
+  void            hide();
+
 protected:
   // Use reference counting
   virtual ~Bar();

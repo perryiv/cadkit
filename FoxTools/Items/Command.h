@@ -16,22 +16,25 @@
 #ifndef _FOX_TOOLS_MENU_COMMAND_CLASS_H_
 #define _FOX_TOOLS_MENU_COMMAND_CLASS_H_
 
-#include "FoxTools/Menu/Item.h"
+#include "FoxTools/Items/Item.h"
 
 namespace FX { class FXObject; class FXComposite; }
 
 
 namespace FoxTools {
-namespace Menu {
 
-class Group;
+  namespace Menu { class Group; }
+  namespace ToolBar { class Bar; }
 
-class FOX_TOOLS_EXPORT Command : public FoxTools::Menu::Item
+namespace Items {
+
+
+class FOX_TOOLS_EXPORT Command : public FoxTools::Items::Item
 {
 public:
 
   // Typedefs.
-  typedef FoxTools::Menu::Item BaseClass;
+  typedef FoxTools::Items::Item BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Command );
@@ -76,7 +79,8 @@ private:
   Command ( const Command & );
   Command &operator = ( const Command & );
 
-  friend class Group;
+  friend class FoxTools::Menu::Group;
+  friend class FoxTools::ToolBar::Bar;
 
   unsigned int _token;
   std::string _hotKeys;

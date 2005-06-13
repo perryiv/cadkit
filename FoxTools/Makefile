@@ -12,6 +12,8 @@ SOURCE = \
 	Functions/MainWindow.cpp \
 	Functions/Mouse.cpp \
 	Icons/Factory.cpp \
+	Items/Command.cpp \
+	Items/Item.cpp \
 	Menu/Bar.cpp \
 	Menu/Button.cpp \
 	Menu/CheckButton.cpp \
@@ -21,7 +23,13 @@ SOURCE = \
 	Menu/RadioButton.cpp \
 	Menu/RecentFiles.cpp \
 	Menu/Separator.cpp \
+	ToolBar/Bar.cpp \
 	ToolBar/Button.cpp \
+	ToolBar/ComboBox.cpp \
+	ToolBar/DockSite.cpp \
+	ToolBar/Factory.cpp \
+	ToolBar/Separator.cpp \
+	ToolBar/ToggleButton.cpp \
 	Widgets/SliderTextField.cpp
 
 OS := $(shell uname)

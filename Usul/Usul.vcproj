@@ -603,6 +603,9 @@
 						RelativePath=".\Interfaces\IGetTitle.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IInitNewDocument.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IOsgFoxDocument.h">
 					</File>
 					<File

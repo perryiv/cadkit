@@ -24,7 +24,7 @@
 
 
 namespace FoxTools {
-namespace Menu {
+namespace Items {
 
 
 class FOX_TOOLS_EXPORT Item : public Usul::Base::Referenced
@@ -69,11 +69,11 @@ public:
       std::string thisCopy ( _name );
       std::string itemCopy ( item->_name );
 
-      // Remove any & from the this copy
+      // Remove any '&' from the this copy
       std::string::iterator end = std::remove ( thisCopy.begin(), thisCopy.end(), '&' );
       thisCopy.resize( end - thisCopy.begin() );
 
-      // Remove any & from the item copy
+      // Remove any '&' from the item copy
       end = std::remove ( itemCopy.begin(), itemCopy.end(), '&' );
       itemCopy.resize( end - itemCopy.begin() );
 
@@ -111,7 +111,7 @@ private:
 };
 
 
-}; // namespace Menu
+}; // namespace Items
 }; // namespace FoxTools
 
 

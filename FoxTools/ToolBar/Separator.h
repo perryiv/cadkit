@@ -1,36 +1,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Separator class for menus.
-//
-///////////////////////////////////////////////////////////////////////////////
+#ifndef __FOX_TOOLS_TOOLBAR_SEPARATOR_H__
+#define __FOX_TOOLS_TOOLBAR_SEPARATOR_H__
 
-#ifndef _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_
-#define _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_
-
+#include "FoxTools/Export/Export.h"
 #include "FoxTools/Items/Command.h"
 
-namespace FX { class FXMenuSeparator; }
-
+namespace FX { class FXComposite; class FXSeparator; }
 
 namespace FoxTools {
-namespace Menu {
+namespace ToolBar {
 
-class Group;
 
 class FOX_TOOLS_EXPORT Separator : public FoxTools::Items::Command
 {
 public:
-
-  // Typedefs.
   typedef FoxTools::Items::Command BaseClass;
 
   // Smart-pointer definitions.
@@ -39,31 +30,29 @@ public:
   // Constructors.
   Separator ( unsigned int token = 0 );
 
-  // Clear the button.
-  virtual void          clear();
+  // Clear
+  virtual void clear();
 
 protected:
 
-  // Use reference counting.
+  // Use reference counting
   virtual ~Separator();
 
-  // Build the button.
   virtual void          _build ( FX::FXComposite *parent );
 
 private:
 
   // No copying.
   Separator ( const Separator & );
-  Separator &operator = ( const Separator & );
+  Separator &operator= ( const Separator & );
 
-  friend class Group;
+  FX::FXSeparator* _separator;
 
-  FX::FXMenuSeparator *_separator;
 };
 
 
-}; // namespace Menu
-}; // namespace FoxTools
+}
+}
 
+#endif // __FOX_TOOLS_TOOLBAR_SEPARATOR_H__
 
-#endif // _FOX_TOOLS_MENU_SEPARATOR_CLASS_H_

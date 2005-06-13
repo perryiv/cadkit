@@ -13,8 +13,13 @@
 
 #include "FoxTools/Headers/Definitions.h"
 
+struct FXEvent;
+#include "FXString.h"
+#include "FXHash.h"
+#include "FXStream.h"
 #include "FXObjectList.h"
 #include "FXList.h"
+#include "FXFrame.h"
 #include "FXComboBox.h"
 
 

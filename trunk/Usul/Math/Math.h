@@ -29,6 +29,8 @@
   #define _USUL_THROW
 #elif _MSC_VER
   #define _USUL_THROW
+#elif __APPLE__
+  #define _USUL_THROW
 #else
   #define _USUL_THROW throw()
 #endif
@@ -177,6 +179,8 @@ template < class T > inline T abs ( T v )
 {
   return ( v > 0 ) ? v : -v;
 }
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////

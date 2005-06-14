@@ -18,6 +18,7 @@
 
 #include "FoxTools/Headers/Registry.h"
 
+#include <sstream>
 
 namespace FoxTools {
 namespace Registry {
@@ -134,6 +135,7 @@ template <> struct IO < float >
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef __APPLE__ // TODO, fix
 template < class Vector, unsigned int Size > struct ReadVector
 {
   Vector operator () ( FX::FXRegistry &reg, const std::string &section, const std::string &key, const Vector &vec )
@@ -150,6 +152,7 @@ template < class Vector, unsigned int Size > struct ReadVector
     return temp;
   }
 };
+#endif
 
 
 }; // namespace Detail

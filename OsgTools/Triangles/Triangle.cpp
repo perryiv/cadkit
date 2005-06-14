@@ -92,13 +92,11 @@ Triangle::~Triangle()
   Detail::unreference ( _v2 );
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Sets all vertices to null.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 void Triangle::clear()
 {
   this->vertex0 ( 0x0 );
@@ -112,7 +110,6 @@ void Triangle::clear()
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 void Triangle::vertex0 ( SharedVertex *v )
 {
   Detail::unreference ( _v0 );
@@ -126,7 +123,6 @@ void Triangle::vertex0 ( SharedVertex *v )
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 void Triangle::vertex1 ( SharedVertex *v )
 {
   Detail::unreference ( _v1 );
@@ -140,7 +136,6 @@ void Triangle::vertex1 ( SharedVertex *v )
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 void Triangle::vertex2 ( SharedVertex *v )
 {
   Detail::unreference ( _v2 );
@@ -177,7 +172,6 @@ void Triangle::unref()
     delete this;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Has this triangle been visited?
@@ -186,7 +180,7 @@ void Triangle::unref()
 
 bool Triangle::visited() const
 {
-  return Usul::Bits::has ( _flags, VISITED );
+  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, VISITED );
 }
 
 
@@ -199,9 +193,9 @@ bool Triangle::visited() const
 void Triangle::visited ( bool v )
 {
   if( v )
-    _flags = Usul::Bits::add ( _flags, VISITED );
+    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, VISITED );
   else
-    _flags = Usul::Bits::remove ( _flags, VISITED );
+    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, VISITED );
 }
 
 
@@ -235,7 +229,7 @@ void Triangle::getNeighbors( PolygonList& triangles ) const
 
 bool Triangle::deleted() const
 {
-  return Usul::Bits::has ( _flags, DELETED );
+  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, DELETED );
 }
 
 
@@ -248,8 +242,8 @@ bool Triangle::deleted() const
 void Triangle::deleted( bool d )
 {
   if( d )
-    _flags = Usul::Bits::add ( _flags, DELETED );
+    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, DELETED );
   else
-    _flags = Usul::Bits::remove ( _flags, DELETED );
+    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, DELETED );
 }
 

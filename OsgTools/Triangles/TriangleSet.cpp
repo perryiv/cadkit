@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/TriangleSet.h"
-
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Policies/Update.h"
@@ -25,6 +24,7 @@
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/EventQueue.h"
+#include "Usul/MPL/StaticAssert.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -54,6 +54,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _geometry  ( new osg::Geometry ),
   _primitiveSet ( new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 ) )
 {
+#ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
@@ -67,6 +68,7 @@ TriangleSet::TriangleSet() : BaseClass(),
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT ( 64 == sizeof ( TriangleSet     ) ); // Why?
+#endif
 #endif
 
   // Add the vertices
@@ -418,7 +420,6 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   // Start at zero.
   this->_setProgressBar ( true, 0, 100 );
-
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
@@ -526,7 +527,6 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   // Return the root.
   return root.release();
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //

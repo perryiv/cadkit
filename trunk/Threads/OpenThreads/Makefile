@@ -3,13 +3,17 @@ SOURCE = \
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
-OS_LINK_FLAGS =
+OS_LINK_FLAGS = -shared
 COMPILER = c++
 
 COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_OPEN_THREADS_EXTENSIONS
 
 # Platform dependent flags. Do not indent.
+ifeq ($(findstring Darwin,$(OS)),Darwin)
+OS_LINK_FLAGS = -dynamiclib
+endif
 ifeq ($(findstring IRIX,$(OS)),IRIX)
+
 COMPILER = g++ #CC
 OS_COMP_FLAGS = -mabi=n32 -mips4  #-n32 -LANG:std
 OS_LINK_FLAGS = -L/usr/freeware/lib32 #-n32 -LANG:std -v
@@ -30,8 +34,8 @@ INCLUDES = \
 
 
 LIBS = \
-	-L$(OSG_FOX_BIN_DIR) -lUsul_s \
-	-L$(OPENTHREADS_LIB_DIR) -lOpenThreads
+	-L$(OPENTHREADS_LIB_DIR) -lOpenThreads \
+	-L$(USUL_LIB_DIR) -lUsul_s
 
 TARGET      = OpenThreadsEx
 ARCHIVE_LIB = lib$(TARGET)_a.a
@@ -41,12 +45,14 @@ CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
 
+all: default
+
 default : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
 	rm -rf $(ARCHIVE_LIB)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND) -shared $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
+	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
 	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)

@@ -4,11 +4,15 @@ SOURCE = \
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
-OS_LINK_FLAGS =
+OS_LINK_FLAGS = -shared
 COMPILER = c++
 
 # Platform dependent flags. Do not indent.
+ifeq ($(findstring Darwin,$(OS)),Darwin)
+OS_LINK_FLAGS = -dynamiclib
+endif
 ifeq ($(findstring IRIX,$(OS)),IRIX)
+
 COMPILER = CC
 OS_COMP_FLAGS = -LANG:std
 OS_LINK_FLAGS = -LANG:std -v
@@ -53,7 +57,7 @@ default : $(TARGET)
 $(TARGET) : $(OBJECTS)
 	rm -rf $(ARCHIVE_LIB)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND) -shared $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
+	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
 	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)

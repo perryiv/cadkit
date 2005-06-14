@@ -117,7 +117,6 @@ void SharedVertex::unref()
     delete this;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Has this shared vertex been visited?
@@ -126,7 +125,7 @@ void SharedVertex::unref()
 
 bool SharedVertex::visited() const
 {
-  return Usul::Bits::has ( _flags, VISITED );
+  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, VISITED );
 }
 
 
@@ -139,9 +138,9 @@ bool SharedVertex::visited() const
 void SharedVertex::visited ( bool v )
 {
   if ( v )
-    _flags = Usul::Bits::add ( _flags, VISITED );
+    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, VISITED );
   else
-    _flags = Usul::Bits::remove ( _flags, VISITED );
+    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, VISITED );
 }
 
 
@@ -153,7 +152,7 @@ void SharedVertex::visited ( bool v )
 
 bool SharedVertex::onEdge() const
 {
-  return Usul::Bits::has( _flags, ON_EDGE );
+  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, ON_EDGE );
 }
 
 
@@ -166,7 +165,7 @@ bool SharedVertex::onEdge() const
 void SharedVertex::onEdge ( bool e )
 {
   if ( e )
-    _flags = Usul::Bits::add ( _flags, ON_EDGE );
+    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, ON_EDGE );
   else
-    _flags = Usul::Bits::remove ( _flags, ON_EDGE );
+    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, ON_EDGE );
 }

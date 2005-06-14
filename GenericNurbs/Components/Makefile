@@ -4,7 +4,7 @@ SOURCE = \
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
-OS_LINK_FLAGS =
+OS_LINK_FLAGS = -shared
 COMPILER = c++
 
 # Change some settings when on irix. Do not indent.
@@ -33,7 +33,7 @@ OBJECTS = $(SOURCE:.cpp=.o)
 default : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
-	$(LINK_COMMAND) -shared $(OBJECTS) -o $(PLUGIN_LIB) $(LIBS)
+	$(LINK_COMMAND) $(OBJECTS) -o $(PLUGIN_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
 	mv $(PLUGIN_LIB) $(BIN_DIR)
 

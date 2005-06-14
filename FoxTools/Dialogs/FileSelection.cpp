@@ -71,8 +71,11 @@ FileSelection::FileSelection() :
 ///////////////////////////////////////////////////////////////////////////////
 
 FileSelection::FileSelection ( const Type &type, 
+
                                const std::string &title, 
+
                                const Filters &filters, 
+
                                unsigned int initialFilter ) :
   _title       ( title ),
   _defaultFile ( "filename" ),
@@ -382,8 +385,10 @@ void FileSelection::_makePatterns ( std::string &patterns ) const
 
 void FileSelection::filterIndex ( unsigned int index )
 {
-  _filterIndex = std::min ( _filters.size() - 1, index );
+  const unsigned int s ( _filters.size() - 1 );
+  _filterIndex = std::min ( s, index );
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

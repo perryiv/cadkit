@@ -3,9 +3,16 @@ SHELL = /bin/sh
 LIB_OS = lib
 OS := $(shell uname)
 
-default : shared_lib archive_lib
+all: default
+
+default : make_dirs shared_lib archive_lib
+
+OS_LINK_FLAGS = -shared
 
 # Platform dependent flags. Do not indent.
+ifeq ($(findstring Darwin,$(OS)),Darwin)
+OS_LINK_FLAGS = -dynamiclib
+endif
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 OS := IRIX32
 CXX = g++ #CC -n32 -LANG:std -woff 1682 -mips3
@@ -24,7 +31,7 @@ endif
 #-- ------------------------------------ --#
 
 libs = \
-	-L$(OSG_LIB_DIR) -losg \
+	-L$(OSG_LIB_DIR) -losg -losgUtil -losgDB -losgText \
 	-L$(USUL_LIB_DIR) -lUsul_s \
 	-L$(OPENTHREADS_LIB_DIR) -lOpenThreads
 
@@ -36,6 +43,9 @@ includes = \
 flags = -D_COMPILING_OSG_TOOLS
 
 BUILD=$(OS)
+IMAGES=Images
+TRIANGLES=Triangles
+
 shared_libname = lib$(PKG_NAME)_s.so
 archive_libname = lib$(PKG_NAME)_a.a
 
@@ -59,21 +69,26 @@ OBJS=\
 	$(BUILD)/Statistics.o \
 	$(BUILD)/Text.o \
 	$(BUILD)/Torus.o \
-	$(BUILD)/Images/EdgeDetect.o \
-	$(BUILD)/Images/Grayscale.o \
-	$(BUILD)/Images/Histogram.o \
-	$(BUILD)/Images/Image3d.o \
-	$(BUILD)/Images/Invert.o \
-	$(BUILD)/Images/Morphology.o \
-	$(BUILD)/Images/Scale.o \
-	$(BUILD)/Images/Threshold.o \
-	$(BUILD)/Triangles/Loop.o \
-	$(BUILD)/Triangles/SharedVertex.o \
-	$(BUILD)/Triangles/Triangle.o \
-	$(BUILD)/Triangles/TriangleSet.o 
+	$(BUILD)/$(IMAGES)/EdgeDetect.o \
+	$(BUILD)/$(IMAGES)/Grayscale.o \
+	$(BUILD)/$(IMAGES)/Histogram.o \
+	$(BUILD)/$(IMAGES)/Image3d.o \
+	$(BUILD)/$(IMAGES)/Invert.o \
+	$(BUILD)/$(IMAGES)/Morphology.o \
+	$(BUILD)/$(IMAGES)/Scale.o \
+	$(BUILD)/$(IMAGES)/Threshold.o \
+	$(BUILD)/$(TRIANGLES)/Loop.o \
+	$(BUILD)/$(TRIANGLES)/SharedVertex.o \
+	$(BUILD)/$(TRIANGLES)/Triangle.o \
+	$(BUILD)/$(TRIANGLES)/TriangleSet.o 
+
+make_dirs:
+	mkdir -p $(BUILD)
+	mkdir -p $(BUILD)/$(IMAGES)
+	mkdir -p $(BUILD)/$(TRIANGLES)
 
 shared_lib: $(OBJS)
-	$(CXX) $(OS_LINK_FLAGS) -shared -g $(OBJS) -o $(BUILD)/$(shared_libname) $(libs)
+	$(CXX) $(OS_LINK_FLAGS) -g $(OBJS) -o $(BUILD)/$(shared_libname) $(libs)
 	mkdir -p ../bin
 	cp $(BUILD)/$(shared_libname) ../bin/
 
@@ -83,7 +98,6 @@ archive_lib: $(OBJS)
 	cp $(BUILD)/$(archive_libname) ../bin/
 
 $(OBJS): $(BUILD)/%.o: %.cpp
-	mkdir -p $(BUILD)
 	@echo "Compiling $< into $@"
 	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) -g $(includes) -c $< -o $@
 

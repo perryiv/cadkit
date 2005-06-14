@@ -34,12 +34,15 @@ SOURCE = \
 
 OS := $(shell uname)
 OS_COMP_FLAGS =
-OS_LINK_FLAGS =
+OS_LINK_FLAGS = -shared
 COMPILER = c++
 
 
 
 # Platform dependent flags. Do not indent.
+ifeq ($(findstring Darwin,$(OS)),Darwin)
+OS_LINK_FLAGS = -dynamiclib
+endif
 ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = g++ #CC
 OS_COMP_FLAGS = -mabi=n32 -mips4 #-n32 -LANG:std
@@ -59,7 +62,8 @@ INCLUDES = \
 
 
 LIBS = \
-	-L${FOX_LIB_DIR} -lFOX-1.4
+	-L$(FOX_LIB_DIR) -lFOX-1.4 \
+	-L$(USUL_LIB_DIR) -lUsul_s
 
 TARGET      = FoxTools
 ARCHIVE_LIB = lib$(TARGET)_a.a
@@ -69,12 +73,14 @@ CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
 
+all: default
+
 default : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
 	rm -rf $(ARCHIVE_LIB)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND) -shared $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
+	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
 	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)

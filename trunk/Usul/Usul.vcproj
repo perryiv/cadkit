@@ -660,6 +660,9 @@
 					RelativePath="Math\Matrix44.h">
 				</File>
 				<File
+					RelativePath=".\Math\MinMax.h">
+				</File>
+				<File
 					RelativePath=".\Math\Transpose.h">
 				</File>
 				<File

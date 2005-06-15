@@ -1,212 +1,104 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach & Perry Miller
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __IMAGES_IMAGE_H__
-#define __IMAGES_IMAGE_H__
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Image class.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-#include "Images/ImageBase.h"
+#ifndef _IMAGES_IMAGE_CLASS_H_
+#define _IMAGES_IMAGE_CLASS_H_
 
+#include "Images/Export.h"
+#include "Images/Enum.h"
+
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/Types/Types.h"
+
+#include <string>
 #include <vector>
 
 
 namespace Images {
 
-template < class Policy > 
-class Image : public ImageBase
+namespace ITK { class BaseImage; }
+
+class IMAGES_EXPORT Image : public Usul::Base::Referenced
 {
 public:
 
   // Useful typedefs
-  typedef ImageBase BaseClass;
-  typedef typename Policy::PixelType   PixelType;
-  typedef typename Policy::PixelFormat PixelFormat;
-  typedef typename Policy::Pixel       Pixel;
-  typedef std::vector< Pixel > Data;
+  typedef Usul::Base::Referenced BaseClass;
+  typedef std::vector < unsigned int > Histogram;
 
-  /// Smart-pointer definitions.
+  // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Image );
 
+  // Constructors.
+  Image ( unsigned int channels = 4, const Images::ValueType &type = UINT_8 );
+  Image ( const Image & );
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Constructor
-  //
-  ///////////////////////////////////////////////////////////////////////////////
+  // Assignment.
+  Image &               operator = ( const Image &image );
 
-  Image() :
-  _r( 0 ),
-  _c( 0 ),
-  _pixelFormat ( Image::GRAYSCALE ),
-  _data()
-  {
-  }
+  // Get the number of channels.
+  unsigned int          channels() const;
 
+  // Get the number of columns.
+  unsigned int          columns() const;
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Copy Constructor
-  //
-  ///////////////////////////////////////////////////////////////////////////////
+  // Get the value.
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint8   &value ) const;
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint16  &value ) const;
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint32  &value ) const;
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint64  &value ) const;
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Float32 &value ) const;
+  void                  get ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Float64 &value ) const;
 
-  Image ( const Image& ):
-  _r( image._r ),
-  _c( image._c ),
-  _pixelFormat ( image._pixelFormat ),
-  _data( image._data )
-  {
-  }
+  // Calculate the histogram.
+  void                  histogram ( Histogram &h, unsigned int numBins = 255 ) const;
 
+  // Read the file.
+  void                  read ( const std::string &name );
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Constructor
-  //
-  ///////////////////////////////////////////////////////////////////////////////
+  // Get the number of rows.
+  unsigned int          rows() const;
 
-  Image( unsigned int r, unsigned int c, PixelFormat pf ) :
-  _r( r ),
-  _c( c ),
-  _pixelFormat ( pf ),
-  _data( r * c * bytesPerPixel() )
-  {
-  }
+  // Set the value.
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint8   value );
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint16  value );
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint32  value );
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Uint64  value );
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Float32 value );
+  void                  set ( unsigned int row, unsigned int column, unsigned int channel, Usul::Types::Float64 value );
 
+  // Convert to grayscale.
+  void                  toGrayScale();
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Destructor
-  //
-  ///////////////////////////////////////////////////////////////////////////////
+  // Get/set the type.
+  Images::ValueType     type() const;
+  void                  type ( Images::ValueType type );
 
-  virtual ~Image()
-  {
-  }
+protected:
 
-  
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Make enough space
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  void             allocate ( unsigned int r, unsigned int c, PixelFormat pf )
-  {
-    _r = r;
-    _c = c;
-    _pixelFormat = pf;
-    _data.resize( r * c * pf );
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //   Get the bytes per pixel
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  unsigned int     bytesPerPixel () const
-  {
-    return sizeof ( PixelType );
-  }
-
-  // Get the Height
-  unsigned int     height() const { return _r; }
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Assignment
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  Image&           operator= ( const Image& )
-  {
-    _r = image._r;
-    _c = image._c;
-    _pixelFormat = image._pixelFormat;
-    _data = image._data;
-    return *this;
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get the pixel
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  Pixel&       operator () ( unsigned int r, unsigned int c )
-  {
-    return _data.at( r * _r + c );
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get the pixel
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  const Pixel& operator () ( unsigned int r, unsigned int c ) const
-  {
-    return _data.at( r * _r + c );
-  }
-
-  // Get the width
-  unsigned int     width() const { return _c; }
-
-  virtual ImageBase *           makeGrayscale ( )
-  {
-    ImageBase *img = new Image< GPolicy < PixelType > >();
-  }
-
-  virtual Images::Histogram      calculateHistogram ( )
-  {
-    Images::Histogram histogram;
-    return histogram;
-  }
-
-  virtual void           invert ( )
-  {
-  }
-
-  virtual void           erode     ( unsigned int r, unsigned int c )
-  {
-  }
-
-  virtual void           dilate    ( unsigned int r, unsigned int c )
-  {
-  }
-
-  virtual void           convolve  ( const Matrix<int>& mask )
-  {
-  }
-
-  virtual void           smooth    ( const Matrix<int>& mask )
-  {
-  }
-
-  virtual void           scale ( double value )
-  {
-  }
-
-  virtual void           threshold ( double t ) 
-  {
-  }
+  // Use reference counting.
+  virtual ~Image();
 
 private:
 
-  unsigned int _r;
-  unsigned int _c;
-  Data _data;
+  Images::ITK::BaseImage *_image;
 };
 
-}
 
-#endif // __IMAGES_IMAGE_H__
+} // Images
 
+
+#endif // _IMAGES_IMAGE_CLASS_H_

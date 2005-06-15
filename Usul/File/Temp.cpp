@@ -18,14 +18,71 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/MPL/StaticAssert.h"
 
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
 
+#ifdef _MSC_VER // Visual C++
+#include "windows.h"
+#endif
+
 using namespace Usul;
 using namespace Usul::File;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Work-around for Win32's tmpnam() implementation. It does not consider if 
+//  the directory is write-protected.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct TempName
+  {
+    static std::string get()
+    {
+      // Initialize the last error.
+      typedef Usul::System::LastError LastError;
+      LastError::init();
+
+      #ifdef _MSC_VER // Visual C++
+
+      // Compile-time sanity check.
+      const unsigned int bufSize ( 16383 ); // 2^14 - 1
+      USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
+
+      // Get the directory where temporary files can be created.
+      char directory[bufSize + 1];
+      DWORD result ( ::GetTempPath ( bufSize, directory ) );
+
+      // Check for errors.
+      if ( 0 == result || bufSize < result )
+        throw std::runtime_error ( std::string ( "Error 3143231617: failed get path for temporary files. " ) + LastError::message() );
+
+      // Get the file name.
+      char pathname[bufSize + 1];
+      result = ::GetTempFileName ( directory, "temp_", 0, pathname );
+
+      // Check for errors.
+      if ( 0 == result )
+        throw std::runtime_error ( std::string ( "Error 2499845465: failed to create temporary file. " ) + LastError::message() );
+
+      // Return the name.
+      return std::string ( pathname );
+
+      #else
+
+      return ::tmpnam ( 0x0 );
+
+      #endif
+    }
+  };
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,7 +92,7 @@ using namespace Usul::File;
 ///////////////////////////////////////////////////////////////////////////////
 
 Temp::Temp ( Format f ) : 
-  _name ( ::tmpnam ( 0x0 ) ), 
+  _name ( Detail::TempName::get() ),
   _stream ( 0x0 ),
   _remove ( true )
 {

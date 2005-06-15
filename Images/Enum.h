@@ -1,39 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach & Perry Miller
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __IMAGES_ENUM_H__
-#define __IMAGES_ENUM_H__
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enumerations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _IMAGES_ENUMERATIONS_H_
+#define _IMAGES_ENUMERATIONS_H_
 
 
 namespace Images {
 
-// Possible channels
-enum Channel
+
+// Possible image types.
+enum ValueType
 {
-  RED = 0,
-  GREEN,
-  BLUE,
-  ALPHA,
-  GRAY = 0,
-  GALPHA = 1
+  UINT_8, 
+  UINT_16, 
+  UINT_32, 
+  FLOAT_32, 
+  FLOAT_64
 };
 
-// Possible Pixel Formats
-enum PixelFormat
-{
-  RGB = 0,
-  RGBA,
-  GRAYSCALE,
-  GRAYSCALE_ALPHA
-};
 
-}
+} // Images
 
 
-#endif // __IMAGES_ENUM_H__
+#endif // _IMAGES_ENUMERATIONS_H_

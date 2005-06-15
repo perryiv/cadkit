@@ -25,6 +25,8 @@
 
 void _testSizes()
 {
+  // If these do not compile, then it's a good indication that Types.h needs 
+  // to be changed for this platform.
   USUL_STATIC_ASSERT ( 8 == sizeof ( Usul::Types::Uint64  ) );
   USUL_STATIC_ASSERT ( 4 == sizeof ( Usul::Types::Uint32  ) );
   USUL_STATIC_ASSERT ( 2 == sizeof ( Usul::Types::Uint16  ) );

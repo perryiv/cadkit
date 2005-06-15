@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(ITK_INC_DIR);$(ITK_INC_DIR)/ITK/VC++7.1;$(ITK_INC_DIR)/ITK/Utilities/vxl/vcl;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities/vxl/vcl;$(ITK_INC_DIR)/ITK/Utilities/vxl/core;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities/vxl/core;$(ITK_INC_DIR)/ITK/Code/Common;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_IMAGES"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -47,11 +47,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=""
-				OutputFile="$(USUL_LIB_DIR)/Imagesd.dll"
+				AdditionalDependencies="ITKCommon.lib ITKIO.lib ITKCommon.lib itkvnl_inst.lib itkvnl_algo.lib itkvnl.lib itkvcl.lib itknetlib.lib itksys.lib ITKNrrdIO.lib itkpng.lib itktiff.lib itkgdcm.lib itkjpeg8.lib itkjpeg12.lib itkjpeg16.lib ITKMetaIO.lib itkzlib.lib ITKDICOMParser.lib ITKEXPAT.lib"
+				OutputFile="../bin/Imagesd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(ITK_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/Imagesd.pdb"
 				ImportLibrary="$(USUL_LIB_DIR)/Imagesd.lib"/>
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(ITK_INC_DIR);$(ITK_INC_DIR)/ITK/VC++7.1;$(ITK_INC_DIR)/ITK/Utilities/vxl/vcl;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities/vxl/vcl;$(ITK_INC_DIR)/ITK/Utilities/vxl/core;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities/vxl/core;$(ITK_INC_DIR)/ITK/Code/Common;$(ITK_INC_DIR)/ITK/VC++7.1/Utilities"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_IMAGES"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -116,8 +116,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=""
-				OutputFile="$(USUL_LIB_DIR)/Images.dll"
+				OutputFile="../bin/Images.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
@@ -158,41 +157,30 @@
 			Name="Source"
 			Filter="">
 			<File
-				RelativePath=".\Contours.h">
-			</File>
-			<File
 				RelativePath=".\Enum.h">
 			</File>
 			<File
-				RelativePath=".\Grayscale.h">
+				RelativePath=".\Export.h">
 			</File>
 			<File
-				RelativePath=".\Histogram.h">
+				RelativePath=".\Image.cpp">
 			</File>
 			<File
 				RelativePath=".\Image.h">
 			</File>
-			<File
-				RelativePath=".\ImageBase.h">
-			</File>
-			<File
-				RelativePath=".\Invert.h">
-			</File>
-			<File
-				RelativePath=".\Matrix.h">
-			</File>
-			<File
-				RelativePath=".\Morphology.h">
-			</File>
-			<File
-				RelativePath=".\Policies.h">
-			</File>
-			<File
-				RelativePath=".\Scale.h">
-			</File>
-			<File
-				RelativePath=".\Threshold.h">
-			</File>
+			<Filter
+				Name="ITK"
+				Filter="">
+				<File
+					RelativePath=".\Itk\BaseImage.cpp">
+				</File>
+				<File
+					RelativePath=".\Itk\BaseImage.h">
+				</File>
+				<File
+					RelativePath=".\Itk\ItkImage.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

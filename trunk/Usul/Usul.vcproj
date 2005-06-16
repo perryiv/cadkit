@@ -432,6 +432,9 @@
 						RelativePath=".\Interfaces\IStatusBar.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IUpdateTextWindow.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IUpdateTreeControls.h">
 					</File>
 				</Filter>
@@ -987,6 +990,12 @@
 				</File>
 				<File
 					RelativePath=".\Resources\StatusBar.h">
+				</File>
+				<File
+					RelativePath=".\Resources\TextWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\Resources\TextWindow.h">
 				</File>
 			</Filter>
 		</Filter>

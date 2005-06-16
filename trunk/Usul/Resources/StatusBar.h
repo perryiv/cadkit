@@ -10,7 +10,6 @@
 #ifndef __USUL_RESOURCES_STATUS_BAR_H___
 #define __USUL_RESOURCES_STATUS_BAR_H___
 
-
 #include "Usul/Export/Export.h"
 
 namespace Usul { namespace Interfaces { struct IStatusBar; } }
@@ -27,7 +26,6 @@ USUL_EXPORT void                             statusBar ( Usul::Interfaces::IStat
 
 } // namespace Resources
 } // namespace Usul
-
 
 
 #endif // __USUL_RESOURCES_STATUS_BAR_H___

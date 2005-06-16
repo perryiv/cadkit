@@ -22,7 +22,7 @@ namespace Images {
   typedef osg::ref_ptr< osg::Image > ImagePtr;
   typedef std::vector< ImagePtr >    ImageList;
 
-  OSG_TOOLS_EXPORT osg::Image* image3d ( ImageList&, bool ensureProperTextureSize = false  );
+  OSG_TOOLS_EXPORT osg::Image* image3d ( ImageList&, bool ensureProperTextureSize = false, double updateTime = 1000  );
 }
 }
 

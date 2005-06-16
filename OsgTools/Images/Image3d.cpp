@@ -9,6 +9,10 @@
 
 #include "OsgTools/Images/Image3d.h"
 
+#include "Usul/Policies/Update.h"
+#include "Usul/Resources/ProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
+
 #include "osg/ref_ptr"
 #include "osg/Image"
 
@@ -18,7 +22,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* OsgTools::Images::image3d( ImageList& images, bool ensureProperTextureSize )
+osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperTextureSize, double updateTime )
 {
   // Make an image
   ImagePtr image3d ( new osg::Image );
@@ -33,6 +37,8 @@ osg::Image* OsgTools::Images::image3d( ImageList& images, bool ensureProperTextu
   //Ensure proper size for texturing
   int new_s ( front->computeNearestPowerOfTwo( width  ) );
   int new_t ( front->computeNearestPowerOfTwo( height ) );
+
+  Usul::Policies::TimeBased elapsed ( updateTime );
 
   if( ensureProperTextureSize )
   {
@@ -57,6 +63,15 @@ osg::Image* OsgTools::Images::image3d( ImageList& images, bool ensureProperTextu
 
     // Copy the image to our 3d image
     image3d->copySubImage ( 0, 0, ( i - images.begin() ), i->get() );
+
+    // Show progress.
+    if ( Usul::Resources::progressBar() && elapsed() )
+    {
+      const float s ( images.size() );
+      const float d ( std::distance ( i, images.end() ) );
+      const float v ( ( s - d ) / s );
+      Usul::Resources::progressBar()->updateProgressBar ( v * 100 );
+    }
   }
 
   image3d->setInternalTextureFormat( front->getInternalTextureFormat() );

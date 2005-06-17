@@ -1,0 +1,187 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 = {
+		activeBuildStyle = 014CEA520018CE5811CA2923;
+		activeTarget = D2AAC0620554660B00DB518D;
+		addToTargets = (
+			D2AAC0620554660B00DB518D,
+		);
+		codeSenseManager = 43B7D006085F6F6700C2A48C;
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					200,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Target_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					541,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					200,
+					10,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 140641908;
+			PBXWorkspaceStateSaveDate = 140641908;
+		};
+		perUserProjectItems = {
+			435EE2C6086206CC004A6ACB = 435EE2C6086206CC004A6ACB;
+			43B7D138085F751A00C2A48C = 43B7D138085F751A00C2A48C;
+			43B7D13A085F751A00C2A48C = 43B7D13A085F751A00C2A48C;
+			43B7D14A085F76D200C2A48C = 43B7D14A085F76D200C2A48C;
+			43B7D14C085F76D200C2A48C = 43B7D14C085F76D200C2A48C;
+			43B7D14D085F76D200C2A48C = 43B7D14D085F76D200C2A48C;
+		};
+		sourceControlManager = 43B7D005085F6F6700C2A48C;
+		userBuildSettings = {
+		};
+	};
+	435EE2C6086206CC004A6ACB = {
+		fRef = 43B7D032085F6F7800C2A48C;
+		isa = PBXTextBookmark;
+		name = "App.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 227;
+		vrLoc = 0;
+	};
+	43B7D005085F6F6700C2A48C = {
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		isa = PBXSourceControlManager;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	43B7D006085F6F6700C2A48C = {
+		indexTemplatePath = "";
+		isa = PBXCodeSenseManager;
+	};
+	43B7D008085F6F7700C2A48C = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {733, 598}}";
+			sepNavSelRange = "{541, 35}";
+			sepNavVisRect = "{{0, 195}, {733, 396}}";
+		};
+	};
+	43B7D015085F6F7800C2A48C = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {582, 6097}}";
+			sepNavSelRange = "{10566, 44}";
+			sepNavVisRect = "{{0, 0}, {0, 0}}";
+		};
+	};
+	43B7D017085F6F7800C2A48C = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {733, 10153}}";
+			sepNavSelRange = "{20732, 136}";
+			sepNavVisRect = "{{0, 9425}, {733, 111}}";
+		};
+	};
+	43B7D032085F6F7800C2A48C = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {372, 403}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {372, 94}}";
+		};
+	};
+	43B7D138085F751A00C2A48C = {
+		fRef = 43B7D008085F6F7700C2A48C;
+		isa = PBXTextBookmark;
+		name = "#include \"FoxTools/Headers/App.h\"";
+		rLen = 35;
+		rLoc = 541;
+		rType = 0;
+		vrLen = 717;
+		vrLoc = 504;
+	};
+	43B7D13A085F751A00C2A48C = {
+		fRef = 43B7D008085F6F7700C2A48C;
+		isa = PBXTextBookmark;
+		name = "#include \"FoxTools/Headers/App.h\"";
+		rLen = 35;
+		rLoc = 541;
+		rType = 0;
+		vrLen = 717;
+		vrLoc = 504;
+	};
+	43B7D14A085F76D200C2A48C = {
+		fRef = 43B7D017085F6F7800C2A48C;
+		isa = PBXTextBookmark;
+		name = "FX::FXButton *button ( new FX::FXButton ( frame, i->c_str(), 0x0, this, Message::ID_CLOSE, flags, 0, 0, 0, 0, 30, 30, 2, 2 ) );";
+		rLen = 136;
+		rLoc = 20732;
+		rType = 0;
+		vrLen = 396;
+		vrLoc = 20051;
+	};
+	43B7D14C085F76D200C2A48C = {
+		fRef = 43B7D017085F6F7800C2A48C;
+		isa = PBXTextBookmark;
+		name = "FX::FXButton *button ( new FX::FXButton ( frame, i->c_str(), 0x0, this, Message::ID_CLOSE, flags, 0, 0, 0, 0, 30, 30, 2, 2 ) );";
+		rLen = 136;
+		rLoc = 20732;
+		rType = 0;
+		vrLen = 396;
+		vrLoc = 20051;
+	};
+	43B7D14D085F76D200C2A48C = {
+		fRef = 43B7D032085F6F7800C2A48C;
+		isa = PBXTextBookmark;
+		name = "App.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 314;
+		vrLoc = 0;
+	};
+	D2AAC0620554660B00DB518D = {
+		activeExec = 0;
+	};
+}

@@ -37,7 +37,7 @@ inline unsigned long currentThreadId()
   #ifdef _WIN32
     return ::GetCurrentThreadId();
   #elif __GNUC__
-    return ::pthread_self(); // TODO, find low-level way.
+    return reinterpret_cast< unsigned long > ( ::pthread_self() ); // TODO, find low-level way.
   #elif __sgi
     return ::pthread_self(); // TODO, find low-level way.
   #else

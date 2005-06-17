@@ -106,6 +106,7 @@ public:
   static std::string      error ( const std::string &buttons, 
                                   const std::string &title, 
                                   const std::string &text,
+                                  bool offerToRemember = false,
                                   FX::FXObject *owner = 0x0 );
 
   /// Set/get the icon. Pass true for "destroy" if this instance should 

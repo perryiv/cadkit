@@ -557,20 +557,30 @@ std::string Message::_find ( FX::FXRegistry &reg ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convenience function to display an error dialog. Separate buttons 
-//  with a '|' character. For example, "OK|Cancel".
+//  Convenience function to display an error dialog. Separate buttons with 
+//  a '|' character. For example, "OK|Cancel". Lets the user choose to supress 
+//  all subsequent errors with same string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 std::string Message::error ( const std::string &b, 
                              const std::string &title, 
                              const std::string &text,
+                             bool offerToRemember,
                              FX::FXObject *owner )
 {
   Message m;
   m.text ( title, text );
   m.icon ( FoxTools::Icons::Factory::ICON_ERROR );
   m.buttons ( b );
+
+  if ( offerToRemember )
+  {
+    const std::string remember ( "Do not show this error message again" );
+    m.checks()[remember] = false;
+    m.cacheIf ( remember, true, false );
+  }
+
   return m.run ( owner, FX::PLACEMENT_OWNER );
 }
 

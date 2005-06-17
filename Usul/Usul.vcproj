@@ -998,6 +998,16 @@
 					RelativePath=".\Resources\TextWindow.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Shared"
+				Filter="">
+				<File
+					RelativePath=".\Shared\Preferences.cpp">
+				</File>
+				<File
+					RelativePath=".\Shared\Preferences.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

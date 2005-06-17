@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	08FB7793FE84155DC02AAC07 = {
-		activeBuildStyle = 014CEA520018CE5811CA2923;
+		activeBuildStyle = 014CEA530018CE5811CA2923;
 		activeTarget = D2AAC0620554660B00DB518D;
 		addToTargets = (
 			D2AAC0620554660B00DB518D,
@@ -14,7 +14,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					300,
-					200,
+					207,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXErrorsWarningsDataSource_TypeID,
@@ -52,7 +52,7 @@
 					200,
 					137,
 					20,
-					48.1626,
+					48,
 					43,
 					43,
 				);
@@ -66,8 +66,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 140474082;
-			PBXWorkspaceStateSaveDate = 140474082;
+			PBXPerProjectTemplateStateSaveDate = 140670736;
+			PBXWorkspaceStateSaveDate = 140670736;
 		};
 		sourceControlManager = 43B7D153085F76E900C2A48C;
 		userBuildSettings = {

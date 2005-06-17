@@ -120,8 +120,10 @@ Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
 
 Referenced::~Referenced()
 {
+#if _DEBUG
   // Remove this address from the set. Should be one occurance.
   USUL_ASSERT ( 1 == im.set().erase ( this ) );
+#endif
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );

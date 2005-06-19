@@ -98,20 +98,51 @@ TriangleSet::~TriangleSet()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::clear()
+void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 {
+  // Try to get a progress.
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+
+  // Update every second.
+  Usul::Policies::TimeBased update ( 1000 );
+
   // Clear the map of shared vertices. (It is most likely already empty.)
   _shared.clear();
 
-  // Because shared vertices and triangles reference each other, we have to 
-  // explicitely tell each triangle to unreference its vertices.
-  std::for_each ( _triangles.begin(), _triangles.end(), std::mem_fun ( &Triangle::clear ) );
+  // Used for progress feedback.
+  const unsigned int numTriangles ( _triangles.size() );
+  const unsigned int maxProgress ( numTriangles * 2 );
+  unsigned int count ( 0 );
 
-  // All triangles should have a reference count of one.
-  for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
-    USUL_ASSERT ( 1 == (*i)->refCount() );
+  // Loop through all the triangles.
+  for ( unsigned int i = 0; i < numTriangles; ++i )
+  {
+    // Because shared vertices and triangles reference each other, we have to 
+    // explicitely tell each triangle to unreference its vertices.
+    _triangles[i]->clear();
 
-  // Now clear the sequence of triangles. The triangles should get deleted.
+    // Feedback.
+    if ( progress.valid() && update() )
+      progress->updateProgressBar ( unsigned int ( float ( count ) / float ( maxProgress ) * 100 ) );
+    ++count;
+  }
+
+  // Loop through all the triangles. Yes, we need two loops.
+  for ( unsigned int i = 0; i < numTriangles; ++i )
+  {
+    // Should be true.
+    USUL_ASSERT ( 1 == _triangles[i]->refCount() );
+
+    // This will delete the triangle.
+    _triangles[i] = 0x0;
+
+    // Feedback.
+    if ( progress.valid() && update() )
+      progress->updateProgressBar ( unsigned int ( float ( count ) / float ( maxProgress ) * 100 ) );
+    ++count;
+  }
+
+  // Now clear the list of triangles.
   _triangles.clear();
 
   // Clear the vertices, normals, and colors.
@@ -294,7 +325,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addStart (  )
+void TriangleSet::addStart()
 {
   typedef Usul::Interfaces::IProgressBar IProgressBar;
   typedef Usul::Interfaces::IStatusBar IStatusBar;
@@ -344,7 +375,7 @@ void TriangleSet::addStart (  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addFinish (  )
+void TriangleSet::addFinish()
 {
   // Get the interface.
   typedef Usul::Interfaces::IStatusBar IStatusBar;
@@ -433,7 +464,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );
 
-  if( _dirty )
+  if ( _dirty )
   {
     //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
@@ -778,7 +809,7 @@ void TriangleSet::remove ( std::vector<unsigned int>& remove, Usul::Interfaces::
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Turn on color and set all trianlges to given color.
+//  Turn on color and set all triangles to given color.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -790,7 +821,6 @@ void TriangleSet::colorOn( const osg::Vec4& color )
   std::fill ( _colors->begin(), _colors->end(), color );
       
   _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-
   _geometry->dirtyDisplayList();
 }
 
@@ -804,7 +834,6 @@ void TriangleSet::colorOn( const osg::Vec4& color )
 void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
 {
   _colors->at( index ) = color;
-
   _geometry->dirtyDisplayList();
 }
 
@@ -817,8 +846,7 @@ void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
 
 void TriangleSet::colorOff ()
 {
-  _geometry->setColorArray( 0x0 );
-
+  _geometry->setColorArray ( 0x0 );
   _geometry->dirtyDisplayList();
 }
 
@@ -829,9 +857,9 @@ void TriangleSet::colorOff ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TriangleSet::displayList ( ) const
+bool TriangleSet::displayList() const
 {
-  return _geometry->getUseDisplayList ( );
+  return _geometry->getUseDisplayList();
 }
 
 
@@ -845,4 +873,3 @@ void TriangleSet::displayList ( bool b )
 {
   _geometry->setUseDisplayList ( b );
 }
-

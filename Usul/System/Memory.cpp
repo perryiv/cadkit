@@ -9,116 +9,146 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Preference class to hold application-defined state.
+//  Class that queries machine memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Usul/Shared/Preferences.h"
+#include "Usul/System/Memory.h"
 
+#include <sstream>
+
+#ifdef _MSC_VER
+# include <windows.h> // For GetComputerName()
+#endif
 
 using namespace Usul;
-using namespace Usul::Shared;
+using namespace Usul::System;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the single instance.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Usul
+Usul::Types::Uint64 Memory::totalPhysical()
 {
-  namespace Shared
-  {
-    namespace Detail
-    {
-      Usul::Shared::Preferences *_instance ( 0x0 );
-    }
-  }
+#ifdef _MSC_VER
+
+  ::MEMORYSTATUS status;
+  ::GlobalMemoryStatus ( &status );
+  return status.dwTotalPhys;
+
+#else
+
+  TODO
+
+#endif
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Preferences::Preferences() : 
-  _bools(),
-  _strings()
+Usul::Types::Uint64 Memory::totalVirtual()
 {
+#ifdef _MSC_VER
+
+  ::MEMORYSTATUS status;
+  ::GlobalMemoryStatus ( &status );
+  return status.dwTotalVirtual;
+
+#else
+
+  TODO
+
+#endif
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destructor.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Preferences::~Preferences()
+Usul::Types::Uint64 Memory::availablePhysical()
 {
+#ifdef _MSC_VER
+
+  ::MEMORYSTATUS status;
+  ::GlobalMemoryStatus ( &status );
+  return status.dwAvailPhys;
+
+#else
+
+  TODO
+
+#endif
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the single instance.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Preferences &Preferences::instance()
+Usul::Types::Uint64 Memory::availableVirtual()
 {
-  if ( 0x0 == Usul::Shared::Detail::_instance )
-    Usul::Shared::Detail::_instance = new Preferences;
-  return *(Usul::Shared::Detail::_instance);
+#ifdef _MSC_VER
+
+  ::MEMORYSTATUS status;
+  ::GlobalMemoryStatus ( &status );
+  return status.dwAvailVirtual;
+
+#else
+
+  TODO
+
+#endif
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the value.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Preferences::getBool ( const std::string &key )
+Usul::Types::Uint64 Memory::usedPhysical()
 {
-  return _bools[key];
+  return ( Memory::totalPhysical() - Memory::availablePhysical() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the value.
+//  Get the memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Preferences::getString ( const std::string &key )
+Usul::Types::Uint64 Memory::usedVirtual()
 {
-  return _strings[key];
+  return ( Memory::totalVirtual() - Memory::availableVirtual() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the value.
+//  Return a formatted string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Preferences::setBool ( const std::string &key, bool value )
+std::string Memory::formatPhysical()
 {
-  _bools[key] = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Preferences::setString ( const std::string &key, const std::string &value )
-{
-  _strings[key] = value;
+  const Usul::Types::Uint64 toKB ( 1024 );
+  std::ostringstream out;
+  out << "Memory Used: " << Memory::usedPhysical()      / toKB 
+      << ", Available: " << Memory::availablePhysical() / toKB 
+      << ", Total: "     << Memory::totalPhysical()     / toKB;
+  return out.str();
 }

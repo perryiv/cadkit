@@ -41,12 +41,12 @@ public:
   void            append ( Command* command );
 
   // Build
-  void            build( bool shown = true,
-                         unsigned int layout = FX::LAYOUT_SIDE_TOP | FX::FRAME_RAISED | FX::LAYOUT_DOCK_SAME, 
-                         int x = 0, 
-                         int y = 0, 
-                         int width = 0,
-                         int height = 0 );
+  void            build ( bool shown = true,
+                          unsigned int layout = FX::LAYOUT_SIDE_TOP | FX::FRAME_RAISED | FX::LAYOUT_DOCK_SAME, 
+                          int x = 0, 
+                          int y = 0, 
+                          int width = 0,
+                          int height = 0 );
 
   // Clear
   virtual void    clear();

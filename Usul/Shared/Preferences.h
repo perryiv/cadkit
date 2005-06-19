@@ -33,11 +33,13 @@ public:
   // Return the single instance.
   static Preferences &instance();
 
-  // Get the boolean.
-  bool &        getBool ( const std::string &key );
+  // Get the value.
+  bool                  getBool   ( const std::string &key );
+  const std::string &   getString ( const std::string &key );
 
-  // Set the boolean.
-  void          setBool ( const std::string &key, bool t );
+  // Set the value.
+  void                  setBool   ( const std::string &key, bool value );
+  void                  setString ( const std::string &key, const std::string &value );
 
 private:
 
@@ -49,7 +51,8 @@ private:
   Preferences &operator = ( const Preferences & );
   Preferences ( const Preferences & );
 
-  std::map < std::string, bool > _bools;
+  std::map < std::string, bool >        _bools;
+  std::map < std::string, std::string > _strings;
 };
 
 

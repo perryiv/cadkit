@@ -508,7 +508,7 @@ void Message::buttons ( const std::string &b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Message::_save ( const std::string &result, FX::FXRegistry &reg ) const
+void Message::_save ( const std::string &result ) const
 {
   // Loop through the check-buttons.
   for ( Checks::const_iterator i = _checks.begin(); i != _checks.end(); ++i )
@@ -518,7 +518,7 @@ void Message::_save ( const std::string &result, FX::FXRegistry &reg ) const
     {
       // Should we persist?
       if ( _cacheIf.second.second )
-        FoxTools::Registry::write ( reg, Detail::REGISTRY_SECTION, this->id(), result );
+        FoxTools::Registry::write ( Detail::REGISTRY_SECTION, this->id(), result );
 
       // Otherwise...
       else
@@ -534,7 +534,7 @@ void Message::_save ( const std::string &result, FX::FXRegistry &reg ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Message::_find ( FX::FXRegistry &reg ) const
+std::string Message::_find() const
 {
   // Handle empty string.
   if ( this->id().empty() )
@@ -546,7 +546,7 @@ std::string Message::_find ( FX::FXRegistry &reg ) const
     return i->second;
 
   // Check the registry.
-  const std::string cached ( FoxTools::Registry::read ( reg, Detail::REGISTRY_SECTION, this->id(), std::string() ) );
+  const std::string cached ( FoxTools::Registry::read ( Detail::REGISTRY_SECTION, this->id(), std::string() ) );
   if ( !cached.empty() )
     return cached;
 
@@ -666,7 +666,7 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
   SET_COLOR ( &dialog, 0, 0, 255 );
 
   // See if we already have the answer.
-  const std::string cached ( this->_find ( dialog.getApp()->reg() ) );
+  const std::string cached ( this->_find() );
   if ( !cached.empty() )
     return cached;
 
@@ -767,7 +767,7 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
   const std::string result ( ( _result.empty() ) ? this->closeButton() : _result );
 
   // Cache results if we are supposed to.
-  this->_save ( result, dialog.getApp()->reg() );
+  this->_save ( result );
 
   // Return the result.
   return result;

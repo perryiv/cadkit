@@ -31,6 +31,7 @@ struct ISendMessage : public Usul::Interfaces::IUnknown
     ID_BUILD_SCENE,
     ID_RENDER_SCENE,
     ID_CLOSE,
+    ID_DISPLAY_LISTS_UPDATE,
     ID_LAST
   };
 

@@ -46,7 +46,7 @@ public:
   typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > Triangles;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef std::map<std::string,std::string>     Options;
+  typedef std::map<std::string,std::string> Options;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -69,7 +69,7 @@ public:
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
 
   // Clear existing data.
-  void                    clear();
+  void                    clear ( Unknown *caller = 0x0 );
 
   // Turn on color and set all trianlges to given color
   void                    colorOn ( const osg::Vec4& color );
@@ -81,11 +81,11 @@ public:
   void                    colorOff ();
 
   // Delete triangle at given index
-  void                    deleteTriangle( unsigned int index );
+  void                    deleteTriangle ( unsigned int index );
 
   // Get/Set the display list flag
-  bool                    displayList () const; 
-  void                    displayList ( bool ); 
+  bool                    displayList () const;
+  void                    displayList ( bool );
 
   // Flip the normal vectors.
   void                    flipNormals();

@@ -162,9 +162,6 @@ osg::Node *ReaderWriterCRSS::_makeCube ( float size ) const
   // Make a cube.
   osg::ref_ptr<osg::Geometry> geometry ( _factory->cube ( osg::Vec3 ( size, size, size ) ) );
 
-  // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( false );
-
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( geometry.get() );
@@ -193,9 +190,6 @@ osg::Node *ReaderWriterCRSS::_makeSphere ( float radius, const osg::Vec2 &detail
 
   // Make a sphere.
   osg::ref_ptr<osg::Geometry> geometry ( _factory->sphere ( radius, size, latRange, longRange ) );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  geometry->setUseDisplayList ( false );
 
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );

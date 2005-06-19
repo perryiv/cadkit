@@ -766,6 +766,12 @@
 					RelativePath="System\LastError.h">
 				</File>
 				<File
+					RelativePath=".\System\Memory.cpp">
+				</File>
+				<File
+					RelativePath=".\System\Memory.h">
+				</File>
+				<File
 					RelativePath=".\System\Screen.cpp">
 				</File>
 				<File

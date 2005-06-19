@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(FOX_INC_DIR);../../;../"
+				AdditionalIncludeDirectories="$(FOX_INC_DIR);../../;../;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="COMPILING_FOX_TOOLS;FOXDLL;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -93,7 +93,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(FOX_INC_DIR);../../;../"
+				AdditionalIncludeDirectories="$(FOX_INC_DIR);../../;../;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="COMPILING_FOX_TOOLS;FOXDLL;_USRDLL;NDEBUG;WIN32;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -291,6 +291,9 @@
 			<Filter
 				Name="Registry"
 				Filter="">
+				<File
+					RelativePath=".\Registry\Registry.cpp">
+				</File>
 				<File
 					RelativePath=".\Registry\Registry.h">
 				</File>

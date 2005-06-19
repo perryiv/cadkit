@@ -23,8 +23,12 @@
 #include "FoxTools/Headers/MainWindow.h"
 #include "FoxTools/Headers/FileDialog.h"
 #include "FoxTools/Headers/App.h"
+#include "FoxTools/Registry/Registry.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/File/Path.h"
+
+#include "boost/algorithm/string/replace.hpp"
 
 #include <sstream>
 #include <algorithm>
@@ -39,10 +43,25 @@
 #define SLASH '/'
 #endif
 
-#define FILTER_INDEX "filter_index"
+#ifdef _WIN32
+#define USE_NATIVE_WINDOWS_FILE_DIALOG
+#endif
 
 using namespace FoxTools;
 using namespace Dialogs;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Some details.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const char REGISTRY_SECTION[]  = "FileSelectionDialogResults";
+  const char FILTER_INDEX[]      = "filter_index";
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,7 +134,11 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   std::string patterns;
   this->_makePatterns ( patterns );
 
-#ifdef _WIN32
+  // Get the initial directory from the registry.
+  const std::string regKey ( _title.empty() ? "default_file_selection_dialog_key" : _title );
+  const std::string initialDir ( FoxTools::Registry::read ( Detail::REGISTRY_SECTION, regKey, std::string() ) );
+
+#ifdef USE_NATIVE_WINDOWS_FILE_DIALOG
 
   // The string that will hold the filenames. It is also used for the initial 
   // filename displayed.
@@ -138,7 +161,7 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   dialog.nMaxFile = maxStringLength;
   dialog.lpstrFileTitle = NULL;
   dialog.nMaxFileTitle = 0;
-  dialog.lpstrInitialDir = NULL;
+  dialog.lpstrInitialDir = ( initialDir.empty() ) ? NULL : initialDir.c_str();
   dialog.lpstrTitle = _title.c_str();
   dialog.Flags = OFN_EXPLORER;
   dialog.nFileOffset = 0;
@@ -228,6 +251,9 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   // Set initial pattern.
   dialog.setCurrentPattern ( _filterIndex );
 
+  // Set the initial directory.
+  dialog.setDirectory ( initialDir.c_str() );
+
   // Run the dialog in a modal loop.
   if ( dialog.execute ( _placement ) )
   {
@@ -245,6 +271,14 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   }
 
 #endif
+
+  // If we have a filename.
+  if ( !_filenames.empty() )
+  {
+    // Get the directory and save it in the registry.
+    const std::string dir ( Usul::File::directory ( _filenames.front(), false ) );
+    FoxTools::Registry::write ( Detail::REGISTRY_SECTION, regKey, dir );
+  }
 
   // It worked.
   return true;
@@ -348,10 +382,10 @@ void FileSelection::_makePatterns ( std::string &patterns ) const
   for ( Filters::const_iterator i = filters.begin(); i != filters.end(); ++i )
   {
     // Get the name and pattern.
-    const std::string &name    = i->first;
-    const std::string &pattern = i->second;
+    std::string name    ( i->first  );
+    std::string pattern ( i->second );
 
-    #ifdef _WIN32
+    #ifdef USE_NATIVE_WINDOWS_FILE_DIALOG
 
       // Append the pattern.
       patterns += name;
@@ -361,13 +395,16 @@ void FileSelection::_makePatterns ( std::string &patterns ) const
 
     #else
 
+      // The extensions have to be separated by a comma.
+      boost::algorithm::replace_all ( name, " *.", ",*." );
+
       // Append the names.
       patterns += ( name + "\n" );
 
     #endif
   }
 
-  #ifdef _WIN32
+  #ifdef USE_NATIVE_WINDOWS_FILE_DIALOG
 
     // The very end is terminated by two null characters. Since the strings in 
     // the list are already terminated by a null, we just need one more.
@@ -414,14 +451,14 @@ FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, co
   section << "file_dialog_" << name;
 
   // Set the filter index.
-  dialog.filterIndex ( ( title.empty() ) ? 0 : FoxTools::Functions::application()->reg().readUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() ) );
+  dialog.filterIndex ( ( title.empty() ) ? 0 : FoxTools::Registry::read ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() ) );
 
   // Run the dialog in a modal loop.
   if ( !dialog.runModal ( owner ) )
     return FilesResult();
 
   // Push the filter index back into the registry.
-  FoxTools::Functions::application()->reg().writeUnsignedEntry ( section.str().c_str(), FILTER_INDEX, dialog.filterIndex() );
+  FoxTools::Registry::write ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() );
 
   // Return the file names.
   return FilesResult ( dialog.filenames(), dialog.filter ( dialog.filterIndex() ) );

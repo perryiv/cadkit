@@ -23,7 +23,7 @@
 #include <map>
 #include <string>
 
-namespace FX { class FXObject; class FXIcon; class FXRegistry; };
+namespace FX { class FXObject; class FXIcon; };
 
 
 namespace FoxTools {
@@ -164,11 +164,11 @@ protected:
   Message ( const Message & );
   Message &               operator = ( const Message & );
 
-  std::string             _find ( FX::FXRegistry &reg ) const;
+  std::string             _find() const;
 
   void                    _grow ( unsigned int rows, unsigned int columns );
 
-  void                    _save ( const std::string &result, FX::FXRegistry &reg ) const;
+  void                    _save ( const std::string &result ) const;
 
 private:
 

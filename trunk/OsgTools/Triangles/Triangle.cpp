@@ -92,11 +92,13 @@ Triangle::~Triangle()
   Detail::unreference ( _v2 );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Sets all vertices to null.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Triangle::clear()
 {
   this->vertex0 ( 0x0 );
@@ -110,6 +112,7 @@ void Triangle::clear()
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Triangle::vertex0 ( SharedVertex *v )
 {
   Detail::unreference ( _v0 );
@@ -123,6 +126,7 @@ void Triangle::vertex0 ( SharedVertex *v )
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Triangle::vertex1 ( SharedVertex *v )
 {
   Detail::unreference ( _v1 );
@@ -136,6 +140,7 @@ void Triangle::vertex1 ( SharedVertex *v )
 //  Set the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Triangle::vertex2 ( SharedVertex *v )
 {
   Detail::unreference ( _v2 );
@@ -172,6 +177,7 @@ void Triangle::unref()
     delete this;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Has this triangle been visited?
@@ -207,17 +213,16 @@ void Triangle::visited ( bool v )
 
 void Triangle::getNeighbors( PolygonList& triangles ) const
 {
-  //Insert each shared vertex's list of polygons
+  // Insert each shared vertex's list of polygons
   triangles.insert ( triangles.end(), _v0->begin(), _v0->end() );
   triangles.insert ( triangles.end(), _v1->begin(), _v1->end() );
   triangles.insert ( triangles.end(), _v2->begin(), _v2->end() );
 
-  //Sort them in ascending order
+  // Sort them in ascending order
   triangles.sort ( Usul::Polygons::PolyLess< Triangle >() );
 
-  //Remove all unique polygons
+  // Remove all unique polygons
   triangles.unique( Usul::Polygons::PolyEqual < Triangle >() );
-  
 }
 
 
@@ -246,4 +251,3 @@ void Triangle::deleted( bool d )
   else
     _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, DELETED );
 }
-

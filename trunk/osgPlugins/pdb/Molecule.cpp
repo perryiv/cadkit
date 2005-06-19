@@ -252,9 +252,6 @@ osg::Node * Molecule::_makeCylinder ( const osg::Vec3 &point1, const osg::Vec3 &
   // Make a cylinder of length one with given radius and number of sides.
   osg::ref_ptr<osg::Geometry> geom ( _shapeFactory->cylinder ( radius, sides ) );
 
-  // TODO, make this an option. Display lists crash with really big files.
-  geom->setUseDisplayList ( false );
-
   // Add cylinder to the scene.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( geom.get() );
@@ -330,9 +327,6 @@ osg::Node *Molecule::_makeSphere ( const osg::Vec3 &center, float radius, const 
   ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
   osg::ref_ptr<osg::Geometry> geom ( _shapeFactory->sphere ( radius, size, latRange, longRange ) );
 
-  // TODO, make this an option. Display lists crash with really big files.
-  geom->setUseDisplayList ( false );
-
   // Add the geometry to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   geode->addDrawable ( geom.get() );
@@ -352,9 +346,6 @@ osg::Node *Molecule::_makeCube ( const osg::Vec3 &center, float size ) const
   // Make the cube.
   osg::Vec3 sides ( size, size, size );
   osg::ref_ptr<osg::Geometry> geom ( _shapeFactory->cube ( sides ) );
-
-  // TODO, make this an option. Display lists crash with really big files.
-  geom->setUseDisplayList ( false );
 
   // Add the cube to a geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );

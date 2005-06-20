@@ -245,12 +245,6 @@
 					RelativePath=".\Functions\Enable.h">
 				</File>
 				<File
-					RelativePath=".\Functions\Files.cpp">
-				</File>
-				<File
-					RelativePath=".\Functions\Files.h">
-				</File>
-				<File
 					RelativePath=".\Functions\GLVisual.cpp">
 				</File>
 				<File

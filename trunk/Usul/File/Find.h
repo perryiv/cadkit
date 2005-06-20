@@ -34,8 +34,8 @@ namespace File {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class NameContainer >
-inline void find ( const std::string &pattern, NameContainer &names )
+template < class Names >
+inline void find ( const std::string &pattern, Names &names )
 {
 #if _WIN32
 
@@ -77,6 +77,25 @@ inline void find ( const std::string &pattern, NameContainer &names )
   TODO
 
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a list of all files in the given directories that match the pattern.
+//  Typical patterns are *.txt, *.*, or *
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Dirs, class Names >
+inline void find ( const Dirs &dirs, const std::string &pattern, Names &fl )
+{
+  // Loop through the directories.
+  for ( Dirs::const_iterator i = dirs.begin(); i != dirs.end(); ++i )
+  {
+    // Append the files.
+    Usul::File::find ( *i + "/" + pattern, fl );
+  }
 }
 
 

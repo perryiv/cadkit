@@ -219,6 +219,12 @@
 				Name="CommandLine"
 				Filter="">
 				<File
+					RelativePath=".\CommandLine\Arguments.cpp">
+				</File>
+				<File
+					RelativePath=".\CommandLine\Arguments.h">
+				</File>
+				<File
 					RelativePath="CommandLine\Parser.h">
 				</File>
 			</Filter>

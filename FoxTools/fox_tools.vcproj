@@ -673,6 +673,26 @@
 					RelativePath=".\Items\Item.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="App"
+				Filter="">
+				<File
+					RelativePath=".\App\Application.cpp">
+				</File>
+				<File
+					RelativePath=".\App\Application.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Windows"
+				Filter="">
+				<File
+					RelativePath=".\Windows\MdiChildWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\Windows\MdiChildWindow.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

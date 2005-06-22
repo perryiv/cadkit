@@ -24,7 +24,7 @@ namespace Detail {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Loop, class Vertex >
-bool containsVertex ( const Loop& loop, Vertex* vertex )
+inline bool containsVertex ( const Loop& loop, Vertex* vertex )
 {
   typename Vertex::findVertex find ( vertex );
 
@@ -39,7 +39,7 @@ bool containsVertex ( const Loop& loop, Vertex* vertex )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Polygons, class IndexSequence, class Loop, class Polygon, class SharedVertex >
-void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p, SharedVertex *v1, SharedVertex *v2 )
+inline void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p, SharedVertex *v1, SharedVertex *v2 )
 {
   //Polygon list will always contain at least one polygon
   if( v1->numTriangles() == 1 )
@@ -70,7 +70,7 @@ void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& l
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Polygons, class IndexSequence, class Loop, class Polygon >
-void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p )
+inline void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Polygon* p )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
 
@@ -140,7 +140,7 @@ void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loop, Poly
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Polygons, class IndexSequence, class Loop, class SharedVertex >
-void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, SharedVertex* sv )
+inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop, SharedVertex* sv )
 {
   typedef typename SharedVertex::TriangleSequence PolygonList;
   typedef typename Polygons::value_type PolygonPtr;
@@ -195,7 +195,7 @@ void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop& loop,
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class PolygonList, class Polygon >
-void findEdge ( PolygonList& polygons, Polygon* check )
+inline void findEdge ( PolygonList& polygons, Polygon* check )
 {
   typedef typename Polygon::SharedVertex SharedVertex;
 

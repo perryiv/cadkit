@@ -323,7 +323,7 @@ struct Vertexchain
 
 
 
-double log2( double n )
+inline double log2( double n )
 {
   return log( n ) / log ( (double) 2 );
 }
@@ -332,7 +332,7 @@ double log2( double n )
 
 
 /* Get log*n for given n */
-int math_logstar_n( int n )
+inline int math_logstar_n( int n )
 {
   int i ( 0 );
   double v ( n );
@@ -344,7 +344,7 @@ int math_logstar_n( int n )
 }
   
 
-int math_N(int n, int h)
+inline int math_N(int n, int h)
 {
   double v ( n );
 
@@ -360,13 +360,13 @@ static int q_idx = 0;
 static int tr_idx = 0;
 
 /* Return a new node to be added into the query tree */
-int newnode()
+inline int newnode()
 {
   return q_idx++;
 }
 
 /* Return a free trapezoid */
-int newtrap( std::vector< Trapezoid > &tr )
+inline int newtrap( std::vector< Trapezoid > &tr )
 {
   tr.at ( tr_idx ).lseg = -1;
   tr.at ( tr_idx ).rseg = -1;
@@ -389,7 +389,7 @@ int newtrap( std::vector< Trapezoid > &tr )
  *                3
  */
 
-int init_query_structure( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg )
+inline int init_query_structure( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg )
 {
   int i1, i2, i3, i4, i5, i6, i7, root;
   int t1, t2, t3, t4;
@@ -472,7 +472,7 @@ int init_query_structure( int segnum, std::vector < Node > &qs, std::vector < Tr
  * have the same y--cood, etc.
  */
 
-bool is_left_of( int segnum, const Point &v, const std::vector< Segment > &seg )
+inline bool is_left_of( int segnum, const Point &v, const std::vector< Segment > &seg )
 {
   const Segment &s ( seg.at( segnum ) );
 
@@ -529,7 +529,7 @@ bool is_left_of( int segnum, const Point &v, const std::vector< Segment > &seg )
 /* already inserted into the segment tree. Use the simple test of */
 /* whether the segment which shares this endpoint is already inserted */
 
-bool inserted( int segnum, int whichpt, std::vector< Segment > &seg )
+inline bool inserted( int segnum, int whichpt, std::vector< Segment > &seg )
 {
   if (whichpt == FIRSTPT)
     return seg.at( seg.at(segnum).prev ).is_inserted;
@@ -541,7 +541,7 @@ bool inserted( int segnum, int whichpt, std::vector< Segment > &seg )
  * point v lie in. The return value is the trapezoid number. 
  */
 
-int locate_endpoint( const Point &v, const Point &vo, int r, const std::vector< Node > &qs, const std::vector< Segment >& seg )
+inline int locate_endpoint( const Point &v, const Point &vo, int r, const std::vector< Node > &qs, const std::vector< Segment >& seg )
 {
   const Node &node ( qs.at( r ) );
   
@@ -599,7 +599,7 @@ int locate_endpoint( const Point &v, const Point &vo, int r, const std::vector< 
  * divided because of its insertion
  */
 
-void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector< Node > &qs, std::vector< Trapezoid> &tr  )
+inline void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector< Node > &qs, std::vector< Trapezoid> &tr  )
 {
   int tnext ( 0 );
   int cond  ( 0 );
@@ -668,7 +668,7 @@ void merge_trapezoids( int segnum, int tfirst, int tlast, int side, std::vector<
  * the  lower trapezoid dividing all the trapezoids in between .
  */
 
-void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg  )
+inline void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid > &tr, std::vector < Segment > &seg  )
 {
   int tu, tl, sk, tfirst, tlast;
   int tfirstr = -1, tlastr = -1, tfirstl = -1, tlastl = -1;
@@ -1247,7 +1247,7 @@ void add_segment( int segnum, std::vector < Node > &qs, std::vector < Trapezoid 
  * This is done to speed up the location-query for the endpoint when
  * the segment is inserted into the trapezoidation subsequently
  */
-int find_new_roots( int segnum, const std::vector< Node > &qs, std::vector< Segment > &seg, const std::vector< Trapezoid > &tr  )
+inline int find_new_roots( int segnum, const std::vector< Node > &qs, std::vector< Segment > &seg, const std::vector< Trapezoid > &tr  )
 {
   Segment &s ( seg.at(segnum) );
   
@@ -1265,7 +1265,7 @@ int find_new_roots( int segnum, const std::vector< Node > &qs, std::vector< Segm
 
 
   /* Main routine to perform trapezoidation */
-int construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trapezoid > &tr, std::vector < Segment > &seg )
+inline int construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trapezoid > &tr, std::vector < Segment > &seg )
 {
   int i ( 1 );
   int h ( 1 );
@@ -1360,7 +1360,7 @@ int construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector< Trape
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool inside_polygon( const Trapezoid &trap, const std::vector < Segment > &seg )
+inline bool inside_polygon( const Trapezoid &trap, const std::vector < Segment > &seg )
 {
   int rseg ( trap.rseg );
 
@@ -1387,7 +1387,7 @@ static int mon_idx = 0;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int newmon()
+inline int newmon()
 {
   return ++mon_idx;
 }
@@ -1401,7 +1401,7 @@ static int chain_idx = 0;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int new_chain_element()
+inline int new_chain_element()
 {
   return ++chain_idx;
 }
@@ -1414,7 +1414,7 @@ int new_chain_element()
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Vertex >
-double get_angle( const Vertex &vp0, const Vertex &vpnext, const Vertex &vp1 )
+inline double get_angle( const Vertex &vp0, const Vertex &vpnext, const Vertex &vp1 )
 {
   Vertex v0 ( vpnext.x() - vp0.x(), vpnext.y() - vp0.y() );
   Vertex v1 ( vp1.x() - vp0.x(), vp1.y() - vp0.y() );
@@ -1428,7 +1428,7 @@ double get_angle( const Vertex &vp0, const Vertex &vpnext, const Vertex &vp1 )
 
 /* (v0, v1) is the new diagonal to be added to the polygon. Find which */
 /* chain to use and return the positions of v0 and v1 in p and q */ 
-int get_vertex_positions( const Vertexchain &vp0, const Vertexchain &vp1, std::vector < Vertexchain > &vert )
+inline int get_vertex_positions( const Vertexchain &vp0, const Vertexchain &vp1, std::vector < Vertexchain > &vert )
 {
   int p ( 0 );
   //int tq ( 0 );
@@ -1480,7 +1480,7 @@ int get_vertex_positions( const Vertexchain &vp0, const Vertexchain &vp1, std::v
  * the current monotone polygon mcur. Split the current polygon into 
  * two polygons using the diagonal (v0, v1) 
  */
-int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &mchain, std::vector < Vertexchain > &vert, std::vector < int > &mon )
+inline int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &mchain, std::vector < Vertexchain > &vert, std::vector < int > &mon )
 {
   Vertexchain &vp0 ( vert.at( v0 ) );
   Vertexchain &vp1 ( vert.at( v1 ) );
@@ -1533,7 +1533,7 @@ int make_new_monotone_poly( int mcur, int v0, int v1, std::vector < Monchain > &
 }
 
 /* recursively visit all the trapezoids */
-int traverse_polygon( int mcur, int trnum, int from, int dir, 
+inline int traverse_polygon( int mcur, int trnum, int from, int dir, 
                      const std::vector < Trapezoid > &tr, 
                      const std::vector < Segment > &seg, 
                      std::vector < Monchain > &mchain, 
@@ -1821,7 +1821,7 @@ int traverse_polygon( int mcur, int trnum, int from, int dir,
  * the polygon.
  */
 
-int monotonate_trapezoids( int n, std::vector < Trapezoid > &tr, std::vector < Segment > &seg, 
+inline int monotonate_trapezoids( int n, std::vector < Trapezoid > &tr, std::vector < Segment > &seg, 
                      std::vector < Monchain > &mchain, 
                      std::vector < Vertexchain > &vert,
                      std::vector < int > &mon,
@@ -1877,7 +1877,7 @@ int monotonate_trapezoids( int n, std::vector < Trapezoid > &tr, std::vector < S
  * Joseph O-Rourke, Computational Geometry in C.
  */
 template < class Triangles >
-bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
+inline bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
                      const std::vector < Monchain > &mchain, 
                      const std::vector < Vertexchain > &vert )
 {
@@ -1963,7 +1963,7 @@ bool triangulate_single_polygon( int nvert, int posmax, int side, Triangles &op,
 /* Take care not to triangulate duplicate monotone polygons */
 
 template < class Triangles >
-void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op, 
+inline void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op, 
                      std::vector < Monchain > &mchain,
                      std::vector < Vertexchain > &vert,
                      std::vector < int > &mon )
@@ -2067,7 +2067,7 @@ void triangulate_monotone_polygons( int nvert, int nmonpoly, Triangles &op,
  */
 
 template < class Sizes, class VertexSequence, class Triangles >
-void triangulate_polygon( const Sizes &sizes, const VertexSequence &vertices, Triangles &triangles )
+inline void triangulate_polygon( const Sizes &sizes, const VertexSequence &vertices, Triangles &triangles )
 {
   /*
   See 3186504610 for places that I think will need to be changed to make vertices start at 0 instead of 1.

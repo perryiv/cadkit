@@ -228,10 +228,25 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
+#ifdef __APPLE__
+  
+  reference at ( unsigned int i )
+  {
+      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
+      return _v[i];
+  }
+  const_reference at ( unsigned int i ) const
+  {
+      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
+      return _v[i];
+  }
+
+#else
+  
   reference at ( size_type i )
   {
-    ErrorChecker ( __FILE__, __LINE__, i < this->size() );
-    return _v[i];
+      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
+      return _v[i];
   }
   const_reference at ( size_type i ) const
   {
@@ -251,21 +266,25 @@ public:
     return _v[i];
   }
 
-
+#endif
+  
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Array syntax.
   //
   /////////////////////////////////////////////////////////////////////////////
-
+  
   reference operator [] ( size_type i )
   {
-    return this->at ( i );
+      return this->at ( i );
   }
   const_reference operator [] ( size_type i ) const
   {
-    return this->at ( i );
+      return this->at ( i );
   }
+
+#ifndef __APPLE__
+
   reference operator [] ( difference_type i )
   {
     return this->at ( i );
@@ -275,7 +294,8 @@ public:
     return this->at ( i );
   }
 
-
+#endif
+  
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Access first element.

@@ -648,6 +648,9 @@
 					<File
 						RelativePath=".\Interfaces\IViewer.h">
 					</File>
+					<File
+						RelativePath=".\Interfaces\IVTKCanvas.h">
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

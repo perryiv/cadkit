@@ -52,18 +52,20 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
 
     template < class IndexSequence >
     void operator() ( const IndexSequence& uncapped, bool forceRedraw = false )
-    {    
+    {
+#ifndef __APPLE__ // TODO, fix
       if( _updatePolicy() )
       {
         //Set the status bar
         std::ostringstream os;
-        os << "Number of polygons found: " << uncapped.size();
+        unsigned long numCapped ( uncapped.size() );
+        os << "Number of polygons found: " << numCapped;
         _statusBar ( os.str(), true );
 
         if( _flush.valid() )
           _flush->flushEventQueue();
       }
-
+#endif
     }
 
     void operator () ( unsigned int current, unsigned int total )

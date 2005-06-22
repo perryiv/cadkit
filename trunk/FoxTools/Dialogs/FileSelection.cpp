@@ -90,11 +90,8 @@ FileSelection::FileSelection() :
 ///////////////////////////////////////////////////////////////////////////////
 
 FileSelection::FileSelection ( const Type &type, 
-
                                const std::string &title, 
-
                                const Filters &filters, 
-
                                unsigned int initialFilter ) :
   _title       ( title ),
   _defaultFile ( "filename" ),

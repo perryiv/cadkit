@@ -4287,6 +4287,7 @@
 				LIBRARY_STYLE = DYNAMIC;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
+				SYMROOT = ../usr/local/lib;
 			};
 			dependencies = (
 			);

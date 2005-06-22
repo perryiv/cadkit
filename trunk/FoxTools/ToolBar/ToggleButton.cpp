@@ -40,6 +40,25 @@ ToggleButton::ToggleButton ( const std::string &name,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ToggleButton::ToggleButton ( const std::string &name, 
+                             const std::string &description, 
+                             unsigned int iconId, 
+                             FX::FXObject *target, 
+                             unsigned int selector, 
+                             unsigned int token ) : 
+  BaseClass ( name, "", description, target, selector, token ),
+  _button ( 0x0 ),
+  _checkedIconId  ( iconId ),
+  _uncheckedIconId ( iconId )
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////

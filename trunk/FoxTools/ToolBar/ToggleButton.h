@@ -38,6 +38,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( ToggleButton );
 
   ToggleButton ( const std::string &name, const std::string &description, unsigned int checkedIconId, unsigned int uncheckedIconId, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
+  ToggleButton ( const std::string &name, const std::string &description, unsigned int iconId, FX::FXObject *target, unsigned int selector, unsigned int token = 0  );
 
   // Clear the button
   virtual void clear();

@@ -15,6 +15,7 @@
 
 #include "Usul/System/LastError.h"
 #include "Usul/MPL/SameType.h"
+#include "Usul/Strings/Trim.h"
 
 #ifdef _WIN32
 # include <windows.h> // For GetLastError()
@@ -24,6 +25,7 @@
 
 #include <errno.h>   // For errno
 #include <string.h>  // For strerror()
+#include <algorithm>
 
 using namespace Usul;
 using namespace Usul::System;
@@ -106,6 +108,12 @@ std::string LastError::message()
 
   // Free the buffer.
   ::LocalFree ( buffer );
+
+  // Remove all carriage-return characters.
+  message.erase ( std::remove ( message.begin(), message.end(), '\r' ), message.end() );
+
+  // Remove all trailing new-line characters.
+  Usul::Strings::trimRightAll ( message, '\n' );
 
   // Return the message.
   return message;

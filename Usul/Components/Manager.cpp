@@ -150,7 +150,7 @@ Manager* Manager::_instance ( 0x0 );
 
 Manager* Manager::instance()
 {
-  if( !_instance )
+  if ( !_instance )
     _instance = new Manager();
   return _instance;
 }
@@ -170,7 +170,7 @@ _unknowns()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load plugins in given director with given extension.
+//  Load plugins in given directory with given extension.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -185,13 +185,13 @@ void Manager::load ( unsigned long iid, const std::list<std::string> &plugins, b
     try
     {
       // Find the factory
-      Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory( name ) );
+      Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory ( name ) );
 
       // Interface for adding mutliple IUnknowns
       Usul::Interfaces::IClassesFactory::QueryPtr classes ( factory );
 
       // Do we need to add more than one?
-      if( classes.valid() )
+      if ( classes.valid() )
       {
         typedef Usul::Interfaces::IClassesFactory::Unknowns Unknowns;
 
@@ -201,7 +201,7 @@ void Manager::load ( unsigned long iid, const std::list<std::string> &plugins, b
         // Go through each list and add to our set
         for( Unknowns::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
         {
-          Usul::Interfaces::IUnknown::QueryPtr unknown( *i );
+          Usul::Interfaces::IUnknown::QueryPtr unknown ( *i );
 
           // Insert into set of plugins
           if ( unknown.valid() )

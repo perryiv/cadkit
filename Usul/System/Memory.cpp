@@ -21,6 +21,12 @@
 # include <windows.h> // For GetComputerName()
 #endif
 
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+#include <sys/vmmeter.h>
+#include <Usul/Types/Types.h>
+#endif
+
 using namespace Usul;
 using namespace Usul::System;
 
@@ -38,10 +44,17 @@ Usul::Types::Uint64 Memory::totalPhysical()
   ::MEMORYSTATUS status;
   ::GlobalMemoryStatus ( &status );
   return status.dwTotalPhys;
-
+#elif __APPLE__
+  int mib[2];
+  size_t len;
+  int physmem;
+  mib[0] = CTL_HW;
+  mib[1] = HW_PHYSMEM;
+  len = sizeof(physmem);
+  sysctl(mib, 2, &physmem, &len, NULL, 0);
+  return static_cast< Usul::Types::Uint64 > ( physmem );
 #else
-
-  TODO
+  TODO FIX ME
 
 #endif
 }
@@ -61,10 +74,18 @@ Usul::Types::Uint64 Memory::totalVirtual()
   ::GlobalMemoryStatus ( &status );
   return status.dwTotalVirtual;
 
+#elif __APPLE__
+    struct xsw_usage swapusage;
+    int mib[2];
+    size_t len;
+    mib[0] = CTL_VM;
+    mib[1] = VM_SWAPUSAGE;
+    len = sizeof(swapusage);
+    sysctl(mib, 2, &swapusage, &len, NULL, 0);
+    return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_total );
+
 #else
-
-  TODO
-
+  TODO  FIX ME
 #endif
 }
 
@@ -83,10 +104,18 @@ Usul::Types::Uint64 Memory::availablePhysical()
   ::GlobalMemoryStatus ( &status );
   return status.dwAvailPhys;
 
+#elif __APPLE__
+  int mib[2];
+  size_t len;
+  int  usedmem;
+  len = sizeof(usedmem);
+  mib[1] = HW_USERMEM;
+  len = sizeof(usedmem);
+  sysctl(mib, 2, &usedmem, &len, NULL, 0);
+  return (Memory::totalPhysical() - usedmem);
 #else
 
-  TODO
-
+  TODO FIX ME
 #endif
 }
 
@@ -105,9 +134,19 @@ Usul::Types::Uint64 Memory::availableVirtual()
   ::GlobalMemoryStatus ( &status );
   return status.dwAvailVirtual;
 
-#else
+#elif __APPLE__
 
-  TODO
+    struct xsw_usage swapusage;
+    int mib[2];
+    size_t len;
+    mib[0] = CTL_VM;
+    mib[1] = VM_SWAPUSAGE;
+    len = sizeof(swapusage);
+    sysctl(mib, 2, &swapusage, &len, NULL, 0);
+    return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_avail );
+    
+#else
+ TOD FIX ME
 
 #endif
 }

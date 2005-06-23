@@ -64,6 +64,8 @@
 		};
 		08FB7795FE84155DC02AAC07 = {
 			children = (
+				431781870869D677006A0DBE,
+				4317818A0869D677006A0DBE,
 				4307296208633F4E0094F9EB,
 				4307296508633F4E0094F9EB,
 				4307296A08633F4F0094F9EB,
@@ -72,7 +74,6 @@
 				4307297308633F4F0094F9EB,
 				4307298708633F4F0094F9EB,
 				430729CB08633F4F0094F9EB,
-				430729CF08633F4F0094F9EB,
 				430729D008633F4F0094F9EB,
 				430729D508633F4F0094F9EB,
 				430729E408633F4F0094F9EB,
@@ -1187,14 +1188,6 @@
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
-		430729CF08633F4F0094F9EB = {
-			children = (
-			);
-			isa = PBXGroup;
-			path = Images;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
 		430729D008633F4F0094F9EB = {
 			children = (
 				430729D108633F4F0094F9EB,
@@ -1394,6 +1387,7 @@
 		430729E408633F4F0094F9EB = {
 			children = (
 				430729E508633F4F0094F9EB,
+				43979A4008690A1100397AD6,
 			);
 			isa = PBXGroup;
 			path = Registry;
@@ -2415,6 +2409,96 @@
 			settings = {
 			};
 		};
+		431781870869D677006A0DBE = {
+			children = (
+				431781880869D677006A0DBE,
+				431781890869D677006A0DBE,
+			);
+			isa = PBXGroup;
+			path = App;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		431781880869D677006A0DBE = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = Application.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		431781890869D677006A0DBE = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = Application.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4317818A0869D677006A0DBE = {
+			children = (
+				4317818B0869D677006A0DBE,
+				4317818C0869D677006A0DBE,
+			);
+			isa = PBXGroup;
+			path = Windows;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4317818B0869D677006A0DBE = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = MdiChildWindow.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4317818C0869D677006A0DBE = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = MdiChildWindow.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4317818D0869D677006A0DBE = {
+			fileRef = 431781880869D677006A0DBE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4317818E0869D677006A0DBE = {
+			fileRef = 431781890869D677006A0DBE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4317818F0869D677006A0DBE = {
+			fileRef = 4317818B0869D677006A0DBE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		431781900869D677006A0DBE = {
+			fileRef = 4317818C0869D677006A0DBE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43979A4008690A1100397AD6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = Registry.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		43979A4108690A1100397AD6 = {
+			fileRef = 43979A4008690A1100397AD6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		43B7D140085F755E00C2A48C = {
 			isa = PBXFileReference;
 			lastKnownFileType = "compiled.mach-o.dylib";
@@ -2566,6 +2650,8 @@
 				43072A7B08633F4F0094F9EB,
 				43072A7D08633F4F0094F9EB,
 				43072A7F08633F4F0094F9EB,
+				4317818E0869D677006A0DBE,
+				431781900869D677006A0DBE,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2604,6 +2690,9 @@
 				43072A7A08633F4F0094F9EB,
 				43072A7C08633F4F0094F9EB,
 				43072A7E08633F4F0094F9EB,
+				43979A4108690A1100397AD6,
+				4317818D0869D677006A0DBE,
+				4317818F0869D677006A0DBE,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2625,7 +2714,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "_DEBUG _COMPILING_FOX_TOOLS";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "/Users/mjackson/Projects/ /usr/local/include/fox-1.4";
+				HEADER_SEARCH_PATHS = "/Users/mjackson/Projects/ /usr/local/include/fox-1.4 /usr/local/include/boost";
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
@@ -2633,6 +2722,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxTools;
+				SYMROOT = ../usr/local/lib;
 			};
 			dependencies = (
 			);

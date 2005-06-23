@@ -25,11 +25,15 @@ namespace FoxTools {
 namespace Registry {
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Read the value.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+
+
 
 FOX_TOOLS_EXPORT std::string    read ( const std::string &section, const std::string &key, const std::string &defaultValue );
 FOX_TOOLS_EXPORT unsigned int   read ( const std::string &section, const std::string &key, unsigned int       defaultValue );
@@ -37,6 +41,7 @@ FOX_TOOLS_EXPORT int            read ( const std::string &section, const std::st
 FOX_TOOLS_EXPORT bool           read ( const std::string &section, const std::string &key, bool               defaultValue );
 FOX_TOOLS_EXPORT float          read ( const std::string &section, const std::string &key, float              defaultValue );
 FOX_TOOLS_EXPORT double         read ( const std::string &section, const std::string &key, double             defaultValue );
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

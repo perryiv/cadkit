@@ -30,6 +30,8 @@ BIN_DIR     = ../../bin
 
 OBJECTS = $(SOURCE:.cpp=.o)
 
+all : default 
+
 default : $(TARGET)
 
 $(TARGET) : $(OBJECTS)

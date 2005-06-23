@@ -16,7 +16,7 @@
 #ifndef _FOX_TOOLS_FIND_PARENT_FUNCTIONS_H_
 #define _FOX_TOOLS_FIND_PARENT_FUNCTIONS_H_
 
-namespace FX { class FXWindow; class FXMainWindow; };
+#include "FoxTools/Headers/Window.h"
 
 
 namespace FoxTools {

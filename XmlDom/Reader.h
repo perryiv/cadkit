@@ -101,7 +101,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Reader &operator = ( const Reader &n )
+  Reader &operator = ( const Reader &r )
   {
     _errorPolicy = r._errorPolicy;
     _callback    = r._callback;

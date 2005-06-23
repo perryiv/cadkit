@@ -73,7 +73,7 @@ CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
 
-all: default
+all : default
 
 default : $(TARGET)
 

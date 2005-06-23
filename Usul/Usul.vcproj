@@ -408,6 +408,9 @@
 						RelativePath=".\Interfaces\IFlushEvents.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGUIDelegate.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ILoadFileDialog.h">
 					</File>
 					<File
@@ -442,6 +445,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IUpdateTreeControls.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IWindow.h">
 					</File>
 				</Filter>
 				<Filter

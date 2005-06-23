@@ -38,7 +38,7 @@ struct ISendMessage : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3448455701u };
 
-  virtual void sendMessage ( unsigned short message, const FX::FXWindow *skip = 0x0 ) = 0;
+  virtual void sendMessage ( unsigned short message, const Usul::Interfaces::IUnknown *skip = 0x0 ) = 0;
 };
 
 }

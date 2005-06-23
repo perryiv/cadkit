@@ -21,11 +21,11 @@
 #include <string>
 #include <utility>
 
-namespace FX { class FXWindow; }
-
 namespace Usul {
 namespace Interfaces {
 
+  struct IWindow;
+  struct IViewer;
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
@@ -46,11 +46,11 @@ struct IDocument : public Usul::Interfaces::IUnknown
   // Make your self active
   virtual void                          active      ( ) = 0;
 
-  virtual void                          addWindow   ( FX::FXWindow *window ) = 0;
-  virtual void                          addListener ( FX::FXWindow *window ) = 0;
+  virtual void                          addWindow   ( Usul::Interfaces::IWindow *window ) = 0;
+  virtual void                          addView     ( Usul::Interfaces::IViewer *view   ) = 0;
 
   // The following window is closing
-  virtual void                          closing     ( FX::FXWindow *window ) = 0;
+  virtual void                          closing     ( Usul::Interfaces::IWindow *window ) = 0;
 
   virtual Format                        fileFormat() const = 0;
   virtual void                          fileFormat ( const Format & ) = 0;
@@ -64,8 +64,8 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual bool                          modified() const = 0;
   virtual void                          modified ( bool ) = 0;
 
-  virtual void                          removeWindow   ( FX::FXWindow *window ) = 0;
-  virtual void                          removeListener ( FX::FXWindow *window ) = 0;
+  virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
+  virtual void                          removeView     ( Usul::Interfaces::IViewer *view   ) = 0;
 
   virtual const std::string&            typeName() const = 0;
 };

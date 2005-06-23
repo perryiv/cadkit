@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Interface for a window
+///  Interface for a prompting a question dialog
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_WINDOW_H_
-#define _USUL_INTERFACE_WINDOW_H_
+#ifndef _USUL_INTERFACE_QUESTION_H_
+#define _USUL_INTERFACE_QUESTION_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,16 +22,15 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IWindow : public Usul::Interfaces::IUnknown
+struct IQuestion : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IWindow );
+  USUL_DECLARE_QUERY_POINTERS ( IQuestion );
 
   /// Id for this interface.
-  enum { IID = 4041454608u };
+  enum { IID = 3434193828u };
 
-  virtual void setFocus() = 0;
-  virtual void handleMessage ( unsigned short message ) = 0;
+  virtual std::string      question ( const std::string &buttons,  const std::string &title, const std::string &text ) = 0;
 
 };
 
@@ -40,5 +39,5 @@ struct IWindow : public Usul::Interfaces::IUnknown
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_WINDOW_H_
+#endif // _USUL_INTERFACE_QUESTION_H_
 

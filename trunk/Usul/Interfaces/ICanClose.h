@@ -17,6 +17,8 @@ namespace FX { class FXWindow; }
 namespace Usul {
 namespace Interfaces {
 
+  struct IWindow;
+
 struct ICanClose : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
@@ -25,7 +27,7 @@ struct ICanClose : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1072485030u };
 
-  virtual bool canClose ( FX::FXWindow *window, Usul::Interfaces::IUnknown *caller = 0x0, bool checkNumWindows = true ) = 0;
+  virtual bool canClose ( Usul::Interfaces::IWindow *window, Usul::Interfaces::IUnknown *caller = 0x0, bool checkNumWindows = true ) = 0;
 
 
 }; // class ICanClose

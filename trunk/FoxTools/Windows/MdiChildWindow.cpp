@@ -19,6 +19,7 @@
 #include "FoxTools/Headers/MenuPane.h"
 #include "FoxTools/Headers/MainWindow.h"
 #include "FoxTools/Functions/MainWindow.h"
+#include "FoxTools/Dialogs/Message.h"
 
 #include "Usul/Interfaces/IReportErrors.h"
 #include "Usul/Interfaces/IStatusBar.h"
@@ -81,7 +82,9 @@ FXIMPLEMENT ( MdiChildWindow, MdiChildWindow::BaseClass, WindowMap, ARRAYNUMBER 
 ///////////////////////////////////////////////////////////////////////////////
 
 MdiChildWindow::MdiChildWindow() : BaseClass(),
-  _document() // This valid-ref-pointer should throw.
+  _document(), // This valid-ref-pointer should throw.
+  _view(),
+  _refCount( 0 )
 {
   // If this static-assertion fails then make Document::ID_FIRST bigger.
   USUL_STATIC_ASSERT ( Usul::Interfaces::ISendMessage::ID_FIRST > MdiChildWindow::ID_LAST );
@@ -104,7 +107,9 @@ MdiChildWindow::MdiChildWindow ( Document *doc,
                                  FX::FXMenuPane *menu,
                                  FX::FXuint options ) : 
   BaseClass ( parent, name.c_str(), icon, menu, options, 0, 0, 300, 200 ),
-  _document ( doc )
+  _document ( doc ),
+  _view(),
+  _refCount( 0 )
 {
   // Should be true.
   USUL_ERROR_CHECKER ( 0x0 != this->getApp() );
@@ -124,7 +129,6 @@ MdiChildWindow::~MdiChildWindow()
 {
   // Remove this window from the document's sets.
   this->document()->removeWindow   ( this );
-  this->document()->removeListener ( this );
 
   // Update all child window's titles
   Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( this->document() );
@@ -133,6 +137,9 @@ MdiChildWindow::~MdiChildWindow()
   // Tell the document this is closing.  
   // Make sure function is called after removeWindow is called.
   this->document()->closing( this );
+
+  // Better be zero
+  USUL_ASSERT ( 0 == _refCount );
 }
 
 
@@ -151,8 +158,7 @@ void MdiChildWindow::create()
   // Call the base class's function.
   BaseClass::create();
   
-  // We are a listener and a reference-window.
-  this->document()->addListener ( this );
+  // Add this to the document
   this->document()->addWindow   ( this );
 
   // Update titles.
@@ -302,9 +308,12 @@ Usul::Interfaces::IUnknown* MdiChildWindow::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-    return static_cast < Usul::Interfaces::IUnknown* > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView* > ( this );
+  case Usul::Interfaces::IWindow::IID:
+    return static_cast < Usul::Interfaces::IWindow* > ( this );
+  case Usul::Interfaces::IQuestion::IID:
+    return static_cast < Usul::Interfaces::IQuestion* > ( this );
   default:
     return 0x0;
   }
@@ -319,6 +328,7 @@ Usul::Interfaces::IUnknown* MdiChildWindow::queryInterface( unsigned long iid )
 
 void MdiChildWindow::ref()
 {
+  ++_refCount;
 }
 
 
@@ -330,6 +340,7 @@ void MdiChildWindow::ref()
 
 void MdiChildWindow::unref ( bool allowDeletion )
 {
+  --_refCount;
 }
 
 
@@ -531,3 +542,40 @@ long MdiChildWindow::onDisplayListUpdate ( FX::FXObject *, FX::FXSelector, void 
 {
   return 1;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the focus to this window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MdiChildWindow::setFocus()
+{
+  BaseClass::setFocus();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle the message.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MdiChildWindow::handleMessage ( unsigned short message )
+{
+  this->handle ( 0x0, FXSEL ( FX::SEL_COMMAND, message ), 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Prompt a question dialog to the user
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MdiChildWindow::question ( const std::string &buttons,  const std::string &title, const std::string &text )
+{
+  return FoxTools::Dialogs::Message::question( buttons, title, text );
+}
+

@@ -30,7 +30,7 @@ struct IGUIDelegate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1927013416u };
 
-
+  virtual bool doesHandle( const std::string& token ) const = 0;
 
 };
 

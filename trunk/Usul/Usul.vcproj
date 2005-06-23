@@ -426,6 +426,9 @@
 						RelativePath=".\Interfaces\IProgressBar.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IQuestion.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IReportErrors.h">
 					</File>
 					<File

@@ -24,6 +24,8 @@
 #include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/IDocument.h"
+#include "Usul/Interfaces/IWindow.h"
+#include "Usul/Interfaces/IQuestion.h"
 
 namespace FX
 {
@@ -36,7 +38,9 @@ namespace FoxTools {
 namespace Windows {
 
 class FOX_TOOLS_EXPORT MdiChildWindow : public FX::FXMDIChild,
-                                          public Usul::Interfaces::IView
+                                        public Usul::Interfaces::IView,
+                                        public Usul::Interfaces::IWindow,
+                                        public Usul::Interfaces::IQuestion
 {
 public:
 
@@ -95,10 +99,18 @@ protected:
   void                      _initPlacement();
   void                      _reportErrors ( unsigned int options, bool clear = false );  
 
+  /// Usul::Interfaces::IWindow
+  virtual void              setFocus();
+  virtual void              handleMessage ( unsigned short message );
+
+  /// Usul::Interfaces::IQuestion
+  virtual std::string      question ( const std::string &buttons,  const std::string &title, const std::string &text );
+
 private:
 
   DocumentPtr _document;
   ViewPtr _view;
+  unsigned int _refCount;
 
   FXDECLARE ( MdiChildWindow );
 };

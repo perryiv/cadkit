@@ -14,10 +14,10 @@
 
 #include <string>
 
-namespace FX { class FXWindow; }
-
 namespace Usul {
 namespace Interfaces {
+
+struct IWindow;
 
 struct IGetTitle : public Usul::Interfaces::IUnknown
 {
@@ -27,7 +27,7 @@ struct IGetTitle : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2425521902u };
 
-  virtual std::string   getTitle ( FX::FXWindow* ) = 0;
+  virtual std::string   getTitle ( Usul::Interfaces::IWindow* ) = 0;
 
 
 }; // class IGetTitle

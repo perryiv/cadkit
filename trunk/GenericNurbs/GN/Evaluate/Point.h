@@ -86,7 +86,7 @@ template < class SplineType > struct Calculate
     std::fill ( pt.begin(), pt.end(), static_cast<DependentType> ( 0 ) );
 
     // We calculate the minimum of the point size and the dimenion.
-    const SizeType dimension ( std::min ( pt.size(), curve.dimension() ) );
+    const SizeType dimension ( std::min ( (SizeType) pt.size(), curve.dimension() ) );
 
 		// If it is rational...
 		if ( curve.rational() )

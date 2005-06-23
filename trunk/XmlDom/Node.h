@@ -224,7 +224,7 @@ public:
 
   String attribute ( unsigned int i ) const
   {
-    if ( i >= _attribute.size() )
+    if ( i >= _attributes.size() )
       return String();
     typename Attributes::iterator itr = _attributes.begin();
     std::advance ( itr, i );
@@ -449,8 +449,8 @@ protected:
 
   Node *_getMissingChild() const
   {
-    const MissingPolicy create;
-    return ( create() ) ? new Node : 0x0;
+    MissingPolicy m;
+    return ( m() ) ? new Node : 0x0;
   }
 
 

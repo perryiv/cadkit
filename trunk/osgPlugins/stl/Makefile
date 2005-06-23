@@ -30,27 +30,31 @@ INCLUDES = \
 	-I${OSG_INC_DIR} \
 	-I${USUL_INC_DIR} \
 	-I${OPENTHREADS_INC_DIR} \
-	-I${PRODUCER_INC_DIR}
+	-I${PRODUCER_INC_DIR} \
+	-I${OSG_TOOLS_INC_DIR}
 
 OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
 	-L${OPENTHREADS_LIB_DIR} \
 	-L${PRODUCER_LIB_DIR} \
-	-losgDB -losg -lProducer -lOpenThreads
+	-L${OSG_TOOLS_LIB_DIR} \
+	-losgDB -losg -lProducer -lOpenThreads -lOsgTools -losgText -losgUtil
 
 USUL_LIBS = \
 	-L${USUL_LIB_DIR} \
-	-lUsul_s
+	-lUsul
 
 LIBS = $(USUL_LIBS) $(OSG_LIBS)
 
 TARGET      = osgdb_stl
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}
+BIN_DIR     = ${OSG_LIB_DIR}/osgPlugins
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
+
+all : default 
 
 default : $(TARGET)
 
@@ -59,7 +63,6 @@ $(TARGET) : $(OBJECTS)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
 	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
-	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)
 
 .cpp.o :

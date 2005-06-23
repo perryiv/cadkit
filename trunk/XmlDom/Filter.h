@@ -94,7 +94,7 @@ struct Use13
 struct Use4
 {
   template < class F, class T1, class T2, class T3, class T4, class T5 >
-  static void call ( F &f, const T1 &, const T2 &, const T3 &, const T4 &t4, const T5 & )
+  static void call ( F &f, const T1 &t1, const T2 &, const T3 &, const T4 &t4, const T5 & )
   {
     f ( t1, t4 );
   }

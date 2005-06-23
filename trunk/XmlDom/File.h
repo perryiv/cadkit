@@ -99,7 +99,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  File &operator = ( const File &n )
+  File &operator = ( const File &r )
   {
     _errorPolicy = r._errorPolicy;
     _contents    = r._contents;

@@ -47,6 +47,8 @@ OBJECTS = $(SOURCE:.cpp=.o)
 
 all: default
 
+all : default 
+
 default : $(TARGET)
 
 $(TARGET) : $(OBJECTS)

@@ -167,6 +167,9 @@ public:
     GN_ERROR_CHECK ( i < this->size() );
     return _c[i];
   }
+
+#ifndef __APPLE__
+
   reference operator [] ( difference_type i )
   {
     GN_ERROR_CHECK ( i >= 0 );
@@ -180,7 +183,8 @@ public:
     return _c[i];
   }
 
-
+#endif
+  
 private:
 
 

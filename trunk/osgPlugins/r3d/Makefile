@@ -10,8 +10,8 @@ COMPILER = c++
 ifeq ($(findstring Darwin,$(OS)),Darwin)
 OS_LINK_FLAGS = -dynamiclib
 endif
-ifeq ($(findstring IRIX,$(OS)),IRIX)
 
+ifeq ($(findstring IRIX,$(OS)),IRIX)
 COMPILER = CC
 OS_COMP_FLAGS = -LANG:std
 OS_LINK_FLAGS = -LANG:std -v
@@ -35,21 +35,23 @@ OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
 	-L${OPENTHREADS_LIB_DIR} \
 	-L${PRODUCER_LIB_DIR} \
-	-losgDB -losg -lProducer -lOpenThreads
+	-losgDB -losg -lProducer -lOpenThreads -losgText -losgUtil 
 
 USUL_LIBS = \
 	-L${USUL_LIB_DIR} \
-	-lUsul_s -lOsgTools_s
+	-lUsul -lOsgTools
 
 LIBS = $(USUL_LIBS) $(OSG_LIBS)
 
 TARGET      = osgdb_r3d
 ARCHIVE_LIB = lib$(TARGET)_a.a
 SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}
+BIN_DIR     = ${OSG_LIB_DIR}/osgPlugins
 CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
 
 OBJECTS = $(SOURCE:.cpp=.o)
+
+all : default 
 
 default : $(TARGET)
 
@@ -58,7 +60,6 @@ $(TARGET) : $(OBJECTS)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
 	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
-	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)
 
 .cpp.o :

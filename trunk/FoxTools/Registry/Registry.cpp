@@ -18,6 +18,7 @@
 #include "FoxTools/Headers/Registry.h"
 #include "FoxTools/Headers/App.h"
 
+#include <stdexcept>
 #include <string>
 
 

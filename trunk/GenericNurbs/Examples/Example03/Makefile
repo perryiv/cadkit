@@ -29,6 +29,8 @@ BIN_DIR = ../../../bin
 TARGET  = gn_example_03
 OBJECTS = $(SOURCE:.cpp=.o)
 
+all : default 
+
 default : $(TARGET)
 
 $(TARGET) : ${OBJECTS}

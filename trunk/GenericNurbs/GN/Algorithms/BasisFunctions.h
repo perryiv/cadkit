@@ -270,7 +270,7 @@ struct BasisFunctions
           N[j] = saved;
         }
       }
-		}
+    }
   }
 };
 

@@ -30,7 +30,7 @@ struct IBuildScene : public Usul::Interfaces::IUnknown
 
   typedef std::map<std::string,std::string>     Options;
 
-  virtual osg::Node *         buildScene ( const Options &options = Options(), Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual osg::Node *         buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
 
 }; // class IBuildScene

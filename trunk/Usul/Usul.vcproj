@@ -931,6 +931,9 @@
 				<File
 					RelativePath=".\Strings\Case.h">
 				</File>
+				<File
+					RelativePath=".\Strings\Trim.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Policies"

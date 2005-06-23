@@ -35,7 +35,7 @@ namespace File {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Names >
-inline void find ( const std::string &pattern, Names &names )
+inline void find ( const std::string &d, const std::string &pattern, Names &names )
 {
 #if _WIN32
 
@@ -45,18 +45,22 @@ inline void find ( const std::string &pattern, Names &names )
   // Safely...
   try
   {
+    // For convenience.
+    const std::string dir ( d + '/' );
+    const std::string path ( dir + pattern );
+
     // Get the first file in the directory.
     WIN32_FIND_DATA data;
-    handle = ::FindFirstFile ( pattern.c_str(), &data );
+    handle = ::FindFirstFile ( path.c_str(), &data );
     if ( INVALID_HANDLE_VALUE == handle )
       return;
 
     // Push the first file onto the list.
-    names.insert ( names.end(), data.cFileName );
+    names.insert ( names.end(), dir + data.cFileName );
 
     // Push any additional files.
     while ( ::FindNextFile ( handle, &data ) )
-      names.insert ( names.end(), data.cFileName );
+      names.insert ( names.end(), dir + data.cFileName );
   }
 
   // Catch all exceptions.
@@ -94,7 +98,7 @@ inline void find ( const Dirs &dirs, const std::string &pattern, Names &fl )
   for ( Dirs::const_iterator i = dirs.begin(); i != dirs.end(); ++i )
   {
     // Append the files.
-    Usul::File::find ( *i + "/" + pattern, fl );
+    Usul::File::find ( *i, pattern, fl );
   }
 }
 

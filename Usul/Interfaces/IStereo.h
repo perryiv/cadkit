@@ -30,7 +30,13 @@ struct IStereo : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2362813894u };
 
+  // Get/set the stereo mode
+  virtual void              stereoMode ( unsigned int ) = 0;
+  virtual unsigned int      stereoMode() const = 0;
 
+  //Get/Set the eye distance
+  virtual void              stereoEyeDistance ( float ) = 0;
+  virtual float             stereoEyeDistance() const = 0;
 
 }; // class IStereo
 

@@ -30,7 +30,33 @@ struct IPolygonMode : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2837403757u };
 
+  enum Mode 
+  {
+    POINT,
+    LINE,
+    FILL
+  };
 
+  enum Face 
+  {
+    FRONT_AND_BACK,
+    FRONT,
+    BACK
+  };
+
+  // Set/query/remove the polygon mode.
+  virtual void                  setPolygonMode    ( unsigned int face, unsigned int  mode ) = 0;
+  virtual void                  togglePolygonMode ( unsigned int face, unsigned int  mode ) = 0;
+  virtual bool                  hasPolygonMode    ( unsigned int face, unsigned int  mode ) const = 0;
+  virtual bool                  hasPolygonMode    ( unsigned int face ) const = 0;
+  virtual bool                  hasPolygonMode() const = 0;
+  virtual void                  removePolygonMode() = 0;
+
+  // Set/query/remove hidden lines.
+  virtual void                  setHiddenLines() = 0;
+  virtual void                  toggleHiddenLines() = 0;
+  virtual bool                  hasHiddenLines() const = 0;
+  virtual void                  removeHiddenLines() = 0;
 
 }; // class IPolygonMode
 

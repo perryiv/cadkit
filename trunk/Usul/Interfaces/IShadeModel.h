@@ -22,25 +22,28 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IShadingModel : public Usul::Interfaces::IUnknown
+struct IShadeModel : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IShadingModel );
+  USUL_DECLARE_QUERY_POINTERS ( IShadeModel );
 
   /// Id for this interface.
   enum { IID = 3260613509u };
 
-  virtual void               shadingFlat  () = 0;
+  enum ShadeMode
+  {
+    FLAT,
+    SMOOTH
+  };
+
   virtual bool               shadingFlat  () const = 0;
-
-  virtual void               shadingSmooth () = 0;
   virtual bool               shadingSmooth () const = 0;
-
   virtual void               removeShadeModel () = 0;
+  virtual void               toggleShadeModel ( unsigned int ) = 0;
+  virtual bool               hasShadeModel  ( unsigned int ) const = 0;
+  virtual bool               hasShadeModel  () const = 0;
 
-  virtual void               toggleShadeModel () = 0;
-
-}; // class IShadingModel
+}; // class IShadeModel
 
 
 } // namespace Interfaces

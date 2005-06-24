@@ -646,6 +646,9 @@
 						RelativePath=".\Interfaces\IImageView.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IMode.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IOpenGLState.h">
 					</File>
 					<File

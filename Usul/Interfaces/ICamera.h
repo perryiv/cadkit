@@ -9,36 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  Interface for setting the camera
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEW_H_
-#define _USUL_INTERFACE_VIEW_H_
+#ifndef _USUL_INTERFACE_CAMERA_H_
+#define _USUL_INTERFACE_CAMERA_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace Usul {
 namespace Interfaces {
 
-  struct IViewer;
 
-struct IView : public Usul::Interfaces::IUnknown
+struct ICamera : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IView );
+  USUL_DECLARE_QUERY_POINTERS ( ICamera );
 
   /// Id for this interface.
-  enum { IID = 2923712104u };
+  enum { IID = 1432227382u };
 
-  virtual Usul::Interfaces::IViewer* view() = 0;
-  virtual void                        view( Usul::Interfaces::IViewer* ) = 0;
+  
 
-}; // class IView
-
-
-}; // namespace Interfaces
-}; // namespace Usul
+}; // class ICamera
 
 
-#endif // _USUL_INTERFACE_VIEW_H_
+} // namespace Interfaces
+} // namespace Usul
+
+
+#endif // _USUL_INTERFACE_CAMERA_H_

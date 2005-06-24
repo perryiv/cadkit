@@ -9,16 +9,14 @@
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Object.h"
-
-#include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IClassesFactory.h"
-#include "Usul/Errors/Stack.h"
 #include "Usul/Components/Exceptions.h"
-
-
 #include "Usul/DLL/Library.h"
 #include "Usul/DLL/Loader.h"
 #include "Usul/DLL/Exceptions.h"
+#include "Usul/Errors/Stack.h"
+#include "Usul/File/Find.h"
+#include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IClassesFactory.h"
 
 #include <iostream>
 
@@ -148,11 +146,11 @@ Manager* Manager::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager* Manager::instance()
+Manager& Manager::instance()
 {
   if ( !_instance )
     _instance = new Manager();
-  return _instance;
+  return *_instance;
 }
 
 
@@ -174,7 +172,21 @@ _unknowns()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load ( unsigned long iid, const std::list<std::string> &plugins, bool keepGoingIfException )
+void Manager::load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException )
+{
+  Strings plugins;
+  Usul::File::find ( dir, "*." + ext, plugins );
+  this->load ( iid, plugins, keepGoingIfException );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load all plugins in the list of file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException )
 {
   typedef std::list<std::string>::const_iterator Iterator;
 

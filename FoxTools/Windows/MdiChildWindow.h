@@ -73,8 +73,8 @@ public:
   Document *                document();
 
   /// Usul::Interfaces::IView
-  virtual Usul::Interfaces::IUnknown* view();
-  virtual void                        view( Usul::Interfaces::IUnknown* );
+  virtual Usul::Interfaces::IViewer* view();
+  virtual void                       view( Usul::Interfaces::IViewer* );
 
   // Is it created?
   bool                      isCreated() const;

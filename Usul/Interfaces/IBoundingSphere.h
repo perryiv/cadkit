@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the camera
+//  Interface for toggling the bounding sphere
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_CAMERA_H_
-#define _USUL_INTERFACE_CAMERA_H_
+#ifndef _USUL_INTERFACE_BOUNDING_SPHERE_H_
+#define _USUL_INTERFACE_BOUNDING_SPHERE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,25 +22,23 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct ICamera : public Usul::Interfaces::IUnknown
+struct IBoundingSphere : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ICamera );
+  USUL_DECLARE_QUERY_POINTERS ( IBoundingSphere );
 
   /// Id for this interface.
-  enum { IID = 1432227382u };
+  enum { IID = 1770828539u };
 
-  // Camera placement flags.
-  enum CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM };
+  // Set/get the bounding-box state.
+  virtual void                  boundingSphere ( bool show ) = 0;
+  virtual bool                  boundingSphere() const = 0;
 
-  // Set the camera.
-  virtual void          camera ( CameraOption option ) = 0;
-
-}; // class ICamera
+}; // class IBoundingSphere
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_CAMERA_H_
+#endif // _USUL_INTERFACE_BOUNDING_SPHERE_H_

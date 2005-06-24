@@ -475,10 +475,16 @@
 						RelativePath=".\Interfaces\IOpenSceneGraph.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IPolygonMode.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IRedraw.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISceneIntersect.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IShadeModel.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITextMatrix.h">
@@ -492,6 +498,9 @@
 					Filter="">
 					<File
 						RelativePath=".\Interfaces\IDocumentCreate.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IExport.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFileSelectionFilters.h">
@@ -643,6 +652,15 @@
 						RelativePath=".\Interfaces\IBackground.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IBoundingBox.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IBoundingSphere.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICamera.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IImageView.h">
 					</File>
 					<File
@@ -653,6 +671,12 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IOsgFoxView.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISpin.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IStereo.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IView.h">

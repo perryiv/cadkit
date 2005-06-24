@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the camera
+//  Interface for setting stereo and getting modes
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_CAMERA_H_
-#define _USUL_INTERFACE_CAMERA_H_
+#ifndef _USUL_INTERFACE_STEREO_H_
+#define _USUL_INTERFACE_STEREO_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,25 +22,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct ICamera : public Usul::Interfaces::IUnknown
+struct IStereo : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ICamera );
+  USUL_DECLARE_QUERY_POINTERS ( IStereo );
 
   /// Id for this interface.
-  enum { IID = 1432227382u };
+  enum { IID = 2362813894u };
 
-  // Camera placement flags.
-  enum CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM };
 
-  // Set the camera.
-  virtual void          camera ( CameraOption option ) = 0;
 
-}; // class ICamera
+}; // class IStereo
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_CAMERA_H_
+#endif // _USUL_INTERFACE_STEREO_H_

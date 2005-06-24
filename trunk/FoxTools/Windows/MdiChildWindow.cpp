@@ -453,9 +453,9 @@ long MdiChildWindow::onFocusIn ( FX::FXObject *object, FX::FXSelector sel, void 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* MdiChildWindow::view()
+Usul::Interfaces::IViewer* MdiChildWindow::view()
 {
-  return _view->queryInterface( Usul::Interfaces::IUnknown::IID );
+  return _view.get();
 }
 
 
@@ -465,9 +465,9 @@ Usul::Interfaces::IUnknown* MdiChildWindow::view()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MdiChildWindow::view ( Usul::Interfaces::IUnknown *viewer )
+void MdiChildWindow::view ( Usul::Interfaces::IViewer *viewer )
 {
-  _view = static_cast < Usul::Interfaces::IViewer* > ( viewer->queryInterface( Usul::Interfaces::IViewer::IID ) );
+  _view = viewer;
 }
 
 

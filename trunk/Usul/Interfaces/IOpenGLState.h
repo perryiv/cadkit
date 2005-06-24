@@ -31,6 +31,15 @@ struct IOpenGLState : public Usul::Interfaces::IUnknown
   enum { IID = 2489692457u };
 
 
+  virtual bool                twoSidedLighting() const = 0;
+  virtual void                twoSidedLighting( bool ) = 0;
+
+  virtual bool                lighting() const = 0;
+  virtual void                lighting( bool ) = 0;
+
+  virtual bool                stereo() const = 0;
+  virtual void                stereo( bool ) = 0;
+
 }; // class IOpenGLState
 
 

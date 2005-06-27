@@ -621,7 +621,7 @@ void Document::closing ( Window *window )
   if ( _windows.empty() )
   {
     // Tell the manager we are closing.
-    Manager::instance().close ( this );
+    Manager::instance().close ( this );  
 
     // Clear the data.
     std::cout << "Closing document: " << this->fileName() << " ... " << Usul::Resources::TextWindow::flush;

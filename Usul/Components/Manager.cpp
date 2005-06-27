@@ -175,7 +175,7 @@ _unknowns()
 void Manager::load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException )
 {
   Strings plugins;
-  Usul::File::find ( dir, "*." + ext, plugins );
+  Usul::File::find ( dir, ext, plugins );
   this->load ( iid, plugins, keepGoingIfException );
 }
 

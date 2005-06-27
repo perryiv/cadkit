@@ -20,7 +20,9 @@
 #if _WIN32
 # include <windows.h>
 #else
-  TODO
+#include <sys/types.h>
+#include <dirent.h>
+#include "Usul/File/Path.h"
 #endif
 
 
@@ -35,7 +37,7 @@ namespace File {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Names >
-inline void find ( const std::string &d, const std::string &pattern, Names &names )
+inline void find ( const std::string &d, const std::string &ext, Names &names )
 {
 #if _WIN32
 
@@ -47,7 +49,7 @@ inline void find ( const std::string &d, const std::string &pattern, Names &name
   {
     // For convenience.
     const std::string dir ( d + '/' );
-    const std::string path ( dir + pattern );
+    const std::string path ( dir + "*" + ext );
 
     // Get the first file in the directory.
     WIN32_FIND_DATA data;
@@ -78,7 +80,28 @@ inline void find ( const std::string &d, const std::string &pattern, Names &name
 
 #else
 
-  TODO
+  struct dirent *dp;
+  struct stat inf;
+
+  // Get directory stream pointer
+  if( DIR * dirp = opendir( d ) )
+  {
+    // Loop over directory entries
+    struct dirent dirresult;
+    
+    while( !readdir_r(dirp,&dirresult,&dp) && dp )
+    {
+      // Get name
+      std::string name ( dp->d_name );
+
+      if ( Usul::File::extension( name ) == ext )
+      {
+        // Add to list
+        names.insert ( name );
+      }
+    }
+    closedir( dirp );
+  }
 
 #endif
 }
@@ -86,19 +109,18 @@ inline void find ( const std::string &d, const std::string &pattern, Names &name
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get a list of all files in the given directories that match the pattern.
-//  Typical patterns are *.txt, *.*, or *
+//  Get a list of all files in the given directories that match the extension.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Dirs, class Names >
-inline void find ( const Dirs &dirs, const std::string &pattern, Names &fl )
+inline void find ( const Dirs &dirs, const std::string &ext, Names &fl )
 {
   // Loop through the directories.
   for ( Dirs::const_iterator i = dirs.begin(); i != dirs.end(); ++i )
   {
     // Append the files.
-    Usul::File::find ( *i, pattern, fl );
+    Usul::File::find ( *i, ext, fl );
   }
 }
 

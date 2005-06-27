@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Resources/ProgressBar.h"
-
+#include "Usul/Interfaces/IProgressBar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +29,7 @@ namespace Usul
   {
     namespace Detail
     {
-      Usul::Interfaces::IProgressBar *_progressBar ( 0x0 );
+      Usul::Interfaces::IProgressBar::QueryPtr _progressBar;
     }
   }
 }
@@ -43,7 +43,7 @@ namespace Usul
 
 Usul::Interfaces::IProgressBar *Usul::Resources::progressBar()
 {
-  return Detail::_progressBar;
+  return Detail::_progressBar.get();
 }
 
 

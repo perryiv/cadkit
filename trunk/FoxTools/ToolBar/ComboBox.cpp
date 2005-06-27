@@ -85,3 +85,18 @@ void ComboBox::_build ( FX::FXComposite *parent )
     _comboBox->setUserData ( this );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ComboBox::_create ()
+{
+  // Create the combo box if we can.
+  if ( _comboBox && !_comboBox->id() )
+    _comboBox->create();
+}
+

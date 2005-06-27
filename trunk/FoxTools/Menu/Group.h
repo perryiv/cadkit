@@ -61,6 +61,9 @@ public:
   // Purge all commands with given token.
   virtual void          purge ( unsigned int token );
 
+  // Rebuild the group.  Does nothing is not already built
+  void                  rebuild();
+
   // Return the size of the group.
   unsigned int          size() const;
 

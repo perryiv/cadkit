@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Resources/EventQueue.h"
+#include "Usul/Interfaces/IFlushEvents.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ namespace Usul
   {
     namespace Detail
     {
-      Usul::Interfaces::IFlushEvents *_flush ( 0x0 );
+      Usul::Interfaces::IFlushEvents::QueryPtr _flush;
     }
   }
 }
@@ -43,7 +44,7 @@ namespace Usul
 
 Usul::Interfaces::IFlushEvents *Usul::Resources::flushEvents()
 {
-  return Detail::_flush;
+  return Detail::_flush.get();
 }
 
 

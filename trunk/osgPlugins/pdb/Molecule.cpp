@@ -26,7 +26,15 @@
 #include <stdexcept>
 #if _DEBUG
 #define NOMINMAX
-#include <windows.h>
+
+#if _WIN32
+# include <windows.h>
+#else
+#include <sys/types.h>
+#include <dirent.h>
+#include "Usul/File/Path.h"
+#endif
+
 #include <sstream>
 #include <ctime>
 #include <float.h>
@@ -176,7 +184,8 @@ osg::Group *Molecule::_build() const
 #if _DEBUG
   message << "Number of Atoms: " << _atoms.size() << std::endl;
   message << "Number of Bonds: " << _bonds.size() << std::endl;
-  ::OutputDebugString( message.str().c_str() );
+ // GCC balks at the next line - '::OutputDebugString' has not been declared'
+ // ::OutputDebugString( message.str().c_str() );
 #endif
 
   // Return the root.

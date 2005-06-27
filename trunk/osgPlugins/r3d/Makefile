@@ -1,28 +1,92 @@
-SOURCE = \
-	ReaderWriterR3D.cpp 
-
+SHELL = /bin/sh
+LIB_OS = lib
+PKG_NAME =  osgdb_r3d
 OS := $(shell uname)
-OS_COMP_FLAGS =
+TARGET  = $(PKG_NAME)
+COMPILE_GUARD = R3D
+
+all: default
+
+default : make_dirs shared_lib archive_lib
+
+# ##### default values for includes and libs ###### #
+
+# Fox Includes and Libs
+ifeq ("$(FOX_INC_DIR)","")
+FOX_INC_DIR = /usr/local/include/fox-1.4
+endif
+
+ifeq ("$(FOX_LIB_DIR)","")
+FOX_LIB_DIR = /usr/local/lib
+endif
+
+# OpenThreads Includes and Libs
+ifeq ("$(OPENTHREADS_INC_DIR)","")
+OPENTHREADS_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OPENTHREADS_LIB_DIR)","")
+OPENTHREADS_LIB_DIR = /usr/local/lib
+endif
+
+# OpenProducer Includes and Libs
+ifeq ("$(PRODUCER_INC_DIR)","")
+PRODUCER_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(PRODUCER_LIB_DIR)","")
+PRODUCER_LIB_DIR = /usr/local/lib
+endif
+
+# Osg Includes and Libs
+ifeq ("$(OSG_BIN_DIR)","")
+OSG_BIN_DIR = /usr/local/bin
+endif
+
+ifeq ("$(OSG_INC_DIR)","")
+OSG_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OSG_LIB_DIR)","")
+OSG_LIB_DIR = /usr/local/lib
+endif
+
+# Our Built Libraries all go in {OSG_PLUGINS_DIR}
+ifeq ("$(USUL_INC_DIR)","")
+USUL_INC_DIR = ../../
+endif
+
+ifeq ("$(USUL_LIB_DIR)","")
+USUL_LIB_DIR = ../../lib
+endif
+
+ifeq ("$(BOOST_INC_DIR)","")
+BOOST_INC_DIR = /usr/local/include/boost
+endif 
+
+ifeq ("$(BOOST_LIB_DIR)","")
+BOOST_LIB_DIR = /usr/local/lib
+endif 
+# ################################################## #
+
 OS_LINK_FLAGS = -shared
-COMPILER = c++
+TARGET_PREFIX = 
+TARGET_DYNAMIC_SUFFIX = .so
+TARGET_STATIC_SUFFIX = _a.a
+INSTALL = ../install
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)
-OS_LINK_FLAGS = -dynamiclib
+OS_LINK_FLAGS := -dynamiclib
 endif
 
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-COMPILER = CC
-OS_COMP_FLAGS = -LANG:std
-OS_LINK_FLAGS = -LANG:std -v
+OS := IRIX32
+CXX = g++ #CC -n32 -LANG:std -woff 1682 -mips3
+CXXFLAGS = -mabi=n32 -mips4  
+LIB_OS = -L/usr/freeware/lib32 #lib32
 endif
 
-COMMON_FLAGS   = -g
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
-LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
-
-COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
-LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
 	-I../../ \
@@ -31,44 +95,51 @@ INCLUDES = \
 	-I${OPENTHREADS_INC_DIR} \
 	-I${PRODUCER_INC_DIR}
 
-OSG_LIBS = \
+LIB_DIRS = \
 	-L${OSG_LIB_DIR} \
 	-L${OPENTHREADS_LIB_DIR} \
 	-L${PRODUCER_LIB_DIR} \
-	-losgDB -losg -lProducer -lOpenThreads -losgText -losgUtil 
+	-L${USUL_LIB_DIR}
 
-USUL_LIBS = \
-	-L${USUL_LIB_DIR} \
-	-lUsul -lOsgTools
+LIBS = -lUsul -lOsgTools -losgDB -losg \
+	-lProducer -lOpenThreads -losgText -losgUtil
 
-LIBS = $(USUL_LIBS) $(OSG_LIBS)
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD)
 
-TARGET      = osgdb_r3d
-ARCHIVE_LIB = lib$(TARGET)_a.a
-SHARED_LIB  = $(TARGET).so
-BIN_DIR     = ${OSG_LIB_DIR}/osgPlugins
-CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
+BUILD = $(OS)
+ARCHIVE_LIB = $(TARGET_PREFIX)$(TARGET)$(TARGET_STATIC_SUFFIX)
+SHARED_LIB  = $(TARGET_PREFIX)$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
 
-OBJECTS = $(SOURCE:.cpp=.o)
+OBJS = $(patsubst %.cpp,%.o,$(subst ./,$(OS)/,$(shell find . -type file -name "*.cpp")))
+  
+BUILD_DIRS:= \
+  $(dir $(subst ./,$(OS)/,$(shell find . -type file -name "*.cpp")))
+  
+make_dirs:
+	@echo 'Building $(PKG_NAME)'
+	mkdir -p $(BUILD_DIRS)
 
-all : default 
+shared_lib: $(OBJS)
+	$(CXX) $(OS_LINK_FLAGS) -g $(OBJS) -o $(BUILD)/$(SHARED_LIB) $(LIB_DIRS) $(LIBS)
+	mkdir -p $(INSTALL)
+	cp $(BUILD)/$(SHARED_LIB) $(INSTALL)
 
-default : $(TARGET)
+archive_lib: $(OBJS)
+	$(RM) $(BUILD)/$(ARCHIVE_LIB)
+	ar -cr $(BUILD)/$(ARCHIVE_LIB) $(OBJS)
+	cp $(BUILD)/$(ARCHIVE_LIB) $(INSTALL)
 
-$(TARGET) : $(OBJECTS)
-	rm -rf $(ARCHIVE_LIB)
-	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND) $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
-	mkdir -p $(BIN_DIR)
-	mv $(SHARED_LIB) $(BIN_DIR)
-
-.cpp.o :
-	$(COMPILE_COMMAND) $(INCLUDES) -c $< -o $@
+$(OBJS): $(BUILD)/%.o: %.cpp
+	@echo "[$(PKG_NAME)]:Compiling $< into $@"
+	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS)
-	rm -rf ii_files/
+	$(RM) -rf $(BUILD) so_locations
 
-clobber:
-	rm -f $(OBJECTS) $(ARCHIVE_LIB) $(SHARED_LIB)
-	rm -rf ii_files/
+real-clean: clean
+	$(RM) $(INSTALL)/$(SHARED_LIB)
+	$(RM) $(INSTALL)/$(ARCHIVE_LIB)
+	
+mvlibs:
+	mkdir -p $(MOVE_LOCATION)
+	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)

@@ -52,6 +52,9 @@ protected:
 
   virtual void          _build ( FX::FXComposite *parent );
 
+  // Create
+  virtual void          _create ();
+
 private:
 
   friend class Bar;

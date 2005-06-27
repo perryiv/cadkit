@@ -84,5 +84,6 @@ void CheckButton::_build ( FX::FXComposite *parent )
     std::ostringstream text;
     text << this->name() << '\t' << this->hotKeys() << '\t' << this->description();
     this->_button ( new FX::FXMenuCheck ( parent, text.str().c_str(), this->target(), this->selector() ) );
+    this->_button()->setUserData ( this );
   }
 }

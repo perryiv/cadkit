@@ -56,6 +56,9 @@ protected:
   FX::FXMenuCommand *   _button();
   void                  _button ( FX::FXMenuCommand * );
 
+  // Create
+  virtual void          _create ();
+
 private:
 
   // No copying.

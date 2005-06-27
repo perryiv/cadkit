@@ -75,3 +75,18 @@ void Separator::_build ( FX::FXComposite *parent )
     _separator->setSelector ( this->selector() );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Separator::_create ()
+{
+  // Create the seperator if we can.
+  if ( _separator && !_separator->id() )
+    _separator->create();
+}
+

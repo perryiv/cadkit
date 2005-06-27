@@ -73,6 +73,9 @@ protected:
   // Build the command.
   virtual void          _build ( FX::FXComposite *parent ) = 0;
 
+  // Create
+  virtual void          _create () = 0;
+
 private:
 
   // No copying.

@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Resources/CancelButton.h"
-
+#include "Usul/Interfaces/ICancelButton.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +29,7 @@ namespace Usul
   {
     namespace Detail
     {
-      Usul::Interfaces::ICancelButton *_cancelButton ( 0x0 );
+      Usul::Interfaces::ICancelButton::QueryPtr _cancelButton;
     }
   }
 }
@@ -43,7 +43,7 @@ namespace Usul
 
 Usul::Interfaces::ICancelButton *Usul::Resources::cancelButton()
 {
-  return Detail::_cancelButton;
+  return Detail::_cancelButton.get();
 }
 
 

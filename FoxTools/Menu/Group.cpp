@@ -20,6 +20,8 @@
 #include "FoxTools/Headers/MenuCascade.h"
 #include "FoxTools/Headers/MenuBar.h"
 #include "FoxTools/Headers/ScrollPane.h"
+#include "FoxTools/Headers/MainWindow.h"
+#include "FoxTools/Functions/MainWindow.h"
 
 #include "Usul/Cast/Cast.h"
 #include "Usul/Errors/Assert.h"
@@ -296,6 +298,26 @@ void Group::create()
   // Create the caption if we can.
   if ( _caption && !_caption->id() )
     _caption->create();
+
+  // Loop through the items.
+  for ( Items::iterator i = _items.begin(); i != _items.end(); ++i )
+  {
+    // Cast.
+    Command::RefPtr command ( dynamic_cast < Command * > ( i->get() ) );
+    Group::RefPtr   group   ( dynamic_cast < Group *   > ( i->get() ) );
+
+    // If we have a command...
+    if ( command.valid() )
+      command->_create ();
+
+    // Or, if we have a group...
+    else if ( group.valid() )
+      group->create();
+
+    // Otherwise, punt.
+    else
+      throw std::runtime_error ( "Error 3523358927: menu item is not a command or group" );
+  }
 }
 
 
@@ -321,3 +343,38 @@ bool Group::scroll() const
 {
   return _scroll;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rebuild the group.  Does nothing if not already built.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::rebuild()
+{
+  // Return now if no pane.
+  if( 0x0 == _pane )
+    return;
+
+  // Loop through the items.
+  for ( Items::iterator i = _items.begin(); i != _items.end(); ++i )
+  {
+    // Cast.
+    Command::RefPtr command ( dynamic_cast < Command * > ( i->get() ) );
+    Group::RefPtr   group   ( dynamic_cast < Group *   > ( i->get() ) );
+
+    // If we have a command...
+    if ( command.valid() )
+      command->_build ( _pane );
+
+    // Or, if we have a group...
+    else if ( group.valid() )
+      group->_build( FoxTools::Functions::mainWindow(), _pane);
+
+    // Otherwise, punt.
+    else
+      throw std::runtime_error ( "Error 3523358927: menu item is not a command or group" );
+  }
+}
+

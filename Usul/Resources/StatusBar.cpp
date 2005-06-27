@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Resources/StatusBar.h"
-
+#include "Usul/Interfaces/IStatusBar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +29,7 @@ namespace Usul
   {
     namespace Detail
     {
-      Usul::Interfaces::IStatusBar *_statusBar ( 0x0 );
+      Usul::Interfaces::IStatusBar::QueryPtr _statusBar;
     }
   }
 }
@@ -43,7 +43,7 @@ namespace Usul
 
 Usul::Interfaces::IStatusBar *Usul::Resources::statusBar()
 {
-  return Detail::_statusBar;
+  return Detail::_statusBar.get();
 }
 
 

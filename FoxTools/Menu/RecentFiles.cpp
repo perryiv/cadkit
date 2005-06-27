@@ -145,3 +145,16 @@ void RecentFiles::appendFile ( const std::string &file )
   if ( _recentFiles && !file.empty() )
     _recentFiles->appendFile ( file.c_str() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RecentFiles::_create ()
+{
+  // No create for recent files
+}
+

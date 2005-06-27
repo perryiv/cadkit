@@ -1062,6 +1062,37 @@
 					RelativePath=".\Shared\Preferences.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Documents"
+				Filter="">
+				<File
+					RelativePath=".\Documents\Document.cpp">
+				</File>
+				<File
+					RelativePath=".\Documents\Document.h">
+				</File>
+				<File
+					RelativePath=".\Documents\FileInfo.h">
+				</File>
+				<File
+					RelativePath=".\Documents\Manager.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Documents\Manager.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

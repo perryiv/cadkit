@@ -20,6 +20,9 @@
 
 
 namespace Usul {
+
+  namespace Documents { class Document; }
+
 namespace Interfaces {
 
 
@@ -32,7 +35,7 @@ struct IDocumentCreate : public Usul::Interfaces::IUnknown
   enum { IID = 1432533693u };
 
   /// Create the document.
-  virtual Usul::Interfaces::IUnknown *    createDocument ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual Usul::Documents::Document *    createDocument ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 };
 
 

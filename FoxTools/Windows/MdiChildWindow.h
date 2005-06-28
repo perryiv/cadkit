@@ -104,7 +104,7 @@ protected:
   virtual void              handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IQuestion
-  virtual std::string      question ( const std::string &buttons,  const std::string &title, const std::string &text );
+  virtual std::string       question ( const std::string &buttons,  const std::string &title, const std::string &text );
 
 private:
 

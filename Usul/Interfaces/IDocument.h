@@ -52,6 +52,9 @@ struct IDocument : public Usul::Interfaces::IUnknown
   // The following window is closing
   virtual void                          closing     ( Usul::Interfaces::IWindow *window ) = 0;
 
+  /// Create default GUI
+  virtual void                          createDefaultGUI ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+
   virtual Format                        fileFormat() const = 0;
   virtual void                          fileFormat ( const Format & ) = 0;
 
@@ -63,6 +66,9 @@ struct IDocument : public Usul::Interfaces::IUnknown
 
   virtual bool                          modified() const = 0;
   virtual void                          modified ( bool ) = 0;
+
+  /// Refresh the view
+  virtual void                          refreshView ( Usul::Interfaces::IViewer * ) = 0;
 
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          removeView     ( Usul::Interfaces::IViewer *view   ) = 0;

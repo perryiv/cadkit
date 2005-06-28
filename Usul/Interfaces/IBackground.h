@@ -36,6 +36,7 @@ struct IBackground : public Usul::Interfaces::IUnknown
   // Set the background color to the default
   virtual void            defaultBackground() = 0;
 
+
 }; // class IBackground
 
 

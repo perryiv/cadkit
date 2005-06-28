@@ -132,9 +132,7 @@ TiffComponent::TiffComponent() : BaseClass(),
   _channels    ( 0 ),
   _floating    ( false ),
   _width       ( 0 ),
-  _height      ( 0 ),
-  _numDirs     ( 0 ),
-  _orientation ( 0 )
+  _height      ( 0 )
 {
 }
 
@@ -169,8 +167,6 @@ void TiffComponent::_init()
   _floating    = false;
   _width       = 0;
   _height      = 0;
-  _numDirs     = 0;
-  _orientation = 0;
 }
 
 
@@ -262,8 +258,6 @@ void TiffComponent::_readProperties ( TIFF *in, const std::string &filename )
   ::TIFFGetField ( in, TIFFTAG_IMAGEWIDTH, &_width );
   ::TIFFGetField ( in, TIFFTAG_IMAGELENGTH, &_height );
   ::TIFFGetFieldDefaulted ( in, TIFFTAG_SAMPLESPERPIXEL, &_channels );
-  _numDirs = ::TIFFNumberOfDirectories ( in );
-  ::TIFFGetFieldDefaulted ( in, TIFFTAG_ORIENTATION, &_orientation );
 
   // Get the photometrics.
   Usul::Types::Uint16 photometrics ( 0 );

@@ -10,94 +10,76 @@
 #ifndef __IMAGES_GRAYSCALE_H__
 #define __IMAGES_GRAYSCALE_H__
 
+#include "usul/Exceptions/Thrower.h"
 
-namespace Images 
+#include <algorithm>
+#include <numeric>
+
+
+namespace Images {
+namespace Algorithms {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the image to grayscale. Changes the pixel values in place, and 
+//  returns the end of the valid values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class ValueContainer > 
+typename ValueContainer::iterator toGrayScale ( ValueContainer &values, unsigned int channels, bool alpha )
 {
+  typedef typename ValueContainer::iterator Itr;
+  typedef typename ValueContainer::value_type ValueType;
 
+  // handle trivial case.
+  if ( values.empty() )
+    return values.end();
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is this image already in grayscale
-//
-///////////////////////////////////////////////////////////////////////////////
+  // If there are not enough channels.
+  if ( ( 0 == channels ) || ( 1 == channels ) || ( ( true == alpha ) && ( 2 == channels ) ) )
+    return values.end();
 
-template < class Image > bool isGrayscale    ( const Image& image )
-{
-  if ( image.pixelFormat() == Image::GRAYSCALE || image.pixelFormat() == Image::GRAYSCALE_ALPHA )
-    return true;
-  return false;
-}
+  // Should be true.
+  if ( 0 == ( values.size() % channels ) )
+    Usul::Exceptions::Thrower<std::runtime_error> 
+      ( "Error 3161031277: number of values (", values.size(), ") is not divisible by the number of channels (", channels, ")" );
 
+  // Iterator to the gray values.
+  Itr gray ( values.begin() );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convertrgb to grayscale value
-//
-///////////////////////////////////////////////////////////////////////////////
+  // Number of values to average.
+  unsigned int numColors ( ( alpha ) ? channels - 1 : channels );
 
-namespace Detail
-{
-  Image::ValueType getGrayscaleValue ( Image::ValueType r, Image::ValueType g, Image::ValueType b )
+  // This makes the compiler happy for the various data types.
+  const ValueType zero  ( static_cast < ValueType > ( 0 ) );
+  const ValueType three ( static_cast < ValueType > ( 3 ) );
+
+  // Loop through the values.
+  for ( Itr i = values.begin(); i != values.end(); ++i )
   {
-    return ( r + g + b ) / 3;
-  }
-}
+    // Calculate the gray value.
+    ValueType average ( ( std::accumulate ( i, i + numColors, zero ) ) / three );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert the image from rgb to grayscale
-//
-///////////////////////////////////////////////////////////////////////////////
+    // Move iterator forward one less than the number of channels. 
+    // The "++i" in the loop above will increment the rest of the way.
+    std::advance ( i, ( channels - 1 ) );
 
-template < class RGBImage, class GrayImage > void rgbToGrayscale ( RGBImage& image, GrayImage& grayImage  )
-{
-  // Return now if image is already grayscale
-  if( isGrayscale ( image ) )
-  {
-    return;
-  }
+    // Write the gray value to the container.
+    (*gray) = average;
 
-  Image newImage;
-
-  const unsigned int width ( image.width() );
-  const unsigned int height ( image.height() );
-
-
-  switch ( image.pixelFormat( ) )
-  {
-  case ( Image::RGB ):
-    {
-      newImage.allocate( width, height, Image::GRAYSCALE );
-
-      for( unsigned int h = 0; h < height; ++h )
-      {
-        for( unsigned int w = 0; w < width; ++w )
-        {
-          newImage(h, w, Image::GRAY )  = Detail::getGrayscaleValue( image( h, w, Image::RED), image( h, w, Image::GREEN), image( h, w, Image::BLUE) );
-        }
-      }
-    }
-    break;
-  case ( Image::RGBA ):
-    {
-      newImage.allocate( image.width(), image.height(), Image::GRAYSCALE_ALPHA );
-
-      for( unsigned int h = 0; h < height; ++h )
-      {
-        for( unsigned int w = 0; w < width; ++w )
-        {
-            newImage(h, w, Image::GRAY )  = Detail::getGrayscaleValue( image( h, w, Image::RED), image( h, w, Image::GREEN), image( h, w, Image::BLUE) );
-            newImage(h, w, Image::GALPHA ) = image(h, w, Image::ALPHA );
-        }
-      }
-    }
-    break;
+    // Increment the iterator to the gray value.
+    ++gray;
   }
 
-  image = newImage;
+  // Return the new end of the gray values.
+  return gray;
 }
 
-}
+
+} // namespace Algorithms
+} // namespace Images
 
 
 #endif // __IMAGES_GRAYSCALE_H__

@@ -43,6 +43,10 @@ public:
   BaseImage();
   BaseImage ( const BaseImage & );
 
+  // Set/get the flag that says if last channel should be interpreted as alpha.
+  bool                        alpha() const { return _alpha; }
+  void                        alpha ( bool a ) { _alpha = a; }
+
   // Get the number of channels.
   unsigned int                channels() const { return _channels; }
 
@@ -83,7 +87,7 @@ private:
   unsigned int _width;
   unsigned int _height;
   unsigned int _channels;
-  bool _hasAlpha;
+  bool _alpha;
 };
 
 

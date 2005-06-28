@@ -698,6 +698,9 @@
 						RelativePath=".\Interfaces\IImageToGrayScale.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IReadImage.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IReadProperties.h">
 					</File>
 					<File

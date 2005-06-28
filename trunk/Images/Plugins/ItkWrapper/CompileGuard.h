@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach & Perry Miller
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,29 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enumerations.
+//  This header file should not be included in client code.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _IMAGES_ENUMERATIONS_H_
-#define _IMAGES_ENUMERATIONS_H_
+#ifndef _ITK_WRAPPER_COMPILE_GUARD_H_
+#define _ITK_WRAPPER_COMPILE_GUARD_H_
 
+#ifndef _COMPILING_ITK_WRAPPER
+# error "This header file is only used for compiling the library."
+# error "It should not be included in client code."
+#endif
 
-namespace Images {
-
-
-// Possible image types.
-enum ValueType
-{
-  UINT_8, 
-  UINT_16, 
-  UINT_32, 
-  FLOAT_32, 
-  FLOAT_64
-};
-
-
-} // Images
-
-
-#endif // _IMAGES_ENUMERATIONS_H_
+#endif // _ITK_WRAPPER_COMPILE_GUARD_H_

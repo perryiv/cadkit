@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Images"
-	ProjectGUID="{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}"
+	Name="plug: IO TIFF"
+	ProjectGUID="{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,8 +23,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_IMAGES"
+				AdditionalIncludeDirectories="../../../;$(TIFF_INC_DIR);$(BOOST_ROOT_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_READ_WRITE_TIFF;FOXDLL"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -33,7 +33,7 @@
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -47,19 +47,21 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Imagesd.dll"
+				AdditionalDependencies="tiffd.lib"
+				OutputFile="../../../bin/ReadWriteTIFF.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(TIFF_LIB_DIR)"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/Imagesd.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Imagesd.lib"/>
+				ProgramDatabaseFile=".\Debug\ReadWriteTIFFd.pdb"
+				ImportLibrary=".\Debug\ReadWriteTIFFd.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Images.tlb"/>
+				TypeLibraryName=".\Debug/ReadWriteTIFF.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -93,8 +95,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_IMAGES"
+				AdditionalIncludeDirectories="../../../;$(TIFF_INC_DIR);$(BOOST_ROOT_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_READ_WRITE_TIFF;FOXDLL"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
 				RuntimeLibrary="2"
@@ -102,7 +104,7 @@
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -115,18 +117,20 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Images.dll"
+				AdditionalDependencies="tiff.lib"
+				OutputFile="../../../bin/ReadWriteTIFF.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
-				ProgramDatabaseFile=".\Release/Images.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Images.lib"/>
+				AdditionalLibraryDirectories="$(TIFF_LIB_DIR)"
+				ModuleDefinitionFile="Export.def"
+				ProgramDatabaseFile=".\Release\ReadWriteTIFF.pdb"
+				ImportLibrary=".\Release\ReadWriteTIFF.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Images.tlb"/>
+				TypeLibraryName=".\Release/ReadWriteTIFF.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -156,62 +160,29 @@
 			Name="Source"
 			Filter="">
 			<Filter
-				Name="Core"
+				Name="Implementation"
 				Filter="">
 				<File
-					RelativePath=".\Core\BaseImage.cpp">
+					RelativePath=".\CompileGuard.h">
 				</File>
 				<File
-					RelativePath=".\Core\BaseImage.h">
+					RelativePath=".\TiffComponent.cpp">
 				</File>
 				<File
-					RelativePath=".\Core\Export.h">
+					RelativePath=".\TiffComponent.h">
 				</File>
 				<File
-					RelativePath=".\Core\Factory.cpp">
+					RelativePath=".\TiffFactory.cpp">
 				</File>
 				<File
-					RelativePath=".\Core\Factory.h">
-				</File>
-				<File
-					RelativePath=".\Core\Image.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Image.h">
-				</File>
-				<File
-					RelativePath=".\Core\ImageBase.h">
-				</File>
-				<File
-					RelativePath=".\Core\ImageImpl.h">
-				</File>
-				<File
-					RelativePath=".\Core\TypeTraits.h">
+					RelativePath=".\TiffFactory.h">
 				</File>
 			</Filter>
 			<Filter
-				Name="Algorithms"
+				Name="DLL"
 				Filter="">
 				<File
-					RelativePath=".\Algorithms\Contours.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Grayscale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Histogram.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Invert.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Morphology.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Scale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Threshold.h">
+					RelativePath="Export.def">
 				</File>
 			</Filter>
 		</Filter>

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="lib: Images"
-	ProjectGUID="{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}"
+	Name="app: Images Test 1"
+	ProjectGUID="{7f4eccd4-e4d3-4650-a2e4-036b9cd0bab9}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -15,7 +15,7 @@
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2">
@@ -23,22 +23,18 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_IMAGES"
-				ExceptionHandling="TRUE"
+				AdditionalIncludeDirectories="../../../"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="FALSE"
-				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile=".\Debug/Example01.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
+				BrowseInformation="1"
+				BrowseInformationFile=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>
@@ -46,20 +42,17 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Imagesd.dll"
-				LinkIncremental="2"
+				OutputFile="../../../bin/images_example_01d.exe"
+				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/Imagesd.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Imagesd.lib"/>
+				ProgramDatabaseFile=".\Debug/testd.pdb"
+				SubSystem="1"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Images.tlb"/>
+				TypeLibraryName=".\Debug/Example01.tlb"
+				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -85,48 +78,42 @@
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
+				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_IMAGES"
+				AdditionalIncludeDirectories="../../../"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="TRUE"
-				ExceptionHandling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile=".\Release/Example01.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Images.dll"
+				OutputFile="../../../bin/images_example_01.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
-				ProgramDatabaseFile=".\Release/Images.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Images.lib"/>
+				ProgramDatabaseFile=".\Release/test.pdb"
+				SubSystem="1"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Images.tlb"/>
+				TypeLibraryName=".\Release/Example01.tlb"
+				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -155,65 +142,9 @@
 		<Filter
 			Name="Source"
 			Filter="">
-			<Filter
-				Name="Core"
-				Filter="">
-				<File
-					RelativePath=".\Core\BaseImage.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\BaseImage.h">
-				</File>
-				<File
-					RelativePath=".\Core\Export.h">
-				</File>
-				<File
-					RelativePath=".\Core\Factory.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Factory.h">
-				</File>
-				<File
-					RelativePath=".\Core\Image.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Image.h">
-				</File>
-				<File
-					RelativePath=".\Core\ImageBase.h">
-				</File>
-				<File
-					RelativePath=".\Core\ImageImpl.h">
-				</File>
-				<File
-					RelativePath=".\Core\TypeTraits.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Algorithms"
-				Filter="">
-				<File
-					RelativePath=".\Algorithms\Contours.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Grayscale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Histogram.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Invert.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Morphology.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Scale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Threshold.h">
-				</File>
-			</Filter>
+			<File
+				RelativePath=".\main.cpp">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

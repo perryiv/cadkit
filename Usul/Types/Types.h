@@ -24,14 +24,14 @@ namespace Types {
 #ifdef _MSC_VER // Visual C++
 
   typedef __int64             Int64;
-  typedef __int32             Int32;
-  typedef __int16             Int16;
-  typedef __int8              Int8;
+  typedef int                 Int32;
+  typedef short               Int16;
+  typedef char                Int8;
 
   typedef unsigned __int64    Uint64;
-  typedef unsigned __int32    Uint32;
-  typedef unsigned __int16    Uint16;
-  typedef unsigned __int8     Uint8;
+  typedef unsigned int        Uint32;
+  typedef unsigned short      Uint16;
+  typedef unsigned char       Uint8;
 
   typedef float               Float32;
   typedef double              Float64;

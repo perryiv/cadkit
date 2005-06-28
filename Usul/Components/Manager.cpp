@@ -223,14 +223,12 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
       else
       {
         // Get the IUnknown
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance( iid ) );
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
 
         // Insert into set of plugins.
         if ( unknown.valid() )
           _unknowns.insert ( unknown.get() );
       }
-
-      
     }
 
     catch ( const std::exception &e )

@@ -23,6 +23,7 @@
 #include <set>
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 using namespace Usul;
 using namespace Usul::Base;
@@ -54,7 +55,16 @@ namespace Usul
 
       ~InstanceManager()
       {
-        USUL_ASSERT ( _set.empty() );
+        if ( false == _set.empty() )
+        {
+          USUL_ASSERT ( 0 ); // FYI
+          std::cout << _set.size() << " referenced items remain:" << std::endl;
+          for ( Set::const_iterator i = _set.begin(); i != _set.end(); ++i )
+          {
+            Referenced *r ( *i );
+            std::cout << "\taddress = " << r << ", name = " << ( ( r ) ? r->typeId().name() : "NULL" ) << std::endl;
+          }
+        }
       }
 
       Set &set()
@@ -193,7 +203,7 @@ void Referenced::unref ( bool allowDeletion )
   {
     #ifdef _DEBUG
 
-      std::string name ( this->typeId().name() );
+      const std::string name ( this->typeId().name() );
 
       try
       {

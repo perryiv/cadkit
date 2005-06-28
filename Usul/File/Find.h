@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Perry L. Miller IV
@@ -15,6 +14,8 @@
 
 #ifndef _USUL_FILE_FIND_FILES_H_
 #define _USUL_FILE_FIND_FILES_H_
+
+#include "Usul/File/Slash.h"
 
 #include <string>
 #if _WIN32
@@ -48,7 +49,7 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
   try
   {
     // For convenience.
-    const std::string dir ( d + '/' );
+    const std::string dir ( d + Usul::File::slash() );
     const std::string path ( dir + "*" + ext );
 
     // Get the first file in the directory.

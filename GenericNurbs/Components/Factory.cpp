@@ -106,14 +106,15 @@ Usul::Interfaces::IUnknown *Factory::queryInterface ( unsigned long iid )
 Usul::Interfaces::IUnknown *Factory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  GN::Components::CurveDouble::ValidRefPtr component ( new GN::Components::CurveDouble() );
+  GN::Components::CurveDouble::ValidAccessRefPtr component ( new GN::Components::CurveDouble() );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );
 
-  // Release this now so that we control the order of unreferencing.
-  // Reference count should go from 2 -> 1.
-  component.release();
+  // Decrement this now so that we control the order of unreferencing.
+  // Reference count should go from 2 -> 1. If query failed above then 
+  // it's deleted here.
+  component = 0x0;
 
   // Return the released pointer to the component.
   // Reference count should go from 1 -> 0, but it should not delete.

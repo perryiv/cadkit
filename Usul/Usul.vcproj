@@ -574,12 +574,6 @@
 						RelativePath=".\Interfaces\IHandle.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IImage.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IImageList.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
@@ -683,6 +677,31 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IVTKCanvas.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Image"
+					Filter="">
+					<File
+						RelativePath=".\Interfaces\IGetImageData.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetImageProperties.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IImage.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IImageList.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IImageToGrayScale.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IReadProperties.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IReadTIFF.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -901,6 +920,9 @@
 				</File>
 				<File
 					RelativePath=".\File\Path.h">
+				</File>
+				<File
+					RelativePath=".\File\Slash.h">
 				</File>
 				<File
 					RelativePath=".\File\Stats.h">

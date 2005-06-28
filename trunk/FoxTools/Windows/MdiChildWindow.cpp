@@ -29,7 +29,6 @@
 #include "Usul/Interfaces/ICanClose.h"
 #include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IGetTitle.h"
-#include "Usul/Interfaces/IRefreshView.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/File/Path.h"
@@ -507,12 +506,7 @@ long MdiChildWindow::onMotion ( FX::FXObject *object, FX::FXSelector selector, v
 
 long MdiChildWindow::onBuildScene ( FX::FXObject *, FX::FXSelector, void * )
 {
-  Usul::Interfaces::IRefreshView::QueryPtr refresh ( this->document() );
-
-  if ( refresh.valid() )
-  {
-    refresh->refreshView ( _view );
-  }
+  this->document()->refreshView ( _view );
 
   // Handled
   return 1;

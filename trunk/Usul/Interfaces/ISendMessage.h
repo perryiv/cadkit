@@ -12,7 +12,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace FX { class FXWindow; }
 
 namespace Usul {
 namespace Interfaces {

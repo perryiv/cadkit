@@ -636,9 +636,6 @@
 						RelativePath=".\Interfaces\IOsgFoxDocument.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IRefreshView.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\ISendMessage.h">
 					</File>
 				</Filter>

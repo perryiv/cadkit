@@ -90,7 +90,7 @@ public:
   virtual void                addWindow   ( Window *window );
   virtual void                addView     ( View   *view   );
 
-  // The following window is closing
+  // The given window is closing
   virtual void                closing     ( Window *window );
 
   /// Iterators to the begining of the windows
@@ -118,7 +118,7 @@ public:
   bool                        closeWindows( Usul::Interfaces::IUnknown *caller = 0x0, const Window* skip = 0x0);
 
   /// Create default GUI
-  virtual void                createDefaultGUI ( Unknown *caller = 0x0 ) = 0;
+  virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
 
   // Get/Set the Delegate.  May be null.
   void                        delegate ( Delegate *delegate );
@@ -175,6 +175,9 @@ public:
 
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 ) = 0;
+
+  /// Refresh the view
+  virtual void                refreshView ( Usul::Interfaces::IViewer * );
 
   /// Remove a window from the proper set.
   virtual void                removeWindow   ( Window *window );
@@ -257,7 +260,7 @@ private:
 };
 
 }; // namespace Documents
-}; // namespace OsgFox
+}; // namespace Usul
 
 
 #endif // _USUL_DOCUMENT_H_

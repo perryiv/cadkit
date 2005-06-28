@@ -439,3 +439,4 @@ void Molecule::_setRanges( osg::LOD *lod, float rangeMin, float maxDist  ) const
   // Set the range for the last child.
   lod->setRange ( numChildren - 1, rangeMin, _lastRangeMax );
 }
+

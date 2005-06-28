@@ -18,13 +18,13 @@
 
 #include "Images/Core/BaseImage.h"
 #include "Images/Core/TypeTraits.h"
+#include "Images/Algorithms/Grayscale.h"
 
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IGetImageData.h"
-#include "Usul/Interfaces/IImageToGrayScale.h"
 
 #include <vector>
 #include <algorithm>
@@ -47,10 +47,11 @@ public:
   typedef BaseImage BaseClass;
   typedef ValueType_ ValueType;
   typedef std::vector<ValueType> Values;
+  typedef typename Values::iterator Itr;
+  typedef typename Values::const_iterator ConstItr;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Components::Manager PluginManager;
   typedef typename Images::TypeTraits<ValueType>::IGetImageData IGetImageData;
-  typedef typename Images::TypeTraits<ValueType>::IImageToGrayScale IImageToGrayScale;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -169,15 +170,8 @@ public:
 
   virtual void toGrayScale()
   {
-    // Default TIFF reader truncates 16-bit pixels, so we use our own reader.
-    IImageToGrayScale::QueryPtr toGray ( PluginManager::instance().getInterface ( IImageToGrayScale::IID ) );
-
-    // See if we have the interfaces we need...
-    if ( false == toGray.valid() )
-      throw std::runtime_error ( "Error 2623586441: failed to find plugin for converting image to gray scale" );
-
-    // Convert the image.
-    toGray->toGrayScale ( this->channels(), _values );
+    Itr end ( Images::Algorithms::toGrayScale ( _values, this->channels(), this->alpha() ) );
+    _values.erase ( end, _values.end() );
   }
 
 
@@ -189,7 +183,36 @@ public:
 
   virtual void read ( const std::string &name )
   {
-    USUL_ASSERT ( 0 );
+    typedef Usul::Interfaces::IRead IRead;
+    typedef Usul::Interfaces::IReadImage IReadImage;
+    typedef Usul::Interfaces::IGetImageProperties IGetImageProperties;
+
+    // Default TIFF reader truncates 16-bit pixels, so we use our own reader.
+    IReadTIFF::QueryPtr tiff ( PluginManager::instance().getInterface ( IReadTIFF::IID ) );
+
+    // Get other interfaces.
+    IRead::QueryPtr reader ( tiff );
+    IGetImageProperties::QueryPtr props ( tiff );
+
+    // See if we have the interfaces we need...
+    if ( false == reader.valid() || false == props.valid() )
+      return false;
+
+    // Read the image.
+    reader->read ( name );
+
+    // See what kind it is.
+    unsigned int bytes ( props->getNumBytesPerValue() );
+    bool floating ( props->isValueFloatingPoint() );
+
+    // Make image of proper kind.
+    Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( bytes, floating, reader ) );
+
+    // Set our image.
+    _image = image;
+
+    // It worked.
+    return true;
   }
 
 

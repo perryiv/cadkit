@@ -39,7 +39,7 @@ BaseImage::BaseImage ( const BaseImage &b ) : BaseClass ( b ),
   _width    ( 0 ),
   _height   ( 0 ),
   _channels ( 0 ),
-  _hasAlpha ( false )
+  _alpha    ( false )
 {
 }
 

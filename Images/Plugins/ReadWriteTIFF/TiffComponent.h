@@ -115,7 +115,6 @@ private:
   bool _floating;
   Usul::Types::Uint32 _width;
   Usul::Types::Uint32 _height;
-  Usul::Types::Uint16 _numDirs;
   Usul::Types::Uint16 _orientation;
 };
 

@@ -180,9 +180,6 @@
 					RelativePath=".\Core\Image.h">
 				</File>
 				<File
-					RelativePath=".\Core\ImageBase.h">
-				</File>
-				<File
 					RelativePath=".\Core\ImageImpl.h">
 				</File>
 				<File

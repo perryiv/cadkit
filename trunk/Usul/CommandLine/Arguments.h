@@ -46,6 +46,9 @@ public:
   // Iterator access.
   Itr                         end() const { return _args.end(); }
 
+  // Return the directory that the program lives in.
+  std::string                 directory() const;
+
   // Return the single instance.
   static Arguments &          instance();
 

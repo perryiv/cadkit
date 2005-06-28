@@ -25,10 +25,9 @@ struct IRead : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1594661597u };
 
- virtual void   read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
-
-
-}; // class IRead
+  // Read the file.
+  virtual void read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+};
 
 
 }; // namespace Interfaces

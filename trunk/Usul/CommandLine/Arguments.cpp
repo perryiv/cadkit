@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/CommandLine/Arguments.h"
-
+#include "Usul/File/Path.h"
 
 using namespace Usul;
 using namespace Usul::CommandLine;
@@ -107,4 +107,16 @@ const std::string &Arguments::argv ( unsigned int i ) const
 const std::string &Arguments::program() const
 {
   return this->argv ( 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the directory that the program lives in.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Arguments::directory() const
+{
+  return Usul::File::directory ( this->program(), false );
 }

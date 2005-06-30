@@ -16,11 +16,7 @@
 #ifndef _USUL_EXCEPTIONS_THROWER_CLASS_H_
 #define _USUL_EXCEPTIONS_THROWER_CLASS_H_
 
-#ifdef __sgi
-#define _CPP_CMATH 1
-#endif
-
-#include <sstream>
+#include "Usul/Headers/SStream.h"
 
 
 namespace Usul {

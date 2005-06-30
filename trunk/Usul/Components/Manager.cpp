@@ -180,6 +180,7 @@ void Manager::load ( unsigned long iid, const std::string &dir, const std::strin
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Load all plugins in the list of file names.

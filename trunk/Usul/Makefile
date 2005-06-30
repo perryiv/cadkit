@@ -1,107 +1,134 @@
-SOURCE = \
-	Adaptors/ProgressBarUpdate.cpp \
-	Base/Referenced.cpp \
-	Base/Typed.cpp \
-	Components/Object.cpp \
-	Components/Registry.cpp \
-	Components/Manager.cpp \
-	DLL/Library.cpp \
-	DLL/Loader.cpp \
-	Errors/Stack.cpp \
-	File/Temp.cpp \
-	ID/GUID.cpp \
-	Resources/CancelButton.cpp \
-	Resources/EventQueue.cpp \
-	Resources/ProgressBar.cpp \
-	Resources/ReportErrors.cpp \
-	Resources/StatusBar.cpp \
-	State/Busy.cpp \
-	System/LastError.cpp \
-	System/Host.cpp \
-	System/Screen.cpp \
-	System/Socket.cpp \
-	Types/Types.cpp \
-	Threads/Mutex.cpp
-
+SHELL = /bin/sh
+LIB_OS = lib
+PKG_NAME = Usul
 OS := $(shell uname)
-OS_COMP_FLAGS =
-OS_LINK_FLAGS = -shared
-COMPILER = c++
+COMPILE_GUARD = USUL
 
-COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_USUL
+all: default
+
+default : make_dirs shared_lib archive_lib
+
+# ##### default values for INCLUDES and LIBS ###### #
+
+# Fox Includes and Libs
+ifeq ("$(FOX_INC_DIR)","")
+FOX_INC_DIR = /usr/local/include/fox-1.4
+endif
+
+ifeq ("$(FOX_LIB_DIR)","")
+FOX_LIB_DIR = /usr/local/lib
+endif
+
+# OpenThreads Includes and Libs
+ifeq ("$(OPENTHREADS_INC_DIR)","")
+OPENTHREADS_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OPENTHREADS_LIB_DIR)","")
+OPENTHREADS_LIB_DIR = /usr/local/lib
+endif
+
+# OpenProducer Includes and Libs
+ifeq ("$(PRODUCER_INC_DIR)","")
+PRODUCER_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(PRODUCER_LIB_DIR)","")
+PRODUCER_LIB_DIR = /usr/local/lib
+endif
+
+# Osg Includes and Libs
+ifeq ("$(OSG_BIN_DIR)","")
+OSG_BIN_DIR = /usr/local/bin
+endif
+
+ifeq ("$(OSG_INC_DIR)","")
+OSG_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OSG_LIB_DIR)","")
+OSG_LIB_DIR = /usr/local/lib
+endif
+
+# Our Build Libraries all go in ../LIBS
+ifeq ("$(USUL_INC_DIR)","")
+USUL_INC_DIR = ../
+endif
+
+ifeq ("$(USUL_LIB_DIR)","")
+USUL_LIB_DIR = ../lib
+endif
+# ################################################## #
+
+OS_LINK_FLAGS = -shared
+TARGET_PREFIX = lib
+TARGET_DYNAMIC_SUFFIX = .so
+TARGET_STATIC_SUFFIX = .a
+INSTALL = ../lib
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)
-OS_LINK_FLAGS = -dynamiclib
+TARGET_DYNAMIC_SUFFIX := .dylib
+OS_LINK_FLAGS := -dynamiclib -install_name $(TARGET_PREFIX)$(PKG_NAME)$(TARGET_DYNAMIC_SUFFIX)
+CXX:=g++
 endif
+
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-
-COMPILER = g++  #CC
-OS_COMP_FLAGS = -mabi=n32 -mips4 #-n32 -LANG:std
-OS_LINK_FLAGS = -L/usr/freeware/lib32 #-n32 -LANG:std -v
-COMMON_FLAGS  = -g -D_DEBUG -D_COMPILING_USUL -D__SGI
-endif
-ifeq ($(findstring Darwin,$(OS)),Darwin)
-OS_LINK_FLAGS = -dynamiclib
+OS := IRIX32
+CXX = g++ #CC -n32 -LANG:std -woff 1682 -mips3
+CXXFLAGS = -mabi=n32 -mips4  
+LIB_OS = -L/usr/freeware/lib32 #lib32
 endif
 
-COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
-LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
-
-COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
-LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
 INCLUDES = \
-	-I../ 
-
-
+	-I../
+	
 LIBS = 
 
-TARGET      = Usul
-ARCHIVE_LIB = lib$(TARGET)_a.a
-SHARED_LIB  = lib$(TARGET)_s.so
-BIN_DIR     = ../bin
-CLEAN       = rm -rf ii_files/ ; rm -f *.o ; cd ../
+LIB_DIRS = 
 
-OBJECTS = $(SOURCE:.cpp=.o)
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) \
+	-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
+	-O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -ffix-and-continue  -mtune=G4
 
-all : default 
+BUILD = $(OS)
+TARGET      = $(PKG_NAME)
+ARCHIVE_LIB = $(TARGET_PREFIX)$(TARGET)$(TARGET_STATIC_SUFFIX)
+SHARED_LIB  = $(TARGET_PREFIX)$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
 
-default : $(TARGET)
+OBJS = $(patsubst %.cpp,%.o,$(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
+  
+BUILD_DIRS:= \
+  $(dir $(subst ./,$(OS)/,$(shell find . -type file -name "*.cpp")))
+  
+make_dirs:
+	@echo '@@@@@ Building $(PKG_NAME) @@@@@'
+	mkdir -p $(BUILD_DIRS)
 
-$(TARGET) : $(OBJECTS)
-	rm -rf $(ARCHIVE_LIB)
-	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND)  $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
-	mkdir -p $(BIN_DIR)
-	mv $(ARCHIVE_LIB) $(BIN_DIR)
-	mv $(SHARED_LIB) $(BIN_DIR)
+shared_lib: $(OBJS)
+	@echo '@@@@@ Linking Dynamic Library... @@@@@'
+	$(CXX) $(OS_LINK_FLAGS) -g $(OBJS) -o $(BUILD)/$(SHARED_LIB) $(LIBDIRS) $(LIBS) 
+	mkdir -p $(INSTALL)
+	cp $(BUILD)/$(SHARED_LIB) $(INSTALL)
 
-.cpp.o :
-	$(COMPILE_COMMAND)$(INCLUDES) -c $< -o $@
+archive_lib: $(OBJS) 
+	@echo '@@@@@ Linking Static Library @@@@@'
+	$(RM) $(BUILD)/$(ARCHIVE_LIB)
+	ar -cr $(BUILD)/$(ARCHIVE_LIB) $(OBJS)
+	cp $(BUILD)/$(ARCHIVE_LIB) $(INSTALL)
+
+$(OBJS): $(BUILD)/%.o: %.cpp
+	@echo "[$(PKG_NAME)]:Compiling $< into $@"
+	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS)
-	rm -rf ii_files/
-	cd Adaptors ; $(CLEAN)
-	cd Base ; $(CLEAN)
-	cd Components ; $(CLEAN)
-	cd DLL ; $(CLEAN)
-	cd File ; $(CLEAN)
-	cd ID ; $(CLEAN)
-	cd System ; $(CLEAN)
-	cd Types ; $(CLEAN)
-	cd Threads ; $(CLEAN)
+	$(RM) -rf $(BUILD) so_locations
 
-clobber:
-	rm -f $(OBJECTS) $(ARCHIVE_LIB) $(SHARED_LIB)
-	rm -rf ii_files/
-	cd Adaptors ; $(CLEAN)
-	cd Base ; $(CLEAN)
-	cd Components ; $(CLEAN)
-	cd DLL ; $(CLEAN)
-	cd File ; $(CLEAN)
-	cd ID ; $(CLEAN)
-	cd System ; $(CLEAN)
-	cd Types ; $(CLEAN)
-	cd Threads ; $(CLEAN)
+real-clean: clean
+	$(RM) $(INSTALL)/$(SHARED_LIB)
+	$(RM) $(INSTALL)/$(ARCHIVE_LIB)
+	
+mvlibs:
+	mkdir -p $(MOVE_LOCATION)
+	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)

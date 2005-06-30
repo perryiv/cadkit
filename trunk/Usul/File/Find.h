@@ -82,10 +82,9 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
 #else
 
   struct dirent *dp;
-  struct stat inf;
 
   // Get directory stream pointer
-  if( DIR * dirp = opendir( d ) )
+  if( DIR * dirp = opendir( d.c_str() ) )
   {
     // Loop over directory entries
     struct dirent dirresult;
@@ -98,7 +97,7 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
       if ( Usul::File::extension( name ) == ext )
       {
         // Add to list
-        names.insert ( name );
+        names.insert(names.end(), name);
       }
     }
     closedir( dirp );
@@ -118,7 +117,7 @@ template < class Dirs, class Names >
 inline void find ( const Dirs &dirs, const std::string &ext, Names &fl )
 {
   // Loop through the directories.
-  for ( Dirs::const_iterator i = dirs.begin(); i != dirs.end(); ++i )
+  for ( typename Dirs::const_iterator i = dirs.begin(); i != dirs.end(); ++i )
   {
     // Append the files.
     Usul::File::find ( *i, ext, fl );

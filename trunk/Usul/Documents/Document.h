@@ -229,7 +229,7 @@ protected:
     typedef typename Listeners::value_type Listener;
 
     // Loop through the windows.
-    for ( Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
+    for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
     {
       // Get the current window.
       Listener listener ( *i );

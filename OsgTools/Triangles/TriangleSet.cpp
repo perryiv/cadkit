@@ -123,7 +123,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
     // Feedback.
     if ( progress.valid() && update() )
-      progress->updateProgressBar ( unsigned int ( float ( count ) / float ( maxProgress ) * 100 ) );
+      progress->updateProgressBar ( (unsigned int) ( float ( count ) / float ( maxProgress ) * 100 ) );
     ++count;
   }
 
@@ -138,7 +138,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
     // Feedback.
     if ( progress.valid() && update() )
-      progress->updateProgressBar ( unsigned int ( float ( count ) / float ( maxProgress ) * 100 ) );
+      progress->updateProgressBar ( (unsigned int) ( float ( count ) / float ( maxProgress ) * 100 ) );
     ++count;
   }
 

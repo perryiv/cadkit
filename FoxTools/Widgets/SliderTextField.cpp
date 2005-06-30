@@ -13,7 +13,7 @@
 #include "FoxTools/Headers/TextField.h"
 #include "FoxTools/Headers/Label.h"
 
-#include <sstream>
+#include "Usul/Headers/SStream.h"
 #include <stdexcept>
 
 using namespace FoxTools::Widgets;

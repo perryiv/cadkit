@@ -79,3 +79,4 @@ osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperText
   // Return the image
   return image3d.release();
 }
+

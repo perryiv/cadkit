@@ -25,6 +25,8 @@
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IGetImageData.h"
+#include "Usul/Interfaces/IRead.h"
+#include "Usul/Interfaces/IReadImage.h"
 
 #include <vector>
 #include <algorithm>

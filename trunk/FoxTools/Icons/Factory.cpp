@@ -25,7 +25,8 @@
 #include "FoxTools/Headers/PNGIcon.h"
 
 #include <stdexcept>
-#include <sstream>
+
+#include "Usul/Headers/SStream.h"
 
 using namespace FoxTools;
 using namespace FoxTools::Icons;

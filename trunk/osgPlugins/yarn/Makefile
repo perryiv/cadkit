@@ -119,15 +119,17 @@ BUILD_DIRS:= \
   $(dir $(subst ./,$(OS)/,$(shell find . -type file -name "*.cpp")))
   
 make_dirs:
-	@echo 'Building $(PKG_NAME)'
+	@echo '@@@@@ Building $(PKG_NAME) @@@@@'
 	mkdir -p $(BUILD_DIRS)
 
 shared_lib: $(OBJS)
+	@echo '@@@@@ Linking Dynamic Library... @@@@@'
 	$(CXX) $(OS_LINK_FLAGS) -g $(OBJS) -o $(BUILD)/$(SHARED_LIB) $(LIB_DIRS) $(LIBS)
 	mkdir -p $(INSTALL)
 	cp $(BUILD)/$(SHARED_LIB) $(INSTALL)
 
-archive_lib: $(OBJS)
+archive_lib: $(OBJS) 
+	@echo '@@@@@ Linking Static Library @@@@@'
 	$(RM) $(BUILD)/$(ARCHIVE_LIB)
 	ar -cr $(BUILD)/$(ARCHIVE_LIB) $(OBJS)
 	cp $(BUILD)/$(ARCHIVE_LIB) $(INSTALL)

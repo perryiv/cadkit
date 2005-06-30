@@ -116,7 +116,7 @@
 			isa = PBXFileReference;
 			lastKnownFileType = "compiled.mach-o.dylib";
 			name = libUsul.dylib;
-			path = ../../usr/local/lib/libUsul.dylib;
+			path = ../../lib/libUsul.dylib;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -240,10 +240,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "/usr/local/include /Users/mjackson/Projects";
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = /Users/mjackson/Projects/usr/local/lib;
+				LIBRARY_SEARCH_PATHS = ../../lib;
 				LIBRARY_STYLE = DYNAMIC;
 				PREBINDING = NO;
 				PRODUCT_NAME = OpenThreadsEx;
+				SYMROOT = ../../lib;
 			};
 			dependencies = (
 			);

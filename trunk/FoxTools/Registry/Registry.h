@@ -19,7 +19,7 @@
 #include "FoxTools/Export/Export.h"
 #include "FoxTools/Headers/Registry.h"
 
-#include <sstream>
+#include "Usul/Headers/SStream.h"
 
 namespace FoxTools {
 namespace Registry {

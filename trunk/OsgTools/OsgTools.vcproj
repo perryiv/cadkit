@@ -116,11 +116,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
 				OutputFile="../bin/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OPENTHREADS_LIB_DIR);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
 				ImportLibrary="../bin/OsgTools.lib"/>
 			<Tool

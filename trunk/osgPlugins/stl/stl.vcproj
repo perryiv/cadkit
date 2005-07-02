@@ -41,11 +41,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreadsWin32.lib"
 				OutputFile="$(OSG_BIN_DIR)/osgdb_stl.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OPENTHREADS_LIB_DIR);$(OSG_LIB_DIR)"
 				IgnoreDefaultLibraryNames="LIBC"
 				ImportLibrary=".\Release\osgdb_stl.lib"
 				TargetMachine="1"/>

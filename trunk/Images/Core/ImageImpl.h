@@ -23,10 +23,7 @@
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
-#include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IGetImageData.h"
-#include "Usul/Interfaces/IRead.h"
-#include "Usul/Interfaces/IReadImage.h"
+#include "Usul/MPL/SameType.h"
 
 #include <vector>
 #include <algorithm>
@@ -52,7 +49,6 @@ public:
   typedef typename Values::iterator Itr;
   typedef typename Values::const_iterator ConstItr;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Components::Manager PluginManager;
   typedef typename Images::TypeTraits<ValueType>::IGetImageData IGetImageData;
 
 
@@ -154,13 +150,75 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Get extreme values in all the channels.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void extremes ( ValueCount &low, ValueCount &high ) const
+  {
+#if 0
+    // The login of this function relies on the histogram being sorted.
+    typedef std::map < double, unsigned int > OneChannelHistogramType;
+    typedef std::vector < unsigned int, OneChannelHistogram > HistogramType;
+    USUL_ASSERT_SAME_TYPE ( Histogram, HistogramType );
+
+    // Must be at least two values.
+    if ( _values.size() < 2 )
+      return;
+
+    // Get the histogram.
+    Histogram h;
+    this->histogram ( h );
+
+    // Iterators to first and last.
+    Histogram::iterator a ( h.begin() );
+    Histogram::iterator b ( h.end()   );
+
+    // For each channel...
+    for ( unsigned int i = 0; i < this->channels(); ++i )
+    {
+      // Find the first non-zero value.
+      low = *a;
+      if ( 0 == low.first )
+      {
+        ++a;
+        low = *a;
+      }
+
+      // The last values should be the high.
+      --b;
+      high = *b;
+    }
+#endif
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Calculate the histogram.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   virtual void histogram ( Histogram &h ) const
   {
-    USUL_ASSERT ( 0 ); // TODO
+    // Make sure there is room for every channel.
+    h.resize ( this->channels() );
+
+    // Loop through the values.
+    for ( unsigned int i = 0; i < _values.size(); ++i )
+    {
+      // Get the value.
+      const ValueType value ( _values[i] );
+
+      // Get the channel.
+      const unsigned int channel ( i % this->channels() );
+
+      // Get reference to the count in the map.
+      unsigned int &count = h.at(channel)[value];
+
+      // Increment this value in the map.
+      ++count;
+    }
   }
 
 
@@ -174,47 +232,6 @@ public:
   {
     Itr end ( Images::Algorithms::toGrayScale ( _values, this->channels(), this->alpha() ) );
     _values.erase ( end, _values.end() );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Read the file.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  virtual void read ( const std::string &name )
-  {
-    typedef Usul::Interfaces::IRead IRead;
-    typedef Usul::Interfaces::IReadImage IReadImage;
-    typedef Usul::Interfaces::IGetImageProperties IGetImageProperties;
-
-    // Default TIFF reader truncates 16-bit pixels, so we use our own reader.
-    IReadTIFF::QueryPtr tiff ( PluginManager::instance().getInterface ( IReadTIFF::IID ) );
-
-    // Get other interfaces.
-    IRead::QueryPtr reader ( tiff );
-    IGetImageProperties::QueryPtr props ( tiff );
-
-    // See if we have the interfaces we need...
-    if ( false == reader.valid() || false == props.valid() )
-      return false;
-
-    // Read the image.
-    reader->read ( name );
-
-    // See what kind it is.
-    unsigned int bytes ( props->getNumBytesPerValue() );
-    bool floating ( props->isValueFloatingPoint() );
-
-    // Make image of proper kind.
-    Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( bytes, floating, reader ) );
-
-    // Set our image.
-    _image = image;
-
-    // It worked.
-    return true;
   }
 
 

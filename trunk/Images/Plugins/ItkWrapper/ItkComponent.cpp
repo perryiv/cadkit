@@ -19,7 +19,9 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Cast/Cast.h"
 
-#include "itkImage.h"
+#include "ITK/Code/Common/itkImage.h"
+#include "ITK/Code/Common/itkImageRegionIterator.h"
+#include "ITK/Code/IO/itkImageFileReader.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -97,8 +99,8 @@ Usul::Interfaces::IUnknown *ItkComponent::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IPlugin*>(this);
   case Usul::Interfaces::IRead::IID:
     return static_cast < Usul::Interfaces::IRead*>(this);
-  case Usul::Interfaces::IReadTIFF::IID:
-    return static_cast < Usul::Interfaces::IReadTIFF*>(this);
+  case Usul::Interfaces::IReadImage::IID:
+    return static_cast < Usul::Interfaces::IReadImage*>(this);
   case Usul::Interfaces::IReadProperties::IID:
     return static_cast < Usul::Interfaces::IReadProperties*>(this);
   case Usul::Interfaces::IGetImageProperties::IID:
@@ -161,26 +163,10 @@ bool ItkComponent::isValueFloatingPoint() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ItkComponent::_readProperties ( TIFF *in, const std::string &filename )
-{
-  // Check input.
-  USUL_ASSERT ( 0x0 != in );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the file properties.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void ItkComponent::readProperties ( const std::string &filename )
 {
-  // Initialize data members.
-  this->_init();
-
-  // Read properties.
-  this->_readProperties ( in, filename );
+  // For now...
+  this->read ( filename, 0x0 );
 }
 
 
@@ -192,11 +178,52 @@ void ItkComponent::readProperties ( const std::string &filename )
 
 void ItkComponent::read ( const std::string &filename, Unknown *caller )
 {
+  // Open as 8-bit rgba.
+  typedef unsigned char PixelType;
+  const unsigned int DIMENSION ( 4 );
+  typedef itk::Image < PixelType, DIMENSION > ImageType;
+  typedef ImageType::PixelContainer::Element Buffer;
+  typedef itk::ImageFileReader < ImageType > ReaderType;
+
   // Initialize data members.
   this->_init();
 
-  // Read properties.
-  this->_readProperties ( in, filename );
+  // Open the file.
+  ReaderType::Pointer reader ( ReaderType::New() );
+  reader->SetFileName ( filename.c_str() );
+  reader->Update();
+
+  // Get the image.
+  ImageType::Pointer image ( reader->GetOutput() );
+
+  // Set these members.
+  _bytes    = sizeof ( PixelType );
+  _channels = DIMENSION;
+  _floating = false;
+  _width    = image->GetBufferedRegion().GetSize()[0];
+  _height   = image->GetBufferedRegion().GetSize()[1];
+
+  // Should be true.
+  const unsigned int numPixels ( image->GetPixelContainer()->Size() );
+  if ( ( _width * _height ) != numPixels )
+    Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 3339041398: Number of pixel values (", numPixels, 
+        ") is not the same as width (", _width, ") times height (", _height, ")" );
+
+  // Make room.
+  _dataUint8.reserve ( numPixels * _channels );
+
+  // Append the values to our container.
+  typedef itk::ImageRegionConstIterator < ImageType > ConstIteratorType;
+  ConstIteratorType itr ( image, image->GetLargestPossibleRegion() );
+  for ( itr.GoToBegin(); !itr.IsAtEnd(); ++itr )
+  {
+    const ImageType::PixelType &pixel ( itr.Value() );
+    _dataUint8.push_back ( pixel );
+  }
+
+  // Should be true.
+  USUL_ASSERT ( ( numPixels * _channels ) == _dataUint8.size() );
 }
 
 

@@ -5,6 +5,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+# define NOMINMAX
+#endif
+
 #include "Images/Core/Image.h"
 
 #include "Usul/File/Find.h"
@@ -14,7 +18,9 @@
 #include "Usul/Interfaces/IPlugin.h"
 
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
+#include <limits>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,30 +75,46 @@ void normalize ( const std::string &dir, const std::string &ext )
   // Sort the names.
   std::sort ( files.begin(), files.end() );
 
+  // Initialize.
+  typedef Images::Image::ValueCount ValueCountAll;
+  typedef ValueCountAll::value_type ValueCountOneChannel;
+  typedef ValueCountOneChannel::first_type PixelValueType;
+  PixelValueType lowest  ( std::numeric_limits<PixelValueType>::max() );
+  PixelValueType highest ( std::numeric_limits<PixelValueType>::min() );
+
   // Loop through the files.
   for ( Files::const_iterator i = files.begin(); i != files.end(); ++i )
   {
-    std::cout << "Processing: " << (*i) << std::endl;
+    std::cout << "Processing: " << (*i);
 
     // Open the image.
     Images::Image::ValidRefPtr image = new Images::Image;
     image->read ( *i );
 
-    // Make sure they are grayscale.
+    // Make sure the image is grayscale.
     image->toGrayScale();
 
-#if 0
+    // Get extreme values in all the channels.
+    ValueCountAll low, high;
+    low.push_back  ( ValueCountOneChannel ( -1, 0 ) );
+    high.push_back ( ValueCountOneChannel ( -1, 0 ) );
+    image->extremes ( low, high );
+    std::cout << ",  low = "   << std::setw ( 5 ) << low.at(0).first 
+              << " ("          << std::setw ( 4 ) << low.at(0).second 
+              << "),  high = " << std::setw ( 5 ) << high.at(0).first 
+              << " ("          << std::setw ( 4 ) << high.at(0).second 
+              << ')';
 
-    // Get the histogram.
-    typedef Images::Image::Histogram Histogram;
-    Histogram h;
-    image->histogram ( h, std::numeric_limits<Usul::Types::Uint16>::max() );
+    // Update global extrema.
+    if ( low.at(0).first < lowest )
+      lowest = low.at(0).first;
+    if ( high.at(0).first > highest )
+      highest = high.at(0).first;
 
-    // Print the histogram.
-    std::copy ( h.begin(), h.end(), std::ostream_iterator<Histogram::value_type> ( std::cout, "\n" ) );
-
-#endif
+    std::cout << std::endl;
   }
+
+  std::cout << "Overall lowest = " << lowest << ", highest = " << highest << std::endl;
 }
 
 

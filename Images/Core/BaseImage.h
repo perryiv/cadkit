@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace Images {
@@ -34,7 +35,10 @@ public:
   // Useful typedefs
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef std::vector < unsigned int > Histogram;
+  typedef std::map < double, unsigned int > OneChannelHistogram;
+  typedef std::vector < OneChannelHistogram > Histogram;
+  typedef std::pair < double, unsigned int > OneChannelValueCount;
+  typedef std::vector < OneChannelValueCount > ValueCount;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseImage );
@@ -53,6 +57,9 @@ public:
   // Return a clone of this image.
   virtual BaseImage *         clone() const = 0;
 
+  // Get extreme values in all the channels.
+  virtual void                extremes ( ValueCount &low, ValueCount &high ) const = 0;
+
   // Get the height.
   unsigned int                height() const { return _height; }
 
@@ -61,9 +68,6 @@ public:
 
   // Convert to grayscale.
   virtual void                toGrayScale() = 0;
-
-  // Read the file.
-  virtual void                read ( const std::string &name ) = 0;
 
   // Resize the image.
   virtual void                resize ( unsigned int width, unsigned int height, unsigned int channels ) = 0;

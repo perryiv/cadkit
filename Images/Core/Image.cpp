@@ -22,6 +22,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/IReadTIFF.h"
+#include "Usul/Interfaces/IReadImage.h"
 #include "Usul/Interfaces/IGetImageProperties.h"
 
 using namespace Images;
@@ -109,63 +110,70 @@ unsigned int Image::channels() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper class for reading an image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class InterfaceType_ > struct Reader
+  {
+    static ::Images::BaseImage *read ( const std::string &name )
+    {
+      typedef Usul::Interfaces::IRead IRead;
+      typedef InterfaceType_ InterfaceType;
+      typedef Usul::Interfaces::IGetImageProperties IGetImageProperties;
+
+      // Default TIFF reader truncates 16-bit pixels, so we use our own reader.
+      InterfaceType::QueryPtr tiff ( PluginManager::instance().getInterface ( InterfaceType::IID ) );
+
+      // Get other interfaces.
+      IRead::QueryPtr reader ( tiff );
+      IGetImageProperties::QueryPtr props ( tiff );
+
+      // See if we have the interfaces we need...
+      if ( false == reader.valid() || false == props.valid() )
+        return 0x0;
+
+      // Read the image.
+      reader->read ( name );
+
+      // See what kind it is.
+      unsigned int bytes ( props->getNumBytesPerValue() );
+      bool floating ( props->isValueFloatingPoint() );
+
+      // Make image of proper kind.
+      return Images::Factory::create ( bytes, floating, reader );
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Read the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Image::read ( const std::string &name )
 {
+  typedef Usul::Interfaces::IRead IRead;
+  typedef Usul::Interfaces::IReadTIFF IReadTIFF;
+  typedef Usul::Interfaces::IReadImage IReadImage;
+  typedef Usul::Interfaces::IGetImageProperties IGetImageProperties;
+
   // Get extension.
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
+  // Declare here.
+  Images::BaseImage::RefPtr image ( 0x0 );
+
   // Do we have a tiff image?
   if ( ext == "tif" || ext == "tiff" )
-    if ( this->_readTiff ( name ) )
-      return;
+    image = Detail::Reader<IReadTIFF>::read ( name );
 
-  // Use default reader.
-  _image->read ( name );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the TIFF image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Image::_readTiff ( const std::string &name )
-{
-  typedef Usul::Interfaces::IRead IRead;
-  typedef Usul::Interfaces::IReadTIFF IReadTIFF;
-  typedef Usul::Interfaces::IGetImageProperties IGetImageProperties;
-
-  // Default TIFF reader truncates 16-bit pixels, so we use our own reader.
-  IReadTIFF::QueryPtr tiff ( PluginManager::instance().getInterface ( IReadTIFF::IID ) );
-
-  // Get other interfaces.
-  IRead::QueryPtr reader ( tiff );
-  IGetImageProperties::QueryPtr props ( tiff );
-
-  // See if we have the interfaces we need...
-  if ( false == reader.valid() || false == props.valid() )
-    return false;
-
-  // Read the image.
-  reader->read ( name );
-
-  // See what kind it is.
-  unsigned int bytes ( props->getNumBytesPerValue() );
-  bool floating ( props->isValueFloatingPoint() );
-
-  // Make image of proper kind.
-  Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( bytes, floating, reader ) );
-
-  // Set our image.
-  _image = image;
-
-  // It worked.
-  return true;
+  // Assign our image. Use default reader is needed.
+  _image = ( image.valid() ) ? image : Detail::Reader<IReadImage>::read ( name );
 }
 
 
@@ -190,4 +198,16 @@ void Image::toGrayScale()
 void Image::histogram ( Histogram &h ) const
 {
   _image->histogram ( h );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get extreme values in all the channels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::extremes ( ValueCount &low, ValueCount &high ) const
+{
+  _image->extremes ( low, high );
 }

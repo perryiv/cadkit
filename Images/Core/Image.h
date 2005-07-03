@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace Images {
@@ -36,7 +37,10 @@ public:
 
   // Useful typedefs
   typedef Usul::Base::Referenced BaseClass;
-  typedef std::vector < unsigned int > Histogram;
+  typedef std::map < double, unsigned int > OneChannelHistogram;
+  typedef std::vector < OneChannelHistogram > Histogram;
+  typedef std::pair < double, unsigned int > OneChannelValueCount;
+  typedef std::vector < OneChannelValueCount > ValueCount;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Image );
@@ -45,17 +49,20 @@ public:
   Image ( unsigned int bytes = 1, bool floating = false );
   Image ( const Image & );
 
-  // Assignment.
-  Image &               operator = ( const Image &image );
-
   // Get the number of channels.
   unsigned int          channels() const;
+
+  // Get extreme values in all the channels.
+  void                  extremes ( ValueCount &low, ValueCount &high ) const;
 
   // Get the height.
   unsigned int          height() const;
 
   // Calculate the histogram.
   void                  histogram ( Histogram &h ) const;
+
+  // Assignment.
+  Image &               operator = ( const Image &image );
 
   // Read the file.
   void                  read ( const std::string &name );
@@ -70,8 +77,6 @@ protected:
 
   // Use reference counting.
   virtual ~Image();
-
-  bool                  _readTiff ( const std::string &name );
 
 private:
 

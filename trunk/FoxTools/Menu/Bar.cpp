@@ -113,11 +113,10 @@ void Bar::build()
     new FX::FXToolBarGrip ( _bar, _bar, FX::FXMenuBar::ID_TOOLBARGRIP, FX::TOOLBARGRIP_DOUBLE );
   }
 
-  // Build every group.
-  for ( Groups::iterator i = _groups.begin(); i != _groups.end(); ++i )
-    (*i)->_build ( FoxTools::Functions::mainWindow(), _bar );
-
-  if( _mdiMenu && _clientArea )
+  // This has to come before the groups or else it shows up after the last 
+  // menu when the child-window is maximized. It should be before the first 
+  // (most likely "File") menu.
+  if ( _mdiMenu && _clientArea )
   {
     // MDI buttons in menu.
     new FX::FXMDIWindowButton   ( _bar, _mdiMenu, _clientArea, FXMDIClient::ID_MDI_MENUWINDOW, LAYOUT_LEFT );
@@ -125,6 +124,10 @@ void Bar::build()
     new FX::FXMDIRestoreButton  ( _bar, _clientArea, FXMDIClient::ID_MDI_MENURESTORE,  FRAME_RAISED | LAYOUT_RIGHT );
     new FX::FXMDIMinimizeButton ( _bar, _clientArea, FXMDIClient::ID_MDI_MENUMINIMIZE, FRAME_RAISED | LAYOUT_RIGHT );
   }
+
+  // Build every group.
+  for ( Groups::iterator i = _groups.begin(); i != _groups.end(); ++i )
+    (*i)->_build ( FoxTools::Functions::mainWindow(), _bar );
 }
 
 
@@ -200,8 +203,6 @@ void Bar::create()
     _bar->setUserData( this );
   }
 
-
-
   // Create all the groups.
   std::for_each ( _groups.begin(), _groups.end(), std::mem_fun ( &Group::create ) );
 }
@@ -216,8 +217,6 @@ void Bar::create()
 void Bar::insert ( const std::string& name, Group *group )
 {
   Item::IsEqual equal ( name );
-
   Groups::iterator i = std::find_if ( _groups.begin(), _groups.end(), equal );
-
-  _groups.insert( i, group );
+  _groups.insert ( i, group );
 }

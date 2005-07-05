@@ -24,12 +24,9 @@
 #include "Usul/Interfaces/IReportErrors.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IProgressBar.h"
-#include "Usul/Interfaces/ISendMessage.h"
-#include "Usul/Interfaces/IRead.h"
-#include "Usul/Interfaces/ICanClose.h"
-#include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IGetTitle.h"
 
+#include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Checker.h"
 #include "Usul/File/Path.h"
 #include "Usul/Cast/Cast.h"
@@ -64,11 +61,11 @@ FXDEFMAP ( MdiChildWindow ) WindowMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, FXMDIChild::ID_MDI_CLOSE,                                  MdiChildWindow::onCommandClose          ),
   FXMAPFUNC ( FX::SEL_COMMAND, FXMDIChild::ID_MDI_MENUCLOSE,                              MdiChildWindow::onCommandClose          ),
   FXMAPFUNC ( FX::SEL_COMMAND, FoxTools::App::Application::ID_DROP_FILE,                  MdiChildWindow::onCommandDropFile       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, Usul::Interfaces::ISendMessage::ID_CLOSE,                  MdiChildWindow::onCommandDocumentClose  ),
-  FXMAPFUNC ( FX::SEL_COMMAND, Usul::Interfaces::ISendMessage::ID_UPDATE_TITLES,          MdiChildWindow::onCommandUpdateTitle    ),
-  FXMAPFUNC ( FX::SEL_COMMAND, Usul::Interfaces::ISendMessage::ID_CLEAR_SCENE,            MdiChildWindow::onClearScene            ),
-  FXMAPFUNC ( FX::SEL_COMMAND, Usul::Interfaces::ISendMessage::ID_BUILD_SCENE,            MdiChildWindow::onBuildScene            ),
-  FXMAPFUNC ( FX::SEL_COMMAND, Usul::Interfaces::ISendMessage::ID_DISPLAY_LISTS_UPDATE,   MdiChildWindow::onDisplayListUpdate     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_CLOSE,                        MdiChildWindow::onCommandDocumentClose  ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_UPDATE_TITLES,                MdiChildWindow::onCommandUpdateTitle    ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_CLEAR_SCENE,                  MdiChildWindow::onClearScene            ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_BUILD_SCENE,                  MdiChildWindow::onBuildScene            ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_DISPLAY_LISTS_UPDATE,         MdiChildWindow::onDisplayListUpdate     ),
 };
 
 FXIMPLEMENT ( MdiChildWindow, MdiChildWindow::BaseClass, WindowMap, ARRAYNUMBER ( WindowMap ) );
@@ -130,8 +127,7 @@ MdiChildWindow::~MdiChildWindow()
   this->document()->removeWindow   ( this );
 
   // Update all child window's titles
-  Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( this->document() );
-  sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_UPDATE_TITLES );
+  this->document()->sendMessage( Usul::Interfaces::ISendMessage::ID_UPDATE_TITLES );
 
   // Tell the document this is closing.  
   // Make sure function is called after removeWindow is called.
@@ -161,8 +157,7 @@ void MdiChildWindow::create()
   this->document()->addWindow   ( this );
 
   // Update titles.
-  Usul::Interfaces::ISendMessage::ValidQueryPtr message ( this->document() );
-  message->sendMessage ( Usul::Interfaces::ISendMessage::ID_UPDATE_TITLES );
+  this->document()->sendMessage ( Document::ID_UPDATE_TITLES );
 
   // Enable windows drag-and-drop.
   #ifdef _WIN32
@@ -243,11 +238,8 @@ void MdiChildWindow::_reportErrors ( unsigned int options, bool clear )
 
 long MdiChildWindow::onCommandClose ( FXObject *object, FXSelector id, void *data )
 {
-  // Get Interface
-  Usul::Interfaces::ICanClose::ValidQueryPtr close ( this->document() );
-  
   // Ask the document if we can close.
-  if ( false == close->canClose ( this, Usul::Interfaces::IUnknown::ValidQueryPtr ( this ) ) )
+  if ( false == this->document()->canClose ( this, Usul::Interfaces::IUnknown::ValidQueryPtr ( this ) ) )
     return 0;
 
   // Show/hide the progress bar.
@@ -357,16 +349,12 @@ long MdiChildWindow::onCommandDropFile ( FX::FXObject *, FX::FXSelector, void *p
   // Have the document read this file if it can.
   std::string filename ( ( ptr ) ? USUL_UNSAFE_CAST ( FX::FXchar *, ptr ) : "" );
 
-  Usul::Interfaces::ICanInsert::QueryPtr insert ( this->document() );
-
-  if ( insert.valid() && insert->canInsert ( filename ) )
+  if ( this->document()->canInsert ( filename ) )
   {
-    Usul::Interfaces::IRead::ValidQueryPtr read ( this->document() );
-    read->read ( filename, Usul::Interfaces::IUnknown::ValidQueryPtr ( this ) );
+    this->document()->read ( filename, Usul::Interfaces::IUnknown::ValidQueryPtr ( this ) );
 
-    Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( this->document() );
-    sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_BUILD_SCENE );
-    sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
+    this->document()->sendMessage( Document::ID_BUILD_SCENE );
+    this->document()->sendMessage( Document::ID_RENDER_SCENE );
   }
 
   // Otherwise, some user feedback...
@@ -437,9 +425,8 @@ long MdiChildWindow::onFocusIn ( FX::FXObject *object, FX::FXSelector sel, void 
   BaseClass::onFocusIn ( object, sel, data );
 
   // Tell the document that it is active
-  // Might need a way to get to the document manager through an interface 
-  // to tell it that our document is now active
-  this->document()->active();
+  Usul::Documents::Manager::instance().active( this->document() );
+  this->document()->activeView( _view.get() );
 
   //Handled
   return 1;
@@ -452,7 +439,7 @@ long MdiChildWindow::onFocusIn ( FX::FXObject *object, FX::FXSelector sel, void 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IViewer* MdiChildWindow::view()
+MdiChildWindow::View* MdiChildWindow::view()
 {
   return _view.get();
 }
@@ -464,7 +451,7 @@ Usul::Interfaces::IViewer* MdiChildWindow::view()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MdiChildWindow::view ( Usul::Interfaces::IViewer *viewer )
+void MdiChildWindow::view ( View *viewer )
 {
   _view = viewer;
 }

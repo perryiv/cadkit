@@ -83,8 +83,9 @@ public:
   /// Construction.
   Document ( const std::string &type );
 
-  // Make this active
-  virtual void                active      ( );
+  // Get/Set the active view
+  virtual void                activeView  ( View *view );
+  virtual View*               activeView  (  ) const;
 
   /// Add a window to the proper set.
   virtual void                addWindow   ( Window *window );
@@ -162,6 +163,12 @@ public:
   /// Notify this document of the message.
   virtual void                notify ( unsigned short message );
 
+  // Notify the document that it is no longer active.
+  virtual void                noLongerActive ( const std::string& activeType );
+
+  // Notify the document that it is active.
+  virtual void                nowActive      ( const std::string& oldType );
+
   /// Return the number of windows.
   unsigned int                numWindows()   const { return _windows.size();   }
   unsigned int                numViews()     const { return _views.size();     }
@@ -224,25 +231,7 @@ protected:
 
   ///  Send the message to all windows except for one specified.
   template < class Listeners, class Skip >
-  void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 )
-  {
-    typedef typename Listeners::value_type Listener;
-
-    // Loop through the windows.
-    for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
-    {
-      // Get the current window.
-      Listener listener ( *i );
-
-      // Skip the given one.
-      if ( skip != listener.get() )
-      {
-        // We can't return if the handle function returns zero because an object
-        // that does not handle the message id will also return zero.
-        listener->handleMessage ( message );
-      }
-    }
-  }
+  void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 );
 
   /// Usul::Interfaces::IGetTitle
   virtual std::string         getTitle ( Window* );
@@ -252,12 +241,42 @@ private:
   FileInfo _file;
   Windows _windows;
   Views   _views;
+  View::RefPtr _active;
   std::string _typeName;
   Delegate::ValidAccessRefPtr _delegate;
 
   // TODO may need a std::map < Usul::Interfaces::IViewer*, Options >
   Options     _options;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Send the message to all windows except for one specified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Listeners, class Skip >
+void Document::_sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip )
+{
+  typedef typename Listeners::value_type Listener;
+
+  // Loop through the windows.
+  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
+  {
+    // Get the current window.
+    Listener listener ( *i );
+
+    // Skip the given one.
+    if ( skip != listener.get() )
+    {
+      // We can't return if the handle function returns zero because an object
+      // that does not handle the message id will also return zero.
+      listener->handleMessage ( message );
+    }
+  }
+}
+
 
 }; // namespace Documents
 }; // namespace Usul

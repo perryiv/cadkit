@@ -43,8 +43,8 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
-  // Make your self active
-  virtual void                          active      ( ) = 0;
+  virtual void                          activeView( Usul::Interfaces::IViewer * ) = 0;
+  virtual Usul::Interfaces::IViewer *   activeView() const = 0;
 
   virtual void                          addWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          addView     ( Usul::Interfaces::IViewer *view   ) = 0;

@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/ILoadFileDialog.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/IQuestion.h"
+#include "Usul/Interfaces/IHandleActivatingDocument.h"
 
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
@@ -54,6 +55,7 @@ Document::Document ( const std::string &type ) : BaseClass(),
   _file      (),
   _windows   (),
   _views     (),
+  _active    (),
   _typeName  ( type ),
   _delegate  (),
   _options   ()
@@ -597,16 +599,34 @@ std::string Document::getTitle ( Window *window )
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make this active.  May want to have the view passed in, so the 
-//  document can keep track of the active view.
+//  Notify the document that it is no longer active.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::active()
+void Document::noLongerActive( const std::string &activeType )
 {
-  Manager::instance().active ( this );
+  Usul::Interfaces::IHandleActivatingDocument::QueryPtr handle ( this->delegate() );
+
+  if( handle.valid() )
+    handle->noLongerActive( this, activeType );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the document that it is active
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::nowActive( const std::string &oldType )
+{
+  Usul::Interfaces::IHandleActivatingDocument::QueryPtr handle ( this->delegate() );
+
+  if( handle.valid() )
+    handle->nowActive( this, oldType );
 }
 
 
@@ -621,7 +641,7 @@ void Document::closing ( Window *window )
   if ( _windows.empty() )
   {
     // Tell the manager we are closing.
-    Manager::instance().close ( this );  
+    Manager::instance().close ( this );
 
     // Clear the data.
     std::cout << "Closing document: " << this->fileName() << " ... " << Usul::Resources::TextWindow::flush;
@@ -691,5 +711,29 @@ void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 {
   if( this->delegate() )
     this->delegate()->refreshView( this, viewer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the active view.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  Document::activeView  ( View *view )
+{
+  _active = view;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the active view.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Document::View* Document::activeView  (  ) const
+{
+  return _active.get();
 }
 

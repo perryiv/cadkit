@@ -466,6 +466,9 @@
 						RelativePath=".\Interfaces\IClippingPlanes.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICreateMovie.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h">
 					</File>
 					<File
@@ -533,9 +536,6 @@
 					Filter="">
 					<File
 						RelativePath=".\Interfaces\IAddTriangle.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IBuildScene.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
@@ -621,13 +621,16 @@
 						RelativePath=".\Interfaces\IGetDocument.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGetOptions.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetTitle.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IInitNewDocument.h">
+						RelativePath=".\Interfaces\IHandleActivatingDocument.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOsgFoxDocument.h">
+						RelativePath=".\Interfaces\IInitNewDocument.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISendMessage.h">
@@ -647,6 +650,12 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IBoundingSphere.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IBuildScene.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IBuildSceneVtk.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ICamera.h">

@@ -48,13 +48,19 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
   /// Reset the file name counter.
   virtual void resetFrameDumpCounter() = 0;
 
+  /// Get the current file number
+  virtual unsigned int currentFile() const = 0;
+
   /// Small struct to turn on/off frame-dumping.
   struct ScopedDump
   {
     ScopedDump ( IFrameDump *f ) : _f ( f )
     {
       if ( _f.valid() )
+      {
         _f->dumpFrames ( true );
+        _f->resetFrameDumpCounter();
+      }
     }
     ~ScopedDump()
     {

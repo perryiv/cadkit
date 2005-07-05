@@ -219,7 +219,7 @@ Manager::Filters Manager::filtersOpen() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make this document active
+//  Make this document active.  May be null.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -229,13 +229,19 @@ void Manager::active ( Document *document )
   if( document == _active.get() )
     return;
 
-  //_active->noLongerActive( document->getType(), Unknown to mainwindow ) - Something like this is needed
-  // std::string oldType ( _active->getType() );
+  // Notify the active document that it is no longer active.
+  if( _active )
+    _active->noLongerActive( document->typeName() );
+  
+  // Get the old type.
+  std::string oldType ( _active ? _active->typeName() : "" );
 
   // Set the active document
   _active = document;
 
-  //document->nowActive( oldType, Unknown to mainWindow )   - Something like this is needed
+  // Notify the document that it is now active.
+  if( _active )
+    _active->nowActive( oldType );
 }
 
 

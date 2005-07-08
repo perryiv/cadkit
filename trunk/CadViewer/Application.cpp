@@ -38,6 +38,7 @@
 
 #include "SAL/Interfaces/INode.h"
 #include "SAL/Interfaces/IOSG.h"
+#include "SAL/Interfaces/IRead.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -263,7 +264,9 @@ Application::Application ( Args &args ) :
   _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _gridFunctor    (),
+  _gridFunctorXZ  (),
+  _gridFunctorZY  (),
+  _gridFunctorYX  (),
   _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
@@ -324,7 +327,7 @@ Application::Application ( Args &args ) :
   _joystick->callback ( vrjGA::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 
   // Have to load the config files now. Remove them from the arguments.
-  Parser::Args configs = _parser->files ( ".config", true );
+  Parser::Args configs = _parser->files ( ".jconf", true );
   this->_loadConfigFiles ( configs );
 
   // populate the color map
@@ -501,7 +504,7 @@ void Application::_initText()
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   ErrorChecker ( 1071452071, mt.valid() );
-  mt->setReferenceFrame ( osg::Transform::RELATIVE_TO_ABSOLUTE );
+  mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.
@@ -569,14 +572,29 @@ void Application::_initGrid ( osg::Node *node )
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
   // Set the properties.
-  _gridFunctor.numBlocks ( _prefs->numGridBlocks() );
-  _gridFunctor.size ( r * _prefs->gridScale() );
-  _gridFunctor.color ( _prefs->gridColor() );
+  _gridFunctorXZ.numBlocks ( _prefs->numGridBlocks() );
+  _gridFunctorXZ.size ( r * _prefs->gridScale() );
+  _gridFunctorXZ.color ( _prefs->gridColor() );
+  _gridFunctorZY.numBlocks ( _prefs->numGridBlocks() );
+  _gridFunctorZY.size ( r * _prefs->gridScale() );
+  _gridFunctorZY.color ( _prefs->gridColor() );
+  _gridFunctorYX.numBlocks ( _prefs->numGridBlocks() );
+  _gridFunctorYX.size ( r * _prefs->gridScale() );
+  _gridFunctorYX.color ( _prefs->gridColor() );
 
   // Move the center so that it is below the bounding sphere of the node.
   osg::Vec3 c ( bs.center() );
   c[1] = -r;
-  _gridFunctor.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+  _gridFunctorXZ.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+  _gridFunctorZY.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+  _gridFunctorYX.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+
+  // Rotate the ZY and YX grids into position
+  Usul::Math::Matrix44f o;
+  o.makeRotation ( 0.5 * 3.1415926, Usul::Math::Vec3f ( 0.0, 0.0, 1.0 ) );
+  _gridFunctorZY.orientation ( o );
+  o.makeRotation ( 0.5 * 3.1415926, Usul::Math::Vec3f ( 1.0, 0.0, 0.0 ) );
+  _gridFunctorYX.orientation ( o );
 
   _rebuildGrid();
 }
@@ -592,7 +610,9 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  _gridBranch->addChild ( _gridFunctor() );
+  _gridBranch->addChild ( _gridFunctorXZ() );
+  _gridBranch->addChild ( _gridFunctorZY() );
+  _gridBranch->addChild ( _gridFunctorYX() );
 }
 
 
@@ -1696,12 +1716,13 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   this->_update ( *_msgText, "Reading file: " + filename );
 
   // Create a component for reading the model.
-  Usul::Interfaces::IRead::ValidQueryPtr reader 
+  SAL::Interfaces::IRead::ValidQueryPtr reader 
     ( Usul::Components::Object::create 
-      ( Usul::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
+      ( SAL::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
 
   // Read the model.
-  SAL::Interfaces::INode::ValidQueryPtr model ( reader->read ( filename, 0x0 ) );
+  Usul::Interfaces::IUnknown *tmp=NULL;
+  SAL::Interfaces::INode::ValidQueryPtr model ( reader->readNodeFile ( filename ) );
 
   // Get the interface we need.
   SAL::Interfaces::IOSG::ValidQueryPtr iosg ( model );

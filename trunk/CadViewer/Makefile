@@ -72,8 +72,8 @@ LOCAL_LIBS = \
 
 JUGGLER_LIBS = \
 	-L${JUGGLER_LIB_DIR} \
-	-lJuggler \
-	-lJuggler_ogl \
+	-lvrj \
+	-lvrj_ogl \
 	-lsonix \
 	-lvpr \
 	-lgadget \

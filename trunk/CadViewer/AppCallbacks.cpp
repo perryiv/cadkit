@@ -1351,7 +1351,9 @@ void Application::_gridColor ( MenuKit::Message m, MenuKit::Item *item )
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
     const osg::Vec4& c = this->_getColor( item->text() );
-    _gridFunctor.color ( c[0], c[1], c[2], c[3] );
+    _gridFunctorXZ.color ( c[0], c[1], c[2], c[3] );
+    _gridFunctorZY.color ( c[0], c[1], c[2], c[3] );
+    _gridFunctorYX.color ( c[0], c[1], c[2], c[3] );
     this->_rebuildGrid();
   }
 }

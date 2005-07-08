@@ -19,6 +19,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IGetImageData.h"
 
 #include <string>
 #include <vector>
@@ -39,6 +40,11 @@ public:
   typedef std::vector < OneChannelHistogram > Histogram;
   typedef std::pair < double, unsigned int > OneChannelValueCount;
   typedef std::vector < OneChannelValueCount > ValueCount;
+  typedef Usul::Interfaces::IGetImageDataUint8::Values DataUint8;
+  typedef Usul::Interfaces::IGetImageDataUint16::Values DataUint16;
+  typedef Usul::Interfaces::IGetImageDataUint32::Values DataUint32;
+  typedef Usul::Interfaces::IGetImageDataFloat32::Values DataFloat32;
+  typedef Usul::Interfaces::IGetImageDataFloat64::Values DataFloat64;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseImage );
@@ -51,6 +57,9 @@ public:
   bool                        alpha() const { return _alpha; }
   void                        alpha ( bool a ) { _alpha = a; }
 
+  // Return the number of bytes per scalar value.
+  virtual unsigned int        bytes() const = 0;
+
   // Get the number of channels.
   unsigned int                channels() const { return _channels; }
 
@@ -59,6 +68,9 @@ public:
 
   // Get extreme values in all the channels.
   virtual void                extremes ( ValueCount &low, ValueCount &high ) const = 0;
+
+  // Are the scalar values integers?
+  virtual bool                integer() const = 0;
 
   // Get the height.
   unsigned int                height() const { return _height; }
@@ -74,6 +86,13 @@ public:
 
   // Set the pixels of this image.
   virtual void                setPixels ( Unknown *pixels ) = 0;
+
+  // Get the image values.
+  virtual void                values ( DataUint8   & ) const = 0;
+  virtual void                values ( DataUint16  & ) const = 0;
+  virtual void                values ( DataUint32  & ) const = 0;
+  virtual void                values ( DataFloat32 & ) const = 0;
+  virtual void                values ( DataFloat64 & ) const = 0;
 
   // Get the width.
   unsigned int                width() const { return _width; }

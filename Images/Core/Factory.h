@@ -33,7 +33,7 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
 
   // Create the image.
-  static BaseImage *create ( unsigned int bytes, bool floating, Unknown *pixels = 0x0 );
+  static BaseImage *create ( unsigned int bytes, bool integer, Unknown *pixels = 0x0 );
 };
 
 

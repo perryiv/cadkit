@@ -63,9 +63,9 @@ public:
   virtual void                  getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const;
 
   // Get the image values.
-  virtual void                  getImageValues ( DataUint8 & ) const;
-  virtual void                  getImageValues ( DataUint16 & ) const;
-  virtual void                  getImageValues ( DataUint32 & ) const;
+  virtual void                  getImageValues ( DataUint8   & ) const;
+  virtual void                  getImageValues ( DataUint16  & ) const;
+  virtual void                  getImageValues ( DataUint32  & ) const;
   virtual void                  getImageValues ( DataFloat32 & ) const;
   virtual void                  getImageValues ( DataFloat64 & ) const;
 
@@ -75,8 +75,8 @@ public:
   // Return the name of the plugin.
   virtual std::string           getPluginName() const;
 
-  // See if the pixel format is floating-point.
-  virtual bool                  isValueFloatingPoint() const;
+  // See if the scalar values are integers.
+  virtual bool                  isValueInteger() const;
 
   // Read the file.
   virtual void                  read ( const std::string &filename, Unknown *caller = 0x0 );
@@ -104,7 +104,7 @@ private:
   DataFloat64 _dataFloat64;
   Usul::Types::Uint16 _bytes;
   Usul::Types::Uint16 _channels;
-  bool _floating;
+  bool _integer;
   Usul::Types::Uint32 _width;
   Usul::Types::Uint32 _height;
 };

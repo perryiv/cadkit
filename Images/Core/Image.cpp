@@ -27,6 +27,8 @@
 
 using namespace Images;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Image, Image::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +71,35 @@ Image::Image ( const Image &image ) : BaseClass ( image ),
 
 Image::~Image()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Image::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IGetImageProperties::IID:
+    return static_cast < Usul::Interfaces::IGetImageProperties*>(this);
+  case Usul::Interfaces::IGetImageDataUint8::IID:
+    return static_cast < Usul::Interfaces::IGetImageDataUint8*>(this);
+  case Usul::Interfaces::IGetImageDataUint16::IID:
+    return static_cast < Usul::Interfaces::IGetImageDataUint16*>(this);
+  case Usul::Interfaces::IGetImageDataUint32::IID:
+    return static_cast < Usul::Interfaces::IGetImageDataUint32*>(this);
+  case Usul::Interfaces::IGetImageDataFloat32::IID:
+    return static_cast < Usul::Interfaces::IGetImageDataFloat32*>(this);
+  case Usul::Interfaces::IGetImageDataFloat64::IID:
+    return static_cast < Usul::Interfaces::IGetImageDataFloat64*>(this);
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -140,10 +171,10 @@ namespace Detail
 
       // See what kind it is.
       unsigned int bytes ( props->getNumBytesPerValue() );
-      bool floating ( props->isValueFloatingPoint() );
+      bool integer ( props->isValueInteger() );
 
       // Make image of proper kind.
-      return Images::Factory::create ( bytes, floating, reader );
+      return Images::Factory::create ( bytes, integer, reader );
     }
   };
 }
@@ -210,4 +241,162 @@ void Image::histogram ( Histogram &h ) const
 void Image::extremes ( ValueCount &low, ValueCount &high ) const
 {
   _image->extremes ( low, high );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of bytes per channel-value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Image::bytes() const
+{
+  return this->type().first;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get whether or not the pixel values are floating point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Image::floating() const
+{
+  return !this->integer();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set whether or not the pixel values are integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::integer ( bool state )
+{
+  this->type ( TypeInfo ( this->bytes(), state ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get whether or not the pixel values are integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Image::integer() const
+{
+  return _image->integer();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the type of image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::type ( unsigned int bytes, bool integer )
+{
+  this->type ( TypeInfo ( bytes, integer ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the type of image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::type ( const TypeInfo &info )
+{
+  if ( info != this->type() )
+  {
+    // Declare a new image. Pass in existing image as the pixel source.
+    Usul::Interfaces::IUnknown::ValidQueryPtr unknown ( this );
+    Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( info.first, info.second, unknown ) );
+
+    // Assign to our image smart-pointer.
+    _image = image;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the type of image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Image::TypeInfo Image::type() const
+{
+  return TypeInfo ( _image->bytes(), _image->integer() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of bytes per value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Image::getNumBytesPerValue() const
+{
+  return this->bytes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the scalar values are integers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Image::isValueInteger() const
+{
+  return this->integer();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::getImageValues ( DataUint8 &v ) const
+{
+  _image->values ( v );
+}
+void Image::getImageValues ( DataUint16 &v ) const
+{
+  _image->values ( v );
+}
+void Image::getImageValues ( DataUint32 &v ) const
+{
+  _image->values ( v );
+}
+void Image::getImageValues ( DataFloat32 &v ) const
+{
+  _image->values ( v );
+}
+void Image::getImageValues ( DataFloat64 &v ) const
+{
+  _image->values ( v );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image dimensions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::getImageDimensions ( unsigned int &w, unsigned int &h, unsigned int &c ) const
+{
+  w = this->width();
+  h = this->height();
+  c = this->channels();
 }

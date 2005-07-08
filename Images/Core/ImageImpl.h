@@ -28,6 +28,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <limits>
 
 
 namespace Images {
@@ -156,6 +157,7 @@ public:
 
   void extremes ( ValueCount &low, ValueCount &high ) const
   {
+    USUL_ASSERT ( 0 ); // Heads up...
 #if 0
     // The login of this function relies on the histogram being sorted.
     typedef std::map < double, unsigned int > OneChannelHistogramType;
@@ -245,6 +247,74 @@ public:
   {
     _values.resize ( w * h * c );
     BaseClass::resize ( w, h, c );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the number of bytes per scalar value.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  unsigned int bytes() const
+  {
+    return sizeof ( ValueType );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Are the scalar values integers?
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  bool integer() const
+  {
+    return std::numeric_limits<ValueType>::is_integer;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the scalar values. Need to cast to eliminate warnings.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class ContainerType > scalars ( ContainerType &v ) const
+  {
+    typedef typename ContainerType::value_type ContainerValueType;
+    const unsigned int num ( _values.size() );
+    v.resize ( num );
+    for ( unsigned int i = 0; i < num; ++i )
+      v[i] = static_cast < ContainerValueType > ( _values[i] );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the image values.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void values ( DataUint8 &v ) const
+  {
+    this->scalars ( v );
+  }
+  virtual void values ( DataUint16 &v ) const
+  {
+    this->scalars ( v );
+  }
+  virtual void values ( DataUint32 &v ) const
+  {
+    this->scalars ( v );
+  }
+  virtual void values ( DataFloat32 &v ) const
+  {
+    this->scalars ( v );
+  }
+  virtual void values ( DataFloat64 &v ) const
+  {
+    this->scalars ( v );
   }
 
 protected:

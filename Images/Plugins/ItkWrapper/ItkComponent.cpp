@@ -44,7 +44,7 @@ ItkComponent::ItkComponent() : BaseClass(),
   _dataFloat64 (),
   _bytes       ( 0 ),
   _channels    ( 0 ),
-  _floating    ( false ),
+  _integer     ( true ),
   _width       ( 0 ),
   _height      ( 0 )
 {
@@ -78,7 +78,7 @@ void ItkComponent::_init()
 
   _bytes       = 0;
   _channels    = 0;
-  _floating    = false;
+  _integer     = true;
   _width       = 0;
   _height      = 0;
 }
@@ -147,13 +147,13 @@ std::string ItkComponent::getPluginName() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the pixel format is floating-point.
+//  See if the scalar values are integers.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ItkComponent::isValueFloatingPoint() const
+bool ItkComponent::isValueInteger() const
 {
-  return _floating;
+  return _integer;
 }
 
 
@@ -199,7 +199,7 @@ void ItkComponent::read ( const std::string &filename, Unknown *caller )
   // Set these members.
   _bytes    = sizeof ( PixelType );
   _channels = DIMENSION;
-  _floating = false;
+  _integer  = true;
   _width    = image->GetBufferedRegion().GetSize()[0];
   _height   = image->GetBufferedRegion().GetSize()[1];
 

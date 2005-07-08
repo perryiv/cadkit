@@ -521,7 +521,9 @@ protected:
   PrefsPtr          _prefs;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
-  OsgTools::Grid    _gridFunctor;
+  OsgTools::Grid    _gridFunctorXZ;
+  OsgTools::Grid    _gridFunctorZY;
+  OsgTools::Grid    _gridFunctorYX;
   bool              _textures;
 };
 

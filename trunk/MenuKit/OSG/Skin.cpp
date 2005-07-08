@@ -377,19 +377,6 @@ float Skin::find_max_width(const Menu::Items& items)
   return ( ( items.end() == iter ) ? 0.0f : graphic_width ( iter->get() ) );
 }
 
-//--- helper implementation ---//
-osg::Drawable* Word::operator() ()
-{
-  osg::ref_ptr<osgText::Text> text = new osgText::Text;
-  text->setDrawMode(osgText::Text::TEXT);
-  text->setAlignment( osgText::Text::LEFT_BASE_LINE );
-  text->setText( _text );
-  text->setFont( _font.get() );
-  text->setColor( color() );
-  text->setCharacterSize( height(),1.0 );
-  return( text.release() );
-}
-
 osg::Drawable* Arrow::operator () ()
 {
   osg::Vec3Array* vertices = new osg::Vec3Array();

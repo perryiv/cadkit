@@ -31,22 +31,9 @@ using namespace Images;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BaseImage *Factory::create ( unsigned int bytes, bool floating, Usul::Interfaces::IUnknown *pixels )
+BaseImage *Factory::create ( unsigned int bytes, bool integer, Usul::Interfaces::IUnknown *pixels )
 {
-  if ( floating )
-  {
-    switch ( bytes )
-    {
-      case 4:
-        return new Images::ImageImpl < Usul::Types::Float32 > ( pixels );
-      case 8:
-        return new Images::ImageImpl < Usul::Types::Float64 > ( pixels );
-      default:
-        Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1318051482: ", bytes, " bytes is not supported for floating-point pixels" );
-    }
-  }
-
-  else
+  if ( integer )
   {
     switch ( bytes )
     {
@@ -58,6 +45,19 @@ BaseImage *Factory::create ( unsigned int bytes, bool floating, Usul::Interfaces
         return new Images::ImageImpl < Usul::Types::Uint32 > ( pixels );
       default:
         Usul::Exceptions::Thrower<std::runtime_error>  ( "Error 3759393049: ", bytes, " bytes is not supported for integer pixels" );
+    }
+  }
+
+  else
+  {
+    switch ( bytes )
+    {
+      case 4:
+        return new Images::ImageImpl < Usul::Types::Float32 > ( pixels );
+      case 8:
+        return new Images::ImageImpl < Usul::Types::Float64 > ( pixels );
+      default:
+        Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1318051482: ", bytes, " bytes is not supported for floating-point pixels" );
     }
   }
 

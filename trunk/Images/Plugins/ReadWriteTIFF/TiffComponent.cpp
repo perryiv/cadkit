@@ -130,7 +130,7 @@ TiffComponent::TiffComponent() : BaseClass(),
   _dataFloat64 (),
   _bytes       ( 0 ),
   _channels    ( 0 ),
-  _floating    ( false ),
+  _integer     ( true ),
   _width       ( 0 ),
   _height      ( 0 )
 {
@@ -164,7 +164,7 @@ void TiffComponent::_init()
 
   _bytes       = 0;
   _channels    = 0;
-  _floating    = false;
+  _integer     = true;
   _width       = 0;
   _height      = 0;
 }
@@ -233,13 +233,13 @@ std::string TiffComponent::getPluginName() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if the pixel format is floating-point.
+//  See if the scalar values are integers.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TiffComponent::isValueFloatingPoint() const
+bool TiffComponent::isValueInteger() const
 {
-  return _floating;
+  return _integer;
 }
 
 

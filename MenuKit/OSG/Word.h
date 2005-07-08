@@ -19,6 +19,9 @@ namespace MenuKit
       Word(const Word& w):
         DrawableFunctor(w), _text(w._text), _font(w._font), _ar(w._ar), _dm(w._dm) {}
 
+	  Word(std::string t, osg::ref_ptr<osgText::Font> f):
+        DrawableFunctor(1.0f), _text(t), _font(f), _ar(1.0), _dm(osgText::Text::TEXT) {}
+
       virtual ~Word() {}
 
       Word& operator =(const Word& w)

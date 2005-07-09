@@ -403,6 +403,9 @@
 					RelativePath=".\Headers\ColorDialog.h">
 				</File>
 				<File
+					RelativePath=".\Headers\ColorSelector.h">
+				</File>
+				<File
 					RelativePath=".\Headers\ComboBox.h">
 				</File>
 				<File

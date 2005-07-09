@@ -417,6 +417,9 @@
 						RelativePath=".\Interfaces\IMainWindow.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IMaterialEditor.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IMenuEntry.h">
 					</File>
 					<File

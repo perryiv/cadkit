@@ -218,10 +218,7 @@ osg::Group *ReaderWriterPDB::_build() const
 
 void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, const Update& progress )
 {
-  clock_t start, finish; // used by clock()
-	double total_second;
-
-  start = clock(); // start to record the time
+  clock_t start ( ::clock() ); // start to record the time
 
   // The buffer that holds the lines. Plenty of padding just to be safe.
   const unsigned int size ( 512 );
@@ -301,12 +298,6 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, const U
 
 //  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )
 //    this->_parsePsf ( psf );
-
-  
-	finish = clock();   // end of the computation; record the time
-	total_second = (double)(finish - start) / CLOCKS_PER_SEC;
-
-  std::cout << "Time to parse: " << total_second << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -696,6 +696,28 @@
 					RelativePath=".\Windows\MdiChildWindow.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Predicates"
+				Filter="">
+				<File
+					RelativePath=".\Predicates\HasText.cpp">
+				</File>
+				<File
+					RelativePath=".\Predicates\HasText.h">
+				</File>
+				<File
+					RelativePath=".\Predicates\IsChildNumber.cpp">
+				</File>
+				<File
+					RelativePath=".\Predicates\IsChildNumber.h">
+				</File>
+				<File
+					RelativePath=".\Predicates\IsMemberOf.cpp">
+				</File>
+				<File
+					RelativePath=".\Predicates\IsMemberOf.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

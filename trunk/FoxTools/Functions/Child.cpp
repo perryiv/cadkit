@@ -57,3 +57,42 @@ unsigned int FoxTools::Functions::whichChild ( const FX::FXObject *obj )
   // If we get to here then we failed.
   throw std::runtime_error ( "Error 3293115579: Failed to determine which child the given object is with respect to its parent" );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Fill the vector with the children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxTools::Functions::getChildren ( FX::FXWindow *window, std::vector<FX::FXWindow *> &v )
+{
+  if ( 0x0 == window )
+    return;
+
+  v.clear();
+  v.reserve ( window->numChildren() );
+  for ( FX::FXWindow *i = window->getFirst(); i; i = i->getNext() )
+    v.push_back ( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find first of type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXWindow *FoxTools::Functions::findFirst ( FX::FXWindow *window, const FX::FXMetaClass *type )
+{
+  if ( 0x0 == window )
+    return 0x0;
+
+  for ( FX::FXWindow *i = window->getFirst(); i; i = i->getNext() )
+  {
+    if ( i->isMemberOf ( type ) )
+      return i;
+  }
+
+  return 0x0;
+}

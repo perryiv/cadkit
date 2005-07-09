@@ -18,15 +18,23 @@
 
 #include "FoxTools/Export/Export.h"
 
-namespace FX { class FXObject; };
+#include <vector>
+
+namespace FX { class FXObject; class FXWindow; class FXMetaClass; };
 
 
 namespace FoxTools {
 namespace Functions {
 
 
+// Find first of type.
+  FOX_TOOLS_EXPORT FX::FXWindow *   findFirst ( FX::FXWindow *window, const FX::FXMetaClass * );
+
+// Fill the vector with the children.
+FOX_TOOLS_EXPORT void               getChildren ( FX::FXWindow *window, std::vector<FX::FXWindow *> &v );
+
 // Get the number this window is in its parent's list of children.
-FOX_TOOLS_EXPORT unsigned int whichChild ( const FX::FXObject *object );
+FOX_TOOLS_EXPORT unsigned int       whichChild ( const FX::FXObject *object );
 
 
 }; // namespace Functions

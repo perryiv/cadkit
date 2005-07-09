@@ -65,34 +65,88 @@ unsigned int FoxTools::Functions::whichChild ( const FX::FXObject *obj )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxTools::Functions::getChildren ( FX::FXWindow *window, std::vector<FX::FXWindow *> &v )
+void FoxTools::Functions::getChildren ( FX::FXWindow *parent, FoxTools::Functions::Children &v )
 {
-  if ( 0x0 == window )
+  if ( 0x0 == parent )
     return;
 
   v.clear();
-  v.reserve ( window->numChildren() );
-  for ( FX::FXWindow *i = window->getFirst(); i; i = i->getNext() )
+  v.reserve ( parent->numChildren() );
+  for ( FX::FXWindow *i = parent->getFirst(); i; i = i->getNext() )
     v.push_back ( i );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Find first of type.
+//  Return a vector of the children.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXWindow *FoxTools::Functions::findFirst ( FX::FXWindow *window, const FX::FXMetaClass *type )
+FoxTools::Functions::Children FoxTools::Functions::getChildren ( FX::FXWindow *parent )
 {
-  if ( 0x0 == window )
+  FoxTools::Functions::Children children;
+  FoxTools::Functions::getChildren ( parent, children );
+  return children;
+}
+
+#if 0
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the i'th of type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXWindow *FoxTools::Functions::findChild ( FX::FXWindow *parent, unsigned int which, const FX::FXMetaClass *type )
+{
+  // Handle trivial case.
+  if ( 0x0 == parent )
     return 0x0;
 
-  for ( FX::FXWindow *i = window->getFirst(); i; i = i->getNext() )
+  // Initialize counter.
+  unsigned int count ( 0 );
+
+  // Look for child.
+  for ( FX::FXWindow *i = parent->getFirst(); i; i = i->getNext() )
   {
     if ( i->isMemberOf ( type ) )
-      return i;
+    {
+      if ( count == which )
+        return i;
+      else
+        ++count;
+    }
   }
 
+  // Did not find the child.
   return 0x0;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the i'th of type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxTools::Functions::hideChild ( FX::FXWindow *parent, unsigned int which, const FX::FXMetaClass *type )
+{
+  FX::FXWindow *child ( FoxTools::Functions::findChild ( parent, which, type ) );
+  if ( child )
+    child->hide();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace text in the first child that contains the string and is of type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxTools::Functions::replaceText ( FX::FXWindow *window, const std::string &oldString, const std::string &newString, const FX::FXMetaClass *type )
+{
+  FX::FXWindow *child ( FoxTools::Functions::findChild ( parent, which, type ) );
+  if ( child )
+    child->hide();
+}
+#endif

@@ -49,6 +49,16 @@ public:
 
   /// Construction.
   Node ( osg::Node * );
+  
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  SAL::Interfaces::IOSG
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  /// Get the pointer to the base class for all OSG objects.
+  virtual const osg::Referenced *       osgReferenced() const;
+  virtual osg::Referenced *             osgReferenced();
 
 protected:
 
@@ -77,16 +87,6 @@ protected:
   /// Get/set the name.
   virtual void                          getNodeName ( std::string &name ) const;
   virtual void                          setNodeName ( const std::string &name );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  SAL::Interfaces::IOSG
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  /// Get the pointer to the base class for all OSG objects.
-  virtual const osg::Referenced *       osgReferenced() const;
-  virtual osg::Referenced *             osgReferenced();
 
   /////////////////////////////////////////////////////////////////////////////
   //

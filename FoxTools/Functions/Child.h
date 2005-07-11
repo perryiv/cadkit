@@ -17,33 +17,52 @@
 #define _FOX_TOOLS_CHILD_FUNCTIONS_H_
 
 #include "FoxTools/Export/Export.h"
+#include "FoxTools/Headers/Window.h"
 
-#include <vector>
-#include <string>
-
-namespace FX { class FXObject; class FXWindow; class FXMetaClass; };
+#include "Usul/MPL/SameType.h"
 
 
 namespace FoxTools {
 namespace Functions {
 
 
-// Find the i'th child of the given type and/or contains te given text.
-//FOX_TOOLS_EXPORT FX::FXWindow *     findChild ( FX::FXWindow *window, unsigned int which, const FX::FXMetaClass *type, const std::string &text );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get container of the children that are of the specified type.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-// Hide the i'th child of type.
-//FOX_TOOLS_EXPORT void               hideChild ( FX::FXWindow *window, unsigned int which, const FX::FXMetaClass * );
+template < class Container_, class ObjectType_ > struct Children
+{
+  typedef Container_ Container;
+  typedef ObjectType_ ObjectType;
 
-// Get a vector of the children.
-typedef std::vector<FX::FXWindow *> Children;
-FOX_TOOLS_EXPORT void               getChildren ( FX::FXWindow *window, Children &v );
-FOX_TOOLS_EXPORT Children           getChildren ( FX::FXWindow *window );
+  static void get ( FX::FXWindow *parent, Container &v, bool traverse = false )
+  {
+    // Take this out if it proves to be a problem. If there is a way to get the 
+    // object-type automatically from the container's value_type (which is a 
+    // pointer type) then that would be better.
+    USUL_ASSERT_SAME_TYPE ( typename Container::value_type, ObjectType * );
 
-// Replace text in the i'th child that contains the string and is of type.
-//FOX_TOOLS_EXPORT void               replaceText ( FX::FXWindow *window, const std::string &oldString, const std::string &newString, const FX::FXMetaClass *type = 0x0 );
+    if ( 0x0 == parent )
+      return;
+    v.reserve ( v.size() + parent->numChildren() );
+    for ( FX::FXWindow *i = parent->getFirst(); i; i = i->getNext() )
+    {
+      if ( i->isMemberOf ( FXMETACLASS ( ObjectType ) ) )
+        v.push_back ( reinterpret_cast < ObjectType * > ( i ) );
+      if ( traverse )
+        get ( i, v, traverse );
+    }
+  }
 
-// Get the number this window is in its parent's list of children.
-FOX_TOOLS_EXPORT unsigned int       whichChild ( const FX::FXObject *object );
+  static Container get ( FX::FXWindow *parent, bool traverse = false )
+  {
+    Container v;
+    get ( parent, v, traverse );
+    return v;
+  }
+};
 
 
 }; // namespace Functions

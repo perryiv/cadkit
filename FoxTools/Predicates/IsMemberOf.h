@@ -18,6 +18,8 @@
 
 #include "FoxTools/Export/Export.h"
 
+#include <functional>
+
 namespace FX { class FXObject; class FXMetaClass; }
 
 
@@ -25,9 +27,11 @@ namespace FoxTools {
 namespace Predicates {
 
 
-struct FOX_TOOLS_EXPORT IsMemberOf
+struct FOX_TOOLS_EXPORT IsMemberOf : public std::unary_function < const FX::FXObject *, bool >
 {
-  IsMemberOf ( const FX::FXMetaClass *meta );
+  typedef std::unary_function < const FX::FXObject *, bool > BaseClass;
+
+  IsMemberOf ( const FX::FXMetaClass *meta, bool doCount, unsigned int which = 0 );
   IsMemberOf ( const IsMemberOf & );
   ~IsMemberOf();
 
@@ -37,6 +41,9 @@ struct FOX_TOOLS_EXPORT IsMemberOf
 private:
 
   const FX::FXMetaClass *_meta;
+  bool _doCount;
+  mutable unsigned int _count;
+  unsigned int _which;
 };
 
 

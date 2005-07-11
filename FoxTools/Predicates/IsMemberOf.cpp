@@ -26,7 +26,11 @@ using namespace FoxTools::Predicates;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsMemberOf::IsMemberOf ( const FX::FXMetaClass *meta ) : _meta ( meta )
+IsMemberOf::IsMemberOf ( const FX::FXMetaClass *meta, bool doCount, unsigned int which ) : BaseClass(), 
+  _meta    ( meta ),
+  _doCount ( doCount ),
+  _count   ( 0 ),
+  _which   ( which )
 {
 }
 
@@ -37,7 +41,11 @@ IsMemberOf::IsMemberOf ( const FX::FXMetaClass *meta ) : _meta ( meta )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsMemberOf::IsMemberOf ( const IsMemberOf &object ) : _meta ( object._meta )
+IsMemberOf::IsMemberOf ( const IsMemberOf &object ) : BaseClass ( object ),
+  _meta    ( object._meta    ),
+  _doCount ( object._doCount ),
+  _count   ( object._count   ),
+  _which   ( object._which   )
 {
 }
 
@@ -61,18 +69,34 @@ IsMemberOf::~IsMemberOf()
 
 IsMemberOf &IsMemberOf::operator = ( const IsMemberOf &object )
 {
-  _meta = object._meta;
+  _meta    = object._meta;
+  _doCount = object._doCount;
+  _count   = object._count;
+  _which   = object._which;
   return *this;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Predicate operator.
+//  Predicate operator. If we are supposed to count, then it returns true 
+//  when it reached the "i'th object of type".
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool IsMemberOf::operator () ( const FX::FXObject *object ) const
 {
-  return ( ( _meta ) ? ( TRUE == object->isMemberOf ( _meta ) ) : false );
+  if ( 0x0 == _meta )
+    return false;
+
+  bool result ( TRUE == object->isMemberOf ( _meta ) );
+
+  if ( _doCount && result )
+  {
+    if ( _which != _count )
+      result = false;
+    ++_count;
+  }
+
+  return result;
 }

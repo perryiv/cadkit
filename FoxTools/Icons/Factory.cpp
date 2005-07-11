@@ -113,20 +113,21 @@ Factory::Factory() : _map()
   MAP_INSERT ( gif, GIF, FORWARD_ARROW_BAR  );
   MAP_INSERT ( gif, GIF, BACKWARD_ARROW     );
   MAP_INSERT ( gif, GIF, BACKWARD_ARROW_BAR );
-  MAP_INSERT ( gif, GIF, RED_CIRCLE );
-  MAP_INSERT ( gif, GIF, RED_X      );
-  MAP_INSERT ( gif, GIF, WRITING    );
-  MAP_INSERT ( gif, GIF, XYZ        );
-  MAP_INSERT ( gif, GIF, SMALL_DOT  );
-  MAP_INSERT ( gif, GIF, WRITE      );
-  MAP_INSERT ( gif, GIF, LOGO       );
+  MAP_INSERT ( gif, GIF, RED_CIRCLE         );
+  MAP_INSERT ( gif, GIF, RED_X              );
+  MAP_INSERT ( gif, GIF, WRITING            );
+  MAP_INSERT ( gif, GIF, XYZ                );
+  MAP_INSERT ( gif, GIF, SMALL_DOT          );
+  MAP_INSERT ( gif, GIF, WRITE              );
+  MAP_INSERT ( gif, GIF, LOGO               );
   MAP_INSERT ( gif, GIF, LIGHTING_OFF       );
   MAP_INSERT ( gif, GIF, LIGHTING_ON        );
   MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_OFF );
   MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_ON  );
-  MAP_INSERT ( gif, GIF, NO_LIGHTNING_BOLT       );
-  MAP_INSERT ( gif, GIF, LIGHTNING_BOLT       );
-  MAP_INSERT ( bmp, BMP, SET_HOME   );
+  MAP_INSERT ( gif, GIF, NO_LIGHTNING_BOLT      );
+  MAP_INSERT ( gif, GIF, LIGHTNING_BOLT         );
+  MAP_INSERT ( gif, GIF, CURVE                  );
+  MAP_INSERT ( bmp, BMP, SET_HOME               );
 }
 
 

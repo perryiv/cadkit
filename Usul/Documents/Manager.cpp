@@ -197,6 +197,9 @@ Manager::Filters Manager::filtersOpen() const
   // Initialize.
   Filters all;
 
+  // Add all files filter.
+  all.push_back ( Filters::value_type ( "All Files (*.*).", "*.*" ) );
+
   // Loop through the plugins.
   for ( PluginItr i = plugins.begin(); i != plugins.end(); ++i )
   {

@@ -18,6 +18,8 @@
 
 #include "FoxTools/Export/Export.h"
 
+#include <functional>
+
 namespace FX { class FXObject; }
 
 
@@ -25,8 +27,10 @@ namespace FoxTools {
 namespace Predicates {
 
 
-struct FOX_TOOLS_EXPORT IsChildNumber
+struct FOX_TOOLS_EXPORT IsChildNumber : public std::unary_function < const FX::FXObject *, bool >
 {
+  typedef std::unary_function < const FX::FXObject *, bool > BaseClass;
+
   IsChildNumber ( unsigned int num );
   IsChildNumber ( const IsChildNumber & );
   ~IsChildNumber();

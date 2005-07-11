@@ -30,7 +30,7 @@ using namespace FoxTools::Predicates;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HasText::HasText ( const std::string &text, bool sub ) : 
+HasText::HasText ( const std::string &text, bool sub ) : BaseClass(),
   _text ( text ), 
   _sub  ( sub )
 {
@@ -43,7 +43,7 @@ HasText::HasText ( const std::string &text, bool sub ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HasText::HasText ( const HasText &object ) : 
+HasText::HasText ( const HasText &object ) : BaseClass ( object ),
   _text ( object._text ), 
   _sub  ( object._sub  )
 {
@@ -85,5 +85,6 @@ bool HasText::operator () ( const FX::FXObject *object ) const
 {
   const FX::FXLabel *label ( SAFE_CAST_FOX_CONST ( FX::FXLabel, object ) );
   const std::string text ( ( label ) ? label->getText().text() : "" );
-  return ( ( _sub ) ? ( boost::find_first ( text, _text ) ) : ( text == _text ) );
+  const bool result ( ( _sub ) ? ( boost::find_first ( text, _text ) ) : ( text == _text ) );
+  return result;
 }

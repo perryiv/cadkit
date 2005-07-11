@@ -30,7 +30,7 @@ using namespace FoxTools::Predicates;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsChildNumber::IsChildNumber ( unsigned int num ) : 
+IsChildNumber::IsChildNumber ( unsigned int num ) : BaseClass(),
   _num   ( num ),
   _count (   0 )
 {
@@ -43,7 +43,7 @@ IsChildNumber::IsChildNumber ( unsigned int num ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsChildNumber::IsChildNumber ( const IsChildNumber &object ) : 
+IsChildNumber::IsChildNumber ( const IsChildNumber &object ) : BaseClass ( object ),
   _num   ( object._num   ),
   _count ( object._count )
 {

@@ -18,6 +18,7 @@
 
 #include "FoxTools/Export/Export.h"
 
+#include <functional>
 #include <string>
 
 namespace FX { class FXObject; }
@@ -27,8 +28,10 @@ namespace FoxTools {
 namespace Predicates {
 
 
-struct FOX_TOOLS_EXPORT HasText
+struct FOX_TOOLS_EXPORT HasText : public std::unary_function < const FX::FXObject *, bool >
 {
+  typedef std::unary_function < const FX::FXObject *, bool > BaseClass;
+
   HasText ( const std::string &text, bool substring = false );
   HasText ( const HasText & );
   ~HasText();

@@ -95,10 +95,10 @@ private:
   Thread &operator = ( const Thread & );
 
   vpr::BaseThread *_thread;
-  Usul::Threads::Variable<bool,Mutex> _done;
-  Usul::Threads::Variable<bool,Mutex> _running;
-  Usul::Threads::Variable<std::string,Mutex> _name;
-  Usul::Threads::Variable<std::string,Mutex> _error;
+  Usul::Threads::Variable<bool> _done;
+  Usul::Threads::Variable<bool> _running;
+  Usul::Threads::Variable<std::string> _name;
+  Usul::Threads::Variable<std::string> _error;
 };
 
 

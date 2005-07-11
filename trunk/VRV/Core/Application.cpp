@@ -38,6 +38,7 @@
 #include "SAL/Interfaces/IBoundingSphere.h"
 #include "SAL/Interfaces/IColorRGBA.h"
 #include "SAL/Interfaces/IBuilder.h"
+#include "SAL/Interfaces/IWrite.h"
 
 #include "vrjGA/ButtonGroup.h"
 #include "vrjGA/TrackerDevice.h"
@@ -46,7 +47,6 @@
 #include "Usul/Components/Object.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Interfaces/IWrite.h"
 #include "Usul/Threads/ThreadId.h"
 
 #include "vrj/Kernel/Kernel.h"
@@ -716,7 +716,7 @@ void Application::addModel ( Unknown *unknown, const Matrix &matrix, const std::
 
 void Application::_addModel ( Unknown *unknown )
 {
-  Guard guard ( _loaded.mutex() );
+  Guard guard ( dynamic_cast<Mutex&>(_loaded.mutex()) );
   _loaded.value()->addChild ( ValidNode ( unknown ) );
 }
 
@@ -784,7 +784,7 @@ void Application::_checkRecentModelReads()
   ErrorChecker ( 1921677499u, isAppThread() );
 
   // Lock the loaded-group.
-  Guard guard ( _loaded.mutex() );
+  Guard guard ( dynamic_cast<Mutex&>(_loaded.mutex()) );
 
   // If the group is empty then just return.
   if ( 0 == _loaded.value()->numChildren() )
@@ -958,11 +958,11 @@ void Application::_writeNodeFile ( const std::string &filename, INode *node )
 {
   ErrorChecker ( 2389321010u, isAppThread() );
 
-  Usul::Interfaces::IWrite::QueryPtr writer
+  SAL::Interfaces::IWrite::QueryPtr writer
     ( Usul::Components::Object::create 
-      ( Usul::Interfaces::IWrite::IID, VRV::SCENE_ABSTRACTION_LAYER, false, false ) );
+      ( SAL::Interfaces::IWrite::IID, VRV::SCENE_ABSTRACTION_LAYER, false, false ) );
   if ( writer.valid() )
-    writer->write ( filename, ValidUnknown ( node ), 0x0 );
+    writer->writeNodeFile ( filename, node );
 }
 
 

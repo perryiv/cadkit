@@ -29,6 +29,7 @@ struct IGroup : public Usul::Interfaces::IUnknown
 
   virtual osg::Group*  getGroup    ( const std::string& ) = 0;
   virtual void         removeGroup ( const std::string& ) = 0;
+  virtual bool         hasGroup    ( const std::string& ) = 0;
 
 }; 
 

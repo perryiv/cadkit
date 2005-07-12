@@ -44,7 +44,9 @@ Usul::Types::Uint64 Memory::totalPhysical()
   ::MEMORYSTATUS status;
   ::GlobalMemoryStatus ( &status );
   return status.dwTotalPhys;
+  
 #elif __APPLE__
+
   int mib[2];
   size_t len;
   int physmem;
@@ -53,7 +55,9 @@ Usul::Types::Uint64 Memory::totalPhysical()
   len = sizeof(physmem);
   sysctl(mib, 2, &physmem, &len, NULL, 0);
   return static_cast< Usul::Types::Uint64 > ( physmem );
+  
 #else
+
   TODO FIX ME
 
 #endif
@@ -105,17 +109,13 @@ Usul::Types::Uint64 Memory::availablePhysical()
   return status.dwAvailPhys;
 
 #elif __APPLE__
-  int mib[2];
-  size_t len;
-  int  usedmem;
-  len = sizeof(usedmem);
-  mib[1] = HW_USERMEM;
-  len = sizeof(usedmem);
-  sysctl(mib, 2, &usedmem, &len, NULL, 0);
-  return (Memory::totalPhysical() - usedmem);
+
+  return (Memory::totalPhysical() - Memory::usedPhysical() );
+
 #else
 
   TODO FIX ME
+  
 #endif
 }
 
@@ -146,7 +146,8 @@ Usul::Types::Uint64 Memory::availableVirtual()
     return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_avail );
     
 #else
- TOD FIX ME
+
+ TODO FIX ME
 
 #endif
 }
@@ -160,7 +161,26 @@ Usul::Types::Uint64 Memory::availableVirtual()
 
 Usul::Types::Uint64 Memory::usedPhysical()
 {
+#ifdef _MSC_VER
+
   return ( Memory::totalPhysical() - Memory::availablePhysical() );
+
+#elif __APPLE__
+  
+  int mib[2];
+  size_t len;
+  int  usedmem;
+  len = sizeof(usedmem);
+  mib[0] = CTL_HW;
+  mib[1] = HW_USERMEM;
+  sysctl(mib, 2, &usedmem, &len, NULL, 0);
+  return static_cast< Usul::Types::Uint64 > (usedmem);
+
+#else
+  
+  FIX ME FOR OTHER PLATFORMS
+
+#endif
 }
 
 

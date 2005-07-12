@@ -243,7 +243,7 @@ private:
   Views   _views;
   View::RefPtr _active;
   std::string _typeName;
-  Delegate::ValidAccessRefPtr _delegate;
+  Delegate::RefPtr _delegate;
 
   // TODO may need a std::map < Usul::Interfaces::IViewer*, Options >
   Options     _options;

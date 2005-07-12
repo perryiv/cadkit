@@ -234,6 +234,9 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
     }
   }
 
+#elif __APPLE__
+//TODO Fix me
+
 #else
 
   // Make a file-selection dialog on the stack.

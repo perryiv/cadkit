@@ -194,7 +194,7 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
   for ( Iterator i = plugins.begin(); i != plugins.end(); ++i )
   {
     const std::string name ( *i );
-
+    
     try
     {
       // Find the factory

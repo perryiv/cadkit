@@ -397,10 +397,16 @@
 					RelativePath=".\Headers\CheckButton.h">
 				</File>
 				<File
+					RelativePath=".\Headers\ColorBar.h">
+				</File>
+				<File
 					RelativePath=".\Headers\ColorDialog.h">
 				</File>
 				<File
 					RelativePath=".\Headers\ColorSelector.h">
+				</File>
+				<File
+					RelativePath=".\Headers\ColorWheel.h">
 				</File>
 				<File
 					RelativePath=".\Headers\ComboBox.h">

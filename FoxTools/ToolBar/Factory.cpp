@@ -62,11 +62,11 @@ void Factory::release()
 ///////////////////////////////////////////////////////////////////////////////
 
 Factory::Factory() : 
-_toolbars(),
-_topDock(),
-_bottomDock(),
-_leftDock(),
-_rightDock()
+  _toolbars(),
+  _topDock(),
+  _bottomDock(),
+  _leftDock(),
+  _rightDock()
 {
 }
 

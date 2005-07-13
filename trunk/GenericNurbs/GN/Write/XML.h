@@ -170,7 +170,7 @@ template < class SplineType > struct XML
         for ( SizeType i = 0; i < numDepVars; ++i )
         {
           // Note: Linux and Cygwin cannot print long double.
-          ::sprintf ( buffer, "%20.15f", double ( s.controlPoint(i,j) ) );
+          ::sprintf ( buffer, "%20.15f  ", double ( s.controlPoint(i,j) ) );
           out << buffer;
         }
 

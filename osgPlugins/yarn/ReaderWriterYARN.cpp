@@ -82,7 +82,7 @@ const char* ReaderWriterYARN::className()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterYARN::Result ReaderWriterYARN::readNode ( const std::string &file, const Options *options )
+ReaderWriterYARN::ReadResult ReaderWriterYARN::readNode ( const std::string &file, const Options *options )
 {
   try
   {
@@ -90,7 +90,7 @@ ReaderWriterYARN::Result ReaderWriterYARN::readNode ( const std::string &file, c
   }
 
   // Catch known exceptions.
-  catch ( const ReaderWriterYARN::Result &r )
+  catch ( const ReaderWriterYARN::ReadResult &r )
   {
     return r;
   }
@@ -98,13 +98,13 @@ ReaderWriterYARN::Result ReaderWriterYARN::readNode ( const std::string &file, c
   // Catch standard exceptions.
   catch ( const std::exception &e )
   {
-    return ReaderWriterYARN::Result ( e.what() );
+    return ReaderWriterYARN::ReadResult ( e.what() );
   }
 
   // Catch all other exceptions.
   catch ( ... )
   {
-    return ReaderWriterYARN::Result ( "Unknown exception caught" );
+    return ReaderWriterYARN::ReadResult ( "Unknown exception caught" );
   }
 
 }
@@ -216,7 +216,7 @@ void  ReaderWriterYARN::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterYARN::Result ReaderWriterYARN::_read ( const std::string &filename, const Options *options )
+ReaderWriterYARN::ReadResult ReaderWriterYARN::_read ( const std::string &filename, const Options *options )
 {
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )

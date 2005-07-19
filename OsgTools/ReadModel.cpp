@@ -25,7 +25,7 @@ osg::Node* OsgTools::readModel ( const std::string& filename, const std::string&
 {
   typedef osgDB::ReaderWriter::Options Options;
 
-  //Save the current options
+  // Save the current options
   OsgTools::ScopedOptions current;
 
   // Set new options, which may be an empty string.
@@ -37,7 +37,7 @@ osg::Node* OsgTools::readModel ( const std::string& filename, const std::string&
   // Read the file.
   osgDB::ReaderWriter::ReadResult rr ( reg->readNode ( filename, options.get() ) );
 
-  //Throw if it did not work
+  // Return now if it worked.
   if ( rr.validNode() )
     return rr.takeNode();
   

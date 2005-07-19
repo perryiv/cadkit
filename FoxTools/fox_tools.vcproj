@@ -535,6 +535,9 @@
 					RelativePath=".\Headers\ScrollPane.h">
 				</File>
 				<File
+					RelativePath=".\Headers\ScrollWindow.h">
+				</File>
+				<File
 					RelativePath=".\Headers\Separator.h">
 				</File>
 				<File

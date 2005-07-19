@@ -50,7 +50,7 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
   {
     // For convenience.
     const std::string dir ( d + Usul::File::slash() );
-    const std::string path ( dir + "*" + ext );
+    const std::string path ( dir + "*." + ext );
 
     // Get the first file in the directory.
     WIN32_FIND_DATA data;

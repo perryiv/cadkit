@@ -25,7 +25,7 @@ class ReaderWriterYARN : public osgDB::ReaderWriter
 public:
 
   typedef osgDB::ReaderWriter BaseClass;
-  typedef osgDB::ReaderWriter::ReadResult Result;
+  typedef osgDB::ReaderWriter::ReadResult ReadResult;
   typedef osgDB::ReaderWriter::Options Options;
   typedef osgDB::ReaderWriter::WriteResult WriteResult;
   typedef osg::Vec3f Vec3;
@@ -40,7 +40,7 @@ public:
 
   virtual bool            acceptsExtension ( const std::string &extension );
   virtual const char*     className();
-  virtual Result          readNode ( const std::string &filename, const Options *options );
+  virtual ReadResult      readNode ( const std::string &filename, const Options *options );
 
 protected:
 
@@ -50,7 +50,7 @@ protected:
   void                    _parseYarns     ( std::ifstream &in );
   void                    _parseNumStacks ( std::ifstream& fin, unsigned int numYarns, unsigned int numSlices );
   void                    _parseStack     ( std::ifstream& fin, unsigned int numSlices, const osg::Vec3 &center );
-  Result                  _read ( const std::string &, const Options * );
+  ReadResult              _read ( const std::string &, const Options * );
 
 private:
 

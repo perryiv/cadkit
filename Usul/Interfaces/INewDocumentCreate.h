@@ -32,7 +32,7 @@ struct INewDocumentCreate : public Usul::Interfaces::IUnknown
   enum { IID = 2870744805u };
 
   /// Name of the document.
-  virtual std::string     name() = 0;
+  virtual std::string       documentTypeName() = 0;
 
 };
 

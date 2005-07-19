@@ -34,8 +34,8 @@ struct IGetImageProperties : public Usul::Interfaces::IUnknown
   // Get the number of bytes per value.
   virtual unsigned int          getNumBytesPerValue() const = 0;
 
-  // See if the pixel format is floating-point.
-  virtual bool                  isValueFloatingPoint() const = 0;
+  // See if the pixel format is integer.
+  virtual bool                  isValueInteger() const = 0;
 };
 
 

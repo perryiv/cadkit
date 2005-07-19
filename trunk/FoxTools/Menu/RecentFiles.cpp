@@ -34,9 +34,10 @@ using namespace FoxTools::Menu;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RecentFiles::RecentFiles ( unsigned int token ) : BaseClass ( token ),
+RecentFiles::RecentFiles ( unsigned int token, bool makeSeperator ) : BaseClass ( token ),
   _recentFiles ( 0x0 ),
-  _commands()
+  _commands    (),
+  _makeSep     ( makeSeperator )
 {
 }
 
@@ -47,10 +48,11 @@ RecentFiles::RecentFiles ( unsigned int token ) : BaseClass ( token ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RecentFiles::RecentFiles ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
+RecentFiles::RecentFiles ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token, bool makeSeperator ) : 
   BaseClass ( name, target, selector, token ),
   _recentFiles ( 0x0 ),
-  _commands()
+  _commands    (),
+  _makeSep     ( makeSeperator )
 {
 }
 
@@ -121,9 +123,12 @@ void RecentFiles::_build ( FX::FXComposite *parent )
     _recentFiles->appendFile ( i->c_str() );
 
   // This separator only shows up of recent-files is not empty.
-  FX::FXMenuSeparator *sep = new FX::FXMenuSeparator ( parent );
-  sep->setTarget ( _recentFiles );
-  sep->setSelector ( FXRecentFiles::ID_ANYFILES );
+  if ( _makeSep )
+  {
+    FX::FXMenuSeparator *sep = new FX::FXMenuSeparator ( parent );
+    sep->setTarget ( _recentFiles );
+    sep->setSelector ( FXRecentFiles::ID_ANYFILES );
+  }
 
   // Create a command for each recent file.
   for ( unsigned int i = FXRecentFiles::ID_FILE_1; i <= FXRecentFiles::ID_FILE_10; ++i )

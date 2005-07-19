@@ -70,7 +70,7 @@ void normalize ( const std::string &dir, const std::string &ext )
   // Get all files in the directory.
   typedef std::vector < std::string > Files;
   Files files;
-  Usul::File::find ( dir, "*." + ext, files );
+  Usul::File::find ( dir, ext, files );
 
   // Sort the names.
   std::sort ( files.begin(), files.end() );

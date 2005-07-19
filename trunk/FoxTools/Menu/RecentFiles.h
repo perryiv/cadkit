@@ -39,8 +39,8 @@ public:
   USUL_DECLARE_REF_POINTERS ( RecentFiles );
 
   // Constructors.
-  RecentFiles ( unsigned int token = 0 );
-  RecentFiles ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token = 0 );
+  RecentFiles ( unsigned int token = 0, bool makeSeperator = false );
+  RecentFiles ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token = 0, bool makeSeperator = false );
 
   // Append a file to the list.
   void                  appendFile ( const std::string & );
@@ -70,6 +70,7 @@ private:
 
   FX::FXRecentFiles *_recentFiles;
   CommandList _commands;
+  bool _makeSep;
 };
 
 

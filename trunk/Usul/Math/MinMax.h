@@ -54,6 +54,38 @@ template < class T > inline const T & maximum ( const T &t1, const T &t2 )
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum value.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < class T, class Pred > inline const T & minimum ( const T &t1, const T &t2, const T &t3, Pred pred )
+{
+  return ( pred ( t1, t2 ) ) ? pred ( t1, t3 ) : pred ( t2, t3 );
+}
+template < class T > inline const T & minimum ( const T &t1, const T &t2, const T &t3 )
+{
+  return Usul::Math::minimum ( t1, t2, t3, std::less<T>() );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Return the maximum value.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < class T, class Pred > inline const T & maximum ( const T &t1, const T &t2, const T &t3, Pred pred )
+{
+  return ( pred ( t1, t2 ) ) ? pred ( t1, t3 ) : pred ( t2, t3 );
+}
+template < class T > inline const T & maximum ( const T &t1, const T &t2, const T &t3 )
+{
+  return Usul::Math::maximum ( t1, t2, t3, std::greater<T>() );
+}
+
+
 }; // namespace Math
 }; // namespace Usul
 

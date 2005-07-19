@@ -1127,6 +1127,13 @@
 					RelativePath=".\Documents\Manager.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Functions"
+				Filter="">
+				<File
+					RelativePath=".\Functions\Color.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

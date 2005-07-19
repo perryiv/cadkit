@@ -19,6 +19,7 @@ namespace OsgTools {
 namespace Images {
 
   OSG_TOOLS_EXPORT void threshold ( osg::Image& image, unsigned char t );
+  OSG_TOOLS_EXPORT void threshold ( osg::Image& image, unsigned char t1, unsigned char t2 );
 }
 }
 

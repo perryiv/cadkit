@@ -254,6 +254,9 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   // Set the initial directory.
   dialog.setDirectory ( initialDir.c_str() );
 
+  // Multiple file selection if we are opening.
+  dialog.setSelectMode ( ( FileSelection::SAVE == _type ) ? ( FX::SELECTFILE_ANY ) : ( FX::SELECTFILE_EXISTING | FX::SELECTFILE_MULTIPLE ) );
+
   // Run the dialog in a modal loop.
   if ( dialog.execute ( _placement ) )
   {

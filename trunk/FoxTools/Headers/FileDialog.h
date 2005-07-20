@@ -16,6 +16,8 @@
 #include "FXString.h"
 #include "FXHash.h"
 #include "FXStream.h"
+#include "FXRecentFiles.h"
+#include "FXFileSelector.h"
 #include "FXFileDialog.h"
 
 

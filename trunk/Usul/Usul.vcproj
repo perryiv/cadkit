@@ -589,6 +589,9 @@
 						RelativePath=".\Interfaces\ISetTool.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ITriangle.h">
+					</File>
+					<File
 						RelativePath="Interfaces\IUndo.h">
 					</File>
 				</Filter>

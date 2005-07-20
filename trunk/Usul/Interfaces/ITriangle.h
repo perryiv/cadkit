@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_GET_VERTEX_H__
-#define __USUL_INTERFACES_GET_VERTEX_H__
+#ifndef __USUL_INTERFACES_TRIANGLE_H__
+#define __USUL_INTERFACES_TRIANGLE_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -18,18 +18,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IGetVertex : public Usul::Interfaces::IUnknown
+struct ITriangle : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IGetVertex );
+  USUL_DECLARE_QUERY_POINTERS ( ITriangle );
 
   /// Id for this interface.
-  enum { IID = 1862774388u };
+  enum { IID = 1203224138u };
 
-  virtual const osg::Vec3f& getVertex( unsigned int index ) const = 0;
+  // Get the vertices of the i'th triangle.
+  virtual const osg::Vec3f &          vertex0 ( unsigned int i ) const = 0;
+  virtual const osg::Vec3f &          vertex1 ( unsigned int i ) const = 0;
+  virtual const osg::Vec3f &          vertex2 ( unsigned int i ) const = 0;
 
 
-}; //struct IGetVertex
+}; //struct ITriangle
 
 
 

@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2004, Adam Kubach
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for flipping normals
+//  Interface for flipping the normal of the i'th primitiver
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_FLIP_NORMALS_H_
-#define _USUL_INTERFACE_FLIP_NORMALS_H_
+#ifndef _USUL_INTERFACE_FLIP_NORMAL_H_
+#define _USUL_INTERFACE_FLIP_NORMAL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,16 +22,16 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IFlipNormals : public Usul::Interfaces::IUnknown
+struct IFlipNormal : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IFlipNormals );
+  USUL_DECLARE_QUERY_POINTERS ( IFlipNormal );
 
   /// Id for this interface.
-  enum { IID = 1873241803u };
+  enum { IID = 2227311008u };
 
   /// Flip the normals.
-  virtual void                flipNormalVectors() = 0;
+  virtual void                flipNormalVector( unsigned int i ) = 0;
 };
 
 
@@ -39,4 +39,4 @@ struct IFlipNormals : public Usul::Interfaces::IUnknown
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_FLIP_NORMALS_H_
+#endif // _USUL_INTERFACE_FLIP_NORMAL_H_

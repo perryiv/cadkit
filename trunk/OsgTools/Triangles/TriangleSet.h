@@ -90,6 +90,9 @@ public:
   // Flip the normal vectors.
   void                    flipNormals();
 
+  // Flip the normal of the i'th triangle
+  void                    flipNormal( unsigned int );
+
   // Get the vertex at the index
   const osg::Vec3f&       getVertex( unsigned int index ) const;
 

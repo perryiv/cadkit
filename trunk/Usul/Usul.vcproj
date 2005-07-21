@@ -556,6 +556,9 @@
 						RelativePath=".\Interfaces\IFindLoops.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IFlipNormal.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFlipNormals.h">
 					</File>
 					<File

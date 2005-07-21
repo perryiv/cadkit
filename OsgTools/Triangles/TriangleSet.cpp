@@ -190,6 +190,24 @@ void TriangleSet::flipNormals()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Flip the normal vector of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::flipNormal( unsigned int i )
+{
+  Triangle *t ( _triangles.at( i ) );
+
+  this->_normalsPerVertex().at ( t->vertex0()->index() ) *= -1;
+  this->_normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
+  this->_normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
+
+  this->_normalsPerFacet().at( i ) *= -1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the vertex of the i'th triangle.
 //
 ///////////////////////////////////////////////////////////////////////////////

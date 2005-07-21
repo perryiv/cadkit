@@ -32,8 +32,8 @@ struct ICleanUp : public Usul::Interfaces::IUnknown
 
 };// ICleanUp
 
-}; //namespace Interfaces
-};//namespace Usul
+} //namespace Interfaces
+}//namespace Usul
 
 #endif //__USUL_INTERFACE_CLEAN_UP_H__
 

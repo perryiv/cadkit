@@ -95,6 +95,7 @@ Factory::Factory() : _map()
   MAP_INSERT ( gif, GIF, SEEK     );
   MAP_INSERT ( gif, GIF, TOOL_SELECTION     );
   MAP_INSERT ( gif, GIF, TRIANGLE           );
+  MAP_INSERT ( gif, GIF, NO_TRIANGLE           );
   MAP_INSERT ( gif, GIF, DELETE_CONNECTED   );
   MAP_INSERT ( gif, GIF, KEEP_CONNECTED     );
   MAP_INSERT ( gif, GIF, ARROW              );

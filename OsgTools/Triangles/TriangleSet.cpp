@@ -51,8 +51,8 @@ TriangleSet::TriangleSet() : BaseClass(),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
   _colors    ( new osg::Vec4Array ),
   _dirty     ( true ),
-  _geometry  ( new osg::Geometry ),
-  _primitiveSet ( new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 ) )
+  _geometry  ( 0x0 ),
+  _primitiveSet ( 0x0 )
 {
 #ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
@@ -71,11 +71,6 @@ TriangleSet::TriangleSet() : BaseClass(),
 #endif
 #endif
 
-  // Add the vertices
-  _geometry->setVertexArray( _vertices.get() );
-
-  // Add the PrimitiveSet
-  _geometry->addPrimitiveSet( _primitiveSet.get() );
 }
 
 
@@ -287,27 +282,8 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
-#if 0
-  //This is my first attempt at making sure the normal is in the same direction as it's neighbors
-  //Make a copy
-  osg::Vec3f copy ( n );
-
-  osg::Vec3f test ( this->normal( (*sv0->begin())->index() ) );
-
-  float dot ( test * copy );
-
-  float arccos ( ::acos ( dot ) );
-
-  float angle ( (float) ( arccos * (float) 180 ) / (float) 3.14159265 );
-
-  if( angle > 180 )
-    copy = -copy;
-
-  this->_addTriangle( sv0, sv1, sv2, copy );
-#else
   //Add the triangle
   this->_addTriangle( sv0, sv1, sv2, n );
-#endif
 }
 
 
@@ -332,6 +308,46 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 
   // Append normal vector.
   this->_normalsPerFacet().push_back ( n );
+
+  // The primitive set will be valid after the scene is built.
+  if( _primitiveSet.valid() )
+  {
+    //For convienence
+    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
+
+    //How many points do we have    
+    const unsigned int numPoints ( _triangles.size() * 3 );
+
+    // Make space.
+    normals->reserve       ( _vertices->size() );
+    _primitiveSet->reserve ( numPoints );
+
+    const unsigned int triNum ( t->index() * 3 );
+
+    // Add the indices to the primitive set
+    _primitiveSet->push_back ( sv0->index() );
+    _primitiveSet->push_back ( sv1->index() );
+    _primitiveSet->push_back ( sv2->index() );
+
+    // Average the normals if we are suppose to
+    if ( !normals->empty() )
+    {
+      // Get the normals.
+      osg::Vec3 n1 ( this->_averageNormal ( sv0 ) );
+      osg::Vec3 n2 ( this->_averageNormal ( sv1 ) );
+      osg::Vec3 n3 ( this->_averageNormal ( sv2 ) );
+
+      // Make sure they are normalized.
+      n1.normalize();
+      n2.normalize();
+      n3.normalize();
+
+      // Set the normal values.
+      normals->push_back( n1 );
+      normals->push_back( n2 );
+      normals->push_back( n3 );
+    }
+  }
 
   // Need to rebuild per-vertex normals and indices.
   _dirty = true;
@@ -445,11 +461,13 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 
 osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 {
+  // Remake the primitve set if it isn't valid.
   if ( !_primitiveSet.valid() )
   {
      _primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
   }
 
+  // Remake the geometry if it isn't valid.
   if ( !_geometry.valid() )
   {
     _geometry = new osg::Geometry;
@@ -469,6 +487,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   // Start at zero.
   this->_setProgressBar ( true, 0, 100 );
+
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
@@ -506,7 +525,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       // Shortcuts to the triangle.
       const Triangle::ValidRefPtr triangle ( i->get() );
 
-      // Get the vertices.5
+      // Get the vertices.
       const SharedVertex *v1 ( triangle->vertex0() );
       const SharedVertex *v2 ( triangle->vertex1() );
       const SharedVertex *v3 ( triangle->vertex2() );
@@ -636,7 +655,7 @@ osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
     normal += this->_normalsPerFacet().at( (*i)->index() );
   }
 
-  //Return the normal.  Do not normalize
+  //Return the normal.  Do not normalize.
   return normal;
 }
 
@@ -719,8 +738,9 @@ void TriangleSet::deleteTriangle( unsigned int index )
   //Display lists need to be recalculated
   _geometry->dirtyDisplayList();
 
-  //Scene needs to be rebuilt
-  _dirty = true;
+  //Scene needs to be rebuilt.
+  // I don't think this is needed.  Leaving here in case I'm wrong.
+  //_dirty = true;
 }
 
 
@@ -749,6 +769,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
+  _primitiveSet->clear();
 
   // Make enough room
   this->reserve( keepers.size() );

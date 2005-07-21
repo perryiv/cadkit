@@ -670,6 +670,9 @@
 						RelativePath=".\Interfaces\ICamera.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGetBoundingBox.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IImageView.h">
 					</File>
 					<File

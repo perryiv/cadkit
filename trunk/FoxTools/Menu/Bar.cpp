@@ -216,7 +216,21 @@ void Bar::create()
 
 void Bar::insert ( const std::string& name, Group *group )
 {
-  Item::IsEqual equal ( name );
-  Groups::iterator i = std::find_if ( _groups.begin(), _groups.end(), equal );
+  Groups::iterator i = std::find_if ( _groups.begin(), _groups.end(), Item::IsEqual ( name ) );
   _groups.insert ( i, group );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get group with given name.  Return null if doesn't exist.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Group * Bar::group ( const std::string& name )
+{
+  Groups::iterator i = std::find_if ( _groups.begin(), _groups.end(), Item::IsEqual ( name ) );
+
+  return ( i != _groups.end() ? i->get() : 0x0 );
+}
+

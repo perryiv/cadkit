@@ -196,7 +196,7 @@ osg::Geode* Torus::operator() () const
 
       /// TODO:  make the end cap
       {
-        float end_sweep = this->getEndSweep();
+       // float end_sweep = this->getEndSweep();
       } // end end cap
     } // endif create_caps
   } // endif create_body

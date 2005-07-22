@@ -22,8 +22,8 @@ void OsgTools::Images::erode ( osg::Image& image, unsigned int r, unsigned int c
   // make a copy to work from
   osg::ref_ptr< osg::Image > copy ( new osg::Image ( image, osg::CopyOp::DEEP_COPY_ALL ) );
 
-  const unsigned int centerX ( r/2 );
-  const unsigned int centerY ( c/2 );
+ // const unsigned int centerX ( r/2 );
+ // const unsigned int centerY ( c/2 );
 
   for( int i = 1; i < copy->s() - 1; ++ i )
   {

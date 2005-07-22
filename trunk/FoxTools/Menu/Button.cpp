@@ -28,7 +28,7 @@ using namespace FoxTools::Menu;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( unsigned int token ) : BaseClass ( token ),
+FoxTools::Menu::Button::Button ( unsigned int token ) : BaseClass ( token ),
   _command ( 0x0 )
 {
 }
@@ -40,7 +40,7 @@ Button::Button ( unsigned int token ) : BaseClass ( token ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
+FoxTools::Menu::Button::Button ( const std::string &name, FX::FXObject *target, unsigned int selector, unsigned int token ) : 
   BaseClass ( name, target, selector, token ),
   _command ( 0x0 )
 {
@@ -53,7 +53,7 @@ Button::Button ( const std::string &name, FX::FXObject *target, unsigned int sel
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, 
+FoxTools::Menu::Button::Button ( const std::string &name, 
                  const std::string &hotKeys, 
                  const std::string &description, 
                  FX::FXObject *target, 
@@ -71,7 +71,7 @@ Button::Button ( const std::string &name,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::~Button()
+FoxTools::Menu::Button::~Button()
 {
   if( _command )
     delete _command;
@@ -84,7 +84,7 @@ Button::~Button()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::clear()
+void FoxTools::Menu::Button::clear()
 {
   if( _command )
     delete _command;
@@ -98,7 +98,7 @@ void Button::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_build ( FX::FXComposite *parent )
+void FoxTools::Menu::Button::_build ( FX::FXComposite *parent )
 {
   if ( 0x0 == this->_button() )
   {
@@ -116,7 +116,7 @@ void Button::_build ( FX::FXComposite *parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::enable ( bool state )
+void FoxTools::Menu::Button::enable ( bool state )
 {
   FoxTools::Functions::enable ( state, _command );
 }
@@ -128,7 +128,7 @@ void Button::enable ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_button ( FX::FXMenuCommand *b )
+void FoxTools::Menu::Button::_button ( FX::FXMenuCommand *b )
 {
   this->clear();
   _command = b;
@@ -141,7 +141,7 @@ void Button::_button ( FX::FXMenuCommand *b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXMenuCommand *Button::_button()
+FX::FXMenuCommand *FoxTools::Menu::Button::_button()
 {
   return _command;
 }
@@ -153,7 +153,7 @@ FX::FXMenuCommand *Button::_button()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_create ()
+void FoxTools::Menu::Button::_create ()
 {
   // Create the button if we can.
   if ( _command && !_command->id() )

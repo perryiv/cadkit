@@ -18,6 +18,10 @@
 
 #include "FoxTools/Export/Export.h"
 
+#ifdef __CARBON__
+#undef check
+#endif
+
 namespace FX { class FXObject; };
 
 

@@ -163,7 +163,7 @@ namespace Detail
       }
       break;
     default:
-      throw std::runtime_error ( "Error 2303146403: Not implemented yet" );
+      USUL_ASSERT ( false );
     }
   }
 
@@ -208,7 +208,7 @@ namespace Detail
       }
       break;
     default:
-      throw std::runtime_error ( "Error 2303146403: Not implemented yet" );
+      USUL_ASSERT ( false );
     }
   }
 }
@@ -282,7 +282,7 @@ void SortBackToFrontCallback::operator () ( osg::Node* node, osg::NodeVisitor *n
             }
             break;
           case osg::PrimitiveSet::DrawArrayLengthsPrimitiveType:
-            throw std::runtime_error ( "Error 2303146403: Not implemented yet" ); // TODO
+            USUL_ASSERT ( false ); // TODO
             break;
           case osg::PrimitiveSet::DrawElementsUBytePrimitiveType:
             {

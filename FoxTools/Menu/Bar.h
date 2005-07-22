@@ -62,6 +62,9 @@ public:
   // Find the child that made the given object.
   Item *                find ( FX::FXObject * );
 
+  // Get group with given name.  Return null if doesn't exist.
+  Group *               group ( const std::string& name );
+
   // Insert group before given group name.
   void                  insert ( const std::string&, Group * );
 

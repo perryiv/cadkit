@@ -30,8 +30,6 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
-#include "OsgTools/SortBackToFrontCallback.h"
-
 #include <algorithm>
 #include <functional>
 
@@ -499,8 +497,6 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   // Make geometry and add to geode.
   geode->addDrawable ( _geometry.get() );
-
-  //geode->setCullCallback ( new OsgTools::SortBackToFrontCallback );
 
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );

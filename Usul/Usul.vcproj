@@ -420,6 +420,9 @@
 						RelativePath=".\Interfaces\IMaterialEditor.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IMenuBar.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IMenuEntry.h">
 					</File>
 					<File
@@ -1069,6 +1072,12 @@
 				</File>
 				<File
 					RelativePath=".\Resources\EventQueue.h">
+				</File>
+				<File
+					RelativePath=".\Resources\MenuBar.cpp">
+				</File>
+				<File
+					RelativePath=".\Resources\MenuBar.h">
 				</File>
 				<File
 					RelativePath=".\Resources\ProgressBar.cpp">

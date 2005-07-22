@@ -22,6 +22,7 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
+#include "Usul/Math/Matrix44.h"
 
 
 namespace OsgTools {
@@ -35,6 +36,7 @@ public:
   typedef Usul::Math::Vec2f Vec2f;
   typedef Usul::Math::Vec3f Vec3f;
   typedef Usul::Math::Vec4f Vec4f;
+  typedef Usul::Math::Matrix44f Matrix44f;
 
   Grid();
 
@@ -49,7 +51,10 @@ public:
   const Vec2f &       size() const { return _size; }
 
   void                center ( const Vec3f &c ) { _center = c; }
-  const Vec3f &       center() const { return _center ; }
+  const Vec3f &       center() const { return _center; }
+
+  void                orientation ( const Matrix44f &m ) { _orientation = m; } 
+  const Matrix44f &   orientation() const { return _orientation; }
 
   void                lineWidth ( float width ) { _lineWidth = width; }
   const float &       lineWidth() const { return _lineWidth; }
@@ -62,6 +67,7 @@ private:
   Vec4f _color;  // rgba
   Vec2f _size;   // xz
   Vec3f _center; // xyz
+  Matrix44f _orientation;
   float _lineWidth;
 };
 

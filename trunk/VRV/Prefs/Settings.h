@@ -27,10 +27,20 @@
 #include "Usul/Math/Matrix44.h"
 
 #include <string>
-
+#include <vector>
 
 namespace VRV {
 namespace Prefs {
+
+class Grids
+{
+  public:
+  Usul::Math::Vec2ui _numGridBlocks;
+  Usul::Math::Vec2f _gridScale;
+  Usul::Math::Vec4f _gridColor;
+  float _gridRotationAngleRad;
+  Usul::Math::Vec3f _gridRotationVector;
+};
 
 
 class VRV_PREFS_EXPORT Settings : public Usul::Base::Referenced
@@ -55,14 +65,26 @@ public:
   // Read the user-settings file.
   void                  read ( const std::string &filename );
 
-  // Set/get the properties.
-  const Color &         gridColor() const { return _gridColor; }
-  void                  gridColor ( const Color &c ) { _gridColor = c; }
-  void                  gridColor ( float r, float g, float b, float a ) { _gridColor.set ( r, g, b, a ); }
-  const Vec2f &         gridScale() const { return _gridScale; }
-  void                  gridScale ( const Vec2f & s ) { _gridScale = s; }
-  const Vec2ui &        numGridBlocks() const { return _numGridBlocks; }
-  void                  numGridBlocks ( const Vec2ui &n ) { _numGridBlocks = n; }
+  // Set/get the grid properties.
+  int                   numGrids() { return _numGrids; }
+  void                  numGrids( int i ) { _grids.clear(); for(int j=0; j<i; j++) _grids.push_back(Grids()); }
+  const Color &         getGridColor( int i ) const { return _grids[i]._gridColor; }
+  void                  gridColor ( int i, const Color &c ) { _grids[i]._gridColor = c; }
+  void                  gridColor ( int i, float r, float g, float b, float a ) { _grids[i]._gridColor.set ( r, g, b, a ); }
+  void                  gridColor (const Color &c ) { _grids[_grids.size()-1]._gridColor = c; }
+  const Vec2f &         getGridScale( int i ) const { return _grids[i]._gridScale; }
+  void                  gridScale ( int i, const Vec2f & s ) { _grids[i]._gridScale = s; }
+  void                  gridScale ( const Vec2f & s ) { _grids[_grids.size()-1]._gridScale = s; }
+  const Vec2ui &        getNumGridBlocks ( int i ) const { return _grids[i]._numGridBlocks; }
+  void                  numGridBlocks ( int i, const Vec2ui &n ) { _grids[i]._numGridBlocks = n; }
+  void                  numGridBlocks ( const Vec2ui &n ) { _grids[_grids.size()-1]._numGridBlocks = n; }
+  float                 getGridRotationAngleRad ( int i ) { return _grids[i]._gridRotationAngleRad; }
+  void                  gridRotationAngleRad ( int i, float a ) { _grids[i]._gridRotationAngleRad = a; }
+  void                  gridRotationAngleRad ( float a ) { _grids[_grids.size()-1]._gridRotationAngleRad = a; }
+  const Vec3f &         getGridRotationVector ( int i ) { return _grids[i]._gridRotationVector; }
+  void                  gridRotationVector ( int i, Vec3f v ) { _grids[i]._gridRotationVector = v; }
+  void                  gridRotationVector ( Vec3f v ) { _grids[_grids.size()-1]._gridRotationVector = v; }
+  
 
   // Clipping plane distances.
   float                 nearClippingDistance() const { return _zNear; }
@@ -177,9 +199,8 @@ private:
   Settings ( const Settings & );
   Settings &operator = ( const Settings & );
 
-  Vec2ui _numGridBlocks;
-  Vec2f _gridScale;
-  Color _gridColor;
+  int _numGrids;
+  std::vector<Grids> _grids;
   float _zNear;
   float _zScale;
   Color _ambientLight;

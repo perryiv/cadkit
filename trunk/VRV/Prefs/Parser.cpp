@@ -116,9 +116,12 @@ void Parser::_read ( const std::string &filename )
   typedef XML::Reader < MemFun, XML::ValueCB, ErrorPolicy > XmlReader;
 
   // Make some member function adaptors.
+  MemFun setNumGrids       ( this, &Parser::_setNumGrids       );
   MemFun setNumGridBlocks  ( this, &Parser::_setNumGridBlocks  );
   MemFun setGridScale      ( this, &Parser::_setGridScale      );
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
+  MemFun setGridRotationAngleRad ( this, &Parser::_setGridRotationAngleRad );
+  MemFun setGridRotationVector   ( this, &Parser::_setGridRotationVector   );
   MemFun setNearClip       ( this, &Parser::_setNearClip       );
   MemFun setViewAllScale   ( this, &Parser::_setViewAllScale   );
   MemFun setLightAmbient   ( this, &Parser::_setLightAmbient   );
@@ -149,9 +152,12 @@ void Parser::_read ( const std::string &filename )
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
+  Helper::add ( reader, start, "grid/num_grids",           setNumGrids       );
   Helper::add ( reader, start, "grid/num_blocks",          setNumGridBlocks  );
   Helper::add ( reader, start, "grid/scale",               setGridScale      );
   Helper::add ( reader, start, "grid/color",               setGridColor      );
+  Helper::add ( reader, start, "grid/rotation_angle_rad",  setGridRotationAngleRad );
+  Helper::add ( reader, start, "grid/rotation_vector",     setGridRotationVector   );
   Helper::add ( reader, start, "clipping_plane/near",      setNearClip       );
   Helper::add ( reader, start, "view_all/scale",           setViewAllScale   );
   Helper::add ( reader, start, "light/ambient",            setLightAmbient   );
@@ -256,6 +262,19 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the number of grids
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNumGrids ( const std::string &s )
+{
+  ErrorChecker ( 1083817592u, !s.empty() );
+  _settings->numGrids ( int ( ::atoi ( s.c_str() ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the number of grid blocks.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -290,6 +309,32 @@ void Parser::_setGridColor ( const std::string &s )
 {
   ErrorChecker ( 1083817589u, !s.empty() );
   _settings->gridColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set grid rotation angle in radians
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setGridRotationAngleRad ( const std::string &s )
+{
+  ErrorChecker ( 1083817593u, !s.empty() );
+  _settings->gridRotationAngleRad ( float ( ::atof ( s.c_str() ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set grid rotation vector
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setGridRotationVector ( const std::string &s )
+{
+  ErrorChecker ( 1083817594u, !s.empty() );
+  _settings->gridRotationVector ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
 }
 
 

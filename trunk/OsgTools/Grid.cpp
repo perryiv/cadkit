@@ -35,11 +35,12 @@ using namespace OsgTools;
 ///////////////////////////////////////////////////////////////////////////////
 
 Grid::Grid() :
-  _numBlocks ( 10, 10 ),
-  _color     ( 1, 0, 0, 1 ),
-  _size      ( 1, 1 ),
-  _center    ( 0, 0, 0 ),
-  _lineWidth ( 1 )
+  _numBlocks   ( 10, 10 ),
+  _color       ( 1, 0, 0, 1 ),
+  _size        ( 1, 1 ),
+  _center      ( 0, 0, 0 ),
+  _orientation ( 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ),
+  _lineWidth   ( 1 )
 {
 }
 
@@ -96,6 +97,13 @@ osg::Node* Grid::operator()() const
   unsigned int index ( 0 );
   unsigned int length ( 2 * numColumns ), start ( 0 );
 
+  // Account for grid orientation
+  Vec3f position ( 0, 0, 0 );
+  Matrix44f translation ( 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+  translation.makeTranslation ( _center );
+  Matrix44f translationInv ( translation );
+  translationInv.invert();
+
   // Set all the vertices.
   for ( unsigned int i = 0; i < numRows - 1; ++i )
   {
@@ -108,9 +116,14 @@ osg::Node* Grid::operator()() const
       float percentX ( float ( j ) / columnPercentDenominator );
       float currentX ( originX + percentX * sizeX );
 
+	  // Apply orientation
       USUL_ASSERT ( index < vertices->size() );
-      vertices->at ( index++ ).set ( currentX, originY, zTop );
-      vertices->at ( index++ ).set ( currentX, originY, zBot );
+      position.set ( currentX, originY, zTop );
+      position = translation * _orientation * translationInv * position;
+      vertices->at ( index++ ).set ( position[0], position[1], position[2] );
+      position.set ( currentX, originY, zBot );
+      position = translation * _orientation * translationInv * position;
+      vertices->at ( index++ ).set ( position[0], position[1], position[2]);
     }
 
     primSetList[i] = new osg::DrawArrays ( osg::PrimitiveSet::QUAD_STRIP, start, length );

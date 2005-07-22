@@ -25,9 +25,7 @@ using namespace VRV::Prefs;
 
 // Constructor
 Settings::Settings()  : BaseClass(),
-                        _numGridBlocks  ( 40, 40 ),
-                        _gridScale      ( 10, 10 ),
-                        _gridColor      ( 1, 1, 1, 1 ),
+                        _numGrids       ( 0 ),
                         _zNear          ( 0.1f ),
                         _zScale         ( 2 ),
                         _ambientLight   ( 0.2f, 0.2f, 0.2f, 1.0f ),

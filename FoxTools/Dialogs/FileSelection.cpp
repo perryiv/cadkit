@@ -29,7 +29,7 @@
 #include "Usul/File/Path.h"
 
 #include "boost/algorithm/string/replace.hpp"
-
+#include <iostream>
 #include <sstream>
 #include <algorithm>
 
@@ -45,6 +45,13 @@
 
 #ifdef _WIN32
 #define USE_NATIVE_WINDOWS_FILE_DIALOG
+#endif
+
+//For this to work properly, Xcode needs to be using precompiled headers
+#ifdef __CARBON__
+# include <Carbon/Carbon.h>
+# include "FoxTools/Dialogs/CarbonFileDialog.h"
+#define USE_APPLE_CARBON_FILE_DIALOG
 #endif
 
 using namespace FoxTools;
@@ -233,9 +240,6 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
       (*i) = dir + (*i);
     }
   }
-
-#elif __APPLE__
-//TODO Fix me
 
 #else
 
@@ -459,7 +463,7 @@ FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, co
   // Run the dialog in a modal loop.
   if ( !dialog.runModal ( owner ) )
     return FilesResult();
-
+  
   // Push the filter index back into the registry.
   FoxTools::Registry::write ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() );
 

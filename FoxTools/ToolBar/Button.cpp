@@ -30,7 +30,7 @@ using namespace FoxTools::ToolBar;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &name, 
+FoxTools::ToolBar::Button::Button ( const std::string &name, 
                  const std::string &description, 
                  unsigned int iconId,
                  FX::FXObject *target, 
@@ -49,7 +49,7 @@ Button::Button ( const std::string &name,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::~Button()
+FoxTools::ToolBar::Button::~Button()
 {
   if( _button )
   {
@@ -65,7 +65,7 @@ Button::~Button()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::clear()
+void FoxTools::ToolBar::Button::clear()
 {
   if( _button )
   {
@@ -82,7 +82,7 @@ void Button::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_build ( FX::FXComposite *parent )
+void FoxTools::ToolBar::Button::_build ( FX::FXComposite *parent )
 {
   if ( 0x0 == _button )
   {
@@ -110,7 +110,7 @@ void Button::_build ( FX::FXComposite *parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::_create ()
+void FoxTools::ToolBar::Button::_create ()
 {
   // Create the button if we can.
   if ( _button && !_button->id() )

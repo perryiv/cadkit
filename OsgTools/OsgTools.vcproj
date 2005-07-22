@@ -309,6 +309,12 @@
 					RelativePath=".\SetDataVariance.h">
 				</File>
 				<File
+					RelativePath=".\SortBackToFrontCallback.cpp">
+				</File>
+				<File
+					RelativePath=".\SortBackToFrontCallback.h">
+				</File>
+				<File
 					RelativePath=".\State.cpp">
 				</File>
 				<File

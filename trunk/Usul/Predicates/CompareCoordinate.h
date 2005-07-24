@@ -23,15 +23,16 @@ namespace Predicates {
 
 struct CompareCoordinate
 {
-  CompareCoordinate ( unsigned int i ) : _i ( i )
+  CompareCoordinate ( unsigned int i, bool less = true ) : _index ( i ), _less ( less )
   {
   }
   template < class VectorType > bool operator () ( const VectorType &a, const VectorType &b )
   {
-    return ( a[_i] < b[_i] );
+    return ( ( _less ) ? ( a[_index] < b[_index] ) : ( b[_index] < a[_index] ) );
   }
 private:
-  unsigned int _i;
+  unsigned int _index;
+  bool _less;
 };
 
 

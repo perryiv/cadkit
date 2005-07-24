@@ -180,6 +180,9 @@
 				Name="Algorithms"
 				Filter="">
 				<File
+					RelativePath=".\Algorithms\ConvexHullSort.h">
+				</File>
+				<File
 					RelativePath="Algorithms\Extract.h">
 				</File>
 				<File
@@ -736,6 +739,9 @@
 				Name="Math"
 				Filter="">
 				<File
+					RelativePath=".\Math\Angle.h">
+				</File>
+				<File
 					RelativePath="Math\Constants.h">
 				</File>
 				<File
@@ -809,6 +815,9 @@
 			<Filter
 				Name="Predicates"
 				Filter="">
+				<File
+					RelativePath=".\Predicates\CompareCoordinate.h">
+				</File>
 				<File
 					RelativePath="Predicates\EndsWith.h">
 				</File>

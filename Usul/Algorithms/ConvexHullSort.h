@@ -43,7 +43,7 @@ template < class PointsContainer > void convexHullSort ( PointsContainer &points
     return;
 
   // Find left-most point.
-  Itr left ( std::min_element ( points.begin(), points.end(), Usul::Predicates::CompareCoordinate ( 1 ) ) );
+  Itr left ( std::min_element ( points.begin(), points.end(), Usul::Predicates::CompareCoordinate ( 0 ) ) );
   if ( points.end() == left )
     throw std::runtime_error ( "Error 1163900903: failed to find left-most element in container of points" );
 

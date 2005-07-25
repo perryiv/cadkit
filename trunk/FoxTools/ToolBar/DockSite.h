@@ -50,6 +50,9 @@ public:
   // Show
   void              show();
 
+  // Remove toolbar with given name
+  void              remove ( const std::string& );
+
 protected:
 
   // Use reference counting.

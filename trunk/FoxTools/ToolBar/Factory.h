@@ -64,8 +64,15 @@ public:
   // Show all
   void            show();
 
+  // Iterators to the toolbars.
   ConstIterator   begin() const { return _toolbars.begin(); }
   ConstIterator   end() const   { return _toolbars.end(); }
+
+  // Perform layout on the dock sites.
+  void            layout();
+
+  // Remove the toolbar with the given name.
+  void            remove ( const std::string& );
 
 protected:
   Factory();

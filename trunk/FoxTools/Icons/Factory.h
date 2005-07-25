@@ -97,6 +97,8 @@ public:
     ICON_NO_LIGHTNING_BOLT,
     ICON_LIGHTNING_BOLT,
     ICON_CURVE,
+    ICON_FLAT,
+    ICON_SMOOTH,
     LAST
   };
 

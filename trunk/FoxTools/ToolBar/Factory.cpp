@@ -265,3 +265,39 @@ void Factory::show()
   this->leftDock()->show();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Perform layout on the dock sites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::layout()
+{
+  this->topDock()->dockSite()->layout();
+  this->bottomDock()->dockSite()->layout();
+  this->rightDock()->dockSite()->layout();
+  this->leftDock()->dockSite()->layout();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the toolbar with the given name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::remove ( const std::string& name )
+{
+  Toolbars::iterator iter = _toolbars.find( name );
+  if( iter != _toolbars.end() )
+  {
+    this->topDock()->remove    ( name );
+    this->bottomDock()->remove ( name );
+    this->rightDock()->remove  ( name );
+    this->leftDock()->remove   ( name );
+
+    _toolbars.erase( iter );
+  }
+}
+

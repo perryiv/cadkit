@@ -274,7 +274,10 @@ void Manager::close ( Document *document )
 
   // Unset the active document if it is the one that is closing
   if ( document == _active.get() )
+  {
+    _active->noLongerActive( "" );
     _active = 0x0;
+  }
 
   // Remove the document from the list
   _documents.remove ( document );

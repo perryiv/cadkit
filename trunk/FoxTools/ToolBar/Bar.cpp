@@ -217,12 +217,16 @@ void Bar::append ( Command *c )
 
 void Bar::create()
 {
-  // Create the menu-bar if we can.
+  // Create the tool-bar if we can.
   if ( _bar && !_bar->id() )
   {
     _bar->create();
     _bar->setUserData( this );
   }
+
+  // Create the undocked site if we can.
+  if( _undockedSite && !_undockedSite->id( ) )
+    _undockedSite->create();
 
 }
 

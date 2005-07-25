@@ -213,3 +213,17 @@ void DockSite::show()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove toolbar with given name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DockSite::remove ( const std::string& name )
+{
+  Bars::iterator i = std::find_if ( _bars.begin(), _bars.end(), Item::IsEqual ( name ) );
+
+  if( i != _bars.end() )
+    _bars.erase ( i );
+}
+

@@ -79,7 +79,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class F1, class F2 > Caller *makeCaller ( F1 f1, F2 f2 )
+template < class F1, class F2 > inline Caller *makeCaller ( F1 f1, F2 f2 )
 {
   return new Usul::Scope::Detail::CallerImpl < F1, F2 > ( f1, f2 );
 }

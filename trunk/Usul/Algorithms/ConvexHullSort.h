@@ -25,80 +25,119 @@
 
 #include <algorithm>
 #include <limits>
+#include <stdexcept>
 
 
 namespace Usul {
 namespace Algorithms {
 
 
-template < class PointsContainer > void convexHullSort ( PointsContainer &points )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class to make an initial vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
 {
-  // Useful typedefs.
-  typedef PointsContainer::iterator Itr;
-  typedef PointsContainer::value_type Value;
-  typedef Usul::Math::Angle<double,3> Angle;
-
-  // Ignore containers without enough points.
-  if ( points.size() <= 2 )
-    return;
-
-  // Find left-most point.
-  Itr left ( std::min_element ( points.begin(), points.end(), Usul::Predicates::CompareCoordinate ( 0 ) ) );
-  if ( points.end() == left )
-    throw std::runtime_error ( "Error 1163900903: failed to find left-most element in container of points" );
-
-  // Put this point in a new container and remove it from the first.
-  PointsContainer ordered;
-  ordered.insert ( ordered.end(), *left );
-  points.erase ( left );
-
-  // Initialize the first vector between vertices. Make it vertical.
-  Value v0 ( 0.0f, 1.0f, 0.0f );
-
-  // While there are still points in the original container...
-  while ( false == points.empty() )
+  struct InitialVector3
   {
-    // Initialize the iterator and angle.
-    Itr saved ( points.end() );
-    double maxAngle ( 0 );
-
-    // Get the current ordered point.
-    const Value &o ( ordered.back() );
-
-    // Loop through the remaining points.
-    for ( Itr i = points.begin(); i != points.end(); ++i )
+    template < class V > static void set ( V &v )
     {
-      // Shortcut to the current point.
-      const Value &p ( *i );
+      v = V ( 0, 1, 0 );
+    }
+  };
+}
 
-      // Get the vector between the two current points.
-      const Value v1 ( p - o );
 
-      // Get the angle between them.
-      const double angle ( Angle::get ( v0, v1 ) );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class to sort points defining a convex hull.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-      // If this angle is greater then save it.
-      if ( angle > maxAngle )
+template
+<
+  class PointsContainer,
+  class SetInitialVector = Detail::InitialVector3,
+  class CompareCoordinate = Usul::Predicates::CompareCoordinate,
+  class CalculateAngle = Usul::Math::Angle<double,3>,
+  class DifferenceType = std::minus<typedef PointsContainer::value_type>
+>
+struct ConvexHullSort
+{
+  static void sort ( PointsContainer &points )
+  {
+    // Useful typedefs.
+    typedef PointsContainer::iterator Itr;
+    typedef PointsContainer::value_type Value;
+    typedef CalculateAngle Angle;
+    typedef DifferenceType Difference;
+
+    // Ignore containers without enough points.
+    if ( points.size() <= 2 )
+      return;
+
+    // Find left-most point.
+    Itr left ( std::min_element ( points.begin(), points.end(), CompareCoordinate ( 0 ) ) );
+    if ( points.end() == left )
+      throw std::runtime_error ( "Error 1163900903: failed to find left-most element in container of points" );
+
+    // Put this point in a new container and remove it from the first.
+    PointsContainer ordered;
+    ordered.insert ( ordered.end(), *left );
+    points.erase ( left );
+
+    // Initialize the first vector between vertices. Make it vertical.
+    Value v0;
+    SetInitialVector() ( v0 );
+
+    // While there are still points in the original container...
+    while ( false == points.empty() )
+    {
+      // Initialize the iterator and angle.
+      Itr saved ( points.end() );
+      double maxAngle ( 0 );
+
+      // Get the current ordered point.
+      const Value &o ( ordered.back() );
+
+      // Loop through the remaining points.
+      for ( Itr i = points.begin(); i != points.end(); ++i )
       {
-        maxAngle = angle;
-        saved = i;
+        // Shortcut to the current point.
+        const Value &p ( *i );
+
+        // Get the vector between the two current points.
+        const Value v1 ( Difference() ( p, o ) );
+
+        // Get the angle between them.
+        const double angle ( Angle() ( v0, v1 ) );
+
+        // If this angle is greater then save it.
+        if ( angle > maxAngle )
+        {
+          maxAngle = angle;
+          saved = i;
+        }
       }
+
+      // Should be true.
+      if ( points.end() == saved )
+        throw std::runtime_error ( "Error 3712866389: failed to find vector with maximum angle with respect to current vector" );
+
+      // Assign new "first" vector. Do this before inserting below.
+      v0 = Value ( Difference() ( o, *saved ) );
+
+      // Append the saved point to the list and remove it from the original.
+      ordered.insert ( ordered.end(), *saved );
+      points.erase ( saved );
     }
 
-    // Should be true.
-    USUL_ASSERT ( points.end() != saved );
-
-    // Assign new "first" vector. Do this before inserting below.
-    v0 = Value ( o - *saved );
-
-    // Append the saved point to the list and remove it from the original.
-    ordered.insert ( ordered.end(), *saved );
-    points.erase ( saved );
+    // Copy the ordered points back into the original container.
+    points = ordered;
   }
-
-  // Copy the ordered points back into the original container.
-  points = ordered;
-}
+};
 
 
 } // namespace Algorithms

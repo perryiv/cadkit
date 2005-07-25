@@ -582,9 +582,6 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   }
   else
   {
-    //Delete the per vertex normals
-    this->_normalsPerVertex().clear();
-
     //Set the normals
     _geometry->setNormalArray ( &this->_normalsPerFacet() );
 

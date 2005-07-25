@@ -974,6 +974,18 @@
 				Name="Scope"
 				Filter="">
 				<File
+					RelativePath=".\Scope\Caller.h">
+				</File>
+				<File
+					RelativePath=".\Scope\GLBeginEnd.h">
+				</File>
+				<File
+					RelativePath=".\Scope\GLPushPopAttrib.h">
+				</File>
+				<File
+					RelativePath=".\Scope\GLPushPopMatrix.h">
+				</File>
+				<File
 					RelativePath=".\Scope\Reset.h">
 				</File>
 			</Filter>

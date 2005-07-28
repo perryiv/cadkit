@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/TriangleSet.h"
+#include "OsgTools/GlassBoundingBox.h"
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Policies/Update.h"
@@ -29,6 +30,10 @@
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
+#include "osg/Vec4"
+#include "osg/LineWidth"
+#include "osg/StateSet"
+#include "osg/AlphaFunc"
 
 #include <algorithm>
 #include <functional>
@@ -52,7 +57,14 @@ TriangleSet::TriangleSet() : BaseClass(),
   _colors    ( new osg::Vec4Array ),
   _dirty     ( true ),
   _geometry  ( 0x0 ),
-  _primitiveSet ( 0x0 )
+  _primitiveSet ( 0x0 ),
+  _max_x (std::numeric_limits< float >::min()),
+  _min_x (std::numeric_limits< float >::max()),
+  _max_y (std::numeric_limits< float >::min()),
+  _min_y (std::numeric_limits< float >::max()),
+  _max_z (std::numeric_limits< float >::min()),
+  _min_z (std::numeric_limits< float >::max()),
+  _showGlassBoundingBox (true)
 {
 #ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
@@ -148,6 +160,16 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   _primitiveSet = 0x0;
   _geometry = 0x0;
+  _showGlassBoundingBox = true;
+  //Clear the Max and Min Values
+  
+  _max_x = (std::numeric_limits< float >::min());
+  _min_x = (std::numeric_limits< float >::max());
+  _max_y = (std::numeric_limits< float >::min());
+  _min_y = (std::numeric_limits< float >::max());
+  _max_z = (std::numeric_limits< float >::min());
+  _min_z = (std::numeric_limits< float >::max());
+  
 }
 
 
@@ -322,7 +344,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     normals->reserve       ( _vertices->size() );
     _primitiveSet->reserve ( numPoints );
 
-    const unsigned int triNum ( t->index() * 3 );
+  //  const unsigned int triNum ( t->index() * 3 );
 
     // Add the indices to the primitive set
     _primitiveSet->push_back ( sv0->index() );
@@ -349,9 +371,32 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     }
   }
 
+  //Check the max and min values
+  this->_setMaxMinValues( sv0 );
+  this->_setMaxMinValues( sv1 );
+  this->_setMaxMinValues( sv2 );
+  
   // Need to rebuild per-vertex normals and indices.
   _dirty = true;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Sets the Max and Min values for XYZ if any of the values are greater than
+//  or less than the existing values
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_setMaxMinValues(SharedVertex *sv) 
+{
+    const osg::Vec3f &v ( this->getVertex( sv->index() ) );
+    if (v.x() > _max_x) _max_x = v.x();
+    if (v.x() < _min_x) _min_x = v.x();
+    if (v.y() > _max_y) _max_y = v.y();
+    if (v.y() < _min_y) _min_y = v.y();
+    if (v.z() > _max_z) _max_z = v.z();
+    if (v.z() < _min_z) _min_z = v.z();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -589,9 +634,141 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
+  // Draw a bounding box
+  root->addChild ( this->_addBoundingBox() );
+  //root->addChild ( this->_addBoundingGlass() );
+  if (_showGlassBoundingBox) {
+    OsgTools::GlassBoundingBox gbb (_min_x,_min_y,_min_z,_max_x,_max_y,_max_z);
+    gbb.addBoundingGlass(root.get() );
+  }
+  
+  
   // Return the root.
   return root.release();
 }
+
+osg::Node* TriangleSet::_addBoundingGlass() 
+{
+    osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
+    osg::Vec3 myCoords[] =
+    {
+      osg::Vec3(_min_x, _min_y, _min_z),
+      osg::Vec3(_min_x, _max_y, _min_z),
+      osg::Vec3(_max_x, _max_y, _min_z),
+      osg::Vec3(_max_x, _min_y, _min_z)
+    };
+
+    int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
+
+    osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
+    osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
+    shared_colors->push_back(osg::Vec4(0.05f,0.05f,0.05f,0.25f));
+    
+    // same trick for shared normal.
+    osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
+    shared_normals->push_back(osg::Vec3(0.0f,0.0f,-1.0f));
+        // pass the created vertex array to the points geometry object.
+    polyGeom->setVertexArray(vertices);
+
+        // use the color array.
+    polyGeom->setColorArray(shared_colors.get());
+    polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+        // use the normal array.
+    polyGeom->setNormalArray(shared_normals.get());
+    polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+        // This time we simply use primitive, and hardwire the number of coords to use 
+        // since we know up front,
+    polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
+
+    // add the points geomtry to the geode.
+    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+    osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
+    
+    stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+    osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
+    alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
+    stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
+    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    polyGeom->setStateSet(stateset);
+    
+    geode->addDrawable( polyGeom.get() );
+    return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw a Bounding Box with some options (Eventually).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* TriangleSet::_addBoundingBox() {
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  
+  osg::BoundingBox bb( _min_x,_min_y,_min_z,_max_x,_max_y,_max_z );
+  
+  for( unsigned int i = 0; i < 8; ++i )
+    vertices->push_back ( bb.corner( i ) );
+  
+  typedef osg::DrawElementsUInt DrawElements;
+  
+  osg::ref_ptr< DrawElements > bottom ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
+  
+  bottom->push_back ( 0 );
+  bottom->push_back ( 1 );
+  bottom->push_back ( 3 );
+  bottom->push_back ( 2 );
+  
+  osg::ref_ptr< DrawElements > top ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
+  
+  top->push_back ( 4 );
+  top->push_back ( 5 );
+  top->push_back ( 7 );
+  top->push_back ( 6 );
+  
+  osg::ref_ptr< DrawElements > lines  ( new DrawElements ( osg::PrimitiveSet::LINES, 0 ) );
+  
+  lines->push_back ( 0 );
+  lines->push_back ( 4 );
+  lines->push_back ( 1 );
+  lines->push_back ( 5 );
+  lines->push_back ( 2 );
+  lines->push_back ( 6 );
+  lines->push_back ( 3 );
+  lines->push_back ( 7 );
+  
+  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+  geometry->setVertexArray  ( vertices.get() );
+  geometry->addPrimitiveSet ( bottom.get() );
+  geometry->addPrimitiveSet ( top.get() );
+  geometry->addPrimitiveSet ( lines.get() );
+  
+  osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
+  
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  
+  colors->resize ( 8 );
+  
+  std::fill( colors->begin(), colors->end(), osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+  
+  geometry->setColorArray ( colors.get() );
+  geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+  
+  // Set the line-width.
+  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
+  lw->setWidth ( 3 );
+  osg::ref_ptr<osg::StateSet> ss = geode->getOrCreateStateSet();
+  ss->setAttribute ( lw.get() );
+  
+  
+  geode->addDrawable ( geometry.get() );
+  
+  return geode.release();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -642,7 +819,7 @@ void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv )
+osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv ) const
 {
   osg::Vec3 normal;
 
@@ -908,4 +1085,52 @@ bool TriangleSet::displayList() const
 void TriangleSet::displayList ( bool b )
 {
   _geometry->setUseDisplayList ( b );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get/Set the Maximum value for X
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  TriangleSet::maxX ( const float x ) {  _max_x = x; }
+float TriangleSet::maxX ()  { return _max_x; }
+void  TriangleSet::minX ( float x ) {  _min_x = x; }
+float TriangleSet::minX ()  {  return _min_x; }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get/Set the Maximum value for Y
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  TriangleSet::maxY ( float y ) {  _max_y = y; }
+float TriangleSet::maxY ()  { return _max_y; }
+void  TriangleSet::minY ( float y ) {  _min_y = y; }
+float TriangleSet::minY ()  {  return _min_y; }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get/Set the Maximum value for Z
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  TriangleSet::maxZ ( float z ) {  _max_z = z; }
+float TriangleSet::maxZ ()  { return _max_z; }
+void  TriangleSet::minZ ( float z ) {  _min_z = z; }
+float TriangleSet::minZ ()  {  return _min_z; }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get/Set property to show/hide the GlassBoundingBox
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::showGlassBoundingBox(bool b) 
+{
+  _showGlassBoundingBox = b; 
+}
+bool TriangleSet::showGlassBoundingBox() 
+{
+  return _showGlassBoundingBox;
 }

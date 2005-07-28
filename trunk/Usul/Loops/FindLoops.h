@@ -14,8 +14,6 @@
 
 namespace Usul {
 namespace Loops {
-
-
 namespace Detail {
 
 
@@ -158,8 +156,6 @@ inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop
   //Mark the shared vertex as visited
   sv->visited( true );
 
-  //PolygonList p1 ( sv->polygons() );
-
   //Loop through the shared vertex's polygons
   for( typename PolygonList::iterator poly = sv->begin(); poly != sv->end(); ++poly )
   {
@@ -235,7 +231,7 @@ inline void findEdge ( PolygonList& polygons, Polygon* check )
 }
 
 
-}
+} // namespace Detail.
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -247,19 +243,22 @@ inline void findEdge ( PolygonList& polygons, Polygon* check )
 template
 <
   class Polygons,
-  class IndexSequence, 
   class Loops, 
   class AdjacencyTest,
   class UpdateFunctor
 >
-inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
+inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
 {
+  // Typedefs.
   typedef typename Polygons::value_type PolygonPtr;
   typedef typename PolygonPtr::element_type Polygon;
   typedef typename Polygon::PolygonSet  PolygonSet;
   typedef typename Loops::value_type Loop;
+  typedef std::list < unsigned int > IndexSequence;
 
-  //Needed for user feedback
+  IndexSequence uncapped;
+
+  // Needed for user feedback.
   const unsigned int size ( polygons.size() );
 
   //Walk through all the polygons

@@ -1007,7 +1007,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
     this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size() );
   }
 
-  // Don't with the shared vertex map
+  // Done with the shared vertex map
   this->addFinish( );
 
   //The scene needs to be rebuilt

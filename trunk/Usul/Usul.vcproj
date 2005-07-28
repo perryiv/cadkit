@@ -601,6 +601,9 @@
 						RelativePath=".\Interfaces\ITriangle.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ITriangleSV.h">
+					</File>
+					<File
 						RelativePath="Interfaces\IUndo.h">
 					</File>
 				</Filter>

@@ -128,7 +128,6 @@ inline void _reverseBytes ( Usul::Types::Uint16 &n )
 
 inline void _reverseBytes ( Usul::Types::Uint32 &n )
 {
- 
   n = (((((Usul::Types::Uint32)n)<<24) & 0xFF000000)  |
    ((((Usul::Types::Uint32)n)<< 8) & 0x00FF0000)  |
    ((((Usul::Types::Uint32)n)>> 8) & 0x0000FF00)  |

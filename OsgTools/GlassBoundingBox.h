@@ -58,7 +58,6 @@ public:
 
 protected:
 //Destruction
-    
   
  
   //init each of the six sides of the Cube;

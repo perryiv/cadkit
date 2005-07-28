@@ -14,7 +14,7 @@
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "Build All";
@@ -1179,7 +1179,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
 				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -1395,7 +1395,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -1434,7 +1434,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -1468,7 +1468,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -1594,7 +1594,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "Build All";
@@ -1613,7 +1613,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "Build All";
@@ -1630,7 +1630,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "Build All";

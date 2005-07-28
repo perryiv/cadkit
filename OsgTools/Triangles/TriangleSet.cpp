@@ -27,16 +27,18 @@
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/MPL/StaticAssert.h"
 
+#include "OsgTools/State.h"
+
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Vec4"
-#include "osg/LineWidth"
 #include "osg/StateSet"
 #include "osg/AlphaFunc"
 
 #include <algorithm>
 #include <functional>
+#include <limits>
 
 using namespace OsgTools::Triangles;
 
@@ -63,8 +65,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _max_y (std::numeric_limits< float >::min()),
   _min_y (std::numeric_limits< float >::max()),
   _max_z (std::numeric_limits< float >::min()),
-  _min_z (std::numeric_limits< float >::max()),
-  _showGlassBoundingBox (true)
+  _min_z (std::numeric_limits< float >::max())
 {
 #ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
@@ -74,12 +75,18 @@ TriangleSet::TriangleSet() : BaseClass(),
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _max_x          ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _min_x          ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _max_y          ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _min_y          ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _max_z          ) );
+  USUL_STATIC_ASSERT (  4 == sizeof ( _min_z          ) );
 #ifdef _WIN32
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 68 == sizeof ( TriangleSet     ) ); // Why?
+  USUL_STATIC_ASSERT ( 92 == sizeof ( TriangleSet     ) ); // Why?
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 64 == sizeof ( TriangleSet     ) ); // Why?
+  USUL_STATIC_ASSERT ( 88 == sizeof ( TriangleSet     ) ); // Why?
 #endif
 #endif
 
@@ -160,9 +167,8 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   _primitiveSet = 0x0;
   _geometry = 0x0;
-  _showGlassBoundingBox = true;
+
   //Clear the Max and Min Values
-  
   _max_x = (std::numeric_limits< float >::min());
   _min_x = (std::numeric_limits< float >::max());
   _max_y = (std::numeric_limits< float >::min());
@@ -280,7 +286,7 @@ const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n )
+void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool rebuild )
 {
   // Get or make the shared vertices.
   SharedVertex *sv0 ( this->_sharedVertex ( v0 ) );
@@ -288,7 +294,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
 
   //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n );
+  this->_addTriangle( sv0, sv1, sv2, n, rebuild );
 }
 
 
@@ -298,14 +304,14 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n )
+void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool rebuild )
 {
   SharedVertex *sv0 ( const_cast < SharedVertex * > ( &v0 ) );
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
   //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n );
+  this->_addTriangle( sv0, sv1, sv2, n, rebuild );
 }
 
 
@@ -315,7 +321,7 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n )
+void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool rebuild )
 {
   // Make the new triangle.
   Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2, _triangles.size() ) );
@@ -332,7 +338,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   this->_normalsPerFacet().push_back ( n );
 
   // The primitive set will be valid after the scene is built.
-  if( _primitiveSet.valid() )
+  if( _primitiveSet.valid() && rebuild )
   {
     //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
@@ -635,11 +641,18 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   }
 
   // Draw a bounding box
-  root->addChild ( this->_addBoundingBox() );
+  bool boundingBox ( options["BoundingBox"] == "Show" );
+  if( boundingBox )
+    root->addChild ( this->_addBoundingBox() );
+  
   //root->addChild ( this->_addBoundingGlass() );
-  if (_showGlassBoundingBox) {
+
+  bool showGlassBoundingBox ( options["GlassBoundingBox"] == "Show" );
+
+  if ( showGlassBoundingBox )
+  {
     OsgTools::GlassBoundingBox gbb (_min_x,_min_y,_min_z,_max_x,_max_y,_max_z);
-    gbb.addBoundingGlass(root.get() );
+    gbb.addBoundingGlass( root.get() );
   }
   
   
@@ -758,11 +771,10 @@ osg::Node* TriangleSet::_addBoundingBox() {
   geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
   
   // Set the line-width.
-  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
-  lw->setWidth ( 3 );
-  osg::ref_ptr<osg::StateSet> ss = geode->getOrCreateStateSet();
-  ss->setAttribute ( lw.get() );
-  
+  OsgTools::State::setLineWidth ( geode.get(), 3.0f );
+
+  // Set two-sided lighting
+  OsgTools::State::setTwoSidedLighting( geode.get(), true );
   
   geode->addDrawable ( geometry.get() );
   
@@ -849,6 +861,25 @@ void TriangleSet::setAllUnvisited()
     (*i)->vertex0()->visited( false );
     (*i)->vertex1()->visited( false );
     (*i)->vertex2()->visited( false );
+  }
+}
+
+// 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the on edge flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::resetOnEdge()
+{
+  //Go to each triangle and it's shared vertices and set the visited flag to false
+  for( Triangles::iterator i = _triangles.begin(); i != _triangles.end(); ++ i )
+  {
+    (*i)->onEdge( false );
+    (*i)->vertex0()->onEdge( false );
+    (*i)->vertex1()->onEdge( false );
+    (*i)->vertex2()->onEdge( false );
   }
 }
 
@@ -1120,17 +1151,3 @@ float TriangleSet::maxZ ()  { return _max_z; }
 void  TriangleSet::minZ ( float z ) {  _min_z = z; }
 float TriangleSet::minZ ()  {  return _min_z; }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get/Set property to show/hide the GlassBoundingBox
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::showGlassBoundingBox(bool b) 
-{
-  _showGlassBoundingBox = b; 
-}
-bool TriangleSet::showGlassBoundingBox() 
-{
-  return _showGlassBoundingBox;
-}

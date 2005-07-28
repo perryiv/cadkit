@@ -252,6 +252,12 @@
 					RelativePath=".\ForEach.h">
 				</File>
 				<File
+					RelativePath=".\GlassBoundingBox.cpp">
+				</File>
+				<File
+					RelativePath=".\GlassBoundingBox.h">
+				</File>
+				<File
 					RelativePath=".\GraphStreamVisitor.h">
 				</File>
 				<File

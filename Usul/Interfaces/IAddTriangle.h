@@ -33,7 +33,7 @@ struct IAddTriangle : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = iid };
 
-  virtual void addTriangle ( const VertexType& v0, const VertexType& v1, const VertexType& v2, const NormalType & normal ) = 0;
+  virtual void addTriangle ( const VertexType& v0, const VertexType& v1, const VertexType& v2, const NormalType & normal, bool rebuild = false ) = 0;
 };
 
 typedef IAddTriangle< OsgTools::Triangles::SharedVertex, osg::Vec3f, 2793935616u > IAddTriangleSharedVertex;

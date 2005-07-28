@@ -28,7 +28,7 @@ namespace Detail {
 template < class Loop, class Vertex >
 inline bool containsVertex ( const Loop& loop, Vertex* vertex )
 {
-  typename Vertex::findVertex find ( vertex );
+  typename Vertex::FindVertex find ( vertex );
 
   return ( std::find_if ( loop.begin(), loop.end(), find ) != loop.end() );
 }
@@ -302,9 +302,10 @@ inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& lo
   
   while( !uncapped.empty() )
   {
+    // Get the first element in the list.
     typename IndexSequence::iterator i ( uncapped.begin() );
 
-    //Create a cluster
+    //Create a loop.
     Loop loop;
 
     //Get the polygon

@@ -24,7 +24,6 @@
 
 #include <limits>
 #include <algorithm>
-#include <vector>
 
 using namespace OsgTools::Triangles;
 
@@ -251,3 +250,31 @@ void Triangle::deleted( bool d )
   else
     _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, DELETED );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this triangle on the edge?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::onEdge() const
+{
+  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, ON_EDGE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the on edge flag
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::onEdge( bool b )
+{
+  if( b )
+    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, ON_EDGE );
+  else
+    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, ON_EDGE );
+}
+

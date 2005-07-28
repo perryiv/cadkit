@@ -227,7 +227,7 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller ) const
+std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
@@ -251,6 +251,9 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller ) c
   
   // Set the format option.
   options["format"] = format;
+
+  // Set the binary flag
+  this->binary( "binary" == format );
 
   // Return the result.
   return result.first;

@@ -69,6 +69,10 @@ public:
   unsigned int                index() const           { return _index; }
   void                        index( unsigned int i ) { _index = i; }
 
+  //Get/Set the onEdge flag
+  bool                        onEdge() const;
+  void                        onEdge ( bool b );
+
   // Reference this instance.
   void                        ref();
 

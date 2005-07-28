@@ -16,8 +16,11 @@
 #ifndef _USUL_SCOPE_GL_BEGIN_END_H_
 #define _USUL_SCOPE_GL_BEGIN_END_H_
 
-#include "GL/GL.h"
-
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 
 namespace Usul {
 namespace Scope {

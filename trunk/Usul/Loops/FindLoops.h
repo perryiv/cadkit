@@ -10,6 +10,8 @@
 #ifndef __USUL_ALGORITHMS_CAP_POLYGONS_H__
 #define __USUL_ALGORITHMS_CAP_POLYGONS_H__
 
+#include "Usul/Polygons/Predicates.h"
+
 namespace Usul {
 namespace Loops {
 
@@ -209,7 +211,7 @@ inline void findEdge ( PolygonList& polygons, Polygon* check )
 
   for( typename PolygonList::iterator i = polygons.begin(); i != polygons.end(); ++i )
   {
-    if( i->get() != check )
+    if( *i != check )
     {
       SharedVertex *t1 ( (*i)->vertex0() );
       SharedVertex *t2 ( (*i)->vertex1() );
@@ -232,6 +234,7 @@ inline void findEdge ( PolygonList& polygons, Polygon* check )
     v3->onEdge( true );
 }
 
+
 }
 
 
@@ -253,7 +256,7 @@ inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& lo
 {
   typedef typename Polygons::value_type PolygonPtr;
   typedef typename PolygonPtr::element_type Polygon;
-  typedef typename Polygon::PolygonList PolygonList;
+  typedef typename Polygon::PolygonSet  PolygonSet;
   typedef typename Loops::value_type Loop;
 
   //Needed for user feedback
@@ -261,28 +264,24 @@ inline void capPolygons ( Polygons& polygons, IndexSequence& uncapped, Loops& lo
 
   //Walk through all the polygons
   for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
-  { 
+  {    
     //Get list of neighbors that share one point
-    PolygonList neighbors; 
-    
+    PolygonSet neighbors; 
+        
     (*iter)->getNeighbors( neighbors );
 
-    PolygonList adjacentPolygons;
-
+    PolygonSet adjacentPolygons;
+    
     //Loop through all this polygon's neighbors
-    for( typename PolygonList::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
+    for( typename PolygonSet::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
     {
-      //Self check...
-      if( (*iter)->index() != (*i)->index() )
-      {
-        //If these two polygons are adjacent...
-        if( adjacent ( *(*iter), *(*i) ) )
-          adjacentPolygons.push_back( *i );
-      }
+      //If these two polygons are adjacent...
+      if( adjacent ( *(*iter), *(*i) ) )
+        adjacentPolygons.insert( *i );
     }
 
     //If we don't have the right number of adjacent polygons...
-    if( adjacentPolygons.size() < vertsPerPoly )
+    if( adjacentPolygons.size() < vertsPerPoly + 1 )
     {
       uncapped.push_back( (*iter)->index() );
       Detail::findEdge( adjacentPolygons, iter->get() );

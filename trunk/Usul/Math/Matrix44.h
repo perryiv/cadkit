@@ -23,7 +23,14 @@
 
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
+#include <algorithm>
 
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 
 namespace Usul {
 namespace Math {

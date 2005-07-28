@@ -49,6 +49,27 @@ struct PolyEqual : public std::binary_function< Polygon, Polygon, bool >
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Predicate to determine if one polygon's index equal to another.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IsEqual
+{
+  IsEqual ( unsigned int index ) :
+  _index ( index )
+  {
+  }
+  
+  template < class Iter > bool operator () ( const Iter& i ) const
+  {
+    return i->index() == _index;
+  }
+  
+private:
+  unsigned int _index;
+};
 
 } //namespace Polygons
 

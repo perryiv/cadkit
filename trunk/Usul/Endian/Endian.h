@@ -18,7 +18,7 @@
 
 #include "Usul/Types/Types.h"
 #include "Usul/Cast/Cast.h"
-#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  For 1025, which, in binary is:
@@ -65,11 +65,6 @@ namespace Endian {
 #error Unknown endian type in Usul/Endian/Endian.h
 #endif
 
-#define Endian32_Swap(value)                     \
-  (((((Usul::Types::Uint32)value)<<24) & 0xFF000000)  | \
-   ((((Usul::Types::Uint32)value)<< 8) & 0x00FF0000)  | \
-   ((((Usul::Types::Uint32)value)>> 8) & 0x0000FF00)  | \
-   ((((Usul::Types::Uint32)value)>>24) & 0x000000FF))
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -113,10 +108,8 @@ namespace Detail {
 
 inline void _reverseBytes ( Usul::Types::Uint16 &n )
 {
-  unsigned char *cptr = (unsigned char *) &n;
-  unsigned char tmp = cptr[0];
-  cptr[0] = cptr[1];
-  cptr[1] = tmp;
+  n = ( ((((Usul::Types::Uint16)n)>> 8) & 0x00FF)  |
+    ((((Usul::Types::Uint16)n)<<8) & 0xFF00) )
 }
 
 
@@ -145,19 +138,14 @@ inline void _reverseBytes ( Usul::Types::Uint32 &n )
 
 inline void _reverseBytes ( Usul::Types::Uint64 &n )
 {
-  unsigned char *cptr = (unsigned char *) &n;
-  unsigned char tmp = cptr[0];
-  cptr[0] = cptr[7];
-  cptr[7] = tmp;
-  tmp     = cptr[1];
-  cptr[1] = cptr[6];
-  cptr[6] = tmp;
-  tmp     = cptr[2];
-  cptr[2] = cptr[5];
-  cptr[5] =tmp;
-  tmp     = cptr[3];
-  cptr[3] = cptr[4];
-  cptr[4] = tmp;
+ n =( ((((UInt64)value)<<56) & 0xFF00000000000000ULL)  | 
+       ((((UInt64)value)<<40) & 0x00FF000000000000ULL)  | 
+       ((((UInt64)value)<<24) & 0x0000FF0000000000ULL)  | 
+       ((((UInt64)value)<< 8) & 0x000000FF00000000ULL)  | 
+       ((((UInt64)value)>> 8) & 0x00000000FF000000ULL)  | 
+       ((((UInt64)value)>>24) & 0x0000000000FF0000ULL)  | 
+       ((((UInt64)value)>>40) & 0x000000000000FF00ULL)  | 
+       ((((UInt64)value)>>56) & 0x00000000000000FFULL) );
 }
 
 

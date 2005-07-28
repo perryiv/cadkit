@@ -62,8 +62,8 @@ public:
   void                    addFinish ( );
 
   // Add a triangle.
-  void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n );
-  void                    addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n );
+  void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool rebuild = false );
+  void                    addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool rebuild = false );
 
   /// Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
@@ -111,6 +111,9 @@ public:
   // Set all triangles and shared vertices to unvisited
   void                    setAllUnvisited();
 
+  // Reset the on edge flag.
+  void                    resetOnEdge();
+
   // Return the number of triangles.
   unsigned int            size() const { return _triangles.size(); }
 
@@ -136,9 +139,7 @@ public:
   float                   maxZ ();
   void                    minZ ( float );
   float                   minZ ();
-  
-  void                    showGlassBoundingBox(bool);
-  bool                    showGlassBoundingBox();
+
 protected:
 
   // Do not copy.
@@ -148,7 +149,8 @@ protected:
   // Use reference counting.
   virtual ~TriangleSet();
 
-  void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n );
+  void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool rebuild = false );
+
   void                    _setMaxMinValues(SharedVertex *sv0);
   osg::Node*              _addBoundingBox();
   osg::Node*              _addBoundingGlass();
@@ -189,8 +191,6 @@ private:
   float _min_y;
   float _max_z;
   float _min_z;
-  
-  bool _showGlassBoundingBox;
 };
 
 

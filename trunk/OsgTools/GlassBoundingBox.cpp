@@ -19,7 +19,10 @@
 #include "osg/StateSet"
 #include "osg/AlphaFunc"
 
+#include <limits>
+
 using namespace OsgTools;
+
 
 USUL_IMPLEMENT_TYPE_ID ( GlassBoundingBox );
 

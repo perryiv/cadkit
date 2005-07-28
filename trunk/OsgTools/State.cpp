@@ -21,6 +21,8 @@
 #include "osg/StateSet"
 #include "osg/PolygonMode"
 #include "osg/ShadeModel"
+#include "osg/LightModel"
+#include "osg/LineWidth"
 
 #include <stdexcept>
 #include <iostream>
@@ -422,4 +424,113 @@ bool State::getPolygonsTextures ( osg::StateSet* ss )
     std::cout << "should return true" << std::endl;
     return true;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the two sided lighting state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool State::getTwoSidedLighting ( osg::Node *node )
+{
+  // Get or create the state set.
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+  // Get the shade-model attribute, if any.
+  const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LIGHTMODEL );
+  if ( !sa )
+    return false;
+
+  // Should be true.
+  const osg::LightModel *lm = dynamic_cast < const osg::LightModel * > ( sa );
+  if ( !lm )
+    return false;
+
+  //Is two sided light on?
+  return ( lm->getTwoSided() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the two sided lighting state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void State::setTwoSidedLighting ( osg::Node *node, bool state )
+{
+  // Get or create the state set.
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+  osg::ref_ptr<osg::LightModel> lm;
+
+  // Get the shade-model attribute, if any.
+  osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LIGHTMODEL );
+  if ( !sa )
+    lm = new osg::LightModel;
+  else
+    lm = dynamic_cast < osg::LightModel * > ( sa );
+
+  lm->setTwoSided( state );
+
+  // Set the state. Make it override any other similar states.
+  typedef osg::StateAttribute Attribute;
+  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
+}
+
+
+// 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set line width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void State::setLineWidth ( osg::Node *node, float width )
+{
+  // Get or create the state set.
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+  osg::ref_ptr<osg::LineWidth> lw;
+
+  // Get the shade-model attribute, if any.
+  osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LINEWIDTH );
+  if ( !sa )
+    lw = new osg::LineWidth;
+  else
+    lw = dynamic_cast < osg::LineWidth * > ( sa );
+
+  lw->setWidth( width );
+
+  // Set the state. Make it override any other similar states.
+  typedef osg::StateAttribute Attribute;
+  ss->setAttributeAndModes ( lw.get(), Attribute::OVERRIDE | Attribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get line width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float State::getLineWidth ( osg::Node *node )
+{
+  // Get or create the state set.
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+  // Get the shade-model attribute, if any.
+  const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LINEWIDTH );
+  if ( !sa )
+    return 1.0;
+
+  // Should be true.
+  const osg::LineWidth *lw = dynamic_cast < const osg::LineWidth * > ( sa );
+  if ( !lw )
+    return 1.0;
+
+  // Get the line width
+  return ( lw->getWidth() );
 }

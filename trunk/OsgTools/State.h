@@ -29,6 +29,10 @@ struct OSG_TOOLS_EXPORT State
   static bool         getLighting  ( osg::Node *node );
   static void         setLighting  ( osg::Node *node, bool state );
 
+  // Set/Get the two sided lighting state.
+  static bool         getTwoSidedLighting ( osg::Node *node );
+  static void         setTwoSidedLighting ( osg::Node *node, bool state );
+
   // Set/get the normalization state.
   static bool         getNormalize ( osg::Node *node );
   static void         setNormalize ( osg::Node *node, bool state );
@@ -60,6 +64,10 @@ struct OSG_TOOLS_EXPORT State
   // Set/get the polygon mode.
   static void         setPolygonMode ( osg::Node *node, unsigned int face, unsigned int mode );
   static bool         getPolygonMode ( osg::Node *node, unsigned int face, unsigned int mode );
+
+  // Set/Get line width
+  static void         setLineWidth ( osg::Node *node, float width );
+  static float        getLineWidth ( osg::Node *node );
 
 };
 

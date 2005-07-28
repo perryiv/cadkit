@@ -225,7 +225,7 @@ protected:
   /// Use reference counting.
   virtual ~Document();
 
-  std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 ) const;
+  std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
 
   void                        _save ( const std::string &filename, Unknown *caller, const Options &options = Options() );
 

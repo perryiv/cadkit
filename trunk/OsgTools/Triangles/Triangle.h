@@ -21,6 +21,8 @@
 #include "Usul/Pointers/Pointers.h"
 
 #include <list>
+#include <vector>
+#include <set>
 
 namespace OsgTools {
 namespace Triangles {
@@ -41,7 +43,7 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Triangle );
 
-  typedef std::list< Triangle::ValidRefPtr > PolygonList;
+  typedef std::set  < Triangle* > PolygonSet;
 
   //Possible flags
   enum
@@ -60,7 +62,8 @@ public:
   void                        deleted( bool );
 
   //Get the neighbors of this Triangle
-  void                        getNeighbors( PolygonList& ) const;
+
+  void                        getNeighbors ( PolygonSet& ) const;
 
   //Get?set this Triangle's index
   unsigned int                index() const           { return _index; }

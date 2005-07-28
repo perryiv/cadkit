@@ -123,6 +123,22 @@ public:
   const osg::Vec3f &      vertex1 ( unsigned int ) const;
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
 
+  //Get/Set the Max and Min Values for the XYZ coordinates
+  void                    maxX ( float );
+  float                   maxX ();
+  void                    minX ( float );
+  float                   minX ();
+  void                    maxY ( float );
+  float                   maxY ();
+  void                    minY ( float );
+  float                   minY ();
+  void                    maxZ ( float );
+  float                   maxZ ();
+  void                    minZ ( float );
+  float                   minZ ();
+  
+  void                    showGlassBoundingBox(bool);
+  bool                    showGlassBoundingBox();
 protected:
 
   // Do not copy.
@@ -133,9 +149,12 @@ protected:
   virtual ~TriangleSet();
 
   void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n );
-
+  void                    _setMaxMinValues(SharedVertex *sv0);
+  osg::Node*              _addBoundingBox();
+  osg::Node*              _addBoundingGlass();
+  
   //Get the averaged normal for the shared vertex
-  osg::Vec3               _averageNormal ( const SharedVertex * );
+  osg::Vec3               _averageNormal ( const SharedVertex *sv ) const;
 
   const osg::Vec3Array &  _normalsPerFacet()  const { return *_normals.second; }
   osg::Vec3Array &        _normalsPerFacet()        { return *_normals.second; }
@@ -163,6 +182,15 @@ private:
   bool _dirty;
   osg::ref_ptr<osg::Geometry> _geometry;
   osg::ref_ptr<osg::DrawElementsUInt> _primitiveSet;
+  //These are the max and min values that would be encountered in this set.
+  float _max_x;
+  float _min_x;
+  float _max_y;
+  float _min_y;
+  float _max_z;
+  float _min_z;
+  
+  bool _showGlassBoundingBox;
 };
 
 

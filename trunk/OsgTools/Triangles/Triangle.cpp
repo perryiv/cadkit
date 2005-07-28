@@ -24,6 +24,7 @@
 
 #include <limits>
 #include <algorithm>
+#include <vector>
 
 using namespace OsgTools::Triangles;
 
@@ -211,18 +212,17 @@ void Triangle::visited ( bool v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Triangle::getNeighbors( PolygonList& triangles ) const
+void Triangle::getNeighbors ( PolygonSet& triangles ) const
 {
-  // Insert each shared vertex's list of polygons
-  triangles.insert ( triangles.end(), _v0->begin(), _v0->end() );
-  triangles.insert ( triangles.end(), _v1->begin(), _v1->end() );
-  triangles.insert ( triangles.end(), _v2->begin(), _v2->end() );
-
-  // Sort them in ascending order
-  triangles.sort ( Usul::Polygons::PolyLess< Triangle >() );
-
-  // Remove all unique polygons
-  triangles.unique( Usul::Polygons::PolyEqual < Triangle >() );
+  for( SharedVertex::TriangleItr i = _v0->begin(); i != _v0->end(); ++i )
+    triangles.insert( i->get() );
+  
+  for( SharedVertex::TriangleItr i = _v1->begin(); i != _v1->end(); ++i )
+    triangles.insert( i->get() );
+  
+  for( SharedVertex::TriangleItr i = _v2->begin(); i != _v2->end(); ++i )
+    triangles.insert( i->get() );
+  
 }
 
 

@@ -83,6 +83,7 @@ OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
 	-losgText \
 	-losgUtil \
+	-losgFX \
 	-losgDB -losg
 
 OPEN_THREADS_LIBS = \

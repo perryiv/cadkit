@@ -64,6 +64,7 @@
 #include "osg/Matrix"
 #include "osg/LightSource"
 #include "osg/Projection"
+#include "osgFX/Scribe"
 
 #include "osgDB/ReadFile"
 #include "osgDB/WriteFile"
@@ -264,9 +265,6 @@ Application::Application ( Args &args ) :
   _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _gridFunctorXZ  (),
-  _gridFunctorZY  (),
-  _gridFunctorYX  (),
   _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
@@ -350,6 +348,10 @@ Application::Application ( Args &args ) :
 
 Application::~Application()
 {
+  for(int i=0; i<_gridFunctors.size(); ++i){
+    delete _gridFunctors[i];
+  }
+  _gridFunctors.clear();
 }
 
 
@@ -564,6 +566,7 @@ void Application::_initGrid ( osg::Node *node )
 {
   ErrorChecker ( 1067093690, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1293823849, 0x0 != node );
+  int i;
 
   // Get the bounding sphere of the node.
   const osg::BoundingSphere &bs = node->getBound();
@@ -571,30 +574,28 @@ void Application::_initGrid ( osg::Node *node )
   // Handle zero-sized bounding spheres.
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
+  // Clean up any old grids
+  for(i=0; i<_gridFunctors.size(); ++i){
+    delete _gridFunctors[i];
+  }
+  _gridFunctors.clear();
+
   // Set the properties.
-  _gridFunctorXZ.numBlocks ( _prefs->numGridBlocks() );
-  _gridFunctorXZ.size ( r * _prefs->gridScale() );
-  _gridFunctorXZ.color ( _prefs->gridColor() );
-  _gridFunctorZY.numBlocks ( _prefs->numGridBlocks() );
-  _gridFunctorZY.size ( r * _prefs->gridScale() );
-  _gridFunctorZY.color ( _prefs->gridColor() );
-  _gridFunctorYX.numBlocks ( _prefs->numGridBlocks() );
-  _gridFunctorYX.size ( r * _prefs->gridScale() );
-  _gridFunctorYX.color ( _prefs->gridColor() );
+  for(i=0; i<_prefs->numGrids(); ++i){
+    OsgTools::Grid *grid = new OsgTools::Grid();
+    grid->numBlocks ( _prefs->numGridBlocks(i) );
+    grid->size ( r * _prefs->gridScale(i) );
+    grid->color ( _prefs->gridColor(i) );
+    Usul::Math::Matrix44f o;
+    o.makeRotation ( _prefs->gridRotationAngleRad(i), _prefs->gridRotationVector(i) );
+    grid->orientation ( o );
 
-  // Move the center so that it is below the bounding sphere of the node.
-  osg::Vec3 c ( bs.center() );
-  c[1] = -r;
-  _gridFunctorXZ.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-  _gridFunctorZY.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-  _gridFunctorYX.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-
-  // Rotate the ZY and YX grids into position
-  Usul::Math::Matrix44f o;
-  o.makeRotation ( 0.5 * 3.1415926, Usul::Math::Vec3f ( 0.0, 0.0, 1.0 ) );
-  _gridFunctorZY.orientation ( o );
-  o.makeRotation ( 0.5 * 3.1415926, Usul::Math::Vec3f ( 1.0, 0.0, 0.0 ) );
-  _gridFunctorYX.orientation ( o );
+    // Move the center so that it is below the bounding sphere of the node.
+    osg::Vec3 c ( bs.center() );
+    c[1] = -r;
+    grid->center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+	_gridFunctors.push_back(grid);
+  }
 
   _rebuildGrid();
 }
@@ -610,9 +611,9 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  _gridBranch->addChild ( _gridFunctorXZ() );
-  _gridBranch->addChild ( _gridFunctorZY() );
-  _gridBranch->addChild ( _gridFunctorYX() );
+  for(int i=0; i<_gridFunctors.size(); ++i){
+    _gridBranch->addChild ( (*(_gridFunctors[i]))() );
+  }
 }
 
 

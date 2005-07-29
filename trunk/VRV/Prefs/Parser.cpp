@@ -116,7 +116,7 @@ void Parser::_read ( const std::string &filename )
   typedef XML::Reader < MemFun, XML::ValueCB, ErrorPolicy > XmlReader;
 
   // Make some member function adaptors.
-  MemFun setNumGrids       ( this, &Parser::_setNumGrids       );
+  MemFun addGrid           ( this, &Parser::_addGrid           );
   MemFun setNumGridBlocks  ( this, &Parser::_setNumGridBlocks  );
   MemFun setGridScale      ( this, &Parser::_setGridScale      );
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
@@ -152,7 +152,7 @@ void Parser::_read ( const std::string &filename )
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
-  Helper::add ( reader, start, "grid/num_grids",           setNumGrids       );
+  Helper::add ( reader, start, "grid/add_grid",            addGrid           );
   Helper::add ( reader, start, "grid/num_blocks",          setNumGridBlocks  );
   Helper::add ( reader, start, "grid/scale",               setGridScale      );
   Helper::add ( reader, start, "grid/color",               setGridColor      );
@@ -266,10 +266,10 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Parser::_setNumGrids ( const std::string &s )
+void Parser::_addGrid ( const std::string &s )
 {
   ErrorChecker ( 1083817592u, !s.empty() );
-  _settings->numGrids ( int ( ::atoi ( s.c_str() ) ) );
+  _settings->addGrid();
 }
 
 

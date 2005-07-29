@@ -46,7 +46,7 @@ protected:
   void                  _read ( const std::string &filename );
 
   // Callbacks for the xml-reader.
-  void                  _setNumGrids       ( const std::string & );
+  void                  _addGrid       ( const std::string & );
   void                  _setNumGridBlocks  ( const std::string & );
   void                  _setGridScale      ( const std::string & );
   void                  _setGridColor      ( const std::string & );

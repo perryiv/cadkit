@@ -42,7 +42,7 @@ public:
 
   void push_back( const value_type& v ) { _loop.push_back( v ); }
 
-  bool triangulate( Usul::Interfaces::IUnknown *caller );
+  bool triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly );
 
   iterator begin() { return _loop.begin(); }
   iterator end()   { return _loop.end(); }

@@ -52,6 +52,7 @@
 #include "OsgTools/Grid.h"
 
 #include <string>
+#include <vector>
 #include <list>
 
 
@@ -521,9 +522,7 @@ protected:
   PrefsPtr          _prefs;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
-  OsgTools::Grid    _gridFunctorXZ;
-  OsgTools::Grid    _gridFunctorZY;
-  OsgTools::Grid    _gridFunctorYX;
+  std::vector<OsgTools::Grid*> _gridFunctors;
   bool              _textures;
 };
 

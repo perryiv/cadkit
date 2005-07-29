@@ -310,8 +310,34 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
+#if 1
+  //Make a copy
+  osg::Vec3f copy ( n );
+
+  //osg::Vec3f n1 ( this->normal( (*sv0->begin())->index() ) );
+  //osg::Vec3f n2 ( this->normal( (*sv1->begin())->index() ) );
+  //osg::Vec3f n3 ( this->normal( (*sv2->begin())->index() ) );
+
+  osg::Vec3f n1 ( this->_averageNormal ( sv0 ) );
+  osg::Vec3f n2 ( this->_averageNormal ( sv1 ) );
+  osg::Vec3f n3 ( this->_averageNormal ( sv2 ) );
+
+  osg::Vec3f test ( n1 + n2 + n3 );
+
+  test.normalize();
+
+  float dot ( test * copy );
+
+  if( dot < 0 )
+    copy *= -1;
+
+  this->_addTriangle( sv0, sv1, sv2, copy, rebuild );
+
+#else
   //Add the triangle
   this->_addTriangle( sv0, sv1, sv2, n, rebuild );
+#endif
+
 }
 
 
@@ -350,8 +376,6 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     normals->reserve       ( _vertices->size() );
     _primitiveSet->reserve ( numPoints );
 
-  //  const unsigned int triNum ( t->index() * 3 );
-
     // Add the indices to the primitive set
     _primitiveSet->push_back ( sv0->index() );
     _primitiveSet->push_back ( sv1->index() );
@@ -385,6 +409,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   // Need to rebuild per-vertex normals and indices.
   _dirty = true;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -718,7 +743,8 @@ osg::Node* TriangleSet::_addBoundingGlass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* TriangleSet::_addBoundingBox() {
+osg::Node* TriangleSet::_addBoundingBox() 
+{
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
   
   osg::BoundingBox bb( _min_x,_min_y,_min_z,_max_x,_max_y,_max_z );

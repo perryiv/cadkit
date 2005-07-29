@@ -57,7 +57,7 @@ Loop::~Loop()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Loop::triangulate( Usul::Interfaces::IUnknown *caller )
+bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
 {
   //Algorithm will fill this data structure with indices for the triangles
   Triangles triangles;
@@ -110,7 +110,7 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller )
     norm.normalize();
 
     //Add the triangle
-    addTriangle->addTriangle( *sv1, *sv2, *sv3, norm );
+    addTriangle->addTriangle( *sv1, *sv2, *sv3, norm, buildOnFly );
   }
 
   //If we get here it succeeded

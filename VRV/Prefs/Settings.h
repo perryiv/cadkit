@@ -66,26 +66,19 @@ public:
   void                  read ( const std::string &filename );
 
   // Set/get the grid properties.
-  int                   numGrids() { return _numGrids; }
-  void                  numGrids( int i ) { _grids.clear(); for(int j=0; j<i; j++) _grids.push_back(Grids()); }
-  const Color &         getGridColor( int i ) const { return _grids[i]._gridColor; }
-  void                  gridColor ( int i, const Color &c ) { _grids[i]._gridColor = c; }
-  void                  gridColor ( int i, float r, float g, float b, float a ) { _grids[i]._gridColor.set ( r, g, b, a ); }
+  int                   numGrids() { return _grids.size(); }
+  void                  numGrids ( int i ) { _grids.clear(); for(int j=0; j<i; j++) _grids.push_back(Grids()); }
+  const Color &         gridColor ( int i ) const { return _grids[i]._gridColor; }
   void                  gridColor (const Color &c ) { _grids[_grids.size()-1]._gridColor = c; }
-  const Vec2f &         getGridScale( int i ) const { return _grids[i]._gridScale; }
-  void                  gridScale ( int i, const Vec2f & s ) { _grids[i]._gridScale = s; }
+  const Vec2f &         gridScale ( int i ) const { return _grids[i]._gridScale; }
   void                  gridScale ( const Vec2f & s ) { _grids[_grids.size()-1]._gridScale = s; }
-  const Vec2ui &        getNumGridBlocks ( int i ) const { return _grids[i]._numGridBlocks; }
-  void                  numGridBlocks ( int i, const Vec2ui &n ) { _grids[i]._numGridBlocks = n; }
+  const Vec2ui &        numGridBlocks ( int i ) const { return _grids[i]._numGridBlocks; }
   void                  numGridBlocks ( const Vec2ui &n ) { _grids[_grids.size()-1]._numGridBlocks = n; }
-  float                 getGridRotationAngleRad ( int i ) { return _grids[i]._gridRotationAngleRad; }
-  void                  gridRotationAngleRad ( int i, float a ) { _grids[i]._gridRotationAngleRad = a; }
+  float                 gridRotationAngleRad ( int i ) { return _grids[i]._gridRotationAngleRad; }
   void                  gridRotationAngleRad ( float a ) { _grids[_grids.size()-1]._gridRotationAngleRad = a; }
-  const Vec3f &         getGridRotationVector ( int i ) { return _grids[i]._gridRotationVector; }
-  void                  gridRotationVector ( int i, Vec3f v ) { _grids[i]._gridRotationVector = v; }
+  const Vec3f &         gridRotationVector ( int i ) { return _grids[i]._gridRotationVector; }
   void                  gridRotationVector ( Vec3f v ) { _grids[_grids.size()-1]._gridRotationVector = v; }
   
-
   // Clipping plane distances.
   float                 nearClippingDistance() const { return _zNear; }
   void                  nearClippingDistance ( float zNear ) { _zNear = zNear; }
@@ -199,7 +192,6 @@ private:
   Settings ( const Settings & );
   Settings &operator = ( const Settings & );
 
-  int _numGrids;
   std::vector<Grids> _grids;
   float _zNear;
   float _zScale;

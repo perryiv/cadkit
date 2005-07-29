@@ -67,7 +67,7 @@ public:
 
   // Set/get the grid properties.
   int                   numGrids() { return _grids.size(); }
-  void                  numGrids ( int i ) { _grids.clear(); for(int j=0; j<i; j++) _grids.push_back(Grids()); }
+  void                  addGrid() { _grids.push_back(Grids()); }
   const Color &         gridColor ( int i ) const { return _grids[i]._gridColor; }
   void                  gridColor (const Color &c ) { _grids[_grids.size()-1]._gridColor = c; }
   const Vec2f &         gridScale ( int i ) const { return _grids[i]._gridScale; }

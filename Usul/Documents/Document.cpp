@@ -298,7 +298,7 @@ void Document::insert ( Unknown *caller )
   FileDialog::QueryPtr fileDialog ( caller );
 
   // Return now if there is no interface
-  if( !fileDialog.valid() )
+  if ( !fileDialog.valid() )
     return;
 
   // Ask for file names.
@@ -311,15 +311,23 @@ void Document::insert ( Unknown *caller )
   this->modified ( !files.empty() );
 
   // Show/hide the progress bar and cancel button.
-  Usul::Interfaces::IProgressBar::ShowHide progress ( caller );
-  Usul::Interfaces::ICancelButton::ShowHide cancel  ( caller );
+  Usul::Interfaces::IProgressBar::ShowHide shp  ( caller );
+  Usul::Interfaces::ICancelButton::ShowHide shc ( caller );
+
+  // Progress.
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
 
   // Loop through the files.
   for ( Filenames::const_iterator i = files.begin(); i != files.end(); ++i )
   {
-    std::cout << "Inserting document: " << *i << " ... " << Usul::Resources::TextWindow::flush;
+    std::cout << "Inserting document: " << *i << Usul::Resources::TextWindow::endl;
     this->read ( *i, caller );
-    std::cout << "done" << Usul::Resources::TextWindow::endl;
+
+    // Show overall progress.
+    progress ( static_cast < unsigned int > ( std::distance ( files.begin(), i ) ), files.size() );
+
+    // Flush events. This lets the user cancel.
+    this->flushEvents();
   }
 
   // Tell everyone to rebuild scene and render.  Scene needs to be rebuilt
@@ -713,7 +721,7 @@ void Document::createDefaultGUI ( Unknown *caller )
 void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 {
   if( this->delegate() )
-    this->delegate()->refreshView( this, viewer );
+    this->delegate()->refreshView ( this, viewer );
 }
 
 

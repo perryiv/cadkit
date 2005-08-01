@@ -19,6 +19,7 @@
 #include "Images/Core/BaseImage.h"
 #include "Images/Core/TypeTraits.h"
 #include "Images/Algorithms/Grayscale.h"
+#include "Images/Algorithms/RedGreenBlue.h"
 
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
@@ -232,8 +233,22 @@ public:
 
   virtual void toGrayScale()
   {
-    Itr end ( Images::Algorithms::toGrayScale ( _values, this->channels(), this->alpha() ) );
+    Itr end ( Images::Algorithms::toGrayScale ( this->channels(), this->alpha(), _values ) );
     _values.erase ( end, _values.end() );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Convert to rgba.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void toRedGreenBlue()
+  {
+    Values values;
+    if ( Images::Algorithms::toRedGreenBlue ( this->channels(), this->alpha(), _values, values ) )
+      _values = values;
   }
 
 
@@ -315,6 +330,60 @@ public:
   virtual void values ( DataFloat64 &v ) const
   {
     this->scalars ( v );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Read the raw data.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void read ( std::istream &in )
+  {
+    Usul::Types::Uint32 w ( 0 );
+    Usul::Types::Uint32 h ( 0 );
+    Usul::Types::Uint32 c ( 0 );
+    Usul::Types::Uint8  a ( 0 );
+
+    in.read ( reinterpret_cast < char * > ( &w ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &h ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &c ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &a ), sizeof ( Usul::Types::Uint8  ) );
+
+    const unsigned long size ( w * h * c * this->bytes() );
+    if ( size > 0 )
+    {
+      this->resize ( w, h, c );
+      this->alpha ( a > 0 );
+      in.read ( reinterpret_cast < char * > ( &_values[0] ), size );
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Write the dimensions and pixel data to the given stream.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void write ( std::ostream &out ) const
+  {
+    Usul::Types::Uint32 w ( this->width()    );
+    Usul::Types::Uint32 h ( this->height()   );
+    Usul::Types::Uint32 c ( this->channels() );
+    Usul::Types::Uint8  a ( ( this->alpha() ) ? 1 : 0 );
+
+    out.write ( reinterpret_cast < const char * > ( &w ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &h ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &c ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &a ), sizeof ( Usul::Types::Uint8  ) );
+
+    if ( false == _values.empty() )
+    {
+      const unsigned long size ( this->bytes() * _values.size() );
+      out.write ( reinterpret_cast < const char * > ( &_values[0] ), size );
+    }
   }
 
 protected:

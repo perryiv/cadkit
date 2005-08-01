@@ -45,8 +45,8 @@ typedef Usul::Components::Manager PluginManager;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Image::Image ( unsigned int bytes, bool floating ) : BaseClass(),
-  _image ( Images::Factory::create ( bytes, floating ) )
+Image::Image ( unsigned int bytes, bool integer ) : BaseClass(),
+  _image ( Images::Factory::create ( bytes, integer ) )
 {
 }
 
@@ -217,6 +217,18 @@ void Image::read ( const std::string &name )
 void Image::toGrayScale()
 {
   _image->toGrayScale();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to rgba.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::toRedGreenBlue()
+{
+  _image->toRedGreenBlue();
 }
 
 
@@ -399,4 +411,41 @@ void Image::getImageDimensions ( unsigned int &w, unsigned int &h, unsigned int 
   w = this->width();
   h = this->height();
   c = this->channels();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the dimensions and pixel data to the given stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::write ( std::ostream &out ) const
+{
+  Usul::Types::Uint32 bytes  ( this->bytes() );
+  Usul::Types::Uint8 integer ( this->integer() );
+
+  out << bytes << integer;
+  _image->write ( out );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the raw data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::read ( std::istream &in )
+{
+  Usul::Types::Uint32 bytes  ( 0 );
+  Usul::Types::Uint8 integer ( 0 );
+
+  in >> bytes >> integer;
+  if ( bytes > 0 )
+  {
+    Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( bytes, 0 != integer, 0x0 ) );
+    image->read ( in );
+    _image = image;
+  }
 }

@@ -28,12 +28,12 @@ namespace Algorithms {
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ValueContainer > 
-typename ValueContainer::iterator toGrayScale ( ValueContainer &values, unsigned int channels, bool alpha )
+typename ValueContainer::iterator toGrayScale ( unsigned int channels, bool alpha, ValueContainer &values )
 {
   typedef typename ValueContainer::iterator Itr;
   typedef typename ValueContainer::value_type ValueType;
 
-  // handle trivial case.
+  // Handle trivial case.
   if ( values.empty() )
     return values.end();
 

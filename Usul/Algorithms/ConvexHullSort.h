@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
-//#include <iostream>
 
 
 namespace Usul {
@@ -114,7 +113,6 @@ struct ConvexHullSort
 
         // Get the angle between them.
         const double angle ( Angle() ( v0, v1 ) );
-        //std::cout << "angle = " << angle << std::endl;
 
         // If this angle is greater then save it.
         if ( angle > maxAngle )

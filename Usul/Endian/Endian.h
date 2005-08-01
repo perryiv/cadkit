@@ -108,8 +108,8 @@ namespace Detail {
 
 inline void _reverseBytes ( Usul::Types::Uint16 &n )
 {
-  n = ( ((((Usul::Types::Uint16)n)>> 8) & 0x00FF)  |
-    ((((Usul::Types::Uint16)n)<<8) & 0xFF00) );
+  n = ( ((((Usul::Types::Uint16)n)>>8) & 0x00FF) |
+        ((((Usul::Types::Uint16)n)<<8) & 0xFF00) );
 }
 
 
@@ -121,13 +121,11 @@ inline void _reverseBytes ( Usul::Types::Uint16 &n )
 
 inline void _reverseBytes ( Usul::Types::Uint32 &n )
 {
-  n = (((((Usul::Types::Uint32)n)<<24) & 0xFF000000)  |
-   ((((Usul::Types::Uint32)n)<< 8) & 0x00FF0000)  |
-   ((((Usul::Types::Uint32)n)>> 8) & 0x0000FF00)  |
-   ((((Usul::Types::Uint32)n)>>24) & 0x000000FF)) ;
+  n = ( ((((Usul::Types::Uint32)n)<<24) & 0xFF000000) |
+        ((((Usul::Types::Uint32)n)<< 8) & 0x00FF0000) |
+        ((((Usul::Types::Uint32)n)>> 8) & 0x0000FF00) |
+        ((((Usul::Types::Uint32)n)>>24) & 0x000000FF) );
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,13 +138,13 @@ inline void _reverseBytes ( Usul::Types::Uint64 &n )
 {
   typedef Usul::Types::Uint64 UInt64;
 
- n =( ((((UInt64) n)<<56) & 0xFF00000000000000ULL)  | 
-       ((((UInt64)n)<<40) & 0x00FF000000000000ULL)  | 
-       ((((UInt64)n)<<24) & 0x0000FF0000000000ULL)  | 
-       ((((UInt64)n)<< 8) & 0x000000FF00000000ULL)  | 
-       ((((UInt64)n)>> 8) & 0x00000000FF000000ULL)  | 
-       ((((UInt64)n)>>24) & 0x0000000000FF0000ULL)  | 
-       ((((UInt64)n)>>40) & 0x000000000000FF00ULL)  | 
+ n = ( ((((UInt64)n)<<56) & 0xFF00000000000000ULL) | 
+       ((((UInt64)n)<<40) & 0x00FF000000000000ULL) | 
+       ((((UInt64)n)<<24) & 0x0000FF0000000000ULL) | 
+       ((((UInt64)n)<< 8) & 0x000000FF00000000ULL) | 
+       ((((UInt64)n)>> 8) & 0x00000000FF000000ULL) | 
+       ((((UInt64)n)>>24) & 0x0000000000FF0000ULL) | 
+       ((((UInt64)n)>>40) & 0x000000000000FF00ULL) | 
        ((((UInt64)n)>>56) & 0x00000000000000FFULL) );
 }
 

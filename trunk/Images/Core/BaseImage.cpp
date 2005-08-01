@@ -24,7 +24,11 @@ using namespace Images;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BaseImage::BaseImage() : BaseClass()
+BaseImage::BaseImage() : BaseClass(),
+  _width    ( 0 ),
+  _height   ( 0 ),
+  _channels ( 0 ),
+  _alpha    ( false )
 {
 }
 
@@ -36,10 +40,10 @@ BaseImage::BaseImage() : BaseClass()
 ///////////////////////////////////////////////////////////////////////////////
 
 BaseImage::BaseImage ( const BaseImage &b ) : BaseClass ( b ),
-  _width    ( 0 ),
-  _height   ( 0 ),
-  _channels ( 0 ),
-  _alpha    ( false )
+  _width    ( b._width    ),
+  _height   ( b._height   ),
+  _channels ( b._channels ),
+  _alpha    ( b._alpha    )
 {
 }
 

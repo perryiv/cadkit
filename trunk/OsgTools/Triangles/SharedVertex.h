@@ -40,7 +40,7 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SharedVertex );
 
-  //Possible flags
+  // Possible flags
   enum
   {
     VISITED  = 0x01,

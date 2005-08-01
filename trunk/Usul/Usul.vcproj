@@ -961,6 +961,12 @@
 					RelativePath=".\File\Path.h">
 				</File>
 				<File
+					RelativePath=".\File\Remove.cpp">
+				</File>
+				<File
+					RelativePath=".\File\Remove.h">
+				</File>
+				<File
 					RelativePath=".\File\Slash.h">
 				</File>
 				<File
@@ -1174,6 +1180,16 @@
 				Filter="">
 				<File
 					RelativePath=".\Functions\Color.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Headers"
+				Filter="">
+				<File
+					RelativePath=".\Headers\OpenGL.h">
+				</File>
+				<File
+					RelativePath=".\Headers\SStream.h">
 				</File>
 			</Filter>
 		</Filter>

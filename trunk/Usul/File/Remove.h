@@ -9,35 +9,28 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Calls glBegin in constructor and glEnd in destructor.
+//  Remove the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_SCOPE_GL_BEGIN_END_H_
-#define _USUL_SCOPE_GL_BEGIN_END_H_
+#ifndef _USUL_FILE_REMOVE_H_
+#define _USUL_FILE_REMOVE_H_
 
-#include "Usul/Headers/OpenGL.h"
+#include "Usul/Export/Export.h"
+
+#include <string>
 
 
 namespace Usul {
-namespace Scope {
+namespace File {
 
 
-struct GLBeginEnd
-{
-  GLBeginEnd ( GLenum mode )
-  {
-    ::glBegin ( mode );
-  }
-  ~GLBeginEnd()
-  {
-    ::glEnd();
-  }
-};
+// Remove the file. Provided as a convenience.
+USUL_EXPORT void remove ( const std::string &file );
 
 
-}; // namespace Scope
+}; // namespace File
 }; // namespace Usul
 
 
-#endif // _USUL_SCOPE_GL_BEGIN_END_H_
+#endif // _USUL_FILE_REMOVE_H_

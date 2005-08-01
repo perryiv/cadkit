@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iosfwd>
 
 
 namespace Images {
@@ -55,7 +56,7 @@ public:
 
   // Set/get the flag that says if last channel should be interpreted as alpha.
   bool                        alpha() const { return _alpha; }
-  void                        alpha ( bool a ) { _alpha = a; }
+  void                        alpha ( bool a );
 
   // Return the number of bytes per scalar value.
   virtual unsigned int        bytes() const = 0;
@@ -81,6 +82,12 @@ public:
   // Convert to grayscale.
   virtual void                toGrayScale() = 0;
 
+  // Convert to rgba.
+  virtual void                toRedGreenBlue() = 0;
+
+  // Read the file.
+  virtual void                read ( std::istream &in ) = 0;
+
   // Resize the image.
   virtual void                resize ( unsigned int width, unsigned int height, unsigned int channels ) = 0;
 
@@ -96,6 +103,9 @@ public:
 
   // Get the width.
   unsigned int                width() const { return _width; }
+
+  // Write the dimensions and pixel data to the given stream.
+  virtual void                write ( std::ostream &out ) const = 0;
 
 protected:
 

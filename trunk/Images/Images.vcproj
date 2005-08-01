@@ -205,6 +205,9 @@
 					RelativePath=".\Algorithms\Morphology.h">
 				</File>
 				<File
+					RelativePath=".\Algorithms\RedGreenBlue.h">
+				</File>
+				<File
 					RelativePath=".\Algorithms\Scale.h">
 				</File>
 				<File

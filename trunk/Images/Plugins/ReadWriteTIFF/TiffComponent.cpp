@@ -101,13 +101,13 @@ namespace Detail
     {
       char message[16384];
       ::vsprintf ( message, format, args );
-      std::cout << "Error 1421868931: In " << module << ", message" << std::endl;
+      std::cout << "Error 1421868931: In " << module << ", message = " << message << std::endl;
     }
     static void _warningHandler ( const char *module, const char *format, va_list args )
     {
       char message[16384];
       ::vsprintf ( message, format, args );
-      std::cout << "Warning 2974278689: In " << module << ", message" << std::endl;
+      std::cout << "Warning 2974278689: In " << module << ", message = " << message << std::endl;
     }
   private:
     TIFFErrorHandler _error;

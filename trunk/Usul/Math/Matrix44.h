@@ -284,11 +284,11 @@ public:
   
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Invert the given matrix.
+  //  Set the given matrix to be the inverse of this matrix.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  bool inverse ( ThisType &M )
+  bool inverse ( ThisType &M ) const
   {
     T d = this->determinant();
 
@@ -874,7 +874,7 @@ inline Usul::Math::Vector4<T,I,E> operator *
   typedef Usul::Math::Matrix44<T,I,E> Matrix44;
   typedef Usul::Math::Vector4<T,I,E> Vector4;
   return Vector4
-  ( 
+  (
     M[0] * b[0] + M[4] * b[1] + M[8]  * b[2] + M[12] * b[3],
     M[1] * b[0] + M[5] * b[1] + M[9]  * b[2] + M[13] * b[3],
     M[2] * b[0] + M[6] * b[1] + M[10] * b[2] + M[14] * b[3],

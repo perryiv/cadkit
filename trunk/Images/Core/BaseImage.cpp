@@ -67,3 +67,15 @@ void BaseImage::resize ( unsigned int w, unsigned int h, unsigned int c )
   _height   = h;
   _channels = c;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says if last channel should be interpreted as alpha.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseImage::alpha ( bool a )
+{
+  _alpha = a;
+}

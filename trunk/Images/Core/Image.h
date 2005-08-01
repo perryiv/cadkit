@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iosfwd>
 
 
 namespace Images {
@@ -111,6 +112,7 @@ public:
 
   // Read the file.
   void                  read ( const std::string &name );
+  void                  read ( std::istream &in );
 
   // Get the width.
   unsigned int          width() const;
@@ -118,10 +120,16 @@ public:
   // Convert to grayscale.
   void                  toGrayScale();
 
+  // Convert to rgb.
+  void                  toRedGreenBlue();
+
   // Set/get the type of image.
   void                  type ( unsigned int bytes, bool integer );
   void                  type ( const TypeInfo & );
   TypeInfo              type() const;
+
+  // Write the dimensions and pixel data to the given stream.
+  void                  write ( std::ostream &out ) const;
 
 protected:
 

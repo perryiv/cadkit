@@ -45,6 +45,12 @@ public:
   // Rename the file. This closes the stream first.
   void                  rename ( const std::string &name );
 
+  // Release ownership of the temporary file.
+  void                  release();
+
+  // Remove the file. Provided as a convenience.
+  static void           remove ( const std::string &file );
+
   // Access the output stream.
   std::ostream &        stream();
 

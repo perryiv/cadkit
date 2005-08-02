@@ -153,7 +153,6 @@ protected:
 
   void                    _setMaxMinValues(SharedVertex *sv0);
   osg::Node*              _addBoundingBox();
-  osg::Node*              _addBoundingGlass();
   
   //Get the averaged normal for the shared vertex
   osg::Vec3               _averageNormal ( const SharedVertex *sv ) const;

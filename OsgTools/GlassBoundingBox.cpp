@@ -18,6 +18,7 @@
 #include "osg/LineWidth"
 #include "osg/StateSet"
 #include "osg/AlphaFunc"
+#include "osg/StateSet"
 
 #include <limits>
 
@@ -67,7 +68,6 @@ GlassBoundingBox::GlassBoundingBox(
 
 void GlassBoundingBox::addBoundingGlass(osg::Group *root) 
 {
-  
   root->addChild(this->_initXYMin() );
   root->addChild(this->_initXYMax() );
   root->addChild(this->_initXZMax() );
@@ -132,6 +132,10 @@ osg::Node* GlassBoundingBox::_initXYMin()
   polyGeom->setStateSet(stateset);
   
   geode->addDrawable( polyGeom.get() );
+
+  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
   return geode.release();
 }
 
@@ -190,6 +194,10 @@ osg::Node* GlassBoundingBox::_initXYMax()
   polyGeom->setStateSet(stateset);
 
   geode->addDrawable( polyGeom.get() );
+
+  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
   return geode.release();
 }
 
@@ -247,6 +255,10 @@ stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 polyGeom->setStateSet(stateset);
 
 geode->addDrawable( polyGeom.get() );
+
+osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
 return geode.release();
 }
 
@@ -304,6 +316,10 @@ osg::Node* GlassBoundingBox::_initXZMax()
   polyGeom->setStateSet(stateset);
 
   geode->addDrawable( polyGeom.get() );
+
+  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
   return geode.release();
 }
 
@@ -361,6 +377,10 @@ stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 polyGeom->setStateSet(stateset);
 
 geode->addDrawable( polyGeom.get() );
+
+osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
 return geode.release();
 }
 
@@ -418,6 +438,10 @@ stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 polyGeom->setStateSet(stateset);
 
 geode->addDrawable( polyGeom.get() );
+
+osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
+
 return geode.release();
 }
 

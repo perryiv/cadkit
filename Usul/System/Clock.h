@@ -22,7 +22,7 @@
 namespace Usul {
   namespace System {
     
-    Usul::Types::Uint64 milliseconds();
+    Usul::Types::Uint64 USUL_EXPORT milliseconds();
     
   }; // namespace System
 }; // namespace Usul

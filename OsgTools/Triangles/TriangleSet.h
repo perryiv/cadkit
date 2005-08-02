@@ -94,7 +94,7 @@ public:
   void                    flipNormal( unsigned int );
 
   // Get the vertex at the index
-  const osg::Vec3f&       getVertex( unsigned int index ) const;
+  const osg::Vec3f&       getVertex ( unsigned int index ) const;
 
   // Keep only these triangles
   void                    keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );

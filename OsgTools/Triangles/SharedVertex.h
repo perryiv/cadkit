@@ -85,21 +85,18 @@ public:
   // Unreference this instance.
   void                  unref();
 
-  //Get/Set the visited flag
+  // Get/Set the visited flag
   bool                  visited() const;
   void                  visited ( bool v );
 
-
-  //  Predicate for finding a shared vertex in an stl container.
+  // Predicate for finding a shared vertex in an stl container.
   struct FindVertex
   {
-    FindVertex ( SharedVertex *v ) : _vertex ( v ) { }
-
+    FindVertex ( SharedVertex *v ) : _vertex ( v ){}
     bool operator () ( const SharedVertex::ValidRefPtr &i ) const
     {
       return i == _vertex;
     }
-
   private:
     SharedVertex::ValidRefPtr _vertex;
   };

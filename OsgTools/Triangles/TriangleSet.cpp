@@ -401,10 +401,10 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     }
   }
 
-  //Check the max and min values
-  this->_setMaxMinValues( sv0 );
-  this->_setMaxMinValues( sv1 );
-  this->_setMaxMinValues( sv2 );
+  // Check the max and min values
+  this->_setMaxMinValues ( sv0 );
+  this->_setMaxMinValues ( sv1 );
+  this->_setMaxMinValues ( sv2 );
   
   // Need to rebuild per-vertex normals and indices.
   _dirty = true;
@@ -415,11 +415,12 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 //
 //  Sets the Max and Min values for XYZ if any of the values are greater than
 //  or less than the existing values
+//
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_setMaxMinValues(SharedVertex *sv) 
+void TriangleSet::_setMaxMinValues ( SharedVertex *sv ) 
 {
-    const osg::Vec3f &v ( this->getVertex( sv->index() ) );
+    const osg::Vec3f &v ( this->getVertex ( sv->index() ) );
     if (v.x() > _max_x) _max_x = v.x();
     if (v.x() < _min_x) _min_x = v.x();
     if (v.y() > _max_y) _max_y = v.y();
@@ -863,9 +864,9 @@ void TriangleSet::resetOnEdge()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f& TriangleSet::getVertex( unsigned int index ) const
+const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 {
-  return _vertices->at( index );
+  return _vertices->at ( index );
 }
 
 

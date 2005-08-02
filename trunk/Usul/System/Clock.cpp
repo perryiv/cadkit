@@ -23,6 +23,8 @@
 #include "time.h"
 #endif
 
+#include <ctime>
+
 using namespace Usul;
 using namespace Usul::System;
 

@@ -314,13 +314,13 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   //Make a copy
   osg::Vec3f copy ( n );
 
-  //osg::Vec3f n1 ( this->normal( (*sv0->begin())->index() ) );
-  //osg::Vec3f n2 ( this->normal( (*sv1->begin())->index() ) );
-  //osg::Vec3f n3 ( this->normal( (*sv2->begin())->index() ) );
+  osg::Vec3f n1 ( this->normal( (*sv0->begin())->index() ) );
+  osg::Vec3f n2 ( this->normal( (*sv1->begin())->index() ) );
+  osg::Vec3f n3 ( this->normal( (*sv2->begin())->index() ) );
 
-  osg::Vec3f n1 ( this->_averageNormal ( sv0 ) );
-  osg::Vec3f n2 ( this->_averageNormal ( sv1 ) );
-  osg::Vec3f n3 ( this->_averageNormal ( sv2 ) );
+  //osg::Vec3f n1 ( this->_averageNormal ( sv0 ) );
+  //osg::Vec3f n2 ( this->_averageNormal ( sv1 ) );
+  //osg::Vec3f n3 ( this->_averageNormal ( sv2 ) );
 
   osg::Vec3f test ( n1 + n2 + n3 );
 
@@ -666,74 +666,21 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   }
 
   // Draw a bounding box
-  bool boundingBox ( options["BoundingBox"] == "Show" );
+  const bool boundingBox ( options["BoundingBox"] == "Show" );
+
   if( boundingBox )
     root->addChild ( this->_addBoundingBox() );
   
-  //root->addChild ( this->_addBoundingGlass() );
-
-  bool showGlassBoundingBox ( options["GlassBoundingBox"] == "Show" );
+  const bool showGlassBoundingBox ( options["GlassBoundingBox"] == "Show" );
 
   if ( showGlassBoundingBox )
   {
     OsgTools::GlassBoundingBox gbb (_min_x,_min_y,_min_z,_max_x,_max_y,_max_z);
     gbb.addBoundingGlass( root.get() );
   }
-  
-  
+   
   // Return the root.
   return root.release();
-}
-
-osg::Node* TriangleSet::_addBoundingGlass() 
-{
-    osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-    osg::Vec3 myCoords[] =
-    {
-      osg::Vec3(_min_x, _min_y, _min_z),
-      osg::Vec3(_min_x, _max_y, _min_z),
-      osg::Vec3(_max_x, _max_y, _min_z),
-      osg::Vec3(_max_x, _min_y, _min_z)
-    };
-
-    int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-    osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-    osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-    shared_colors->push_back(osg::Vec4(0.05f,0.05f,0.05f,0.25f));
-    
-    // same trick for shared normal.
-    osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-    shared_normals->push_back(osg::Vec3(0.0f,0.0f,-1.0f));
-        // pass the created vertex array to the points geometry object.
-    polyGeom->setVertexArray(vertices);
-
-        // use the color array.
-    polyGeom->setColorArray(shared_colors.get());
-    polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-        // use the normal array.
-    polyGeom->setNormalArray(shared_normals.get());
-    polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-        // This time we simply use primitive, and hardwire the number of coords to use 
-        // since we know up front,
-    polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-    // add the points geomtry to the geode.
-    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-    
-    stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-    osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-    alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-    stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-    stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-    polyGeom->setStateSet(stateset);
-    
-    geode->addDrawable( polyGeom.get() );
-    return geode.release();
 }
 
 
@@ -799,8 +746,8 @@ osg::Node* TriangleSet::_addBoundingBox()
   // Set the line-width.
   OsgTools::State::setLineWidth ( geode.get(), 3.0f );
 
-  // Set two-sided lighting
-  OsgTools::State::setTwoSidedLighting( geode.get(), true );
+  // Turn off lighting.
+  OsgTools::State::setLighting ( geode.get(), false );
   
   geode->addDrawable ( geometry.get() );
   

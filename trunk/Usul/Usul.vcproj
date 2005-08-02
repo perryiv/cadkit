@@ -854,6 +854,12 @@
 				Name="System"
 				Filter="">
 				<File
+					RelativePath=".\System\Clock.cpp">
+				</File>
+				<File
+					RelativePath=".\System\Clock.h">
+				</File>
+				<File
 					RelativePath=".\System\Host.cpp">
 				</File>
 				<File

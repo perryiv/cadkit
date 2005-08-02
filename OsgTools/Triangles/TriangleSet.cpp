@@ -60,12 +60,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _dirty     ( true ),
   _geometry  ( 0x0 ),
   _primitiveSet ( 0x0 ),
-  _max_x (std::numeric_limits< float >::min()),
-  _min_x (std::numeric_limits< float >::max()),
-  _max_y (std::numeric_limits< float >::min()),
-  _min_y (std::numeric_limits< float >::max()),
-  _max_z (std::numeric_limits< float >::min()),
-  _min_z (std::numeric_limits< float >::max())
+  _bb()
 {
 #ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
@@ -75,12 +70,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _max_x          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _min_x          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _max_y          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _min_y          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _max_z          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _min_z          ) );
+  USUL_STATIC_ASSERT (  24 == sizeof ( _bb             ) );
 #ifdef _WIN32
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
   USUL_STATIC_ASSERT ( 92 == sizeof ( TriangleSet     ) ); // Why?
@@ -169,12 +159,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   _geometry = 0x0;
 
   //Clear the Max and Min Values
-  _max_x = (std::numeric_limits< float >::min());
-  _min_x = (std::numeric_limits< float >::max());
-  _max_y = (std::numeric_limits< float >::min());
-  _min_y = (std::numeric_limits< float >::max());
-  _max_z = (std::numeric_limits< float >::min());
-  _min_z = (std::numeric_limits< float >::max());
+  _bb.init();
   
 }
 
@@ -420,13 +405,13 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 
 void TriangleSet::_setMaxMinValues ( SharedVertex *sv ) 
 {
-    const osg::Vec3f &v ( this->getVertex ( sv->index() ) );
-    if (v.x() > _max_x) _max_x = v.x();
-    if (v.x() < _min_x) _min_x = v.x();
-    if (v.y() > _max_y) _max_y = v.y();
-    if (v.y() < _min_y) _min_y = v.y();
-    if (v.z() > _max_z) _max_z = v.z();
-    if (v.z() < _min_z) _min_z = v.z();
+    const osg::Vec3f &v ( this->getVertex( sv->index() ) );
+    if ( v.x() > _bb.xMax() ) _bb.xMax() = v.x();
+    if ( v.x() < _bb.xMin() ) _bb.xMin() = v.x();
+    if ( v.y() > _bb.yMax() ) _bb.yMax() = v.y();
+    if ( v.y() < _bb.yMin() ) _bb.yMin() = v.y();
+    if ( v.z() > _bb.zMax() ) _bb.zMax() = v.z();
+    if ( v.z() < _bb.zMin() ) _bb.zMin() = v.z();
 }
 
 
@@ -666,93 +651,20 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
-  // Draw a bounding box
+  // Show we draw a bounding box?
   const bool boundingBox ( options["BoundingBox"] == "Show" );
 
-  if( boundingBox )
-    root->addChild ( this->_addBoundingBox() );
-  
+  // Show we draw a glass bounding box?
   const bool showGlassBoundingBox ( options["GlassBoundingBox"] == "Show" );
 
-  if ( showGlassBoundingBox )
+  if ( boundingBox || showGlassBoundingBox )
   {
-    OsgTools::GlassBoundingBox gbb (_min_x,_min_y,_min_z,_max_x,_max_y,_max_z);
-    gbb.addBoundingGlass( root.get() );
+    OsgTools::GlassBoundingBox gbb ( _bb.xMin(), _bb.yMin(), _bb.zMin(), _bb.xMax(), _bb.yMax(), _bb.zMax() );
+    gbb.addBoundingGlass( root.get(), boundingBox, showGlassBoundingBox, true );
   }
    
   // Return the root.
   return root.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Draw a Bounding Box with some options (Eventually).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* TriangleSet::_addBoundingBox() 
-{
-  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  
-  osg::BoundingBox bb( _min_x,_min_y,_min_z,_max_x,_max_y,_max_z );
-  
-  for( unsigned int i = 0; i < 8; ++i )
-    vertices->push_back ( bb.corner( i ) );
-  
-  typedef osg::DrawElementsUInt DrawElements;
-  
-  osg::ref_ptr< DrawElements > bottom ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
-  
-  bottom->push_back ( 0 );
-  bottom->push_back ( 1 );
-  bottom->push_back ( 3 );
-  bottom->push_back ( 2 );
-  
-  osg::ref_ptr< DrawElements > top ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
-  
-  top->push_back ( 4 );
-  top->push_back ( 5 );
-  top->push_back ( 7 );
-  top->push_back ( 6 );
-  
-  osg::ref_ptr< DrawElements > lines  ( new DrawElements ( osg::PrimitiveSet::LINES, 0 ) );
-  
-  lines->push_back ( 0 );
-  lines->push_back ( 4 );
-  lines->push_back ( 1 );
-  lines->push_back ( 5 );
-  lines->push_back ( 2 );
-  lines->push_back ( 6 );
-  lines->push_back ( 3 );
-  lines->push_back ( 7 );
-  
-  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
-  geometry->setVertexArray  ( vertices.get() );
-  geometry->addPrimitiveSet ( bottom.get() );
-  geometry->addPrimitiveSet ( top.get() );
-  geometry->addPrimitiveSet ( lines.get() );
-  
-  osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-  
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  
-  colors->resize ( 8 );
-  
-  std::fill( colors->begin(), colors->end(), osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
-  
-  geometry->setColorArray ( colors.get() );
-  geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-  
-  // Set the line-width.
-  OsgTools::State::setLineWidth ( geode.get(), 3.0f );
-
-  // Turn off lighting.
-  OsgTools::State::setLighting ( geode.get(), false );
-  
-  geode->addDrawable ( geometry.get() );
-  
-  return geode.release();
 }
 
 
@@ -1092,36 +1004,4 @@ void TriangleSet::displayList ( bool b )
   _geometry->setUseDisplayList ( b );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get/Set the Maximum value for X
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  TriangleSet::maxX ( const float x ) {  _max_x = x; }
-float TriangleSet::maxX ()  { return _max_x; }
-void  TriangleSet::minX ( float x ) {  _min_x = x; }
-float TriangleSet::minX ()  {  return _min_x; }
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get/Set the Maximum value for Y
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  TriangleSet::maxY ( float y ) {  _max_y = y; }
-float TriangleSet::maxY ()  { return _max_y; }
-void  TriangleSet::minY ( float y ) {  _min_y = y; }
-float TriangleSet::minY ()  {  return _min_y; }
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get/Set the Maximum value for Z
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  TriangleSet::maxZ ( float z ) {  _max_z = z; }
-float TriangleSet::maxZ ()  { return _max_z; }
-void  TriangleSet::minZ ( float z ) {  _min_z = z; }
-float TriangleSet::minZ ()  {  return _min_z; }
 

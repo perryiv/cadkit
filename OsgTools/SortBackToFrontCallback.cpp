@@ -76,6 +76,63 @@ namespace Detail
 
   ///////////////////////////////////////////////////////////////////////////////
   //
+  //  Quad structure to hold the indices in the vertex list.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  struct Quad
+  {
+  public:
+    Quad ( unsigned int i0, unsigned int i1, unsigned int i2, unsigned int i3, const osg::Vec3Array* vertices ) :
+      _index0 ( i0 ),
+      _index1 ( i1 ),
+      _index2 ( i2 ),
+      _index3 ( i3 ),
+      _vertices ( vertices )
+    {
+    }
+
+    bool operator< ( const Quad &t ) const
+    {
+      const osg::Vec3& v1 ( _vertices->at( _index0 ) );
+      const osg::Vec3& v2 ( _vertices->at( t._index0 ) );
+
+      return v1[2] < v2[2];
+    }
+
+    Quad& operator= ( const Quad &rhs )
+    {
+      this->_index0 = rhs._index0;
+      this->_index1 = rhs._index1;
+      this->_index2 = rhs._index2;
+      this->_index3 = rhs._index3;
+      this->_vertices = rhs._vertices;
+
+      return *this;
+    }
+
+    double length2 ( const osg::Vec3& eye ) const
+    {
+      return (eye - _vertices->at( _index0 ) ).length2();
+    }
+
+    unsigned int index0 () const { return _index0; }
+    unsigned int index1 () const { return _index1; }
+    unsigned int index2 () const { return _index2; }
+    unsigned int index3 () const { return _index3; }
+
+  private:
+    unsigned int _index0;
+    unsigned int _index1;
+    unsigned int _index2;
+    unsigned int _index3;
+
+    osg::ref_ptr < const osg::Vec3Array > _vertices;
+  };
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
   //  Predicate to sort back to front.
   //
   ///////////////////////////////////////////////////////////////////////////////
@@ -162,6 +219,53 @@ namespace Detail
         }
       }
       break;
+    case osg::PrimitiveSet::QUADS:
+      {
+        typedef std::vector< Quad > Quads;
+        Quads quads;
+        
+        quads.reserve ( da.getNumPrimitives() );
+
+        for ( int i = da.getFirst(); i < da.getCount(); i += 4 )
+        {
+          Quad t ( i, i + 1, i + 2, i + 3, &vertices );
+
+          quads.push_back( t );
+        }
+
+        // Sort
+        std::sort ( quads.begin(), quads.end(), BackToFront( eye ) );
+
+        // Make a copy
+        osg::ref_ptr < osg::Vec3Array > vcopy ( new osg::Vec3Array ( vertices.size() ) );
+        osg::ref_ptr < osg::Vec3Array > ncopy ( new osg::Vec3Array ( normals.size() ) );
+
+        std::copy ( vertices.begin(), vertices.end(), vcopy->begin() );
+        std::copy ( normals.begin(),  normals.end(),  ncopy->begin() );
+
+        // Populate the vertices
+        unsigned int current ( 0 );
+        for( Quads::iterator i = quads.begin(); i != quads.end(); ++i, current += 4 )
+        {
+          vertices.at ( current )     = vcopy->at ( i->index0() );
+          vertices.at ( current + 1 ) = vcopy->at ( i->index1() );
+          vertices.at ( current + 2 ) = vcopy->at ( i->index2() );
+          vertices.at ( current + 3 ) = vcopy->at ( i->index3() );
+
+          if ( bindPerVertex )
+          {
+            normals.at ( current )     = ncopy->at ( i->index0() );
+            normals.at ( current + 1 ) = ncopy->at ( i->index1() );
+            normals.at ( current + 2 ) = ncopy->at ( i->index2() );
+            normals.at ( current + 3 ) = ncopy->at ( i->index3() );
+          }
+          else
+          {
+            normals.at ( current / 4 )     = ncopy->at ( i->index0() / 4 );
+          }
+        }
+      }
+      break;
     default:
       USUL_ASSERT ( false );
     }
@@ -204,6 +308,35 @@ namespace Detail
           de.at ( current )     = i->index0();
           de.at ( current + 1 ) = i->index1();
           de.at ( current + 2 ) = i->index2();
+        }
+      }
+      break;
+    case osg::PrimitiveSet::QUADS:
+      {
+        typedef std::vector< Quad > Quads;
+        Quads quads;
+        
+        quads.reserve ( de.getNumPrimitives() );
+
+        // Build the triangle vector to sort
+        for ( typename DrawElements::iterator i = de.begin(); i != de.end(); i += 4 )
+        {
+          Quad t ( *i, *(i + 1), *(i + 2), *(i + 3), &vertices );
+
+          quads.push_back( t );
+        }
+
+        // Sort
+        std::sort ( quads.begin(), quads.end(), BackToFront( eye ) );
+
+        // Populate the draw elements
+        unsigned int current ( 0 );
+        for( Quads::iterator i = quads.begin(); i != quads.end(); ++i, current += 4 )
+        {
+          de.at ( current )     = i->index0();
+          de.at ( current + 1 ) = i->index1();
+          de.at ( current + 2 ) = i->index2();
+          de.at ( current + 3 ) = i->index3();
         }
       }
       break;

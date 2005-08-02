@@ -61,6 +61,11 @@ inline void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, 
 
     visitSharedVertex( polygons, uncapped, loop, v1 );
   }
+  else
+  {
+    visitSharedVertex( polygons, uncapped, loop, v1 );
+    visitSharedVertex( polygons, uncapped, loop, v2 );
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -85,18 +90,34 @@ inline void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loo
   //Check to see if all three shared vertices are on the edge
   if( v1->onEdge() && v2->onEdge() && v3->onEdge() )
   {
+    const bool containsV1 ( containsVertex ( loop, v1 ) );
+    const bool containsV2 ( containsVertex ( loop, v2 ) );
+    const bool containsV3 ( containsVertex ( loop, v3 ) );
+
+    if( containsV1 && containsV2 ) 
+    {
+      visitSharedVertex( polygons, uncapped, loop, v3 );
+    }
+    else if( containsV1 && containsV3 ) 
+    {
+      visitSharedVertex( polygons, uncapped, loop, v2 );
+    }
+    else if( containsV2 && containsV3 ) 
+    {
+      visitSharedVertex( polygons, uncapped, loop, v1 );
+    }
     //Check to see if v1 was added already
-    if( containsVertex ( loop, v1 ) )
+    if( containsV1 )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v2, v3 );
     }
     //Check to see if v2 was added already
-    else if( containsVertex ( loop, v2 ) )
+    else if( containsV2 )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v3 );
     }
     //Check to see if v3 was added already
-    else if( containsVertex ( loop, v3 ) )
+    else if( containsV3 )
     {
       findEmptySharedVertex ( polygons, uncapped, loop, p, v1, v2 );
     }

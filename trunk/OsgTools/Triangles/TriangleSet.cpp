@@ -660,7 +660,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   if ( boundingBox || showGlassBoundingBox )
   {
     OsgTools::GlassBoundingBox gbb ( _bb.xMin(), _bb.yMin(), _bb.zMin(), _bb.xMax(), _bb.yMax(), _bb.zMax() );
-    gbb.addBoundingGlass( root.get(), boundingBox, showGlassBoundingBox, true );
+    gbb.addBoundingGlass( root.get(), boundingBox, showGlassBoundingBox, false );
   }
    
   // Return the root.

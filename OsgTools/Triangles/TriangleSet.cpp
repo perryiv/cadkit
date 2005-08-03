@@ -299,6 +299,7 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   //Make a copy
   osg::Vec3f copy ( n );
 
+#if 0
   osg::Vec3f n1 ( this->normal( (*sv0->begin())->index() ) );
   osg::Vec3f n2 ( this->normal( (*sv1->begin())->index() ) );
   osg::Vec3f n3 ( this->normal( (*sv2->begin())->index() ) );
@@ -314,6 +315,20 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   float dot ( test * copy );
 
   if( dot < 0 )
+    copy *= -1;
+#endif
+
+  osg::Vec3 one   ( _vertices->at( v0.index() ) );
+  osg::Vec3 two   ( _vertices->at( v1.index() ) );
+  osg::Vec3 three ( _vertices->at( v2.index() ) );
+
+  osg::Vec3 center ( ( one + two + three ) / 3 );
+
+  osg::Vec3 cg ( _bb.center() );
+
+  osg::Vec3 refVector ( center - cg );
+
+  if ( ( refVector * copy ) < 0 )
     copy *= -1;
 
   this->_addTriangle( sv0, sv1, sv2, copy, rebuild );

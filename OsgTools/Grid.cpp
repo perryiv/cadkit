@@ -22,6 +22,7 @@
 #include "osg/PolygonMode"
 #include "osg/LineWidth"
 #include "osg/MatrixTransform"
+#include "osg/CullFace"
 
 #include <stdexcept>
 
@@ -162,6 +163,9 @@ osg::Node* Grid::operator()() const
   osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
   mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE );
   ss->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+
+  // Tell the grid to draw both sides
+  ss->setMode(GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
 
   // Tell it to use color instead of materials.
   ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );

@@ -415,6 +415,7 @@ protected:
   void                          _polysFlat        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysWireframe   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysPoints      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _polysScribe      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysTexture     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _setAnalogTrim    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _viewHome         ( MenuKit::Message m, MenuKit::Item *item );
@@ -524,6 +525,7 @@ protected:
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid*> _gridFunctors;
   bool              _textures;
+  GroupPtr          _scribeBranch;
 };
 
 

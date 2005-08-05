@@ -48,6 +48,7 @@
 #include "osg/LineSegment"
 #include "osgUtil/IntersectVisitor"
 #include "osgDB/ReadFile"
+#include "osgFX/Scribe"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/State.h"
@@ -906,6 +907,35 @@ void Application::_polysPoints ( MenuKit::Message m, MenuKit::Item *item )
       break;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Draw polygons with scribe effect
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_polysScribe ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 1084120995u, isAppThread(), CV::NOT_APP_THREAD );
+  int i;
+
+  // Process the message.
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_UPDATE:
+      item->checked ( _models->containsNode ( _scribeBranch.get() ) );
+      break;
+
+    case MenuKit::MESSAGE_SELECTED:
+      if ( item->checked() && _models->containsNode ( _scribeBranch.get() ) )
+        OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _models.get() );
+      else
+        _models->addChild ( _scribeBranch.get() );
+      break;
+  }
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -265,7 +265,8 @@ Application::Application ( Args &args ) :
   _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _textures       ( true )
+  _textures       ( true ),
+  _scribeBranch   ( new osg::Group )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -280,6 +281,7 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071446158u, _textBranch.valid() );
+  ErrorChecker ( 1067094629u, _scribeBranch.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
   ErrorChecker ( 1071551355u, 0x0 != _frameText.get() );
@@ -304,6 +306,7 @@ Application::Application ( Args &args ) :
   _root->addChild      ( _navBranch.get()    );
   _navBranch->addChild ( _models.get()       );
   _navBranch->addChild ( _gridBranch.get()   );
+  _models->addChild ( _scribeBranch.get() );
 
   // Name the branches.
   _root->setName         ( "_root"         );
@@ -316,6 +319,7 @@ Application::Application ( Args &args ) :
   _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
   _textBranch->setName   ( "_textBranch"   );
+  _scribeBranch->setName ( "_scribeBranch" );
 
   // Hook up the joystick callbacks.
   USUL_VALID_REF_POINTER(JoystickCB) jcb ( new JoystickCB ( this ) );
@@ -592,7 +596,7 @@ void Application::_initGrid ( osg::Node *node )
 
     // Move the center so that it is below the bounding sphere of the node.
     osg::Vec3 c ( bs.center() );
-    c[1] = -r;
+    if(_prefs->offsetGrid(i)) c[1] = -r;
     grid->center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
 	_gridFunctors.push_back(grid);
   }
@@ -631,8 +635,13 @@ void Application::_initLight()
   osg::ref_ptr<osg::Light> light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( _prefs->lightPosition(),lp,4 );
-  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( _prefs->lightDirection(),ld,3 );
+  int i;
+  for(i=0; i<4; ++i){
+    lp[i]=_prefs->lightPosition()[i];
+  }
+  for(i=0; i<3; ++i){
+    ld[i]=_prefs->lightDirection()[i];
+  }
   light->setPosition( lp );
   light->setDirection( ld );
 
@@ -756,6 +765,7 @@ void Application::_initMenu()
   CV_REGISTER ( _polysFlat,        "polygons_flat" );
   CV_REGISTER ( _polysWireframe,   "polygons_wireframe" );
   CV_REGISTER ( _polysPoints,      "polygons_points" );
+  CV_REGISTER ( _polysScribe,      "polygons_scribe" );
   CV_REGISTER ( _gridVisibility,   "grid_visibility" );
   CV_REGISTER ( _statusBarVis,     "status_bar_visibility" );
   CV_REGISTER ( _viewHome,         "camera_view_home" );
@@ -796,7 +806,7 @@ void Application::_initMenu()
   _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
-  OsgTools::State::setPolygonsFilled ( _models.get(), false );
+  //OsgTools::State::setPolygonsFilled ( _models.get(), false );
   OsgTools::State::setPolygonsSmooth ( _models.get() );
 }
 
@@ -1753,6 +1763,12 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   if ( node->getName().empty() )
     node->setName ( filename );
 
+  // Create the scribe effect since it must attach to the model
+  osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
+  sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
+  sc->addChild ( node.get() );
+  _scribeBranch->addChild ( sc.get() );
+  
   // Hook things up.
   mt->addChild ( node.get() );
 

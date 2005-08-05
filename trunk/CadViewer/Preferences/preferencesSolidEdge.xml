@@ -17,12 +17,26 @@
     </machine>
     <grid>
 	  <add_grid>1</add_grid>
-      <num_blocks>40 40</num_blocks>
-      <scale>10 10</scale>
-      <color>1 1 1 1</color>
+      <num_blocks>1 1</num_blocks>
+      <scale>2 2</scale>
+      <color>0.2 0.0 1.0 1.0</color>
 	  <rotation_angle_rad>0.0</rotation_angle_rad>
 	  <rotation_vector>1.0 0.0 0.0</rotation_vector>
-	  <offset>true</offset>
+	  <offset>false</offset>
+	  <add_grid>1</add_grid>
+      <num_blocks>1 1</num_blocks>
+      <scale>2 2</scale>
+      <color>0.2 0.0 1.0 1.0</color>
+	  <rotation_angle_rad>1.5780</rotation_angle_rad>
+	  <rotation_vector>1.0 0.0 0.0</rotation_vector>
+	  <offset>false</offset>
+	  <add_grid>1</add_grid>
+      <num_blocks>1 1</num_blocks>
+      <scale>2 2</scale>
+      <color>0.2 0.0 1.0 1.0</color>
+	  <rotation_angle_rad>1.5708</rotation_angle_rad>
+	  <rotation_vector>0.0 0.0 1.0</rotation_vector>
+	  <offset>false</offset>
     </grid>
     <clipping_plane>
       <near>0.1</near>
@@ -38,8 +52,7 @@
       <position>  0  100  10 1.0 </position>
     </light>
     <background>
-      <color>0.2 0.2 0.4 1.0</color>
-      <color>0.0 0.0 0.0 1.0</color>
+      <color>0.0 0.6 0.8 1.0</color>
     </background>
     <normals>
       <normalize>

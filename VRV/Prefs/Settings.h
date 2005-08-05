@@ -40,6 +40,7 @@ class Grids
   Usul::Math::Vec4f _gridColor;
   float _gridRotationAngleRad;
   Usul::Math::Vec3f _gridRotationVector;
+  bool _offsetGrid;
 };
 
 
@@ -78,6 +79,8 @@ public:
   void                  gridRotationAngleRad ( float a ) { _grids[_grids.size()-1]._gridRotationAngleRad = a; }
   const Vec3f &         gridRotationVector ( int i ) { return _grids[i]._gridRotationVector; }
   void                  gridRotationVector ( Vec3f v ) { _grids[_grids.size()-1]._gridRotationVector = v; }
+  bool                  offsetGrid( int i ) { return _grids[i]._offsetGrid; }
+  void                  offsetGrid( bool b ) { _grids[_grids.size()-1]._offsetGrid = b; }
   
   // Clipping plane distances.
   float                 nearClippingDistance() const { return _zNear; }

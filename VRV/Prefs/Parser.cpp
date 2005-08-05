@@ -122,6 +122,7 @@ void Parser::_read ( const std::string &filename )
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
   MemFun setGridRotationAngleRad ( this, &Parser::_setGridRotationAngleRad );
   MemFun setGridRotationVector   ( this, &Parser::_setGridRotationVector   );
+  MemFun offsetGrid        ( this, &Parser::_offsetGrid        );
   MemFun setNearClip       ( this, &Parser::_setNearClip       );
   MemFun setViewAllScale   ( this, &Parser::_setViewAllScale   );
   MemFun setLightAmbient   ( this, &Parser::_setLightAmbient   );
@@ -158,6 +159,7 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "grid/color",               setGridColor      );
   Helper::add ( reader, start, "grid/rotation_angle_rad",  setGridRotationAngleRad );
   Helper::add ( reader, start, "grid/rotation_vector",     setGridRotationVector   );
+  Helper::add ( reader, start, "grid/offset",              offsetGrid        );
   Helper::add ( reader, start, "clipping_plane/near",      setNearClip       );
   Helper::add ( reader, start, "view_all/scale",           setViewAllScale   );
   Helper::add ( reader, start, "light/ambient",            setLightAmbient   );
@@ -333,8 +335,25 @@ void Parser::_setGridRotationAngleRad ( const std::string &s )
 
 void Parser::_setGridRotationVector ( const std::string &s )
 {
-  ErrorChecker ( 1083817594u, !s.empty() );
+  ErrorChecker ( 108381759u, !s.empty() );
   _settings->gridRotationVector ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set grid rotation vector
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_offsetGrid ( const std::string &s )
+{
+  ErrorChecker ( 1083817594u, !s.empty() );
+  std::string f = "false";
+  if(s==f)
+    _settings->offsetGrid ( false );
+  else
+    _settings->offsetGrid ( true );
 }
 
 

@@ -13,6 +13,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace OsgTools { namespace Triangles { class SharedVertex; } }
+namespace osg { class Drawable; }
 
 namespace Usul {
 namespace Interfaces {
@@ -29,9 +30,9 @@ struct ITriangleSV : public Usul::Interfaces::IUnknown
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
 
   // Get the shared vertices of the i'th triangle.
-  virtual const SharedVertex*         sharedVertex0 ( unsigned int i ) const = 0;
-  virtual const SharedVertex*         sharedVertex1 ( unsigned int i ) const = 0;
-  virtual const SharedVertex*         sharedVertex2 ( unsigned int i ) const = 0;
+  virtual const SharedVertex*         sharedVertex0 ( const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const SharedVertex*         sharedVertex1 ( const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const SharedVertex*         sharedVertex2 ( const osg::Drawable*, unsigned int i ) const = 0;
 
 
 }; //struct ITriangleSV

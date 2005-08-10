@@ -17,7 +17,7 @@
 
 #include "osg/Array"
 
-namespace osg { class Group; class Node; class Drawable; }
+namespace osg { class Group; class Node; class Drawable; class BoundingBox; }
 
 namespace OsgTools {
   
@@ -35,9 +35,10 @@ public:
   GlassBoundingBox();
   GlassBoundingBox(const float xMin, const float yMin, float const zMin,
                    const float xMax, const float yMax, float const zMax);
+  GlassBoundingBox( const osg::BoundingBox& );
   
   //Get the OSG Node to render
-  void         addBoundingGlass( osg::Group *root, bool outline, bool glass, bool numbers = false );
+  void        operator() ( osg::Group *root, bool outline, bool glass, bool numbers = false );
   
     //Get/Set the Max and Min Values for the XYZ coordinates
   void                    xMax ( float );

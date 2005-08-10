@@ -11,11 +11,15 @@
 #define __USUL_ALGORITHMS_CAP_POLYGONS_H__
 
 #include "Usul/Polygons/Predicates.h"
+#include "Usul/Polygons/Triangle.h"
+#include <iostream>
+#include <vector>
 
 namespace Usul {
 namespace Loops {
 namespace Detail {
 
+  std::vector< unsigned int > cache;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -63,8 +67,10 @@ inline void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, 
   }
   else
   {
-    visitSharedVertex( polygons, uncapped, loop, v1 );
-    visitSharedVertex( polygons, uncapped, loop, v2 );
+    if ( v1->numTriangles() < v2->numTriangles() )
+      visitSharedVertex( polygons, uncapped, loop, v1 );
+    else
+      visitSharedVertex( polygons, uncapped, loop, v2 );
   }
 }
 
@@ -154,6 +160,49 @@ inline void visitPolygon( Polygons& polygons, IndexSequence& uncapped, Loop& loo
 }
 
 
+struct PolygonSort
+{
+  template < class PolygonPtr > bool operator () ( const PolygonPtr& p1, const PolygonPtr &p2 ) const
+  {
+    typedef typename PolygonPtr::element_type Polygon;
+    typedef typename Polygon::PolygonSet PolygonSet;
+#if 0
+    PolygonSet s1, s2;
+
+    p1->getNeighbors( s1 );
+    p2->getNeighbors( s2 );
+#endif
+    unsigned int c1 ( cache.at( p1->index() ) );
+    unsigned int c2 ( cache.at( p2->index() ) );
+#if 0
+    Usul::Polygons::TriangleTest adjacent;
+
+    //Loop through all this polygon's neighbors
+    for( typename PolygonSet::iterator i = s1.begin(); i != s1.end(); ++i )
+    {
+      //If these two polygons are adjacent...
+      if( adjacent ( *p1, *(*i) ) )
+        ++c1;
+    }
+  
+    //Loop through all this polygon's neighbors
+    for( typename PolygonSet::iterator i = s2.begin(); i != s2.end(); ++i )
+    {
+      //If these two polygons are adjacent...
+      if( adjacent ( *p2, *(*i) ) )
+        ++c2;
+    }
+#endif
+    if( c1 == c2 )
+    {
+      // If the two counts are equal, more tests are needed to decide which polygon
+      // to visit.  A line test may be needed.
+    }
+
+    return c1 < c2;
+  }
+};
+
 //////////////////////////////////////////////////////////////////////////////
 //
 //  Visit a shared vertex
@@ -177,6 +226,8 @@ inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop
   //Mark the shared vertex as visited
   sv->visited( true );
 
+  PolygonList polyCandidates;
+  
   //Loop through the shared vertex's polygons
   for( typename PolygonList::iterator poly = sv->begin(); poly != sv->end(); ++poly )
   {
@@ -185,24 +236,63 @@ inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop
     {
       //Used below
       const unsigned index ( (*poly)->index() );
-
+          
       //Is the index in the list of candidates?
       if( std::binary_search( uncapped.begin(), uncapped.end(), index ) )
       {
-        //Add the vertex to the current loop
-        loop.push_back( sv );
-
-        //Remove it from candidates so we don't add it again
-        uncapped.remove ( index );
-
-        //Get the polygon
-        PolygonPtr p ( polygons.at( index ) );
-
-        //Visit this polygon
-        visitPolygon( polygons, uncapped, loop, p.get() );
+        //Add the Polygon to the Candidates to check out
+        polyCandidates.push_back( (*poly) );
       }
     }
   }
+
+  //Check if polyCandidates.size() > 1
+  
+  //If size==1, do the recurse
+  if ( polyCandidates.size() == 1 ) 
+  {
+    //Add the vertex to the current loop
+    loop.push_back( sv );
+    
+    // Get the index.
+    const unsigned index ( polyCandidates.front()->index() );
+    
+    // Remove it from candidates so we don't add it again.
+    uncapped.remove ( index );
+    
+    // Get the polygon.
+    PolygonPtr p ( polygons.at( index ) );
+    
+    // Visit this polygon.
+    visitPolygon( polygons, uncapped, loop, p.get() );
+  }
+  else if ( polyCandidates.size() > 1) //else check for proper Poly
+  {
+    // Add the vertex to the current loop.
+    loop.push_back( sv );
+
+    // Sort the polygons based on the order to visit.
+    std::sort ( polyCandidates.begin(), polyCandidates.end(), PolygonSort() );
+
+    // Loop through the polygons.
+    for ( typename PolygonList::iterator i = polyCandidates.begin(); i != polyCandidates.end(); ++ i )
+    {  
+      // Get the index.
+      const unsigned index ( (*i)->index() );
+      
+      // Remove it from candidates so we don't add it again.
+      uncapped.remove ( index );
+      
+      // Get the polygon.
+      PolygonPtr p ( polygons.at( index ) );
+      
+      // Visit this polygon.
+      visitPolygon( polygons, uncapped, loop, p.get() );
+    }
+    
+  }
+
+  //if size is 0 then STOP recursion.. do nothing
 
 }
 
@@ -282,6 +372,9 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
   // Needed for user feedback.
   const unsigned int size ( polygons.size() );
 
+  // Make the cache big enough.
+  Detail::cache.resize ( size );
+
   //Walk through all the polygons
   for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
   {    
@@ -305,7 +398,10 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
     {
       uncapped.push_back( (*iter)->index() );
       Detail::findEdge( adjacentPolygons, iter->get() );
+      (*iter)->onEdge( true );
     }
+
+    Detail::cache.at( (*iter)->index() ) = adjacentPolygons.size();
 
     //Send a progress upate
     updater ( uncapped );
@@ -343,6 +439,9 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
 
     updater( loops.size() );
   }
+
+  // Clear the cache
+  Detail::cache.clear();
 }
 
 }

@@ -58,9 +58,8 @@ TriangleSet::TriangleSet() : BaseClass(),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
   _colors    ( new osg::Vec4Array ),
   _dirty     ( true ),
-  _geometry  ( 0x0 ),
-  _primitiveSet ( 0x0 ),
-  _bb()
+  _bb(),
+  _partition (  )
 {
 #ifndef __APPLE__ // They are different, but it is not critical. TODO.
   USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
@@ -68,15 +67,14 @@ TriangleSet::TriangleSet() : BaseClass(),
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _geometry       ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _primitiveSet   ) );
-  USUL_STATIC_ASSERT (  24 == sizeof ( _bb             ) );
+  USUL_STATIC_ASSERT ( 64 == sizeof ( _partition      ) );
+  USUL_STATIC_ASSERT ( 24 == sizeof ( _bb             ) );
 #ifdef _WIN32
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 92 == sizeof ( TriangleSet     ) ); // Why?
+  USUL_STATIC_ASSERT ( 148 == sizeof ( TriangleSet     ) ); // Why?
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 88 == sizeof ( TriangleSet     ) ); // Why?
+  USUL_STATIC_ASSERT ( 144 == sizeof ( TriangleSet     ) ); // Why?
 #endif
 #endif
 
@@ -109,6 +107,9 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   // Update every second.
   Usul::Policies::TimeBased update ( 1000 );
+
+  // Clear the partition first.
+  _partition.clear();
 
   // Clear the map of shared vertices. (It is most likely already empty.)
   _shared.clear();
@@ -154,9 +155,6 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
-
-  _primitiveSet = 0x0;
-  _geometry = 0x0;
 
   //Clear the Max and Min Values
   _bb.init();
@@ -271,7 +269,7 @@ const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool rebuild )
+void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
 {
   // Get or make the shared vertices.
   SharedVertex *sv0 ( this->_sharedVertex ( v0 ) );
@@ -279,7 +277,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
 
   //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n, rebuild );
+  this->_addTriangle( sv0, sv1, sv2, n, correctNormal, rebuild );
 }
 
 
@@ -289,55 +287,14 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool rebuild )
+void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
 {
   SharedVertex *sv0 ( const_cast < SharedVertex * > ( &v0 ) );
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
-#if 1
-  //Make a copy
-  osg::Vec3f copy ( n );
-
-#if 0
-  osg::Vec3f n1 ( this->normal( (*sv0->begin())->index() ) );
-  osg::Vec3f n2 ( this->normal( (*sv1->begin())->index() ) );
-  osg::Vec3f n3 ( this->normal( (*sv2->begin())->index() ) );
-
-  //osg::Vec3f n1 ( this->_averageNormal ( sv0 ) );
-  //osg::Vec3f n2 ( this->_averageNormal ( sv1 ) );
-  //osg::Vec3f n3 ( this->_averageNormal ( sv2 ) );
-
-  osg::Vec3f test ( n1 + n2 + n3 );
-
-  test.normalize();
-
-  float dot ( test * copy );
-
-  if( dot < 0 )
-    copy *= -1;
-#endif
-
-  osg::Vec3 one   ( _vertices->at( v0.index() ) );
-  osg::Vec3 two   ( _vertices->at( v1.index() ) );
-  osg::Vec3 three ( _vertices->at( v2.index() ) );
-
-  osg::Vec3 center ( ( one + two + three ) / 3 );
-
-  osg::Vec3 cg ( _bb.center() );
-
-  osg::Vec3 refVector ( center - cg );
-
-  if ( ( refVector * copy ) < 0 )
-    copy *= -1;
-
-  this->_addTriangle( sv0, sv1, sv2, copy, rebuild );
-
-#else
   //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n, rebuild );
-#endif
-
+  this->_addTriangle( sv0, sv1, sv2, n, correctNormal, rebuild );
 }
 
 
@@ -347,8 +304,33 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool rebuild )
+void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
 {
+  //Make a copy
+  osg::Vec3f copy ( n );
+
+  // Fix the normal if we should.
+  if( correctNormal )
+  {
+    // Get the three vertices of the triangle.
+    osg::Vec3 one   ( _vertices->at( sv0->index() ) );
+    osg::Vec3 two   ( _vertices->at( sv1->index() ) );
+    osg::Vec3 three ( _vertices->at( sv2->index() ) );
+
+    // Get the center of the triangle.
+    osg::Vec3 center ( ( one + two + three ) / 3 );
+
+    // Get the center of the model.
+    osg::Vec3 cg ( _bb.center() );
+
+    // Make the reference vector.
+    osg::Vec3 refVector ( center - cg );
+
+    // Flip the normal if it's pointing towards the center.
+    if ( ( refVector * copy ) < 0 )
+      copy *= -1;
+  }
+
   // Make the new triangle.
   Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2, _triangles.size() ) );
 
@@ -361,10 +343,10 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   sv2->add ( t.get() );
 
   // Append normal vector.
-  this->_normalsPerFacet().push_back ( n );
+  this->_normalsPerFacet().push_back ( copy );
 
   // The primitive set will be valid after the scene is built.
-  if( _primitiveSet.valid() && rebuild )
+  if( rebuild )
   {
     //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
@@ -373,13 +355,11 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     const unsigned int numPoints ( _triangles.size() * 3 );
 
     // Make space.
-    normals->reserve       ( _vertices->size() );
-    _primitiveSet->reserve ( numPoints );
+    normals->reserve      ( _vertices->size() );
+    _partition.reserve    ( numPoints );
 
-    // Add the indices to the primitive set
-    _primitiveSet->push_back ( sv0->index() );
-    _primitiveSet->push_back ( sv1->index() );
-    _primitiveSet->push_back ( sv2->index() );
+    // Add the triangle
+    _partition.add ( t.get(), *_vertices, copy );
 
     // Average the normals if we are suppose to
     if ( !normals->empty() )
@@ -538,26 +518,11 @@ SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
 
 osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 {
-  // Remake the primitve set if it isn't valid.
-  if ( !_primitiveSet.valid() )
-  {
-     _primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
-  }
-
-  // Remake the geometry if it isn't valid.
-  if ( !_geometry.valid() )
-  {
-    _geometry = new osg::Geometry;
-
-    // Add the vertices
-    _geometry->setVertexArray( _vertices.get() );
-
-    // Add the PrimitiveSet
-    _geometry->addPrimitiveSet( _primitiveSet.get() );
-  }
-
   // Make copy of the options.
   Options options ( opt );
+
+  // Show the progress bar.
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
 
   // User feedback.
   this->_setStatusBar ( "Building Scene ..." );
@@ -568,18 +533,17 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   // The scene root.
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
-  // A single geode.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  root->addChild ( geode.get() );
-
-  // Make geometry and add to geode.
-  geode->addDrawable ( _geometry.get() );
-
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );
 
   if ( _dirty )
   {
+    // Clear the partition.  Make sure it's cleared before subdivided.
+    _partition.clear();
+
+    // Subdivide the partition
+    _partition.subdivide( _bb, 6 );
+
     //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
 
@@ -588,7 +552,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
     // Make space.
     normals->resize       ( _vertices->size() );
-    _primitiveSet->resize ( numPoints );
+    _partition.reserve   ( numPoints );
 
     // Initialize counter for progress.
     unsigned int count ( 0 );
@@ -600,31 +564,32 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
     {
       // Shortcuts to the triangle.
-      const Triangle::ValidRefPtr triangle ( i->get() );
+      Triangle* triangle ( i->get() );
+
+      // Should be valid.
+      USUL_ASSERT ( 0x0 != triangle );
 
       // Get the vertices.
-      const SharedVertex *v1 ( triangle->vertex0() );
-      const SharedVertex *v2 ( triangle->vertex1() );
-      const SharedVertex *v3 ( triangle->vertex2() );
+      const SharedVertex *sv0 ( triangle->vertex0() );
+      const SharedVertex *sv1 ( triangle->vertex1() );
+      const SharedVertex *sv2 ( triangle->vertex2() );
 
       // Make sure we have good pointers.
-      if ( !v1 || !v2 || !v3 )
+      if ( !sv0 || !sv1 || !sv2 )
         throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
 
       const unsigned int triNum ( count * 3 );
 
-      // Add the indices to the primitive set
-      _primitiveSet->at( triNum )     = ( v1->index() );
-      _primitiveSet->at( triNum + 1 ) = ( v2->index() );
-      _primitiveSet->at( triNum + 2 ) = ( v3->index() );
+      // Add the triangle to the partition
+      _partition.add ( triangle, *_vertices, this->_normalsPerFacet().at( count ) );
 
       // If we are suppose to add averaged normals...
       if( average )
       {
         // Get the normals.
-        osg::Vec3 n1 ( this->_averageNormal ( v1 ) );
-        osg::Vec3 n2 ( this->_averageNormal ( v2 ) );
-        osg::Vec3 n3 ( this->_averageNormal ( v3 ) );
+        osg::Vec3 n1 ( this->_averageNormal ( sv0 ) );
+        osg::Vec3 n2 ( this->_averageNormal ( sv1 ) );
+        osg::Vec3 n3 ( this->_averageNormal ( sv2 ) );
 
         // Make sure they are normalized.
         n1.normalize();
@@ -632,9 +597,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
         n3.normalize();
 
         // Set the normal values.
-        normals->at( v1->index() ) = n1;
-        normals->at( v2->index() ) = n2;
-        normals->at( v3->index() ) = n3;
+        normals->at( sv0->index() ) = n1;
+        normals->at( sv1->index() ) = n2;
+        normals->at( sv2->index() ) = n3;
       }
 
       // Show progress.
@@ -642,29 +607,19 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       ++count;
     }
 
-    _geometry->dirtyBound();
-    _geometry->dirtyDisplayList();
-
     _dirty = false;
   }
 
-  //Set the right number of normals
+  osg::ref_ptr< osg::Vec3Array > normals;
+
+  //Get the right normals
   if( average )
-  {
-    //Set the normals
-    _geometry->setNormalArray ( &this->_normalsPerVertex() );
-
-    // Need per-vertex normals for osg::Geometry's "fast path".
-    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-  }
+    normals = &this->_normalsPerVertex();
   else
-  {
-    //Set the normals
-    _geometry->setNormalArray ( &this->_normalsPerFacet() );
+    normals = &this->_normalsPerFacet();
 
-    //Set the normal binding
-    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-  }
+  // Get the node that the partition builds.
+  root->addChild ( _partition ( _vertices.get(), normals.get(), average ) );
 
   // Show we draw a bounding box?
   const bool boundingBox ( options["BoundingBox"] == "Show" );
@@ -674,8 +629,8 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   if ( boundingBox || showGlassBoundingBox )
   {
-    OsgTools::GlassBoundingBox gbb ( _bb.xMin(), _bb.yMin(), _bb.zMin(), _bb.xMax(), _bb.yMax(), _bb.zMax() );
-    gbb.addBoundingGlass( root.get(), boundingBox, showGlassBoundingBox, false );
+    OsgTools::GlassBoundingBox gbb ( _bb );
+    gbb ( root.get(), boundingBox, showGlassBoundingBox, true );
   }
    
   // Return the root.
@@ -803,7 +758,7 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::deleteTriangle( unsigned int index )
+void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
 {
   //Get the triangle to remove
   Triangles::iterator doomed ( _triangles.begin() + index );
@@ -834,19 +789,8 @@ void TriangleSet::deleteTriangle( unsigned int index )
   //Remove the normal
   this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + index ) );
 
-  // Positions of the indices of doomed
-  osg::DrawElementsUInt::iterator first ( _primitiveSet->begin() + ( index * 3 ) );
-  osg::DrawElementsUInt::iterator last  ( _primitiveSet->begin() + ( index * 3 ) + 3 );
+  _partition.remove( d, index );
 
-  //Remove the indices from the primitive set
-  _primitiveSet->erase( first, last );
-
-  //Display lists need to be recalculated
-  _geometry->dirtyDisplayList();
-
-  //Scene needs to be rebuilt.
-  // I don't think this is needed.  Leaving here in case I'm wrong.
-  //_dirty = true;
 }
 
 
@@ -875,7 +819,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
-  _primitiveSet->clear();
+  _partition.clear();
 
   // Make enough room
   this->reserve( keepers.size() );
@@ -884,6 +828,8 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->addStart(  );
 
   this->_setStatusBar( "Adding Triangles..." );
+
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
 
   Usul::Policies::TimeBased update ( 1000 );
 
@@ -960,6 +906,7 @@ void TriangleSet::remove ( std::vector<unsigned int>& remove, Usul::Interfaces::
 
 void TriangleSet::colorOn( const osg::Vec4& color )
 {
+#if 0
   _geometry->setColorArray( _colors.get() );
 
   _colors->resize ( _triangles.size() );
@@ -967,6 +914,7 @@ void TriangleSet::colorOn( const osg::Vec4& color )
       
   _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   _geometry->dirtyDisplayList();
+#endif
 }
 
 
@@ -978,8 +926,10 @@ void TriangleSet::colorOn( const osg::Vec4& color )
 
 void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
 {
+#if 0
   _colors->at( index ) = color;
   _geometry->dirtyDisplayList();
+#endif
 }
 
 
@@ -991,8 +941,10 @@ void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
 
 void TriangleSet::colorOff ()
 {
+#if 0
   _geometry->setColorArray ( 0x0 );
   _geometry->dirtyDisplayList();
+#endif
 }
 
 
@@ -1004,7 +956,10 @@ void TriangleSet::colorOff ()
 
 bool TriangleSet::displayList() const
 {
+#if 0
   return _geometry->getUseDisplayList();
+#endif
+  return false;
 }
 
 
@@ -1016,7 +971,82 @@ bool TriangleSet::displayList() const
 
 void TriangleSet::displayList ( bool b )
 {
+#if 0
   _geometry->setUseDisplayList ( b );
+#endif
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the first vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f & TriangleSet::vertex0 ( const osg::Drawable* d, unsigned int i ) const
+{
+  unsigned int index ( _partition.index0 ( d, i ) );
+  return _vertices->at( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the second vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f & TriangleSet::vertex1 ( const osg::Drawable* d, unsigned int i ) const
+{
+  unsigned int index ( _partition.index1 ( d, i ) );
+  return _vertices->at( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the third vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f & TriangleSet::vertex2 ( const osg::Drawable* d, unsigned int i ) const
+{
+  unsigned int index ( _partition.index2 ( d, i ) );
+  return _vertices->at( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the first shared vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
+{
+  return _partition.sharedVertex0( d, i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the second shared vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
+{
+  return _partition.sharedVertex1( d, i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the third shared vertex of the i'th triangle in the drawable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
+{
+  return _partition.sharedVertex2( d, i );
+}

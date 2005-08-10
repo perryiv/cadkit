@@ -18,6 +18,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace osg { class Drawable; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -30,13 +32,13 @@ struct IDeletePrimitive : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1744889731u };
 
-  virtual void deletePrimitive ( unsigned int num ) = 0;
+  virtual void deletePrimitive ( const osg::Drawable*, unsigned int num ) = 0;
 
 }; // struct IDeletePrimitive
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_DELETE_PRIMITIVE_H_

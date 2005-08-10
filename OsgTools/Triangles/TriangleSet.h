@@ -22,6 +22,7 @@
 
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
+#include "OsgTools/Triangles/Partition.h"
 
 #include "osg/Geometry"
 #include "osg/ref_ptr"
@@ -63,8 +64,19 @@ public:
   void                    addFinish ( );
 
   // Add a triangle.
-  void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool rebuild = false );
-  void                    addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool rebuild = false );
+  void                    addTriangle ( const osg::Vec3f &v0, 
+                                        const osg::Vec3f &v1, 
+                                        const osg::Vec3f &v2, 
+                                        const osg::Vec3f &n, 
+                                        bool correctNormal = false, 
+                                        bool rebuild = false );
+
+  void                    addTriangle ( const SharedVertex &v0, 
+                                        const SharedVertex &v1, 
+                                        const SharedVertex &v2, 
+                                        const osg::Vec3f &n, 
+                                        bool correctNormal = false, 
+                                        bool rebuild = false );
 
   /// Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
@@ -82,7 +94,7 @@ public:
   void                    colorOff ();
 
   // Delete triangle at given index
-  void                    deleteTriangle ( unsigned int index );
+  void                    deleteTriangle ( const osg::Drawable*, unsigned int index );
 
   // Get/Set the display list flag
   bool                    displayList () const;
@@ -118,6 +130,11 @@ public:
   // Return the number of triangles.
   unsigned int            size() const { return _triangles.size(); }
 
+  // Get the shared vertices of the i'th triangle in the drawable.
+  const SharedVertex*         sharedVertex0 ( const osg::Drawable*, unsigned int i ) const;
+  const SharedVertex*         sharedVertex1 ( const osg::Drawable*, unsigned int i ) const;
+  const SharedVertex*         sharedVertex2 ( const osg::Drawable*, unsigned int i ) const;
+
   // Get the triangles
   const Triangles&        triangles() const { return _triangles; }
   Triangles&              triangles()       { return _triangles; }
@@ -126,6 +143,11 @@ public:
   const osg::Vec3f &      vertex0 ( unsigned int ) const;
   const osg::Vec3f &      vertex1 ( unsigned int ) const;
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
+
+  // Get the vertices of the i'th triangle.
+  const osg::Vec3f &          vertex0 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &          vertex1 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &          vertex2 ( const osg::Drawable* d, unsigned int i ) const;
 
 protected:
 
@@ -136,7 +158,7 @@ protected:
   // Use reference counting.
   virtual ~TriangleSet();
 
-  void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool rebuild = false );
+  void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild );
 
   void                    _setMaxMinValues(SharedVertex *sv0);
   
@@ -158,7 +180,6 @@ private:
   typedef osg::ref_ptr<osg::Vec3Array>        VerticesPtr;
   typedef osg::ref_ptr<osg::Vec3Array>        NormalsPtr;
   typedef osg::ref_ptr<osg::Vec4Array>        ColorsPtr;
-  typedef osg::ref_ptr<osg::UIntArray>        IndicesPtr;
   typedef std::pair<NormalsPtr,NormalsPtr>    Normals;
 
   SharedVertices _shared;
@@ -167,9 +188,8 @@ private:
   Normals _normals;
   ColorsPtr _colors;
   bool _dirty;
-  osg::ref_ptr<osg::Geometry> _geometry;
-  osg::ref_ptr<osg::DrawElementsUInt> _primitiveSet;
   osg::BoundingBox _bb;
+  Partition _partition;
 };
 
 

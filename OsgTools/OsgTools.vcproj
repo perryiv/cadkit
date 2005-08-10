@@ -356,6 +356,12 @@
 					RelativePath=".\Triangles\Loop.h">
 				</File>
 				<File
+					RelativePath=".\Triangles\Partition.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Partition.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\SharedVertex.cpp">
 				</File>
 				<File

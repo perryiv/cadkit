@@ -67,9 +67,26 @@ GlassBoundingBox::GlassBoundingBox(
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GlassBoundingBox::GlassBoundingBox( const osg::BoundingBox& bb ) : 
+BaseClass(),
+_xMax ( bb.xMax() ),
+_xMin ( bb.xMin() ),
+_yMax ( bb.yMax() ),
+_yMin ( bb.yMin() ),
+_zMax ( bb.zMax() ),
+_zMin ( bb.zMin() )
+{
+  
+}
 
 
-void GlassBoundingBox::addBoundingGlass( osg::Group *root, bool outline, bool glass, bool numbers ) 
+void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, bool numbers ) 
 {
   osg::BoundingBox bb( _xMin,_yMin,_zMin,_xMax,_yMax,_zMax );
 

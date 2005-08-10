@@ -32,7 +32,10 @@ public:
 	MaterialFactory();
 	MaterialFactory(unsigned int seed);
 
+  // Create a random material.  Cached based on string name.
   osg::Material* create ( const std::string, float min = 0.0, float max = 1.0 );
+
+  // Create a random material.
   osg::Material* create ( float min = 0.0, float max = 1.0 );
 
   void clear() { _materialMap.clear(); }

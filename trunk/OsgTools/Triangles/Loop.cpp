@@ -110,7 +110,7 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
     norm.normalize();
 
     //Add the triangle
-    addTriangle->addTriangle( *sv1, *sv2, *sv3, norm, buildOnFly );
+    addTriangle->addTriangle( *sv1, *sv2, *sv3, norm, true, buildOnFly );
   }
 
   //If we get here it succeeded

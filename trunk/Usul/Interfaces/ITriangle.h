@@ -12,7 +12,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Vec3f; }
+namespace osg { class Vec3f; class Drawable; }
 
 namespace Usul {
 namespace Interfaces {
@@ -27,9 +27,9 @@ struct ITriangle : public Usul::Interfaces::IUnknown
   enum { IID = 1203224138u };
 
   // Get the vertices of the i'th triangle.
-  virtual const osg::Vec3f &          vertex0 ( unsigned int i ) const = 0;
-  virtual const osg::Vec3f &          vertex1 ( unsigned int i ) const = 0;
-  virtual const osg::Vec3f &          vertex2 ( unsigned int i ) const = 0;
+  virtual const osg::Vec3f &          vertex0 ( const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const osg::Vec3f &          vertex1 ( const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const osg::Vec3f &          vertex2 ( const osg::Drawable*, unsigned int i ) const = 0;
 
 
 }; //struct ITriangle

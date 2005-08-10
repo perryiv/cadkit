@@ -536,7 +536,8 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );
 
-  if ( _dirty )
+  // Rebuild if dirty or if we need per vertex normals are there aren't any.
+  if ( _dirty || ( average && this->_normalsPerVertex().empty() ) )
   {
     // Clear the partition.  Make sure it's cleared before subdivided.
     _partition.clear();
@@ -550,8 +551,11 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     //How many points do we have    
     const unsigned int numPoints ( _triangles.size() * 3 );
 
-    // Make space.
-    normals->resize       ( _vertices->size() );
+    // Size the normals if we should.
+    if ( average )
+      normals->resize       ( _vertices->size() );
+    
+    // Make some room in the partition.
     _partition.reserve   ( numPoints );
 
     // Initialize counter for progress.
@@ -569,23 +573,21 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       // Should be valid.
       USUL_ASSERT ( 0x0 != triangle );
 
-      // Get the vertices.
-      const SharedVertex *sv0 ( triangle->vertex0() );
-      const SharedVertex *sv1 ( triangle->vertex1() );
-      const SharedVertex *sv2 ( triangle->vertex2() );
-
-      // Make sure we have good pointers.
-      if ( !sv0 || !sv1 || !sv2 )
-        throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
-
-      const unsigned int triNum ( count * 3 );
-
       // Add the triangle to the partition
       _partition.add ( triangle, *_vertices, this->_normalsPerFacet().at( count ) );
 
       // If we are suppose to add averaged normals...
       if( average )
       {
+        // Get the vertices.
+        const SharedVertex *sv0 ( triangle->vertex0() );
+        const SharedVertex *sv1 ( triangle->vertex1() );
+        const SharedVertex *sv2 ( triangle->vertex2() );
+
+        // Make sure we have good pointers.
+        if ( !sv0 || !sv1 || !sv2 )
+          throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
+
         // Get the normals.
         osg::Vec3 n1 ( this->_averageNormal ( sv0 ) );
         osg::Vec3 n2 ( this->_averageNormal ( sv1 ) );
@@ -760,7 +762,7 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 
 void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
 {
-  //Get the triangle to remove
+  //Get the triangle to remove.
   Triangles::iterator doomed ( _triangles.begin() + index );
 
   // Decrement the index of all triangles after doomed.
@@ -783,12 +785,13 @@ void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
   // Unref doomed.  Not needed, but can't hurt
   (*doomed) = 0x0;
 
-  // Remove doomed from our vector of triangles
+  // Remove doomed from our vector of triangles.
   _triangles.erase( doomed );
 
-  //Remove the normal
+  // Remove the normal.
   this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + index ) );
 
+  // Remove the triangle from the partition.
   _partition.remove( d, index );
 
 }
@@ -814,12 +817,12 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
 
   // Clear every thing we have.  Don't use this->clear() because triangles ref count is not 1
+  _partition.clear();
   _triangles.clear();
   _vertices->clear();
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
-  _partition.clear();
 
   // Make enough room
   this->reserve( keepers.size() );

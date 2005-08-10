@@ -46,6 +46,10 @@ void Partition::clear()
 {
   _cubes.clear();
   _geometries.clear();
+
+  for ( PrimitiveSets::iterator i = _primitiveSets.begin(); i != _primitiveSets.end(); ++i )
+    (*i)->clear();
+
   _primitiveSets.clear();
   _triangles.clear();
 }
@@ -79,13 +83,18 @@ void Partition::add ( Triangle *t, const osg::Vec3Array &vertices, const osg::Ve
   // Add the triangle.
   _triangles.at( index ).push_back ( t );
 
-  if ( _geometries.at ( index )->getNormalBinding() == osg::Geometry::BIND_PER_PRIMITIVE )
+  osg::Geometry *geometry ( _geometries.at ( index ).get() );
+
+  if ( geometry->getNormalBinding() == osg::Geometry::BIND_PER_PRIMITIVE )
   {
-    osg::ref_ptr < osg::Vec3Array > normals ( _geometries.at ( index )->getNormalArray() );
+    osg::ref_ptr < osg::Vec3Array > normals ( geometry->getNormalArray() );
 
     if ( normals.valid() )
       normals->push_back ( n );
   }
+
+  geometry->dirtyBound();
+  geometry->dirtyDisplayList();
 }
 
 
@@ -200,7 +209,7 @@ osg::Node* Partition::operator () ( osg::Vec3Array *vertices, osg::Vec3Array *no
     geode->addDrawable ( geometry.get() );
 
     // Callback to set the bounding box.
-    geometry->setComputeBoundingBoxCallback( new BoundingBoxCallback ( _cubes.at( i ) ) );
+    //geometry->setComputeBoundingBoxCallback( new BoundingBoxCallback ( _cubes.at( i ) ) );
 
     // Add the vertices
     geometry->setVertexArray( vertices );
@@ -268,7 +277,7 @@ unsigned int Partition::_index ( const osg::Vec3& v0, const osg::Vec3& v1, const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Subdive the partition.
+//  Subdivide the given bounding box n number of times.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -278,6 +287,13 @@ void Partition::subdivide ( const osg::BoundingBox &bb, unsigned int times )
 
   _triangles.resize( _cubes.size() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Subdivide the given bounding box n number of times.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Partition::_subdivide ( const osg::BoundingBox &bb, unsigned int times )
 {
@@ -301,6 +317,13 @@ void Partition::_subdivide ( const osg::BoundingBox &bb, unsigned int times )
     this->_subdivide ( bb2, times - 1 );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Divide the bounding box into two along the longest axis.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Partition::_divide ( const osg::BoundingBox &bb, osg::BoundingBox &bb1, osg::BoundingBox &bb2 )
 {
@@ -527,5 +550,16 @@ const Triangle* Partition::_triangle( const osg::Drawable *d, unsigned int index
   }
 
   throw std::runtime_error ( "Drawable not in this partition." );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge any excess memory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Partition::purge ()
+{
 }
 

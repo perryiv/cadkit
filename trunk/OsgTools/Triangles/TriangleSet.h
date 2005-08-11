@@ -131,9 +131,9 @@ public:
   unsigned int            size() const { return _triangles.size(); }
 
   // Get the shared vertices of the i'th triangle in the drawable.
-  const SharedVertex*         sharedVertex0 ( const osg::Drawable*, unsigned int i ) const;
-  const SharedVertex*         sharedVertex1 ( const osg::Drawable*, unsigned int i ) const;
-  const SharedVertex*         sharedVertex2 ( const osg::Drawable*, unsigned int i ) const;
+  const SharedVertex*     sharedVertex0 ( const osg::Drawable*, unsigned int i ) const;
+  const SharedVertex*     sharedVertex1 ( const osg::Drawable*, unsigned int i ) const;
+  const SharedVertex*     sharedVertex2 ( const osg::Drawable*, unsigned int i ) const;
 
   // Get the triangles
   const Triangles&        triangles() const { return _triangles; }
@@ -145,9 +145,9 @@ public:
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
 
   // Get the vertices of the i'th triangle.
-  const osg::Vec3f &          vertex0 ( const osg::Drawable* d, unsigned int i ) const;
-  const osg::Vec3f &          vertex1 ( const osg::Drawable* d, unsigned int i ) const;
-  const osg::Vec3f &          vertex2 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex0 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex1 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex2 ( const osg::Drawable* d, unsigned int i ) const;
 
 protected:
 

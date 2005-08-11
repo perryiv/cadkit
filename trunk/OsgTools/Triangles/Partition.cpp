@@ -61,7 +61,7 @@ void Partition::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Partition::add ( Triangle *t, const osg::Vec3Array &vertices, const osg::Vec3& n )
+void Partition::add ( Triangle *t, const osg::Vec3Array &vertices, const osg::Vec3& n, bool purge )
 {
   unsigned int i0 ( t->vertex0()->index() );
   unsigned int i1 ( t->vertex1()->index() );
@@ -95,6 +95,13 @@ void Partition::add ( Triangle *t, const osg::Vec3Array &vertices, const osg::Ve
 
   geometry->dirtyBound();
   geometry->dirtyDisplayList();
+
+  // Purge excess memory, if we are supposed to.
+  if ( purge )
+  {
+    PrimitiveSetPtr temp ( new DrawElements ( *primitiveSet ) );
+    primitiveSet->swap ( *temp );
+  }
 }
 
 
@@ -137,10 +144,10 @@ void Partition::remove ( const osg::Drawable *d, unsigned int index )
 
 void Partition::reserve ( unsigned int s )
 {
-  //unsigned int size ( s / _primitiveSets.size() );
+  unsigned int size ( s / _primitiveSets.size() );
 
-  //for( PrimitiveSets::iterator i = _primitiveSets.begin(); i != _primitiveSets.end(); ++ i )
-  //  (*i)->reserve ( size );
+  for( PrimitiveSets::iterator i = _primitiveSets.begin(); i != _primitiveSets.end(); ++ i )
+    (*i)->reserve ( size );
 }
 
 
@@ -194,6 +201,8 @@ osg::Node* Partition::operator () ( osg::Vec3Array *vertices, osg::Vec3Array *no
   for ( unsigned int i = 0; i < _cubes.size(); ++i )
   {
     GeometryPtr geometry ( _geometries.at( i ) );
+
+    //geometry->setUseVertexBufferObjects( true );
 
 #if DRAW_CUBES
     OsgTools::GlassBoundingBox gbb ( _cubes.at( i ) );
@@ -561,5 +570,43 @@ const Triangle* Partition::_triangle( const osg::Drawable *d, unsigned int index
 
 void Partition::purge ()
 {
+  // Purge all of the primitive sets
+  for ( PrimitiveSets::iterator i = _primitiveSets.begin(); i != _primitiveSets.end(); ++ i )
+  {
+    PrimitiveSetPtr temp ( new DrawElements ( *(*i) ) );
+    (*i)->swap ( *temp );
+  }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the display list flag.  Return true only if all geometries are using
+//  display lists.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Partition::displayList () const
+{
+  bool d ( true );
+
+  for ( Geometries::const_iterator i = _geometries.begin(); i != _geometries.end(); ++ i )
+    d = d && (*i)->getUseDisplayList (  );
+
+  return d;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the display list flag for each geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Partition::displayList ( bool d )
+{
+  for ( Geometries::iterator i = _geometries.begin(); i != _geometries.end(); ++ i )
+    (*i)->setUseDisplayList ( d );
+}
+
 

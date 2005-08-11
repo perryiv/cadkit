@@ -359,7 +359,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     _partition.reserve    ( numPoints );
 
     // Add the triangle
-    _partition.add ( t.get(), *_vertices, copy );
+    _partition.add ( t.get(), *_vertices, copy, true );
 
     // Average the normals if we are suppose to
     if ( !normals->empty() )
@@ -379,15 +379,19 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
       normals->push_back( n2 );
       normals->push_back( n3 );
     }
+
+    //_partition.purge();
+  }
+  else
+  {
+    // Need to rebuild per-vertex normals and indices.
+    _dirty = true;
   }
 
   // Check the max and min values
   this->_setMaxMinValues ( sv0 );
   this->_setMaxMinValues ( sv1 );
   this->_setMaxMinValues ( sv2 );
-  
-  // Need to rebuild per-vertex normals and indices.
-  _dirty = true;
 }
 
 
@@ -609,6 +613,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       ++count;
     }
 
+    // Purge any excess memory from the partition.
+    _partition.purge();
+
     _dirty = false;
   }
 
@@ -823,6 +830,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->_normalsPerVertex().clear();
   this->_normalsPerFacet().clear();
   _colors->clear();
+  _bb.init();
 
   // Make enough room
   this->reserve( keepers.size() );
@@ -832,6 +840,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
 
   this->_setStatusBar( "Adding Triangles..." );
 
+  // Show the progress bar.
   Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
 
   Usul::Policies::TimeBased update ( 1000 );
@@ -959,10 +968,7 @@ void TriangleSet::colorOff ()
 
 bool TriangleSet::displayList() const
 {
-#if 0
-  return _geometry->getUseDisplayList();
-#endif
-  return false;
+  return _partition.displayList();
 }
 
 
@@ -974,9 +980,7 @@ bool TriangleSet::displayList() const
 
 void TriangleSet::displayList ( bool b )
 {
-#if 0
-  _geometry->setUseDisplayList ( b );
-#endif
+  _partition.displayList( b );
 }
 
 

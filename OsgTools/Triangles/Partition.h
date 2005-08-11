@@ -30,11 +30,15 @@ class OSG_TOOLS_EXPORT Partition
 public:
   Partition( );
 
+  // Add a triangle.
+  void                      add ( Triangle *, const osg::Vec3Array &vertices, const osg::Vec3& n, bool purge = false );
+
   // Clear the partition.
   void                      clear();
 
-  // Add a triangle.
-  void                      add ( Triangle *, const osg::Vec3Array &vertices, const osg::Vec3& n );
+  // Get/Set display list state
+  bool                      displayList () const;
+  void                      displayList ( bool d );
 
   // Get the vertex index of the i'th triangle in the drawable.
   unsigned int              index0 ( const osg::Drawable *d, unsigned int i ) const;

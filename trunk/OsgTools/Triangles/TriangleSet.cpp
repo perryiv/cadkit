@@ -379,8 +379,6 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
       normals->push_back( n2 );
       normals->push_back( n3 );
     }
-
-    //_partition.purge();
   }
   else
   {

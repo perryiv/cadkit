@@ -126,10 +126,23 @@ void Partition::remove ( const osg::Drawable *d, unsigned int index )
       //Remove the indices from the primitive set
       primitiveSet->erase( first, last );
       
-      //Display lists need to be recalculated
-      _geometries.at( i )->dirtyDisplayList();
-
+      // Remove the triangle.
       _triangles.at( i ).erase ( _triangles.at( i ).begin() + index );
+
+      // Get the geometry
+      osg::Geometry *geometry ( _geometries.at ( i ).get() );
+
+      // If per primitive normals...
+      if ( geometry->getNormalBinding() == osg::Geometry::BIND_PER_PRIMITIVE )
+      {
+        osg::ref_ptr < osg::Vec3Array > normals ( geometry->getNormalArray() );
+
+        if ( normals.valid() )
+          normals->erase ( normals->begin() + index );
+      }
+
+      //Display lists need to be recalculated
+      geometry->dirtyDisplayList();
 
     }
   }

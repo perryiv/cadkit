@@ -31,82 +31,73 @@ namespace Triangles {
 class OSG_TOOLS_EXPORT Loop
 {
 public:
-  typedef OsgTools::Triangles::SharedVertex::ValidRefPtr SharedVertexPtr;
-  typedef SharedVertexPtr value_type;
-  typedef std::vector< value_type > Points;
-  typedef Points::iterator iterator;
-  typedef Points::const_iterator const_iterator;
+  // Typedefs.
+  typedef OsgTools::Triangles::SharedVertex::ValidRefPtr  SharedVertexPtr;
+  typedef SharedVertexPtr                                 value_type;
+  typedef std::vector< value_type >                       Points;
+  typedef Points::iterator                                iterator;
+  typedef Points::const_iterator                          const_iterator;
 
   Loop();
+  Loop ( const Points & );
   ~Loop();
 
-  void push_back( const value_type& v ) { _loop.push_back( v ); }
+  void                  push_back ( const value_type& v ) { _loop.push_back( v ); }
 
-  bool triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly );
+  bool                  triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly );
 
-  iterator begin() { return _loop.begin(); }
-  iterator end()   { return _loop.end(); }
+  iterator              begin() { return _loop.begin(); }
+  iterator              end()   { return _loop.end(); }
 
-  const_iterator begin() const { return _loop.begin(); }
-  const_iterator end()   const { return _loop.end();   }
+  const_iterator        begin() const { return _loop.begin(); }
+  const_iterator        end()   const { return _loop.end();   }
 
-  //Is this loop empty?
-  bool empty() const { return _loop.empty(); }
+  // Is this loop empty?
+  bool                  empty() const { return _loop.empty(); }
 
-  //get the size
-  unsigned int size() const { return _loop.size(); }
+  // Get the size.
+  unsigned int          size() const { return _loop.size(); }
 
-  //Check to see if the given point is inside this loop
-  bool pointInside( const osg::Vec3 &, Usul::Interfaces::IUnknown *caller ) const;
+  // Check to see if the given point is inside this loop.
+  bool                  pointInside( const osg::Vec3 &, Usul::Interfaces::IUnknown *caller ) const;
 
-  //Add a loop to the list of inner loops
-  void addInnerLoop ( const Loop& loop ) { _innerLoops.push_back( loop._loop ); }
+  // Add a loop to the list of inner loops.
+  void                  addInnerLoop ( const Loop& loop ) { _innerLoops.push_back( loop._loop ); }
 
-  bool hasInnerLoop ( ) const { return !_innerLoops.empty(); }
+  // Does this loop have any inner loops?
+  bool                  hasInnerLoop ( ) const { return !_innerLoops.empty(); }
 
-  //Build frame data from this loop
-  void getFrameData ( osg::Vec3&, float &, osg::Quat&, Usul::Interfaces::IUnknown *caller ) const;
+  // Get the number of inner loops.
+  unsigned int          numInnerLoops ( ) const { return _innerLoops.size(); }
 
-  //Get the number of planes that this loop covers
-  unsigned int getNumPlanes() const;
+  // Get the number of planes that the loop covers.
+  unsigned int          numPlanes ( Usul::Interfaces::IUnknown* caller ) const;
 
-  //Flip the normals that this loop made
-  void flipNormals();
+  // Get the points for inner loop i.
+  const Points&         points ( unsigned int i ) const { return _innerLoops.at( i ); }
 
-  //Undo any changed made
-  void undo();
+  // Build frame data from this loop.
+  void                  getFrameData ( osg::Vec3&, float &, osg::Quat&, Usul::Interfaces::IUnknown *caller ) const;
 
-  //Get the geometry
-  //osg::Geometry* geometry() { return _geometry.get(); }
-
-  //Get/Set the starting value
-  unsigned int start () const               { return _start; }
-  void         start ( unsigned int start ) { _start = start; }
-
-  //Get the number of triangles
-  unsigned int triangles () const { return _numTriangles; }
-
-  const osg::Vec3f& vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const;
+  // Get the osg::Vec3 for the i'th point in this loop.
+  const osg::Vec3f&     vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const;
 
 private:
   typedef std::vector< Usul::Math::Vec3i > Triangles;
 
-  //Build points needed for the algorithm
+  // Build points needed for the algorithm.
   void _buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &points, Usul::Interfaces::IUnknown *caller  );
 
   void _triangulate ( Triangles &triangles, Usul::Interfaces::IUnknown *caller );
 
+  // Get the osg::Vec3array from the loop.
+  osg::Vec3Array*   _vertices( Usul::Interfaces::IUnknown *caller ) const;
+
   Points _loop;
 
-  std::list< Points > _innerLoops;
+  std::vector< Points > _innerLoops;
 
-  //Our starting location in the vertex sequence
-  unsigned int _start;
-
-  //The number of triangles that we made
-  unsigned int _numTriangles;
-
-};//class Loop
+}; // class Loop.
 
 } //namespace Triangles
 } //namespace OsgTools

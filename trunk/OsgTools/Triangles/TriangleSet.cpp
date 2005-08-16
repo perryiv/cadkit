@@ -1055,3 +1055,16 @@ const SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigne
 {
   return _partition.sharedVertex2( d, i );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the normal of the i'th vertex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f & TriangleSet::vertexNormal ( unsigned int i ) const
+{
+  return ( _normalsPerVertex().empty() ? _normalsPerFacet().at( i /3 ) : _normalsPerVertex().at ( i ) );
+}
+

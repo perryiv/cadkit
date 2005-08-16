@@ -574,6 +574,9 @@
 						RelativePath=".\Interfaces\IGetLoops.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGetNormal.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetPosition.h">
 					</File>
 					<File

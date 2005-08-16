@@ -115,6 +115,9 @@ public:
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
 
+  // Get the normal of the i'th vertex.
+  const osg::Vec3f &      vertexNormal ( unsigned int ) const;
+
   // Remove these triangles
   void                    remove ( std::vector<unsigned int>& remove, Usul::Interfaces::IUnknown *caller );
 

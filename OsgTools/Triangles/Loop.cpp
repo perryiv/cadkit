@@ -12,18 +12,65 @@
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
 
-
 #include "osg/Matrix"
 #include "osg/Plane"
 #include "osg/ref_ptr"
+#include "osg/BoundingSphere"
 
 #include <algorithm>
 
 #include "Usul/Loops/FillLoop.h"
 #include "Usul/Loops/Direction.h"
+#include "Usul/Predicates/Tolerance.h"
 
 using namespace OsgTools::Triangles;
 
+namespace Detail
+{
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the center of the vec3array.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  osg::Vec3 center ( const osg::Vec3Array & vertices )
+  {
+    osg::Vec3 center;
+
+    //Add up all the points
+    for( osg::Vec3Array::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
+    {
+       center += *iter;
+    }
+
+    //Get the average for the center
+    center = center / vertices.size();
+
+    return center;
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the maximium distance from the center.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  float maxDistance ( const osg::Vec3Array & vertices, const osg::Vec3 & center )
+  {
+    float max ( std::numeric_limits< float >::min() );
+  
+    //Find the maximium distance from the center
+    for( osg::Vec3Array::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
+    {
+      const float t ( iter->length() );
+      if ( t > max )
+        max = t;
+    }
+
+    return max;
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,10 +80,21 @@ using namespace OsgTools::Triangles;
 
 Loop::Loop() : 
 _loop(),
-_innerLoops(),
-_start ( 0 ),
-_numTriangles ( 0 )
+_innerLoops()
 {  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Loop::Loop ( const Points &p ) : 
+_loop( p.begin(), p.end() ),
+_innerLoops()
+{
 }
 
 
@@ -59,10 +117,10 @@ Loop::~Loop()
 
 bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
 {
-  //Algorithm will fill this data structure with indices for the triangles
+  // Algorithm will fill this data structure with indices for the triangles.
   Triangles triangles;
 
-  //Triangulate
+  // Triangulate
   try
   {
     this->_triangulate ( triangles, caller );
@@ -74,17 +132,14 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
     this->_triangulate( triangles, caller );
   }
 
-  //Return false if there was a problem
+  // Return false if there was a problem.
   if ( triangles.empty() )
     return false;
-
-  //_start = _vertices->size();
-  _numTriangles = triangles.size();
 
   Usul::Interfaces::IAddTriangleSharedVertex::ValidQueryPtr addTriangle ( caller );
   Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
 
-  //Add the new triangles to the vec3array
+  // Add the new triangles to the vec3array.
   for( unsigned int i = 0; i < triangles.size(); ++i )
   {
     int n1 ( triangles[i][0] );
@@ -95,31 +150,32 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
     SharedVertexPtr sv2 ( _loop.at( n2 - 1 ) );
     SharedVertexPtr sv3 ( _loop.at( n3 - 1 ) );
     
-    //Get the vertices of this triangle. 3186504610
+    // Get the vertices of this triangle. 3186504610
     osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
     osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
     osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
 
-    //Calculate the normal
+    // Calculate the normal.
     const osg::Vec3 t1 ( v2 - v1 );
     const osg::Vec3 t2 ( v3 - v1 );
 
     osg::Vec3 norm ( t1 ^ t2 );
 
-    //Normalize the normal
+    // Normalize the normal.
     norm.normalize();
 
-    //Add the triangle
+    // Add the triangle.
     addTriangle->addTriangle( *sv1, *sv2, *sv3, norm, true, buildOnFly );
   }
 
-  //If we get here it succeeded
+  // If we get here it succeeded.
   return true;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build points for triangulation algorithm
+//  Build points for triangulation algorithm.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -169,7 +225,7 @@ void Loop::_buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &poin
   }
 
   //Go through any inner loops
-  for( std::list< Points >::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++ i )
+  for( std::vector< Points >::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++ i )
   {
     osg::ref_ptr <osg::Vec2Array> tPoints ( new osg::Vec2Array );
 
@@ -254,8 +310,13 @@ bool Loop::pointInside( const osg::Vec3 &point, Usul::Interfaces::IUnknown *call
   osg::Plane planeOne ( v1, v2, v3 );
   osg::Plane planeTwo ( v1, v2, point );
 
+  osg::Vec3 n1 ( planeOne.getNormal() );
+  osg::Vec3 n2 ( planeTwo.getNormal() );
+
+  float d ( planeOne.distance( point ) );
+
   //We are probably going to need some tolerence here
-  if( planeOne != planeTwo )
+  if( ( n1 * n2 ) > 0.25 && ( n1 * -n2 ) > 0.25 || ( d > 5.0 || d < -5.0 ) )
     return false;
 
   osg::Matrix matrix;
@@ -266,41 +327,35 @@ bool Loop::pointInside( const osg::Vec3 &point, Usul::Interfaces::IUnknown *call
   //Rotate the point into the proper plane
   osg::Vec3 pt ( point * matrix );
 
-  //Vector where the data will be copied to
-  osg::ref_ptr< osg::Vec3Array > copy ( new osg::Vec3Array );
-  copy->reserve( _loop.size() );
-  
-  //Copy and shift so pt is the origin
-  for( Loop::const_iterator iter = _loop.begin(); iter != _loop.end(); ++iter )
-  {
-    // Get the vertex
-    osg::Vec3 t ( getVertex->getVertex( (*iter)->index() ) );
+  // The vertices of this loop
+  osg::ref_ptr< osg::Vec3Array > vertices ( this->_vertices( caller ) );
 
+  //Copy and shift so pt is the origin
+  for( osg::Vec3Array::iterator iter = vertices->begin(); iter != vertices->end(); ++iter )
+  {
     //Translate point into proper plane
-    osg::Vec3 v ( t * matrix );
+    *iter = *iter * matrix;
 
     //Move so that pt is the origin
-    v = v - pt;
-
-    //Add the vertex to our vector
-    copy->push_back( v );
+    *iter -= pt;
   }
   
   unsigned int rCross ( 0 ); // number of right edge/ray crossings 
 
   // For each edge e=(i-1,i), see if crosses ray.
-  for( osg::Vec3Array::const_iterator iter = copy->begin(); iter != copy->end(); ++iter ) 
+  for( osg::Vec3Array::const_iterator iter = vertices->begin(); iter != vertices->end(); ++iter ) 
   {
     // First see if q=(0,0) is a vertex. 
     if ( iter->x() == 0 && iter->y() == 0 ) 
       return false;
 
     osg::Vec3Array::const_iterator prev ( iter - 1 );
-    if( iter == copy->begin() )
-      prev = copy->end() - 1;
+    if( iter == vertices->begin() )
+      prev = vertices->end() - 1;
 
     // if e "straddles" the x-axis... 
     if( ( ( iter->y() > 0 ) && ( prev->y() <= 0 ) ) || ( ( prev->y() > 0 ) && ( iter->y() <= 0 ) ) ) 
+    //if( ( iter->y() > 0 ) != ( prev->y() > 0 ) ) 
     { 
       // e straddles ray, so compute intersection with ray.
       double x = ( iter->x() * prev->y() - prev->x() * iter->y() ) / ( prev->y() - iter->y() );
@@ -311,12 +366,13 @@ bool Loop::pointInside( const osg::Vec3 &point, Usul::Interfaces::IUnknown *call
     }
   }
     
-  // q inside iff an odd number of crossings.
+  // point inside iff an odd number of crossings.
   if( (rCross % 2) == 1 )
     return true;
 
   //if we get here return false
   return false;
+
 }
 
 
@@ -333,18 +389,11 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
 
   Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
 
-  //Add up all the points
-  for( Loop::const_iterator iter = _loop.begin(); iter != _loop.end(); ++iter )
-  {
-    SharedVertexPtr sv ( *iter );
+  // Get the osg::Vec3Array.
+  osg::ref_ptr< osg::Vec3Array > vertices ( this->_vertices( caller ) );
 
-    osg::Vec3f v ( getVertex->getVertex( sv->index() ) );
-
-    center += v;
-  }
-
-  //Get the average for the center
-  center = center / _loop.size();
+  // Get the center point.
+  center = Detail::center ( *vertices );
 
   SharedVertexPtr sv1 ( _loop.at( 0 ) );
   SharedVertexPtr sv2 ( _loop.at( 1 ) );
@@ -364,19 +413,8 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
   //Normalize the normal
   normal.normalize();
 
-  float max ( std::numeric_limits< float >::min() );
+  float max ( Detail::maxDistance( *vertices, center ) );
   
-  //Find the maximium distance from the center
-  for( Loop::const_iterator iter = _loop.begin(); iter != _loop.end(); ++iter )
-  {
-    SharedVertexPtr sv ( *iter );
-
-    osg::Vec3 v ( getVertex->getVertex( sv->index() ) - center );
-    const float t ( v.length() );
-    if ( t > max )
-      max = t;
-  }
-
   //Back up from the center
   distance = 3 * max;
 
@@ -387,85 +425,6 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
   mat.makeLookAt( eye, center, normal );
 
   rotation.set( mat );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of planes that this loop in on
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Loop::getNumPlanes() const
-{
-  //TODO
-  return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Flip the normals that this loop created
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Loop::flipNormals()
-{
-#if 0
-  unsigned int numNormals ( _numTriangles );
-  unsigned int start ( _start );
-
-  if( _bindPerVertex )
-    numNormals *= 3;
-  else
-    start /= 3;
-
-  // Loop through the normals and negate them.
-  std::transform ( _normals->begin() + start, _normals->begin() + start + numNormals, _normals->begin() + start, std::negate<osg::Vec3>() );
-
-  _geometry->dirtyDisplayList();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Undo the triangles that this loop created
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Loop::undo()
-{
-#if 0
-  //Return if we don't have any triangles to remove
-  if( _numTriangles == 0 )
-    return;
-
-  //get the draw arrays
-  osg::ref_ptr<osg::DrawArrays> draw ( dynamic_cast < osg::DrawArrays * > ( _geometry->getPrimitiveSet ( 0 ) ) );
-
-  //remove the vertices
-  _vertices->erase( _vertices->begin() + _start, _vertices->begin() + _start + ( _numTriangles * 3 ) );
-
-  //remove the normals
-  unsigned int numNormals ( _numTriangles );
-  unsigned int normalStart ( _start );
-
-  if( _bindPerVertex )
-    numNormals *= 3;
-  else
-    normalStart /= 3;
-
-  _normals->erase( _normals->begin() + normalStart, _normals->begin() + normalStart + numNormals );
-
-  //set the new count
-  draw->setCount ( _vertices->size() );
-
-  _geometry->dirtyDisplayList();
-
-  _start = 0;
-  _numTriangles = 0;
-#endif
 }
 
 
@@ -483,3 +442,87 @@ const osg::Vec3f& Loop::vertex ( unsigned int i, Usul::Interfaces::IUnknown *cal
 
   return getVertex->getVertex( sv->index() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the osg::Vec3array from the loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3Array* Loop::_vertices( Usul::Interfaces::IUnknown *caller ) const
+{
+  Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
+
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  vertices->reserve( this->size() );
+
+  // Build the vec3array
+  for( Loop::const_iterator iter = _loop.begin(); iter != _loop.end(); ++iter )
+  {
+    SharedVertexPtr sv ( *iter );
+
+    osg::Vec3f v ( getVertex->getVertex( sv->index() ) );
+
+    vertices->push_back ( v );
+  }
+
+  return vertices.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of planes that the loop covers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
+{
+  typedef Usul::Math::Vector3< bool > Vec3b;
+
+  Vec3b changed ( true, true, true );
+
+  // The vertices of this loop
+  osg::ref_ptr< osg::Vec3Array > vertices ( this->_vertices( caller ) );
+
+  Usul::Predicates::Tolerance< float > equal ( 0.5 );
+
+  for( osg::Vec3Array::const_iterator iter = vertices->begin(); iter != vertices->end(); ++iter ) 
+  {
+    Vec3b c ( false, false, false );
+
+    osg::Vec3Array::const_iterator prev ( iter - 1 );
+    if( iter == vertices->begin() )
+      prev = vertices->end() - 1;
+
+    // Has x changed?
+    if( false == equal ( prev->x(), iter->x() ) )
+      c[0] = true;
+
+    if( false == equal ( prev->y(), iter->y() ) )
+      c[1] = true;
+
+    if( false == equal ( prev->z(), iter->z() ) )
+      c[2] = true;
+
+    changed[0] = changed[0] && c[0];
+    changed[1] = changed[1] && c[1];
+    changed[2] = changed[2] && c[2];
+  }
+
+  unsigned int count ( 0 );
+
+  if( false == changed[0] )
+    ++count;
+
+  if( false == changed[1] )
+    ++count;
+
+  if( false == changed[2] )
+    ++count;
+
+  //return count;
+  return 1.0;
+}
+

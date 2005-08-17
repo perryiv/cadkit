@@ -28,6 +28,7 @@
 #include "Usul/MPL/StaticAssert.h"
 
 #include "OsgTools/State.h"
+#include "OsgTools/Callbacks/BoundingBox.h"
 
 #include "osg/Group"
 #include "osg/Geode"

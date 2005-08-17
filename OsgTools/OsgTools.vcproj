@@ -441,6 +441,13 @@
 					RelativePath=".\Images\Threshold.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Callbacks"
+				Filter="">
+				<File
+					RelativePath=".\Callbacks\BoundingBox.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

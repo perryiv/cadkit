@@ -12,6 +12,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace osg { class Plane; class BoundingBox; }
 
 namespace Usul {
 namespace Interfaces {
@@ -26,7 +27,10 @@ struct IClippingPlanes : public Usul::Interfaces::IUnknown
 
   // Add/Remove clipping plane
   virtual void                  addClippingPlane ( ) = 0;
+  virtual void                  addClippingPlane ( const osg::Plane& plane ) = 0;
+  virtual void                  addClippingBox   ( const osg::BoundingBox& bb ) = 0;
   virtual void                  removeClippingPlane ( unsigned int ) = 0;
+  virtual void                  removeClippingPlanes (  ) = 0;
 
   // Get the number of clipping planes in the scene
   virtual unsigned int          numClippingPlanes () = 0;

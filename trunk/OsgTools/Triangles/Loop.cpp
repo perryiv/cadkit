@@ -63,7 +63,8 @@ namespace Detail
     //Find the maximium distance from the center
     for( osg::Vec3Array::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
     {
-      const float t ( iter->length() );
+      osg::Vec3 d ( *iter - center );
+      const float t ( d.length() );
       if ( t > max )
         max = t;
     }

@@ -111,8 +111,9 @@ void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, 
     root->addChild(this->_initXZMin() );
     root->addChild(this->_initYZMax() );
     root->addChild(this->_initYZMin() );
-#endif
+#else
     root->addChild ( this->_makeBoxGlass ( *vertices ) );
+#endif
   }
 
   // Add numbers to the bounding box.  This is mainly for debugging.

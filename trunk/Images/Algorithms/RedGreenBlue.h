@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Preey L Miller
+//  Copyright (c) 2005, Perry L Miller
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,8 +9,6 @@
 
 #ifndef _IMAGES_ALGORITHMS_TO_RED_GREEN_BLUE_H_
 #define _IMAGES_ALGORITHMS_TO_RED_GREEN_BLUE_H_
-
-#include "usul/Exceptions/Thrower.h"
 
 #include <algorithm>
 #include <numeric>
@@ -22,62 +20,79 @@ namespace Algorithms {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert the image to red-green-blue-alpha.
+//  Convert the image to red-green-blue.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class C1, class C2 > 
-bool toRedGreenBlue ( unsigned int channels, bool alpha, const C1 &input, C2 &output )
+template < class Channels > void redGreenBlue ( bool hasAlpha, Channels &channels )
 {
+  typedef typename Channels::value_type Channel;
+  typedef typename Channel::value_type ValueType;
+
   // Handle trivial case.
-  if ( input.empty() )
-    return false;
+  if ( channels.empty() )
+    return;
+
+  // Needed below.
+  const unsigned int size ( channels.at(0).size() );
 
   // If there is an alpha...
-  if ( alpha )
+  if ( hasAlpha )
   {
-    // Make sure the input is grey-scale.
-    if ( 2 != channels )
-      return false;
+    // Make the proper number of channels.
+    channels.resize ( 4 );
 
-    // Make space.
-    const unsigned int size ( input.size() / 2 );
-    output.resize ( size * 4 );
+    // Get shortcuts to the channels.
+    Channel &c0 ( channels.at(0) );
+    Channel &c1 ( channels.at(1) );
+    Channel &c2 ( channels.at(2) );
+    Channel &c3 ( channels.at(3) );
 
-    // Loop through the input.
+    // Make sure they are the proper size.
+    c0.resize ( size );
+    c1.resize ( size );
+    c2.resize ( size );
+    c3.resize ( size );
+
+    // Loop through the values.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      // Set the values.
-      output[i  ] = input[i];
-      output[i+1] = input[i];
-      output[i+2] = input[i];
-      output[i+3] = input[i];
+      // Grab alpha before we write over it.
+      ValueType a ( c1[i] );
+
+      // Green and blue get red's value.
+      c1[i] = c0[i];
+      c2[i] = c0[i];
+
+      // Assign alpha.
+      c1[i] = a;
     }
   }
 
   // Otherwise...
   else
   {
-    // Make sure the input is grey-scale.
-    if ( 1 != channels )
-      return false;
+    // Make the proper number of channels.
+    channels.resize ( 3 );
 
-    // Make space.
-    const unsigned int size ( input.size() );
-    output.resize ( size * 3 );
+    // Get shortcuts to the channels.
+    Channel &c0 ( channels.at(0) );
+    Channel &c1 ( channels.at(1) );
+    Channel &c2 ( channels.at(2) );
 
-    // Loop through the input.
+    // Make sure they are the proper size.
+    c0.resize ( size );
+    c1.resize ( size );
+    c2.resize ( size );
+
+    // Loop through the values.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      // Set the values.
-      output[i  ] = input[i];
-      output[i+1] = input[i];
-      output[i+2] = input[i];
+      // Green and blue get red's value.
+      c1[i] = c0[i];
+      c2[i] = c0[i];
     }
   }
-
-  // It worked.
-  return true;
 }
 
 

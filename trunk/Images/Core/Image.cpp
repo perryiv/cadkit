@@ -105,25 +105,85 @@ Usul::Interfaces::IUnknown *Image::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the width.
+//  Set the number of columns.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Image::width() const
+void Image::columns ( unsigned int c )
 {
-  return _image->width();
+  _image->columns ( c );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the height.
+//  Return the number of columns.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Image::height() const
+unsigned int Image::columns() const
 {
-  return _image->height();
+  return _image->columns();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::rows ( unsigned int r )
+{
+  _image->rows ( r );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Image::rows() const
+{
+  return _image->rows();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::layers ( unsigned int l )
+{
+  _image->layers ( l );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Image::layers() const
+{
+  return _image->layers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of channels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::channels ( unsigned int c )
+{
+  _image->channels ( c );
 }
 
 
@@ -214,9 +274,9 @@ void Image::read ( const std::string &name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Image::toGrayScale()
+void Image::grayScale()
 {
-  _image->toGrayScale();
+  _image->grayScale();
 }
 
 
@@ -226,9 +286,9 @@ void Image::toGrayScale()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Image::toRedGreenBlue()
+void Image::redGreenBlue()
 {
-  _image->toRedGreenBlue();
+  _image->redGreenBlue();
 }
 
 
@@ -406,11 +466,12 @@ void Image::getImageValues ( DataFloat64 &v ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Image::getImageDimensions ( unsigned int &w, unsigned int &h, unsigned int &c ) const
+void Image::getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const
 {
-  w = this->width();
-  h = this->height();
-  c = this->channels();
+  rows     = this->rows();
+  columns  = this->columns();
+  layers   = this->layers();
+  channels = this->channels();
 }
 
 
@@ -425,7 +486,9 @@ void Image::write ( std::ostream &out ) const
   Usul::Types::Uint32 bytes  ( this->bytes() );
   Usul::Types::Uint8 integer ( this->integer() );
 
-  out << bytes << integer;
+  out.write ( reinterpret_cast < const char * > ( &bytes    ), sizeof ( Usul::Types::Uint32 ) );
+  out.write ( reinterpret_cast < const char * > ( &integer  ), sizeof ( Usul::Types::Uint8  ) );
+
   _image->write ( out );
 }
 
@@ -441,11 +504,37 @@ void Image::read ( std::istream &in )
   Usul::Types::Uint32 bytes  ( 0 );
   Usul::Types::Uint8 integer ( 0 );
 
-  in >> bytes >> integer;
+  in.read ( reinterpret_cast < char * > ( &bytes   ), sizeof ( Usul::Types::Uint32 ) );
+  in.read ( reinterpret_cast < char * > ( &integer ), sizeof ( Usul::Types::Uint8  ) );
+
   if ( bytes > 0 )
   {
     Images::BaseImage::ValidRefPtr image ( Images::Factory::create ( bytes, 0 != integer, 0x0 ) );
     image->read ( in );
     _image = image;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the alpha state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Image::alpha() const
+{
+  return _image->alpha();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::alpha ( bool a )
+{
+  _image->alpha ( a );
 }

@@ -44,7 +44,7 @@ struct IGetImageData : public Usul::Interfaces::IUnknown
   enum { IID = iid_ };
 
   /// Get the image dimensions.
-  virtual void getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const = 0;
+  virtual void getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const = 0;
 
   /// Get the image values.
   virtual void getImageValues ( Values & ) const = 0;

@@ -131,8 +131,9 @@ TiffComponent::TiffComponent() : BaseClass(),
   _bytes       ( 0 ),
   _channels    ( 0 ),
   _integer     ( true ),
-  _width       ( 0 ),
-  _height      ( 0 )
+  _rows        ( 0 ),
+  _columns     ( 0 ),
+  _layers      ( 1 )
 {
 }
 
@@ -165,8 +166,9 @@ void TiffComponent::_init()
   _bytes       = 0;
   _channels    = 0;
   _integer     = true;
-  _width       = 0;
-  _height      = 0;
+  _rows        = 0;
+  _columns     = 0;
+  _layers      = 1;
 }
 
 
@@ -255,8 +257,9 @@ void TiffComponent::_readProperties ( TIFF *in, const std::string &filename )
   USUL_ASSERT ( 0x0 != in );
 
   // Get the info.
-  ::TIFFGetField ( in, TIFFTAG_IMAGEWIDTH, &_width );
-  ::TIFFGetField ( in, TIFFTAG_IMAGELENGTH, &_height );
+  ::TIFFGetField ( in, TIFFTAG_IMAGEWIDTH,  &_columns  );
+  ::TIFFGetField ( in, TIFFTAG_IMAGELENGTH, &_rows );
+  ::TIFFGetField ( in, TIFFTAG_IMAGEDEPTH,  &_layers  );
   ::TIFFGetFieldDefaulted ( in, TIFFTAG_SAMPLESPERPIXEL, &_channels );
 
   // Get the photometrics.
@@ -444,9 +447,10 @@ void TiffComponent::getImageValues ( DataFloat64 &v ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TiffComponent::getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const
+void TiffComponent::getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const
 {
-  width    = _width;
-  height   = _height;
+  rows     = _rows;
+  columns  = _columns;
+  layers   = _layers;
   channels = _channels;
 }

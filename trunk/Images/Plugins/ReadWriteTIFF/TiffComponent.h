@@ -66,7 +66,7 @@ public:
   TiffComponent();
 
   // Get the image dimensions.
-  virtual void                  getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const;
+  virtual void                  getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const;
 
   // Get the image values.
   virtual void                  getImageValues ( DataUint8   & ) const;
@@ -113,9 +113,9 @@ private:
   Usul::Types::Uint16 _bytes;
   Usul::Types::Uint16 _channels;
   bool _integer;
-  Usul::Types::Uint32 _width;
-  Usul::Types::Uint32 _height;
-  Usul::Types::Uint16 _orientation;
+  Usul::Types::Uint32 _rows;
+  Usul::Types::Uint32 _columns;
+  Usul::Types::Uint32 _layers;
 };
 
 

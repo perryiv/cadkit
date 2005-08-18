@@ -45,8 +45,9 @@ ItkComponent::ItkComponent() : BaseClass(),
   _bytes       ( 0 ),
   _channels    ( 0 ),
   _integer     ( true ),
-  _width       ( 0 ),
-  _height      ( 0 )
+  _rows        ( 0 ),
+  _columns     ( 0 ),
+  _layers      ( 1 )
 {
 }
 
@@ -79,8 +80,9 @@ void ItkComponent::_init()
   _bytes       = 0;
   _channels    = 0;
   _integer     = true;
-  _width       = 0;
-  _height      = 0;
+  _rows        = 0;
+  _columns     = 0;
+  _layers      = 1;
 }
 
 
@@ -180,7 +182,7 @@ void ItkComponent::read ( const std::string &filename, Unknown *caller )
 {
   // Open as 8-bit rgba.
   typedef unsigned char PixelType;
-  const unsigned int DIMENSION ( 4 );
+  const unsigned int DIMENSION ( 3 ); // Volume
   typedef itk::Image < PixelType, DIMENSION > ImageType;
   typedef ImageType::PixelContainer::Element Buffer;
   typedef itk::ImageFileReader < ImageType > ReaderType;
@@ -200,15 +202,18 @@ void ItkComponent::read ( const std::string &filename, Unknown *caller )
   _bytes    = sizeof ( PixelType );
   _channels = DIMENSION;
   _integer  = true;
-  _width    = image->GetBufferedRegion().GetSize()[0];
-  _height   = image->GetBufferedRegion().GetSize()[1];
+  _rows     = image->GetBufferedRegion().GetSize()[0];
+  _columns  = ( image->GetBufferedRegion().GetSize().GetSizeDimension() > 1 ) ? image->GetBufferedRegion().GetSize()[1] : 1;
+  _layers   = ( image->GetBufferedRegion().GetSize().GetSizeDimension() > 2 ) ? image->GetBufferedRegion().GetSize()[2] : 1;
 
   // Should be true.
   const unsigned int numPixels ( image->GetPixelContainer()->Size() );
-  if ( ( _width * _height ) != numPixels )
+  if ( ( _rows * _columns * _layers ) != numPixels )
     Usul::Exceptions::Thrower<std::runtime_error>
       ( "Error 3339041398: Number of pixel values (", numPixels, 
-        ") is not the same as width (", _width, ") times height (", _height, ")" );
+        ") is not the same as rows (", _rows, 
+        ") times columns (", _columns, 
+        ") times layers (", _layers, ")" );
 
   // Make room.
   _dataUint8.reserve ( numPixels * _channels );
@@ -218,7 +223,7 @@ void ItkComponent::read ( const std::string &filename, Unknown *caller )
   ConstIteratorType itr ( image, image->GetLargestPossibleRegion() );
   for ( itr.GoToBegin(); !itr.IsAtEnd(); ++itr )
   {
-    const ImageType::PixelType &pixel ( itr.Value() );
+    ImageType::PixelType pixel ( itr.Value() );
     _dataUint8.push_back ( pixel );
   }
 
@@ -261,9 +266,10 @@ void ItkComponent::getImageValues ( DataFloat64 &v ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ItkComponent::getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const
+void ItkComponent::getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const
 {
-  width    = _width;
-  height   = _height;
+  rows     = _rows;
+  columns  = _columns;
+  layers   = _layers;
   channels = _channels;
 }

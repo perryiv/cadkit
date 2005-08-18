@@ -79,6 +79,9 @@ protected:
   void                  _setTransSpeed     ( const std::string & );
   void                  _setRotSpeed       ( const std::string & );
   void                  _setScaleSpeed     ( const std::string & );
+  void                  _setSinterServer   ( const std::string & );
+  void                  _setSinterWriter   ( const std::string & );
+  void                  _setSinterTmpFile  ( const std::string & );
 
 private:
 

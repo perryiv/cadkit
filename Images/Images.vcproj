@@ -183,12 +183,18 @@
 					RelativePath=".\Core\ImageImpl.h">
 				</File>
 				<File
+					RelativePath=".\Core\Iterator.h">
+				</File>
+				<File
 					RelativePath=".\Core\TypeTraits.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Algorithms"
 				Filter="">
+				<File
+					RelativePath=".\Algorithms\Alpha.h">
+				</File>
 				<File
 					RelativePath=".\Algorithms\Contours.h">
 				</File>

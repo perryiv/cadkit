@@ -71,7 +71,7 @@ void copy1dTo2d ( const ArrayType source,
 
   // Initialize the starting point. Note: using pointer syntax was difficult 
   // with generic template parameter ArrayType. Need this to be generic to 
-  // accommodate somerthing like double array[5].
+  // accommodate something like double array[5].
   SizeType offset ( 0 );
 
   // Loop through rows.

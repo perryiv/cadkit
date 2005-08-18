@@ -27,54 +27,69 @@ namespace Algorithms {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class ValueContainer > 
-typename ValueContainer::iterator toGrayScale ( unsigned int channels, bool alpha, ValueContainer &values )
+template < class Channels > void grayScale ( bool hasAlpha, Channels &channels )
 {
-  typedef typename ValueContainer::iterator Itr;
-  typedef typename ValueContainer::value_type ValueType;
+  typedef typename Channels::value_type Channel;
 
   // Handle trivial case.
-  if ( values.empty() )
-    return values.end();
+  if ( channels.empty() )
+    return;
 
-  // If there are not enough channels.
-  if ( ( 0 == channels ) || ( 1 == channels ) || ( ( true == alpha ) && ( 2 == channels ) ) )
-    return values.end();
+  // Needed below.
+  const unsigned int size ( channels.at(0).size() );
 
-  // Should be true.
-  if ( 0 == ( values.size() % channels ) )
-    Usul::Exceptions::Thrower<std::runtime_error> 
-      ( "Error 3161031277: number of values (", values.size(), ") is not divisible by the number of channels (", channels, ")" );
-
-  // Iterator to the gray values.
-  Itr gray ( values.begin() );
-
-  // Number of values to average.
-  unsigned int numColors ( ( alpha ) ? channels - 1 : channels );
-
-  // This makes the compiler happy for the various data types.
-  const ValueType zero  ( static_cast < ValueType > ( 0 ) );
-  const ValueType three ( static_cast < ValueType > ( 3 ) );
-
-  // Loop through the values.
-  for ( Itr i = values.begin(); i != values.end(); ++i )
+  // RGBA
+  if ( true == hasAlpha && 4 == channels.size() )
   {
-    // Calculate the gray value.
-    ValueType average ( ( std::accumulate ( i, i + numColors, zero ) ) / three );
+    // Get shortcuts to the channels.
+    Channel &c0 ( channels.at(0) );
+    Channel &c1 ( channels.at(1) );
+    Channel &c2 ( channels.at(2) );
+    Channel &c3 ( channels.at(3) );
 
-    // Move iterator forward one less than the number of channels. 
-    // The "++i" in the loop above will increment the rest of the way.
-    std::advance ( i, ( channels - 1 ) );
+    // Make sure they are the proper size.
+    c0.resize ( size );
+    c1.resize ( size );
+    c2.resize ( size );
+    c3.resize ( size );
 
-    // Write the gray value to the container.
-    (*gray) = average;
+    // Loop through the values.
+    for ( unsigned int i = 0; i < size; ++i )
+    {
+      // Red gets average color.
+      c0[i] = ( c0[i] + c1[i] + c2[i] ) / 3;
 
-    // Increment the iterator to the gray value.
-    ++gray;
+      // Assign alpha.
+      c1[i] = c3[i];
+    }
+
+    // Now resize.
+    channels.resize ( 2 );
   }
 
-  // Return the new end of the gray values.
-  return gray;
+  // RGB
+  else if ( false == hasAlpha && 3 == channels.size() )
+  {
+    // Get shortcuts to the channels.
+    Channel &c0 ( channels.at(0) );
+    Channel &c1 ( channels.at(1) );
+    Channel &c2 ( channels.at(2) );
+
+    // Make sure they are the proper size.
+    c0.resize ( size );
+    c1.resize ( size );
+    c2.resize ( size );
+
+    // Loop through the values.
+    for ( unsigned int i = 0; i < size; ++i )
+    {
+      // Red gets average color.
+      c0[i] = ( c0[i] + c1[i] + c2[i] ) / 3;
+    }
+
+    // Now resize.
+    channels.resize ( 1 );
+  }
 }
 
 

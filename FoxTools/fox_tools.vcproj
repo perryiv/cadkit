@@ -731,6 +731,19 @@
 					RelativePath=".\Functors\SetText.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Builder"
+				Filter="">
+				<File
+					RelativePath=".\Builder\Factory.h">
+				</File>
+				<File
+					RelativePath=".\Builder\Reader.cpp">
+				</File>
+				<File
+					RelativePath=".\Builder\Reader.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -25,10 +25,10 @@ using namespace Images;
 ///////////////////////////////////////////////////////////////////////////////
 
 BaseImage::BaseImage() : BaseClass(),
-  _width    ( 0 ),
-  _height   ( 0 ),
-  _channels ( 0 ),
-  _alpha    ( false )
+  _rows    ( 0 ),
+  _columns ( 0 ),
+  _layers  ( 1 ),
+  _alpha   ( false )
 {
 }
 
@@ -40,10 +40,10 @@ BaseImage::BaseImage() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 BaseImage::BaseImage ( const BaseImage &b ) : BaseClass ( b ),
-  _width    ( b._width    ),
-  _height   ( b._height   ),
-  _channels ( b._channels ),
-  _alpha    ( b._alpha    )
+  _rows    ( b._rows    ),
+  _columns ( b._columns ),
+  _layers  ( b._layers  ),
+  _alpha   ( b._alpha   )
 {
 }
 
@@ -61,15 +61,15 @@ BaseImage::~BaseImage()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Resize the image.
+//  Set the size info.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BaseImage::resize ( unsigned int w, unsigned int h, unsigned int c )
+void BaseImage::_set ( unsigned int rows, unsigned int columns, unsigned int layers )
 {
-  _width    = w;
-  _height   = h;
-  _channels = c;
+  _rows    = rows;
+  _columns = columns;
+  _layers  = layers;
 }
 
 
@@ -82,4 +82,52 @@ void BaseImage::resize ( unsigned int w, unsigned int h, unsigned int c )
 void BaseImage::alpha ( bool a )
 {
   _alpha = a;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int BaseImage::size() const
+{
+  return ( this->rows() * this->columns() * this->layers() * this->channels() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int BaseImage::rows() const
+{
+  return _rows;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of columns.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int BaseImage::columns() const
+{
+  return _columns;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int BaseImage::layers() const
+{
+  return _layers;
 }

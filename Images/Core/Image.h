@@ -67,69 +67,80 @@ public:
   Image ( unsigned int bytes = 1, bool integer = true );
   Image ( const Image & );
 
-  // Get the number of bytes per channel-value.
-  unsigned int          bytes() const;
+  // Set/get if this image has an alpha channel.
+  void                        alpha ( bool );
+  bool                        alpha() const;
 
-  // Get the number of channels.
-  unsigned int          channels() const;
+  // Get the number of bytes per channel-value.
+  unsigned int                bytes() const;
+
+  // Set/get the number of channels.
+  void                        channels ( unsigned int c );
+  unsigned int                channels() const;
+
+  // Set/get the number of columns.
+  void                        columns ( unsigned int c );
+  unsigned int                columns() const;
 
   // Get extreme values in all the channels.
-  void                  extremes ( ValueCount &low, ValueCount &high ) const;
+  void                        extremes ( ValueCount &low, ValueCount &high ) const;
 
   // Get whether or not the pixel values are floating point.
-  bool                  floating() const;
+  bool                        floating() const;
 
   // Get the image dimensions.
-  virtual void          getImageDimensions ( unsigned int &width, unsigned int &height, unsigned int &channels ) const;
+  virtual void                getImageDimensions ( unsigned int &rows, unsigned int &columns, unsigned int &layers, unsigned int &channels ) const;
 
   // Get the image values.
-  virtual void          getImageValues ( DataUint8   & ) const;
-  virtual void          getImageValues ( DataUint16  & ) const;
-  virtual void          getImageValues ( DataUint32  & ) const;
-  virtual void          getImageValues ( DataFloat32 & ) const;
-  virtual void          getImageValues ( DataFloat64 & ) const;
+  virtual void                getImageValues ( DataUint8   & ) const;
+  virtual void                getImageValues ( DataUint16  & ) const;
+  virtual void                getImageValues ( DataUint32  & ) const;
+  virtual void                getImageValues ( DataFloat32 & ) const;
+  virtual void                getImageValues ( DataFloat64 & ) const;
 
   // Usul::Interfaces::IGetImageProperties
   // Get the number of bytes per value. IGetImageProperties
-  virtual unsigned int  getNumBytesPerValue() const;
+  virtual unsigned int        getNumBytesPerValue() const;
 
-  // Get the height.
-  unsigned int          height() const;
+  // Convert to grayscale.
+  void                        grayScale();
 
   // Calculate the histogram.
-  void                  histogram ( Histogram &h ) const;
+  void                        histogram ( Histogram &h ) const;
 
   // Set/get whether or not the pixel values are integers.
-  void                  integer ( bool state );
-  bool                  integer() const;
+  void                        integer ( bool state );
+  bool                        integer() const;
 
   // Usul::Interfaces::IGetImageProperties
   // See if the scalar values are integers.
-  virtual bool          isValueInteger() const;
+  virtual bool                isValueInteger() const;
+
+  // Set/get the number of layers. For a "regular" 2D image, this is 1.
+  void                        layers ( unsigned int d );
+  unsigned int                layers() const;
 
   // Assignment.
-  Image &               operator = ( const Image &image );
+  Image &                     operator = ( const Image &image );
 
   // Read the file.
-  void                  read ( const std::string &name );
-  void                  read ( std::istream &in );
-
-  // Get the width.
-  unsigned int          width() const;
-
-  // Convert to grayscale.
-  void                  toGrayScale();
+  void                        read ( const std::string &name );
+  void                        read ( std::istream &in );
 
   // Convert to rgb.
-  void                  toRedGreenBlue();
+  void                        redGreenBlue();
+
+  // Set/get the number of rows.
+  void                        rows ( unsigned int r );
+  unsigned int                rows() const;
 
   // Set/get the type of image.
-  void                  type ( unsigned int bytes, bool integer );
-  void                  type ( const TypeInfo & );
-  TypeInfo              type() const;
+  void                        type ( unsigned int bytes, bool integer );
+  void                        type ( const TypeInfo & );
+  TypeInfo                    type() const;
 
   // Write the dimensions and pixel data to the given stream.
-  void                  write ( std::ostream &out ) const;
+  void                        write ( std::ostream &out ) const;
 
 protected:
 

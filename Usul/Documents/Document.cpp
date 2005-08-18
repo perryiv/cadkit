@@ -303,7 +303,6 @@ void Document::insert ( Unknown *caller )
 
   // Ask for file names.
   const Filenames files ( fileDialog->getLoadFileNames ( "Insert", this->filtersInsert() ) );
-
   if ( files.empty() )
     return;
 

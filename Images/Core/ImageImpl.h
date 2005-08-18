@@ -17,9 +17,11 @@
 #define _IMAGES_TEMPLATE_IMAGE_IMPLEMENTATION_CLASS_H_
 
 #include "Images/Core/BaseImage.h"
+#include "Images/Core/Iterator.h"
 #include "Images/Core/TypeTraits.h"
 #include "Images/Algorithms/Grayscale.h"
 #include "Images/Algorithms/RedGreenBlue.h"
+#include "Images/Algorithms/Alpha.h"
 
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
@@ -47,11 +49,14 @@ public:
 
   typedef BaseImage BaseClass;
   typedef ValueType_ ValueType;
-  typedef std::vector<ValueType> Values;
-  typedef typename Values::iterator Itr;
-  typedef typename Values::const_iterator ConstItr;
+  typedef ImageImpl<ValueType> ThisType;
+  typedef std::vector<ValueType> Channel;
+  typedef std::vector<Channel> Channels;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef typename Images::TypeTraits<ValueType>::IGetImageData IGetImageData;
+  typedef typename IGetImageData::Values ImageDataValues;
+  typedef Images::Iterator<ThisType> Iterator;
+  typedef const Iterator ConstIterator;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -70,7 +75,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   ImageImpl ( Unknown *pixels = 0x0 ) : BaseClass(),
-    _values()
+    _channels()
   {
     // Set the pixels.
     this->setPixels ( pixels );
@@ -84,7 +89,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   ImageImpl ( const ImageImpl &image ) : BaseClass ( image ),
-    _values ( image._values )
+    _channels ( image._channels )
   {
   }
 
@@ -97,9 +102,161 @@ public:
 
   ImageImpl &operator = ( const ImageImpl &image )
   {
-    _values = image._values;
+    _channels = image._channels;
     BaseClass::operator = ( image );
     return *this;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the channel.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const Channel &channel ( unsigned int which ) const
+  {
+    return _channels.at ( which );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the channel.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Channel &channel ( unsigned int which )
+  {
+    return _channels.at ( which );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the number of channels.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual unsigned int channels() const
+  {
+    return _channels.size();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the number of channels.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void channels ( unsigned int c )
+  {
+    return _channels.resize ( c );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the number of rows.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual unsigned int rows() const
+  {
+    return BaseClass::rows();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the number of rows.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void rows ( unsigned int r )
+  {
+    USUL_ASSERT ( 0 ); // TODO
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the number of columns.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual unsigned int columns() const
+  {
+    return BaseClass::columns();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the number of columns.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void columns ( unsigned int c )
+  {
+    USUL_ASSERT ( 0 ); // TODO
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the number of layers.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual unsigned int layers() const
+  {
+    return BaseClass::layers();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the number of layers.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  virtual void layers ( unsigned int l )
+  {
+    USUL_ASSERT ( 0 ); // TODO
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return iterator to beginning.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Iterator begin()
+  {
+    return Iterator ( *this, false );
+  }
+  ConstIterator begin() const
+  {
+    return Iterator ( const_cast < ThisType & > ( *this ), false );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return iterator to end.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Iterator end()
+  {
+    return Iterator ( *this, true );
+  }
+  ConstIterator end() const
+  {
+    return Iterator ( const_cast < ThisType & > ( *this ), true );
   }
 
 
@@ -117,24 +274,23 @@ public:
       return;
 
     // Get the pixels.
-    typedef typename IGetImageData::Values ImageDataValues;
     ImageDataValues v;
-    unsigned int w ( 0 ), h ( 0 ), c ( 0 );
+    unsigned int rows ( 0 ), columns ( 0 ), layers ( 0 ), channels ( 0 );
     data->getImageValues ( v );
-    data->getImageDimensions ( w, h, c );
+    data->getImageDimensions ( rows, columns, layers, channels );
 
     // Check data.
-    if ( v.size() != w * h * c )
+    if ( v.size() != rows * columns * layers * channels )
     {
       Usul::Exceptions::Thrower<std::runtime_error>
         ( "Error 1598924701: there are ", v.size(), " values in the image array, but ",
-          "width = ", w, ", height = ", h, ", and number of channels = ", c,
-          ", which means there should be ", w * h * c, " values" );
+          "rows = ", rows, ", columns = ", columns, ", layers = ", layers, ", channels = ", channels,
+          ", which means there should be ", rows * columns * layers * channels, " values" );
     }
 
     // Set our data.
-    this->resize ( w, h, c );
-    std::copy ( v.begin(), v.end(), _values.begin() );
+    this->resize ( rows, columns, layers, channels );
+    std::copy ( v.begin(), v.end(), this->begin() );
   }
 
 
@@ -159,40 +315,32 @@ public:
   void extremes ( ValueCount &low, ValueCount &high ) const
   {
     USUL_ASSERT ( 0 ); // Heads up...
-#if 0
-    // The login of this function relies on the histogram being sorted.
-    typedef std::map < double, unsigned int > OneChannelHistogramType;
-    typedef std::vector < unsigned int, OneChannelHistogram > HistogramType;
-    USUL_ASSERT_SAME_TYPE ( Histogram, HistogramType );
+  }
 
-    // Must be at least two values.
-    if ( _values.size() < 2 )
-      return;
 
-    // Get the histogram.
-    Histogram h;
-    this->histogram ( h );
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Calculate the histogram.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
-    // Iterators to first and last.
-    Histogram::iterator a ( h.begin() );
-    Histogram::iterator b ( h.end()   );
+  virtual void histogram ( unsigned int whichChannel, OneChannelHistogram &h ) const
+  {
+    // Get the channel.
+    const Channel &channel ( _channels.at ( whichChannel ) );
 
-    // For each channel...
-    for ( unsigned int i = 0; i < this->channels(); ++i )
+    // Loop through the values.
+    for ( typename Channel::const_iterator i = channel.begin(); i != channel.end(); ++i )
     {
-      // Find the first non-zero value.
-      low = *a;
-      if ( 0 == low.first )
-      {
-        ++a;
-        low = *a;
-      }
+      // Get the value.
+      const ValueType &value ( *i );
 
-      // The last values should be the high.
-      --b;
-      high = *b;
+      // Get reference to the count in the map.
+      unsigned int &count = h[value];
+
+      // Increment this value in the map.
+      ++count;
     }
-#endif
   }
 
 
@@ -207,20 +355,11 @@ public:
     // Make sure there is room for every channel.
     h.resize ( this->channels() );
 
-    // Loop through the values.
-    for ( unsigned int i = 0; i < _values.size(); ++i )
+    // Loop through the channels.
+    for ( unsigned int i = 0; i < _channels.size(); ++i )
     {
-      // Get the value.
-      const ValueType value ( _values[i] );
-
-      // Get the channel.
-      const unsigned int channel ( i % this->channels() );
-
-      // Get reference to the count in the map.
-      unsigned int &count = h.at(channel)[value];
-
-      // Increment this value in the map.
-      ++count;
+      // Calculate histogram on this channel.
+      this->histogram ( i, h.at(i) );
     }
   }
 
@@ -231,10 +370,9 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void toGrayScale()
+  virtual void grayScale()
   {
-    Itr end ( Images::Algorithms::toGrayScale ( this->channels(), this->alpha(), _values ) );
-    _values.erase ( end, _values.end() );
+    Images::Algorithms::grayScale ( this->alpha(), _channels );
   }
 
 
@@ -244,11 +382,9 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void toRedGreenBlue()
+  virtual void redGreenBlue()
   {
-    Values values;
-    if ( Images::Algorithms::toRedGreenBlue ( this->channels(), this->alpha(), _values, values ) )
-      _values = values;
+    Images::Algorithms::redGreenBlue ( this->alpha(), _channels );
   }
 
 
@@ -258,10 +394,23 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void resize ( unsigned int w, unsigned int h, unsigned int c )
+  void resize ( unsigned int rows, 
+                unsigned int columns, 
+                unsigned int layers, 
+                unsigned int channels )
   {
-    _values.resize ( w * h * c );
-    BaseClass::resize ( w, h, c );
+    // Set the number of channels.
+    _channels.resize ( channels );
+
+    // The number of values.
+    const unsigned int size ( rows * columns * layers );
+
+    // Loop through the channels and set their sizes.
+    for ( typename Channels::iterator i = _channels.begin(); i != _channels.end(); ++i )
+      (*i).resize ( size );
+
+    // Set base class's members.
+    this->_set ( rows, columns, layers );
   }
 
 
@@ -297,11 +446,17 @@ public:
 
   template < class ContainerType > scalars ( ContainerType &v ) const
   {
-    typedef typename ContainerType::value_type ContainerValueType;
-    const unsigned int num ( _values.size() );
-    v.resize ( num );
-    for ( unsigned int i = 0; i < num; ++i )
-      v[i] = static_cast < ContainerValueType > ( _values[i] );
+    typedef typename ContainerType::iterator Itr;
+    typedef typename ContainerType::value_type Type;
+
+    const unsigned int size ( this->size() );
+    v.resize ( size );
+    ConstIterator from ( this->begin() );
+
+    for ( Itr to = v.begin(); to != v.end(); ++to, ++from )
+    {
+      (*to) = static_cast < Type > ( *from );
+    }
   }
 
 
@@ -341,22 +496,25 @@ public:
 
   virtual void read ( std::istream &in )
   {
-    Usul::Types::Uint32 w ( 0 );
-    Usul::Types::Uint32 h ( 0 );
-    Usul::Types::Uint32 c ( 0 );
-    Usul::Types::Uint8  a ( 0 );
+    Usul::Types::Uint32 rows     ( 0 );
+    Usul::Types::Uint32 columns  ( 0 );
+    Usul::Types::Uint32 layers   ( 0 );
+    Usul::Types::Uint32 channels ( 0 );
+    Usul::Types::Uint8  alpha    ( 0 );
 
-    in.read ( reinterpret_cast < char * > ( &w ), sizeof ( Usul::Types::Uint32 ) );
-    in.read ( reinterpret_cast < char * > ( &h ), sizeof ( Usul::Types::Uint32 ) );
-    in.read ( reinterpret_cast < char * > ( &c ), sizeof ( Usul::Types::Uint32 ) );
-    in.read ( reinterpret_cast < char * > ( &a ), sizeof ( Usul::Types::Uint8  ) );
+    in.read ( reinterpret_cast < char * > ( &rows     ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &columns  ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &layers   ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &channels ), sizeof ( Usul::Types::Uint32 ) );
+    in.read ( reinterpret_cast < char * > ( &alpha    ), sizeof ( Usul::Types::Uint8  ) );
 
-    const unsigned long size ( w * h * c * this->bytes() );
-    if ( size > 0 )
+    this->resize ( rows, columns, layers, channels );
+
+    for ( unsigned int i = 0; i < _channels.size(); ++i )
     {
-      this->resize ( w, h, c );
-      this->alpha ( a > 0 );
-      in.read ( reinterpret_cast < char * > ( &_values[0] ), size );
+      Channel &channel = _channels.at(i);
+      const unsigned int size ( channel.size() * this->bytes() );
+      in.read ( reinterpret_cast < char * > ( &channel[0] ), size );
     }
   }
 
@@ -369,20 +527,23 @@ public:
 
   virtual void write ( std::ostream &out ) const
   {
-    Usul::Types::Uint32 w ( this->width()    );
-    Usul::Types::Uint32 h ( this->height()   );
-    Usul::Types::Uint32 c ( this->channels() );
-    Usul::Types::Uint8  a ( ( this->alpha() ) ? 1 : 0 );
+    Usul::Types::Uint32 rows     ( this->rows()     );
+    Usul::Types::Uint32 columns  ( this->columns()  );
+    Usul::Types::Uint32 layers   ( this->layers()   );
+    Usul::Types::Uint32 channels ( this->channels() );
+    Usul::Types::Uint8  alpha    ( ( this->alpha() ) ? 1 : 0 );
 
-    out.write ( reinterpret_cast < const char * > ( &w ), sizeof ( Usul::Types::Uint32 ) );
-    out.write ( reinterpret_cast < const char * > ( &h ), sizeof ( Usul::Types::Uint32 ) );
-    out.write ( reinterpret_cast < const char * > ( &c ), sizeof ( Usul::Types::Uint32 ) );
-    out.write ( reinterpret_cast < const char * > ( &a ), sizeof ( Usul::Types::Uint8  ) );
+    out.write ( reinterpret_cast < const char * > ( &rows     ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &columns  ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &layers   ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &channels ), sizeof ( Usul::Types::Uint32 ) );
+    out.write ( reinterpret_cast < const char * > ( &alpha    ), sizeof ( Usul::Types::Uint8  ) );
 
-    if ( false == _values.empty() )
+    for ( unsigned int i = 0; i < _channels.size(); ++i )
     {
-      const unsigned long size ( this->bytes() * _values.size() );
-      out.write ( reinterpret_cast < const char * > ( &_values[0] ), size );
+      const Channel &channel = _channels.at(i);
+      const unsigned int size ( channel.size() * this->bytes() );
+      out.write ( reinterpret_cast < const char * > ( &channel[0] ), size );
     }
   }
 
@@ -406,7 +567,7 @@ private:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Values _values;
+  Channels _channels;
 };
 
 

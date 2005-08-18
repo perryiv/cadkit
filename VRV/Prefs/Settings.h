@@ -184,6 +184,14 @@ public:
   void                  selectionColor ( const Color &c ) { _selectColor = c; }
   void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }
 
+  // Set/get the sinterpoint specific information
+  void                  sinterPointServer ( std::string s ) { _sinterServer = s; }
+  const std::string     sinterPointServer() { return _sinterServer; }
+  void                  sinterPointWriter ( std::string s ) { _sinterWriter = s; }
+  const std::string     sinterPointWriter() { return _sinterWriter; }
+  void                  sinterPointTmpFile ( std::string s ) { _sinterTmpFile = s; }
+  const std::string     sinterPointTmpFile() { return _sinterTmpFile; }
+
 protected:
 
   // Use reference counting.
@@ -223,6 +231,9 @@ private:
   float _rotSpeed;
   float _scaleSpeed;
   Color _selectColor;
+  std::string _sinterServer;
+  std::string _sinterWriter;
+  std::string _sinterTmpFile;
 };
 
 

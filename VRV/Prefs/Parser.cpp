@@ -149,6 +149,9 @@ void Parser::_read ( const std::string &filename )
   MemFun setTransSpeed     ( this, &Parser::_setTransSpeed     );
   MemFun setRotSpeed       ( this, &Parser::_setRotSpeed       );
   MemFun setScaleSpeed     ( this, &Parser::_setScaleSpeed     );
+  MemFun setSinterServer   ( this, &Parser::_setSinterServer   );
+  MemFun setSinterWriter   ( this, &Parser::_setSinterWriter   );
+  MemFun setSinterTmpFile  ( this, &Parser::_setSinterTmpFile  );
 
   // Declare the reader and add the callbacks.
   XmlReader reader;
@@ -186,6 +189,9 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "speed/translate",          setTransSpeed     );
   Helper::add ( reader, start, "speed/rotate",             setRotSpeed       );
   Helper::add ( reader, start, "speed/scale",              setScaleSpeed     );
+  Helper::add ( reader, start, "sinterpoint/server",       setSinterServer   );
+  Helper::add ( reader, start, "sinterpoint/writer",       setSinterWriter   );
+  Helper::add ( reader, start, "sinterpoint/tmp_file",     setSinterTmpFile  );
 
   // Read the file.
   try
@@ -697,4 +703,42 @@ void Parser::_setScaleSpeed ( const std::string &s )
 {
   ErrorChecker ( 2973371103u, !s.empty() );
   _settings->scaleSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the SinterPoint server
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setSinterServer ( const std::string &s )
+{
+  ErrorChecker ( 2973371104u, !s.empty() );
+  _settings->sinterPointServer( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the SinterPoint writer
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setSinterWriter ( const std::string &s )
+{
+  ErrorChecker ( 2973371105u, !s.empty() );
+  _settings->sinterPointWriter( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the SinterPoint tmp file
+//
+///////////////////////////////////////////////////////////////////////////////
+void Parser::_setSinterTmpFile ( const std::string &s )
+{
+  ErrorChecker ( 2973371106u, !s.empty() );
+  _settings->sinterPointTmpFile( s );
 }

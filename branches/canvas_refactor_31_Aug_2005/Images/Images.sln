@@ -1,0 +1,58 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Images", "Images.vcproj", "{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Images Test 1", "Examples\Example01\Example01.vcproj", "{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4} = {C9C67B1C-4E30-429F-9B38-7C04CA236FF4}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Usul", "..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: IO TIFF", "Plugins\ReadWriteTIFF\ReadWriteTIFF.vcproj", "{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: ITK", "Plugins\ItkWrapper\ItkWrapper.vcproj", "{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Debug.ActiveCfg = Debug|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Debug.Build.0 = Debug|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Release.ActiveCfg = Release|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Release.Build.0 = Release|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Debug.ActiveCfg = Debug|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Debug.Build.0 = Debug|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Release.ActiveCfg = Release|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Release.Build.0 = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug.ActiveCfg = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug.Build.0 = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release.ActiveCfg = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release.Build.0 = Release|Win32
+		{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}.Debug.ActiveCfg = Debug|Win32
+		{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}.Debug.Build.0 = Debug|Win32
+		{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}.Release.ActiveCfg = Release|Win32
+		{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}.Release.Build.0 = Release|Win32
+		{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}.Debug.ActiveCfg = Debug|Win32
+		{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}.Debug.Build.0 = Debug|Win32
+		{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}.Release.ActiveCfg = Release|Win32
+		{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

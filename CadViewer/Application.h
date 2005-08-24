@@ -54,11 +54,16 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <fstream>
+
+#if defined (USE_SINTERPOINT)
+# include "SinterAppData.h"
+#endif
 
 
 namespace CV {
 
-
+	
 class Application : public osgVRJ::Application,
                     public CV::Interfaces::IApplication,
                     public CV::Interfaces::IAuxiliaryScene,
@@ -306,7 +311,7 @@ protected:
   // Navigate if we are supposed to.
   void                          _navigate();
 
-  // Get the number of selected
+    // Get the number of selected
   unsigned int                 _numSelected();
 
   // Parse the command-line arguments.
@@ -526,7 +531,26 @@ protected:
   std::vector<OsgTools::Grid*> _gridFunctors;
   bool              _textures;
   GroupPtr          _scribeBranch;
+
+  // Used for networked file loading with SinterPoint, if enabled
+# if defined (USE_SINTERPOINT)
+    void                   _sinterPointInit();
+    void                   _sinterReceiveModelPreFrame();
+    void                   _sinterReceiveModelPostFrame();
+    sinter::Receiver       _sinterReceiver;
+    std::ofstream          _sinterFile;
+
+    cluster::UserData< SinterAppData >  _sinterAppData;
+
+    // These are static for use in the callback function
+    static int             _sinterCallback ( const char *data, const int size );
+    static std::string     _sinterFileData;
+    static vpr::Mutex      _sinterMutex;
+    static SinterFileState _sinterFileState;
+# endif
 };
+
+
 
 
 }; // namespace CV

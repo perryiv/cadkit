@@ -487,6 +487,11 @@ void Application::_init()
   this->_handleNavigationEvent( NAVIGATE_NO_NAV );   // activate default navigation
                                                           // TODO: read from _pref
   // Note: we cannot initialize the text yet because the viewport has not been set.
+  
+  // Setup Sinterpoint if enabled
+# if defined (USE_SINTERPOINT)
+    this->_sinterPointInit();
+# endif
 }
 
 
@@ -1010,6 +1015,11 @@ void Application::_preFrame()
 
   // Navigate if we are supposed to.
   this->_navigate();
+
+  // Check to see if we are receiving a model, if enabled
+# if defined (USE_SINTERPOINT)
+    this->_sinterReceiveModelPreFrame();
+# endif
 }
 
 
@@ -1362,6 +1372,12 @@ void Application::_postFrame()
     if ( this->getFrameStamp()->getFrameNumber() > 10 )
       this->_initText();
 #endif
+
+  // Last steps after application data sync
+# if defined (USE_SINTERPOINT)
+    this->_sinterReceiveModelPostFrame();
+# endif
+
 }
 
 
@@ -3054,3 +3070,258 @@ void Application::_updateSceneTool()
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Static variables necessary for use with the sinterpoint callback
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+    std::string     Application::_sinterFileData;
+    vpr::Mutex      Application::_sinterMutex;
+    SinterFileState Application::_sinterFileState;
+# endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Setup SinterPoint, if enabled
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+
+  void Application::_sinterPointInit()
+  {
+    // If the machine name is the same as the writer...
+    const std::string host    ( Usul::System::Host::name() );
+    const std::string writer = _prefs->sinterPointWriter();
+
+    // Make sure there is a writer-machine.
+    ErrorChecker ( 2519309141u, !writer.empty(), 
+      "No machine specified as the Sinter Point Writer in user-preferences." );
+
+    // The writer alone uses sinterpoint
+    if ( host == writer )
+    {
+      _sinterReceiver.SetType ( "DEMO" );
+      _sinterReceiver.SetVersion ( "1.0" );
+      _sinterReceiver.SetMaxSend ( 1 );
+
+      // Connect to server
+      std::string server = _prefs->sinterPointServer();
+      int result = _sinterReceiver.Connect ( server.c_str() );
+      if (result!=0) 
+      {
+        std::cout << "ERROR in SinterPoint = " << result << std::endl;
+        std::cout << "      SinterPoint reciever failed to connect to: " << server.c_str() << std::endl;
+        std::cout << "      SinterPoint communication will be unusable" << std::endl;
+      }
+      else{
+        // give function pointer to receiver
+        _sinterReceiver.OnReceive ( &_sinterCallback ); 	  
+
+        std::cout << "SinterPoint connected successfully" << std::endl;
+      }
+
+      // Start out doing nothing
+      _sinterFileState = NOTHING;
+    }
+
+    // Now everyone initializes the SinterAppData
+    vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
+    _sinterAppData.init(newGuid);
+  }
+
+# endif
+
+    
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Obtain a model across the network with SinterPoint - preFrame portion
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+
+  void Application::_sinterReceiveModelPreFrame()
+  {
+    ErrorChecker ( 2346088800u, isAppThread(), CV::NOT_APP_THREAD );
+
+    // If the machine name is the same as the writer...
+    const std::string host    ( Usul::System::Host::name() );
+    const std::string writer = _prefs->sinterPointWriter();
+
+    // Make sure there is a writer-machine.
+    ErrorChecker ( 2519309141u, !writer.empty(), 
+      "No machine specified as the Sinter Point Writer in user-preferences." );
+
+    // The writer obtains the new osg file from Sinterpoint and writes it out
+    if ( host == writer )
+    {
+      int length;
+
+      // Share the state
+      _sinterAppData->_state = _sinterFileState;
+
+      if ( _sinterFileState == RECEIVING )
+      {
+        // Keep grabbing data from SinterPoint and writing it out
+        if ( !_sinterFile.is_open() ){
+          _sinterFile.open ( _prefs->sinterPointTmpFile().c_str() );
+        }
+        _sinterMutex.acquire();
+        length = _sinterFileData.length();
+        if ( length!=0 )
+        {
+          // Share the data across the cluster
+          _sinterAppData->_data = _sinterFileData;
+          
+          // Write the data to a file
+          _sinterFile.write ( _sinterFileData.c_str(), length );
+          _sinterFileData.clear();
+        }
+        _sinterMutex.release();
+      }
+
+      else  if ( _sinterFileState == DONE )
+      {
+        // Grab the last data chunk, if needed, write it out then close
+        length = _sinterFileData.length();
+        if ( length!=0 )
+        {
+          // Share the data across the cluster
+          _sinterAppData->_data = _sinterFileData;
+          
+          // Write the data to a file
+          _sinterFile.write ( _sinterFileData.c_str(), length );
+          _sinterFileData.clear();
+        }
+        _sinterFile.close();
+      }
+    }
+
+    // Other machines simply receive ApplicationData and write it out
+    else
+    {
+      // Get the data and state
+      _sinterFileData = _sinterAppData->_data;
+      _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
+    }
+  }
+
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Obtain a model across the network with SinterPoint - postFrame portion
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+
+  void Application::_sinterReceiveModelPostFrame()
+  {
+    ErrorChecker ( 2346088801u, isAppThread(), CV::NOT_APP_THREAD );
+
+    // If the machine name is the same as the writer...
+    const std::string host    ( Usul::System::Host::name() );
+    const std::string writer = _prefs->sinterPointWriter();
+
+    // Make sure there is a writer-machine.
+    ErrorChecker ( 2519309142u, !writer.empty(), 
+      "No machine specified as the Sinter Point Writer in user-preferences." );
+
+    // The writer will just load the file
+    if ( host == writer )
+    {
+      if ( _sinterFileState == DONE ){
+        // Load the completed file
+        this->_loadModelFile ( _prefs->sinterPointTmpFile().c_str() );
+
+        // Finished
+        _sinterFileState = NOTHING;
+      }
+    }
+
+    // Other machines simply receive ApplicationData and write it out
+    else
+    {
+      int length;
+
+      // Get the data and state
+      _sinterFileData = _sinterAppData->_data;
+      _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
+
+      if ( _sinterFileState == RECEIVING ) {
+        // Keep grabbing data from SinterPoint and writing it out
+        if ( !_sinterFile.is_open() ){
+          _sinterFile.open ( _prefs->sinterPointTmpFile().c_str() );
+        }
+        length = _sinterFileData.length();
+        if ( length!=0 )
+        {
+          // Write the data to a file
+          _sinterFile.write ( _sinterFileData.c_str(), length );
+          _sinterFileData.clear();
+        }
+      }
+
+      else if (_sinterFileState == DONE) {
+        // Grab the last data chunk, if needed, write it out then close
+        length = _sinterFileData.length();
+        if ( length!=0 )
+        {
+          // Write the data to a file
+          _sinterFile.write ( _sinterFileData.c_str(), length );
+          _sinterFileData.clear();
+        }
+        _sinterFile.close();
+
+        // Now load
+        this->_loadModelFile ( _prefs->sinterPointTmpFile().c_str() );
+      }
+    }
+  }
+
+#endif
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SinterPoint callback to obtain a model across the network
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+
+  int Application::_sinterCallback ( const char *data, const int size )
+  {
+    _sinterMutex.acquire();
+    std::string msg = data;
+
+    // Clean off the trailing characters SinterPoint tends to leave on
+    msg.erase ( size, msg.size() );
+
+    if ( msg=="EOFEOFEOF" )
+    {
+      _sinterFileState = DONE;
+    }
+    else
+    {
+      // Add the newline back on and append to the Data
+      msg += "\n";
+      _sinterFileData += msg;
+      _sinterFileState = RECEIVING;
+    }
+
+    _sinterMutex.release();
+  }
+
+#endif
+
+

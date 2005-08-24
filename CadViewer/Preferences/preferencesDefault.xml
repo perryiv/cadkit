@@ -113,5 +113,10 @@
       </comment>
       <scale>      0.75 </scale>
     </speed>
+	<sinterpoint>
+	  <server>stalfos</server>
+	  <writer>stalfos</writer>
+	  <tmp_file>/tmp/sinterTmpFile.osg</tmp_file>
+	</sinterpoint>
   </preferences>
 </cv>

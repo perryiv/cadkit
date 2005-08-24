@@ -1,3 +1,6 @@
+SINTERPOINT = NO
+#NO/YES
+
 SOURCE = \
 	Application.cpp \
 	AppCallbacks.cpp \
@@ -31,8 +34,8 @@ SOURCE = \
 OS := $(shell uname)
 COMPILER        = c++
 DEBUG_FLAGS     = -g -D_DEBUG -D_DEBUG_PRINT
-#COMPILER_FLAGS  = -I/usr/include/glib-1.2 -I/usr/lib/glib/include/ -DHAVE_GLIB
-#LINKER_FLAGS    = -lglib
+COMPILER_FLAGS  = 
+LINKER_FLAGS    = 
 JUGGLER_LIB_DIR = ${VJ_BASE_DIR}/lib
 
 # Change some settings when on irix.
@@ -48,9 +51,6 @@ ifeq ($(findstring Cygwin,$(OS)),Cygwin)
 COMPILER_FLAGS = -I$(NSPR_ROOT)/include
 COMPILER = g++
 endif
-
-COMPILE_COMMAND = $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)
-LINK_COMMAND		= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
 
 BIN_DIR = ../bin
 
@@ -93,6 +93,16 @@ OPEN_THREADS_LIBS = \
 STANDARD_LIBS = \
 	-lGL \
 	-lm
+
+# Add sinterpoint if requested
+ifeq "$(SINTERPOINT)" "YES"
+COMPILER_FLAGS	+= -DUSE_SINTERPOINT 
+INCLUDES		+= -I$(SINTERPOINT_BASE_DIR)/include
+LOCAL_LIBS		+= -L$(SINTERPOINT_BASE_DIR)/lib -lsinter
+endif
+
+COMPILE_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)
+LINK_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
 
 LIBS = $(LOCAL_LIBS) $(JUGGLER_LIBS) $(OSG_LIBS) $(OPEN_THREADS_LIBS) $(STANDARD_LIBS)
 

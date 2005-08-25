@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+// Interface for triangulating a 2D loop of vertices.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,11 +17,10 @@
 #define __USUL_INTERFACES_TRIANGULATE_H__
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "osg/Array"
 #include "Usul/Math/Vector2.h"
 
+#include <vector>
 
-namespace osg { class Array; }
 
 namespace Usul {
 namespace Interfaces {
@@ -29,7 +28,7 @@ namespace Interfaces {
 
 struct ITriangulate : public Usul::Interfaces::IUnknown
 {
-
+  // Useful typedef(s).
   typedef std::vector<Usul::Math::Vec2d> Vertices;
 
   /// Smart-pointer definitions.
@@ -38,12 +37,9 @@ struct ITriangulate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3661762526u };
 
-  // Get normal for the i'th vertex.
-  virtual void triangulate( const Vertices &inVertices, Vertices &outVertices ) = 0;
-
-
-}; //struct __USUL_INTERFACES_TRIANGULATE_H__
-
+  // Triangulate the loop.
+  virtual void triangulate ( const Vertices &in, Vertices &out ) = 0;
+};
 
 
 }

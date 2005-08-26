@@ -31,9 +31,9 @@ using namespace Usul::System;
 
 Usul::Types::Uint64 Usul::System::milliseconds() 
 {
-#ifdef _WIN32
+#ifndef __APPLE__
   return ::clock();
-#elif defined(__APPLE__)
+#else
   struct timeval t1;
   gettimeofday(&t1, NULL);
   Usul::Types::Uint64 seconds ( t1.tv_sec );
@@ -41,7 +41,6 @@ Usul::Types::Uint64 Usul::System::milliseconds()
   seconds *= 1000;
   microSec /= 1000;
   return seconds + microSec; // Both in milliseconds at this point.
-#else
-  TODO
 #endif
 }
+

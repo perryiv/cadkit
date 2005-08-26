@@ -22,6 +22,7 @@
 #include "XmlDom/Filter.h"
 
 #include <string>
+#include <stdexcept>
 
 
 namespace XML {

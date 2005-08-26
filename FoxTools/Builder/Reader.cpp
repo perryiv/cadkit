@@ -44,7 +44,7 @@ using namespace FoxTools::Builder;
 ///////////////////////////////////////////////////////////////////////////////
 
 #define REGISTER_FACTORY(factory_type,parent_type,class_type)\
-  _factories[#class_type] = new FoxTools::Builder::##factory_type < FX::##parent_type, FX::##class_type >
+  _factories[#class_type] = new factory_type < parent_type, class_type >
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,12 +70,12 @@ Reader::Reader() :
   _hints()
 {
   // Factories.
-  REGISTER_FACTORY ( NeedsOwnerAndString, FXComposite, FXDialogBox );
-  REGISTER_FACTORY ( NeedsOwnerAndString, FXComposite, FXLabel );
-  REGISTER_FACTORY ( NeedsParent, FXComposite, FXHorizontalFrame );
-  REGISTER_FACTORY ( NeedsParent, FXComposite, FXVerticalFrame );
-  REGISTER_FACTORY ( NeedsParent, FXComposite, FXHorizontalSeparator );
-  REGISTER_FACTORY ( NeedsParent, FXComposite, FXVerticalSeparator );
+  REGISTER_FACTORY ( NeedsOwnerAndString, FX::FXComposite, FX::FXDialogBox );
+  REGISTER_FACTORY ( NeedsOwnerAndString, FX::FXComposite, FX::FXLabel );
+  REGISTER_FACTORY ( NeedsParent, FX::FXComposite, FX::FXHorizontalFrame );
+  REGISTER_FACTORY ( NeedsParent, FX::FXComposite, FX::FXVerticalFrame );
+  REGISTER_FACTORY ( NeedsParent, FX::FXComposite, FX::FXHorizontalSeparator );
+  REGISTER_FACTORY ( NeedsParent, FX::FXComposite, FX::FXVerticalSeparator );
 
   // Layout hints.
   REGISTER_LAYOUT_HINT ( LAYOUT_NORMAL );

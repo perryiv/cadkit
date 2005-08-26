@@ -62,21 +62,16 @@ TriangleSet::TriangleSet() : BaseClass(),
   _bb(),
   _partition (  )
 {
-#ifndef __APPLE__ // They are different, but it is not critical. TODO.
-  USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
+#ifdef _WIN32
   USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
   USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
-  USUL_STATIC_ASSERT ( 64 == sizeof ( _partition      ) );
   USUL_STATIC_ASSERT ( 24 == sizeof ( _bb             ) );
-#ifdef _WIN32
+  USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 148 == sizeof ( TriangleSet     ) ); // Why?
-#else
-  USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 144 == sizeof ( TriangleSet     ) ); // Why?
-#endif
+  USUL_STATIC_ASSERT ( 64 == sizeof ( _partition      ) );
+  USUL_STATIC_ASSERT ( 148 == sizeof ( TriangleSet    ) ); // Why?
 #endif
 
 }

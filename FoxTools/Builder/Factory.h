@@ -17,8 +17,8 @@
 #define _FOX_TOOLS_BUILDER_FACTORY_H_
 
 
-namespace FX { class FXWindow; }
-
+//namespace FX { class FXWindow; }
+#include "FoxTools/Headers/Window.h"
 
 namespace FoxTools {
 namespace Builder {
@@ -73,8 +73,8 @@ template < class OwnerType, class ClassType > struct NeedsOwnerAndString : publi
 };
 
 
-}; // namespace Builder
-}; // namespace FoxTools
+} // namespace Builder
+} // namespace FoxTools
 
 
 #endif // _FOX_TOOLS_BUILDER_FACTORY_H_

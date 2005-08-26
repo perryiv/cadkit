@@ -66,11 +66,16 @@ TARGET_DYNAMIC_SUFFIX = .so
 TARGET_STATIC_SUFFIX = .a
 INSTALL = ../lib
 
+
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) 
+	
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)
 TARGET_DYNAMIC_SUFFIX := .dylib
 OS_LINK_FLAGS := -dynamiclib -install_name $(TARGET_PREFIX)$(PKG_NAME)$(TARGET_DYNAMIC_SUFFIX)
 CXX:=g++
+flags+=-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
+	-O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -ffix-and-continue  -mtune=G4
 endif
 
 ifeq ($(findstring IRIX,$(OS)),IRIX)
@@ -88,9 +93,6 @@ LIBS =
 
 LIB_DIRS = 
 
-flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) \
-	-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
-	-O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -ffix-and-continue  -mtune=G4
 
 BUILD = $(OS)
 TARGET      = $(PKG_NAME)
@@ -100,10 +102,11 @@ SHARED_LIB  = $(TARGET_PREFIX)$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
 OBJS = $(patsubst %.cpp,%.o,$(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
   
 BUILD_DIRS:= \
-  $(dir $(subst ./,$(OS)/,$(shell find . -type file -name "*.cpp")))
+  $(dir $(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
   
 make_dirs:
 	@echo '@@@@@ Building $(PKG_NAME) @@@@@'
+	@echo 'Build dirs: $(BUILD_DIRS)'
 	mkdir -p $(BUILD_DIRS)
 
 shared_lib: $(OBJS)
@@ -132,3 +135,5 @@ real-clean: clean
 mvlibs:
 	mkdir -p $(MOVE_LOCATION)
 	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)
+	
+	

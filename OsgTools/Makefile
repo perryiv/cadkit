@@ -1,9 +1,9 @@
 SHELL = /bin/sh
 LIB_OS = lib
-PKG_NAME = OpenThreadsEx
+PKG_NAME = OsgTools
 OS := $(shell uname)
 TARGET  = $(PKG_NAME)
-COMPILE_GUARD = OPEN_THREADS_EXTENSIONS
+COMPILE_GUARD = OSG_TOOLS
 
 all: default
 
@@ -53,11 +53,11 @@ endif
 
 # Our Build Libraries all go in ../libs
 ifeq ("$(USUL_INC_DIR)","")
-USUL_INC_DIR = ../../
+USUL_INC_DIR = ../
 endif
 
 ifeq ("$(USUL_LIB_DIR)","")
-USUL_LIB_DIR = ../../lib
+USUL_LIB_DIR = ../lib
 endif
 
 ifeq ("$(BOOST_INC_DIR)","")
@@ -73,12 +73,16 @@ OS_LINK_FLAGS = -shared
 TARGET_PREFIX = lib
 TARGET_DYNAMIC_SUFFIX = .so
 TARGET_STATIC_SUFFIX = .a
-INSTALL = ../../lib
+INSTALL = ../lib
+
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) 
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)
 TARGET_DYNAMIC_SUFFIX := .dylib
 OS_LINK_FLAGS := -dynamiclib -install_name $(TARGET_PREFIX)$(PKG_NAME)$(TARGET_DYNAMIC_SUFFIX)
+flags+=	-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
+	-O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -ffix-and-continue  -mtune=G4
 endif
 
 ifeq ($(findstring IRIX,$(OS)),IRIX)
@@ -88,19 +92,19 @@ CXXFLAGS = -mabi=n32 -mips4
 LIB_OS = -L/usr/freeware/lib32 #lib32
 endif
 
-INCLUDES = \
-	-I../../ \
-	-I$(OPENTHREADS_INC_DIR) \
-	-I$(USUL_INC_DIR) 
 
-LIB_DIRS = \
-	-L$(OPENTHREADS_LIB_DIR) -L$(USUL_LIB_DIR) 
+INCLUDES = \
+	-I../ \
+	-I$(OSG_INC_DIR) \
+	-I$(USUL_INC_DIR) \
+	-I$(OPENTHREADS_INC_DIR)
 
 LIBS = \
-	-lOpenThreads -lUsul
+	 -losg -losgUtil -losgDB -losgText -lUsul -lOpenThreads
 
-flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD)
-
+LIB_DIRS = \
+	-L$(OSG_LIB_DIR) -L$(USUL_LIB_DIR) -L$(OPENTHREADS_LIB_DIR)
+	
 BUILD = $(OS)
 ARCHIVE_LIB = lib$(TARGET)$(TARGET_STATIC_SUFFIX)
 SHARED_LIB  = lib$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
@@ -138,5 +142,5 @@ real-clean: clean
 	$(RM) $(INSTALL)/$(ARCHIVE_LIB)
 	
 mvlibs:
-	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)
 	mkdir -p $(MOVE_LOCATION)
+	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)

@@ -19,12 +19,14 @@
 #ifndef _USUL_ALGORITHMS_CONVEX_HULL_SORT_H_
 #define _USUL_ALGORITHMS_CONVEX_HULL_SORT_H_
 
+
 #include "Usul/Errors/Assert.h"
 #include "Usul/Predicates/CompareCoordinate.h"
 #include "Usul/Math/Angle.h"
 
 #include <algorithm>
 #include <limits>
+#include <vector>
 #include <stdexcept>
 
 
@@ -62,15 +64,15 @@ template
   class SetInitialVector = Detail::InitialVector3,
   class CompareCoordinate = Usul::Predicates::CompareCoordinate,
   class CalculateAngle = Usul::Math::Angle<double,3>,
-  class DifferenceType = std::minus<typedef PointsContainer::value_type>
+  class DifferenceType = std::minus< typename PointsContainer::value_type>
 >
 struct ConvexHullSort
 {
   static void sort ( PointsContainer &points )
   {
     // Useful typedefs.
-    typedef PointsContainer::iterator Itr;
-    typedef PointsContainer::value_type Value;
+    typedef typename PointsContainer::iterator Itr;
+    typedef typename PointsContainer::value_type Value;
     typedef CalculateAngle Angle;
     typedef DifferenceType Difference;
 

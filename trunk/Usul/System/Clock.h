@@ -24,8 +24,8 @@ namespace Usul {
     
     Usul::Types::Uint64 USUL_EXPORT milliseconds();
     
-  }; // namespace System
-}; // namespace Usul
+  } // namespace System
+} // namespace Usul
 
 
 #endif // _USUL_SYSTEM_CLOCK_CLASS_H_

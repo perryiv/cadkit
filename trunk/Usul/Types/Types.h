@@ -36,7 +36,7 @@ namespace Types {
   typedef float               Float32;
   typedef double              Float64;
 
-#elif defined __SGI
+#elif __SGI
   
   typedef long long           Int64;
   typedef int                 Int32;
@@ -51,7 +51,22 @@ namespace Types {
   typedef float               Float32;
   typedef double              Float64;
 
-#elif defined __APPLE__ 
+#elif __APPLE__ 
+  //TODO Figure out if this is correct.... 
+  typedef long long           Int64;
+  typedef int                 Int32;
+  typedef short               Int16;
+  typedef char                Int8;
+  
+  typedef unsigned long long  Uint64;
+  typedef unsigned int        Uint32;
+  typedef unsigned short      Uint16;
+  typedef unsigned char       Uint8;
+  
+  typedef float               Float32;
+  typedef double              Float64;
+  
+#elif __linux 
   //TODO Figure out if this is correct.... 
   typedef long long           Int64;
   typedef int                 Int32;
@@ -86,8 +101,8 @@ namespace Types {
 #endif
 
 
-}; // namespace Types
-}; // namespace Usul
+} // namespace Types
+} // namespace Usul
 
 
 #endif // _USUL_BASIC_TYPES_H_

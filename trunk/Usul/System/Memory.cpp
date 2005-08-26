@@ -27,6 +27,10 @@
 #include <Usul/Types/Types.h>
 #endif
 
+#ifdef __linux
+#include <sys/sysinfo.h>
+#endif
+
 using namespace Usul;
 using namespace Usul::System;
 
@@ -56,8 +60,13 @@ Usul::Types::Uint64 Memory::totalPhysical()
   sysctl(mib, 2, &physmem, &len, NULL, 0);
   return static_cast< Usul::Types::Uint64 > ( physmem );
   
-#else
+#elif __linux
 
+  struct sysinfo info;
+  sysinfo ( &info );
+  return info.totalram;
+  
+#else
   TODO FIX ME
 
 #endif
@@ -88,6 +97,12 @@ Usul::Types::Uint64 Memory::totalVirtual()
     sysctl(mib, 2, &swapusage, &len, NULL, 0);
     return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_total );
 
+#elif __linux
+
+  struct sysinfo info;
+  sysinfo ( &info );
+  return info.totalswap;
+  
 #else
   TODO  FIX ME
 #endif
@@ -112,6 +127,12 @@ Usul::Types::Uint64 Memory::availablePhysical()
 
   return (Memory::totalPhysical() - Memory::usedPhysical() );
 
+#elif __linux
+
+  struct sysinfo info;
+  sysinfo ( &info );
+  return info.freeram;
+  
 #else
 
   TODO FIX ME
@@ -145,6 +166,12 @@ Usul::Types::Uint64 Memory::availableVirtual()
     sysctl(mib, 2, &swapusage, &len, NULL, 0);
     return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_avail );
     
+ #elif __linux
+
+  struct sysinfo info;
+  sysinfo ( &info );
+  return info.freeswap;
+  
 #else
 
  TODO FIX ME
@@ -161,11 +188,7 @@ Usul::Types::Uint64 Memory::availableVirtual()
 
 Usul::Types::Uint64 Memory::usedPhysical()
 {
-#ifdef _MSC_VER
-
-  return ( Memory::totalPhysical() - Memory::availablePhysical() );
-
-#elif __APPLE__
+#ifdef __APPLE__
   
   int mib[2];
   size_t len;
@@ -177,8 +200,8 @@ Usul::Types::Uint64 Memory::usedPhysical()
   return static_cast< Usul::Types::Uint64 > (usedmem);
 
 #else
-  
-  FIX ME FOR OTHER PLATFORMS
+
+  return ( Memory::totalPhysical() - Memory::availablePhysical() );
 
 #endif
 }

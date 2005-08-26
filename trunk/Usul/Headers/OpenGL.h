@@ -13,10 +13,12 @@
 
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
+# include <OpenGL/gl.h>
 #else
-#include <windows.h>
-#include <GL/gl.h>
+# ifdef _MSC_VER
+#  include <windows.h>
+# endif
+# include <GL/gl.h>
 #endif
 
 

@@ -524,6 +524,6 @@ unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
     ++count;
 
   //return count;
-  return 1.0;
+  return 1;
 }
 

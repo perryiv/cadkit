@@ -20,6 +20,7 @@
 #ifdef _WIN32
 # include <windows.h>
 #elif __GNUC__
+# include "Usul/Cast/Cast.h"
 # include <pthread.h>
 #elif __sgi
 # include <pthread.h>
@@ -37,7 +38,7 @@ inline unsigned long currentThreadId()
   #ifdef _WIN32
     return ::GetCurrentThreadId();
   #elif __GNUC__
-    return reinterpret_cast< unsigned long > ( ::pthread_self() ); // TODO, find low-level way.
+    return USUL_UNSAFE_CAST ( unsigned long, ::pthread_self() ); // TODO, find low-level way.
   #elif __sgi
     return ::pthread_self(); // TODO, find low-level way.
   #else

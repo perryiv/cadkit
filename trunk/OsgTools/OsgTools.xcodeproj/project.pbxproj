@@ -35,8 +35,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		430AF96A08AAD91D00232D64 /* Partition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 430AF96808AAD91D00232D64 /* Partition.cpp */; };
+		430AF96B08AAD91D00232D64 /* Partition.h in Headers */ = {isa = PBXBuildFile; fileRef = 430AF96908AAD91D00232D64 /* Partition.h */; };
 		431E60F20891BC5500B1EC98 /* SortBackToFrontCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */; };
 		431E60F30891BC5500B1EC98 /* SortBackToFrontCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */; };
+		434D93AF08B5856900B74A7F /* BoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 434D93AE08B5856900B74A7F /* BoundingBox.h */; };
 		43993059087EF171002E5D22 /* Axes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993005087EF171002E5D22 /* Axes.cpp */; };
 		4399305A087EF171002E5D22 /* Axes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993006087EF171002E5D22 /* Axes.h */; };
 		4399305B087EF171002E5D22 /* Box.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993007087EF171002E5D22 /* Box.h */; };
@@ -178,8 +181,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		430AF96808AAD91D00232D64 /* Partition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Partition.cpp; sourceTree = "<group>"; };
+		430AF96908AAD91D00232D64 /* Partition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Partition.h; sourceTree = "<group>"; };
 		431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SortBackToFrontCallback.cpp; sourceTree = SOURCE_ROOT; };
 		431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SortBackToFrontCallback.h; sourceTree = SOURCE_ROOT; };
+		434D93AE08B5856900B74A7F /* BoundingBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = BoundingBox.h; sourceTree = "<group>"; };
 		43993005087EF171002E5D22 /* Axes.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Axes.cpp; sourceTree = SOURCE_ROOT; };
 		43993006087EF171002E5D22 /* Axes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Axes.h; sourceTree = SOURCE_ROOT; };
 		43993007087EF171002E5D22 /* Box.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Box.h; sourceTree = SOURCE_ROOT; };
@@ -304,6 +310,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				434D93AD08B5856900B74A7F /* Callbacks */,
 				431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */,
 				431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */,
 				43993005087EF171002E5D22 /* Axes.cpp */,
@@ -377,6 +384,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		434D93AD08B5856900B74A7F /* Callbacks */ = {
+			isa = PBXGroup;
+			children = (
+				434D93AE08B5856900B74A7F /* BoundingBox.h */,
+			);
+			path = Callbacks;
+			sourceTree = "<group>";
+		};
 		4399301A087EF171002E5D22 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -408,6 +423,8 @@
 			children = (
 				43993050087EF171002E5D22 /* Loop.cpp */,
 				43993051087EF171002E5D22 /* Loop.h */,
+				430AF96808AAD91D00232D64 /* Partition.cpp */,
+				430AF96908AAD91D00232D64 /* Partition.h */,
 				43993052087EF171002E5D22 /* SharedVertex.cpp */,
 				43993053087EF171002E5D22 /* SharedVertex.h */,
 				43993054087EF171002E5D22 /* Triangle.cpp */,
@@ -505,6 +522,8 @@
 				439930AA087EF171002E5D22 /* Visitor.h in Headers */,
 				431E60F30891BC5500B1EC98 /* SortBackToFrontCallback.h in Headers */,
 				43A1BCBB0898838900E1421E /* GlassBoundingBox.h in Headers */,
+				430AF96B08AAD91D00232D64 /* Partition.h in Headers */,
+				434D93AF08B5856900B74A7F /* BoundingBox.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +636,7 @@
 				439930A8087EF171002E5D22 /* TriangleSet.cpp in Sources */,
 				431E60F20891BC5500B1EC98 /* SortBackToFrontCallback.cpp in Sources */,
 				43A1BCBA0898838900E1421E /* GlassBoundingBox.cpp in Sources */,
+				430AF96A08AAD91D00232D64 /* Partition.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -643,6 +663,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;

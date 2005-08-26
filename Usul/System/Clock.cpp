@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class that represents the system's last error.
+//  Class the returns time values in seconds or milliseconds
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -28,6 +28,11 @@
 using namespace Usul;
 using namespace Usul::System;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns the milliseconds offset from a platform dependent value
+//
+///////////////////////////////////////////////////////////////////////////////
 
 Usul::Types::Uint64 Usul::System::milliseconds() 
 {
@@ -41,6 +46,26 @@ Usul::Types::Uint64 Usul::System::milliseconds()
   seconds *= 1000;
   microSec /= 1000;
   return seconds + microSec; // Both in milliseconds at this point.
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns the seconds offset from a platform dependent value
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint64 Usul::System::seconds() 
+{
+#ifdef _WIN32
+  return ::clock()/1000;
+#elif defined(__APPLE__)
+  struct timeval t1;
+  gettimeofday(&t1, NULL);
+  return t1.tv_sec;
+#else
+  TODO
 #endif
 }
 

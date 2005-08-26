@@ -24,6 +24,7 @@ namespace Usul {
     
     Usul::Types::Uint64 USUL_EXPORT milliseconds();
     
+    Usul::Types::Uint64 USUL_EXPORT seconds();
   } // namespace System
 } // namespace Usul
 

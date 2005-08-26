@@ -52,20 +52,28 @@ namespace Types {
   typedef double              Float64;
 
 #elif __APPLE__ 
-  //TODO Figure out if this is correct.... 
-  typedef long long           Int64;
-  typedef int                 Int32;
-  typedef short               Int16;
-  typedef char                Int8;
-  
-  typedef unsigned long long  Uint64;
-  typedef unsigned int        Uint32;
-  typedef unsigned short      Uint16;
+   // These were taken from the MacTypes.h located in 
+  // /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/
+  //     CarbonCore.framework/Versions/A/Headers/
   typedef unsigned char       Uint8;
+  typedef signed char         Int8;
+  
+  typedef unsigned short      Uint16;
+  typedef signed short        Int16;
+
+  typedef unsigned int                    Uint32;
+  typedef signed int                      Int32;
+
+  #if defined(_MSC_VER) && !defined(__MWERKS__) && defined(_M_IX86)
+    typedef   signed __int64                Int64;
+    typedef unsigned __int64                Uint64;
+  #else
+    typedef   signed long long              Int64;
+    typedef unsigned long long              Uint64;
+  #endif
   
   typedef float               Float32;
-  typedef double              Float64;
-  
+  typedef double              Float64;  
 #elif __linux 
   //TODO Figure out if this is correct.... 
   typedef long long           Int64;

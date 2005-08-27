@@ -130,6 +130,8 @@ Factory::Factory() : _map()
   MAP_INSERT ( gif, GIF, CURVE                  );
   MAP_INSERT ( gif, GIF, FLAT                   );
   MAP_INSERT ( gif, GIF, SMOOTH                 );
+  MAP_INSERT ( gif, GIF, GLASS_BOX              );
+  MAP_INSERT ( gif, GIF, BOUND_BOX              );  
   MAP_INSERT ( bmp, BMP, SET_HOME               );
 }
 
@@ -210,7 +212,7 @@ FX::FXIcon *Factory::icon ( unsigned int id ) const
 
   // Make the icon.
   FX::FXApp *app ( FoxTools::Functions::application() );
-  FX::FXIcon *icon = 0x0;
+  //FX::FXIcon *icon = 0x0;
   if ( FXMETACLASS ( FX::FXGIFIcon ) == type )
     return new FX::FXGIFIcon ( app, &array[0] );
   else if ( FXMETACLASS ( FX::FXPNGIcon ) == type )

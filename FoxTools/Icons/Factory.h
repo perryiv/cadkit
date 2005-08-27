@@ -99,6 +99,8 @@ public:
     ICON_CURVE,
     ICON_FLAT,
     ICON_SMOOTH,
+    ICON_GLASS_BOX,
+    ICON_BOUND_BOX,
     LAST
   };
 

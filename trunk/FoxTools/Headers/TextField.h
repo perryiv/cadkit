@@ -14,7 +14,7 @@
 #include "FoxTools/Headers/Definitions.h"
 
 #include "FXFont.h"
-struct FXEvent;
+namespace FX { struct FXEvent; }
 #include "FXTextField.h"
 
 

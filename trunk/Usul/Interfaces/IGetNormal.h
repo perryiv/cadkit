@@ -24,7 +24,7 @@ struct IGetNormal : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IGetNormal );
 
   /// Id for this interface.
-  enum { IID = 3661522526 };
+  enum { IID = 3661522526u };
 
   // Get normal for the i'th vertex.
   virtual const osg::Vec3f& getNormal( unsigned int index ) const = 0;

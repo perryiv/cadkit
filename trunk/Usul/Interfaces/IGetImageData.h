@@ -52,11 +52,11 @@ struct IGetImageData : public Usul::Interfaces::IUnknown
 
 
 // Common typedefs.
-typedef IGetImageData < 4227521170, Usul::Types::Uint8   > IGetImageDataUint8;
-typedef IGetImageData < 3914360671, Usul::Types::Uint16  > IGetImageDataUint16;
-typedef IGetImageData < 1967682583, Usul::Types::Uint32  > IGetImageDataUint32;
-typedef IGetImageData < 3227115360, Usul::Types::Float32 > IGetImageDataFloat32;
-typedef IGetImageData < 3894806559, Usul::Types::Float64 > IGetImageDataFloat64;
+typedef IGetImageData < 4227521170u, Usul::Types::Uint8   > IGetImageDataUint8;
+typedef IGetImageData < 3914360671u, Usul::Types::Uint16  > IGetImageDataUint16;
+typedef IGetImageData < 1967682583u, Usul::Types::Uint32  > IGetImageDataUint32;
+typedef IGetImageData < 3227115360u, Usul::Types::Float32 > IGetImageDataFloat32;
+typedef IGetImageData < 3894806559u, Usul::Types::Float64 > IGetImageDataFloat64;
 
 
 }; // namespace Interfaces

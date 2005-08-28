@@ -96,7 +96,8 @@ endif
 
 INCLUDES = \
 	-I../ \
-	-I$(FOX_INC_DIR)
+	-I$(FOX_INC_DIR) \
+	-I$(BOOST_INC_DIR)
 
 
 LIBS = \
@@ -133,7 +134,7 @@ archive_lib: $(OBJS)
 
 $(OBJS): $(BUILD)/%.o: %.cpp
 	@echo "[$(PKG_NAME)]:Compiling $< into $@"
-	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) $(INCLUDES) -c $< -o $@ 
 
 clean:
 	$(RM) -rf $(BUILD) so_locations

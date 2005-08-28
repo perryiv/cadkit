@@ -18,12 +18,17 @@
 #include "Usul/Strings/Trim.h"
 #include "Usul/Types/Types.h"
 
-
+// TODO do we really need to include time.h on apple and ctime otherwise?
+// Should be able to pick on for all platforms.
 #ifdef __APPLE__
-#include "time.h"
+# include "time.h"
+#else
+# include <ctime>
 #endif
 
-#include <ctime>
+#ifndef _MSC_VER
+# include <sys/time.h> // For gettimeofday
+#endif 
 
 using namespace Usul;
 using namespace Usul::System;
@@ -60,12 +65,10 @@ Usul::Types::Uint64 Usul::System::seconds()
 {
 #ifdef _WIN32
   return ::clock()/1000;
-#elif defined(__APPLE__)
+#else
   struct timeval t1;
   gettimeofday(&t1, NULL);
   return t1.tv_sec;
-#else
-  TODO
 #endif
 }
 

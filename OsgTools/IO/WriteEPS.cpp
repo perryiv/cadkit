@@ -22,6 +22,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#if 0
+
 #include "StdAfx.h"
 #include "SgEpsWrite.h"
 #include "SgDefine.h"
@@ -580,3 +582,6 @@ void SgEpsWrite::setRenderCallback ( SgEpsWriteCB *callback, const void *data )
 	_callback = callback;
 	_data = data;
 }
+
+#endif
+

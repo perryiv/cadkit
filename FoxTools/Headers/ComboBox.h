@@ -13,7 +13,7 @@
 
 #include "FoxTools/Headers/Definitions.h"
 
-struct FXEvent;
+namespace FX { struct FXEvent; }
 #include "FXString.h"
 #include "FXHash.h"
 #include "FXStream.h"

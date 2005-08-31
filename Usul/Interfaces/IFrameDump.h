@@ -20,6 +20,7 @@
 
 #include <string>
 
+
 namespace Usul {
 namespace Interfaces {
 
@@ -33,42 +34,42 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
   enum { IID = 3168586510u };
 
   /// Set properties for dumping frames.
-  virtual void frameDumpProperties ( const std::string &dir, 
-                                     const std::string &base, 
-                                     const std::string &ext, 
-                                     unsigned int start = 0, 
-                                     unsigned int digits = 10 ) = 0;
+  virtual void            frameDumpProperties ( const std::string &dir, 
+                                                const std::string &base, 
+                                                const std::string &ext, 
+                                                unsigned int start = 0, 
+                                                unsigned int digits = 10 ) = 0;
 
   /// Turn on/off frame-dumping.
-  virtual void dumpFrames ( bool ) = 0;
+  virtual void            frameDumpState ( bool ) = 0;
 
   /// Are we dumping frames?
-  virtual bool dumpFrames() const = 0;
+  virtual bool            frameDumpState() const = 0;
 
   /// Reset the file name counter.
-  virtual void resetFrameDumpCounter() = 0;
+  virtual void            frameDumpResetCounter() = 0;
 
   /// Get the current file number
-  virtual unsigned int currentFile() const = 0;
+  virtual unsigned int    frameDumpCurrentFileNum() const = 0;
 
   /// Small struct to turn on/off frame-dumping.
   struct ScopedDump
   {
-    ScopedDump ( IFrameDump *f ) : _f ( f )
+    ScopedDump ( IUnknown *u ) : _f ( u )
     {
       if ( _f.valid() )
       {
-        _f->dumpFrames ( true );
-        _f->resetFrameDumpCounter();
+        _f->frameDumpState ( true );
+        _f->frameDumpResetCounter();
       }
     }
     ~ScopedDump()
     {
       if ( _f.valid() )
-        _f->dumpFrames ( false );
+        _f->frameDumpState ( false );
     }
   protected:
-    IFrameDump::RefPtr _f;
+    IFrameDump::QueryPtr _f;
   };
 };
 

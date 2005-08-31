@@ -21,17 +21,22 @@
 
 
 namespace OsgTools {
+namespace State {
 
 
-struct OSG_TOOLS_EXPORT State
+struct OSG_TOOLS_EXPORT StateSet
 {
   // Set/get the lighting state
   static bool         getLighting  ( osg::Node *node );
+  static bool         getLighting  ( const osg::StateSet *ss );
   static void         setLighting  ( osg::Node *node, bool state );
+  static void         setLighting  ( osg::StateSet *ss, bool state );
 
   // Set/Get the two sided lighting state.
   static bool         getTwoSidedLighting ( osg::Node *node );
+  static bool         getTwoSidedLighting ( const osg::StateSet *ss );
   static void         setTwoSidedLighting ( osg::Node *node, bool state );
+  static void         setTwoSidedLighting ( osg::StateSet *ss, bool state );
 
   // Set/get the normalization state.
   static bool         getNormalize ( osg::Node *node );
@@ -69,9 +74,12 @@ struct OSG_TOOLS_EXPORT State
   static void         setLineWidth ( osg::Node *node, float width );
   static float        getLineWidth ( osg::Node *node );
 
+  // Set the states for hidden lines.
+  static void         hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg::StateSet *hidden );
 };
 
 
+}; // namespace State
 }; // namespace OsgTools
 
 

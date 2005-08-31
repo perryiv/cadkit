@@ -27,15 +27,7 @@
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/MPL/StaticAssert.h"
 
-#include "OsgTools/State.h"
-#include "OsgTools/Callbacks/BoundingBox.h"
-
 #include "osg/Group"
-#include "osg/Geode"
-#include "osg/Geometry"
-#include "osg/Vec4"
-#include "osg/StateSet"
-#include "osg/AlphaFunc"
 
 #include <algorithm>
 #include <functional>

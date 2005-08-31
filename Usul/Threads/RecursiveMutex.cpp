@@ -17,6 +17,10 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Errors/Stack.h"
+
+#include <stdexcept>
+#include <sstream>
 
 using namespace Usul;
 using namespace Usul::Threads;
@@ -54,8 +58,32 @@ RecursiveMutex::RecursiveMutex() :
 RecursiveMutex::~RecursiveMutex()
 {
   USUL_ASSERT ( 0 == _count );
-  delete _local;
-  delete _mutex;
+
+  // Safely...
+  try
+  {
+    delete _local;
+    _local = 0x0;
+    delete _mutex;
+    _mutex = 0x0;
+  }
+
+  // Catch standard exceptions.
+  catch ( const std::exception &e )
+  {
+    Usul::Errors::Stack::instance().push ( e.what() );
+    std::ostringstream out;
+    out << "Error 2795795243: Standard exception caught in destructor for recursive mutex: " << this;
+    Usul::Errors::Stack::instance().push ( out.str() );
+  }
+
+  // Catch all exceptions.
+  catch ( ... )
+  {
+    std::ostringstream out;
+    out << "Error 2316729842: Unknown exception caught in destructor for recursive mutex: " << this;
+    Usul::Errors::Stack::instance().push ( out.str() );
+  }
 }
 
 
@@ -96,4 +124,21 @@ void RecursiveMutex::unlock()
   // Unlock mutex if we should.
   if ( 0 == _count )
     _mutex->unlock();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of times this mutex has been locked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int RecursiveMutex::count() const
+{
+  // One thread at a time in this function.
+  MutexGuard guard ( *_local );
+
+  // This should be a little safer than "return _count".
+  const unsigned int c ( _count );
+  return c;
 }

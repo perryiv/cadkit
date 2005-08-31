@@ -219,11 +219,10 @@ void Application::_reportErrors() const
   {
     Usul::Interfaces::IReportErrors::QueryPtr report ( Usul::Resources::reportErrors() );
 
-    if( report.valid() )
+    if ( report.valid() )
     {
       typedef Usul::Interfaces::IReportErrors ReportErrors;
       const unsigned int options ( ReportErrors::ERROR_DIALOG | ReportErrors::STANDARD_OUT | ReportErrors::LOG_FILE );
-
       report->reportErrors ( options, true );
     }
   }

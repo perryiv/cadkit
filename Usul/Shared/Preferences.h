@@ -21,6 +21,8 @@
 #include <string>
 #include <map>
 
+namespace Usul { namespace Threads { class Mutex; } }
+
 
 namespace Usul {
 namespace Shared {
@@ -40,7 +42,8 @@ public:
 
   // Get the value.
   bool                  getBool   ( const std::string &key );
-  const std::string &   getString ( const std::string &key );
+  std::string           getString ( const std::string &key );
+  void                  getString ( const std::string &key, std::string &value );
   int                   getInt    ( const std::string &key );
   unsigned int          getUint   ( const std::string &key );
   float                 getFloat  ( const std::string &key );
@@ -57,13 +60,13 @@ public:
   void                  setFloat  ( const std::string &key, float              value );
   void                  setDouble ( const std::string &key, double             value );
 
-  // Get the container.
-  const Bools&          getBools   ( ) const { return _bools;   }
-  const Strings&        getStrings ( ) const { return _strings; }
-  const Ints&           getInts    ( ) const { return _ints;    }
-  const Uints&          getUints   ( ) const { return _uints;   }
-  const Floats&         getFloats  ( ) const { return _floats;  }
-  const Doubles&        getDoubles ( ) const { return _doubles; }
+  // Get copies of the containers.
+  const Bools           getBools()   const;
+  const Strings         getStrings() const;
+  const Ints            getInts()    const;
+  const Uints           getUints()   const;
+  const Floats          getFloats()  const;
+  const Doubles         getDoubles() const;
 
 private:
 
@@ -81,7 +84,7 @@ private:
   Floats   _floats;
   Doubles  _doubles;
   Strings  _strings;
-  
+  Usul::Threads::Mutex *_mutex;
 };
 
 

@@ -16,10 +16,11 @@
 
 namespace osg { class Node; }
 
-namespace OsgTools {
 
-OSG_TOOLS_EXPORT osg::Node* readModel( const std::string& filename, const std::string& options );
-
+namespace OsgTools
+{
+  OSG_TOOLS_EXPORT osg::Node* readModel ( const std::string& filename );
 }
+
 
 #endif //__OSG_TOOLS_READ_MODEL_H__

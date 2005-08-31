@@ -29,18 +29,21 @@ class USUL_EXPORT RecursiveMutex
 public:
 
   RecursiveMutex();
-  virtual ~RecursiveMutex();
+  ~RecursiveMutex();
+
+  // Return the number of times this mutex has been locked.
+  unsigned int            count() const;
 
   // Lock/unlock the mutex.
-  virtual void            lock() = 0;
-  virtual void            unlock() = 0;
+  void                    lock();
+  void                    unlock();
 
 private:
 
   RecursiveMutex ( const RecursiveMutex & );             // No copying
   RecursiveMutex &operator = ( const RecursiveMutex & ); // No assignment
 
-  Usul::Threads::Mutex *_mutex;
+  mutable Usul::Threads::Mutex *_mutex;
   Usul::Threads::Mutex *_local;
   unsigned int _count;
 };

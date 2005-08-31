@@ -20,7 +20,7 @@
 #include "Usul/Math/Vector2.h"
 
 #include <vector>
-
+#include <list>
 
 namespace Usul {
 namespace Interfaces {
@@ -28,8 +28,10 @@ namespace Interfaces {
 
 struct ITriangulate : public Usul::Interfaces::IUnknown
 {
-  // Useful typedef(s).
-  typedef std::vector<Usul::Math::Vec2d> Vertices;
+  // Useful typedefs.
+  typedef std::vector< Usul::Math::Vec2d >  Vertices;
+  typedef std::vector< unsigned int >       UIntArray;
+  typedef std::list  < Vertices >           InnerLoops;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ITriangulate );
@@ -38,7 +40,7 @@ struct ITriangulate : public Usul::Interfaces::IUnknown
   enum { IID = 3661762526u };
 
   // Triangulate the loop.
-  virtual void triangulate ( const Vertices &in, Vertices &out ) = 0;
+  virtual void triangulate ( const Vertices &in, InnerLoops& inner, Vertices &out, UIntArray& indices ) = 0;
 };
 
 

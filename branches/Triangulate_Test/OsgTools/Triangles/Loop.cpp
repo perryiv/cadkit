@@ -11,6 +11,8 @@
 
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
+#include "Usul/Interfaces/ITriangulate.h"
+#include "Usul/Interfaces/IAddSharedVertex.h"
 
 #include "osg/Matrix"
 #include "osg/Plane"
@@ -18,12 +20,23 @@
 #include "osg/BoundingSphere"
 
 #include <algorithm>
+#include <iostream>
+#include <map>
 
 #include "Usul/Loops/FillLoop.h"
 #include "Usul/Loops/Direction.h"
 #include "Usul/Predicates/Tolerance.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Math/Vector3.h"
 
 using namespace OsgTools::Triangles;
+
+std::ostream& operator<< ( std::ostream& os, const osg::Vec3& v )
+{
+  os << v.x() << " " << v.y() << " " << v.z();
+
+  return os;
+}
 
 namespace Detail
 {
@@ -37,7 +50,7 @@ namespace Detail
   {
     osg::Vec3 center;
 
-    //Add up all the points
+    // Add up all the points.
     for( osg::Vec3Array::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
     {
        center += *iter;
@@ -71,6 +84,58 @@ namespace Detail
 
     return max;
   }
+
+  // Map to hold vec3 and the corresponding shared vertex
+  typedef std::map< osg::Vec3f, SharedVertex::ValidRefPtr > Shared;
+
+  SharedVertex*    getSharedVertex( Shared& shared, const osg::Vec3& key, Usul::Interfaces::IUnknown *caller )
+  {
+    Shared::const_iterator iter = shared.find( key );
+
+    // If we don't already have it, make a new one.
+    if ( iter == shared.end() )
+    {
+      Usul::Interfaces::IAddSharedVertex::ValidQueryPtr    addSharedVertex ( caller );
+
+      SharedVertex* sv ( addSharedVertex->addSharedVertex( key ) );
+
+      shared.insert ( Shared::value_type ( key, sv ) );
+
+      return sv;
+    }
+
+    // return the shared vertex.
+    return iter->second.get();
+  }
+
+
+  template < class Vertices >
+    void fillVertices ( Vertices &vertices, Shared& shared, Loop::Points& points, osg::Matrix& mat, Usul::Interfaces::IUnknown* caller )
+  {
+    typedef typename Vertices::value_type Vertex;
+
+    Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex       ( caller );
+
+
+    // Make the vertex array for the triangulate algorithm.
+    for( Loop::Points::const_iterator i = points.begin(); i != points.end(); ++i )
+    {
+      Loop::SharedVertexPtr sv ( *i );
+
+      // Get the vertex;
+      osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
+
+      // Add the vec3 and the shared vertex to the map
+      shared.insert ( Shared::value_type ( v, sv.get() ) );
+
+      // Translate into proper plane.
+      v = v * mat;
+
+      vertices.push_back( Vertex ( v.x(), v.y() ) );
+
+    }
+  }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,72 +183,25 @@ Loop::~Loop()
 
 bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
 {
-  // Algorithm will fill this data structure with indices for the triangles.
-  Triangles triangles;
+  // Useful typedefs.
+  typedef Usul::Interfaces::ITriangulate   Triangulate;
+  typedef Triangulate::Vertices            Vertices;
+  typedef Triangulate::UIntArray           UIntArray;
+  typedef Triangulate::InnerLoops          InnerLoops;
+  typedef Usul::Components::Manager        PluginManager;
 
-  // Triangulate
-  try
-  {
-    this->_triangulate ( triangles, caller );
-  }
-  catch ( ... )
-  {
-    std::reverse( _loop.begin(), _loop.end() );
-
-    this->_triangulate( triangles, caller );
-  }
-
-  // Return false if there was a problem.
-  if ( triangles.empty() )
-    return false;
-
-  Usul::Interfaces::IAddTriangleSharedVertex::ValidQueryPtr addTriangle ( caller );
-  Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
-
-  // Add the new triangles to the vec3array.
-  for( unsigned int i = 0; i < triangles.size(); ++i )
-  {
-    int n1 ( triangles[i][0] );
-    int n2 ( triangles[i][1] );
-    int n3 ( triangles[i][2] );
-
-    SharedVertexPtr sv1 ( _loop.at( n1 - 1 ) );
-    SharedVertexPtr sv2 ( _loop.at( n2 - 1 ) );
-    SharedVertexPtr sv3 ( _loop.at( n3 - 1 ) );
-    
-    // Get the vertices of this triangle. 3186504610
-    osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
-    osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
-    osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
-
-    // Calculate the normal.
-    const osg::Vec3 t1 ( v2 - v1 );
-    const osg::Vec3 t2 ( v3 - v1 );
-
-    osg::Vec3 norm ( t1 ^ t2 );
-
-    // Normalize the normal.
-    norm.normalize();
-
-    // Add the triangle.
-    addTriangle->addTriangle( *sv1, *sv2, *sv3, norm, true, buildOnFly );
-  }
-
-  // If we get here it succeeded.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build points for triangulation algorithm.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Loop::_buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &points, Usul::Interfaces::IUnknown *caller  )
-{
-  Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
-
+  // Get needed interfaces
+  Triangulate::ValidQueryPtr tri ( PluginManager::instance().getInterface( Triangulate::IID ) );
+  Usul::Interfaces::IGetVertex::ValidQueryPtr               getVertex       ( caller );
+  Usul::Interfaces::IAddTriangleSharedVertex::ValidQueryPtr addTriangle     ( caller );
+  
+  // Data structures needed to triangulate.
+  Vertices vertices;
+  InnerLoops innerLoops;
+  UIntArray indices;
+  Vertices out;
+  
+  // Get the first three shared vertices
   SharedVertexPtr sv1 ( _loop.at( 0 ) );
   SharedVertexPtr sv2 ( _loop.at( 1 ) );
   SharedVertexPtr sv3 ( _loop.at( 2 ) );
@@ -201,85 +219,80 @@ void Loop::_buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &poin
   //Make the rotation matrix to rotate the loop into the x-y plane
   mat.makeRotate( plane.getNormal(), osg::Vec3 ( 0.0, 0.0, 1.0 ) );
 
-  //first point must be a dummy point for algorithm 3186504610
-  points.push_back ( osg::Vec2( 0.0, 0.0 ) );
+  float planeValue ( (v1 * mat).z() );
 
-  //Add the size of this loop to sizes
-  sizes.push_back( _loop.size() );
+  // Local map of osg::Vec3 and the shared vertex they belong too.
+  Detail::Shared shared;
 
+#if 0
+  // Make the vertex array for the triangulate algorithm.
   for( const_iterator i = _loop.begin(); i != _loop.end(); ++i )
   {
     SharedVertexPtr sv ( *i );
 
+    // Get the vertex;
     osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
 
+    // Add the vec3 and the shared vertex to the map
+    shared.insert ( Detail::Shared::value_type ( v, sv.get() ) );
+
+    // Translate into proper plane.
     v = v * mat;
 
-    points.push_back ( osg::Vec2 ( v[0], v[1] ) );
+    planeValue = v[2];
+
+    vertices.push_back( Usul::Math::Vec2d ( v.x(), v.y() ) );
 
   }
+#endif
+  Detail::fillVertices ( vertices, shared, _loop, mat, caller );
 
-  //Reverse the loop if it is not counter clockwise
-  if( !Usul::Loops::isCounterClockwise( points.begin(), points.end() - 1 ) )
+  // Loop through the inner loops
+  for ( Loop::InnerLoops::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++i )
   {
-    std::reverse( points.begin(), points.end() );
+    Vertices v;
+
+    Detail::fillVertices ( v, shared, *i, mat, caller );
+
+    innerLoops.push_back( v );
   }
 
-  //Go through any inner loops
-  for( std::vector< Points >::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++ i )
+  // Triangulate.
+  tri->triangulate ( vertices, innerLoops, out, indices );
+
+  // Matrix to rotate back to 3D
+  osg::Matrix m;
+  m.makeRotate( osg::Vec3 ( 0.0, 0.0, 1.0 ), plane.getNormal()  );
+
+  // Add the triangles
+  for ( unsigned int i = 0; i < indices.size(); i+= 3 )
   {
-    osg::ref_ptr <osg::Vec2Array> tPoints ( new osg::Vec2Array );
+    int n0 ( indices.at( i ) );
+    int n1 ( indices.at( i + 1 ) );
+    int n2 ( indices.at( i + 2 ) );
 
-    sizes.push_back( i->size() );
+    osg::Vec3 v0 ( out.at( n0 )[0], out.at( n0 )[1], planeValue );
+    osg::Vec3 v1 ( out.at( n1 )[0], out.at( n1 )[1], planeValue );
+    osg::Vec3 v2 ( out.at( n2 )[0], out.at( n2 )[1], planeValue );
 
-    for( const_iterator j = i->begin(); j != i->end(); ++j )
-    {
-      SharedVertexPtr sv ( *j );
+    v0 = v0 * m;
+    v1 = v1 * m;
+    v2 = v2 * m;
 
-      osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
+    SharedVertex *sv0 ( Detail::getSharedVertex ( shared, v0, caller ) );
+    SharedVertex *sv1 ( Detail::getSharedVertex ( shared, v1, caller ) );
+    SharedVertex *sv2 ( Detail::getSharedVertex ( shared, v2, caller ) );
 
-      v = v * mat;
+    // Plane to get the normal.
+    osg::Plane plane ( v0, v1, v2 );
 
-      tPoints->push_back ( osg::Vec2 ( v[0], v[1] ) );
-    }
-
-    //Inner loops need to be clock-wise
-    if( Usul::Loops::isCounterClockwise( tPoints->begin(), tPoints->end() - 1 ) )
-    {
-      std::reverse( tPoints->begin(), tPoints->end() );
-      std::reverse( i->begin(), i->end() );
-    }
-
-    points.insert( points.end(), tPoints->begin(), tPoints->end() );
-    _loop.insert( _loop.end(), i->begin(), i->end() );
-
+    // Add the triangle.
+    addTriangle->addTriangle( *sv0, *sv1, *sv2, plane.getNormal(), true, buildOnFly );
   }
-}
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Triangulate
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Loop::_triangulate ( Triangles &triangles, Usul::Interfaces::IUnknown *caller )
-{
-  //Clear in case any thing was added before
-  triangles.clear();
-
-  //reserve enough room
-  triangles.reserve( _loop.size() );
-
-  std::list< unsigned int > sizes;
-  
-  osg::ref_ptr < osg::Vec2Array > points ( new osg::Vec2Array );
-  points->reserve( _loop.size() + 1 );
-
-  this->_buildPoints( sizes, *points, caller );
-
-  Usul::Loops::triangulate_polygon( sizes, *points, triangles );
-
+  // If we get here it succeeded.
+  return true;
 }
 
 
@@ -396,23 +409,18 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
   // Get the center point.
   center = Detail::center ( *vertices );
 
-  SharedVertexPtr sv1 ( _loop.at( 0 ) );
-  SharedVertexPtr sv2 ( _loop.at( 1 ) );
-  SharedVertexPtr sv3 ( _loop.at( 2 ) );
+  SharedVertexPtr sv0 ( _loop.at( 0 ) );
+  SharedVertexPtr sv1 ( _loop.at( 1 ) );
+  SharedVertexPtr sv2 ( _loop.at( 2 ) );
   
   //Get three vertices
+  osg::Vec3 v0 ( getVertex->getVertex ( sv0->index() ) );
   osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
   osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
-  osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
 
-  //Calculate the normal
-  const osg::Vec3 t1 ( v2 - v1 );
-  const osg::Vec3 t2 ( v3 - v1 );
-
-  osg::Vec3 normal ( t1 ^ t2 );
-
-  //Normalize the normal
-  normal.normalize();
+  // Plane to get the normal.
+  osg::Plane plane ( v0, v1, v2 );
+  osg::Vec3 normal ( plane.getNormal() );
 
   float max ( Detail::maxDistance( *vertices, center ) );
   
@@ -421,11 +429,7 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
 
   osg::Vec3 eye ( center + ( normal * distance ) );
 
-  osg::Matrix mat;
-
-  mat.makeLookAt( eye, center, normal );
-
-  rotation.set( mat );
+  rotation.set( osg::Matrix::lookAt ( eye, center, normal ) );
 }
 
 

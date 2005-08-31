@@ -83,7 +83,7 @@ public:
   void                  remove ( Triangle *t );
 
   // Unreference this instance.
-  void                  unref();
+  void                  unref( bool allowDeletion = true );
 
   // Get/Set the visited flag
   bool                  visited() const;

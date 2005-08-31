@@ -14,10 +14,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Shared/Preferences.h"
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
 
 
 using namespace Usul;
 using namespace Usul::Shared;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for guarding access.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define GUARD_THIS Usul::Threads::Guard < Usul::Threads::Mutex > guard ( *_mutex )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +60,8 @@ Preferences::Preferences() :
   _uints(),
   _floats(),
   _doubles(),
-  _strings()
+  _strings(),
+  _mutex ( Usul::Threads::Mutex::create() )
 {
 }
 
@@ -63,12 +74,13 @@ Preferences::Preferences() :
 
 Preferences::~Preferences()
 {
+  delete _mutex;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the single instance.
+//  Return the single instance. TODO, need to guard this function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -88,7 +100,9 @@ Preferences &Preferences::instance()
 
 bool Preferences::getBool ( const std::string &key )
 {
-  return _bools[key];
+  GUARD_THIS;
+  const bool value ( _bools[key] );
+  return value;
 }
 
 
@@ -98,9 +112,24 @@ bool Preferences::getBool ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Preferences::getString ( const std::string &key )
+std::string Preferences::getString ( const std::string &key )
 {
-  return _strings[key];
+  GUARD_THIS;
+  const std::string value ( _strings[key] );
+  return value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Preferences::getString ( const std::string &key, std::string &value )
+{
+  GUARD_THIS;
+  value = _strings[key];
 }
 
 
@@ -112,7 +141,9 @@ const std::string &Preferences::getString ( const std::string &key )
 
 int Preferences::getInt ( const std::string &key )
 {
-  return _ints[key];
+  GUARD_THIS;
+  const int value ( _ints[key] );
+  return value;
 }
 
 
@@ -122,9 +153,11 @@ int Preferences::getInt ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Preferences::getUint   ( const std::string &key )
+unsigned int Preferences::getUint ( const std::string &key )
 {
-  return _uints[key];
+  GUARD_THIS;
+  const unsigned int value ( _uints[key] );
+  return value;
 }
 
 
@@ -134,9 +167,11 @@ unsigned int Preferences::getUint   ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Preferences::getFloat  ( const std::string &key )
+float Preferences::getFloat ( const std::string &key )
 {
-  return _floats[key];
+  GUARD_THIS;
+  const float value ( _floats[key] );
+  return value;
 }
 
 
@@ -148,7 +183,9 @@ float Preferences::getFloat  ( const std::string &key )
 
 double Preferences::getDouble ( const std::string &key )
 {
-  return _doubles[key];
+  GUARD_THIS;
+  const double value ( _doubles[key] );
+  return value;
 }
 
 
@@ -160,6 +197,7 @@ double Preferences::getDouble ( const std::string &key )
 
 void Preferences::setBool ( const std::string &key, bool value )
 {
+  GUARD_THIS;
   _bools[key] = value;
 }
 
@@ -172,6 +210,7 @@ void Preferences::setBool ( const std::string &key, bool value )
 
 void Preferences::setString ( const std::string &key, const std::string &value )
 {
+  GUARD_THIS;
   _strings[key] = value;
 }
 
@@ -184,6 +223,7 @@ void Preferences::setString ( const std::string &key, const std::string &value )
 
 void Preferences::setInt ( const std::string &key, int value )
 {
+  GUARD_THIS;
   _ints[key] = value;
 }
 
@@ -194,8 +234,9 @@ void Preferences::setInt ( const std::string &key, int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Preferences::setUint   ( const std::string &key, unsigned int value )
+void Preferences::setUint ( const std::string &key, unsigned int value )
 {
+  GUARD_THIS;
   _uints[key] = value;
 }
 
@@ -206,8 +247,9 @@ void Preferences::setUint   ( const std::string &key, unsigned int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Preferences::setFloat  ( const std::string &key, float value )
+void Preferences::setFloat ( const std::string &key, float value )
 {
+  GUARD_THIS;
   _floats[key] = value;
 }
 
@@ -220,6 +262,6 @@ void Preferences::setFloat  ( const std::string &key, float value )
 
 void Preferences::setDouble ( const std::string &key, double value )
 {
+  GUARD_THIS;
   _doubles[key] = value;
 }
-

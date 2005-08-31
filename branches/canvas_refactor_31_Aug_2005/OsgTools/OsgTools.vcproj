@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="opengl32.lib osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib"
 				OutputFile="../bin/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="opengl32.lib osgGA.lib OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
 				OutputFile="../bin/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -240,6 +240,12 @@
 					RelativePath=".\Dimension.h">
 				</File>
 				<File
+					RelativePath=".\DisplayLists.cpp">
+				</File>
+				<File
+					RelativePath=".\DisplayLists.h">
+				</File>
+				<File
 					RelativePath=".\FlipNormals.h">
 				</File>
 				<File
@@ -312,6 +318,9 @@
 					RelativePath=".\ScopedProjection.h">
 				</File>
 				<File
+					RelativePath=".\ScopedViewport.h">
+				</File>
+				<File
 					RelativePath=".\SetDataVariance.h">
 				</File>
 				<File
@@ -319,12 +328,6 @@
 				</File>
 				<File
 					RelativePath=".\SortBackToFrontCallback.h">
-				</File>
-				<File
-					RelativePath=".\State.cpp">
-				</File>
-				<File
-					RelativePath=".\State.h">
 				</File>
 				<File
 					RelativePath=".\Statistics.cpp">
@@ -440,12 +443,92 @@
 				<File
 					RelativePath=".\Images\Threshold.h">
 				</File>
+				<File
+					RelativePath=".\Images\TiledImage.cpp">
+				</File>
+				<File
+					RelativePath=".\Images\TiledImage.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Callbacks"
 				Filter="">
 				<File
 					RelativePath=".\Callbacks\BoundingBox.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Render"
+				Filter="">
+				<File
+					RelativePath=".\Render\ActionAdapter.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\ActionAdapter.h">
+				</File>
+				<File
+					RelativePath=".\Render\Animation.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\Animation.h">
+				</File>
+				<File
+					RelativePath=".\Render\ClampProjection.h">
+				</File>
+				<File
+					RelativePath=".\Render\Constants.h">
+				</File>
+				<File
+					RelativePath=".\Render\EventAdapter.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\EventAdapter.h">
+				</File>
+				<File
+					RelativePath=".\Render\FrameDump.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\FrameDump.h">
+				</File>
+				<File
+					RelativePath=".\Render\LodCallbacks.h">
+				</File>
+				<File
+					RelativePath=".\Render\RecordTime.h">
+				</File>
+				<File
+					RelativePath=".\Render\Trackball.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\Trackball.h">
+				</File>
+				<File
+					RelativePath=".\Render\Viewer.cpp">
+				</File>
+				<File
+					RelativePath=".\Render\Viewer.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="State"
+				Filter="">
+				<File
+					RelativePath=".\State\PolygonMode.cpp">
+				</File>
+				<File
+					RelativePath=".\State\PolygonMode.h">
+				</File>
+				<File
+					RelativePath=".\State\ShadeModel.cpp">
+				</File>
+				<File
+					RelativePath=".\State\ShadeModel.h">
+				</File>
+				<File
+					RelativePath=".\State\StateSet.cpp">
+				</File>
+				<File
+					RelativePath=".\State\StateSet.h">
 				</File>
 			</Filter>
 		</Filter>

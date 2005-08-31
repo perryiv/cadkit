@@ -32,11 +32,10 @@ struct ITextMatrix : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1758536334u };
 
-  virtual void setText      ( float x, float y, unsigned int row, unsigned int col, const std::string& text ) = 0;
-  virtual void createMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth ) = 0;
-  virtual void removeMatrix ( float x, float y ) = 0;
-
-}; // class ITextMatrix
+  virtual void textCellSet      ( float x, float y, unsigned int row, unsigned int col, const std::string& text ) = 0;
+  virtual void textMatrixRemove ( float x, float y ) = 0;
+  virtual void textMatrixResize ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth ) = 0;
+};
 
 
 }; // namespace Interfaces

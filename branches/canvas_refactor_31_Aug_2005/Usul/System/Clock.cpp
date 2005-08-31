@@ -9,13 +9,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class that represents the system's last error.
+//  Class that abstracts the system time.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/System/Clock.h"
-#include "Usul/MPL/SameType.h"
-#include "Usul/Strings/Trim.h"
 #include "Usul/Types/Types.h"
 
 

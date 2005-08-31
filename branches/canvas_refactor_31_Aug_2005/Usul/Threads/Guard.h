@@ -25,13 +25,13 @@ template < class MutexType > class Guard
 {
 public:
 
-  // Constructor. Locks the mutex.
+  // Constructor locks the mutex.
   Guard ( MutexType &m ) : _mutex ( m )
   {
     _mutex.lock();
   }
 
-  // Destructor. Unlocks the mutex.
+  // Destructor unlocks the mutex.
   ~Guard()
   {
     _mutex.unlock();

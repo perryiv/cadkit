@@ -481,16 +481,22 @@
 						RelativePath=".\Interfaces\IFrameDump.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGroup.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IOpenSceneGraph.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IPolygonMode.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IProjectionMatrix.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IRedraw.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IRender.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISceneGroup.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISceneIntersect.h">
@@ -503,6 +509,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITrackball.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IViewport.h">
 					</File>
 				</Filter>
 				<Filter
@@ -598,7 +607,19 @@
 						RelativePath=".\Interfaces\INotifyClose.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IRenderNotify.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISetTool.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISwapBuffers.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimerNotify.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimerServer.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITriangle.h">
@@ -691,9 +712,6 @@
 						RelativePath=".\Interfaces\IMode.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOpenGLState.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IOsgFoxView.h">
 					</File>
 					<File
@@ -738,6 +756,16 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IReadTIFF.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="OpenGL"
+					Filter="">
+					<File
+						RelativePath=".\Interfaces\IOpenGLContext.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOpenGLState.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -907,6 +935,12 @@
 				Name="Threads"
 				Filter="">
 				<File
+					RelativePath=".\Threads\ContextMutex.cpp">
+				</File>
+				<File
+					RelativePath=".\Threads\ContextMutex.h">
+				</File>
+				<File
 					RelativePath="Threads\Guard.h">
 				</File>
 				<File
@@ -920,6 +954,12 @@
 				</File>
 				<File
 					RelativePath="Threads\Queue.h">
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.cpp">
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.h">
 				</File>
 				<File
 					RelativePath="Threads\Set.h">

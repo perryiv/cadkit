@@ -29,6 +29,7 @@ namespace osg
   class Viewport;
   class Matrixf;
   class Matrixd;
+  class Vec4f;
 };
 
 namespace osgText

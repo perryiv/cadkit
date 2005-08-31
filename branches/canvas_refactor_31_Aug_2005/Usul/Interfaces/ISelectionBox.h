@@ -18,7 +18,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Vec3f; typedef Vec3f Vec3; }
+namespace osg { class Vec3d; }
+
 
 namespace Usul {
 namespace Interfaces {
@@ -32,8 +33,8 @@ struct ISelectionBox : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1104766252u };
 
-  virtual void drawSelectionBox ( const osg::Vec3&, const osg::Vec3& ) = 0;
-  virtual void removeSelectionBox() = 0;
+  virtual void selectionBoxSet ( const osg::Vec3d &, const osg::Vec3d & ) = 0;
+  virtual void selectionBoxRemove() = 0;
 
 }; // class ISelectionBox
 

@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class that represents a screen.
+//  Class that abstracts the system time.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,13 +19,15 @@
 #include "Usul/Export/Export.h"
 #include "Usul/Types/Types.h"
 
-namespace Usul {
-  namespace System {
-    
+
+namespace Usul
+{
+  namespace System
+  {
+    // Return the system-time in milliseconds.
     Usul::Types::Uint64 USUL_EXPORT milliseconds();
-    
-  }; // namespace System
-}; // namespace Usul
+  };
+};
 
 
 #endif // _USUL_SYSTEM_CLOCK_CLASS_H_

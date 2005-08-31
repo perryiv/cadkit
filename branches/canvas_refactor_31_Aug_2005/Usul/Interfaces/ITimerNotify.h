@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,32 +9,29 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for direct access to OpenSceneGraph base class.
+//  Interface for receiving timer events.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_OPEN_SCENE_GRAPH_H_
-#define _USUL_INTERFACE_OPEN_SCENE_GRAPH_H_
+#ifndef _USUL_INTERFACE_TIMER_NOTIFY_H_
+#define _USUL_INTERFACE_TIMER_NOTIFY_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Referenced; };
-
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IOpenSceneGraph : public Usul::Interfaces::IUnknown
+struct ITimerNotify : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IOpenSceneGraph );
+  USUL_DECLARE_QUERY_POINTERS ( ITimerNotify );
 
   /// Id for this interface.
-  enum { IID = 2851842570u };
+  enum { IID = 2203616723u };
 
-  /// Get the pointer to the base class for all OSG objects.
-  virtual osg::Referenced *             osgReferenced() = 0;
+  /// Notification of a timer event. Return false to cancel the timer.
+  virtual bool                    timerEventNotify ( unsigned int id, IUnknown *caller ) = 0;
 };
 
 
@@ -42,4 +39,4 @@ struct IOpenSceneGraph : public Usul::Interfaces::IUnknown
 }; // namespace Usul
 
 
-#endif // _USUL_INTERFACE_OPEN_SCENE_GRAPH_H_
+#endif // _USUL_INTERFACE_TIMER_NOTIFY_H_

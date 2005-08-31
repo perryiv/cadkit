@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "OsgTools/State.h"
+#include "OsgTools/State/StateSet.h"
 #include "OsgTools/SortBackToFrontCallback.h"
 
 #include "osg/Group"
@@ -172,10 +172,10 @@ osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
   geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
   
   // Set the line-width.
-  OsgTools::State::setLineWidth ( geode.get(), 2.0f );
+  OsgTools::State::StateSet::setLineWidth ( geode.get(), 2.0f );
 
   // Turn off lighting.
-  OsgTools::State::setLighting ( geode.get(), false );
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
   
   geode->addDrawable ( geometry.get() );
 

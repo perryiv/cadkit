@@ -18,6 +18,11 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <string>
+#include <vector>
+#include <utility>
+
+
 namespace Usul {
 namespace Interfaces {
 
@@ -30,19 +35,20 @@ struct IExport : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 4193063315u };
 
-  typedef std::pair<std::string,std::string>    Filter;
-  typedef std::vector<Filter>                   Filters;
+  /// Useful typedefs.
+  typedef std::pair<std::string,std::string>  Filter;
+  typedef std::vector<Filter>                 Filters;
 
-  // Write the current frame to an image file.
-  virtual bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const = 0;
+  /// Write the current frame to an image file.
+  virtual bool                  writeImageFile ( const std::string &name ) const = 0;
 
-  // Write the current scene to file.
-  virtual bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const = 0;
+  /// Write the current scene to file.
+  virtual bool                  writeSceneFile ( const std::string &name ) const = 0;
 
+  /// Return appropriate file-selection filters.
   virtual Filters               filtersWriteScene() const = 0;
   virtual Filters               filtersWriteImage() const = 0;
-
-}; // class IExport
+};
 
 
 } // namespace Interfaces

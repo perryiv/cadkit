@@ -8,34 +8,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/ReadModel.h"
-#include "OsgTools/ScopedOptions.h"
+
 #include "osgDB/Registry"
 #include "osgDB/ReadFile"
 
 #include <sstream>
 #include <stdexcept>
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read model using osg.  Throws if fails to read.
+//  Read model using osg. Throws if fails to read.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* OsgTools::readModel ( const std::string& filename, const std::string& s )
+osg::Node* OsgTools::readModel ( const std::string& filename )
 {
-  typedef osgDB::ReaderWriter::Options Options;
-
-  // Save the current options
-  OsgTools::ScopedOptions current;
-
-  // Set new options, which may be an empty string.
-  osg::ref_ptr<Options> options ( new Options );
-  options->setOptionString ( s );
-  osgDB::Registry *reg = osgDB::Registry::instance();
-  reg->setOptions ( options.get() );
-
   // Read the file.
-  osgDB::ReaderWriter::ReadResult rr ( reg->readNode ( filename, options.get() ) );
+  osgDB::ReaderWriter::ReadResult rr ( osgDB::Registry::instance()->readNode ( filename, osgDB::Registry::instance()->getOptions() ) );
 
   // Return now if it worked.
   if ( rr.validNode() )
@@ -51,6 +41,4 @@ osg::Node* OsgTools::readModel ( const std::string& filename, const std::string&
 
   // Report the error.
   throw std::runtime_error ( message.str() );
-
 }
-

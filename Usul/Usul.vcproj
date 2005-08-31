@@ -544,52 +544,22 @@
 					Name="Misc"
 					Filter="">
 					<File
-						RelativePath=".\Interfaces\IAddTriangle.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\ICleanUp.h">
 					</File>
 					<File
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDeleteAllConnected.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IDeletePrimitive.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFindLoops.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFlipNormal.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFlipNormals.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IGetHeight.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetLoops.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IGetNormal.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IGetPosition.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IGetVertex.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetWidth.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IHandle.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\INotify.h">
@@ -599,15 +569,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISetTool.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\ITriangle.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\ITriangleSV.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\ITriangulate.h">
 					</File>
 					<File
 						RelativePath="Interfaces\IUndo.h">
@@ -741,6 +702,52 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IReadTIFF.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Primitives"
+					Filter="">
+					<File
+						RelativePath=".\Interfaces\IAddSharedVertex.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IAddTriangle.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IDeleteAllConnected.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IDeletePrimitive.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFindLoops.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFlipNormal.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFlipNormals.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetLoops.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetNormal.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetVertex.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IKeepAllConnected.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITriangle.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITriangleSV.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITriangulate.h">
 					</File>
 				</Filter>
 			</Filter>

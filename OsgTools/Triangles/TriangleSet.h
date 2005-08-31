@@ -63,6 +63,9 @@ public:
   void                    addStart  ( );
   void                    addFinish ( );
 
+  // Add a shared vertex.  Is not added to the map.
+  SharedVertex*           addSharedVertex ( const osg::Vec3f& );
+
   // Add a triangle.
   void                    addTriangle ( const osg::Vec3f &v0, 
                                         const osg::Vec3f &v1, 

@@ -15,7 +15,7 @@
 
 namespace CV{
 
-  enum SinterFileState { NOTHING, RECEIVING, DONE };
+  enum SinterFileState { NOTHING, SIZE, RECEIVE, DONE, LOAD };
 
   class SinterAppData : public vpr::SerializableObject
     {
@@ -24,6 +24,7 @@ namespace CV{
       {
         _data = reader->readString();
         _state = reader->readUint32();
+		_fileSize = reader->readUint32();
         return vpr::ReturnStatus::Succeed;
       }
 
@@ -31,11 +32,13 @@ namespace CV{
       {
         writer->writeString ( _data );
         writer->writeUint32 ( _state );
+        writer->writeUint32 ( _fileSize );
         return vpr::ReturnStatus::Succeed;
       }
     public:
       std::string _data;
       int _state;
+	  int _fileSize;
     };
 
 };

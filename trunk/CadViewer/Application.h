@@ -55,9 +55,11 @@
 #include <vector>
 #include <list>
 #include <fstream>
+#include <sstream>
 
 #if defined (USE_SINTERPOINT)
 # include "SinterAppData.h"
+# include "sys/time.h"
 #endif
 
 
@@ -303,6 +305,7 @@ protected:
 
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
+  void                          _loadModelStream ( std::stringstream &filestream );
   void                          _loadRestartFile ( const std::string &filename );
   void                          _loadConfigFiles ( const std::list<std::string> &configs );
   void                          _loadSimConfigs  ( std::string dir );
@@ -336,6 +339,7 @@ protected:
 
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
+  void                          _streamModel ( std::stringstream &filestream, const Matrix44f &matrix );
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -532,21 +536,30 @@ protected:
   bool              _textures;
   GroupPtr          _scribeBranch;
 
-  // Used for networked file loading with SinterPoint, if enabled
 # if defined (USE_SINTERPOINT)
+    // Used for networked file loading with SinterPoint, if enabled
     void                   _sinterPointInit();
     void                   _sinterReceiveModelPreFrame();
     void                   _sinterReceiveModelPostFrame();
     sinter::Receiver       _sinterReceiver;
-    std::ofstream          _sinterFile;
-
+    std::string            _sinterStream;
     cluster::UserData< SinterAppData >  _sinterAppData;
 
     // These are static for use in the callback function
     static int             _sinterCallback ( const char *data, const int size );
-    static std::string     _sinterFileData;
     static vpr::Mutex      _sinterMutex;
+    static std::string     _sinterFileData;
     static SinterFileState _sinterFileState;
+    static unsigned int    _sinterFileSize;
+
+    // Used to time sinterpoint loading for optimizations
+    double _getClockTime(){
+      struct timeval t;
+      gettimeofday(&t,NULL);
+      return((double)t.tv_sec + (double)t.tv_usec * 0.000001);
+    }
+    double _sinterTime1, _sinterTime2;
+    bool _sinterTiming;	
 # endif
 };
 

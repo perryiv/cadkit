@@ -68,6 +68,7 @@
 
 #include "osgDB/ReadFile"
 #include "osgDB/WriteFile"
+#include "osgDB/ReaderWriter"
 
 #include "OsgTools/Axes.h"
 #include "OsgTools/Text.h"
@@ -1666,6 +1667,25 @@ void Application::_loadModelFile ( const std::string &filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Stream in the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadModelStream ( std::stringstream &filestream )
+{
+  ErrorChecker ( 1067093697u, isAppThread(), CV::NOT_APP_THREAD );
+
+  // Need an identity matrix.
+  Matrix44f matrix;
+  matrix.identity();
+
+  // Append the request.
+  this->_streamModel ( filestream, matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Load the restart file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1793,6 +1813,74 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
 
   // Do any post-processing.
   this->_postProcessModelLoad ( filename, node.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream in the model and position it using the matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_streamModel ( std::stringstream &filestream, const Matrix44f &matrix )
+{
+  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
+  ErrorChecker ( 1067093698u, _models.valid() );
+
+  // User feedback.
+  this->_update ( *_msgText, "Reading stream" );
+
+  // Stream in the file
+  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension("osg");
+  if(!rw){
+	  std::ostringstream out;
+    out << "Error: OSG plugin not available, streamed file input will fail.";
+    this->_update ( *_msgText, out.str() );
+  }
+  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( filestream );
+  if(!rr.validNode()){
+	  std::ostringstream out;
+    out << "Error: Streamed input of node file failed, resulting node not vaild.";
+    this->_update ( *_msgText, out.str() );
+  }
+  NodePtr node = rr.getNode();
+
+  // User feedback.
+  this->_update ( *_msgText, "Done streaming" );
+
+  // Are we supposed to set the normalize flag? We only turn it on, 
+  // not off, because we want to inherit the global state.
+  bool norm ( _prefs->normalizeVertexNormalsModels() );
+  if ( norm )
+    OsgTools::State::setNormalize ( node.get(), norm );
+
+  // Make a matrix transform for this model.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setName ( std::string ( "Branch for: " ) + std::string ("streamed") );
+
+  // Set its matrix.
+  osg::Matrixf M;
+  OsgTools::Convert::matrix ( matrix, M );
+  mt->setMatrix ( M );
+
+  // Set its name to the filename if there is no name.
+  if ( node->getName().empty() )
+    node->setName ( std::string("streamed") );
+
+  // Create the scribe effect since it must attach to the model
+  osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
+  sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
+  sc->addChild ( node.get() );
+  _scribeBranch->addChild ( sc.get() );
+  
+  // Hook things up.
+  mt->addChild ( node.get() );
+
+  // Hook things up.
+  _models->addChild ( mt.get() );
+
+  // Do any post-processing.
+  this->_postProcessModelLoad ( std::string("streamed"), node.get() );
 }
 
 
@@ -3079,9 +3167,10 @@ void Application::_updateSceneTool()
 ///////////////////////////////////////////////////////////////////////////////
 
 # if defined (USE_SINTERPOINT)
-    std::string     Application::_sinterFileData;
     vpr::Mutex      Application::_sinterMutex;
+    std::string     Application::_sinterFileData;
     SinterFileState Application::_sinterFileState;
+    unsigned int    Application::_sinterFileSize;
 # endif
 
 
@@ -3116,7 +3205,7 @@ void Application::_updateSceneTool()
       if (result!=0) 
       {
         std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "      SinterPoint reciever failed to connect to: " << server.c_str() << std::endl;
+        std::cout << "      SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
         std::cout << "      SinterPoint communication will be unusable" << std::endl;
       }
       else{
@@ -3133,6 +3222,11 @@ void Application::_updateSceneTool()
     // Now everyone initializes the SinterAppData
     vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
     _sinterAppData.init(newGuid);
+
+    // To be safe
+    _sinterStream.clear();
+
+    _sinterTiming=false;
   }
 
 # endif
@@ -3158,20 +3252,33 @@ void Application::_updateSceneTool()
     ErrorChecker ( 2519309141u, !writer.empty(), 
       "No machine specified as the Sinter Point Writer in user-preferences." );
 
-    // The writer obtains the new osg file from Sinterpoint and writes it out
+    // The writer obtains the new osg file from Sinterpoint here and sends out
+    // application data for the other machines
     if ( host == writer )
     {
       int length;
 
       // Share the state
       _sinterAppData->_state = _sinterFileState;
-
-      if ( _sinterFileState == RECEIVING )
+      
+      if ( _sinterFileState == RECEIVE )
       {
-        // Keep grabbing data from SinterPoint and writing it out
-        if ( !_sinterFile.is_open() ){
-          _sinterFile.open ( _prefs->sinterPointTmpFile().c_str() );
+        if(_sinterTiming == false){
+          _sinterTime1 = _getClockTime();
+          _sinterTiming = true;
+          std::cout << "Begin receiving" << std::endl;
         }
+
+        // Reserve the string size if it's too low
+        if ( _sinterStream.capacity() < _sinterFileSize )
+        {
+          _sinterStream.reserve ( _sinterFileSize );
+          std::cout << "Stream reserved to size = " << _sinterStream.capacity() << std::endl;
+          // Share the size
+          _sinterAppData->_fileSize = _sinterFileSize;
+        }
+
+        // Keep grabbing data from SinterPoint and writing it out
         _sinterMutex.acquire();
         length = _sinterFileData.length();
         if ( length!=0 )
@@ -3179,8 +3286,8 @@ void Application::_updateSceneTool()
           // Share the data across the cluster
           _sinterAppData->_data = _sinterFileData;
           
-          // Write the data to a file
-          _sinterFile.write ( _sinterFileData.c_str(), length );
+          // Add to the file stream
+          _sinterStream += _sinterFileData;
           _sinterFileData.clear();
         }
         _sinterMutex.release();
@@ -3195,20 +3302,12 @@ void Application::_updateSceneTool()
           // Share the data across the cluster
           _sinterAppData->_data = _sinterFileData;
           
-          // Write the data to a file
-          _sinterFile.write ( _sinterFileData.c_str(), length );
+          // Add to the file stream
+          _sinterStream += _sinterFileData;
           _sinterFileData.clear();
         }
-        _sinterFile.close();
+        _sinterFileState=LOAD;
       }
-    }
-
-    // Other machines simply receive ApplicationData and write it out
-    else
-    {
-      // Get the data and state
-      _sinterFileData = _sinterAppData->_data;
-      _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
     }
   }
 
@@ -3235,19 +3334,29 @@ void Application::_updateSceneTool()
     ErrorChecker ( 2519309142u, !writer.empty(), 
       "No machine specified as the Sinter Point Writer in user-preferences." );
 
-    // The writer will just load the file
+    // The writer will just finish and load the file here so they all load in postframe
+    // after application data has been sync'd
     if ( host == writer )
     {
-      if ( _sinterFileState == DONE ){
-        // Load the completed file
-        this->_loadModelFile ( _prefs->sinterPointTmpFile().c_str() );
+      if ( _sinterFileState == LOAD ){
+        // Stream in the completed file
+        _sinterTime2 = _getClockTime();
+        _sinterTiming = false;
+        std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
+        std::stringstream ss;
+        ss.str(_sinterStream);
+        this->_loadModelStream ( ss );
 
         // Finished
+        _sinterStream.clear();
+        _sinterStream.reserve ( 0 );
+        _sinterFileData.clear();
+        _sinterFileData.reserve ( 0 );
         _sinterFileState = NOTHING;
       }
     }
 
-    // Other machines simply receive ApplicationData and write it out
+    // Other machines receive ApplicationData and do all their work here
     else
     {
       int length;
@@ -3255,17 +3364,22 @@ void Application::_updateSceneTool()
       // Get the data and state
       _sinterFileData = _sinterAppData->_data;
       _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
+      _sinterFileSize = _sinterAppData->_fileSize;
 
-      if ( _sinterFileState == RECEIVING ) {
-        // Keep grabbing data from SinterPoint and writing it out
-        if ( !_sinterFile.is_open() ){
-          _sinterFile.open ( _prefs->sinterPointTmpFile().c_str() );
+      if ( _sinterFileState == RECEIVE ) {
+        // Reserve the string size if it hasn't already been set
+        if ( _sinterStream.capacity() < _sinterFileSize )
+        {
+          _sinterStream.reserve ( _sinterFileSize );
+          std::cout << "Stream reserved to size = " << _sinterStream.capacity() << std::endl;
         }
+        
+        // Keep grabbing data from SinterPoint and writing it out
         length = _sinterFileData.length();
         if ( length!=0 )
         {
-          // Write the data to a file
-          _sinterFile.write ( _sinterFileData.c_str(), length );
+          // Add to the file stream
+          _sinterStream+=_sinterFileData;
           _sinterFileData.clear();
         }
       }
@@ -3275,14 +3389,20 @@ void Application::_updateSceneTool()
         length = _sinterFileData.length();
         if ( length!=0 )
         {
-          // Write the data to a file
-          _sinterFile.write ( _sinterFileData.c_str(), length );
+          // Add to the file stream
+          _sinterStream+=_sinterFileData;
           _sinterFileData.clear();
         }
-        _sinterFile.close();
-
         // Now load
-        this->_loadModelFile ( _prefs->sinterPointTmpFile().c_str() );
+        std::stringstream ss;
+        ss.str (_sinterStream );
+        this->_loadModelStream ( ss );
+        
+        // Finished
+        _sinterStream.clear();
+        _sinterStream.reserve ( 0 );
+        _sinterFileData.clear();
+        _sinterFileData.reserve ( 0 );
       }
     }
   }
@@ -3307,16 +3427,43 @@ void Application::_updateSceneTool()
     // Clean off the trailing characters SinterPoint tends to leave on
     msg.erase ( size, msg.size() );
 
-    if ( msg=="EOFEOFEOF" )
+    if ( msg=="SINTERPOINT_FILE_SIZE" )
+    {
+      _sinterFileState = SIZE;
+    }
+    else if ( msg=="SINTERPOINT_FILE_RECEIVE" )
+    {
+      _sinterFileState = RECEIVE;
+    }
+    else if ( msg=="SINTERPOINT_FILE_DONE" )
     {
       _sinterFileState = DONE;
     }
     else
     {
-      // Add the newline back on and append to the Data
-      msg += "\n";
-      _sinterFileData += msg;
-      _sinterFileState = RECEIVING;
+      // Received data is file size
+      if ( _sinterFileState==SIZE )
+      {
+        std::stringstream ss;
+        ss.str(msg);
+        unsigned int size;
+        ss >> size;
+        _sinterFileSize = size;
+
+        // Set the receiver string to this size
+        // This is worst case, but assumes the 
+        // whole file could come across within one
+        // juggler event loop
+        _sinterFileData.reserve(size);
+      }
+      // Received data is file data
+      else
+      {
+        // Add the newline back on and append to the Data
+        msg += "\n";
+        _sinterFileData += msg;
+        _sinterFileState = RECEIVE;
+      }
     }
 
     _sinterMutex.release();

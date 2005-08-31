@@ -53,6 +53,12 @@ public:
   // Is this loop empty?
   bool                  empty() const { return _loop.empty(); }
 
+  // Erase the element at i
+  void                  erase ( unsigned int i ) { _loop.erase ( _loop.begin() + i ); }
+
+  // Erase the iterator.
+  iterator              erase ( iterator iter ) { return _loop.erase ( iter ); }
+
   // Get the size.
   unsigned int          size() const { return _loop.size(); }
 

@@ -112,6 +112,9 @@ public:
   // Get the vertex at the index
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
 
+  // Get the bounding box.
+  const osg::BoundingBox& getBoundingBox () const { return _bb; }
+
   // Keep only these triangles
   void                    keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );
 

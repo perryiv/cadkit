@@ -485,6 +485,32 @@ void TriangleSet::addFinish()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make the shared vertex.  Is not added to the map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v )
+{
+  // Look for the shared vertex.
+  SharedVertices::iterator i = _shared.find ( v );
+  if ( _shared.end() != i )
+    return i->second.get();
+
+  // If we get to here then append to the vertices.
+  _vertices->push_back ( v );
+
+  // Make shared vertex with proper index.
+  SharedVertex::ValidRefPtr sv ( new SharedVertex ( _vertices->size() - 1  ) );
+  
+  // Do not add shared vertex to the map
+
+  // Return the new shared vertex.
+  return sv.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get or make the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////

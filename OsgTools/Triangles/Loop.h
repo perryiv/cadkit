@@ -13,8 +13,6 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Triangles/SharedVertex.h"
 
-#include "Usul/Math/Vector3.h"
-
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "osg/Vec3"
@@ -83,19 +81,15 @@ public:
   const osg::Vec3f&     vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const;
 
 private:
-  typedef std::vector< Usul::Math::Vec3i > Triangles;
-
-  // Build points needed for the algorithm.
-  void _buildPoints ( std::list< unsigned int > &sizes, osg::Vec2Array &points, Usul::Interfaces::IUnknown *caller  );
-
-  void _triangulate ( Triangles &triangles, Usul::Interfaces::IUnknown *caller );
 
   // Get the osg::Vec3array from the loop.
   osg::Vec3Array*   _vertices( Usul::Interfaces::IUnknown *caller ) const;
 
   Points _loop;
 
-  std::vector< Points > _innerLoops;
+  typedef std::vector< Points > InnerLoops;
+
+  InnerLoops _innerLoops;
 
 }; // class Loop.
 

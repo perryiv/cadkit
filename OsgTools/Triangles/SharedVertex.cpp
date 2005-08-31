@@ -109,11 +109,11 @@ void SharedVertex::ref()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::unref()
+void SharedVertex::unref( bool allowDeletion )
 {
   USUL_ASSERT ( this );
   USUL_ASSERT ( _ref > 0 );
-  if ( 0 == --_ref )
+  if ( 0 == --_ref && allowDeletion )
     delete this;
 }
 

@@ -8,11 +8,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/Loop.h"
+#include "Usul/Interfaces/IGetDocument.h"
 
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
 #include "Usul/Interfaces/ITriangulate.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
+#include "Usul/Interfaces/IActiveView.h"
+#include "Usul/Interfaces/IDocument.h"
+#include "Usul/Interfaces/IGetBoundingBox.h"
+#include "Usul/Interfaces/IGroup.h"
 
 #include "osg/Matrix"
 #include "osg/Plane"
@@ -28,6 +33,8 @@
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Math/Vector3.h"
+
+#include "LoopSplitter.h"
 
 using namespace OsgTools::Triangles;
 
@@ -163,6 +170,13 @@ _innerLoops()
 {
 }
 
+Loop::Loop( const Loop &loop ) :
+_loop(loop._loop),
+_innerLoops(loop._innerLoops)
+{
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -172,6 +186,8 @@ _innerLoops()
 
 Loop::~Loop()
 {
+_loop.clear();
+_innerLoops.clear();
 }
 
 
@@ -189,7 +205,10 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
   typedef Triangulate::UIntArray           UIntArray;
   typedef Triangulate::InnerLoops          InnerLoops;
   typedef Usul::Components::Manager        PluginManager;
-
+  
+  if ( this->isCoplanar(caller) == -1 ) {
+    return false;
+  }
   // Get needed interfaces
   Triangulate::ValidQueryPtr tri ( PluginManager::instance().getInterface( Triangulate::IID ) );
   Usul::Interfaces::IGetVertex::ValidQueryPtr               getVertex       ( caller );
@@ -224,27 +243,6 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
   // Local map of osg::Vec3 and the shared vertex they belong too.
   Detail::Shared shared;
 
-#if 0
-  // Make the vertex array for the triangulate algorithm.
-  for( const_iterator i = _loop.begin(); i != _loop.end(); ++i )
-  {
-    SharedVertexPtr sv ( *i );
-
-    // Get the vertex;
-    osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
-
-    // Add the vec3 and the shared vertex to the map
-    shared.insert ( Detail::Shared::value_type ( v, sv.get() ) );
-
-    // Translate into proper plane.
-    v = v * mat;
-
-    planeValue = v[2];
-
-    vertices.push_back( Usul::Math::Vec2d ( v.x(), v.y() ) );
-
-  }
-#endif
   Detail::fillVertices ( vertices, shared, _loop, mat, caller );
 
   // Loop through the inner loops
@@ -529,5 +527,78 @@ unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
 
   //return count;
   return 1;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Determines if the loop is entirly contained on a single plane. If the loop
+// is fully contained on a single plane, then an int value is returned that
+// can be used to determine which element of the 3D vector can be safely removed
+// to translate to a 2D space.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
+  int size = _loop.size();
+  int plane = -1; //0=x, 1=y, 2=z;
+  float xavg = 0.0f, yavg=0.0f, zavg =0.0f;
+  //Loop once to find if the loop is on a single plane.
+  for( unsigned int i = 0; i < size; ++i)
+  {
+    xavg += (this->vertex( i, caller )).x();
+    yavg += (this->vertex( i, caller )).y();
+    zavg += (this->vertex( i, caller )).z();
+  }
+  xavg /= size;
+  yavg /= size;
+  zavg /= size;
+  
+  if (xavg == (this->vertex( 0, caller )).x() &&
+      yavg != (this->vertex( 0, caller )).y() && 
+      zavg != (this->vertex( 0, caller )).z() ) {
+      std::cout << "The loop is coplanar on the ZY plane" << std::endl;
+      plane = LoopSplitter::X_AXIS;
+  } else if (xavg != (this->vertex( 0, caller )).x() &&
+      yavg == (this->vertex( 0, caller )).y() && 
+      zavg != (this->vertex( 0, caller )).z() ) {
+      std::cout << "The loop is coplanar on the XZ plane" << std::endl;
+      plane = LoopSplitter::Y_AXIS;
+  } else if (xavg != (this->vertex( 0, caller )).x() &&
+      yavg != (this->vertex( 0, caller )).y() && 
+      zavg == (this->vertex( 0, caller )).z() ) {
+      std::cout << "The loop is coplanar on the XY plane" << std::endl;
+      plane = LoopSplitter::Z_AXIS;
+  }
+  return plane;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// This will attempt to print out a conforming .poly file for the Quake
+//  Triangulation program
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Loop::_printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller ) {
+  std::cout << "============== BEGIN POLY FILE ====================" << std::endl;
+  std::cout << "# Poly file for Loop\n# This was generated from OsgFox Code" << std::endl;
+  std::cout << loop.size() << " 2 1 0" << std::endl;
+  for( unsigned int i = 0; i < loop.size(); ++ i )
+  {
+    osg::Vec3 v ( loop.vertex( i, caller ) );
+   // vertices->push_back( loop.vertex( i, caller ) );
+    std::cout << i+1 << " " << v.x() << " " << v.z() << " 0" << std::endl; 
+  }
+  std::cout << loop.size() << " 0" << std::endl;
+  for (unsigned int i = 0; i < loop.size(); ++i) {
+    if (i+1 != loop.size() )
+      std::cout << i+1 << " " << i+1 << " " << i+2 << std::endl;
+  }
+  std::cout << loop.size() << " " << loop.size() << " 1" << std::endl;
+  std::cout << "0"<< std::endl;
+  std::cout << "============== END POLY FILE ================\n\n" << std::endl;
 }
 

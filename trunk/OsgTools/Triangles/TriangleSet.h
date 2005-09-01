@@ -158,6 +158,8 @@ public:
   const osg::Vec3f &      vertex1 ( const osg::Drawable* d, unsigned int i ) const;
   const osg::Vec3f &      vertex2 ( const osg::Drawable* d, unsigned int i ) const;
 
+  const osg::BoundingBox & getBoundingBox() const;
+  
 protected:
 
   // Do not copy.

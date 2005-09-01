@@ -1090,3 +1090,15 @@ const osg::Vec3f & TriangleSet::vertexNormal ( unsigned int i ) const
   return ( _normalsPerVertex().empty() ? _normalsPerFacet().at( i /3 ) : _normalsPerVertex().at ( i ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a reference to the osg BoundingBox
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::BoundingBox & TriangleSet::getBoundingBox() const 
+{
+  return _bb;
+}
+

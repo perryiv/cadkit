@@ -133,3 +133,53 @@ bool PolygonMode::has ( const osg::StateSet *ss )
   const bool both  ( PolygonMode::has ( osg::PolygonMode::FRONT_AND_BACK, ss ) );
   return ( front || back || both );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert an unsigned int to an osg::PolygonMode::Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::PolygonMode::Mode PolygonMode::mode ( IPolygonMode::Mode m )
+{
+  switch ( m )
+  {
+  case Usul::Interfaces::IPolygonMode::POINT:
+    return osg::PolygonMode::POINT;
+
+  case Usul::Interfaces::IPolygonMode::LINE:
+    return osg::PolygonMode::LINE;
+    
+  case Usul::Interfaces::IPolygonMode::FILL:
+    return osg::PolygonMode::FILL;
+
+  default:
+    throw std::runtime_error ( "Error 3148945400: Invalid unsigned integer for polygon mode." );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert an unsigned int to an osg::PolygonMode::Face
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::PolygonMode::Face PolygonMode::face ( IPolygonMode::Face f )
+{
+  switch ( f )
+  {
+  case Usul::Interfaces::IPolygonMode::FRONT_AND_BACK:
+    return osg::PolygonMode::FRONT_AND_BACK;
+
+  case Usul::Interfaces::IPolygonMode::FRONT:
+    return osg::PolygonMode::FRONT;
+
+  case Usul::Interfaces::IPolygonMode::BACK:
+    return osg::PolygonMode::BACK;
+
+  default:
+    throw std::runtime_error ( "Error 2817842441: Invalid unsigned integer for polygon face." );
+  }
+}

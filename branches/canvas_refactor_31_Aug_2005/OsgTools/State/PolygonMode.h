@@ -19,6 +19,8 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+#include "Usul/Interfaces/IPolygonMode.h"
+
 #include "osg/PolygonMode"
 
 
@@ -28,12 +30,21 @@ namespace State {
 
 struct OSG_TOOLS_EXPORT PolygonMode
 {
-  static void         set    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, osg::StateSet * );
-  static void         toggle ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, osg::StateSet * );
-  static bool         has    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, const osg::StateSet * );
-  static bool         has    ( osg::PolygonMode::Face face, const osg::StateSet * );
-  static bool         has    ( const osg::StateSet * );
-  static void         remove ( osg::StateSet * );
+  typedef Usul::Interfaces::IPolygonMode IPolygonMode;
+
+  static osg::PolygonMode::Mode       mode   ( IPolygonMode::Mode m );
+
+  static bool                         has    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, const osg::StateSet * );
+  static bool                         has    ( osg::PolygonMode::Face face, const osg::StateSet * );
+  static bool                         has    ( const osg::StateSet * );
+
+  static osg::PolygonMode::Face       face   ( IPolygonMode::Face f );
+
+  static void                         remove ( osg::StateSet * );
+
+  static void                         set    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, osg::StateSet * );
+
+  static void                         toggle ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, osg::StateSet * );
 };
 
 

@@ -45,10 +45,10 @@ struct IPolygonMode : public Usul::Interfaces::IUnknown
   };
 
   // Set/query/remove the polygon mode.
-  virtual void                  setPolygonMode    ( unsigned int face, unsigned int  mode ) = 0;
-  virtual void                  togglePolygonMode ( unsigned int face, unsigned int  mode ) = 0;
-  virtual bool                  hasPolygonMode    ( unsigned int face, unsigned int  mode ) const = 0;
-  virtual bool                  hasPolygonMode    ( unsigned int face ) const = 0;
+  virtual void                  setPolygonMode    ( Face face, Mode mode ) = 0;
+  virtual void                  togglePolygonMode ( Face face, Mode mode ) = 0;
+  virtual bool                  hasPolygonMode    ( Face face, Mode mode ) const = 0;
+  virtual bool                  hasPolygonMode    ( Face face ) const = 0;
   virtual bool                  hasPolygonMode() const = 0;
   virtual void                  removePolygonMode() = 0;
 

@@ -238,6 +238,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IViewport*>(this);
   case Usul::Interfaces::ITimerNotify::IID:
     return static_cast<Usul::Interfaces::ITimerNotify*>(this);
+  case Usul::Interfaces::IGetBoundingBox::IID:
+    return static_cast<Usul::Interfaces::IGetBoundingBox*>(this);
   default:
     return 0x0;
   }
@@ -350,6 +352,17 @@ void Viewer::render()
 
   // Check for errors.
   USUL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // Swap the buffers.
+  if ( _swapBuffers.valid() )
+    _swapBuffers->swapBuffers ( this->_unknown() );
+
+  // Dump the current frame if we should.
+  this->frameDump();
+
+  // Notify the client.
+  if ( _renderNotify.valid() )
+    _renderNotify->renderNotify ( this->_unknown() );
 }
 
 
@@ -582,21 +595,48 @@ void Viewer::hiddenLines ( bool h )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the display-list usage flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::displayListsUsage ( bool state )
+{
+  Usul::Shared::Preferences::instance().setBool ( OsgTools::Render::DISPLAY_LISTS, state );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the display-list usage flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::displayListsUsage()
+{
+  return Usul::Shared::Preferences::instance().getBool ( OsgTools::Render::DISPLAY_LISTS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the display-list state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::displayLists ( bool use, bool release )
+void Viewer::displayListsUpdate()
 {
   GUARD_MEMBERS;
   GUARD_CONTEXT;
+
+  // Are we supposed to use display lists?
+  const bool use ( Viewer::displayListsUsage() );
 
   // Set the display-list usage.
   OsgTools::DisplayLists dl ( use );
   dl ( _root.get() );
 
-  // If we are not using display lists, and we are supposed to release them...
-  if ( !use && release )
+  // If we are not using display lists...
+  if ( false == use )
   {
     // Delete all display-lists associated with our context id.
     _sceneView->releaseAllGLObjects();
@@ -1246,8 +1286,7 @@ void Viewer::timeInfo ( std::string &s ) const
 ///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::animate ( const osg::Vec3d &t1, const osg::Quat &r1, 
-                       const osg::Vec3d &t2, const osg::Quat &r2, 
-                       double duration )
+                       const osg::Vec3d &t2, const osg::Quat &r2 )
 {
   GUARD_MEMBERS;
 
@@ -1256,8 +1295,8 @@ void Viewer::animate ( const osg::Vec3d &t1, const osg::Quat &r1,
     return;
 
   // Initialize animation and register timer callback.
-  _animation.init ( t1, r1, t2, r2, duration );
-  _timerServer->timerCallbackSet ( ID_ANIMATION_TIMEOUT, duration, this->_unknown() );
+  _animation.init ( t1, r1, t2, r2, _ANIMATION_DURATION_MILLISECONDS );
+  _timerServer->timerCallbackSet ( ID_ANIMATION_TIMEOUT, _ANIMATION_TIMER_MILLISECONDS, this->_unknown() );
 }
 
 
@@ -1267,7 +1306,7 @@ void Viewer::animate ( const osg::Vec3d &t1, const osg::Quat &r1,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::rotate ( const osg::Vec3d &axis, double radians, double duration, IUnknown *caller )
+void Viewer::rotate ( const osg::Vec3d &axis, double radians )
 {
   GUARD_MEMBERS;
 
@@ -1283,7 +1322,7 @@ void Viewer::rotate ( const osg::Vec3d &axis, double radians, double duration, I
   osg::Quat R2; M2.get ( R2 );
 
   // Animate.
-  this->animate ( T1, R1, T1, R2, duration, caller );
+  this->animate ( T1, R1, T1, R2 );
 }
 
 
@@ -1302,6 +1341,9 @@ bool Viewer::timerEventNotify ( unsigned int id, IUnknown *caller )
   {
     case ID_ANIMATION_TIMEOUT:
       return this->_animate();
+
+    case ID_SPIN_TIMEOUT:
+      return this->_spin();
 
     default:
       USUL_ASSERT ( false ); // Heads up
@@ -1339,20 +1381,12 @@ bool Viewer::_animate()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::spinPerformMotion()
+bool Viewer::_spin()
 {
   GUARD_MEMBERS;
 
   // Handle no manipulator.
   if ( 0x0 == this->_navManip() )
-    return false;
-
-  // Stop if the global flag says to.
-  if ( false == Viewer::spinAllowed() )
-    return false;
-
-  // Stop if this instance should.
-  if ( false == this->spinState() )
     return false;
 
   // Make the adapters.
@@ -1375,28 +1409,33 @@ bool Viewer::spinPerformMotion()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the flag that says this viewer should be spinning.
+//  Start/stop the spin.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::spinState ( bool state )
+void Viewer::spin ( bool state )
 {
-  GUARD_MEMBERS;
-  _flags = ( ( state ) ? Usul::Bits::add ( _flags, _SPINNING ) : Usul::Bits::remove ( _flags, _SPINNING ) );
-}
+  // Punt if not given needed interface.
+  if ( false == _timerServer.valid() )
+    return;
 
+  // If we are supposed to start it.
+  if ( state )
+  {
+    // First, stop any spin there is.
+    this->spin ( false );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the flag that says this viewer should be spinning.
-//
-///////////////////////////////////////////////////////////////////////////////
+    // Set a new timeout event if we are allowed.
+    if ( Viewer::spinAllowed() )
+      _timerServer->timerCallbackSet ( ID_SPIN_TIMEOUT, _SPIN_TIMER_MILLISECONDS, this->_unknown() );
+  }
 
-bool Viewer::spinState() const
-{
-  GUARD_MEMBERS;
-  const bool state ( Usul::Bits::has ( _flags, _SPINNING ) );
-  return state;
+  // Otherwise...
+  else
+  {
+    // Remove the timer.
+    _timerServer->timerCallbackRemove ( ID_SPIN_TIMEOUT );
+  }
 }
 
 
@@ -1625,7 +1664,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::boundingBox ( bool state )
+void Viewer::boundingBoxVisible ( bool state )
 {
   GUARD_MEMBERS;
 
@@ -1660,7 +1699,7 @@ void Viewer::boundingBox ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::boundingSphere ( bool state )
+void Viewer::boundingSphereVisible ( bool state )
 {
   GUARD_MEMBERS;
 
@@ -1695,7 +1734,7 @@ void Viewer::boundingSphere ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::boundingBox() const
+bool Viewer::boundingBoxVisible() const
 {
   GUARD_MEMBERS;
   GroupMap::const_iterator i = _groupMap.find ( OsgTools::Render::BOUNDING_BOX );
@@ -1709,11 +1748,26 @@ bool Viewer::boundingBox() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::boundingSphere() const
+bool Viewer::boundingSphereVisible() const
 {
   GUARD_MEMBERS;
   GroupMap::const_iterator i = _groupMap.find ( OsgTools::Render::BOUNDING_SPHERE );
   return ( ( _groupMap.end() != i ) && ( i->second.valid() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::BoundingBox Viewer::boundingBoxGet() const
+{
+  // Get the scene's bounding box.
+  osg::BoundingBox bb;
+  bb.expandBy ( _root->getBound() );
+  return bb;
 }
 
 

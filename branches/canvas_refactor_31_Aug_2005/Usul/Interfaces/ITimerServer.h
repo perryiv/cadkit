@@ -30,11 +30,14 @@ struct ITimerServer : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2106047749u };
 
-  /// Set a timer callback.
-  virtual void                    timerCallbackSet ( double seconds, unsigned int id, IUnknown *caller ) = 0;
+  /// Query if timer exists.
+  virtual bool                    timerCallbackHas ( unsigned int id ) const = 0;
 
   /// Remove a timer callback.
   virtual void                    timerCallbackRemove ( unsigned int id ) = 0;
+
+  /// Set a timer callback.
+  virtual void                    timerCallbackSet ( double seconds, unsigned int id, IUnknown *caller ) = 0;
 };
 
 

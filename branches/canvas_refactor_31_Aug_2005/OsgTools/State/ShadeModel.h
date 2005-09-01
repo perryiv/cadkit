@@ -19,6 +19,8 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+#include "Usul/Interfaces/IShadeModel.h"
+
 #include "osg/ShadeModel"
 
 
@@ -28,11 +30,18 @@ namespace State {
 
 struct OSG_TOOLS_EXPORT ShadeModel
 {
-  static void         set    ( osg::ShadeModel::Mode mode, osg::StateSet * );
-  static void         toggle ( osg::ShadeModel::Mode mode, osg::StateSet * );
-  static bool         has    ( osg::ShadeModel::Mode mode, const osg::StateSet * );
-  static bool         has    ( const osg::StateSet * );
-  static void         remove ( osg::StateSet * );
+  typedef Usul::Interfaces::IShadeModel IShadeModel;
+
+  static bool                         has    ( osg::ShadeModel::Mode mode, const osg::StateSet * );
+  static bool                         has    ( const osg::StateSet * );
+
+  static osg::ShadeModel::Mode        mode   ( IShadeModel::Mode m );
+
+  static void                         remove ( osg::StateSet * );
+
+  static void                         set    ( osg::ShadeModel::Mode mode, osg::StateSet * );
+
+  static void                         toggle ( osg::ShadeModel::Mode mode, osg::StateSet * );
 };
 
 

@@ -31,8 +31,8 @@ struct IBoundingSphere : public Usul::Interfaces::IUnknown
   enum { IID = 1770828539u };
 
   // Set/get the bounding-box state.
-  virtual void                  boundingSphere ( bool show ) = 0;
-  virtual bool                  boundingSphere() const = 0;
+  virtual void                  boundingSphereVisible ( bool show ) = 0;
+  virtual bool                  boundingSphereVisible() const = 0;
 
 }; // class IBoundingSphere
 

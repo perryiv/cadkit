@@ -30,9 +30,12 @@ struct IStereo : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2362813894u };
 
+  /// Possible modes.
+  enum Mode { NONE, QUAD_BUFFER, ANAGLYPHIC, HORIZONTAL_SPLIT, VERTICAL_SPLIT, LEFT_EYE, RIGHT_EYE };
+
   // Get/set the stereo mode
-  virtual void              stereoMode ( unsigned int ) = 0;
-  virtual unsigned int      stereoMode() const = 0;
+  virtual void              stereoMode ( Mode ) = 0;
+  virtual Mode              stereoMode() const = 0;
 
   //Get/Set the eye distance
   virtual void              stereoEyeDistance ( float ) = 0;

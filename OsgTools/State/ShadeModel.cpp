@@ -120,7 +120,7 @@ bool ShadeModel::has ( const osg::StateSet *ss )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an unsigned int to an osg::ShadeModel Mode
+//  Convert a IShadeModel::Mode to an osg::ShadeModel Mode
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -128,11 +128,13 @@ osg::ShadeModel::Mode ShadeModel::mode ( Usul::Interfaces::IShadeModel::Mode m )
 {
   switch ( m )
   {
-  case Usul::Interfaces::IShadeModel::FLAT:
-    return osg::ShadeModel::FLAT;
-  case Usul::Interfaces::IShadeModel::SMOOTH:
-    return osg::ShadeModel::SMOOTH;
-  default:
-    throw std::runtime_error ( "Error 3545915658: Invalid unsigned integer for shading model." );
+    case Usul::Interfaces::IShadeModel::FLAT:
+      return osg::ShadeModel::FLAT;
+
+    case Usul::Interfaces::IShadeModel::SMOOTH:
+      return osg::ShadeModel::SMOOTH;
+
+    default:
+      throw std::runtime_error ( "Error 3545915658: Invalid shading model." );
   }
 }

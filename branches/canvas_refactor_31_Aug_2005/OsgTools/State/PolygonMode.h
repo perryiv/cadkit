@@ -38,8 +38,6 @@ struct OSG_TOOLS_EXPORT PolygonMode
   static bool                         has    ( osg::PolygonMode::Face face, const osg::StateSet * );
   static bool                         has    ( const osg::StateSet * );
 
-  static osg::PolygonMode::Face       face   ( IPolygonMode::Face f );
-
   static void                         remove ( osg::StateSet * );
 
   static void                         set    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode, osg::StateSet * );

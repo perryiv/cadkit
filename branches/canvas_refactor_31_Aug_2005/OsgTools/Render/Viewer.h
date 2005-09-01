@@ -31,7 +31,6 @@
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/ISelectionBox.h"
-#include "Usul/Interfaces/IExport.h"
 #include "Usul/Interfaces/IProjectionMatrix.h"
 #include "Usul/Interfaces/IRender.h"
 #include "Usul/Interfaces/IViewport.h"
@@ -40,6 +39,14 @@
 #include "Usul/Interfaces/IRenderNotify.h"
 #include "Usul/Interfaces/ISwapBuffers.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
+#include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IShadeModel.h"
+#include "Usul/Interfaces/ISpin.h"
+#include "Usul/Interfaces/IBoundingSphere.h"
+#include "Usul/Interfaces/IBoundingBox.h"
+#include "Usul/Interfaces/IWriteScene.h"
+#include "Usul/Interfaces/IWriteImage.h"
+#include "Usul/Interfaces/IStereo.h"
 
 #include "osg/ref_ptr"
 #include "osg/Vec4"
@@ -68,12 +75,20 @@ namespace Render {
 class OSG_TOOLS_EXPORT Viewer : private Usul::Base::Referenced,
                                 public Usul::Interfaces::IFrameDump,
                                 public Usul::Interfaces::ISelectionBox,
-                                public Usul::Interfaces::IExport,
                                 public Usul::Interfaces::IProjectionMatrix,
                                 public Usul::Interfaces::IRender,
                                 public Usul::Interfaces::IViewport,
                                 public Usul::Interfaces::ITimerNotify,
-                                public Usul::Interfaces::IGetBoundingBox
+                                public Usul::Interfaces::IGetBoundingBox,
+                                public Usul::Interfaces::IPolygonMode,
+                                public Usul::Interfaces::IShadeModel,
+                                public Usul::Interfaces::ISpin,
+                                public Usul::Interfaces::IBoundingSphere,
+                                public Usul::Interfaces::IBoundingBox,
+                                public Usul::Interfaces::IWriteScene,
+                                public Usul::Interfaces::IWriteImage,
+                                public Usul::Interfaces::IStereo
+
 {
 public:
 
@@ -88,10 +103,13 @@ public:
   typedef Usul::Interfaces::IDocument IDocument;
   typedef osg::ref_ptr < osg::Group > GroupPtr;
   typedef osg::ref_ptr < osg::ClipNode > ClipPtr;
-  typedef Usul::Interfaces::IExport::Filter Filter;
-  typedef Usul::Interfaces::IExport::Filters Filters;
+  typedef std::pair < std::string, std::string > Filter;
+  typedef std::vector < Filter > Filters;
   typedef osgGA::MatrixManipulator NavManip;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IPolygonMode IPolygonMode;
+  typedef Usul::Interfaces::IShadeModel IShadeModel;
+  typedef Usul::Interfaces::IShadeModel IStereo;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Viewer );
@@ -111,13 +129,13 @@ public:
   osg::Vec4f                      backgroundColor() const;
 
   // Bounding-box.
-  void                            boundingBoxVisible ( bool show );
-  bool                            boundingBoxVisible() const;
+  virtual void                    boundingBoxVisible ( bool show );
+  virtual bool                    boundingBoxVisible() const;
   virtual osg::BoundingBox        boundingBoxGet() const;
 
   // Set/get the bounding-sphere visible state.
-  void                            boundingSphereVisible ( bool show );
-  bool                            boundingSphereVisible() const;
+  virtual void                    boundingSphereVisible ( bool show );
+  virtual bool                    boundingSphereVisible() const;
 
   // Clipping planes.
   void                            clipPlaneAdd ( const osg::Plane &plane );
@@ -146,10 +164,6 @@ public:
   virtual unsigned int            frameDumpCurrentFileNum() const;
   virtual void                    frameDumpResetCounter();
   virtual void                    frameDumpProperties ( const std::string &dir, const std::string &base, const std::string &ext, unsigned int start = 0, unsigned int digits = 10 );
-
-  // Set/get hidden lines state.
-  void                            hiddenLines ( bool );
-  bool                            hiddenLines() const;
 
   // Pass false for "justModel" to intersect with the entire scene.
   bool                            intersect ( const osg::Vec2d &mouse, bool justModel, osgUtil::Hit &hit ) const;
@@ -211,33 +225,32 @@ public:
   virtual void                    projectionMatrix ( double left, double right, double bottom, double top, double zNear, double zFar );
   virtual bool                    projectionMatrix ( double &fovy, double &aspect, double &zNear, double &zFar );
 
-  // Set/query/remove the polygon mode.
-  void                            polygonModeSet    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode );
-  void                            polygonModeToggle ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode );
-  bool                            polygonModeHas    ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode ) const;
-  bool                            polygonModeHas    ( osg::PolygonMode::Face face ) const;
-  bool                            polygonModeHas() const;
-  void                            polygonModeRemove();
+  // Set/get the polygon mode.
+  virtual void                    polygonMode ( IPolygonMode::Mode mode );
+  virtual IPolygonMode::Mode      polygonMode() const;
 
   // Usul::Interfaces::ISelectionBox.
   virtual void                    selectionBoxSet ( const osg::Vec3d &, const osg::Vec3d & );
   virtual void                    selectionBoxRemove();
 
-  // Set/query/remove the shade model.
-  void                            shadeModelSet    ( osg::ShadeModel::Mode mode );
-  void                            shadeModelToggle ( osg::ShadeModel::Mode mode );
-  bool                            shadeModelHas    ( osg::ShadeModel::Mode mode ) const;
-  bool                            shadeModelHas() const;
-  void                            shadeModelRemove();
+  // Set/get the shade model.
+  virtual void                    shadeModel ( IShadeModel::Mode mode );
+  virtual IShadeModel::Mode       shadeModel() const;
 
   // Get/Set back to front sorting.
   bool                            sortBackToFront() const;
   void                            sortBackToFront ( bool );
 
   // Spinning.
-  void                            spin ( bool );
+  virtual void                    spin ( bool );
   static void                     spinAllowed ( bool );
   static bool                     spinAllowed();
+
+  // Stereo.
+  virtual void                    stereoMode ( IStereo::Mode );
+  virtual IStereo::Mode           stereoMode() const;
+  virtual void                    stereoEyeDistance ( float );
+  virtual float                   stereoEyeDistance() const;
 
   // Text in the view.
   virtual void                    textCellSet      ( double x, double y, unsigned int row, unsigned int col, const std::string &text );

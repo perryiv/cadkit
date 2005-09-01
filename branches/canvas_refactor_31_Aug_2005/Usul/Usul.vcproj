@@ -521,9 +521,6 @@
 						RelativePath=".\Interfaces\IDocumentCreate.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IExport.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IFileSelectionFilters.h">
 					</File>
 					<File
@@ -531,6 +528,12 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IRead.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IWriteImage.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IWriteScene.h">
 					</File>
 				</Filter>
 				<Filter

@@ -50,6 +50,7 @@
 #include "Usul/Interfaces/ITimerServer.h"
 
 #include "osg/MatrixTransform"
+#include "osg/DisplaySettings"
 
 #include "osgUtil/UpdateVisitor"
 
@@ -58,6 +59,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <limits>
+#include <map>
 
 using namespace OsgTools::Render;
 
@@ -228,8 +230,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IFrameDump*>(this);
   case Usul::Interfaces::ISelectionBox::IID:
     return static_cast<Usul::Interfaces::ISelectionBox*>(this);
-  case Usul::Interfaces::IExport::IID:
-    return static_cast<Usul::Interfaces::IExport*>(this);
   case Usul::Interfaces::IProjectionMatrix::IID:
     return static_cast<Usul::Interfaces::IProjectionMatrix*>(this);
   case Usul::Interfaces::IRender::IID:
@@ -240,6 +240,22 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ITimerNotify*>(this);
   case Usul::Interfaces::IGetBoundingBox::IID:
     return static_cast<Usul::Interfaces::IGetBoundingBox*>(this);
+  case Usul::Interfaces::IPolygonMode::IID:
+    return static_cast<Usul::Interfaces::IPolygonMode*>(this);
+  case Usul::Interfaces::IShadeModel::IID:
+    return static_cast<Usul::Interfaces::IShadeModel*>(this);
+  case Usul::Interfaces::ISpin::IID:
+    return static_cast<Usul::Interfaces::ISpin*>(this);
+  case Usul::Interfaces::IBoundingSphere::IID:
+    return static_cast<Usul::Interfaces::IBoundingSphere*>(this);
+  case Usul::Interfaces::IBoundingBox::IID:
+    return static_cast<Usul::Interfaces::IBoundingBox*>(this);
+  case Usul::Interfaces::IWriteScene::IID:
+    return static_cast<Usul::Interfaces::IWriteScene*>(this);
+  case Usul::Interfaces::IWriteImage::IID:
+    return static_cast<Usul::Interfaces::IWriteImage*>(this);
+  case Usul::Interfaces::IStereo::IID:
+    return static_cast<Usul::Interfaces::IStereo*>(this);
   default:
     return 0x0;
   }
@@ -378,7 +394,7 @@ void Viewer::_singlePassRender()
   GUARD_CONTEXT;
 
   // If we are doing hidden-line rendering...
-  if ( this->hiddenLines() )
+  if ( Usul::Bits::has ( _flags, _HIDDEN_LINES ) )
   {
     // Get the current model-group.
     osg::ref_ptr<osg::Node> model ( _model.get() );
@@ -560,36 +576,6 @@ unsigned int Viewer::numRenderPasses() const
   GUARD_MEMBERS;
   const unsigned int num ( _numPasses );
   return num;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if there are hidden lines.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::hiddenLines() const
-{
-  GUARD_MEMBERS;
-  return Usul::Bits::has ( _flags, _HIDDEN_LINES );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the state for hidden lines.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::hiddenLines ( bool h )
-{
-  GUARD_MEMBERS;
-  _flags = ( h ) ? Usul::Bits::remove ( _flags, _HIDDEN_LINES ) : Usul::Bits::add ( _flags, _HIDDEN_LINES );
-
-  // Make sure there is no polygon mode in the viewer's global-state-set.
-  if ( h )
-    this->polygonModeRemove();
 }
 
 
@@ -790,16 +776,11 @@ bool Viewer::writeImageFile ( const std::string &name ) const
   GUARD_MEMBERS;
   GUARD_CONTEXT;
 
-  // Get the viewport.
-  const osg::Viewport *vp ( _sceneView->getViewport() );
-  if ( 0x0 == vp )
-    return false;
-
   // Make the image
   osg::ref_ptr<osg::Image> image ( new osg::Image );
 
   // Read the screen buffer.
-  image->readPixels ( vp->x(), vp->y(), vp->width(), vp->height(), GL_RGB, GL_UNSIGNED_BYTE );
+  image->readPixels ( 0, 0, this->viewportWidth(), this->viewportHeight(), GL_RGB, GL_UNSIGNED_BYTE );
 
   // Write the image.
   return osgDB::writeImageFile ( *image, name );
@@ -964,75 +945,56 @@ void Viewer::resize ( unsigned int w, unsigned int h )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::polygonModeSet ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode )
+void Viewer::polygonMode ( IPolygonMode::Mode m )
 {
   GUARD_MEMBERS;
-  OsgTools::State::PolygonMode::set ( face, mode, _sceneView->getGlobalStateSet() );
+
+  switch ( m )
+  {
+    case IPolygonMode::NONE:
+      OsgTools::State::PolygonMode::remove ( _sceneView->getGlobalStateSet() );
+      _flags = Usul::Bits::remove ( _flags, _HIDDEN_LINES );
+      break;
+
+    case IPolygonMode::HIDDEN_LINES:
+      OsgTools::State::PolygonMode::remove ( _sceneView->getGlobalStateSet() );
+      _flags = Usul::Bits::add ( _flags, _HIDDEN_LINES );
+      break;
+
+    default:
+      _flags = Usul::Bits::remove ( _flags, _HIDDEN_LINES );
+      OsgTools::State::PolygonMode::set ( osg::PolygonMode::FRONT_AND_BACK, OsgTools::State::PolygonMode::mode ( m ), _sceneView->getGlobalStateSet() );
+      break;
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Toggle the polygon mode.
+//  Get the polygon mode.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::polygonModeToggle ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode )
+Usul::Interfaces::IPolygonMode::Mode Viewer::polygonMode() const
 {
   GUARD_MEMBERS;
-  OsgTools::State::PolygonMode::toggle ( face, mode, _sceneView->getGlobalStateSet() );
-}
 
+  const osg::PolygonMode::Face face ( osg::PolygonMode::FRONT_AND_BACK );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle the polygon mode.
-//
-///////////////////////////////////////////////////////////////////////////////
+  if ( Usul::Bits::has ( _flags, _HIDDEN_LINES ) )
+    return IPolygonMode::HIDDEN_LINES;
 
-bool Viewer::polygonModeHas ( osg::PolygonMode::Face face, osg::PolygonMode::Mode mode ) const
-{
-  GUARD_MEMBERS;
-  return OsgTools::State::PolygonMode::has ( face, mode, _sceneView->getGlobalStateSet() );
-}
+  else if ( OsgTools::State::PolygonMode::has ( face, osg::PolygonMode::POINT, _sceneView->getGlobalStateSet() ) )
+    return IPolygonMode::POINTS;
 
+  else if ( OsgTools::State::PolygonMode::has ( face, osg::PolygonMode::LINE, _sceneView->getGlobalStateSet() ) )
+    return IPolygonMode::WIRE_FRAME;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle the polygon mode.
-//
-///////////////////////////////////////////////////////////////////////////////
+  else if ( OsgTools::State::PolygonMode::has ( face, osg::PolygonMode::FILL, _sceneView->getGlobalStateSet() ) )
+    return IPolygonMode::FILLED;
 
-bool Viewer::polygonModeHas ( osg::PolygonMode::Face face ) const
-{
-  GUARD_MEMBERS;
-  return OsgTools::State::PolygonMode::has ( face, _sceneView->getGlobalStateSet() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle the polygon mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::polygonModeHas() const
-{
-  GUARD_MEMBERS;
-  return OsgTools::State::PolygonMode::has ( _sceneView->getGlobalStateSet() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the polygon mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::polygonModeRemove()
-{
-  GUARD_MEMBERS;
-  OsgTools::State::PolygonMode::remove ( _sceneView->getGlobalStateSet() );
+  else
+    return IPolygonMode::NONE;
 }
 
 
@@ -1042,49 +1004,41 @@ void Viewer::polygonModeRemove()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::shadeModelSet ( osg::ShadeModel::Mode mode )
+void Viewer::shadeModel ( IShadeModel::Mode m )
 {
   GUARD_MEMBERS;
-  OsgTools::State::ShadeModel::set ( mode, _sceneView->getGlobalStateSet() );
+
+  switch ( m )
+  {
+    case IShadeModel::NONE:
+      OsgTools::State::ShadeModel::remove ( _sceneView->getGlobalStateSet() );
+      break;
+
+    default:
+      OsgTools::State::ShadeModel::set ( OsgTools::State::ShadeModel::mode ( m ), _sceneView->getGlobalStateSet() );
+      break;
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Toggle the shade model.
+//  Get the shade model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::shadeModelToggle ( osg::ShadeModel::Mode mode )
+Usul::Interfaces::IShadeModel::Mode Viewer::shadeModel() const
 {
   GUARD_MEMBERS;
-  OsgTools::State::ShadeModel::toggle ( mode, _sceneView->getGlobalStateSet() );
-}
 
+  if ( OsgTools::State::ShadeModel::has ( osg::ShadeModel::FLAT, _sceneView->getGlobalStateSet() ) )
+    return IShadeModel::FLAT;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle the shade model.
-//
-///////////////////////////////////////////////////////////////////////////////
+  else if ( OsgTools::State::ShadeModel::has ( osg::ShadeModel::SMOOTH, _sceneView->getGlobalStateSet() ) )
+    return IShadeModel::SMOOTH;
 
-bool Viewer::shadeModelHas ( osg::ShadeModel::Mode mode ) const
-{
-  GUARD_MEMBERS;
-  return OsgTools::State::ShadeModel::has ( mode, _sceneView->getGlobalStateSet() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle the shade model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::shadeModelHas() const
-{
-  GUARD_MEMBERS;
-  return OsgTools::State::ShadeModel::has ( _sceneView->getGlobalStateSet() );
+  else
+    return IShadeModel::NONE;
 }
 
 
@@ -2612,4 +2566,101 @@ const Viewer::NavManip *Viewer::_navManip() const
 Usul::Interfaces::IUnknown *Viewer::_unknown()
 {
   return this->queryInterface ( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for defining mappings between the two stereo mode flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define STEREO_MAP_ENTRY(stereo_mode)\
+  usulToOsg[Usul::Interfaces::IStereo:: ##stereo_mode] = osg::DisplaySettings:: ##stereo_mode; \
+  osgToUsul[osg::DisplaySettings:: ##stereo_mode] = Usul::Interfaces::IStereo:: ##stereo_mode
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Mappings between the two stereo mode flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ModeMap
+  {
+    typedef std::map < Usul::Interfaces::IStereo::Mode, osg::DisplaySettings::StereoMode > UsulToOsg;
+    typedef std::map < osg::DisplaySettings::StereoMode, Usul::Interfaces::IStereo::Mode > OsgToUsul;
+    ModeMap() : osgToUsul(), usulToOsg()
+    {
+      STEREO_MAP_ENTRY ( QUAD_BUFFER      );
+      STEREO_MAP_ENTRY ( ANAGLYPHIC       );
+      STEREO_MAP_ENTRY ( HORIZONTAL_SPLIT );
+      STEREO_MAP_ENTRY ( VERTICAL_SPLIT   );
+      STEREO_MAP_ENTRY ( LEFT_EYE         );
+      STEREO_MAP_ENTRY ( RIGHT_EYE        );
+    }
+    UsulToOsg usulToOsg;
+    OsgToUsul osgToUsul;
+  } _modeMap;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change the stereo mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stereoMode ( Usul::Interfaces::IStereo::Mode m )
+{
+  if ( Usul::Interfaces::IStereo::NONE == m )
+  {
+    _sceneView->getDisplaySettings()->setStereo ( false );
+  }
+  else
+  {
+    _sceneView->getDisplaySettings()->setStereo ( true );
+    _sceneView->getDisplaySettings()->setStereoMode ( Detail::_modeMap.usulToOsg[m] );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the stereo mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IStereo::Mode Viewer::stereoMode() const
+{
+  if ( _sceneView->getDisplaySettings()->getStereo() )
+    return Detail::_modeMap.osgToUsul[_sceneView->getDisplaySettings()->getStereoMode()];
+  else
+    return Usul::Interfaces::IStereo::NONE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change the eye distance
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stereoEyeDistance ( float d )
+{
+  _sceneView->getDisplaySettings()->setEyeSeparation ( d );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the eye distance
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Viewer::stereoEyeDistance() const
+{
+  return _sceneView->getDisplaySettings()->getEyeSeparation();
 }

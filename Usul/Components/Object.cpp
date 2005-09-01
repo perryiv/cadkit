@@ -147,7 +147,7 @@ Usul::DLL::Library::Function _getFunction ( const std::string &name, Usul::DLL::
   {
     Usul::Exceptions::Thrower<Usul::Components::Exceptions::FailedToFindFunction>
       ( "Error: 1028502101, failed to find function.",
-        " Name: ", name, "Library: ", lib->filename() );
+        " Name: ", name, " in Library: ", lib->filename() );
   }
 
   // Return the function pointer.

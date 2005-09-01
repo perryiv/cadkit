@@ -60,7 +60,7 @@ void ActionAdapter::requestRedraw()
 
 void ActionAdapter::requestContinuousUpdate ( bool needed )
 {
-  _viewer.spinState ( needed );
+  _viewer.spin ( needed && Viewer::spinAllowed() );
 }
 
 

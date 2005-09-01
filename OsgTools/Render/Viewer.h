@@ -39,6 +39,7 @@
 #include "Usul/Interfaces/ITimerServer.h"
 #include "Usul/Interfaces/IRenderNotify.h"
 #include "Usul/Interfaces/ISwapBuffers.h"
+#include "Usul/Interfaces/IGetBoundingBox.h"
 
 #include "osg/ref_ptr"
 #include "osg/Vec4"
@@ -71,7 +72,8 @@ class OSG_TOOLS_EXPORT Viewer : private Usul::Base::Referenced,
                                 public Usul::Interfaces::IProjectionMatrix,
                                 public Usul::Interfaces::IRender,
                                 public Usul::Interfaces::IViewport,
-                                public Usul::Interfaces::ITimerNotify
+                                public Usul::Interfaces::ITimerNotify,
+                                public Usul::Interfaces::IGetBoundingBox
 {
 public:
 
@@ -102,20 +104,20 @@ public:
 
   // Animate.
   void                            animate ( const osg::Vec3d &t1, const osg::Quat &r1, 
-                                            const osg::Vec3d &t2, const osg::Quat &r2, 
-                                            double duration, IUnknown *caller );
+                                            const osg::Vec3d &t2, const osg::Quat &r2 );
 
   // Set/get the background color.
   void                            backgroundColor ( const osg::Vec4f &color );
   osg::Vec4f                      backgroundColor() const;
 
-  // Set/get the bounding-box state.
-  void                            boundingBox ( bool show );
-  bool                            boundingBox() const;
+  // Bounding-box.
+  void                            boundingBoxVisible ( bool show );
+  bool                            boundingBoxVisible() const;
+  virtual osg::BoundingBox        boundingBoxGet() const;
 
-  // Set/get the bounding-sphere state.
-  void                            boundingSphere ( bool show );
-  bool                            boundingSphere() const;
+  // Set/get the bounding-sphere visible state.
+  void                            boundingSphereVisible ( bool show );
+  bool                            boundingSphereVisible() const;
 
   // Clipping planes.
   void                            clipPlaneAdd ( const osg::Plane &plane );
@@ -128,8 +130,10 @@ public:
   // Set the default background.
   void                            defaultBackground();
 
-  // Set the display-list state.
-  void                            displayLists ( bool use, bool release );
+  // Display-list state.
+  void                            displayListsUpdate();
+  static void                     displayListsUsage ( bool );
+  static bool                     displayListsUsage();
 
   // Get the filters.
   virtual Filters                 filtersWriteScene() const;
@@ -201,7 +205,7 @@ public:
   void                            resize ( unsigned int width, unsigned int height );
 
   // Rotate.
-  void                            rotate ( const osg::Vec3d &axis, double radians, double duration, IUnknown *caller );
+  void                            rotate ( const osg::Vec3d &axis, double radians );
 
   // Set/get projection matrix.
   virtual void                    projectionMatrix ( double left, double right, double bottom, double top, double zNear, double zFar );
@@ -230,10 +234,8 @@ public:
   bool                            sortBackToFront() const;
   void                            sortBackToFront ( bool );
 
-  // Start/stop spinning, or perform an incremental "spin".
-  bool                            spinPerformMotion();
-  void                            spinState ( bool );
-  bool                            spinState() const;
+  // Spinning.
+  void                            spin ( bool );
   static void                     spinAllowed ( bool );
   static bool                     spinAllowed();
 
@@ -291,9 +293,9 @@ protected:
 
   void                            _removeGroup ( const std::string &key );
 
-  void                            _setDisplayListsUsage();
   void                            _setModel ( osg::Node * );
   void                            _singlePassRender();
+  bool                            _spin();
 
   IUnknown *                      _unknown();
 
@@ -307,7 +309,6 @@ private:
     _HAS_ACCUM_BUFFER   = 0x00000001,
     _HIDDEN_LINES       = 0x00000002,
     _SORT_BACK_TO_FRONT = 0x00000004,
-    _SPINNING           = 0x00000010,
   };
 
   // Timer ids.
@@ -315,6 +316,14 @@ private:
   {
     ID_ANIMATION_TIMEOUT,
     ID_SPIN_TIMEOUT,
+  };
+
+  // Local integer constants.
+  enum
+  {
+    _SPIN_TIMER_MILLISECONDS         = 15,
+    _ANIMATION_TIMER_MILLISECONDS    = 15, // 15 ms will give about 60 FPS for OpenGL rendering.
+    _ANIMATION_DURATION_MILLISECONDS = 500 // Half a second.
   };
 
   typedef std::pair < bool, osg::Matrixd > CameraBuffer;
@@ -348,7 +357,7 @@ private:
   mutable RecursiveMutex _members;
   mutable ContextMutex::ValidRefPtr _context;
   SceneViewPtr _sceneView;
-  Document::RefPtr _document;
+  IDocument::RefPtr _document;
   unsigned int _numPasses;
   unsigned int _flags;
   GroupPtr _root;
@@ -365,7 +374,7 @@ private:
   NavManips _navManips;
   NavHistory _navHistory;
   ITimerServer::QueryPtr _timerServer;
-  IRenderNotiry::QueryPtr _renderNotify;
+  IRenderNotify::QueryPtr _renderNotify;
   ISwapBuffers::QueryPtr _swapBuffers;
 };
 

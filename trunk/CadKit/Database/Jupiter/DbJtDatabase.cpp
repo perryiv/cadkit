@@ -227,17 +227,29 @@ bool DbJtDatabase::readData ( const std::string &filename )
   // Try to traverse.
   try
   {
+#ifdef _CADKIT_USE_JTOPEN
+    if ( false == PROGRESS ( FORMAT ( "Attempting to register JT Open Toolkit customer number %d.", _globalVisApi.getCustomerId() ) ) )
+#else // _CADKIT_USE_JTOPEN
     if ( false == PROGRESS ( FORMAT ( "Attempting to register DirectModel Data Toolkit customer number %d.", _globalVisApi.getCustomerId() ) ) )
+#endif // _CADKIT_USE_JTOPEN
       return false;
 
     // Initialize (register customer).
     if ( false == _globalVisApi.init() )
     {
+#ifdef _CADKIT_USE_JTOPEN
+      ERROR ( FORMAT ( "Failed to register JT Open Toolkit customer number: %d.", _globalVisApi.getCustomerId() ), 0 );
+#else // _CADKIT_USE_JTOPEN
       ERROR ( FORMAT ( "Failed to register DirectModel Data Toolkit customer number: %d.", _globalVisApi.getCustomerId() ), 0 );
+#endif
       return false;
     }
 
+#ifdef _CADKIT_USE_JTOPEN
+    if ( false == PROGRESS ( "Done registering JT Open Toolkit customer." ) )
+#else // _CADKIT_USE_JTOPEN
     if ( false == PROGRESS ( "Done registering DirectModel Data Toolkit customer." ) )
+#endif // _CADKIT_USE_JTOPEN
       return false;
 
     // Traverse the database.
@@ -276,8 +288,11 @@ bool DbJtDatabase::_traverse ( const std::string &filename )
   SL_PRINT3 ( "In DbJtDatabase::_traverse(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
 
+
   // Since this is the beginning of a new file, we need to scale.
+
   this->_setNeedToScale ( true );
+
 
   // Make sure the client data is cleared.
   this->_clearClientDataMaps();
@@ -1518,17 +1533,28 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
 
 bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const
 {
+
   // TODO. Handle "tryParents".
   bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, matrix );
 
+
+
   // The first time we scale, even if the above didn't work.
+
   if ( this->_doWeNeedToScale() )
+
   {
+
     this->_applyScaleOnce ( matrix );
+
     return true;
+
   }
 
+
+
   // Return the result.
+
   return result;
 }
 
@@ -1544,15 +1570,25 @@ bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool try
   // TODO. Handle "tryParents".
   bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, matrix );
 
+
   // The first time we scale, even if the above didn't work.
+
   if ( this->_doWeNeedToScale() )
+
   {
+
     this->_applyScaleOnce ( matrix );
+
     return true;
+
   }
 
+
+
   // Return the result.
+
   return result;
+
 }
 
 

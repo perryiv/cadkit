@@ -36,7 +36,11 @@ public:
   typedef Points::iterator                                iterator;
   typedef Points::const_iterator                          const_iterator;
 
+
+
+
   Loop();
+  Loop( const Loop & );
   Loop ( const Points & );
   ~Loop();
 
@@ -52,6 +56,9 @@ public:
 
   // Is this loop empty?
   bool                  empty() const { return _loop.empty(); }
+  
+  // Erase element at index i
+  void                  erase ( unsigned int i ) { _loop.erase ( _loop.begin() + i ); }
 
   // Erase the element at i
   void                  erase ( unsigned int i ) { _loop.erase ( _loop.begin() + i ); }
@@ -86,16 +93,20 @@ public:
   // Get the osg::Vec3 for the i'th point in this loop.
   const osg::Vec3f&     vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const;
 
+/// This should be public
+  int                  isCoplanar( Usul::Interfaces::IUnknown *caller);
+  void                 _printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller );
+  
 private:
 
   // Get the osg::Vec3array from the loop.
   osg::Vec3Array*   _vertices( Usul::Interfaces::IUnknown *caller ) const;
 
-  Points _loop;
+  Points _loop; //Vector of SharedVertices
 
   typedef std::vector< Points > InnerLoops;
 
-  InnerLoops _innerLoops;
+  InnerLoops _innerLoops; // Vector of Points
 
 }; // class Loop.
 

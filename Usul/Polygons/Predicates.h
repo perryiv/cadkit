@@ -58,21 +58,21 @@ struct PolyEqual : public std::binary_function< Polygon, Polygon, bool >
 struct IsEqual
 {
   IsEqual ( unsigned int index ) :
-  _index ( index )
+    _index ( index )
   {
   }
   
   template < class Iter > bool operator () ( const Iter& i ) const
   {
-    return i->index() == _index;
+    return ( i->index() == _index );
   }
   
 private:
-  unsigned int _index;
+  const unsigned int _index;
 };
 
-} //namespace Polygons
 
+} //namespace Polygons
 } //namespace Usul
 
 

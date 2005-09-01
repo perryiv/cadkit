@@ -14,4 +14,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // This is also defined in the corresponding cpp file.
+#ifdef _CADKIT_USE_JTOPEN
+#define DMDTK_MINOR_VERSION 2
+#endif // _CADKIT_USE_JTOPEN
+
 #define DMDTK_MAJOR_VERSION 5

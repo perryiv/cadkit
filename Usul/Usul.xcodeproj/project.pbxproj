@@ -9,9 +9,24 @@
 /* Begin PBXBuildFile section */
 		43137FFB088DF1DE00FE58B9 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43137FF9088DF1DE00FE58B9 /* Color.cpp */; };
 		43137FFC088DF1DE00FE58B9 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FFA088DF1DE00FE58B9 /* Color.h */; };
+		431BAF350895337000126128 /* ConvexHullSort.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF340895337000126128 /* ConvexHullSort.h */; };
+		431BAF370895337A00126128 /* Angle.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF360895337A00126128 /* Angle.h */; };
+		431BAF390895338600126128 /* CompareCoordinate.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF380895338600126128 /* CompareCoordinate.h */; };
+		431BB0AC0895601E00126128 /* Caller.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0A80895601E00126128 /* Caller.h */; };
+		431BB0AD0895601E00126128 /* GLBeginEnd.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0A90895601E00126128 /* GLBeginEnd.h */; };
+		431BB0AE0895601E00126128 /* GLPushPopAttrib.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0AA0895601E00126128 /* GLPushPopAttrib.h */; };
+		431BB0AF0895601E00126128 /* GLPushPopMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0AB0895601E00126128 /* GLPushPopMatrix.h */; };
+		431BB0B10895603900126128 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB0B00895603900126128 /* OpenGL.framework */; };
+		431E60E20891BBF300B1EC98 /* IMenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E10891BBF300B1EC98 /* IMenuBar.h */; };
+		431E60E50891BC0600B1EC98 /* MenuBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60E30891BC0600B1EC98 /* MenuBar.cpp */; };
+		431E60E60891BC0600B1EC98 /* MenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E40891BC0600B1EC98 /* MenuBar.h */; };
+		432FBA80089E78E7000D01F5 /* Clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 432FBA7E089E78E7000D01F5 /* Clock.h */; };
+		432FBA81089E78E7000D01F5 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 432FBA7F089E78E7000D01F5 /* Clock.cpp */; };
 		436671C30890783900B2F004 /* IFlipNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C00890783900B2F004 /* IFlipNormal.h */; };
 		436671C40890783900B2F004 /* IGetBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C10890783900B2F004 /* IGetBoundingBox.h */; };
 		436671C50890783900B2F004 /* ITriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C20890783900B2F004 /* ITriangle.h */; };
+		43887E1708B2E2250005B358 /* IGetNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 43887E1508B2E2250005B358 /* IGetNormal.h */; };
+		43887E1808B2E2250005B358 /* ITriangleSV.h in Headers */ = {isa = PBXBuildFile; fileRef = 43887E1608B2E2250005B358 /* ITriangleSV.h */; };
 		43992D88087ED8DC002E5D22 /* Bind.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C63087ED8DC002E5D22 /* Bind.h */; };
 		43992D89087ED8DC002E5D22 /* MemberFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C64087ED8DC002E5D22 /* MemberFunction.h */; };
 		43992D8A087ED8DC002E5D22 /* ProgressBarUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C65087ED8DC002E5D22 /* ProgressBarUpdate.cpp */; };
@@ -269,11 +284,13 @@
 		43992E86087ED8DD002E5D22 /* Variable.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D84087ED8DC002E5D22 /* Variable.h */; };
 		43992E87087ED8DD002E5D22 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D86087ED8DC002E5D22 /* Types.cpp */; };
 		43992E88087ED8DD002E5D22 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D87087ED8DC002E5D22 /* Types.h */; };
+		43D577B208BCC46900493C0A /* ITriangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D577B108BCC46900493C0A /* ITriangulate.h */; };
 		43DA18B408832CE00046E5BA /* IMaterialEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B308832CE00046E5BA /* IMaterialEditor.h */; };
 		43DA18B908832D3B0046E5BA /* IBuildSceneVtk.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */; };
 		43DA18BA08832D3B0046E5BA /* ICreateMovie.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B608832D3B0046E5BA /* ICreateMovie.h */; };
 		43DA18BB08832D3B0046E5BA /* IGetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B708832D3B0046E5BA /* IGetOptions.h */; };
 		43DA18BC08832D3B0046E5BA /* IHandleActivatingDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B808832D3B0046E5BA /* IHandleActivatingDocument.h */; };
+		43F64A0308C6427C005F2A68 /* IAddSharedVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -303,9 +320,24 @@
 /* Begin PBXFileReference section */
 		43137FF9088DF1DE00FE58B9 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		43137FFA088DF1DE00FE58B9 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
+		431BAF340895337000126128 /* ConvexHullSort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConvexHullSort.h; sourceTree = "<group>"; };
+		431BAF360895337A00126128 /* Angle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Angle.h; sourceTree = "<group>"; };
+		431BAF380895338600126128 /* CompareCoordinate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompareCoordinate.h; sourceTree = "<group>"; };
+		431BB0A80895601E00126128 /* Caller.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Caller.h; sourceTree = "<group>"; };
+		431BB0A90895601E00126128 /* GLBeginEnd.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLBeginEnd.h; sourceTree = "<group>"; };
+		431BB0AA0895601E00126128 /* GLPushPopAttrib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLPushPopAttrib.h; sourceTree = "<group>"; };
+		431BB0AB0895601E00126128 /* GLPushPopMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLPushPopMatrix.h; sourceTree = "<group>"; };
+		431BB0B00895603900126128 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		431E60E10891BBF300B1EC98 /* IMenuBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IMenuBar.h; sourceTree = "<group>"; };
+		431E60E30891BC0600B1EC98 /* MenuBar.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MenuBar.cpp; sourceTree = "<group>"; };
+		431E60E40891BC0600B1EC98 /* MenuBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MenuBar.h; sourceTree = "<group>"; };
+		432FBA7E089E78E7000D01F5 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
+		432FBA7F089E78E7000D01F5 /* Clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
 		436671C00890783900B2F004 /* IFlipNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IFlipNormal.h; sourceTree = "<group>"; };
 		436671C10890783900B2F004 /* IGetBoundingBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IGetBoundingBox.h; sourceTree = "<group>"; };
 		436671C20890783900B2F004 /* ITriangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ITriangle.h; sourceTree = "<group>"; };
+		43887E1508B2E2250005B358 /* IGetNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IGetNormal.h; sourceTree = "<group>"; };
+		43887E1608B2E2250005B358 /* ITriangleSV.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ITriangleSV.h; sourceTree = "<group>"; };
 		43992C63087ED8DC002E5D22 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Bind.h; path = Adaptors/Bind.h; sourceTree = SOURCE_ROOT; };
 		43992C64087ED8DC002E5D22 /* MemberFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MemberFunction.h; path = Adaptors/MemberFunction.h; sourceTree = SOURCE_ROOT; };
 		43992C65087ED8DC002E5D22 /* ProgressBarUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ProgressBarUpdate.cpp; path = Adaptors/ProgressBarUpdate.cpp; sourceTree = SOURCE_ROOT; };
@@ -563,11 +595,13 @@
 		43992D84087ED8DC002E5D22 /* Variable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Variable.h; path = Threads/Variable.h; sourceTree = SOURCE_ROOT; };
 		43992D86087ED8DC002E5D22 /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Types.cpp; path = Types/Types.cpp; sourceTree = SOURCE_ROOT; };
 		43992D87087ED8DC002E5D22 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = Types/Types.h; sourceTree = SOURCE_ROOT; };
+		43D577B108BCC46900493C0A /* ITriangulate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITriangulate.h; sourceTree = "<group>"; };
 		43DA18B308832CE00046E5BA /* IMaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMaterialEditor.h; path = Interfaces/IMaterialEditor.h; sourceTree = SOURCE_ROOT; };
 		43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IBuildSceneVtk.h; path = Interfaces/IBuildSceneVtk.h; sourceTree = SOURCE_ROOT; };
 		43DA18B608832D3B0046E5BA /* ICreateMovie.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ICreateMovie.h; path = Interfaces/ICreateMovie.h; sourceTree = SOURCE_ROOT; };
 		43DA18B708832D3B0046E5BA /* IGetOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetOptions.h; path = Interfaces/IGetOptions.h; sourceTree = SOURCE_ROOT; };
 		43DA18B808832D3B0046E5BA /* IHandleActivatingDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IHandleActivatingDocument.h; path = Interfaces/IHandleActivatingDocument.h; sourceTree = SOURCE_ROOT; };
+		43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddSharedVertex.h; path = Interfaces/IAddSharedVertex.h; sourceTree = SOURCE_ROOT; };
 		D2AAC0630554660B00DB518D /* libUsul.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libUsul.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -576,6 +610,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				431BB0B10895603900126128 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,6 +620,7 @@
 		08FB7794FE84155DC02AAC07 /* Usul */ = {
 			isa = PBXGroup;
 			children = (
+				431BB0B00895603900126128 /* OpenGL.framework */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
@@ -668,6 +704,7 @@
 		43992C68087ED8DC002E5D22 /* Algorithms */ = {
 			isa = PBXGroup;
 			children = (
+				431BAF340895337000126128 /* ConvexHullSort.h */,
 				43992C69087ED8DC002E5D22 /* Extract.h */,
 				43992C6A087ED8DC002E5D22 /* FindAllConnected.h */,
 				43992C6B087ED8DC002E5D22 /* Sphere.h */,
@@ -849,6 +886,10 @@
 		43992CB7087ED8DC002E5D22 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */,
+				43887E1508B2E2250005B358 /* IGetNormal.h */,
+				43887E1608B2E2250005B358 /* ITriangleSV.h */,
+				431E60E10891BBF300B1EC98 /* IMenuBar.h */,
 				436671C00890783900B2F004 /* IFlipNormal.h */,
 				436671C10890783900B2F004 /* IGetBoundingBox.h */,
 				436671C20890783900B2F004 /* ITriangle.h */,
@@ -965,6 +1006,7 @@
 				43992D21087ED8DC002E5D22 /* IViewer.h */,
 				43992D22087ED8DC002E5D22 /* IVTKCanvas.h */,
 				43992D23087ED8DC002E5D22 /* IWindow.h */,
+				43D577B108BCC46900493C0A /* ITriangulate.h */,
 			);
 			path = Interfaces;
 			sourceTree = SOURCE_ROOT;
@@ -992,6 +1034,7 @@
 		43992D2C087ED8DC002E5D22 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				431BAF360895337A00126128 /* Angle.h */,
 				43992D2D087ED8DC002E5D22 /* Constants.h */,
 				43992D2E087ED8DC002E5D22 /* Equality.h */,
 				43992D2F087ED8DC002E5D22 /* Finite.h */,
@@ -1055,6 +1098,7 @@
 		43992D4D087ED8DC002E5D22 /* Predicates */ = {
 			isa = PBXGroup;
 			children = (
+				431BAF380895338600126128 /* CompareCoordinate.h */,
 				43992D4E087ED8DC002E5D22 /* EndsWith.h */,
 				43992D4F087ED8DC002E5D22 /* FileExists.h */,
 				43992D50087ED8DC002E5D22 /* IsOfType.h */,
@@ -1085,6 +1129,8 @@
 		43992D59087ED8DC002E5D22 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				431E60E30891BC0600B1EC98 /* MenuBar.cpp */,
+				431E60E40891BC0600B1EC98 /* MenuBar.h */,
 				43992D5A087ED8DC002E5D22 /* CancelButton.cpp */,
 				43992D5B087ED8DC002E5D22 /* CancelButton.h */,
 				43992D5C087ED8DC002E5D22 /* EventQueue.cpp */,
@@ -1104,6 +1150,10 @@
 		43992D66087ED8DC002E5D22 /* Scope */ = {
 			isa = PBXGroup;
 			children = (
+				431BB0A80895601E00126128 /* Caller.h */,
+				431BB0A90895601E00126128 /* GLBeginEnd.h */,
+				431BB0AA0895601E00126128 /* GLPushPopAttrib.h */,
+				431BB0AB0895601E00126128 /* GLPushPopMatrix.h */,
 				43992D67087ED8DC002E5D22 /* Reset.h */,
 			);
 			path = Scope;
@@ -1139,6 +1189,8 @@
 		43992D71087ED8DC002E5D22 /* System */ = {
 			isa = PBXGroup;
 			children = (
+				432FBA7E089E78E7000D01F5 /* Clock.h */,
+				432FBA7F089E78E7000D01F5 /* Clock.cpp */,
 				43992D72087ED8DC002E5D22 /* Host.cpp */,
 				43992D73087ED8DC002E5D22 /* Host.h */,
 				43992D74087ED8DC002E5D22 /* LastError.cpp */,
@@ -1421,6 +1473,20 @@
 				436671C30890783900B2F004 /* IFlipNormal.h in Headers */,
 				436671C40890783900B2F004 /* IGetBoundingBox.h in Headers */,
 				436671C50890783900B2F004 /* ITriangle.h in Headers */,
+				431E60E20891BBF300B1EC98 /* IMenuBar.h in Headers */,
+				431E60E60891BC0600B1EC98 /* MenuBar.h in Headers */,
+				431BAF350895337000126128 /* ConvexHullSort.h in Headers */,
+				431BAF370895337A00126128 /* Angle.h in Headers */,
+				431BAF390895338600126128 /* CompareCoordinate.h in Headers */,
+				431BB0AC0895601E00126128 /* Caller.h in Headers */,
+				431BB0AD0895601E00126128 /* GLBeginEnd.h in Headers */,
+				431BB0AE0895601E00126128 /* GLPushPopAttrib.h in Headers */,
+				431BB0AF0895601E00126128 /* GLPushPopMatrix.h in Headers */,
+				432FBA80089E78E7000D01F5 /* Clock.h in Headers */,
+				43887E1708B2E2250005B358 /* IGetNormal.h in Headers */,
+				43887E1808B2E2250005B358 /* ITriangleSV.h in Headers */,
+				43D577B208BCC46900493C0A /* ITriangulate.h in Headers */,
+				43F64A0308C6427C005F2A68 /* IAddSharedVertex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1512,6 +1578,8 @@
 				43992E81087ED8DD002E5D22 /* Mutex.cpp in Sources */,
 				43992E87087ED8DD002E5D22 /* Types.cpp in Sources */,
 				43137FFB088DF1DE00FE58B9 /* Color.cpp in Sources */,
+				431E60E50891BC0600B1EC98 /* MenuBar.cpp in Sources */,
+				432FBA81089E78E7000D01F5 /* Clock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1525,6 +1593,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;

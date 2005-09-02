@@ -450,6 +450,9 @@
 						RelativePath=".\Interfaces\ISetCursor.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISetFocus.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IStatusBar.h">
 					</File>
 					<File
@@ -457,9 +460,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IUpdateTreeControls.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IWindow.h">
 					</File>
 				</Filter>
 				<Filter
@@ -604,6 +604,12 @@
 						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IMessageQueueFlush.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IMessageQueuePost.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\INotify.h">
 					</File>
 					<File
@@ -727,9 +733,6 @@
 						RelativePath=".\Interfaces\IView.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IViewer.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IVTKCanvas.h">
 					</File>
 				</Filter>
@@ -768,7 +771,7 @@
 						RelativePath=".\Interfaces\IOpenGLContext.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOpenGLState.h">
+						RelativePath=".\Interfaces\IOpenGLLighting.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1189,6 +1192,9 @@
 			<Filter
 				Name="Shared"
 				Filter="">
+				<File
+					RelativePath=".\Shared\Constants.h">
+				</File>
 				<File
 					RelativePath=".\Shared\Preferences.cpp">
 				</File>

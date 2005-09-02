@@ -16,12 +16,17 @@
 #ifndef _USUL_THREADS_GUARDED_QUEUE_CLASSES_H_
 #define _USUL_THREADS_GUARDED_QUEUE_CLASSES_H_
 
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
+
+#include <queue>
+
 
 namespace Usul {
 namespace Threads {
 
 
-template < class Config_ > class Queue
+template < class T > class Queue
 {
 public:
 
@@ -31,12 +36,11 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef Config_ Config;
-  typedef typename Config::mutex_type mutex_type;
-  typedef typename Config::guard_type guard_type;
-  typedef typename Config::queue_type queue_type;
+  typedef std::queue < T > queue_type;
   typedef typename queue_type::value_type value_type;
   typedef typename queue_type::size_type size_type;
+  typedef Usul::Threads::Mutex MutexType;
+  typedef Usul::Threads::Guard < MutexType > GuardType;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -45,11 +49,12 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Queue() : _mutex(), _queue()
+  Queue() : _mutex ( Usul::Threads::Mutex::create() ), _queue()
   {
   }
   ~Queue()
   {
+    delete _mutex;
   }
 
 
@@ -61,44 +66,36 @@ public:
 
   bool empty()
   {
-    guard_type guard ( _mutex );
+    GuardType guard ( *_mutex );
     return _queue.empty();
   }
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the front (most recently added) of the queue.
+  //  Get the front element, the one that was added first.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  value_type &front()
+  value_type front() const
   {
-    guard_type guard ( _mutex );
-    return _queue.front();
-  }
-  const value_type &front() const
-  {
-    guard_type guard ( _mutex );
-    return _queue.front();
+    GuardType guard ( *_mutex );
+    const value_type value ( _queue.front() );
+    return value;
   }
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the back of the queue.
+  //  Get the back element, the one that was added most recently.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  value_type &back()
+  value_type back() const
   {
-    guard_type guard ( _mutex );
-    return _queue.back();
-  }
-  const value_type &back() const
-  {
-    guard_type guard ( _mutex );
-    return _queue.back();
+    GuardType guard ( *_mutex );
+    const value_type value ( _queue.back() );
+    return value;
   }
 
 
@@ -110,7 +107,7 @@ public:
 
   void push ( const value_type &value )
   {
-    guard_type guard ( _mutex );
+    GuardType guard ( *_mutex );
     _queue.push ( value );
   }
 
@@ -123,8 +120,9 @@ public:
 
   void pop()
   {
-    guard_type guard ( _mutex );
-    _queue.pop();
+    GuardType guard ( *_mutex );
+    if ( false == _queue.empty() )
+      _queue.pop();
   }
 
 
@@ -136,9 +134,11 @@ public:
 
   size_type size() const
   {
-    guard_type guard ( _mutex );
-    return _queue.size();
+    GuardType guard ( *_mutex );
+    const size_type s ( _queue.size() );
+    return s;
   }
+
 
 private:
 
@@ -146,29 +146,13 @@ private:
   Queue ( const Queue & );
   Queue &operator = ( const Queue & );
 
-  mutex_type _mutex;
+  MutexType *_mutex;
   queue_type _queue;
 };
 
 
 }; // namespace Threads
 }; // namespace Usul
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro for declaring config structs.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_DECLARE_QUEUE_CONFIG(struct_name,the_mutex_type,the_guard_type,the_queue_type) \
-struct struct_name \
-{ \
-  typedef the_mutex_type mutex_type; \
-  typedef the_guard_type guard_type; \
-  typedef the_queue_type queue_type; \
-} \
-
 
 
 #endif // _USUL_THREADS_GUARDED_QUEUE_CLASSES_H_

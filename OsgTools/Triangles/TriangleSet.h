@@ -109,11 +109,11 @@ public:
   // Flip the normal of the i'th triangle
   void                    flipNormal( unsigned int );
 
+  // Get the bounding box.
+  const osg::BoundingBox& getBoundingBox () const;
+
   // Get the vertex at the index
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
-
-  // Get the bounding box.
-  const osg::BoundingBox& getBoundingBox () const { return _bb; }
 
   // Keep only these triangles
   void                    keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );
@@ -157,8 +157,6 @@ public:
   const osg::Vec3f &      vertex0 ( const osg::Drawable* d, unsigned int i ) const;
   const osg::Vec3f &      vertex1 ( const osg::Drawable* d, unsigned int i ) const;
   const osg::Vec3f &      vertex2 ( const osg::Drawable* d, unsigned int i ) const;
-
-  const osg::BoundingBox & getBoundingBox() const;
   
 protected:
 

@@ -21,7 +21,7 @@
 #include <vector>
 #include <list>
 
-class LoopSplitter
+class OSG_TOOLS_EXPORT LoopSplitter
 {
   public:
 

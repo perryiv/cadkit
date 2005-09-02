@@ -37,6 +37,7 @@ public:
   typedef std::vector<Filter>                   Filters;
   typedef Document::RefPtr                      DocumentPtr;
   typedef std::list< DocumentPtr >              Documents;
+  typedef Usul::Interfaces::IDocument           IDocument;
 
   // Singleton.
   static Manager &      instance();

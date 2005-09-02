@@ -8,8 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/Loop.h"
-#include "Usul/Interfaces/IGetDocument.h"
 
+#include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
 #include "Usul/Interfaces/ITriangulate.h"
@@ -27,9 +27,8 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <limits>
 
-#include "Usul/Loops/FillLoop.h"
-#include "Usul/Loops/Direction.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Math/Vector3.h"
@@ -97,6 +96,29 @@ namespace Detail
 
   SharedVertex*    getSharedVertex( Shared& shared, const osg::Vec3& key, Usul::Interfaces::IUnknown *caller )
   {
+    struct T
+    {
+      T( float t ) : _t ( t ) { }
+
+      bool operator () ( const osg::Vec3& v1, const osg::Vec3& v2 )
+      {
+        Usul::Predicates::Tolerance< float > equal ( _t );
+
+        return ( equal ( v1.x(), v2.x() ) && equal ( v1.y(), v2.y() ) && equal ( v1.z(), v2.z() ) );
+      }
+
+    private:
+      float _t;
+    };
+
+    T equal ( 0.000001 );
+
+    for ( Shared::iterator i = shared.begin(); i != shared.end(); ++i )
+    {
+      if( equal ( key, i->first ) )
+        return i->second.get();
+
+    }
     Shared::const_iterator iter = shared.find( key );
 
     // If we don't already have it, make a new one.
@@ -117,12 +139,11 @@ namespace Detail
 
 
   template < class Vertices >
-    void fillVertices ( Vertices &vertices, Shared& shared, Loop::Points& points, osg::Matrix& mat, Usul::Interfaces::IUnknown* caller )
+  void fillVertices ( Vertices &vertices, Shared& shared, Loop::Points& points, osg::Matrix& mat, Usul::Interfaces::IUnknown* caller )
   {
     typedef typename Vertices::value_type Vertex;
 
     Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex       ( caller );
-
 
     // Make the vertex array for the triangulate algorithm.
     for( Loop::Points::const_iterator i = points.begin(); i != points.end(); ++i )
@@ -153,7 +174,8 @@ namespace Detail
 
 Loop::Loop() : 
 _loop(),
-_innerLoops()
+_innerLoops(),
+_valid ( true )
 {  
 }
 
@@ -166,13 +188,15 @@ _innerLoops()
 
 Loop::Loop ( const Points &p ) : 
 _loop( p.begin(), p.end() ),
-_innerLoops()
+_innerLoops(),
+_valid ( true )
 {
 }
 
 Loop::Loop( const Loop &loop ) :
 _loop(loop._loop),
-_innerLoops(loop._innerLoops)
+_innerLoops(loop._innerLoops),
+_valid ( loop._valid )
 {
 }
 
@@ -600,5 +624,18 @@ void Loop::_printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::I
   std::cout << loop.size() << " " << loop.size() << " 1" << std::endl;
   std::cout << "0"<< std::endl;
   std::cout << "============== END POLY FILE ================\n\n" << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Loop::clear()
+{
+  _loop.clear();
+  _innerLoops.clear();
+  _valid = true;
 }
 

@@ -17,6 +17,56 @@
 
 using namespace OsgTools::Triangles;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Useful typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::vector< unsigned int > UsedIndices;
+typedef std::vector< unsigned int > TransitionPoints;
+
+
+namespace Detail
+{
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Function to build a co planer loop.  Returns false if it reaches a
+  //  transition point that is incorrect.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  bool buildLoop ( const Loop& loop, Loop &fixedLoop, unsigned int start, unsigned int stop, const TransitionPoints &transitions, UsedIndices& used )
+  {
+    //Copy from old loop into new loop
+    for ( Loop::const_iterator iter = loop.begin() + start; iter != loop.begin() + stop + 1; iter++) 
+    {
+      if( iter == loop.end() )
+        iter = loop.begin();
+      
+      unsigned int index ( iter - loop.begin() );
+
+      fixedLoop.push_back(*iter);
+      
+      if ( start != index && stop != index ) 
+      {
+        // Is index a transition point that we aren't looking for?
+        if ( transitions.end() != std::find ( transitions.begin(), transitions.end(), index ) )
+        {
+          std::cout << "Unexpected transition point " << index << std::endl << "Expecting " << stop << std::endl;
+          return false;
+        }
+
+        used.push_back( index );
+      }
+    }
+
+    return true;
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Returns the axis (x, y, or z) to use for the sorting
@@ -262,9 +312,10 @@ void LoopSplitter::_findTransitionPoints( const OsgTools::Triangles::Loop& loop,
     return;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Split the loop up into n co-planer loops.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -277,54 +328,78 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
   if ( edgeMap.size() == 1 ) {
     std::vector<osg::Vec3f> & v = edgeMap.begin()->second;
     int edge = edgeMap.begin()->first;
-    std::vector<int> usedIndices; //Store indices that need to be erased from the loop object
+
+    UsedIndices usedIndices; //Store indices that need to be erased from the loop object
+    
     std::cout << "Edge Number: " << edge << std::endl;
     std::cout << "Vector size: " << v.size() << std::endl;
     if (v.size()%2 == 0) 
-    {
-      
+    {      
       //Even number of points
       std::sort(v.begin(), v.end(), AxisSort( _getSortAxis(edge) ) );
-      //Create a new Loop and temp vars
 
+      TransitionPoints transitionPoints;
+
+      // Place all transition points in a vector to test against.
+      for ( TPointIndices::iterator iter = tPointIndices.begin(); iter != tPointIndices.end(); ++iter )
+        transitionPoints.push_back( iter->second );
+
+      // Start and stop values for building the loop.
       int startIndex = 0;
       int stopIndex = 0;
       
       std::cout << "Pairs that should be together:" << std::endl;
-      for ( unsigned int i = 0; i < v.size();i+=2) {
+      for ( unsigned int i = 0; i < v.size();i+=2) 
+      {
         Loop fixedLoop;
         TPointIndices::iterator it = tPointIndices.find ( v[i] );
-        if ( tPointIndices.end() != it ) {
-          std::cout << it->second << std::endl;
+        if ( tPointIndices.end() != it ) 
+        {
           startIndex = it->second;
         }
         TPointIndices::iterator ite = tPointIndices.find ( v[i+1] );
-        if ( tPointIndices.end() != ite ) {
-          std::cout << ite->second << std::endl;
+        if ( tPointIndices.end() != ite ) 
+        {
           stopIndex = ite->second;
         }
-        //Copy from old loop into new loop
-        for (const_iterator iter = loop.begin() + startIndex; iter != loop.begin() + stopIndex+1; iter++) {
-            if( iter == loop.end() )
-              iter = loop.begin();
-              
-            fixedLoop.push_back(*iter);
-            
-            unsigned int index ( iter - loop.begin() );
-            
-            if (startIndex != index && stopIndex != index) {
-              usedIndices.push_back( index );
-            }
+
+        std::cout << "[ " << startIndex << ", " << stopIndex << " ]" << std::endl;
+
+        UsedIndices local;
+
+        if ( Detail::buildLoop( loop, fixedLoop, startIndex, stopIndex, transitionPoints, local ) )
+        {
+          loops.push_back(fixedLoop);
         }
-      
-        loops.push_back(fixedLoop);
+        else
+        {
+          local.clear();
+          fixedLoop.clear();
+
+          // try it again with opposite starting points.
+          if ( false == Detail::buildLoop( loop, fixedLoop, stopIndex, startIndex, transitionPoints, local ) )
+            throw std::runtime_error ("Cannot split this loop." );
+          loops.push_back( fixedLoop );
+        }
+
+        usedIndices.insert( usedIndices.end(), local.begin(), local.end() );
+        //std::copy( local.begin(), local.end(), usedIndices.end() );
       }  //End for loop
      
       std::cout << "UsedIndices Size: " << usedIndices.size() << std::endl;
       //Erase the indices from a copy of the parent loop
       Loop parentCopy ( loop ); //Copy Constructor
       std::sort(usedIndices.begin(), usedIndices.end() );
-      for ( std::vector<int>::reverse_iterator it = usedIndices.rbegin();it != usedIndices.rend(); it++ ) {
+      for ( UsedIndices::reverse_iterator it = usedIndices.rbegin();it != usedIndices.rend(); it++ ) 
+      {
+        unsigned int index ( *it );
+
+        if( index >= parentCopy.size() || index < 0 )
+        {
+          std::ostringstream os;
+          os << "Index: " << index << " is invalid. " << std::endl << "Number of indices: " << parentCopy.size() << std::endl;
+          throw std::runtime_error ( os.str() );
+        }
         parentCopy.erase( *it );
       }
       loops.push_back(parentCopy);

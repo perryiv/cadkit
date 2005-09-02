@@ -36,9 +36,6 @@ public:
   typedef Points::iterator                                iterator;
   typedef Points::const_iterator                          const_iterator;
 
-
-
-
   Loop();
   Loop( const Loop & );
   Loop ( const Points & );
@@ -53,6 +50,9 @@ public:
 
   const_iterator        begin() const { return _loop.begin(); }
   const_iterator        end()   const { return _loop.end();   }
+
+  // Clear the loop.
+  void                  clear();
 
   // Is this loop empty?
   bool                  empty() const { return _loop.empty(); }
@@ -90,6 +90,9 @@ public:
 /// This should be public
   int                  isCoplanar( Usul::Interfaces::IUnknown *caller);
   void                 _printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller );
+
+  bool                 valid() const { return _valid; }
+  void                 valid( bool b ) { _valid = b; }
   
 private:
 
@@ -101,6 +104,8 @@ private:
   typedef std::vector< Points > InnerLoops;
 
   InnerLoops _innerLoops; // Vector of Points
+
+  bool _valid;
 
 }; // class Loop.
 

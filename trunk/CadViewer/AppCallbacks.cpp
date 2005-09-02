@@ -1812,7 +1812,8 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
   {
     // Get the point.
     osg::Vec3 point ( hits[0].getWorldIntersectPoint() );
-
+    point *= -1.0;
+    
     // Translate to that point.
     Matrix44f M;
     M.makeTranslation ( point );

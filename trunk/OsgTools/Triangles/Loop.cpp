@@ -541,7 +541,7 @@ unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
 ///////////////////////////////////////////////////////////////////////////////
 
 int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
-  int size = _loop.size();
+  unsigned int size = _loop.size();
   int plane = -1; //0=x, 1=y, 2=z;
   float xavg = 0.0f, yavg=0.0f, zavg =0.0f;
   //Loop once to find if the loop is on a single plane.

@@ -128,6 +128,11 @@ void Document::removeWindow ( Window *window )
 
 void Document::removeView ( View *view )
 {
+  // If we are removing the active view then make it null.
+  if ( this->activeView() == view )
+    this->activeView ( 0x0 );
+
+  // Remove the view.
   _views.remove ( view );
 }
 
@@ -609,7 +614,6 @@ std::string Document::getTitle ( Window *window )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Notify the document that it is no longer active.
@@ -706,8 +710,8 @@ Document::Delegate* Document::delegate ( )
 
 void Document::createDefaultGUI ( Unknown *caller )
 {
-  if( this->delegate() )
-    this->delegate()->createDefaultGUI( this, caller );
+  if ( this->delegate() )
+    this->delegate()->createDefaultGUI ( this, caller );
 }
 
 
@@ -719,7 +723,7 @@ void Document::createDefaultGUI ( Unknown *caller )
 
 void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 {
-  if( this->delegate() )
+  if ( this->delegate() )
     this->delegate()->refreshView ( this, viewer );
 }
 
@@ -730,7 +734,7 @@ void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void  Document::activeView  ( View *view )
+void Document::activeView ( View *view )
 {
   _active = view;
 }
@@ -742,7 +746,7 @@ void  Document::activeView  ( View *view )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::View* Document::activeView  (  ) const
+Document::View* Document::activeView() const
 {
   return _active.get();
 }

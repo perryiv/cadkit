@@ -16,8 +16,6 @@
 #ifndef _OPEN_SCENE_GRAPH_TOOLS_CLAMP_PROJECTION_H_
 #define _OPEN_SCENE_GRAPH_TOOLS_CLAMP_PROJECTION_H_
 
-#include "OsgTools/Render/Constants.h"
-
 #include "osgUtil/CullVisitor"
 
 
@@ -29,7 +27,7 @@ struct ClampProjection : public osg::CullSettings::ClampProjectionMatrixCallback
 {
   typedef osg::CullSettings::ClampProjectionMatrixCallback BaseClass;
 
-  ClampProjection ( osgUtil::CullVisitor &cv ) : BaseClass(), _cv ( cv )
+  ClampProjection ( osgUtil::CullVisitor &cv, double zNear, double zFar ) : BaseClass(), _cv ( cv ), _zNear ( zNear ), _zFar ( zFar )
   {
   }
 
@@ -50,16 +48,16 @@ protected:
     // Make sure near and far values are reasonable.
     if ( zNear <= 0 )
     {
-      zNear = OsgTools::Render::CAMERA_Z_NEAR;
+      zNear = _zNear;
     }
     if ( zFar <= 0 )
     {
-      zFar = OsgTools::Render::CAMERA_Z_FAR;
+      zFar = _zFar;
     }
     if ( zNear > zFar )
     {
-      zNear = OsgTools::Render::CAMERA_Z_NEAR;
-      zFar  = OsgTools::Render::CAMERA_Z_FAR;
+      zNear = _zNear;
+      zFar  = _zFar;
     }
 
     // Ask cull-visitor to clamp the projection matrix.
@@ -67,6 +65,8 @@ protected:
   }
 
   osgUtil::CullVisitor &_cv;
+  const double _zNear;
+  const double _zFar;
 };
 
 

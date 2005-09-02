@@ -19,13 +19,11 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
-#include <utility>
+
 
 namespace Usul {
 namespace Interfaces {
 
-  struct IWindow;
-  struct IViewer;
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
@@ -43,23 +41,23 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
-  virtual void                          activeView( Usul::Interfaces::IViewer * ) = 0;
-  virtual Usul::Interfaces::IViewer *   activeView() const = 0;
+  virtual void                          activeView ( IUnknown * ) = 0;
+  virtual IUnknown *                    activeView() const = 0;
 
-  virtual void                          addWindow   ( Usul::Interfaces::IWindow *window ) = 0;
-  virtual void                          addView     ( Usul::Interfaces::IViewer *view   ) = 0;
+  virtual void                          addWindow   ( IUnknown *window ) = 0;
+  virtual void                          addView     ( IUnknown *view   ) = 0;
 
   // The following window is closing
-  virtual void                          closing     ( Usul::Interfaces::IWindow *window ) = 0;
+  virtual void                          closing     ( IUnknown *window ) = 0;
 
   /// Create default GUI
-  virtual void                          createDefaultGUI ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void                          createDefaultGUI ( IUnknown *caller = 0x0 ) = 0;
 
   virtual Format                        fileFormat() const = 0;
   virtual void                          fileFormat ( const Format & ) = 0;
 
   virtual void                          fileName ( const std::string &f ) = 0;
-  virtual const std::string &           fileName() const = 0;
+  virtual std::string                   fileName() const = 0;
 
   virtual bool                          fileValid() const = 0;
   virtual void                          fileValid ( bool ) = 0;
@@ -68,12 +66,12 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                          modified ( bool ) = 0;
 
   /// Refresh the view
-  virtual void                          refreshView ( Usul::Interfaces::IViewer * ) = 0;
+  virtual void                          refreshView ( IUnknown * ) = 0;
 
-  virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
-  virtual void                          removeView     ( Usul::Interfaces::IViewer *view   ) = 0;
+  virtual void                          removeWindow   ( IUnknown *window ) = 0;
+  virtual void                          removeView     ( IUnknown *view   ) = 0;
 
-  virtual const std::string&            typeName() const = 0;
+  virtual std::string                   typeName() const = 0;
 };
 
 

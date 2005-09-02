@@ -47,6 +47,9 @@
 #include "Usul/Interfaces/IWriteScene.h"
 #include "Usul/Interfaces/IWriteImage.h"
 #include "Usul/Interfaces/IStereo.h"
+#include "Usul/Interfaces/IOpenGLLighting.h"
+#include "Usul/Interfaces/IMessageQueuePost.h"
+#include "Usul/Interfaces/IMessageQueueFlush.h"
 
 #include "osg/ref_ptr"
 #include "osg/Vec4"
@@ -87,7 +90,10 @@ class OSG_TOOLS_EXPORT Viewer : private Usul::Base::Referenced,
                                 public Usul::Interfaces::IBoundingBox,
                                 public Usul::Interfaces::IWriteScene,
                                 public Usul::Interfaces::IWriteImage,
-                                public Usul::Interfaces::IStereo
+                                public Usul::Interfaces::IStereo,
+                                public Usul::Interfaces::IOpenGLLighting,
+                                public Usul::Interfaces::IMessageQueuePostUShort,
+                                public Usul::Interfaces::IMessageQueueFlush
 
 {
 public:
@@ -110,6 +116,8 @@ public:
   typedef Usul::Interfaces::IPolygonMode IPolygonMode;
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef Usul::Interfaces::IShadeModel IStereo;
+  typedef Usul::Interfaces::IMessageQueuePostUShort IMessageQueuePost;
+  typedef Usul::Interfaces::IMessageQueueFlush IMessageQueueFlush;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Viewer );
@@ -158,7 +166,6 @@ public:
   virtual Filters                 filtersWriteImage() const;
 
   // Frame dumping.
-  void                            frameDump() const;
   virtual void                    frameDumpState ( bool );
   virtual bool                    frameDumpState() const;
   virtual unsigned int            frameDumpCurrentFileNum() const;
@@ -173,10 +180,10 @@ public:
   void                            init();
 
   // Lighting.
-  void                            lighting ( bool );
-  bool                            lighting() const;
-  void                            lightBothSides ( bool );
-  bool                            lightBothSides() const;
+  virtual bool                    lighting() const;
+  virtual void                    lighting ( bool );
+  virtual bool                    lightBothSides() const;
+  virtual void                    lightBothSides ( bool );
 
   // Get the line segment into the scene that goes through the 2D coordinate.
   void                            lineSegment ( const osg::Vec2d &mouse, osg::Vec3d &pt0, osg::Vec3d &pt1 ) const;
@@ -185,6 +192,11 @@ public:
   void                            lodCullCallback ( osg::NodeCallback *cb );
   void                            lodCullCallbackLow();
   void                            lodCullCallbackHigh();
+
+  // Post and flush messages. Returns true if it worked.
+  virtual bool                    messageQueueFlushAll();
+  virtual bool                    messageQueueFlushOne();
+  virtual bool                    messageQueuePost ( const unsigned short &message );
 
   // Set the model.
   void                            model ( osg::Node * );
@@ -243,7 +255,6 @@ public:
 
   // Spinning.
   virtual void                    spin ( bool );
-  static void                     spinAllowed ( bool );
   static bool                     spinAllowed();
 
   // Stereo.
@@ -294,6 +305,8 @@ protected:
   bool                            _animate();
 
   void                            _cullAndDraw();
+
+  void                            _dumpCurrentFrame() const;
 
   osg::Group *                    _getGroup ( const std::string &key );
   osg::Node *                     _getModel();
@@ -389,6 +402,8 @@ private:
   ITimerServer::QueryPtr _timerServer;
   IRenderNotify::QueryPtr _renderNotify;
   ISwapBuffers::QueryPtr _swapBuffers;
+  IMessageQueuePost::QueryPtr _postMessage;
+  IMessageQueueFlush::QueryPtr _flushMessage;
 };
 
 

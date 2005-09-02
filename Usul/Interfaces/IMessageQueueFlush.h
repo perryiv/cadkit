@@ -1,20 +1,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Interface for getting the view
-//
+///
+///  Interface for flushing messages from the queue.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEWER_H_
-#define _USUL_INTERFACE_VIEWER_H_
+#ifndef _USUL_INTERFACE_MESSAGE_QUEUE_FLUSH_H_
+#define _USUL_INTERFACE_MESSAGE_QUEUE_FLUSH_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,31 +22,22 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IViewer : public Usul::Interfaces::IUnknown
+struct IMessageQueueFlush : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewer );
+  USUL_DECLARE_QUERY_POINTERS ( IMessageQueueFlush );
 
   /// Id for this interface.
-  enum { IID = 3739984930u };
+  enum { IID = 1685855450u };
 
-  virtual void render() = 0;
-
-  virtual void clear() = 0;
-
-  // These may be moved to own interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
-
-  virtual void handleMessage ( unsigned short message ) = 0;
-
-}; // struct IViewer
+  /// Flush messages.
+  virtual bool            messageQueueFlushAll() = 0;
+  virtual bool            messageQueueFlushOne() = 0;
+};
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEWER_H_
+#endif // _USUL_INTERFACE_MESSAGE_QUEUE_FLUSH_H_

@@ -47,6 +47,7 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Math/Math.h"
 #include "Usul/Shared/Preferences.h"
+#include "Usul/Shared/Constants.h"
 #include "Usul/Interfaces/ITimerServer.h"
 
 #include "osg/MatrixTransform"
@@ -82,28 +83,30 @@ using namespace OsgTools::Render;
 
 Viewer::Viewer ( ContextMutex *context, IDocument *doc, IUnknown *unknown ) : 
   BaseClass(),
-  _members      (),
-  _context      ( context ),
-  _sceneView    ( new osgUtil::SceneView ),
-  _document     ( doc ),
-  _numPasses    ( 1 ),
-  _flags        ( 0 ),
-  _root         ( new osg::Group ),
-  _clipped      ( new osg::ClipNode ),
-  _unclipped    ( new osg::ClipNode ),
-  _model        ( new osg::Group ),
-  _decorator    ( new osg::Group ),
-  _groupMap     (),
-  _frameDump    (),
-  _times        (),
-  _animation    (),
-  _textMap      (),
-  _lods         (),
-  _navManips    (),
-  _navHistory   (),
-  _timerServer  ( unknown ),
-  _renderNotify ( unknown ),
-  _swapBuffers  ( unknown )
+  _members       (),
+  _context       ( context ),
+  _sceneView     ( new osgUtil::SceneView ),
+  _document      ( doc ),
+  _numPasses     ( 1 ),
+  _flags         ( 0 ),
+  _root          ( new osg::Group ),
+  _clipped       ( new osg::ClipNode ),
+  _unclipped     ( new osg::ClipNode ),
+  _model         ( new osg::Group ),
+  _decorator     ( new osg::Group ),
+  _groupMap      (),
+  _frameDump     (),
+  _times         (),
+  _animation     (),
+  _textMap       (),
+  _lods          (),
+  _navManips     (),
+  _navHistory    (),
+  _timerServer   ( unknown ),
+  _renderNotify  ( unknown ),
+  _swapBuffers   ( unknown ),
+  _postMessage   ( unknown ),
+  _flushMessage  ( unknown )
 
 {
   // Configure the scene-view.
@@ -120,6 +123,10 @@ Viewer::Viewer ( ContextMutex *context, IDocument *doc, IUnknown *unknown ) :
 
   // Push a default navigation manipulator.
   this->navManipPush ( new Trackball );
+
+  // Add this viewer to the document.
+  if ( _document.valid() )
+    _document->addView ( this->_unknown() );
 }
 
 
@@ -149,6 +156,10 @@ Viewer::~Viewer()
 
     // Sanity check.
     USUL_ASSERT ( 0 == _members.count() );
+
+    // Remove this view from the document.
+    if ( _document.valid() )
+      _document->removeView ( this->_unknown() );
   }
 
   // Catch standard exceptions.
@@ -205,7 +216,7 @@ void Viewer::init()
   // calculated near or far distance of zero. SceneViewer::cull() does not 
   // handle this case, and the projection matrix ends up with NANs.
   osg::ref_ptr<osgUtil::CullVisitor> cv ( _sceneView->getCullVisitor() );
-  cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv ) );
+  cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::CAMERA_Z_NEAR, OsgTools::Render::CAMERA_Z_FAR ) );
 
   // Related to above, and new with 0.9.8-2. osgUtil::SceneView and 
   // osgUtil::CullVisitor both inherit from osg::CullSettings. SceneView 
@@ -256,6 +267,12 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IWriteImage*>(this);
   case Usul::Interfaces::IStereo::IID:
     return static_cast<Usul::Interfaces::IStereo*>(this);
+  case Usul::Interfaces::IOpenGLLighting::IID:
+    return static_cast<Usul::Interfaces::IOpenGLLighting*>(this);
+  case Usul::Interfaces::IMessageQueuePostUShort::IID:
+    return static_cast<Usul::Interfaces::IMessageQueuePostUShort*>(this);
+  case Usul::Interfaces::IMessageQueueFlush::IID:
+    return static_cast<Usul::Interfaces::IMessageQueueFlush*>(this);
   default:
     return 0x0;
   }
@@ -322,7 +339,8 @@ void Viewer::backgroundColor ( const osg::Vec4f &color )
 osg::Vec4f Viewer::backgroundColor() const
 {
   GUARD_MEMBERS;
-  return _sceneView->getClearColor();
+  const osg::Vec4f color (  _sceneView->getClearColor() );
+  return color;
 }
 
 
@@ -374,7 +392,7 @@ void Viewer::render()
     _swapBuffers->swapBuffers ( this->_unknown() );
 
   // Dump the current frame if we should.
-  this->frameDump();
+  this->_dumpCurrentFrame();
 
   // Notify the client.
   if ( _renderNotify.valid() )
@@ -587,7 +605,7 @@ unsigned int Viewer::numRenderPasses() const
 
 void Viewer::displayListsUsage ( bool state )
 {
-  Usul::Shared::Preferences::instance().setBool ( OsgTools::Render::DISPLAY_LISTS, state );
+  Usul::Shared::Preferences::instance().setBool ( Usul::Shared::DISPLAY_LISTS, state );
 }
 
 
@@ -599,7 +617,7 @@ void Viewer::displayListsUsage ( bool state )
 
 bool Viewer::displayListsUsage()
 {
-  return Usul::Shared::Preferences::instance().getBool ( OsgTools::Render::DISPLAY_LISTS );
+  return Usul::Shared::Preferences::instance().getBool ( Usul::Shared::DISPLAY_LISTS );
 }
 
 
@@ -710,7 +728,7 @@ bool Viewer::frameDumpState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::frameDump() const
+void Viewer::_dumpCurrentFrame() const
 {
   if ( this->frameDumpState() )
     this->writeImageFile ( _frameDump.filename() );
@@ -1395,25 +1413,13 @@ void Viewer::spin ( bool state )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convenience function for setting the global "allow spin" flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::spinAllowed ( bool state )
-{
-  Usul::Shared::Preferences::instance().setBool ( OsgTools::Render::ALLOW_SPIN, state );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Convenience function for getting the global "allow spin" flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Viewer::spinAllowed()
 {
-  return Usul::Shared::Preferences::instance().getBool ( OsgTools::Render::ALLOW_SPIN );
+  return Usul::Shared::Preferences::instance().getBool ( Usul::Shared::ALLOW_SPIN );
 }
 
 
@@ -2615,6 +2621,7 @@ namespace Detail
 
 void Viewer::stereoMode ( Usul::Interfaces::IStereo::Mode m )
 {
+  GUARD_MEMBERS;
   if ( Usul::Interfaces::IStereo::NONE == m )
   {
     _sceneView->getDisplaySettings()->setStereo ( false );
@@ -2635,6 +2642,7 @@ void Viewer::stereoMode ( Usul::Interfaces::IStereo::Mode m )
 
 Usul::Interfaces::IStereo::Mode Viewer::stereoMode() const
 {
+  GUARD_MEMBERS;
   if ( _sceneView->getDisplaySettings()->getStereo() )
     return Detail::_modeMap.osgToUsul[_sceneView->getDisplaySettings()->getStereoMode()];
   else
@@ -2650,6 +2658,7 @@ Usul::Interfaces::IStereo::Mode Viewer::stereoMode() const
 
 void Viewer::stereoEyeDistance ( float d )
 {
+  GUARD_MEMBERS;
   _sceneView->getDisplaySettings()->setEyeSeparation ( d );
 }
 
@@ -2662,5 +2671,46 @@ void Viewer::stereoEyeDistance ( float d )
 
 float Viewer::stereoEyeDistance() const
 {
-  return _sceneView->getDisplaySettings()->getEyeSeparation();
+  GUARD_MEMBERS;
+  const float distance ( _sceneView->getDisplaySettings()->getEyeSeparation() );
+  return distance;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Post the message
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::messageQueuePost ( const unsigned short &message )
+{
+  GUARD_MEMBERS;
+  return ( ( _postMessage.valid() ) ? _postMessage->messageQueuePost ( message ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush all messages
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::messageQueueFlushAll()
+{
+  GUARD_MEMBERS;
+  return ( ( _flushMessage.valid() ) ? _flushMessage->messageQueueFlushAll() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush one message
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::messageQueueFlushOne()
+{
+  GUARD_MEMBERS;
+  return ( ( _flushMessage.valid() ) ? _flushMessage->messageQueueFlushOne() : false );
 }

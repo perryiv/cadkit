@@ -30,8 +30,6 @@
 #include "Usul/Interfaces/IGetTitle.h"
 #include "Usul/Interfaces/ICanClose.h"
 #include "Usul/Interfaces/ICanInsert.h"
-#include "Usul/Interfaces/IViewer.h"
-#include "Usul/Interfaces/IWindow.h"
 #include "Usul/Interfaces/IGUIDelegate.h"
 
 #include <string>
@@ -57,13 +55,9 @@ public:
 
   /// Typedefs.
   typedef Usul::Base::Referenced                BaseClass;
-  typedef Usul::Interfaces::IUnknown            Unknown;
-  typedef Usul::Interfaces::IWindow             Window;
-  typedef Window::ValidRefPtr                   WindowPtr;
-  typedef std::list<WindowPtr>                  Windows;
-  typedef Usul::Interfaces::IViewer             View;
-  typedef View::ValidRefPtr                     ViewPtr;
-  typedef std::list<ViewPtr>                    Views;
+  typedef Usul::Interfaces::IUnknown            IUnknown;
+  typedef std::list<IUnknown::ValidRefPtr>      Windows;
+  typedef std::list<IUnknown::ValidRefPtr>      Views;
   typedef std::pair<std::string,std::string>    Filter;
   typedef std::vector<Filter>                   Filters;
   typedef std::map<std::string,std::string>     Options;
@@ -78,21 +72,19 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  // Messages moved to the Usul::Interfaces::ISendMessage
-
   /// Construction.
   Document ( const std::string &type );
 
   // Get/Set the active view
-  virtual void                activeView  ( View *view );
-  virtual View*               activeView  (  ) const;
+  virtual void                activeView  ( IUnknown *view );
+  virtual IUnknown *          activeView() const;
 
   /// Add a window to the proper set.
-  virtual void                addWindow   ( Window *window );
-  virtual void                addView     ( View   *view   );
+  virtual void                addWindow ( IUnknown *window );
+  virtual void                addView   ( IUnknown *view   );
 
   // The given window is closing
-  virtual void                closing     ( Window *window );
+  virtual void                closing ( IUnknown *window );
 
   /// Iterators to the begining of the windows
   WindowItr                   beginWindows()       { return _windows.begin(); }
@@ -103,7 +95,7 @@ public:
   void                        binary ( bool b );
 
   /// Ask the document if the window can close.
-  bool                        canClose ( Window *window, Unknown *caller = 0x0, bool checkNumWindows = true );
+  bool                        canClose ( IUnknown *window, Unknown *caller = 0x0, bool checkNumWindows = true );
   bool                        canClose ( Unknown *caller = 0x0 );
 
   /// Return true if this document can do it.
@@ -116,7 +108,7 @@ public:
   virtual void                clear ( Unknown *caller = 0x0 ) = 0;
 
   /// Close all referenced windows except one specified
-  bool                        closeWindows( Usul::Interfaces::IUnknown *caller = 0x0, const Window* skip = 0x0);
+  bool                        closeWindows ( IUnknown *caller = 0x0, const IUnknown *skip = 0x0);
 
   /// Create default GUI
   virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
@@ -167,11 +159,11 @@ public:
   virtual void                noLongerActive ( const std::string& activeType );
 
   // Notify the document that it is active.
-  virtual void                nowActive      ( const std::string& oldType );
+  virtual void                nowActive ( const std::string& oldType );
 
   /// Return the number of windows.
-  unsigned int                numWindows()   const { return _windows.size();   }
-  unsigned int                numViews()     const { return _views.size();     }
+  unsigned int                numWindows() const { return _windows.size();   }
+  unsigned int                numViews()   const { return _views.size();     }
 
   /// Open the file. Clears any data this document already has.
   virtual void                open ( const std::string &filename, Unknown *caller = 0x0 );
@@ -184,11 +176,11 @@ public:
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 ) = 0;
 
   /// Refresh the view
-  virtual void                refreshView ( Usul::Interfaces::IViewer * );
+  virtual void                refreshView ( IUnknown *view );
 
   /// Remove a window from the proper set.
-  virtual void                removeWindow   ( Window *window );
-  virtual void                removeView     ( View   *view   );
+  virtual void                removeWindow ( IUnknown *window );
+  virtual void                removeView   ( IUnknown *view   );
 
   /// Save the document to existing file name.
   void                        save ( Unknown *caller = 0x0 );
@@ -203,7 +195,6 @@ public:
   /// Convenience function to set status bar and flush events.
   void                        setStatusBar ( const std::string &text );
 
-  /// Usul::Interfaces::ISendMessage
   /// Send the message to all listeners except for one specified
   virtual void                sendMessage ( unsigned short message, const Unknown *skip = 0x0 );
 
@@ -234,14 +225,14 @@ protected:
   void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 );
 
   /// Usul::Interfaces::IGetTitle
-  virtual std::string         getTitle ( Window* );
+  virtual std::string         getTitle ( IUnknown *caller );
 
 private:
 
   FileInfo _file;
   Windows _windows;
   Views   _views;
-  View::RefPtr _active;
+  IUnknown::RefPtr _active;
   std::string _typeName;
   Delegate::RefPtr _delegate;
 

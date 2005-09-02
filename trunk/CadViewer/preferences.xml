@@ -114,9 +114,8 @@
       <scale>      0.75 </scale>
     </speed>
 	<sinterpoint>
-	  <server>stalfos</server>
-	  <writer>stalfos</writer>
-	  <tmp_file>/tmp/sinterTmpFile</tmp_file>
+	  <server>my_server</server>
+	  <writer>my_writer</writer>
 	</sinterpoint>
   </preferences>
 </cv>

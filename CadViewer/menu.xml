@@ -239,6 +239,11 @@
           <info>Draw polygons with points at the vertices</info>
           <id>polygons_points</id>
         </radio>
+        <radio>
+          <text>Scribe</text>
+          <info>Draw polygons with scribe effect</info>
+          <id>polygons_scribe</id>
+        </radio>
       </menu>
     </menu>
     <menu>

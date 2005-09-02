@@ -3187,10 +3187,11 @@ void Application::_updateSceneTool()
     // If the machine name is the same as the writer...
     const std::string host    ( Usul::System::Host::name() );
     const std::string writer = _prefs->sinterPointWriter();
+	std::cout << "Sinter Point Writer machine = " << writer.c_str() << std::endl;
 
     // Make sure there is a writer-machine.
     ErrorChecker ( 2519309141u, !writer.empty(), 
-      "No machine specified as the Sinter Point Writer in user-preferences." );
+      "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
 
     // The writer alone uses sinterpoint
     if ( host == writer )
@@ -3205,8 +3206,8 @@ void Application::_updateSceneTool()
       if (result!=0) 
       {
         std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "      SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
-        std::cout << "      SinterPoint communication will be unusable" << std::endl;
+        std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
+        std::cout << "SinterPoint communication will be unusable" << std::endl;
       }
       else{
         // give function pointer to receiver
@@ -3223,7 +3224,7 @@ void Application::_updateSceneTool()
     vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
     _sinterAppData.init(newGuid);
 
-    // To be safe
+    // Just to be safe
     _sinterStream.clear();
 
     _sinterTiming=false;
@@ -3248,10 +3249,6 @@ void Application::_updateSceneTool()
     const std::string host    ( Usul::System::Host::name() );
     const std::string writer = _prefs->sinterPointWriter();
 
-    // Make sure there is a writer-machine.
-    ErrorChecker ( 2519309141u, !writer.empty(), 
-      "No machine specified as the Sinter Point Writer in user-preferences." );
-
     // The writer obtains the new osg file from Sinterpoint here and sends out
     // application data for the other machines
     if ( host == writer )
@@ -3269,16 +3266,18 @@ void Application::_updateSceneTool()
           std::cout << "Begin receiving" << std::endl;
         }
 
-        // Reserve the string size if it's too low
+        // Reserve the string size if it's too low - this is a big performace boost
         if ( _sinterStream.capacity() < _sinterFileSize )
         {
           _sinterStream.reserve ( _sinterFileSize );
           std::cout << "Stream reserved to size = " << _sinterStream.capacity() << std::endl;
+
           // Share the size
           _sinterAppData->_fileSize = _sinterFileSize;
         }
 
         // Keep grabbing data from SinterPoint and writing it out
+        // Use a mutex to insure the callback doesn't overwrite anything
         _sinterMutex.acquire();
         length = _sinterFileData.length();
         if ( length!=0 )
@@ -3330,10 +3329,6 @@ void Application::_updateSceneTool()
     const std::string host    ( Usul::System::Host::name() );
     const std::string writer = _prefs->sinterPointWriter();
 
-    // Make sure there is a writer-machine.
-    ErrorChecker ( 2519309142u, !writer.empty(), 
-      "No machine specified as the Sinter Point Writer in user-preferences." );
-
     // The writer will just finish and load the file here so they all load in postframe
     // after application data has been sync'd
     if ( host == writer )
@@ -3367,7 +3362,7 @@ void Application::_updateSceneTool()
       _sinterFileSize = _sinterAppData->_fileSize;
 
       if ( _sinterFileState == RECEIVE ) {
-        // Reserve the string size if it hasn't already been set
+        // Reserve the string size if it hasn't already been set - big preformance boost
         if ( _sinterStream.capacity() < _sinterFileSize )
         {
           _sinterStream.reserve ( _sinterFileSize );
@@ -3385,7 +3380,7 @@ void Application::_updateSceneTool()
       }
 
       else if (_sinterFileState == DONE) {
-        // Grab the last data chunk, if needed, write it out then close
+        // Grab the last data chunk, if needed, write it out, then close
         length = _sinterFileData.length();
         if ( length!=0 )
         {
@@ -3427,6 +3422,7 @@ void Application::_updateSceneTool()
     // Clean off the trailing characters SinterPoint tends to leave on
     msg.erase ( size, msg.size() );
 
+    // Check for commands in the messages
     if ( msg=="SINTERPOINT_FILE_SIZE" )
     {
       _sinterFileState = SIZE;
@@ -3439,6 +3435,7 @@ void Application::_updateSceneTool()
     {
       _sinterFileState = DONE;
     }
+	  // Otherwise we just have data
     else
     {
       // Received data is file size
@@ -3450,10 +3447,13 @@ void Application::_updateSceneTool()
         ss >> size;
         _sinterFileSize = size;
 
-        // Set the receiver string to this size
-        // This is worst case, but assumes the 
-        // whole file could come across within one
-        // juggler event loop
+        /*
+        Set the receiver string to this size
+        This is worst case, but assumes the 
+        whole file could come across within one
+        juggler event loop, and provides a big
+		    performance boost
+        */
         _sinterFileData.reserve(size);
       }
       // Received data is file data

@@ -18,6 +18,8 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Predicates/LessVector.h"
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "OsgTools/Triangles/SharedVertex.h"
@@ -27,6 +29,7 @@
 #include "osg/Geometry"
 #include "osg/ref_ptr"
 #include "osg/BoundingBox"
+#include "osg/Vec3f"
 
 namespace osg { class Node; }
 
@@ -45,7 +48,9 @@ public:
 
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
-  typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr > SharedVertices;
+  typedef Usul::Predicates::CloseFloat < float > CloseFloat;
+  typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
+  typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr, LessVector > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > Triangles;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;

@@ -52,7 +52,8 @@ namespace Types {
   typedef double              Float64;
 
 #elif __APPLE__ 
-   // These were taken from the MacTypes.h located in 
+
+  // These were taken from the MacTypes.h located in 
   // /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/
   //     CarbonCore.framework/Versions/A/Headers/
   typedef unsigned char       Uint8;
@@ -74,7 +75,9 @@ namespace Types {
   
   typedef float               Float32;
   typedef double              Float64;  
+
 #elif __linux 
+
   //TODO Figure out if this is correct.... 
   typedef long long           Int64;
   typedef int                 Int32;

@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The finite function.
+//  The NaN function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_MATH_FINITE_FUNCTION_H_
-#define _USUL_MATH_FINITE_FUNCTION_H_
+#ifndef _USUL_MATH_NOT_A_NUMBER_FUNCTION_H_
+#define _USUL_MATH_NOT_A_NUMBER_FUNCTION_H_
 
 #include "Usul/Cast/Cast.h"
 
@@ -47,9 +47,9 @@
 extern "C"
 {
 #ifdef _MSC_VER
-  _CRTIMP int __cdecl _finite ( double );
+  _CRTIMP int __cdecl _isnan ( double );
 #else
-  int finite ( double ) _USUL_THROW;
+  int isnan ( double ) _USUL_THROW;
 #endif
 };
 
@@ -69,66 +69,66 @@ namespace Math {
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  See if the number is finite.
+//  See if the number is a NAN.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-inline bool finite ( long double v )
+inline bool nan ( long double v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 != ::_isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
 #else
-  return ( 0 !=  ::finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 !=  ::isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
 #endif
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  See if the number is finite.
+//  See if the number is a NAN.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-inline bool finite ( double v )
+inline bool nan ( double v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_finite ( v ) );
+  return ( 0 != ::_isnan ( v ) );
 #else
-  return ( 0 !=  ::finite ( v ) );
+  return ( 0 !=  ::isnan ( v ) );
 #endif
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  See if the number is finite.
+//  See if the number is a NAN.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-inline bool finite ( float v )
+inline bool nan ( float v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 != ::_isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
 #else
-  return ( 0 !=  ::finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 !=  ::isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
 #endif
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Macro for defining the finite function for 4D vector types.
+///  Macro for defining the nan function for 4D vector types.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-#define USUL_DECLARE_FINITE_VEC4(vector_type) \
-namespace Usul { namespace Math { bool finite ( const vector_type &v ) \
+#define USUL_DECLARE_NAN_VEC4(vector_type) \
+namespace Usul { namespace Math { bool nan ( const vector_type &v ) \
 { \
   return ( \
-    Usul::Math::finite ( v[0] ) && \
-    Usul::Math::finite ( v[1] ) && \
-    Usul::Math::finite ( v[2] ) && \
-    Usul::Math::finite ( v[3] ) ); \
+    Usul::Math::nan ( v[0] ) && \
+    Usul::Math::nan ( v[1] ) && \
+    Usul::Math::nan ( v[2] ) && \
+    Usul::Math::nan ( v[3] ) ); \
 } }; }
 
 
@@ -138,33 +138,33 @@ namespace Usul { namespace Math { bool finite ( const vector_type &v ) \
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Macro for defining the finite function for 3D vector types.
+///  Macro for defining the nan function for 3D vector types.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-#define USUL_DECLARE_FINITE_VEC3(vector_type) \
-namespace Usul { namespace Math { bool finite ( const vector_type &v ) \
+#define USUL_DECLARE_NAN_VEC3(vector_type) \
+namespace Usul { namespace Math { bool nan ( const vector_type &v ) \
 { \
   return ( \
-    Usul::Math::finite ( v[0] ) && \
-    Usul::Math::finite ( v[1] ) && \
-    Usul::Math::finite ( v[2] ) ); \
+    Usul::Math::nan ( v[0] ) && \
+    Usul::Math::nan ( v[1] ) && \
+    Usul::Math::nan ( v[2] ) ); \
 } }; }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 ///
-///  Macro for defining the finite function for 2D vector types.
+///  Macro for defining the nan function for 2D vector types.
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-#define USUL_DECLARE_FINITE_VEC2(vector_type) \
-namespace Usul { namespace Math { bool finite ( const vector_type &v ) \
+#define USUL_DECLARE_NAN_VEC2(vector_type) \
+namespace Usul { namespace Math { bool nan ( const vector_type &v ) \
 { \
   return ( \
-    Usul::Math::finite ( v[0] ) && \
-    Usul::Math::finite ( v[1] ) ); \
+    Usul::Math::nan ( v[0] ) && \
+    Usul::Math::nan ( v[1] ) ); \
 } }; }
 
 
-#endif // _USUL_MATH_FINITE_FUNCTION_H_
+#endif // _USUL_MATH_NOT_A_NUMBER_FUNCTION_H_

@@ -18,6 +18,8 @@
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Predicates/EqualVector.h"
+
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
@@ -25,7 +27,6 @@
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/EventQueue.h"
-#include "Usul/MPL/StaticAssert.h"
 
 #include "OsgTools/State.h"
 #include "OsgTools/Callbacks/BoundingBox.h"
@@ -53,7 +54,7 @@ USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
-  _shared    (),
+  _shared    ( LessVector ( CloseFloat() ) ),
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
@@ -63,17 +64,16 @@ TriangleSet::TriangleSet() : BaseClass(),
   _partition (  )
 {
 #ifdef _WIN32
-  USUL_STATIC_ASSERT (  4 == sizeof ( _vertices       ) );
-  USUL_STATIC_ASSERT (  8 == sizeof ( _normals        ) );
-  USUL_STATIC_ASSERT (  4 == sizeof ( _colors         ) );
-  USUL_STATIC_ASSERT (  1 == sizeof ( _dirty          ) );
-  USUL_STATIC_ASSERT ( 24 == sizeof ( _bb             ) );
-  USUL_STATIC_ASSERT ( 12 == sizeof ( _shared         ) );
-  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles      ) );
-  USUL_STATIC_ASSERT ( 64 == sizeof ( _partition      ) );
-  USUL_STATIC_ASSERT ( 148 == sizeof ( TriangleSet    ) ); // Why?
+  USUL_STATIC_ASSERT (   4 == sizeof ( _vertices       ) );
+  USUL_STATIC_ASSERT (   8 == sizeof ( _normals        ) );
+  USUL_STATIC_ASSERT (   4 == sizeof ( _colors         ) );
+  USUL_STATIC_ASSERT (   1 == sizeof ( _dirty          ) );
+  USUL_STATIC_ASSERT (  24 == sizeof ( _bb             ) );
+  USUL_STATIC_ASSERT (  24 == sizeof ( _shared         ) );
+  USUL_STATIC_ASSERT (  16 == sizeof ( _triangles      ) );
+  USUL_STATIC_ASSERT (  64 == sizeof ( _partition      ) );
+  USUL_STATIC_ASSERT ( 160 == sizeof ( TriangleSet     ) ); // Does not add up...
 #endif
-
 }
 
 
@@ -152,7 +152,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   this->_normalsPerFacet().clear();
   _colors->clear();
 
-  //Clear the Max and Min Values
+  // Clear the Max and Min Values
   _bb.init();
   
 }
@@ -272,8 +272,8 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv1 ( this->_sharedVertex ( v1 ) );
   SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
 
-  //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n, correctNormal, rebuild );
+  // Add the triangle
+  this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
 }
 
 
@@ -289,8 +289,8 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
   SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
   SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
 
-  //Add the triangle
-  this->_addTriangle( sv0, sv1, sv2, n, correctNormal, rebuild );
+  // Add the triangle
+  this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
 }
 
 
@@ -302,11 +302,11 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
 
 void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
 {
-  //Make a copy
+  // Make a copy
   osg::Vec3f copy ( n );
 
   // Fix the normal if we should.
-  if( correctNormal )
+  if ( correctNormal )
   {
     // Get the three vertices of the triangle.
     osg::Vec3 one   ( _vertices->at( sv0->index() ) );
@@ -342,7 +342,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   this->_normalsPerFacet().push_back ( copy );
 
   // The primitive set will be valid after the scene is built.
-  if( rebuild )
+  if ( rebuild )
   {
     //For convienence
     osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
@@ -398,13 +398,17 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
 
 void TriangleSet::_setMaxMinValues ( SharedVertex *sv ) 
 {
-    const osg::Vec3f &v ( this->getVertex( sv->index() ) );
+#if 0
+    const osg::Vec3f &v ( this->getVertex ( sv->index() ) );
     if ( v.x() > _bb.xMax() ) _bb.xMax() = v.x();
     if ( v.x() < _bb.xMin() ) _bb.xMin() = v.x();
     if ( v.y() > _bb.yMax() ) _bb.yMax() = v.y();
     if ( v.y() < _bb.yMin() ) _bb.yMin() = v.y();
     if ( v.z() > _bb.zMax() ) _bb.zMax() = v.z();
     if ( v.z() < _bb.zMin() ) _bb.zMin() = v.z();
+#else
+    _bb.expandBy ( this->getVertex ( sv->index() ) );
+#endif
 }
 
 
@@ -416,6 +420,8 @@ void TriangleSet::_setMaxMinValues ( SharedVertex *sv )
 
 void TriangleSet::addStart()
 {
+#if 0
+
   typedef Usul::Interfaces::IProgressBar IProgressBar;
   typedef Usul::Interfaces::IStatusBar IStatusBar;
 
@@ -455,6 +461,7 @@ void TriangleSet::addStart()
     if ( progress.valid() && update() )
       progress->updateProgressBar ( ( i - _triangles.begin() ) / _triangles.size() );
   }
+#endif
 }
 
 
@@ -466,6 +473,8 @@ void TriangleSet::addStart()
 
 void TriangleSet::addFinish()
 {
+#if 0
+
   // Get the interface.
   typedef Usul::Interfaces::IStatusBar IStatusBar;
   IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
@@ -480,6 +489,8 @@ void TriangleSet::addFinish()
   // Set status bar.
   if ( status.valid() )
     status->setStatusBarText ( "Done clearing map of shared vertices", true );
+
+#endif
 }
 
 
@@ -832,14 +843,14 @@ void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
 
 void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller )
 {
-  //Make a copy of the triangles
+  // Make a copy of the triangles
   Triangles triangles ( _triangles );
 
-  //Make a copy of the normals
+  // Make a copy of the normals
   NormalsPtr normals ( new osg::Vec3Array ( this->_normalsPerFacet().size() ) );
   std::copy ( this->_normalsPerFacet().begin(), this->_normalsPerFacet().end(), normals->begin() );
 
-  //Make a copy of the vertices
+  // Make a copy of the vertices
   VerticesPtr vertices ( new osg::Vec3Array ( _vertices->size() ) );
   std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
 
@@ -856,7 +867,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   this->reserve( keepers.size() );
 
   // Initialize the shared vertex map
-  this->addStart(  );
+  this->addStart();
 
   this->_setStatusBar( "Adding Triangles..." );
 
@@ -866,30 +877,30 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   Usul::Policies::TimeBased update ( 1000 );
 
   // Go through the triangles that we need to keep
-  for( std::vector<unsigned int>::const_iterator i = keepers.begin(); i != keepers.end(); ++i )
+  for ( std::vector<unsigned int>::const_iterator i = keepers.begin(); i != keepers.end(); ++i )
   {
     // Get the triangle
     Triangle::ValidRefPtr t ( triangles.at( *i ) );
 
-    // Get it's vertices
-    osg::Vec3f v0 ( vertices->at( t->vertex0()->index() ) );
-    osg::Vec3f v1 ( vertices->at( t->vertex1()->index() ) );
-    osg::Vec3f v2 ( vertices->at( t->vertex2()->index() ) );
+    // Get its vertices
+    const osg::Vec3f &v0 ( vertices->at( t->vertex0()->index() ) );
+    const osg::Vec3f &v1 ( vertices->at( t->vertex1()->index() ) );
+    const osg::Vec3f &v2 ( vertices->at( t->vertex2()->index() ) );
 
     // Get it's normal
-    osg::Vec3f n ( normals->at( t->index() ) );
+    const osg::Vec3f &n ( normals->at ( t->index() ) );
 
     // Add the triangle
-    this->addTriangle( v0, v1, v2, n );
+    this->addTriangle ( v0, v1, v2, n );
 
     // Let the user know how much we have done
     this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size() );
   }
 
   // Done with the shared vertex map
-  this->addFinish( );
+  this->addFinish();
 
-  //The scene needs to be rebuilt
+  // The scene needs to be rebuilt
   _dirty = true;
 }
 

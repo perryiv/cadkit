@@ -755,6 +755,9 @@
 				Name="Math"
 				Filter="">
 				<File
+					RelativePath=".\Math\Absolute.h">
+				</File>
+				<File
 					RelativePath=".\Math\Angle.h">
 				</File>
 				<File
@@ -774,6 +777,12 @@
 				</File>
 				<File
 					RelativePath=".\Math\MinMax.h">
+				</File>
+				<File
+					RelativePath=".\Math\NaN.h">
+				</File>
+				<File
+					RelativePath=".\Math\Power.h">
 				</File>
 				<File
 					RelativePath=".\Math\Transpose.h">
@@ -832,16 +841,25 @@
 				Name="Predicates"
 				Filter="">
 				<File
+					RelativePath=".\Predicates\CloseFloat.h">
+				</File>
+				<File
 					RelativePath=".\Predicates\CompareCoordinate.h">
 				</File>
 				<File
 					RelativePath="Predicates\EndsWith.h">
 				</File>
 				<File
+					RelativePath=".\Predicates\EqualVector.h">
+				</File>
+				<File
 					RelativePath="Predicates\FileExists.h">
 				</File>
 				<File
 					RelativePath="Predicates\IsOfType.h">
+				</File>
+				<File
+					RelativePath=".\Predicates\LessVector.h">
 				</File>
 				<File
 					RelativePath=".\Predicates\Tolerance.h">

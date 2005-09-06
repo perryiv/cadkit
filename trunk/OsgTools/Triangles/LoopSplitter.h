@@ -48,6 +48,37 @@ class OSG_TOOLS_EXPORT LoopSplitter
       XMIN_ZMAX = 11,
       XMAX_ZMAX = 12
     };   
+    
+    enum OSG_BOUNDBOX
+    {
+      XMIN_YMIN_ZMIN = 0,
+      XMAX_YMIN_ZMIN = 1,
+      XMIN_YMAX_ZMIN = 2,
+      XMAX_YMAX_ZMIN = 3,
+      XMIN_YMIN_ZMAX = 4,
+      XMAX_YMIN_ZMAX = 5,
+      XMIN_YMAX_ZMAX = 6,
+      XMAX_YMAX_ZMAX = 7     
+    };
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// These values were created by adding the values of the 3 edges that connect
+//  to form the corner point. Nicely enough, these values are unique
+//
+///////////////////////////////////////////////////////////////////////////////
+
+    enum CORNER_EDGE
+    {
+      CE_XMIN_YMIN_ZMIN = 13,
+      CE_XMAX_YMIN_ZMIN = 14,
+      CE_XMIN_YMAX_ZMIN = 21,
+      CE_XMAX_YMAX_ZMIN = 22,
+      CE_XMIN_YMIN_ZMAX = 16,
+      CE_XMAX_YMIN_ZMAX = 19,
+      CE_XMIN_YMAX_ZMAX = 24,
+      CE_XMAX_YMAX_ZMAX = 27     
+    };
 
     // Typedefs.
     typedef OsgTools::Triangles::SharedVertex::ValidRefPtr  SharedVertexPtr;
@@ -56,9 +87,10 @@ class OSG_TOOLS_EXPORT LoopSplitter
     typedef Points::iterator                                iterator;
     typedef Points::const_iterator                          const_iterator;
 
-    typedef std::map<int, std::vector<osg::Vec3f> >   EdgeMap;
-    typedef std::map<osg::Vec3f, unsigned int>        TPointIndices;
-    typedef std::vector<OsgTools::Triangles::Loop>    Loops;
+    typedef std::map<int, std::vector<osg::Vec3f> >       EdgeMap;
+    typedef std::map<osg::Vec3f, unsigned int>            TPointIndices;
+    typedef std::vector<OsgTools::Triangles::Loop>        Loops;
+    typedef std::map<int, Points>  EdgeVertMap;
     
     /// Constructor
     LoopSplitter(osg::BoundingBox box, Usul::Interfaces::IUnknown *caller);
@@ -72,9 +104,13 @@ class OSG_TOOLS_EXPORT LoopSplitter
     void              _createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
     bool              _makeCornerDecision(int a, int b, int c,int e1, int e2) const;
     osg::Vec3f        _getCornerPoint(int edge1, int edge2) const;
+    int               _getBoundBoxIndex(int edgeTotal) const ;
     int               _getSortAxis(int edge1) const ;
     void              _printEdgeMap(EdgeMap edgeMap);
-    
+    void              _singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
+    void              _tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
+void  _addNewPoints(int edge, int corner, float length, osg::Vec3 & tp, std::vector<osg::Vec3> & verts) ;
+
   private:
     LoopSplitter();
     osg::BoundingBox _boundBox;

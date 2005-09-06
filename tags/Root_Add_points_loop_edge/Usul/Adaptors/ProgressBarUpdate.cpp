@@ -1,0 +1,57 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Usul/Adaptors/ProgressBarUpdate.h"
+
+using namespace Usul::Adaptors;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.  Show the progress bar and set values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ProgressBarUpdate::ProgressBarUpdate( Usul::Interfaces::IUnknown *caller, unsigned int init, unsigned int total ) :
+_progress ( caller )
+{
+  if( _progress.valid() )
+  {
+    _progress->showProgressBar();
+    _progress->setTotalProgressBar( total );
+    _progress->updateProgressBar ( init );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.  Hide the progress bar
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ProgressBarUpdate::~ProgressBarUpdate()
+{
+  if( _progress.valid() )
+    _progress->hideProgressBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar with the given value
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarUpdate::operator() ( unsigned int value ) const
+{
+  if( _progress.valid() )
+    _progress->updateProgressBar( value );
+}
+

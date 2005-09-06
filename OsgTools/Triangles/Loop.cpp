@@ -424,13 +424,15 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
     return;
 
   Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
-
+  Usul::Interfaces::IGetBoundingBox::ValidQueryPtr bbox  ( caller );
+    
+  osg::BoundingBox bounds (bbox->getBoundingBox() );
   // Get the osg::Vec3Array.
   osg::ref_ptr< osg::Vec3Array > vertices ( this->_vertices( caller ) );
 
   // Get the center point.
   center = Detail::center ( *vertices );
-
+  
   SharedVertexPtr sv0 ( _loop.at( 0 ) );
   SharedVertexPtr sv1 ( _loop.at( 1 ) );
   SharedVertexPtr sv2 ( _loop.at( 2 ) );
@@ -440,9 +442,26 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
   osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
   osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
 
-  // Plane to get the normal.
-  osg::Plane plane ( v0, v1, v2 );
-  osg::Vec3 normal ( plane.getNormal() );
+  int thePlane = this->isCoplanar( caller );
+  osg::Vec3 normal;
+  if (thePlane == -1) {
+    osg::Plane plane ( v0, v1, v2 );
+    normal = plane.getNormal() ;
+  } else if ( thePlane == 0 && v0.x() == bounds.xMin() ) {
+      normal = osg::Vec3(1.0f, 0.0f, 0.0f);
+  } else if ( thePlane == 0 && v0.x() == bounds.xMax() ) {
+      normal = osg::Vec3(-1.0f, 0.0f, 0.0f);
+  } else if ( thePlane == 1 && v0.y() == bounds.yMin() ) {
+      normal = osg::Vec3(0.0f, 1.0f, 0.0f);  
+  } else if ( thePlane == 1 && v0.y() == bounds.yMax() ) {
+      normal = osg::Vec3(0.0f, -1.0f, 0.0f);  
+  } else if ( thePlane == 2 && v0.z() == bounds.zMin() ) {
+      normal = osg::Vec3(0.0f, 0.0f, -1.0f);  
+  } else if ( thePlane == 2 && v0.z() == bounds.zMax() ) {
+      normal = osg::Vec3(0.0f, 0.0f, 1.0f);  
+  } else {
+    throw std::runtime_error("Error 8924892034: Invalid Plane value inside Loop::getFrameData()" );
+  }
 
   float max ( Detail::maxDistance( *vertices, center ) );
   
@@ -564,7 +583,8 @@ unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
+int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) const 
+{
   unsigned int size = _loop.size();
   int plane = -1; //0=x, 1=y, 2=z;
   float xavg = 0.0f, yavg=0.0f, zavg =0.0f;
@@ -582,17 +602,17 @@ int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
   if (xavg == (this->vertex( 0, caller )).x() &&
       yavg != (this->vertex( 0, caller )).y() && 
       zavg != (this->vertex( 0, caller )).z() ) {
-      std::cout << "The loop is coplanar on the ZY plane" << std::endl;
+  //    std::cout << "The loop is coplanar on the ZY plane" << std::endl;
       plane = LoopSplitter::X_AXIS;
   } else if (xavg != (this->vertex( 0, caller )).x() &&
       yavg == (this->vertex( 0, caller )).y() && 
       zavg != (this->vertex( 0, caller )).z() ) {
-      std::cout << "The loop is coplanar on the XZ plane" << std::endl;
+ //     std::cout << "The loop is coplanar on the XZ plane" << std::endl;
       plane = LoopSplitter::Y_AXIS;
   } else if (xavg != (this->vertex( 0, caller )).x() &&
       yavg != (this->vertex( 0, caller )).y() && 
       zavg == (this->vertex( 0, caller )).z() ) {
-      std::cout << "The loop is coplanar on the XY plane" << std::endl;
+ //     std::cout << "The loop is coplanar on the XY plane" << std::endl;
       plane = LoopSplitter::Z_AXIS;
   }
   return plane;
@@ -607,7 +627,7 @@ int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Loop::_printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller ) {
-  std::cout << "============== BEGIN POLY FILE ====================" << std::endl;
+  std::cout << "#============== BEGIN POLY FILE ====================" << std::endl;
   std::cout << "# Poly file for Loop\n# This was generated from OsgFox Code" << std::endl;
   std::cout << loop.size() << " 2 1 0" << std::endl;
   for( unsigned int i = 0; i < loop.size(); ++ i )
@@ -623,7 +643,7 @@ void Loop::_printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::I
   }
   std::cout << loop.size() << " " << loop.size() << " 1" << std::endl;
   std::cout << "0"<< std::endl;
-  std::cout << "============== END POLY FILE ================\n\n" << std::endl;
+  std::cout << "#============== END POLY FILE ================\n\n" << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

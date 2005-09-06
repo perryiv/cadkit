@@ -88,7 +88,7 @@ public:
   const osg::Vec3f&     vertex ( unsigned int i, Usul::Interfaces::IUnknown *caller  ) const;
 
 /// This should be public
-  int                  isCoplanar( Usul::Interfaces::IUnknown *caller);
+  int                  isCoplanar( Usul::Interfaces::IUnknown *caller) const;
   void                 _printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller );
 
   bool                 valid() const { return _valid; }

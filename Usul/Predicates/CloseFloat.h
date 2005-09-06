@@ -143,14 +143,6 @@ template <> struct CloseFloat < Usul::Types::Float64 >
     SignedInteger ia = *(reinterpret_cast<SignedInteger*>(&a));
     SignedInteger ib = *(reinterpret_cast<SignedInteger*>(&b));
 
-#ifndef _DEBUG
-#if 1
-    Deliberately breaking release build... Mike or Adam, Is it correct to 
-    extend 0x80000000 for the 32 bit case (above) to 0x8000000000000000?
-    If so, remove this text.
-#endif
-#endif
-
     // Make them lexicographically ordered as a twos-complement int.
     if ( ia < 0 )
       ia = 0x8000000000000000 - ia;

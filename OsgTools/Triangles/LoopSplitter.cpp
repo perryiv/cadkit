@@ -708,14 +708,16 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
     // We now need to create vectors of Shared Vertices to add to the edges
     // between the transition point and the corner point.
   std::vector<Points> theNewPoints;
-  for (int i = 0; i < v.size(); ++i) {
+  for ( unsigned int i = 0; i < v.size(); ++i )
+  {
     std::vector<osg::Vec3> vertices;
-    _addNewPoints(edges[i], bbIndex, length, v[i], vertices);
+    _addNewPoints ( edges.at(i), bbIndex, length, v.at(i), vertices);
     std::cout << "New points Size: " << vertices.size() << std::endl;
     Points something;
-    for (int j = 0; j < vertices.size();j++) {
-      std::cout << vertices[j].x() << " , " << vertices[j].y() << " , " << vertices[j].z() << std::endl;
-      SharedVertex *sv ( addSharedVertex->addSharedVertex( vertices[j] ) );  
+    for ( unsigned int j = 0; j < vertices.size(); ++j)
+    {
+      std::cout << vertices.at(j).x() << " , " << vertices.at(j).y() << " , " << vertices.at(j).z() << std::endl;
+      SharedVertex *sv ( addSharedVertex->addSharedVertex( vertices.at(j) ) );  
       std::cout << sv << std::endl;
       something.push_back(sv);
     }

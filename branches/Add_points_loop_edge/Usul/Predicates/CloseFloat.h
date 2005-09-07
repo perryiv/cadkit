@@ -144,7 +144,8 @@ template <> struct CloseFloat < Usul::Types::Float64 >
     SignedInteger ib = *(reinterpret_cast<SignedInteger*>(&b));
 
 #ifndef _DEBUG
-#if 1
+#if 0
+    // I don't see any problem in this
     Deliberately breaking release build... Mike or Adam, Is it correct to 
     extend 0x80000000 for the 32 bit case (above) to 0x8000000000000000?
     If so, remove this text.

@@ -606,22 +606,23 @@ int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loop::_printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller ) {
+void Loop::printQuakePolygonFile( Usul::Interfaces::IUnknown *caller ) {
   std::cout << "============== BEGIN POLY FILE ====================" << std::endl;
   std::cout << "# Poly file for Loop\n# This was generated from OsgFox Code" << std::endl;
-  std::cout << loop.size() << " 2 1 0" << std::endl;
-  for( unsigned int i = 0; i < loop.size(); ++ i )
+  std::cout << this->size() << " 2 1 0" << std::endl;
+
+  for( unsigned int i = 0; i < this->size(); ++ i )
   {
-    osg::Vec3 v ( loop.vertex( i, caller ) );
+    osg::Vec3 v ( this->vertex( i, caller ) );
    // vertices->push_back( loop.vertex( i, caller ) );
     std::cout << i+1 << " " << v.x() << " " << v.z() << " 0" << std::endl; 
   }
-  std::cout << loop.size() << " 0" << std::endl;
-  for (unsigned int i = 0; i < loop.size(); ++i) {
-    if (i+1 != loop.size() )
+  std::cout << this->size() << " 0" << std::endl;
+  for (unsigned int i = 0; i < this->size(); ++i) {
+    if (i+1 != this->size() )
       std::cout << i+1 << " " << i+1 << " " << i+2 << std::endl;
   }
-  std::cout << loop.size() << " " << loop.size() << " 1" << std::endl;
+  std::cout << this->size() << " " << this->size() << " 1" << std::endl;
   std::cout << "0"<< std::endl;
   std::cout << "============== END POLY FILE ================\n\n" << std::endl;
 }

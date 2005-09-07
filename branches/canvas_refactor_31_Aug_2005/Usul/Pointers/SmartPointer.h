@@ -282,19 +282,16 @@ struct SmartPointer
 
   struct IsEqual
   {
-    IsEqual( element_type* p ) :
-    _p ( p )
-    { }
-
+    IsEqual ( const element_type* p ) : _p ( p )
+    {
+    }
     bool operator() ( const ThisType& t ) const
     {
       return _p == t.get();
     }
-
   private:
     IsEqual();
-
-    element_type *_p;
+    const element_type *_p;
   };
 
 protected:

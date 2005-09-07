@@ -56,13 +56,12 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced                BaseClass;
   typedef Usul::Interfaces::IUnknown            IUnknown;
-  typedef std::list<IUnknown::ValidRefPtr>      Windows;
-  typedef std::list<IUnknown::ValidRefPtr>      Views;
+  typedef std::list<IUnknown::ValidRefPtr>      Unknowns;
   typedef std::pair<std::string,std::string>    Filter;
   typedef std::vector<Filter>                   Filters;
   typedef std::map<std::string,std::string>     Options;
-  typedef Windows::iterator                     WindowItr;
-  typedef Windows::const_iterator               WindowConstItr;
+  typedef Unknowns::iterator                    UnknownItr;
+  typedef Unknowns::const_iterator              UnknownConstItr;
   typedef Usul::Interfaces::IDocument           IDocument;
   typedef Usul::Interfaces::IGUIDelegate        Delegate;
 
@@ -87,16 +86,16 @@ public:
   virtual void                closing ( IUnknown *window );
 
   /// Iterators to the begining of the windows
-  WindowItr                   beginWindows()       { return _windows.begin(); }
-  WindowConstItr              beginWindows() const { return _windows.begin(); }
+  UnknownItr                  beginWindows()       { return _windows.begin(); }
+  UnknownConstItr             beginWindows() const { return _windows.begin(); }
 
   /// Set/get the whether or not this document is binary.
   bool                        binary() const;
   void                        binary ( bool b );
 
   /// Ask the document if the window can close.
-  bool                        canClose ( IUnknown *window, Unknown *caller = 0x0, bool checkNumWindows = true );
-  bool                        canClose ( Unknown *caller = 0x0 );
+  bool                        canClose ( IUnknown *window, IUnknown *caller, bool checkNumWindows );
+  bool                        canClose ( IUnknown *caller );
 
   /// Return true if this document can do it.
   virtual bool                canExport ( const std::string &ext ) const = 0;
@@ -105,28 +104,28 @@ public:
   virtual bool                canSave   ( const std::string &ext ) const = 0;
 
   /// Clear any existing data.
-  virtual void                clear ( Unknown *caller = 0x0 ) = 0;
+  virtual void                clear ( IUnknown *caller = 0x0 ) = 0;
 
   /// Close all referenced windows except one specified
   bool                        closeWindows ( IUnknown *caller = 0x0, const IUnknown *skip = 0x0);
 
   /// Create default GUI
-  virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
+  virtual void                createDefaultGUI ( IUnknown *caller = 0x0 );
 
   // Get/Set the Delegate.  May be null.
   void                        delegate ( Delegate *delegate );
   Delegate*                   delegate ( );
 
   /// Iterators to the end
-  WindowItr                   endWindows()       { return _windows.end(); }
-  WindowConstItr              endWindows() const { return _windows.end(); }
+  UnknownItr                  endWindows()       { return _windows.end(); }
+  UnknownConstItr             endWindows() const { return _windows.end(); }
 
   /// Set/get the file format.
   virtual IDocument::Format   fileFormat() const { return _file.format(); }
   virtual void                fileFormat ( const IDocument::Format &f ) { _file.format ( f ); }
 
   /// Set/get the file name.
-  virtual const std::string & fileName() const { return _file.name(); }
+  virtual std::string         fileName() const { return _file.name(); }
   virtual void                fileName ( const std::string &n ) { _file.name ( n ); }
 
   /// Set/get the valid flag.
@@ -143,10 +142,10 @@ public:
   void                        flushEvents();
 
   /// Prompt user for documents to export.
-  void                        exportDocument ( Unknown *caller = 0x0 );
+  void                        exportDocument ( IUnknown *caller = 0x0 );
 
   /// Prompt user for documents to insert into this one.
-  void                        insert ( Unknown *caller = 0x0 );
+  void                        insert ( IUnknown *caller = 0x0 );
 
   /// Set/get the modified flag.
   virtual bool                modified() const { return _file.modified(); }
@@ -166,14 +165,14 @@ public:
   unsigned int                numViews()   const { return _views.size();     }
 
   /// Open the file. Clears any data this document already has.
-  virtual void                open ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                open ( const std::string &filename, IUnknown *caller = 0x0 );
 
   /// Get the options
   Options&                    options()       { return _options; }
   const Options&              options() const { return _options; }
 
   /// Read the file and add it to existing document's data.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 ) = 0;
+  virtual void                read ( const std::string &filename, IUnknown *caller = 0x0 ) = 0;
 
   /// Refresh the view
   virtual void                refreshView ( IUnknown *view );
@@ -183,10 +182,10 @@ public:
   virtual void                removeView   ( IUnknown *view   );
 
   /// Save the document to existing file name.
-  void                        save ( Unknown *caller = 0x0 );
+  void                        save ( IUnknown *caller = 0x0 );
 
   /// Always prompts for new file name.
-  void                        saveAs ( Unknown *caller = 0x0 );
+  void                        saveAs ( IUnknown *caller = 0x0 );
 
   /// Convenience function to set progress bar and flush events.
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
@@ -196,16 +195,16 @@ public:
   void                        setStatusBar ( const std::string &text );
 
   /// Send the message to all listeners except for one specified
-  virtual void                sendMessage ( unsigned short message, const Unknown *skip = 0x0 );
+  virtual void                sendMessage ( unsigned short message, const IUnknown *skip = 0x0 );
 
   /// Return the name of this type of document.
-  virtual const std::string&  typeName() const { return _typeName; }
+  virtual std::string         typeName() const { return _typeName; }
 
   /// Bring the windows forward
   void                        windowsForward();
 
   /// Write the document to given file name. Does not rename this document.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const = 0;
+  virtual void                write ( const std::string &filename, IUnknown *caller = 0x0  ) const = 0;
 
 protected:
 
@@ -216,9 +215,9 @@ protected:
   /// Use reference counting.
   virtual ~Document();
 
-  std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
+  std::string                 _getSaveAsFileName ( Options &options, IUnknown *caller = 0x0 );
 
-  void                        _save ( const std::string &filename, Unknown *caller, const Options &options = Options() );
+  void                        _save ( const std::string &filename, IUnknown *caller, const Options &options = Options() );
 
   ///  Send the message to all windows except for one specified.
   template < class Listeners, class Skip >
@@ -230,14 +229,14 @@ protected:
 private:
 
   FileInfo _file;
-  Windows _windows;
-  Views   _views;
+  Unknowns _windows;
+  Unknowns _views;
   IUnknown::RefPtr _active;
   std::string _typeName;
   Delegate::RefPtr _delegate;
 
   // TODO may need a std::map < Usul::Interfaces::IViewer*, Options >
-  Options     _options;
+  Options _options;
 };
 
 

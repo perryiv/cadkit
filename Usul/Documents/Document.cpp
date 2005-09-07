@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/ILoadFileDialog.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/IQuestion.h"
+#include "Usul/Interfaces/ISetFocus.h"
 #include "Usul/Interfaces/IHandleActivatingDocument.h"
 
 #include "Usul/Resources/ProgressBar.h"
@@ -83,27 +84,30 @@ Document::~Document()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a window to the referenced set.
+//  Add a window to the referenced set. Changed set to list to get proper 
+//  order of addition.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::addWindow ( Window *window )
+void Document::addWindow ( Usul::Interfaces::IUnknown *window )
 {
-  // Changed set to list to get proper order of addition
-  if ( std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual ( window ) ) == _windows.end() )
+  Unknowns::value_type::IsEqual pred ( window );
+  if ( std::find_if ( _windows.begin(), _windows.end(), pred ) == _windows.end() )
     _windows.push_back ( window );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a view to the view set.
+//  Add a view to the view set. Changed set to list to get proper 
+//  order of addition.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::addView ( View *view )
+void Document::addView ( Usul::Interfaces::IUnknown *view )
 {
-  if ( std::find_if ( _views.begin(), _views.end(), ViewPtr::IsEqual ( view ) ) == _views.end() )
+  Unknowns::value_type::IsEqual pred ( view );
+  if ( std::find_if ( _views.begin(), _views.end(), pred ) == _views.end() )
     _views.push_back ( view );
 }
 
@@ -114,7 +118,7 @@ void Document::addView ( View *view )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::removeWindow ( Window *window )
+void Document::removeWindow ( Usul::Interfaces::IUnknown *window )
 {
   _windows.remove ( window );
 }
@@ -126,7 +130,7 @@ void Document::removeWindow ( Window *window )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::removeView ( View *view )
+void Document::removeView ( Usul::Interfaces::IUnknown *view )
 {
   // If we are removing the active view then make it null.
   if ( this->activeView() == view )
@@ -232,7 +236,7 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
+std::string Document::_getSaveAsFileName ( Options &options, Usul::Interfaces::IUnknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
@@ -271,7 +275,7 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::_save ( const std::string &name, Unknown *caller, const Options &options )
+void Document::_save ( const std::string &name, Usul::Interfaces::IUnknown *caller, const Options &options )
 {
   // Write the document.
   std::cout << "Saving file: " << name << " ... " << Usul::Resources::TextWindow::flush;
@@ -293,7 +297,7 @@ void Document::_save ( const std::string &name, Unknown *caller, const Options &
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::insert ( Unknown *caller )
+void Document::insert ( Usul::Interfaces::IUnknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ILoadFileDialog FileDialog;
@@ -346,7 +350,7 @@ void Document::insert ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::exportDocument ( Unknown *caller )
+void Document::exportDocument ( Usul::Interfaces::IUnknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
@@ -376,10 +380,11 @@ void Document::exportDocument ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Document::canClose ( Window *window, Usul::Interfaces::IUnknown *caller, bool checkNumWindows )
+bool Document::canClose ( Usul::Interfaces::IUnknown *window, Usul::Interfaces::IUnknown *caller, bool checkNumWindows )
 {
   // If the given window is not in our set...
-  if ( _windows.end() == std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual( window ) ) )
+  Unknowns::value_type::IsEqual pred ( window );
+  if ( _windows.end() == std::find_if ( _windows.begin(), _windows.end(), pred ) )
     return true;
 
   // If there are no reference windows...
@@ -390,7 +395,7 @@ bool Document::canClose ( Window *window, Usul::Interfaces::IUnknown *caller, bo
   if ( checkNumWindows && _windows.size() > 1 )
     return true;
 
-  return this->canClose( caller );
+  return this->canClose ( caller );
 }
 
 
@@ -400,7 +405,7 @@ bool Document::canClose ( Window *window, Usul::Interfaces::IUnknown *caller, bo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Document::canClose ( Unknown *caller )
+bool Document::canClose ( Usul::Interfaces::IUnknown *caller )
 {
   // If the document isn't modified...
   if ( !this->modified() )
@@ -439,14 +444,14 @@ bool Document::canClose ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Window* skip )
+bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Usul::Interfaces::IUnknown* skip )
 {
   // See if we can close.  Don't check the number of referenced windows
   if ( false == this->canClose ( *_windows.begin(), caller, false ) )
     return false;
 
   // Make a copy because closing the window invalidates the iterator
-  Windows copy ( _windows );
+  Unknowns copy ( _windows );
 
   // Tell the windows to close
   this->_sendMessage ( copy, Document::ID_CLOSE, skip );
@@ -465,7 +470,7 @@ bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Window* 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::sendMessage ( unsigned short message, const Unknown *skip )
+void Document::sendMessage ( unsigned short message, const Usul::Interfaces::IUnknown *skip )
 {
   // Send message to both windows and views
   this->_sendMessage ( _windows, message, skip );
@@ -576,21 +581,26 @@ void Document::binary ( bool b )
 void Document::windowsForward()
 {
   // Loop through the documents in reverse order.  The first window will be on top.
-  for ( Windows::reverse_iterator i = _windows.rbegin(); i != _windows.rend(); ++i )
+  for ( Unknowns::reverse_iterator i = _windows.rbegin(); i != _windows.rend(); ++i )
   {
-    // Set the focus (brings window to the front).
-    (*i)->setFocus();
+    // Get the interface.
+    Usul::Interfaces::ISetFocus::QueryPtr sf ( *i );
+    if ( sf.valid() )
+    {
+      // Set the focus (brings window to the front).
+      sf->setFocus();
+    }
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Build the title for the given Window
+//  Build the title for the given window.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Document::getTitle ( Window *window )
+std::string Document::getTitle ( Usul::Interfaces::IUnknown *window )
 {
   // String for title
   std::string title ( this->fileName() );
@@ -599,13 +609,12 @@ std::string Document::getTitle ( Window *window )
   if ( this->numWindows() > 1 )
   {
     // Find our window.
-    typedef Document::WindowConstItr Itr;
-    Document::WindowPtr::IsEqual pred ( window );
-    Itr where ( std::find_if ( this->beginWindows(), this->endWindows(), pred ) );
+    Unknowns::value_type::IsEqual pred ( window );
+    UnknownConstItr where ( std::find_if ( this->beginWindows(), this->endWindows(), pred ) );
 
     // Build the proper title
     std::ostringstream os;
-    os << title << ":" << std::distance < Itr > ( this->beginWindows(), where ) + 1;
+    os << title << ":" << std::distance < UnknownConstItr > ( this->beginWindows(), where ) + 1;
     title = os.str();
   }
 
@@ -650,7 +659,7 @@ void Document::nowActive( const std::string &oldType )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::closing ( Window *window )
+void Document::closing ( Usul::Interfaces::IUnknown *window )
 {
   if ( _windows.empty() )
   {
@@ -708,7 +717,7 @@ Document::Delegate* Document::delegate ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::createDefaultGUI ( Unknown *caller )
+void Document::createDefaultGUI ( Usul::Interfaces::IUnknown *caller )
 {
   if ( this->delegate() )
     this->delegate()->createDefaultGUI ( this, caller );
@@ -721,7 +730,7 @@ void Document::createDefaultGUI ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
+void Document::refreshView ( Usul::Interfaces::IUnknown *viewer )
 {
   if ( this->delegate() )
     this->delegate()->refreshView ( this, viewer );
@@ -734,7 +743,7 @@ void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::activeView ( View *view )
+void Document::activeView ( Usul::Interfaces::IUnknown *view )
 {
   _active = view;
 }
@@ -746,7 +755,7 @@ void Document::activeView ( View *view )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::View* Document::activeView() const
+Document::Usul::Interfaces::IUnknown* Document::activeView() const
 {
   return _active.get();
 }

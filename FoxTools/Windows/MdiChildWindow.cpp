@@ -294,7 +294,7 @@ MdiChildWindow::Document *MdiChildWindow::document()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* MdiChildWindow::queryInterface( unsigned long iid )
+Usul::Interfaces::IUnknown* MdiChildWindow::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
@@ -494,8 +494,6 @@ long MdiChildWindow::onMotion ( FX::FXObject *object, FX::FXSelector selector, v
 long MdiChildWindow::onBuildScene ( FX::FXObject *, FX::FXSelector, void * )
 {
   this->document()->refreshView ( _view );
-
-  // Handled
   return 1;
 }
 

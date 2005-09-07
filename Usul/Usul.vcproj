@@ -730,9 +730,6 @@
 						RelativePath=".\Interfaces\IStereo.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IView.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IVTKCanvas.h">
 					</File>
 				</Filter>

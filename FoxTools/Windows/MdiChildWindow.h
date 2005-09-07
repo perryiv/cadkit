@@ -22,9 +22,6 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/IView.h"
-#include "Usul/Interfaces/IViewer.h"
-#include "Usul/Interfaces/IWindow.h"
 #include "Usul/Interfaces/IQuestion.h"
 
 namespace FX
@@ -49,7 +46,7 @@ public:
   typedef Usul::Documents::Document Document;
   typedef Document::ValidRefPtr DocumentPtr;
   typedef Usul::Pointers::Configs::NoRefCountingNullAccessThrows ViewPointerPolicy;
-  typedef Usul::Interfaces::IViewer View;
+  typedef Usul::Interfaces::IUnknown View;
   typedef Usul::Pointers::SmartPointer < View, ViewPointerPolicy > ViewPtr;
 
   /// Usul::Interfaces::IUnknown members.
@@ -105,7 +102,7 @@ protected:
   virtual void              handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IQuestion
-  virtual std::string       question ( const std::string &buttons,  const std::string &title, const std::string &text );
+  virtual std::string       question ( const std::string &buttons, const std::string &title, const std::string &text );
 
 private:
 

@@ -17,6 +17,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace Detail { struct Edge; }
 
 #include <vector>
 #include <list>
@@ -90,7 +91,8 @@ class OSG_TOOLS_EXPORT LoopSplitter
     typedef std::map<int, std::vector<osg::Vec3f> >       EdgeMap;
     typedef std::map<osg::Vec3f, unsigned int>            TPointIndices;
     typedef std::vector<OsgTools::Triangles::Loop>        Loops;
-    typedef std::map<int, Points>  EdgeVertMap;
+    typedef std::map<int, Points>                         EdgeVertMap;
+    typedef std::vector< Detail::Edge >                   Edges;
     
     /// Constructor
     LoopSplitter(osg::BoundingBox box, Usul::Interfaces::IUnknown *caller);
@@ -107,9 +109,8 @@ class OSG_TOOLS_EXPORT LoopSplitter
     int               _getBoundBoxIndex(int edgeTotal) const ;
     int               _getSortAxis(int edge1) const ;
     void              _printEdgeMap(EdgeMap edgeMap);
-    void              _singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
-    void              _tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
-void  _addNewPoints(int edge, int corner, float length, osg::Vec3 & tp, std::vector<osg::Vec3> & verts) ;
+    void              _singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &edges, Loops & loops);
+    void              _tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &edges, Loops & loops);
 
   private:
     LoopSplitter();

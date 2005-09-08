@@ -29,6 +29,8 @@
   #define _USUL_THROW
 #elif __CYGWIN__
   #define _USUL_THROW
+#elif __APPLE__
+  #define _USUL_THROW
 #else
   #define _USUL_THROW throw()
 #endif

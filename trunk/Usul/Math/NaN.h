@@ -29,6 +29,11 @@
   #define _USUL_THROW
 #elif __CYGWIN__
   #define _USUL_THROW
+#elif __APPLE__
+  #define _USUL_THROW
+  #ifdef isnan
+  #undef isnan
+  #endif
 #else
   #define _USUL_THROW throw()
 #endif

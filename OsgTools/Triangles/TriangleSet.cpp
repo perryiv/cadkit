@@ -502,6 +502,7 @@ void TriangleSet::addFinish()
 
 SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v )
 {
+# if 0
   // Look for the shared vertex.
   SharedVertices::iterator i = _shared.find ( v );
   if ( _shared.end() != i )
@@ -517,6 +518,9 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v )
 
   // Return the new shared vertex.
   return sv.release();
+#else
+  return this->_sharedVertex( v );
+#endif
 }
 
 

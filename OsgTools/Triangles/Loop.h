@@ -60,6 +60,10 @@ public:
   // Erase element at index i
   void                  erase ( unsigned int i ) { _loop.erase ( _loop.begin() + i ); }
 
+  // Insert elements after pos.
+  template < class InputIterator >
+  void                  insert ( iterator pos, InputIterator first, InputIterator last );
+
   // Get the size.
   unsigned int          size() const { return _loop.size(); }
 
@@ -89,7 +93,7 @@ public:
 
 /// This should be public
   int                  isCoplanar( Usul::Interfaces::IUnknown *caller) const;
-  void                 _printQuakePolygonFile(const OsgTools::Triangles::Loop& loop, Usul::Interfaces::IUnknown *caller );
+  void                 printQuakePolygonFile( Usul::Interfaces::IUnknown *caller );
 
   bool                 valid() const { return _valid; }
   void                 valid( bool b ) { _valid = b; }
@@ -108,6 +112,19 @@ private:
   bool _valid;
 
 }; // class Loop.
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert [ first, last ) before pos.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class InputIterator >
+inline void  Loop::insert ( iterator pos, InputIterator first, InputIterator last )
+{
+  _loop.insert( pos, first, last );
+}
 
 } //namespace Triangles
 } //namespace OsgTools

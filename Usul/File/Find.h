@@ -84,23 +84,23 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
   struct dirent *dp;
 
   // Get directory stream pointer
-  if( DIR * dirp = opendir( d.c_str() ) )
+  if ( DIR * dirp = opendir ( d.c_str() ) )
   {
     // Loop over directory entries
     struct dirent dirresult;
     
-    while( !readdir_r(dirp,&dirresult,&dp) && dp )
+    while ( !readdir_r ( dirp, &dirresult, &dp ) && dp )
     {
       // Get name
       std::string name ( dp->d_name );
 
-      if ( Usul::File::extension( name ) == ext )
+      if ( Usul::File::extension ( name ) == ext )
       {
         // Add to list
-        names.insert(names.end(), name);
+        names.insert ( names.end(), name );
       }
     }
-    closedir( dirp );
+    closedir ( dirp );
   }
 
 #endif

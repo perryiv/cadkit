@@ -145,9 +145,9 @@ template <> struct CloseFloat < Usul::Types::Float64 >
 
     // Make them lexicographically ordered as a twos-complement int.
     if ( ia < 0 )
-      ia = 0x8000000000000000 - ia;
+      ia = 0x8000000000000000ull - ia;
     if ( ib < 0 )
-      ib = 0x8000000000000000 - ib;
+      ib = 0x8000000000000000ull - ib;
 
     // See how far apart a and b are.
     UnsignedInteger diff ( static_cast < UnsignedInteger > ( Usul::Math::absolute ( ia - ib ) ) );

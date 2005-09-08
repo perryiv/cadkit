@@ -18,13 +18,12 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
-
 namespace Documents { class Document; }
 
+
+namespace Usul {
 namespace Interfaces {
 
-struct IViewer;
 
 struct IGUIDelegate : public Usul::Interfaces::IUnknown
 {

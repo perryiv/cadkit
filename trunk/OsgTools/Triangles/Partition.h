@@ -70,6 +70,10 @@ public:
   // Subdivide the partition.  Needs to be called before triangles are added.
   void                      subdivide ( const osg::BoundingBox&, unsigned int times );
 
+    // Get the i'th triangle in the given drawable.
+  Triangle*                 triangle( const osg::Drawable *d, unsigned int i );
+  const Triangle*           triangle( const osg::Drawable *d, unsigned int i ) const;
+
 private:
   
   // Get primitive set index for given vertices.
@@ -83,10 +87,6 @@ private:
 
   // Subdivide the given bounding box n number of times.
   void                      _subdivide ( const osg::BoundingBox&, unsigned int times );
-
-  // Get the i'th triangle in the given drawable.
-  Triangle*                 _triangle( const osg::Drawable *d, unsigned int i );
-  const Triangle*           _triangle( const osg::Drawable *d, unsigned int i ) const;
 
   // Typedefs.
   typedef std::vector < osg::BoundingBox > Cubes;

@@ -764,7 +764,7 @@ void TriangleSet::setAllUnvisited()
   }
 }
 
-// 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Reset the on edge flag.
@@ -805,37 +805,33 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
 {
   //Get the triangle to remove.
-  Triangles::iterator doomed ( _triangles.begin() + index );
+  Triangle::ValidRefPtr doomed ( _partition.triangle( d, index ) );
 
   // Decrement the index of all triangles after doomed.
-  for( Triangles::iterator i = doomed + 1; i != _triangles.end(); ++i  )
+  for( Triangles::iterator i = _triangles.begin() + doomed->index() + 1; i != _triangles.end(); ++i  )
   {
     unsigned int t ( (*i)->index() - 1 );
     (*i)->index( t );
   }
 
   // Get the shared vertices.
-  SharedVertex *sv0 ( (*doomed)->vertex0() );
-  SharedVertex *sv1 ( (*doomed)->vertex1() );
-  SharedVertex *sv2 ( (*doomed)->vertex2() );
+  SharedVertex *sv0 ( doomed->vertex0() );
+  SharedVertex *sv1 ( doomed->vertex1() );
+  SharedVertex *sv2 ( doomed->vertex2() );
 
   //Remove the triangle from the shared vertices
-  sv0->remove( doomed->get() );
-  sv1->remove( doomed->get() );
-  sv2->remove( doomed->get() );
-
-  // Unref doomed.  Not needed, but can't hurt
-  (*doomed) = 0x0;
+  sv0->remove( doomed.get() );
+  sv1->remove( doomed.get() );
+  sv2->remove( doomed.get() );
 
   // Remove doomed from our vector of triangles.
-  _triangles.erase( doomed );
+  _triangles.erase( _triangles.begin() + doomed->index() );
 
   // Remove the normal.
-  this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + index ) );
+  this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + doomed->index() ) );
 
   // Remove the triangle from the partition.
   _partition.remove( d, index );
-
 }
 
 
@@ -859,6 +855,7 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
 
   // Clear every thing we have.  Don't use this->clear() because triangles ref count is not 1
+  _shared.clear();
   _partition.clear();
   _triangles.clear();
   _vertices->clear();

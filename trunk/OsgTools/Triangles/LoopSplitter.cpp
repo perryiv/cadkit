@@ -7,23 +7,13 @@
  *
  */
 
-/*
-
-   *------------*
-   |            |
-   |            |
-   |            
-
-
-
-
-
-
-*/
 #include "LoopSplitter.h"
 #include "OsgTools/Triangles/Loop.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
+#include "Usul/Interfaces/IGetVertex.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Predicates/EqualVector.h"
 
 #include <iostream>
 #include <string>
@@ -31,18 +21,20 @@
 
 using namespace OsgTools::Triangles;
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Useful typedefs.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
-
 namespace Detail
 {
+  // Class to represent an edge on the boundary of two planes.
+  struct Edge
+  {
+    osg::Vec3 pointOne;
+    osg::Vec3 pointTwo;
+  };
 
   ///////////////////////////////////////////////////////////////////////////////
   //
@@ -68,7 +60,7 @@ namespace Detail
         // Is index a transition point that we aren't looking for?
         if ( transitions.end() != std::find ( transitions.begin(), transitions.end(), index ) )
         {
-          std::cout << "Unexpected transition point " << index << std::endl << "Expecting " << stop << std::endl;
+          //std::cout << "Unexpected transition point " << index << std::endl << "Expecting " << stop << std::endl;
           return false;
         }
 
@@ -79,20 +71,53 @@ namespace Detail
     return true;
   }
   
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return the average length of a segment for given loop.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
   float avgSegmentLength( const Loop& loop, Usul::Interfaces::IUnknown *_caller ) 
   {
-    float l = 0.0f;
-    unsigned int size = loop.size();
+    float average ( 0.0f );
+    const unsigned int size = loop.size();
     for( unsigned int i = 0; i < size -1; ++i)
     {
      osg::Vec3 v1 ( loop.vertex( i, _caller ) );
      osg::Vec3 v2 ( loop.vertex( i+1, _caller ) );
-     l += (v1-v2).length();
+     average += (v1-v2).length();
     }
-    l = l/size;
-    return l;
+    average = average / size;
+    return average;
   }
-  
+ 
+  struct Finder
+  {
+    Finder( const osg::Vec3& v, Usul::Interfaces::IUnknown* caller ) : 
+    _v ( v ),
+    _caller( caller )
+    {  }
+
+    bool operator () ( const SharedVertex* sv ) const
+    {
+      Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( _caller );
+
+      typedef Usul::Predicates::CloseFloat< float > CloseFloat;
+      CloseFloat cf;
+      Usul::Predicates::EqualVector < CloseFloat, 3 > equalVector ( cf );
+
+      osg::Vec3 v ( getVertex->getVertex( sv->index() ) );
+
+      return equalVector ( v, _v );
+      
+    }
+
+  private:
+    Usul::Interfaces::IUnknown *_caller;
+    osg::Vec3 _v;
+  };
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -374,6 +399,38 @@ void LoopSplitter::_findTransitionPoints( const OsgTools::Triangles::Loop& loop,
     return;
 }
 
+template < class Vertices >
+void bisect ( const osg::Vec3& p1, const osg::Vec3& p2, float distance, Vertices &vertices )
+{
+  float length ( (p1 - p2).length() );
+
+  if ( length > distance )
+  {
+    osg::Vec3 v ( (p1 + p2)/2 );
+    typename Vertices::iterator i = std::find ( vertices.begin(), vertices.end(), p1 );
+    vertices.insert( i + 1, v );
+  }
+}
+
+template < class Vertices >
+bool good ( float distance, const Vertices& vertices )
+{
+  typedef typename Vertices::value_type Vertex;
+
+  for( typename Vertices::const_iterator iter = vertices.begin(); iter != vertices.end() - 1; ++iter )
+  {
+    Vertex v1 ( *iter );
+    Vertex v2 ( *(iter + 1 ) );
+
+    float length ( (v1-v2).length() );
+
+    if( length > distance )
+      return false;
+  }
+
+  return true;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -384,309 +441,135 @@ void LoopSplitter::_findTransitionPoints( const OsgTools::Triangles::Loop& loop,
 void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops) 
 {  
   //Start figuring out what we have. There are a few special cases that we know how to handle.
+
+  Edges edges;
   
   /// There is only 1 Edge Involved in the loop
   if ( edgeMap.size() == 1 ) {
-    _singleEdge(loop, edgeMap, tPointIndices, loops);
+    _singleEdge(loop, edgeMap, tPointIndices, edges, loops);
   }
   
   /// There are two edges involved in this loop.
   if ( edgeMap.size() == 2 ) {
-    _doubleEdge(loop, edgeMap, tPointIndices, loops );
+    _doubleEdge(loop, edgeMap, tPointIndices, edges, loops );
   }
   
   //If there are 3 edges involved and only 3 transition points, then we are
   // going to have to add the corner point into the mix as a transition point
   if ( edgeMap.size() == 3) {
-    _tripleEdge(loop, edgeMap, tPointIndices, loops);
+    _tripleEdge(loop, edgeMap, tPointIndices, edges, loops);
   }
 
+  const float distance ( Detail::avgSegmentLength( loop, _caller ) );
 
-}
+  typedef std::vector< osg::Vec3 > Vertices;
+  typedef std::vector< SharedVertex::ValidRefPtr > SharedVertices;
+  typedef std::pair< osg::Vec3, osg::Vec3 > EdgePair;
+  typedef std::pair< Vertices, SharedVertices > VerticesPair;
+  typedef std::map < EdgePair, VerticesPair > Map;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// This was experimental code to add addition points to the edges so the 
-//  triangulation produces better triangles
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LoopSplitter::_addNewPoints(int edge, int corner, float length, osg::Vec3 & tp, std::vector<osg::Vec3> & verts) 
-{
-    /// Now we know which corner point to add, Add a new Shared Vertex to the Document
-  Usul::Interfaces::IAddSharedVertex::ValidQueryPtr    addSharedVertex ( _caller );
-  float min = -2.0f;
-  float max = 0.0f;
+  Map map;
+  Usul::Interfaces::IAddSharedVertex::ValidQueryPtr addSharedVertex ( _caller );
   
-  switch(edge) 
+  for( Edges::const_iterator iter = edges.begin(); iter != edges.end(); ++iter )
   {
-      case ZMIN_YMIN:  //1
-        if ( corner == XMIN_YMIN_ZMIN ) {
-          min = _boundBox.corner(corner).x();
-          max = tp.x(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (min, tp.y(), tp.z());
-            verts.push_back( v  );
-            min += length;
-          }
-        } else  if ( corner == XMAX_YMIN_ZMIN ) {
-          min = tp.x();
-          max = _boundBox.corner(corner).x();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (max, tp.y(), tp.z());
-            verts.push_back( v  );
-            max -= length;
-          }
-        }
-        break;
-      case XMIN_YMIN:  //2
-        if ( corner == XMIN_YMIN_ZMIN ) {
-          min = _boundBox.corner(corner).z();
-          max = tp.z();
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), min);
-            verts.push_back( v  );
-            min += length;
-          }    
-        } else  if ( corner == XMIN_YMIN_ZMAX ) {
-          min = tp.z();
-          max = _boundBox.corner(corner).z();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), max);
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-        break;
-      case ZMAX_YMIN: //3
-        if ( corner == XMIN_YMIN_ZMAX ) {
-          min = _boundBox.corner(corner).x();
-          max = tp.x(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (min, tp.y(), tp.z());
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMAX_YMIN_ZMAX ) {
-          min = tp.x();
-          max = _boundBox.corner(corner).x();
-          max -= length; //do not want to start at the TransPoint
-            while (min < max ) {
-              osg::Vec3 v (max, tp.y(), tp.z());
-              verts.push_back( v  );
-              max -= length;
-            }  
-        }
-    
-        break;
-      case XMAX_YMIN:  //4
-        if ( corner == XMAX_YMIN_ZMIN ) {
-          min = _boundBox.corner(corner).z();
-          max = tp.z(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), min);
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMAX_YMIN_ZMAX ) {
-          min = tp.z();
-          max = _boundBox.corner(corner).z();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), max);
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-       
-        break;
-      case ZMIN_YMAX: //5
-        if ( corner == XMIN_YMAX_ZMIN ) {
-          min = _boundBox.corner(corner).x();
-          max = tp.x();
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (min, tp.y(), tp.z());
-            verts.push_back( v  );
-            min += length;
-          } 
-        
-        } else  if ( corner == XMAX_YMAX_ZMIN ) {
-          min = tp.x();
-          max = _boundBox.corner(corner).x();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (max, tp.y(), tp.z());
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-   
-        break;
-      case XMIN_YMAX:  //6
-        if ( corner == XMIN_YMAX_ZMIN ) {
-          min = _boundBox.corner(corner).z();
-          max = tp.z(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), min);
-            verts.push_back( v  );
-            min += length;
-          }
-        } else  if ( corner == XMIN_YMAX_ZMAX ) {
-          min = tp.z();
-          max = _boundBox.corner(corner).z();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), max);
-            verts.push_back( v  );
-            max -= length;
-          }    
-        }
-      
-        break;
-      case ZMAX_YMAX:  //7
-        if ( corner == XMIN_YMAX_ZMAX ) {
-          min = _boundBox.corner(corner).x();
-          max = tp.x();
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (min, tp.y(), tp.z());
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMAX_YMAX_ZMAX ) {
-          min = tp.x();
-          max = _boundBox.corner(corner).x();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (max, tp.y(), tp.z());
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-           
-        break;
-      case XMAX_YMAX:  //8
-        if ( corner == XMAX_YMAX_ZMIN ) {
-          min = _boundBox.corner(corner).z();
-          max = tp.z();
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), min);
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMAX_YMAX_ZMAX ) {
-          min = tp.z();
-          max = _boundBox.corner(corner).z();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), tp.y(), max);
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-                
-        break;
-      case XMAX_ZMIN:  //9
-        if ( corner == XMAX_YMIN_ZMIN ) {
-          min = _boundBox.corner(corner).y();
-          max = tp.y(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), min, tp.z());
-            verts.push_back( v  );
-            min += length;
-          }
-        } else  if ( corner == XMAX_YMAX_ZMIN ) {
-          min = tp.y();
-          max = _boundBox.corner(corner).y();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), max, tp.z());
-            verts.push_back( v  );
-            max -= length;
-          }
-        }
-           
-        break;      
-      case XMIN_ZMIN: //10
-        if ( corner == XMIN_YMIN_ZMIN ) {
-          min = _boundBox.corner(corner).y();
-          max = tp.y(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), min, tp.z());
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMIN_YMAX_ZMIN ) {
-          min = tp.y();
-          max = _boundBox.corner(corner).y();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), max, tp.z());
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-                 
-        break;      
-      case XMIN_ZMAX:  //11
-        if ( corner == XMIN_YMIN_ZMAX ) {
-          min = _boundBox.corner(corner).y();
-          max = tp.y(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), min, tp.z());
-            verts.push_back( v  );
-            min += length;
-          } 
-        } else  if ( corner == XMIN_YMAX_ZMAX ) {
-          min = tp.y();
-          max = _boundBox.corner(corner).y();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), max, tp.z());
-            verts.push_back( v  );
-            max -= length;
-          } 
-        }
-            
-        break;      
-      case XMAX_ZMAX:  //12
-        if ( corner == XMAX_YMIN_ZMAX ) {
-          min = _boundBox.corner(corner).y();
-          max = tp.y(); 
-          min += length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), min, tp.z());
-            verts.push_back( v  );
-            min += length;
-          }  
-        } else  if ( corner == XMAX_YMAX_ZMAX ) {
-          min = tp.y();
-          max = _boundBox.corner(corner).y();
-          max -= length; //do not want to start at the TransPoint
-          while (min < max ) {
-            osg::Vec3 v (tp.x(), max, tp.z());
-            verts.push_back( v  );
-            max -= length;
-          }  
-        }
-           
-        break;      
-      default:
-        throw std::runtime_error("Error 94630293940: _addNewPoints() Invalid Edge Value");
+    Vertices v;
+    v.push_back( iter->pointOne );
+    v.push_back( iter->pointTwo );
+
+    while ( !good( distance, v ) )
+    {
+      Vertices copy ( v );
+      for ( Vertices::iterator vertexIter = copy.begin(); vertexIter != copy.end() - 1; ++vertexIter )
+        bisect( *vertexIter, *(vertexIter + 1), distance, v );
     }
 
+    // Remove the first and last points ( the transition points ).
+    v.erase( v.begin() );
+    v.erase( v.end() - 1 );
+
+    SharedVertices shared;
+
+    for( Vertices::const_iterator vertex = v.begin(); vertex != v.end(); ++vertex )
+    {
+      shared.push_back ( addSharedVertex->addSharedVertex ( *vertex ) );
+    }
+    
+    map [ EdgePair( iter->pointOne, iter->pointTwo ) ] = VerticesPair( v, shared );
+  }
+  
+  // Go through our new loops
+  for( Loops::iterator iter = loops.begin(); iter != loops.end(); ++iter )
+  {
+    //std::cout << "Loop: " << iter-loops.begin() << std::endl;
+    // Go through out added points
+    for( Map::const_iterator j = map.begin(); j != map.end(); ++j )
+    {
+      EdgePair edge ( j->first );
+      const Vertices &vertices ( j->second.first );
+      SharedVertices shared ( j->second.second );
+
+      if ( !vertices.empty() )
+      {
+        // Does the loop contain both transition points?
+       
+        Detail::Finder f1( edge.first, _caller );
+        Loop::iterator first = std::find_if ( iter->begin(), iter->end(), f1 );
+        
+        Detail::Finder f2( edge.second, _caller );
+        Loop::iterator second = std::find_if ( iter->begin(), iter->end(), f2 );
+
+        if ( first != iter->end() && second != iter->end() ) 
+        {
+          unsigned int indexOne ( first - iter->begin() );
+          unsigned int indexTwo ( second - iter->begin() );
+          //std::cout << "Index one: " << indexOne << " " << "Index two: " << indexTwo << std::endl;
+
+          Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( _caller );
+          osg::Vec3 v1 ( getVertex->getVertex( (*first)->index() ) );
+          osg::Vec3 v2 ( getVertex->getVertex( (*second)->index() ) );
+
+          float dOne ( ( v1 - vertices[0]).length() );
+          float dTwo ( ( v2 - vertices[0]).length() );
+
+          if( first == (iter->end() - 1) || second == (iter->end() - 1) )
+          {
+            osg::Vec3 v ( getVertex->getVertex( (*(iter->end() - 1))->index() ) );
+
+            float d1 ( ( v - vertices[0]).length() );
+            float d2 ( ( v - vertices.back()).length() );
+
+            if( d1 > d2 )
+            {
+              std::reverse( shared.begin(), shared.end() );
+            }
+
+            iter->insert( iter->end(), shared.begin(), shared.end() );
+          }
+
+          // If the first transition point is closer to the begining.
+          else if ( first < second )
+          {
+            // If vertices[0] is closer to second than first, then reverse
+            if( dOne > dTwo )
+              std::reverse( shared.begin(), shared.end() );
+
+            // Insert before the second transition point.
+            iter->insert( second, shared.begin(), shared.end() );
+          }
+          else
+          {
+            // If vertices[0] is closer to first than second, then reverse
+            if( dTwo > dOne )
+              std::reverse( shared.begin(), shared.end() );
+
+            // Insert after second
+            iter->insert( second + 1, shared.begin(), shared.end() );
+          }
+        }
+      }
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -695,7 +578,7 @@ void LoopSplitter::_addNewPoints(int edge, int corner, float length, osg::Vec3 &
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops) 
+void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges& e, Loops & loops) 
 {
  // std::cout << "----- _tripleEdge -----" << std::endl;
   bool ok = true;
@@ -727,33 +610,23 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
   Usul::Interfaces::IAddSharedVertex::ValidQueryPtr    addSharedVertex ( _caller );
   SharedVertex* sv ( addSharedVertex->addSharedVertex( cornerVert ) );  
  // std::cout << "Adding Vertex succeeded" << std::endl;
-  /// Add some more points along the edge if necessary
-  float length = Detail::avgSegmentLength(loop, _caller);
-  
-    // We now know the transition point indices and which edge they fall on.
-    // We now need to create vectors of Shared Vertices to add to the edges
-    // between the transition point and the corner point.
-  std::vector<Points> theNewPoints;
-  for (unsigned int i = 0; i < v.size(); ++i) {
-    std::vector<osg::Vec3> vertices;
-    _addNewPoints(edges[i], bbIndex, length, v[i], vertices);
-   // std::cout << "New points Size: " << vertices.size() << std::endl;
-    Points something;
-    for (unsigned int j = 0; j < vertices.size();j++) {
-      //std::cout << vertices[j].x() << " , " << vertices[j].y() << " , " << vertices[j].z() << std::endl;
-      SharedVertex *sv ( addSharedVertex->addSharedVertex( vertices[j] ) );  
-      //std::cout << sv << std::endl;
-      something.push_back(sv);
-    }
-    theNewPoints.push_back(something);
-  }
+
   
   /// Now lets make some loops
   /** Probably need a helper function.....  */
   TransitionPoints transitionPoints;
   // Place all transition points in a vector to test against.
   for ( TPointIndices::iterator iter = tPointIndices.begin(); iter != tPointIndices.end(); ++iter )
+  {
     transitionPoints.push_back( iter->second );
+
+    Detail::Edge edge;
+
+    edge.pointOne = loop.vertex( iter->second, _caller );
+    edge.pointTwo = cornerVert;
+
+    e.push_back( edge );
+  }
 
   // Start and stop values for building the loop.
   int startIndex = 0;
@@ -786,7 +659,7 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
 
    // std::cout << "[ " << startIndex << ", " << stopIndex << " ]" << std::endl;
     UsedIndices local;
-    Points & refSomething ( theNewPoints[i] ); //get a reference to the vector of Points
+    
     fixedLoop.push_back(sv); //Add the corner point to the loop
 
     if ( Detail::buildLoop( loop, fixedLoop, startIndex, stopIndex, transitionPoints, local ) )
@@ -814,7 +687,7 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoopSplitter::_doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops) 
+void LoopSplitter::_doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges& e, Loops & loops) 
 {
     //std::cout << "----- _doubleEdge ----" << std::endl;
     UsedIndices usedIndices; //Store indices that need to be erased from the loop object
@@ -826,7 +699,7 @@ void LoopSplitter::_doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
 
       if (v.size()%2 == 0) 
       {      
-        _edgeHelper(loop,edge,v,tPointIndices, loops, usedIndices);
+        _edgeHelper(loop,edge,v,tPointIndices, e, loops, usedIndices);
        } else {
         //This is really bad.
         throw std::runtime_error("Error:2039402349 - Odd Number of Transition points on 1 Edge. Not Handled.");
@@ -844,7 +717,7 @@ void LoopSplitter::_doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoopSplitter::_singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops) 
+void LoopSplitter::_singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &e, Loops & loops) 
 {
   //std::cout << "------ _singleEdge --------" << std::endl;
   std::vector<osg::Vec3f> & v = edgeMap.begin()->second;
@@ -855,7 +728,7 @@ void LoopSplitter::_singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
   {   
 
    /// Trying to move common code out to another method
-    _edgeHelper(loop, edge, v ,tPointIndices, loops, usedIndices);
+    _edgeHelper(loop, edge, v ,tPointIndices, e, loops, usedIndices);
     
     //Erase the indices from a copy of the parent loop
     _parentLoopCopier(loop, loops, usedIndices);
@@ -878,20 +751,19 @@ void LoopSplitter::_singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
 void LoopSplitter::_parentLoopCopier(const OsgTools::Triangles::Loop & loop, Loops & loops, UsedIndices & usedIndices) 
 {
   //std::cout << "------     _parentLoopCopier --------" << std::endl;
+
+  // Make a copy of the loop that we are splitting.
   Loop parentCopy ( loop ); //Copy Constructor
+    
+  // Sort from least to greatest.
   std::sort(usedIndices.begin(), usedIndices.end() );
+    
+  // Erase all the indices that were used above.  Every thing that is left is our final co-planar loop.
   for ( UsedIndices::reverse_iterator it = usedIndices.rbegin();it != usedIndices.rend(); it++ ) 
   {
-    unsigned int index ( *it );
-
-    if( index >= parentCopy.size() || index < 0 )
-    {
-      std::ostringstream os;
-      os << "Index: " << index << " is invalid. " << std::endl << "Number of indices: " << parentCopy.size() << std::endl;
-      throw std::runtime_error ( os.str() );
-    }
     parentCopy.erase( *it );
   }
+
   loops.push_back(parentCopy);
 
 }
@@ -903,7 +775,7 @@ void LoopSplitter::_parentLoopCopier(const OsgTools::Triangles::Loop & loop, Loo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoopSplitter::_edgeHelper(const OsgTools::Triangles::Loop& loop, const unsigned int edge, std::vector<osg::Vec3> & v, TPointIndices & tPointIndices, Loops & loops, UsedIndices & usedIndices  )
+void LoopSplitter::_edgeHelper(const OsgTools::Triangles::Loop& loop, const unsigned int edge, std::vector<osg::Vec3> & v, TPointIndices & tPointIndices, Edges &edges, Loops & loops, UsedIndices & usedIndices  )
 {
   //std::cout << "------     _edgeHelper --------" << std::endl;
   /// The number of transition points must be even
@@ -920,31 +792,17 @@ void LoopSplitter::_edgeHelper(const OsgTools::Triangles::Loop& loop, const unsi
     for ( TPointIndices::iterator iter = tPointIndices.begin(); iter != tPointIndices.end(); ++iter )
       transitionPoints.push_back( iter->second );
 
-    // Start and stop values for building the loop.
-    int startIndex = 0;
-    int stopIndex = 0;
-    
     for ( unsigned int i = 0; i < v.size();i+=2) 
     {
       Loop fixedLoop;
-      TPointIndices::iterator it = tPointIndices.find ( v[i] );
-      if ( tPointIndices.end() != it ) 
-      {
-        startIndex = it->second;
-      }
-      TPointIndices::iterator ite = tPointIndices.find ( v[i+1] );
-      if ( tPointIndices.end() != ite ) 
-      {
-        stopIndex = ite->second;
-      }
+      
+      // Start and stop values for building the loop.
+      const unsigned int startIndex ( tPointIndices[ v[i] ] );
+      const unsigned int stopIndex  ( tPointIndices[ v[i + 1] ] );
 
       UsedIndices local;
 
-      if ( Detail::buildLoop( loop, fixedLoop, startIndex, stopIndex, transitionPoints, local ) )
-      {
-        loops.push_back(fixedLoop);
-      }
-      else
+      if ( false == Detail::buildLoop( loop, fixedLoop, startIndex, stopIndex, transitionPoints, local ) )
       {
         local.clear();
         fixedLoop.clear();
@@ -956,7 +814,20 @@ void LoopSplitter::_edgeHelper(const OsgTools::Triangles::Loop& loop, const unsi
         loops.push_back( fixedLoop );
       }
 
+      // Insert the new loop
+      loops.push_back( fixedLoop );
+
       usedIndices.insert( usedIndices.end(), local.begin(), local.end() );
+    }
+
+    for( TransitionPoints::iterator iter = transitionPoints.begin(); iter != transitionPoints.end(); iter += 2 )
+    {
+      Detail::Edge e;
+      
+      e.pointOne = loop.vertex( *iter, _caller );
+      e.pointTwo = loop.vertex( *(iter + 1 ), _caller );
+
+      edges.push_back( e );
     }
 }
 

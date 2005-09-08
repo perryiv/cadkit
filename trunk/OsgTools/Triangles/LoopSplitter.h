@@ -17,6 +17,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace Detail { struct Edge; }
 
 #include <vector>
 #include <list>
@@ -91,7 +92,8 @@ class OSG_TOOLS_EXPORT LoopSplitter
     typedef std::map<osg::Vec3f, unsigned int>            TPointIndices;
     typedef std::vector<OsgTools::Triangles::Loop>        Loops;
     typedef std::map<int, Points>                         EdgeVertMap;
-    
+    typedef std::vector< Detail::Edge >                   Edges;
+
     typedef std::vector< unsigned int >                   UsedIndices;
     typedef std::vector< unsigned int >                   TransitionPoints;
     /// Constructor
@@ -109,11 +111,11 @@ class OSG_TOOLS_EXPORT LoopSplitter
     int               _getBoundBoxIndex(int edgeTotal) const ;
     int               _getSortAxis(int edge1) const ;
     void              _printEdgeMap(EdgeMap edgeMap);
-    void              _singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
-    void              _doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
-    void              _tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Loops & loops);
+    void              _singleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &edges, Loops & loops);
+    void              _doubleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &edges, Loops & loops);
+    void              _tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap & edgeMap, TPointIndices & tPointIndices, Edges &edges, Loops & loops);
     void              _addNewPoints(int edge, int corner, float length, osg::Vec3 & tp, std::vector<osg::Vec3> & verts);
-    void              _edgeHelper(const OsgTools::Triangles::Loop& loop, const unsigned int edge, std::vector<osg::Vec3> & transitionPoints, TPointIndices & tPointIndices, Loops & loops, UsedIndices & usedIndices  );
+    void              _edgeHelper(const OsgTools::Triangles::Loop& loop, const unsigned int edge, std::vector<osg::Vec3> & transitionPoints, TPointIndices & tPointIndices, Edges &e, Loops & loops, UsedIndices & usedIndices  );
     void              _parentLoopCopier(const OsgTools::Triangles::Loop & loop, Loops & loops, UsedIndices & usedIndices);
   private:
     LoopSplitter();

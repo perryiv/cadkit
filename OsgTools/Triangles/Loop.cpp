@@ -32,6 +32,7 @@
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Predicates/CloseFloat.h"
 
 #include "LoopSplitter.h"
 
@@ -96,6 +97,7 @@ namespace Detail
 
   SharedVertex*    getSharedVertex( Shared& shared, const osg::Vec3& key, Usul::Interfaces::IUnknown *caller )
   {
+#if 1
     struct T
     {
       T( float t ) : _t ( t ) { }
@@ -135,6 +137,14 @@ namespace Detail
 
     // return the shared vertex.
     return iter->second.get();
+#else
+
+    Usul::Interfaces::IAddSharedVertex::ValidQueryPtr    addSharedVertex ( caller );
+
+    SharedVertex* sv ( addSharedVertex->addSharedVertex( key ) );
+
+    return sv;
+#endif
   }
 
 
@@ -253,6 +263,28 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
   osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
   osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
   osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
+
+
+  osg::Vec3 seg1 ( v2 - v1 );
+  osg::Vec3 seg2 ( v3 - v2 );
+
+  seg1.normalize();
+  seg2.normalize();
+
+  unsigned int index ( 3 );
+
+  Usul::Predicates::CloseFloat< float > close;
+
+  while ( close ( seg1 * seg2, 1.0 ) )
+  {
+    SharedVertexPtr sv ( _loop.at( index ) );
+    v3 = getVertex->getVertex ( sv->index() );
+
+    seg2 = v3 - v2;
+    seg2.normalize();
+
+    ++index;
+  }
   
   //Calculate the plane that this loop is on
   osg::Plane plane ( v1, v2, v3 );
@@ -611,11 +643,56 @@ void Loop::printQuakePolygonFile( Usul::Interfaces::IUnknown *caller ) {
   std::cout << "# Poly file for Loop\n# This was generated from OsgFox Code" << std::endl;
   std::cout << this->size() << " 2 1 0" << std::endl;
 
+  Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );
+
+    // Get the first three shared vertices
+  SharedVertexPtr sv1 ( _loop.at( 0 ) );
+  SharedVertexPtr sv2 ( _loop.at( 1 ) );
+  SharedVertexPtr sv3 ( _loop.at( 2 ) );
+  
+  //Get three vertices
+  osg::Vec3 v1 ( getVertex->getVertex ( sv1->index() ) );
+  osg::Vec3 v2 ( getVertex->getVertex ( sv2->index() ) );
+  osg::Vec3 v3 ( getVertex->getVertex ( sv3->index() ) );
+
+
+  osg::Vec3 seg1 ( v2 - v1 );
+  osg::Vec3 seg2 ( v3 - v2 );
+
+  seg1.normalize();
+  seg2.normalize();
+
+  unsigned int index ( 3 );
+
+  Usul::Predicates::CloseFloat< float > close;
+
+  while ( close ( seg1 * seg2, 1.0 ) )
+  {
+    SharedVertexPtr sv ( _loop.at( index ) );
+    v3 = getVertex->getVertex ( sv->index() );
+
+    seg2 = v3 - v2;
+    seg2.normalize();
+
+    ++index;
+  }
+  
+  //Calculate the plane that this loop is on
+  osg::Plane plane ( v1, v2, v3 );
+
+  osg::Matrix mat;
+
+  //Make the rotation matrix to rotate the loop into the x-y plane
+  mat.makeRotate( plane.getNormal(), osg::Vec3 ( 0.0, 0.0, 1.0 ) );
+
+
   for( unsigned int i = 0; i < this->size(); ++ i )
   {
     osg::Vec3 v ( this->vertex( i, caller ) );
+    v = v * mat;
+
    // vertices->push_back( loop.vertex( i, caller ) );
-    std::cout << i+1 << " " << v.x() << " " << v.z() << " 0" << std::endl; 
+    std::cout << i+1 << " " << v.x() << " " << v.y() << " 0" << std::endl; 
   }
   std::cout << this->size() << " 0" << std::endl;
   for (unsigned int i = 0; i < this->size(); ++i) {

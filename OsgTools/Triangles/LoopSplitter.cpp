@@ -468,10 +468,13 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
   const float distance ( Detail::avgSegmentLength( loop, _caller ) );
 
   typedef std::vector< osg::Vec3 > Vertices;
+  typedef std::vector< SharedVertex::ValidRefPtr > SharedVertices;
   typedef std::pair< osg::Vec3, osg::Vec3 > EdgePair;
-  typedef std::map < EdgePair, Vertices > Map;
+  typedef std::pair< Vertices, SharedVertices > VerticesPair;
+  typedef std::map < EdgePair, VerticesPair > Map;
 
   Map map;
+  Usul::Interfaces::IAddSharedVertex::ValidQueryPtr addSharedVertex ( _caller );
   
   for( Edges::const_iterator iter = edges.begin(); iter != edges.end(); ++iter )
   {
@@ -489,12 +492,17 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
     // Remove the first and last points ( the transition points ).
     v.erase( v.begin() );
     v.erase( v.end() - 1 );
+
+    SharedVertices shared;
+
+    for( Vertices::const_iterator vertex = v.begin(); vertex != v.end(); ++vertex )
+    {
+      shared.push_back ( addSharedVertex->addSharedVertex ( *vertex ) );
+    }
     
-    map [ EdgePair( iter->pointOne, iter->pointTwo ) ] = v;
+    map [ EdgePair( iter->pointOne, iter->pointTwo ) ] = VerticesPair( v, shared );
   }
-
-  Usul::Interfaces::IAddSharedVertex::ValidQueryPtr addSharedVertex ( _caller );
-
+  
   // Go through our new loops
   for( Loops::iterator iter = loops.begin(); iter != loops.end(); ++iter )
   {
@@ -503,7 +511,8 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
     for( Map::const_iterator j = map.begin(); j != map.end(); ++j )
     {
       EdgePair edge ( j->first );
-      const Vertices &vertices ( j->second );
+      const Vertices &vertices ( j->second.first );
+      SharedVertices shared ( j->second.second );
 
       if ( !vertices.empty() )
       {
@@ -527,14 +536,6 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
 
           float dOne ( ( v1 - vertices[0]).length() );
           float dTwo ( ( v2 - vertices[0]).length() );
-            
-          typedef std::vector< SharedVertex::ValidRefPtr > SharedVertices;
-          SharedVertices shared;
-          
-          for( Vertices::const_iterator vertex = vertices.begin(); vertex != vertices.end(); ++vertex )
-          {
-            shared.push_back ( addSharedVertex->addSharedVertex ( *vertex ) );
-          }
 
           if( first == (iter->end() - 1) || second == (iter->end() - 1) )
           {

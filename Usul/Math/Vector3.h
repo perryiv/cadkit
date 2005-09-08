@@ -18,6 +18,7 @@
 
 #include "Usul/Math/Math.h"
 #include "Usul/Errors/AssertPolicy.h"
+#include "Usul/Types/Types.h"
 
 
 namespace Usul {
@@ -112,7 +113,7 @@ public:
     return _v;
   }
 
-
+  
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Set the value.
@@ -399,7 +400,7 @@ public:
   T normalize()
   {
     T l = this->length();
-    T il = 1 / l;
+    Usul::Types::Float64 il = 1.0 / l;
 
     _v[0] *= il;
     _v[1] *= il;

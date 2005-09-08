@@ -448,7 +448,7 @@ unsigned int  Partition::_indexn ( const osg::Drawable *d, unsigned int index, u
 
 SharedVertex* Partition::sharedVertex0 ( const osg::Drawable *d, unsigned int i )
 {
-  return this->_triangle( d, i )->vertex0();
+  return this->triangle( d, i )->vertex0();
 }
 
 
@@ -460,7 +460,7 @@ SharedVertex* Partition::sharedVertex0 ( const osg::Drawable *d, unsigned int i 
 
 SharedVertex* Partition::sharedVertex1 ( const osg::Drawable *d, unsigned int i )
 {
-  return this->_triangle( d, i )->vertex1();
+  return this->triangle( d, i )->vertex1();
 }
 
 
@@ -472,7 +472,7 @@ SharedVertex* Partition::sharedVertex1 ( const osg::Drawable *d, unsigned int i 
 
 SharedVertex* Partition::sharedVertex2 ( const osg::Drawable *d, unsigned int i )
 {
-  return this->_triangle( d, i )->vertex2();
+  return this->triangle( d, i )->vertex2();
 }
 
 
@@ -484,7 +484,7 @@ SharedVertex* Partition::sharedVertex2 ( const osg::Drawable *d, unsigned int i 
 
 const SharedVertex* Partition::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
 {
-  return this->_triangle( d, i )->vertex0();
+  return this->triangle( d, i )->vertex0();
 }
 
 
@@ -496,7 +496,7 @@ const SharedVertex* Partition::sharedVertex0 ( const osg::Drawable *d, unsigned 
 
 const SharedVertex* Partition::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
 {
-  return this->_triangle( d, i )->vertex1();
+  return this->triangle( d, i )->vertex1();
 }
 
 
@@ -508,7 +508,7 @@ const SharedVertex* Partition::sharedVertex1 ( const osg::Drawable *d, unsigned 
 
 const SharedVertex* Partition::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
 {
-  return this->_triangle( d, i )->vertex2();
+  return this->triangle( d, i )->vertex2();
 }
 
 
@@ -518,7 +518,7 @@ const SharedVertex* Partition::sharedVertex2 ( const osg::Drawable *d, unsigned 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle* Partition::_triangle( const osg::Drawable *d, unsigned int index )
+Triangle* Partition::triangle( const osg::Drawable *d, unsigned int index )
 {
   for( unsigned int i = 0; i < _geometries.size(); ++i )
   {
@@ -538,7 +538,7 @@ Triangle* Partition::_triangle( const osg::Drawable *d, unsigned int index )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Triangle* Partition::_triangle( const osg::Drawable *d, unsigned int index ) const
+const Triangle* Partition::triangle( const osg::Drawable *d, unsigned int index ) const
 {
   for( unsigned int i = 0; i < _geometries.size(); ++i )
   {

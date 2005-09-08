@@ -65,7 +65,7 @@ public:
 
   void                        getNeighbors ( PolygonSet& ) const;
 
-  //Get?set this Triangle's index
+  //Get/set this Triangle's index
   unsigned int                index() const           { return _index; }
   void                        index( unsigned int i ) { _index = i; }
 

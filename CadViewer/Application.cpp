@@ -3278,7 +3278,7 @@ void Application::_updateSceneTool()
       if ( _sinterFileState == DONE ) {
         // Stream in the completed file
         this->_loadModelStream ( _sinterStream );
-
+	
         _sinterStream.clear();
         _sinterStream.str("");
         _sinterFileState = NOTHING;
@@ -3328,18 +3328,23 @@ void Application::_updateSceneTool()
     if ( msg=="SINTERPOINT_FILE_RECEIVE" )
     {
       _sinterFileState = RECEIVE;
+	  std::cout << "Begin sinterpoint recieve..." << std::endl;
       _sinterTime1 = _getClockTime();
+	  _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
     }
     else if ( msg=="SINTERPOINT_FILE_DONE" )
     {
       _sinterFileState = DONE;
       _sinterTime2 = _getClockTime();
+	  std::cout << "Sinterpoint recieve completed" << std::endl;
       std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
+	  _sinterTmpFile.close();
     }
 	  // Otherwise we just have data
     else
     {
       _sinterStream.write(msg.c_str(),size);
+	  _sinterTmpFile.write(msg.c_str(),size);
       _sinterFileState = RECEIVE;
     }
   }

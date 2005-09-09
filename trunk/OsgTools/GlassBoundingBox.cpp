@@ -26,6 +26,7 @@
 #include "osgText/Text"
 
 #include <limits>
+#include <iostream>
 
 using namespace OsgTools;
 
@@ -121,6 +122,77 @@ void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, 
     root->addChild( this->_makeNumbers() );
 }
 
+
+osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
+{
+  typedef osg::DrawElementsUInt DrawElements;
+ #if 0 
+  osg::ref_ptr< DrawElements > bottom ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
+  
+  bottom->push_back ( 0 );
+  bottom->push_back ( 1 );
+  bottom->push_back ( 3 );
+  bottom->push_back ( 2 );
+  
+  osg::ref_ptr< DrawElements > top ( new DrawElements ( osg::PrimitiveSet::LINE_LOOP, 0 ) );
+  
+  top->push_back ( 4 );
+  top->push_back ( 5 );
+  top->push_back ( 7 );
+  top->push_back ( 6 );
+#endif  
+  osg::ref_ptr< DrawElements > lines  ( new DrawElements ( osg::PrimitiveSet::LINES, 0 ) );
+  
+  lines->push_back ( 0 );
+  lines->push_back ( 1 );
+  lines->push_back ( 0 );
+  lines->push_back ( 2 );
+  lines->push_back ( 0 );
+  lines->push_back ( 4 );
+  
+  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+
+  // Set the vertices.
+  geometry->setVertexArray  ( &vertices );
+
+  // Add the primitive sets.
+  #if 0
+  geometry->addPrimitiveSet ( bottom.get() );
+  geometry->addPrimitiveSet ( top.get() );
+  #endif
+  geometry->addPrimitiveSet ( lines.get() );
+  
+  osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
+  
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  
+//  colors->resize ( 8 );
+  
+//  std::fill( colors->begin(), colors->end(), osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+
+  osg::Vec4 greenColor(0.0f, 1.0f, 0.0f, 1.0f);
+  osg::Vec4 redColor(1.0f, 0.0f, 0.0f, 1.0f);
+  osg::Vec4 blueColor(0.0f, 0.0f, 1.0f, 1.0f);
+  colors->push_back(greenColor);
+  colors->push_back(redColor);
+  colors->push_back(blueColor);
+
+  
+  geometry->setColorArray ( colors.get() );
+  geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  
+  // Set the line-width.
+  OsgTools::State::setLineWidth ( geode.get(), 2.0f );
+
+  // Turn off lighting.
+  OsgTools::State::setLighting ( geode.get(), false );
+  
+  geode->addDrawable ( geometry.get() );
+
+  return geode.release();
+}
+
+#if 0
 osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
 {
   typedef osg::DrawElementsUInt DrawElements;
@@ -181,6 +253,7 @@ osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
 
   return geode.release();
 }
+ #endif
  
 osg::Node* GlassBoundingBox::_makeBoxGlass   ( osg::Vec3Array& vertices )
 {
@@ -691,34 +764,60 @@ osg::Node* GlassBoundingBox::_makeNumbers    ( )
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
   
   // Fill the vertices
-  for( unsigned int i = 0; i < 8; ++i )
+  for( unsigned int i = 0; i < 8; ++i ) 
     vertices->push_back ( bb.corner( i ) );
 
   osg::ref_ptr< osg::Geode >   geode ( new osg::Geode );
 
   osg::Vec4 layoutColor(1.0f,0.0f,0.0f,1.0f);
-  float layoutCharacterSize = 0.05f * bb.radius();    
-
-  geode->addDrawable( this->_makeNumber ( "0", bb.corner( 0 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "1", bb.corner( 1 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "2", bb.corner( 2 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "3", bb.corner( 3 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "4", bb.corner( 4 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "5", bb.corner( 5 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "6", bb.corner( 6 ), layoutColor, layoutCharacterSize  ) );
-  geode->addDrawable( this->_makeNumber ( "7", bb.corner( 7 ), layoutColor, layoutCharacterSize  ) );
+  float layoutCharacterSize = 0.075f * bb.radius();    
+  
+  char name[75];
+  sprintf(name, "%0.4f,%0.4f,%0.4f", _xMin, _yMin, _zMin);
+ 
+  geode->addDrawable( this->_makeNumber ( name, bb.corner( 0 ), layoutColor, layoutCharacterSize  ) );
+  
+  geode->addDrawable( this->_makeNumber ( _xMax, bb.corner( 1 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( _yMax, bb.corner( 2 ), layoutColor, layoutCharacterSize  ) );
+ // geode->addDrawable( this->_makeNumber ( "3", bb.corner( 3 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( _zMax, bb.corner( 4 ), layoutColor, layoutCharacterSize  ) );
+ // geode->addDrawable( this->_makeNumber ( "5", bb.corner( 5 ), layoutColor, layoutCharacterSize  ) );
+ // geode->addDrawable( this->_makeNumber ( "6", bb.corner( 6 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "Max", bb.corner( 7 ), layoutColor, layoutCharacterSize  ) );
 
   return geode.release();
+}
+
+osg::Drawable* GlassBoundingBox::_makeNumber     ( float number, const osg::Vec3& pos, const osg::Vec4& color, float size )
+{
+  char name[50];
+  sprintf(name, "%0.4f", number);
+  osg::ref_ptr< osgText::Text > text ( new osgText::Text );
+  osgText::Font* arial = osgText::readFontFile("fonts/ariel.ttf");
+  text->setFont(arial);
+  text->setColor( color );
+  text->setCharacterSize( size );
+  text->setPosition ( pos );
+  text->setText( name );
+  text->setAutoRotateToScreen(true);
+  text->setFontResolution(40,40);
+  text->update();
+
+  return text.release();
 }
 
 
 osg::Drawable* GlassBoundingBox::_makeNumber     ( const std::string& name, const osg::Vec3& pos, const osg::Vec4& color, float size )
 {
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
+  osgText::Font* arial = osgText::readFontFile("fonts/ariel.ttf");
+  text->setFont(arial);
   text->setColor( color );
   text->setCharacterSize( size );
   text->setPosition ( pos );
   text->setText( name );
+  text->setAutoRotateToScreen(true);
+  text->setFontResolution(40,40);
   text->update();
 
   return text.release();

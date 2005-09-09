@@ -64,9 +64,10 @@ public:
     traverse( node ); 
   }
 
-private:
+protected:
   virtual ~SetSortToFrontCallback () { }
 
+private:
   osg::ref_ptr< SortBackToFrontCallback > _cb;
 };
 
@@ -92,7 +93,7 @@ public:
 
   virtual void apply( osg::Node& node)  { node.setCullCallback( 0x0 );  traverse( node ); }
 
-private:
+protected:
   virtual ~UnSetSortToFrontCallback () { }
 
 };

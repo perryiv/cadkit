@@ -537,29 +537,25 @@ protected:
   GroupPtr          _scribeBranch;
 
 # if defined (USE_SINTERPOINT)
-    // Used for networked file loading with SinterPoint, if enabled
-    void                   _sinterPointInit();
-    void                   _sinterReceiveModelPreFrame();
-    void                   _sinterReceiveModelPostFrame();
-    sinter::Receiver       _sinterReceiver;
-    std::string            _sinterStream;
+    // Functions used for networked file loading with SinterPoint, if enabled
+    void            _sinterPointInit();
+    void            _sinterReceiveModelPreFrame();
+    void            _sinterReceiveModelPostFrame();
+    void            _sinterReceiveData(int size);
+
+    // SinterPoint variables
+    sinter::Receiver                    _sinterReceiver;
+    std::stringstream                   _sinterStream;
     cluster::UserData< SinterAppData >  _sinterAppData;
+    SinterFileState                     _sinterFileState;
 
-    // These are static for use in the callback function
-    static int             _sinterCallback ( const char *data, const int size );
-    static vpr::Mutex      _sinterMutex;
-    static std::string     _sinterFileData;
-    static SinterFileState _sinterFileState;
-    static unsigned int    _sinterFileSize;
-
-    // Used to time sinterpoint loading for optimizations
+    // Used to time sinterpoint loading
     double _getClockTime(){
       struct timeval t;
       gettimeofday(&t,NULL);
       return((double)t.tv_sec + (double)t.tv_usec * 0.000001);
     }
     double _sinterTime1, _sinterTime2;
-    bool _sinterTiming;	
 # endif
 };
 

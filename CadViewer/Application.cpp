@@ -3162,20 +3162,6 @@ void Application::_updateSceneTool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Static variables necessary for use with the sinterpoint callback
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-    vpr::Mutex      Application::_sinterMutex;
-    std::string     Application::_sinterFileData;
-    SinterFileState Application::_sinterFileState;
-    unsigned int    Application::_sinterFileSize;
-# endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Setup SinterPoint, if enabled
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3210,9 +3196,6 @@ void Application::_updateSceneTool()
         std::cout << "SinterPoint communication will be unusable" << std::endl;
       }
       else{
-        // give function pointer to receiver
-        _sinterReceiver.OnReceive ( &_sinterCallback ); 	  
-
         std::cout << "SinterPoint connected successfully" << std::endl;
       }
 
@@ -3224,10 +3207,9 @@ void Application::_updateSceneTool()
     vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
     _sinterAppData.init(newGuid);
 
-    // Just to be safe
+    // Just make sure the stream is empty and ready
     _sinterStream.clear();
-
-    _sinterTiming=false;
+    _sinterStream.str("");
   }
 
 # endif
@@ -3253,59 +3235,19 @@ void Application::_updateSceneTool()
     // application data for the other machines
     if ( host == writer )
     {
-      int length;
-
+      int size;
+      while( (size = _sinterReceiver.Receive(0)) > 0)
+      {
+        _sinterReceiveData(size);
+      }
+	
       // Share the state
       _sinterAppData->_state = _sinterFileState;
-      
-      if ( _sinterFileState == RECEIVE )
+            
+      if ( _sinterFileState == DONE )
       {
-        if(_sinterTiming == false){
-          _sinterTime1 = _getClockTime();
-          _sinterTiming = true;
-          std::cout << "Begin receiving" << std::endl;
-        }
-
-        // Reserve the string size if it's too low - this is a big performace boost
-        if ( _sinterStream.capacity() < _sinterFileSize )
-        {
-          _sinterStream.reserve ( _sinterFileSize );
-          std::cout << "Stream reserved to size = " << _sinterStream.capacity() << std::endl;
-
-          // Share the size
-          _sinterAppData->_fileSize = _sinterFileSize;
-        }
-
-        // Keep grabbing data from SinterPoint and writing it out
-        // Use a mutex to insure the callback doesn't overwrite anything
-        _sinterMutex.acquire();
-        length = _sinterFileData.length();
-        if ( length!=0 )
-        {
-          // Share the data across the cluster
-          _sinterAppData->_data = _sinterFileData;
-          
-          // Add to the file stream
-          _sinterStream += _sinterFileData;
-          _sinterFileData.clear();
-        }
-        _sinterMutex.release();
-      }
-
-      else  if ( _sinterFileState == DONE )
-      {
-        // Grab the last data chunk, if needed, write it out then close
-        length = _sinterFileData.length();
-        if ( length!=0 )
-        {
-          // Share the data across the cluster
-          _sinterAppData->_data = _sinterFileData;
-          
-          // Add to the file stream
-          _sinterStream += _sinterFileData;
-          _sinterFileData.clear();
-        }
-        _sinterFileState=LOAD;
+        // Share the finished file stream data
+        _sinterAppData->_data = _sinterStream.str();
       }
     }
   }
@@ -3333,20 +3275,12 @@ void Application::_updateSceneTool()
     // after application data has been sync'd
     if ( host == writer )
     {
-      if ( _sinterFileState == LOAD ){
+      if ( _sinterFileState == DONE ) {
         // Stream in the completed file
-        _sinterTime2 = _getClockTime();
-        _sinterTiming = false;
-        std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-        std::stringstream ss;
-        ss.str(_sinterStream);
-        this->_loadModelStream ( ss );
+        this->_loadModelStream ( _sinterStream );
 
-        // Finished
         _sinterStream.clear();
-        _sinterStream.reserve ( 0 );
-        _sinterFileData.clear();
-        _sinterFileData.reserve ( 0 );
+        _sinterStream.str("");
         _sinterFileState = NOTHING;
       }
     }
@@ -3354,50 +3288,18 @@ void Application::_updateSceneTool()
     // Other machines receive ApplicationData and do all their work here
     else
     {
-      int length;
+      // Get the state
+      _sinterStream.str ( _sinterAppData->_data ) ;
+      
+      if ( _sinterFileState == DONE ) {
+        // Get the data if it is finished
+        _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
 
-      // Get the data and state
-      _sinterFileData = _sinterAppData->_data;
-      _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
-      _sinterFileSize = _sinterAppData->_fileSize;
+        // Stream in the completed file
+        this->_loadModelStream ( _sinterStream );
 
-      if ( _sinterFileState == RECEIVE ) {
-        // Reserve the string size if it hasn't already been set - big preformance boost
-        if ( _sinterStream.capacity() < _sinterFileSize )
-        {
-          _sinterStream.reserve ( _sinterFileSize );
-          std::cout << "Stream reserved to size = " << _sinterStream.capacity() << std::endl;
-        }
-        
-        // Keep grabbing data from SinterPoint and writing it out
-        length = _sinterFileData.length();
-        if ( length!=0 )
-        {
-          // Add to the file stream
-          _sinterStream+=_sinterFileData;
-          _sinterFileData.clear();
-        }
-      }
-
-      else if (_sinterFileState == DONE) {
-        // Grab the last data chunk, if needed, write it out, then close
-        length = _sinterFileData.length();
-        if ( length!=0 )
-        {
-          // Add to the file stream
-          _sinterStream+=_sinterFileData;
-          _sinterFileData.clear();
-        }
-        // Now load
-        std::stringstream ss;
-        ss.str (_sinterStream );
-        this->_loadModelStream ( ss );
-        
-        // Finished
         _sinterStream.clear();
-        _sinterStream.reserve ( 0 );
-        _sinterFileData.clear();
-        _sinterFileData.reserve ( 0 );
+        _sinterStream.str("");
       }
     }
   }
@@ -3414,61 +3316,35 @@ void Application::_updateSceneTool()
 
 # if defined (USE_SINTERPOINT)
 
-  int Application::_sinterCallback ( const char *data, const int size )
+  void Application::_sinterReceiveData(int size)
   {
-    _sinterMutex.acquire();
-    std::string msg = data;
+    std::string msg;
+    msg = _sinterReceiver.Data();
 
     // Clean off the trailing characters SinterPoint tends to leave on
-    msg.erase ( size, msg.size() );
+    msg.resize(size);
 
     // Check for commands in the messages
-    if ( msg=="SINTERPOINT_FILE_SIZE" )
-    {
-      _sinterFileState = SIZE;
-    }
-    else if ( msg=="SINTERPOINT_FILE_RECEIVE" )
+    if ( msg=="SINTERPOINT_FILE_RECEIVE" )
     {
       _sinterFileState = RECEIVE;
+      _sinterTime1 = _getClockTime();
     }
     else if ( msg=="SINTERPOINT_FILE_DONE" )
     {
       _sinterFileState = DONE;
+      _sinterTime2 = _getClockTime();
+      std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
     }
 	  // Otherwise we just have data
     else
     {
-      // Received data is file size
-      if ( _sinterFileState==SIZE )
-      {
-        std::stringstream ss;
-        ss.str(msg);
-        unsigned int size;
-        ss >> size;
-        _sinterFileSize = size;
-
-        /*
-        Set the receiver string to this size
-        This is worst case, but assumes the 
-        whole file could come across within one
-        juggler event loop, and provides a big
-		    performance boost
-        */
-        _sinterFileData.reserve(size);
-      }
-      // Received data is file data
-      else
-      {
-        // Add the newline back on and append to the Data
-        msg += "\n";
-        _sinterFileData += msg;
-        _sinterFileState = RECEIVE;
-      }
+      _sinterStream.write(msg.c_str(),size);
+      _sinterFileState = RECEIVE;
     }
-
-    _sinterMutex.release();
   }
 
 #endif
+
 
 

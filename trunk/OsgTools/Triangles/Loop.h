@@ -79,9 +79,6 @@ public:
   // Get the number of inner loops.
   unsigned int          numInnerLoops ( ) const { return _innerLoops.size(); }
 
-  // Get the number of planes that the loop covers.
-  unsigned int          numPlanes ( Usul::Interfaces::IUnknown* caller ) const;
-
   // Get the points for inner loop i.
   const Points&         points ( unsigned int i ) const { return _innerLoops.at( i ); }
 

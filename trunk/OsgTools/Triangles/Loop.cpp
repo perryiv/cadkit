@@ -476,23 +476,36 @@ void Loop::getFrameData ( osg::Vec3& center, float &distance, osg::Quat& rotatio
 
   int thePlane = this->isCoplanar( caller );
   osg::Vec3 normal;
-  if (thePlane == -1) {
-    osg::Plane plane ( v0, v1, v2 );
-    normal = plane.getNormal() ;
-  } else if ( thePlane == 0 && v0.x() == bounds.xMin() ) {
+  
+  if ( thePlane == 0 && v0.x() == bounds.xMin() ) 
+  {
       normal = osg::Vec3(1.0f, 0.0f, 0.0f);
-  } else if ( thePlane == 0 && v0.x() == bounds.xMax() ) {
+  } 
+  else if ( thePlane == 0 && v0.x() == bounds.xMax() ) 
+  {
       normal = osg::Vec3(-1.0f, 0.0f, 0.0f);
-  } else if ( thePlane == 1 && v0.y() == bounds.yMin() ) {
+  } 
+  else if ( thePlane == 1 && v0.y() == bounds.yMin() ) 
+  {
       normal = osg::Vec3(0.0f, 1.0f, 0.0f);  
-  } else if ( thePlane == 1 && v0.y() == bounds.yMax() ) {
+  } 
+  else if ( thePlane == 1 && v0.y() == bounds.yMax() ) 
+  {
       normal = osg::Vec3(0.0f, -1.0f, 0.0f);  
-  } else if ( thePlane == 2 && v0.z() == bounds.zMin() ) {
+  } 
+  else if ( thePlane == 2 && v0.z() == bounds.zMin() ) 
+  {
       normal = osg::Vec3(0.0f, 0.0f, -1.0f);  
-  } else if ( thePlane == 2 && v0.z() == bounds.zMax() ) {
+  } 
+  else if ( thePlane == 2 && v0.z() == bounds.zMax() ) 
+  {
       normal = osg::Vec3(0.0f, 0.0f, 1.0f);  
-  } else {
-    throw std::runtime_error("Error 8924892034: Invalid Plane value inside Loop::getFrameData()" );
+  } 
+  else 
+  {
+      // Plane to get the normal.
+    osg::Plane plane ( v0, v1, v2 );
+    normal = plane.getNormal();
   }
 
   float max ( Detail::maxDistance( *vertices, center ) );
@@ -547,63 +560,6 @@ osg::Vec3Array* Loop::_vertices( Usul::Interfaces::IUnknown *caller ) const
 
   return vertices.release();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of planes that the loop covers.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Loop::numPlanes ( Usul::Interfaces::IUnknown* caller ) const
-{
-  typedef Usul::Math::Vector3< bool > Vec3b;
-
-  Vec3b changed ( true, true, true );
-
-  // The vertices of this loop
-  osg::ref_ptr< osg::Vec3Array > vertices ( this->_vertices( caller ) );
-
-  Usul::Predicates::Tolerance< float > equal ( 0.5 );
-
-  for( osg::Vec3Array::const_iterator iter = vertices->begin(); iter != vertices->end(); ++iter ) 
-  {
-    Vec3b c ( false, false, false );
-
-    osg::Vec3Array::const_iterator prev ( iter - 1 );
-    if( iter == vertices->begin() )
-      prev = vertices->end() - 1;
-
-    // Has x changed?
-    if( false == equal ( prev->x(), iter->x() ) )
-      c[0] = true;
-
-    if( false == equal ( prev->y(), iter->y() ) )
-      c[1] = true;
-
-    if( false == equal ( prev->z(), iter->z() ) )
-      c[2] = true;
-
-    changed[0] = changed[0] && c[0];
-    changed[1] = changed[1] && c[1];
-    changed[2] = changed[2] && c[2];
-  }
-
-  unsigned int count ( 0 );
-
-  if( false == changed[0] )
-    ++count;
-
-  if( false == changed[1] )
-    ++count;
-
-  if( false == changed[2] )
-    ++count;
-
-  //return count;
-  return 1;
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

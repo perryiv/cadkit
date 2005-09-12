@@ -628,6 +628,9 @@
 						RelativePath=".\Interfaces\IActiveView.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IAxes.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IBackground.h">
 					</File>
 					<File

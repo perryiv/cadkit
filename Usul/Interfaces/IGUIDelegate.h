@@ -18,8 +18,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Documents { class Document; }
-
 
 namespace Usul {
 namespace Interfaces {
@@ -34,8 +32,8 @@ struct IGUIDelegate : public Usul::Interfaces::IUnknown
   enum { IID = 1927013416u };
 
   virtual bool               doesHandle       ( const std::string& token ) const = 0;
-  virtual void               createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller ) = 0;
-  virtual void               refreshView      ( Usul::Documents::Document *document, Usul::Interfaces::IViewer  *viewer ) = 0;
+  virtual void               createDefaultGUI ( Usul::Interfaces::IUnknown *document, Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void               refreshView      ( Usul::Interfaces::IUnknown *document, Usul::Interfaces::IUnknown *viewer ) = 0;
 };
 
 

@@ -269,8 +269,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IStereo*>(this);
   case Usul::Interfaces::IOpenGLLighting::IID:
     return static_cast<Usul::Interfaces::IOpenGLLighting*>(this);
-  case Usul::Interfaces::IMessageQueuePostUShort::IID:
-    return static_cast<Usul::Interfaces::IMessageQueuePostUShort*>(this);
+  case Usul::Interfaces::IMessageQueuePostUInt::IID:
+    return static_cast<Usul::Interfaces::IMessageQueuePostUInt*>(this);
   case Usul::Interfaces::IMessageQueueFlush::IID:
     return static_cast<Usul::Interfaces::IMessageQueueFlush*>(this);
   default:
@@ -2683,7 +2683,7 @@ float Viewer::stereoEyeDistance() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::messageQueuePost ( const unsigned short &message )
+bool Viewer::messageQueuePost ( unsigned int message )
 {
   GUARD_MEMBERS;
   return ( ( _postMessage.valid() ) ? _postMessage->messageQueuePost ( message ) : false );

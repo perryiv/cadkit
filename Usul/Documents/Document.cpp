@@ -9,10 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Document class. OsgFox windows have reference-counted smart-pointers to 
-//  this class. Since fox deletes its own windows its own way, this class 
-//  simply has raw pointers to fox windows. Care must be taken to ensure the 
-//  set of windows does not have any dangling pointers.
+//  Document class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +161,10 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICanInsert* > ( this );
   case Usul::Interfaces::ICanClose::IID:
     return static_cast < Usul::Interfaces::ICanClose* > ( this );
+  case Usul::Interfaces::IMessageQueuePostUInt::IID:
+    return static_cast < Usul::Interfaces::IMessageQueuePostUInt * > ( this );
+  case Usul::Interfaces::IMessageQueueFlush::IID:
+    return static_cast < Usul::Interfaces::IMessageQueueFlush * > ( this );
   default:
     return 0x0;
   }
@@ -454,29 +455,14 @@ bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Usul::In
   Unknowns copy ( _windows );
 
   // Tell the windows to close
-  this->_sendMessage ( copy, Document::ID_CLOSE, skip );
+  Detail::_sendMessage ( copy, Document::ID_CLOSE, skip );
 
   // Let anyone else who may be open that the document is closing
-  this->sendMessage( Document::ID_CLOSE );
+  this->sendMessage ( Document::ID_CLOSE );
 
   // If we get here the windows have closed
   return true;
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to all listeners except for one specified.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::sendMessage ( unsigned short message, const Usul::Interfaces::IUnknown *skip )
-{
-  // Send message to both windows and views
-  this->_sendMessage ( _windows, message, skip );
-  this->_sendMessage ( _views,   message, skip );
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -680,10 +666,10 @@ void Document::closing ( Usul::Interfaces::IUnknown *window )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::notify ( unsigned short message )
+void Document::notify ( unsigned int message )
 {
   // Default implementation passes the message along to the windows.
-  this->sendMessage ( message );
+  this->messageQueuePost ( message );
 }
 
 
@@ -720,7 +706,7 @@ Document::Delegate* Document::delegate ( )
 void Document::createDefaultGUI ( Usul::Interfaces::IUnknown *caller )
 {
   if ( this->delegate() )
-    this->delegate()->createDefaultGUI ( this, caller );
+    this->delegate()->createDefaultGUI ( this->_unknown(), caller );
 }
 
 
@@ -733,7 +719,7 @@ void Document::createDefaultGUI ( Usul::Interfaces::IUnknown *caller )
 void Document::refreshView ( Usul::Interfaces::IUnknown *viewer )
 {
   if ( this->delegate() )
-    this->delegate()->refreshView ( this, viewer );
+    this->delegate()->refreshView ( this->_unknown(), viewer );
 }
 
 
@@ -755,8 +741,99 @@ void Document::activeView ( Usul::Interfaces::IUnknown *view )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::Usul::Interfaces::IUnknown* Document::activeView() const
+Usul::Interfaces::IUnknown* Document::activeView() const
 {
   return _active.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return this instance's unknown pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Document::_unknown()
+{
+  return this->queryInterface ( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Post the message
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::messageQueuePost ( unsigned int message )
+{
+  GUARD_MEMBERS;
+  return ( ( _postMessage.valid() ) ? _postMessage->messageQueuePost ( message ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush all messages
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::messageQueueFlushAll()
+{
+  GUARD_MEMBERS;
+  return ( ( _flushMessage.valid() ) ? _flushMessage->messageQueueFlushAll() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush one message
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::messageQueueFlushOne()
+{
+  GUARD_MEMBERS;
+  return ( ( _flushMessage.valid() ) ? _flushMessage->messageQueueFlushOne() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Post the message to all windows except for the one specified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::_postMessage ( Listeners &listeners, unsigned int message, const Skip *skip )
+{
+  typedef typename Listeners::value_type Listener;
+
+  // Loop through the windows.
+  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
+  {
+    // Get the current window.
+    Listener listener ( *i );
+
+    // Skip the given one.
+    if ( skip != listener.get() )
+    {
+      // We can't return if the handle function returns zero because an object
+      // that does not handle the message id will also return zero.
+      listener->handleMessage ( message );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Send the message to all listeners except for one specified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::sendMessage ( unsigned int message, const Usul::Interfaces::IUnknown *skip )
+{
+  // Send message to both windows and views
+  Detail::_sendMessage ( _windows, message, skip );
+  Detail::_sendMessage ( _views,   message, skip );
+}

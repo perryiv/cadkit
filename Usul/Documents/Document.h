@@ -24,7 +24,8 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/ISendMessage.h"
+#include "Usul/Interfaces/IMessageQueuePost.h"
+#include "Usul/Interfaces/IMessageQueueFlush.h"
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetTitle.h"
@@ -45,7 +46,8 @@ namespace Documents {
 
 class USUL_EXPORT Document : public Usul::Base::Referenced,
                              public Usul::Interfaces::IDocument,
-                             public Usul::Interfaces::ISendMessage,
+                             public Usul::Interfaces::IMessageQueuePostUInt,
+                             public Usul::Interfaces::IMessageQueueFlush,
                              public Usul::Interfaces::IRead,
                              public Usul::Interfaces::IGetTitle,
                              public Usul::Interfaces::ICanClose,
@@ -120,6 +122,9 @@ public:
   UnknownItr                  endWindows()       { return _windows.end(); }
   UnknownConstItr             endWindows() const { return _windows.end(); }
 
+  /// Prompt user for documents to export.
+  void                        exportDocument ( IUnknown *caller = 0x0 );
+
   /// Set/get the file format.
   virtual IDocument::Format   fileFormat() const { return _file.format(); }
   virtual void                fileFormat ( const IDocument::Format &f ) { _file.format ( f ); }
@@ -141,18 +146,23 @@ public:
   // Flush the event queue. Gives the user the opportunity to cancel.
   void                        flushEvents();
 
-  /// Prompt user for documents to export.
-  void                        exportDocument ( IUnknown *caller = 0x0 );
+  /// Usul::Interfaces::IGetTitle
+  virtual std::string         getTitle ( IUnknown *caller );
 
   /// Prompt user for documents to insert into this one.
   void                        insert ( IUnknown *caller = 0x0 );
+
+  /// Post and flush messages. Returns true if it worked.
+  virtual bool                messageQueueFlushAll();
+  virtual bool                messageQueueFlushOne();
+  virtual bool                messageQueuePost ( unsigned int message );
 
   /// Set/get the modified flag.
   virtual bool                modified() const { return _file.modified(); }
   virtual void                modified ( bool m ) { _file.modified ( m ); }
 
   /// Notify this document of the message.
-  virtual void                notify ( unsigned short message );
+  virtual void                notify ( unsigned int message );
 
   // Notify the document that it is no longer active.
   virtual void                noLongerActive ( const std::string& activeType );
@@ -194,9 +204,6 @@ public:
   /// Convenience function to set status bar and flush events.
   void                        setStatusBar ( const std::string &text );
 
-  /// Send the message to all listeners except for one specified
-  virtual void                sendMessage ( unsigned short message, const IUnknown *skip = 0x0 );
-
   /// Return the name of this type of document.
   virtual std::string         typeName() const { return _typeName; }
 
@@ -217,14 +224,11 @@ protected:
 
   std::string                 _getSaveAsFileName ( Options &options, IUnknown *caller = 0x0 );
 
+  void                        _postMessage ( Unknowns &listeners, unsigned int message, const IUnknown *skip );
+
   void                        _save ( const std::string &filename, IUnknown *caller, const Options &options = Options() );
 
-  ///  Send the message to all windows except for one specified.
-  template < class Listeners, class Skip >
-  void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 );
-
-  /// Usul::Interfaces::IGetTitle
-  virtual std::string         getTitle ( IUnknown *caller );
+  IUnknown *                  _unknown();
 
 private:
 
@@ -238,34 +242,6 @@ private:
   // TODO may need a std::map < Usul::Interfaces::IViewer*, Options >
   Options _options;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to all windows except for one specified.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Listeners, class Skip >
-void Document::_sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip )
-{
-  typedef typename Listeners::value_type Listener;
-
-  // Loop through the windows.
-  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
-  {
-    // Get the current window.
-    Listener listener ( *i );
-
-    // Skip the given one.
-    if ( skip != listener.get() )
-    {
-      // We can't return if the handle function returns zero because an object
-      // that does not handle the message id will also return zero.
-      listener->handleMessage ( message );
-    }
-  }
-}
 
 
 }; // namespace Documents

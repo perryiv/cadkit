@@ -453,6 +453,9 @@
 						RelativePath=".\Interfaces\IStatusBar.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IUpdateGUI.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IUpdateTextWindow.h">
 					</File>
 					<File

@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/IQuestion.h"
 #include "Usul/Interfaces/IHandleActivatingDocument.h"
+#include "Usul/Interfaces/IUpdateGUI.h"
 
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
@@ -745,5 +746,20 @@ void  Document::activeView  ( View *view )
 Document::View* Document::activeView  (  ) const
 {
   return _active.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the GUI
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::updateGUI  (  ) 
+{
+  Usul::Interfaces::IUpdateGUI::QueryPtr update  ( this->delegate( ) );
+
+  if( update.valid() )
+    update->updateGUI();
 }
 

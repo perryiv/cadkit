@@ -210,6 +210,9 @@ public:
   /// Return the name of this type of document.
   virtual const std::string&  typeName() const { return _typeName; }
 
+  /// Update the GUI.
+  virtual void                updateGUI();
+
   /// Bring the windows forward
   void                        windowsForward();
 

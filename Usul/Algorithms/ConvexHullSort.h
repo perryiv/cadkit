@@ -83,7 +83,7 @@ struct ConvexHullSort
     // Find left-most point.
     Itr left ( std::min_element ( points.begin(), points.end(), CompareCoordinate ( 0 ) ) );
     if ( points.end() == left )
-      throw std::runtime_error ( "Error 1163900903: failed to find left-most element in container of points" );
+      throw std::runtime_error ( "Error 1163900903: failed to finConvexHullSortd left-most element in container of points" );
 
     // Put this point in a new container and remove it from the first.
     PointsContainer ordered;
@@ -93,6 +93,9 @@ struct ConvexHullSort
     // Initialize the first vector between vertices. Make it vertical.
     Value v0;
     SetInitialVector() ( v0 );
+    
+    Difference difference;
+    Angle getAngle;
 
     // While there are still points in the original container...
     while ( false == points.empty() )
@@ -111,10 +114,10 @@ struct ConvexHullSort
         const Value &p ( *i );
 
         // Get the vector between the two current points.
-        const Value v1 ( Difference() ( p, o ) );
+        const Value v1 ( difference ( p, o ) );
 
         // Get the angle between them.
-        const double angle ( Angle() ( v0, v1 ) );
+        const double angle ( getAngle ( v0, v1 ) );
 
         // If this angle is greater then save it.
         if ( angle > maxAngle )

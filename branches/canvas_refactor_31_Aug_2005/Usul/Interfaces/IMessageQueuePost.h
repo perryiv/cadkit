@@ -36,12 +36,13 @@ struct IMessageQueuePost : public Usul::Interfaces::IUnknown
   enum { IID = iid };
 
   /// Post the message.
-  virtual bool            messageQueuePost ( const MessageType &message ) = 0;
+  virtual bool            messageQueuePost ( MessageType message ) = 0;
 };
 
 
 typedef IMessageQueuePost < unsigned short, 2092838157u > IMessageQueuePostUShort;
 typedef IMessageQueuePost < unsigned long,  3130254695u > IMessageQueuePostULong;
+typedef IMessageQueuePost < unsigned int,   1794573985u > IMessageQueuePostUInt;
 
 
 } // namespace Interfaces

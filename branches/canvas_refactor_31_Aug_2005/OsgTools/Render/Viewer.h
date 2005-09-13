@@ -92,7 +92,7 @@ class OSG_TOOLS_EXPORT Viewer : private Usul::Base::Referenced,
                                 public Usul::Interfaces::IWriteImage,
                                 public Usul::Interfaces::IStereo,
                                 public Usul::Interfaces::IOpenGLLighting,
-                                public Usul::Interfaces::IMessageQueuePostUShort,
+                                public Usul::Interfaces::IMessageQueuePostUInt,
                                 public Usul::Interfaces::IMessageQueueFlush
 
 {
@@ -116,7 +116,7 @@ public:
   typedef Usul::Interfaces::IPolygonMode IPolygonMode;
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef Usul::Interfaces::IShadeModel IStereo;
-  typedef Usul::Interfaces::IMessageQueuePostUShort IMessageQueuePost;
+  typedef Usul::Interfaces::IMessageQueuePostUInt IMessageQueuePost;
   typedef Usul::Interfaces::IMessageQueueFlush IMessageQueueFlush;
 
   // Smart-pointer definitions.
@@ -196,7 +196,7 @@ public:
   // Post and flush messages. Returns true if it worked.
   virtual bool                    messageQueueFlushAll();
   virtual bool                    messageQueueFlushOne();
-  virtual bool                    messageQueuePost ( const unsigned short &message );
+  virtual bool                    messageQueuePost ( unsigned int message );
 
   // Set the model.
   void                            model ( osg::Node * );

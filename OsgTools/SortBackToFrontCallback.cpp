@@ -12,6 +12,7 @@
 #include "Usul/Errors/Assert.h"
 
 #include "osg/Geometry"
+#include "osgUtil/CullVisitor"
 
 #include <algorithm>
 
@@ -379,6 +380,8 @@ void SortBackToFrontCallback::operator () ( osg::Node* node, osg::NodeVisitor *n
   // Get the eye position.
   const osg::Vec3& eye ( nv->getEyePoint() );
 
+  osgUtil::CullVisitor *cv = dynamic_cast< osgUtil::CullVisitor* > ( nv );
+
   // Is the node a geode?
   if ( osg::Geode *geode = dynamic_cast < osg::Geode* > ( node ) )
   {
@@ -388,6 +391,14 @@ void SortBackToFrontCallback::operator () ( osg::Node* node, osg::NodeVisitor *n
       // Is the drawable a geometry?
       if( osg::Geometry *geometry = geode->getDrawable( i )->asGeometry() )
       {
+        // Don't bother sorting if the geometry is culled.
+        if( cv )
+        {
+          const osg::BoundingBox &bb = geometry->getBound();
+          if ( cv->isCulled( bb ) )
+            continue;
+
+        }
         typedef osg::Geometry::PrimitiveSetList PrimitiveSetList;
 
         //Get the primitive set

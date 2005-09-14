@@ -24,6 +24,8 @@
 #include "FoxTools/Headers/FileDialog.h"
 #include "FoxTools/Headers/App.h"
 #include "FoxTools/Registry/Registry.h"
+#include "FoxTools/Headers/File.h"
+#include "FoxTools/Headers/MessageBox.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/File/Path.h"
@@ -264,16 +266,33 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   // Run the dialog in a modal loop.
   if ( dialog.execute ( _placement ) )
   {
-    // Set the filter index.
+      // Set the filter index.
     _filterIndex = dialog.getCurrentPattern();
 
-    // Get the filenames.
-    FX::FXString *path = dialog.getFilenames();
-    while ( path && !path->empty() )
+    if (_type == OPEN ) 
     {
-      std::string temp ( path->text() );
+      FX::FXString *path = dialog.getFilenames();
+      while ( path &&  !path->empty() )
+      {
+        std::string temp ( path->text() );
+        _filenames.push_back ( temp );
+        path += 1;
+      }
+    } 
+    else //Otherwise SAVE
+    {
+      // Get the filename.
+      FX::FXString path = dialog.getFilename();
+  
+      if(FXFile::exists(path))
+      {
+          if(MBOX_CLICKED_NO==FXMessageBox::question(&dialog,MBOX_YES_NO,"Overwrite Document","Overwrite existing document: %s?",path.text())) 
+          {
+            return false;
+          } 
+      }
+      std::string temp ( path.text() );
       _filenames.push_back ( temp );
-      path += 1;
     }
   }
 

@@ -3200,7 +3200,7 @@ void Application::_updateSceneTool()
       }
 
       // Start out doing nothing
-      _sinterFileState = NOTHING;
+      _sinterNodeState = NOTHING;
     }
 
     // Now everyone initializes the SinterAppData
@@ -3242,11 +3242,12 @@ void Application::_updateSceneTool()
       }
 	
       // Share the state
-      _sinterAppData->_state = _sinterFileState;
+      _sinterAppData->_state = _sinterNodeState;
             
-      if ( _sinterFileState == DONE )
+      if ( _sinterNodeState == DONE )
       {
-        // Share the finished file stream data
+        // Share the finished file stream name and data
+        _sinterAppData->_name = _sinterNodeName;
         _sinterAppData->_data = _sinterStream.str();
       }
     }
@@ -3275,13 +3276,13 @@ void Application::_updateSceneTool()
     // after application data has been sync'd
     if ( host == writer )
     {
-      if ( _sinterFileState == DONE ) {
+      if ( _sinterNodeState == DONE ) {
         // Stream in the completed file
         this->_loadModelStream ( _sinterStream );
 	
         _sinterStream.clear();
         _sinterStream.str("");
-        _sinterFileState = NOTHING;
+        _sinterNodeState = NOTHING;
       }
     }
 
@@ -3289,11 +3290,14 @@ void Application::_updateSceneTool()
     else
     {
       // Get the state
-      _sinterStream.str ( _sinterAppData->_data ) ;
-      
-      if ( _sinterFileState == DONE ) {
+      _sinterNodeState = static_cast<SinterNodeState>(_sinterAppData->_state);
+           
+      if ( _sinterNodeState == DONE ) {
+        // Get the name of the new node
+        _sinterNodeName = _sinterAppData->_name;
+        
         // Get the data if it is finished
-        _sinterFileState = static_cast<SinterFileState>(_sinterAppData->_state);
+        _sinterStream.str ( _sinterAppData->_data ) ;
 
         // Stream in the completed file
         this->_loadModelStream ( _sinterStream );
@@ -3325,27 +3329,43 @@ void Application::_updateSceneTool()
     msg.resize(size);
 
     // Check for commands in the messages
-    if ( msg=="SINTERPOINT_FILE_RECEIVE" )
+    if ( msg=="SINTERPOINT_NODE_NAME" )
     {
-      _sinterFileState = RECEIVE;
-	  std::cout << "Begin sinterpoint recieve..." << std::endl;
-      _sinterTime1 = _getClockTime();
-	  _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
+      _sinterNodeState = NAME;
+      std::cout << "Receive name" << std::endl;
     }
-    else if ( msg=="SINTERPOINT_FILE_DONE" )
+    else if ( msg=="SINTERPOINT_NODE_RECEIVE" )
     {
-      _sinterFileState = DONE;
+      _sinterNodeState = RECEIVE;
+      std::cout << "Begin sinterpoint recieve..." << std::endl;
+      _sinterTime1 = _getClockTime();
+      _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
+    }
+    else if ( msg=="SINTERPOINT_NODE_DONE" )
+    {
+      _sinterNodeState = DONE;
       _sinterTime2 = _getClockTime();
-	  std::cout << "Sinterpoint recieve completed" << std::endl;
+      std::cout << "Sinterpoint recieve completed" << std::endl;
       std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-	  _sinterTmpFile.close();
+      _sinterTmpFile.close();
+    }
+    else if ( msg=="SINTERPOINT_CLEARALL" )
+    {
+
     }
 	  // Otherwise we just have data
     else
     {
-      _sinterStream.write(msg.c_str(),size);
-	  _sinterTmpFile.write(msg.c_str(),size);
-      _sinterFileState = RECEIVE;
+      if ( _sinterNodeState == NAME )
+      {
+        _sinterNodeName = msg;
+      }
+      else 
+      {
+        _sinterStream.write(msg.c_str(),size);
+        _sinterTmpFile.write(msg.c_str(),size);
+        _sinterNodeState = RECEIVE;
+      }
     }
   }
 

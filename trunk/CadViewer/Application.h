@@ -547,8 +547,9 @@ protected:
     sinter::Receiver                    _sinterReceiver;
     std::stringstream                   _sinterStream;
     cluster::UserData< SinterAppData >  _sinterAppData;
-    SinterFileState                     _sinterFileState;
-	std::ofstream						_sinterTmpFile;
+    SinterNodeState                     _sinterNodeState;
+    std::string                         _sinterNodeName;
+    std::ofstream                       _sinterTmpFile;
 
     // Used to time sinterpoint loading
     double _getClockTime(){

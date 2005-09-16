@@ -56,7 +56,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index ) : 
+Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index ) : 
   _v0    ( v0 ),
   _v1    ( v1 ),
   _v2    ( v2 ),

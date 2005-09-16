@@ -48,6 +48,7 @@ Preferences::Preferences() :
   _bools(),
   _ints(),
   _uints(),
+  _uints64(),
   _floats(),
   _doubles(),
   _strings()
@@ -122,7 +123,7 @@ int Preferences::getInt ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Preferences::getUint   ( const std::string &key )
+unsigned int Preferences::getUint ( const std::string &key )
 {
   return _uints[key];
 }
@@ -134,7 +135,19 @@ unsigned int Preferences::getUint   ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Preferences::getFloat  ( const std::string &key )
+Usul::Types::Uint64 Preferences::getUint64 ( const std::string &key )
+{
+  return _uints64[key];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Preferences::getFloat ( const std::string &key )
 {
   return _floats[key];
 }
@@ -194,7 +207,7 @@ void Preferences::setInt ( const std::string &key, int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Preferences::setUint   ( const std::string &key, unsigned int value )
+void Preferences::setUint ( const std::string &key, unsigned int value )
 {
   _uints[key] = value;
 }
@@ -206,7 +219,19 @@ void Preferences::setUint   ( const std::string &key, unsigned int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Preferences::setFloat  ( const std::string &key, float value )
+void Preferences::setUint64 ( const std::string &key, Usul::Types::Uint64 value )
+{
+  _uints64[key] = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Preferences::setFloat ( const std::string &key, float value )
 {
   _floats[key] = value;
 }

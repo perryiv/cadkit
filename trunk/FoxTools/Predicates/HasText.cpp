@@ -85,6 +85,6 @@ bool HasText::operator () ( const FX::FXObject *object ) const
 {
   const FX::FXLabel *label ( SAFE_CAST_FOX_CONST ( FX::FXLabel, object ) );
   const std::string text ( ( label ) ? label->getText().text() : "" );
-  const bool result ( ( _sub ) ? ( boost::find_first ( text, _text ) ) : ( text == _text ) );
+  const bool result ( ( _sub ) ? ( false == boost::find_first ( text, _text ).empty() ) : ( text == _text ) );
   return result;
 }

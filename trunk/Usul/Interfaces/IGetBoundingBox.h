@@ -33,7 +33,7 @@ struct IGetBoundingBox : public Usul::Interfaces::IUnknown
   enum { IID = 3115299299u };
 
   // Get the bounding-box.
-  virtual const osg::BoundingBox          getBoundingBox ( ) const = 0;
+  virtual osg::BoundingBox getBoundingBox() const = 0;
 
 }; // class IGetBoundingBox
 

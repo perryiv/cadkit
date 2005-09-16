@@ -18,9 +18,16 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Predicates/CloseFloat.h"
-#include "Usul/Predicates/LessVector.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Predicates/CloseFloat.h"
+
+//#define TRY_NEW_HASH
+#ifdef TRY_NEW_HASH
+#include "Usul/Containers/Hash.h"
+#include "Usul/Predicates/EqualVector.h"
+#else
+#include "Usul/Predicates/LessVector.h"
+#endif
 
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
@@ -49,9 +56,15 @@ public:
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Predicates::CloseFloat < float > CloseFloat;
+#ifdef TRY_NEW_HASH
+  typedef Usul::Predicates::EqualVector < CloseFloat, 3 > EqualVector;
+  typedef Usul::Containers::HashFunctions::Vector < unsigned int, float, 3 > HashFunction;
+  typedef Usul::Containers::Hash < osg::Vec3f, SharedVertex::RefPtr, HashFunction, EqualVector > SharedVertices;
+#else
   typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
   typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr, LessVector > SharedVertices;
-  typedef std::vector < Triangle::ValidAccessRefPtr > Triangles;
+#endif
+  typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;
 
@@ -115,7 +128,7 @@ public:
   void                    flipNormal( unsigned int );
 
   // Get the bounding box.
-  const osg::BoundingBox& getBoundingBox () const;
+  osg::BoundingBox        getBoundingBox() const;
 
   // Get the vertex at the index
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
@@ -149,9 +162,17 @@ public:
   const SharedVertex*     sharedVertex1 ( const osg::Drawable*, unsigned int i ) const;
   const SharedVertex*     sharedVertex2 ( const osg::Drawable*, unsigned int i ) const;
 
-  // Get the triangles
-  const Triangles&        triangles() const { return _triangles; }
-  Triangles&              triangles()       { return _triangles; }
+  // Get the triangles. Use with caution.
+  const TriangleVector &  triangles() const { return _triangles; }
+  TriangleVector &        triangles()       { return _triangles; }
+
+  // Update the bounding box.
+  void                    updateBounds ( SharedVertex *v );
+  void                    updateBounds ( const osg::Vec3f &v );
+
+  // Get vertex pool. Use with caution.
+  const osg::Vec3Array &  vertices() const { return *_vertices; }
+  osg::Vec3Array &        vertices()       { return *_vertices; }
 
   // Get the vertices of the i'th triangle.
   const osg::Vec3f &      vertex0 ( unsigned int ) const;
@@ -174,8 +195,6 @@ protected:
 
   void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild );
 
-  void                    _setMaxMinValues(SharedVertex *sv0);
-  
   //Get the averaged normal for the shared vertex
   osg::Vec3               _averageNormal ( const SharedVertex *sv ) const;
 
@@ -197,7 +216,7 @@ private:
   typedef std::pair<NormalsPtr,NormalsPtr>    Normals;
 
   SharedVertices _shared;
-  Triangles _triangles;
+  TriangleVector _triangles;
   VerticesPtr _vertices;
   Normals _normals;
   ColorsPtr _colors;

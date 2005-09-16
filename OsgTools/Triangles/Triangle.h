@@ -36,9 +36,10 @@ public:
   // Typedefs.
   typedef unsigned char ReferenceCount;
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
+  typedef unsigned int IndexType;
 
   // Construction & destruction.
-  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
+  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Triangle );
@@ -66,8 +67,8 @@ public:
   void                        getNeighbors ( PolygonSet& ) const;
 
   //Get/set this Triangle's index
-  unsigned int                index() const           { return _index; }
-  void                        index( unsigned int i ) { _index = i; }
+  IndexType                   index() const         { return _index; }
+  void                        index ( IndexType i ) { _index = i; }
 
   //Get/Set the onEdge flag
   bool                        onEdge() const;
@@ -113,7 +114,7 @@ private:
   SharedVertex *_v0;
   SharedVertex *_v1;
   SharedVertex *_v2;
-  unsigned int _index;
+  IndexType _index;
   unsigned char _flags;
   ReferenceCount _ref;
 };

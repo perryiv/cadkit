@@ -30,6 +30,8 @@
 #include "Usul/Errors/Checker.h"
 #include "Usul/File/Path.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/Types/Types.h"
+#include "Usul/System/Clock.h"
 
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/StatusBar.h"
@@ -493,7 +495,14 @@ long MdiChildWindow::onMotion ( FX::FXObject *object, FX::FXSelector selector, v
 
 long MdiChildWindow::onBuildScene ( FX::FXObject *, FX::FXSelector, void * )
 {
+  // Initialize start time.
+  Usul::Types::Uint64 start ( Usul::System::milliseconds() );
+
+  // Build the scene.
   this->document()->refreshView ( _view );
+
+  // Feedback.
+  ::printf ( "%8.4f seconds .... Time to build scene.\n", static_cast < double > ( Usul::System::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
   // Handled
   return 1;

@@ -170,13 +170,11 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
 
 void Document::open ( const std::string &file, Usul::Interfaces::IUnknown *caller )
 {
-  std::cout << "Opening document: " << file << " ... " << Usul::Resources::TextWindow::flush;
   this->clear();
   this->read ( file, caller );
   this->fileName ( file );
   this->fileValid ( true );
   this->modified ( false );
-  std::cout << "done" << Usul::Resources::TextWindow::endl;
 }
 
 

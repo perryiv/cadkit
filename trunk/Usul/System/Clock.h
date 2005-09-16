@@ -19,13 +19,19 @@
 #include "Usul/Export/Export.h"
 #include "Usul/Types/Types.h"
 
+
 namespace Usul {
-  namespace System {
-    
-    Usul::Types::Uint64 USUL_EXPORT milliseconds();
-    
-    Usul::Types::Uint64 USUL_EXPORT seconds();
-  } // namespace System
+namespace System {
+
+
+struct USUL_EXPORT Clock
+{
+  static Usul::Types::Uint64          milliseconds();
+  static Usul::Types::Uint64          seconds();
+};
+
+
+} // namespace System
 } // namespace Usul
 
 

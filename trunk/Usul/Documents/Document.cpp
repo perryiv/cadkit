@@ -516,7 +516,7 @@ void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::setProgressBar ( bool state, std::ifstream &in, unsigned int fileSize )
+void Document::setProgressBar ( bool state, std::istream &in, unsigned int fileSize )
 {
   if ( state )
     this->setProgressBar ( state, in.tellg(), fileSize );

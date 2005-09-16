@@ -496,13 +496,13 @@ long MdiChildWindow::onMotion ( FX::FXObject *object, FX::FXSelector selector, v
 long MdiChildWindow::onBuildScene ( FX::FXObject *, FX::FXSelector, void * )
 {
   // Initialize start time.
-  Usul::Types::Uint64 start ( Usul::System::milliseconds() );
+  Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
 
   // Build the scene.
   this->document()->refreshView ( _view );
 
   // Feedback.
-  ::printf ( "%8.4f seconds .... Time to build scene.\n", static_cast < double > ( Usul::System::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+  ::printf ( "%8.4f seconds .... Time to build scene.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
   // Handled
   return 1;

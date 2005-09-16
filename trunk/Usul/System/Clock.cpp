@@ -14,12 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/System/Clock.h"
-#include "Usul/MPL/SameType.h"
-#include "Usul/Strings/Trim.h"
-#include "Usul/Types/Types.h"
 
 // TODO do we really need to include time.h on apple and ctime otherwise?
-// Should be able to pick on for all platforms.
+// Should be able to pick one for all platforms.
 #ifdef __APPLE__
 # include "time.h"
 #else
@@ -33,13 +30,14 @@
 using namespace Usul;
 using namespace Usul::System;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Returns the milliseconds offset from a platform dependent value
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Types::Uint64 Usul::System::milliseconds() 
+Usul::Types::Uint64 Usul::System::Clock::milliseconds() 
 {
 #ifndef __APPLE__
   return ::clock();
@@ -61,7 +59,7 @@ Usul::Types::Uint64 Usul::System::milliseconds()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Types::Uint64 Usul::System::seconds() 
+Usul::Types::Uint64 Usul::System::Clock::seconds() 
 {
 #ifdef _WIN32
   return ::clock()/1000;

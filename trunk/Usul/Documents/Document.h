@@ -198,7 +198,7 @@ public:
 
   /// Convenience function to set progress bar and flush events.
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
-  void                        setProgressBar ( bool state, std::ifstream &in, unsigned int fileSize );
+  void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize );
 
   /// Convenience function to set status bar and flush events.
   void                        setStatusBar ( const std::string &text );

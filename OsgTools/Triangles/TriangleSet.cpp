@@ -197,7 +197,7 @@ void TriangleSet::flipNormals()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::flipNormal( unsigned int i )
+void TriangleSet::flipNormal ( unsigned int i )
 {
   Triangle *t ( _triangles.at( i ) );
 
@@ -383,7 +383,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     _dirty = true;
   }
 
-  // Check the max and min values
+  // Update the max and min values.
   this->updateBounds ( sv0 );
   this->updateBounds ( sv1 );
   this->updateBounds ( sv2 );
@@ -684,8 +684,8 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   osg::ref_ptr< osg::Vec3Array > normals;
 
-  //Get the right normals
-  if( average )
+  // Get the right normals
+  if ( average )
     normals = &this->_normalsPerVertex();
   else
     normals = &this->_normalsPerFacet();
@@ -893,12 +893,12 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   _bb.init();
 
   // Make enough room
-  this->reserve( keepers.size() );
+  this->reserve ( keepers.size() );
 
   // Initialize the shared vertex map
   this->addStart();
 
-  this->_setStatusBar( "Adding Triangles..." );
+  this->_setStatusBar ( "Adding Triangles..." );
 
   // Show the progress bar.
   Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );

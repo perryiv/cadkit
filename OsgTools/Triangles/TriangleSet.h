@@ -20,14 +20,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/CloseFloat.h"
-
-//#define TRY_NEW_HASH
-#ifdef TRY_NEW_HASH
-#include "Usul/Containers/Hash.h"
-#include "Usul/Predicates/EqualVector.h"
-#else
 #include "Usul/Predicates/LessVector.h"
-#endif
 
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
@@ -56,14 +49,8 @@ public:
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Predicates::CloseFloat < float > CloseFloat;
-#ifdef TRY_NEW_HASH
-  typedef Usul::Predicates::EqualVector < CloseFloat, 3 > EqualVector;
-  typedef Usul::Containers::HashFunctions::Vector < unsigned int, float, 3 > HashFunction;
-  typedef Usul::Containers::Hash < osg::Vec3f, SharedVertex::RefPtr, HashFunction, EqualVector > SharedVertices;
-#else
   typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
   typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr, LessVector > SharedVertices;
-#endif
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;
@@ -81,8 +68,8 @@ public:
   void                    addStart  ( );
   void                    addFinish ( );
 
-  // Add a shared vertex.  Is not added to the map.
-  SharedVertex*           addSharedVertex ( const osg::Vec3f& );
+  // Add a shared vertex.
+  SharedVertex *          addSharedVertex ( const osg::Vec3f &v, bool look = true );
 
   // Add a triangle.
   void                    addTriangle ( const osg::Vec3f &v0, 
@@ -98,6 +85,11 @@ public:
                                         const osg::Vec3f &n, 
                                         bool correctNormal = false, 
                                         bool rebuild = false );
+
+  void                    addTriangle ( SharedVertex *sv0, 
+                                        SharedVertex *sv1, 
+                                        SharedVertex *sv2, 
+                                        const osg::Vec3f &n );
 
   /// Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
@@ -205,8 +197,6 @@ protected:
 
   void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
   void                    _setStatusBar ( const std::string &text );
-
-  SharedVertex *          _sharedVertex ( const osg::Vec3f &v );
 
 private:
 

@@ -31,6 +31,7 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef T ValueType;
+  typedef Attribute < T > ThisType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Attribute );
@@ -39,6 +40,9 @@ public:
   explicit Attribute() : BaseClass()  {}
   Attribute ( const Attribute &m ) : BaseClass ( m ), _value ( m._value ){}
   Attribute ( const T &t ) : BaseClass(), _value ( t ){}
+
+  /// Type id.
+  const std::type_info &  typeId() const { return typeid ( *this ); }
 
   // Set/get to the data.
   const ValueType &       value() const { return _value; }

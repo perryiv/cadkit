@@ -54,11 +54,7 @@ USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
-#ifdef TRY_NEW_HASH
-  _shared    ( 1024, HashFunction(), EqualVector ( CloseFloat() ), false ),
-#else
   _shared    ( LessVector ( CloseFloat() ) ),
-#endif
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
@@ -165,13 +161,6 @@ void TriangleSet::reserve ( unsigned int num )
   _vertices->reserve ( 3 * num );
   this->_normalsPerFacet().reserve ( num );
 
-#ifdef TRY_NEW_HASH
-
-  // Make hash table a reasonable size.
-  _shared.buckets ( num / 3 );
-
-#endif
-
   // Note: Colors are user-defined, and per-vertex normals are calculated 
   // when done adding triangles.
 }
@@ -269,9 +258,9 @@ const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
 void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
 {
   // Get or make the shared vertices.
-  SharedVertex *sv0 ( this->_sharedVertex ( v0 ) );
-  SharedVertex *sv1 ( this->_sharedVertex ( v1 ) );
-  SharedVertex *sv2 ( this->_sharedVertex ( v2 ) );
+  SharedVertex *sv0 ( this->addSharedVertex ( v0 ) );
+  SharedVertex *sv1 ( this->addSharedVertex ( v1 ) );
+  SharedVertex *sv2 ( this->addSharedVertex ( v2 ) );
 
   // Add the triangle
   this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
@@ -292,6 +281,18 @@ void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, 
 
   // Add the triangle
   this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n )
+{
+  this->_addTriangle ( sv0, sv1, sv2, n, false, false );
 }
 
 
@@ -411,12 +412,6 @@ void TriangleSet::updateBounds ( SharedVertex *sv )
 void TriangleSet::updateBounds ( const osg::Vec3f &v ) 
 {
   _bb.expandBy ( v );
-
-#ifdef TRY_NEW_HASH
-
-  _shared.function().range ( _bb.xMin(), _bb.yMin(), _bb.zMin(), 
-                             _bb.xMax(), _bb.yMax(), _bb.zMax() );
-#endif
 }
 
 
@@ -428,48 +423,6 @@ void TriangleSet::updateBounds ( const osg::Vec3f &v )
 
 void TriangleSet::addStart()
 {
-#if 0
-
-  typedef Usul::Interfaces::IProgressBar IProgressBar;
-  typedef Usul::Interfaces::IStatusBar IStatusBar;
-
-  // Get the interfaces.
-  IProgressBar::QueryPtr progress ( Usul::Resources::progressBar() );
-  IStatusBar::QueryPtr   status   ( Usul::Resources::statusBar()  );
-
-  // Update every second.
-  Usul::Policies::TimeBased update ( 1000 );
-
-  // Set status bar.
-  if ( status.valid() )
-    status->setStatusBarText ( "Initializing map of shared vertices...", true );
-
-  // Loop through the triangles.
-  for ( TriangleVector::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
-  {
-    // Get the triangle.
-    Triangle::ValidRefPtr t ( i->get() );
-
-    // Get the shared vertices.
-    SharedVertex::ValidRefPtr sv0 ( t->vertex0() );
-    SharedVertex::ValidRefPtr sv1 ( t->vertex1() );
-    SharedVertex::ValidRefPtr sv2 ( t->vertex2() );
-
-    // Get the indices.
-    const unsigned int i0 ( sv0->index() );
-    const unsigned int i1 ( sv1->index() );
-    const unsigned int i2 ( sv2->index() );
-
-    // Set the map's key to the shared vertex.
-    _shared.insert( SharedVertices::value_type ( _vertices->at(i0), sv0.get() ) );
-    _shared.insert( SharedVertices::value_type ( _vertices->at(i1), sv1.get() ) );
-    _shared.insert( SharedVertices::value_type ( _vertices->at(i2), sv2.get() ) );
-
-    // Feedback.
-    if ( progress.valid() && update() )
-      progress->updateProgressBar ( ( i - _triangles.begin() ) / _triangles.size() );
-  }
-#endif
 }
 
 
@@ -481,24 +434,6 @@ void TriangleSet::addStart()
 
 void TriangleSet::addFinish()
 {
-#if 0
-
-  // Get the interface.
-  typedef Usul::Interfaces::IStatusBar IStatusBar;
-  IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
-
-  // Set status bar.
-  if ( status.valid() )
-    status->setStatusBarText ( "Clearing map of shared vertices...", true );
-
-  // Clear the map.
-  _shared.clear();
-
-  // Set status bar.
-  if ( status.valid() )
-    status->setStatusBarText ( "Done clearing map of shared vertices", true );
-
-#endif
 }
 
 
@@ -508,69 +443,22 @@ void TriangleSet::addFinish()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v )
+SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 {
-# if 0
-  // Look for the shared vertex.
-  SharedVertices::iterator i = _shared.find ( v );
-  if ( _shared.end() != i )
-    return i->second.get();
+  // Look for and existing shared vertex if we are supposed to.
+  if ( look )
+  {
+    SharedVertices::iterator i = _shared.find ( v );
+    if ( _shared.end() != i )
+      return i->second.get();
+  }
 
   // If we get to here then append to the vertices.
   _vertices->push_back ( v );
-
-  // Make shared vertex with proper index.
-  SharedVertex::ValidRefPtr sv ( new SharedVertex ( _vertices->size() - 1  ) );
-  
-  // Do not add shared vertex to the map
-
-  // Return the new shared vertex.
-  return sv.release();
-#else
-  return this->_sharedVertex( v );
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get or make the shared vertex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SharedVertex *TriangleSet::_sharedVertex ( const osg::Vec3f &v )
-{
-#ifdef TRY_NEW_HASH
-
-  // Look for the shared vertex.
-  SharedVertices::ValueType &sv ( _shared[v] );
-  if ( sv.valid() )
-    return sv.get();
-
-#else
-
-  // Look for the shared vertex.
-  SharedVertices::iterator i = _shared.find ( v );
-  if ( _shared.end() != i )
-    return i->second.get();
-
-#endif
-
-  // If we get to here then append to the vertices.
-  _vertices->push_back ( v );
-
-#ifdef TRY_NEW_HASH
-
-  // Make shared vertex with proper index.
-  sv = new SharedVertex ( _vertices->size() - 1  );
-
-#else
 
   // Make shared vertex with proper index.
   SharedVertex::ValidRefPtr sv ( new SharedVertex ( _vertices->size() - 1  ) );
   _shared.insert ( SharedVertices::value_type ( v, sv.get() ) );
-
-#endif
 
   // Return the new shared vertex.
   return sv.get();

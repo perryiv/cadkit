@@ -33,7 +33,7 @@ struct IAddSharedVertex : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3984837821u };
 
-  virtual OsgTools::Triangles::SharedVertex*       addSharedVertex( const osg::Vec3f& ) = 0;
+  virtual OsgTools::Triangles::SharedVertex*       addSharedVertex ( const osg::Vec3f &v, bool look = true ) = 0;
 
 }; //struct IAddSharedVertex
 

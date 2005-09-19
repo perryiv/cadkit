@@ -3182,8 +3182,8 @@ void Application::_updateSceneTool()
     // The writer alone uses sinterpoint
     if ( host == writer )
     {
-      _sinterReceiver.SetType ( "DEMO" );
-      _sinterReceiver.SetVersion ( "1.0" );
+      _sinterReceiver.SetType ( "CADVIEWER" );
+      _sinterReceiver.SetVersion ( "2.0" );
       _sinterReceiver.SetMaxSend ( 1 );
 
       // Connect to server
@@ -3353,7 +3353,7 @@ void Application::_updateSceneTool()
     {
 
     }
-	  // Otherwise we just have data
+    // Otherwise we just have data
     else
     {
       if ( _sinterNodeState == NAME )

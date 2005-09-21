@@ -350,6 +350,12 @@
 				Name="Triangles"
 				Filter="">
 				<File
+					RelativePath=".\Triangles\Factory.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Factory.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\Loop.cpp">
 				</File>
 				<File

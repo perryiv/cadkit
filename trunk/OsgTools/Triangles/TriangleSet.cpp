@@ -60,11 +60,12 @@ TriangleSet::TriangleSet() : BaseClass(),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
   _colors    ( new osg::Vec4Array ),
   _dirty     ( true ),
-  _bb(),
-  _partition (  )
+  _bb        (),
+  _partition (),
+  _factory   ()
 {
   // Keeping tabs on memory consumption...
-  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 200 );
+  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) == 164 );
 }
 
 
@@ -330,7 +331,7 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   }
 
   // Make the new triangle.
-  Triangle::ValidRefPtr t ( new Triangle ( sv0, sv1, sv2, _triangles.size() ) );
+  Triangle::ValidRefPtr t ( this->newTriangle ( sv0, sv1, sv2, _triangles.size() ) );
 
   // Append it to the list.
   _triangles.push_back ( t.get() );
@@ -457,7 +458,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
   _vertices->push_back ( v );
 
   // Make shared vertex with proper index.
-  SharedVertex::ValidRefPtr sv ( new SharedVertex ( _vertices->size() - 1  ) );
+  SharedVertex::ValidRefPtr sv ( this->newSharedVertex ( _vertices->size() - 1  ) );
   _shared.insert ( SharedVertices::value_type ( v, sv.get() ) );
 
   // Return the new shared vertex.
@@ -489,10 +490,11 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   osg::ref_ptr<osg::Group> root ( new osg::Group );
 
   // Should we use averaged normals?
-  const bool average ( "average" == options["normals"] );
+  const bool useAverage ( "average" == options["normals"] );
+  const bool buildAverage ( useAverage && this->normalsPerVertex().empty() );
 
   // Rebuild if dirty or if we need per vertex normals and there aren't any.
-  if ( _dirty || ( average && this->normalsPerVertex().empty() ) )
+  if ( _dirty || buildAverage )
   {
     // Clear the partition.  Make sure it's cleared before subdivided.
     _partition.clear();
@@ -507,7 +509,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     const unsigned int numPoints ( _triangles.size() * 3 );
 
     // Size the normals if we should.
-    if ( average )
+    if ( buildAverage )
       normals->resize ( _vertices->size() );
     
     // Make some room in the partition.
@@ -532,7 +534,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       _partition.add ( triangle, *_vertices, this->normalsPerFacet().at( count ) );
 
       // If we are suppose to add averaged normals...
-      if( average )
+      if ( buildAverage )
       {
         // Get the vertices.
         const SharedVertex *sv0 ( triangle->vertex0() );
@@ -573,13 +575,13 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   osg::ref_ptr< osg::Vec3Array > normals;
 
   // Get the right normals
-  if ( average )
+  if ( useAverage )
     normals = &this->normalsPerVertex();
   else
     normals = &this->normalsPerFacet();
 
   // Get the node that the partition builds.
-  root->addChild ( _partition ( _vertices.get(), normals.get(), average ) );
+  root->addChild ( _partition ( _vertices.get(), normals.get(), useAverage ) );
 
   // Show we draw a bounding box?
   const bool boundingBox ( options["BoundingBox"] == "Show" );
@@ -1030,3 +1032,34 @@ osg::BoundingBox TriangleSet::getBoundingBox() const
   return _bb;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a new shared vertex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex *TriangleSet::newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve )
+{
+#if 1
+  return _factory.newSharedVertex ( index, numTrianglesToReserve );
+#else
+  return new SharedVertex ( index, numTrianglesToReserve );
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a new triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::Triangle *TriangleSet::newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index )
+{
+#if 1
+  return _factory.newTriangle ( v0, v1, v2, index );
+#else
+  return new Triangle ( v0, v1, v2, index );
+#endif
+}

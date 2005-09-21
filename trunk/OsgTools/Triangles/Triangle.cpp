@@ -56,13 +56,13 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index ) : 
+Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned int flags ) : 
   _v0    ( v0 ),
   _v1    ( v1 ),
   _v2    ( v2 ),
   _index ( index ),
-  _flags ( 0  ),
-  _ref   ( 0  )
+  _flags ( flags ),
+  _ref   ( 0 )
 {
   USUL_STATIC_ASSERT (  4 == sizeof ( _v0       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _v1       ) );
@@ -169,12 +169,24 @@ void Triangle::ref()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Triangle::unref()
+void Triangle::unref ( bool allowDeletion )
 {
   USUL_ASSERT ( this );
   USUL_ASSERT ( _ref > 0 );
   if ( 0 == --_ref )
-    delete this;
+  {
+    if ( allowDeletion )
+    {
+      if ( Usul::Bits::has ( _flags, MEMORY_POOL ) )
+      {
+        this->clear();
+      }
+      else
+      {
+        delete this;
+      }
+    }
+  }
 }
 
 

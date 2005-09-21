@@ -37,40 +37,42 @@ public:
   typedef unsigned char ReferenceCount;
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
   typedef unsigned int IndexType;
-
-  // Construction & destruction.
-  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index );
+  typedef std::set < Triangle* > PolygonSet;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Triangle );
 
-  typedef std::set  < Triangle* > PolygonSet;
-
-  //Possible flags
+  // Possible flags
   enum
   {
-    VISITED  = 0x01,
-    ON_EDGE  = 0x02,
-    DELETED  = 0x04,
-    SELECTED = 0x08
+    VISITED     = 0x01,
+    ON_EDGE     = 0x02,
+    DELETED     = 0x04,
+    SELECTED    = 0x08,
+    MEMORY_POOL = 0x10
   };
+
+  // Construction
+  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned int flags = 0 );
+
+  // Use reference counting. Needs to be public to work with boost::object_pool.
+  ~Triangle();
 
   // Sets all vertices to null.
   void                        clear();
 
-  //Get/Set the deleted flag
+  // Get/Set the deleted flag
   bool                        deleted() const;
-  void                        deleted( bool );
+  void                        deleted ( bool );
 
-  //Get the neighbors of this Triangle
-
+  // Get the neighbors of this Triangle
   void                        getNeighbors ( PolygonSet& ) const;
 
-  //Get/set this Triangle's index
+  // Get/set this Triangle's index
   IndexType                   index() const         { return _index; }
   void                        index ( IndexType i ) { _index = i; }
 
-  //Get/Set the onEdge flag
+  // Get/Set the onEdge flag
   bool                        onEdge() const;
   void                        onEdge ( bool b );
 
@@ -81,7 +83,7 @@ public:
   ReferenceCount              refCount() const { return _ref; }
 
   // Unreference this instance.
-  void                        unref();
+  void                        unref ( bool allowDeletion = true );
 
   // Get shared vertices.
   const SharedVertex *        vertex0() const { return _v0; }
@@ -100,16 +102,11 @@ public:
   bool                        visited() const;
   void                        visited ( bool v );
 
-protected:
+private:
 
-  /// Do not copy.
+  // Do not copy.
   Triangle ( const Triangle & );
   Triangle &operator = ( const Triangle & );
-
-  // Use reference counting.
-  ~Triangle();
-
-private:
 
   SharedVertex *_v0;
   SharedVertex *_v1;

@@ -50,7 +50,7 @@ public:
   };
 
   // Construction.
-  SharedVertex ( unsigned int index );
+  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
 
   // Add the given triangle to the list.
   void                  add ( Triangle *t );
@@ -58,6 +58,9 @@ public:
   // Iterators to the triangles.
   ConstTriangleItr      begin() const { return _triangles.begin(); }
   TriangleItr           begin()       { return _triangles.begin(); }
+
+  // Return the current triangle capacity.
+  unsigned int          capacity() const { return _triangles.capacity(); }
 
   // Iterators to the triangles.
   ConstTriangleItr      end() const { return _triangles.end(); }
@@ -82,10 +85,13 @@ public:
   // Remove the given triangle from the list.
   void                  remove ( Triangle *t );
 
-  // Unreference this instance.
-  void                  unref( bool allowDeletion = true );
+  // Reserve space for triangles.
+  void                  reserve ( unsigned int num ) { _triangles.reserve ( num ); }
 
-  // Get/Set the visited flag
+  // Unreference this instance.
+  void                  unref ( bool allowDeletion = true );
+
+  // Get/set the visited flag
   bool                  visited() const;
   void                  visited ( bool v );
 

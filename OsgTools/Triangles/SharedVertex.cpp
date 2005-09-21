@@ -34,7 +34,7 @@ using namespace OsgTools::Triangles;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SharedVertex::SharedVertex ( unsigned int index ) : 
+SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve ) : 
   _index     ( index ),
   _triangles (),
   _flags     ( 0 ),
@@ -49,7 +49,11 @@ SharedVertex::SharedVertex ( unsigned int index ) :
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles    ) );
   USUL_STATIC_ASSERT ( 20 == sizeof ( SharedVertex  ) ); // Why?
-#endif 
+#endif
+
+  // Reserve triangles.
+  if ( numTrianglesToReserve > 0 )
+    _triangles.reserve ( numTrianglesToReserve );
 }
 
 

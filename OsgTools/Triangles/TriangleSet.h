@@ -54,6 +54,10 @@ public:
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;
+  typedef osg::ref_ptr<osg::Vec3Array> VerticesPtr;
+  typedef osg::ref_ptr<osg::Vec3Array> NormalsPtr;
+  typedef osg::ref_ptr<osg::Vec4Array> ColorsPtr;
+  typedef std::pair<NormalsPtr,NormalsPtr> Normals;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -91,6 +95,9 @@ public:
                                         SharedVertex *sv2, 
                                         const osg::Vec3f &n );
 
+  /// Get the averaged normal for the shared vertex.
+  osg::Vec3               averageNormal ( const SharedVertex *sv ) const;
+
   /// Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
 
@@ -113,6 +120,9 @@ public:
   bool                    displayList () const;
   void                    displayList ( bool );
 
+  // Is the triangle set empty?
+  bool                    empty() const { return _triangles.empty(); }
+
   // Flip the normal vectors.
   void                    flipNormals();
 
@@ -130,6 +140,12 @@ public:
 
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
+
+  // Access the containers of normals. Use with caution.
+  const osg::Vec3Array &  normalsPerFacet()  const { return *_normals.second; }
+  osg::Vec3Array &        normalsPerFacet()        { return *_normals.second; }
+  const osg::Vec3Array &  normalsPerVertex() const { return *_normals.first; }
+  osg::Vec3Array &        normalsPerVertex()       { return *_normals.first; }
 
   // Get the normal of the i'th vertex.
   const osg::Vec3f &      vertexNormal ( unsigned int ) const;
@@ -153,6 +169,10 @@ public:
   const SharedVertex*     sharedVertex0 ( const osg::Drawable*, unsigned int i ) const;
   const SharedVertex*     sharedVertex1 ( const osg::Drawable*, unsigned int i ) const;
   const SharedVertex*     sharedVertex2 ( const osg::Drawable*, unsigned int i ) const;
+
+  // Get the shared vertices. Be real careful when using this.
+  const SharedVertices &  sharedVertices() const { return _shared; }
+  SharedVertices &        sharedVertices()       { return _shared; }
 
   // Get the triangles. Use with caution.
   const TriangleVector &  triangles() const { return _triangles; }
@@ -187,23 +207,10 @@ protected:
 
   void                    _addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild );
 
-  //Get the averaged normal for the shared vertex
-  osg::Vec3               _averageNormal ( const SharedVertex *sv ) const;
-
-  const osg::Vec3Array &  _normalsPerFacet()  const { return *_normals.second; }
-  osg::Vec3Array &        _normalsPerFacet()        { return *_normals.second; }
-  const osg::Vec3Array &  _normalsPerVertex() const { return *_normals.first; }
-  osg::Vec3Array &        _normalsPerVertex()       { return *_normals.first; }
-
   void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
   void                    _setStatusBar ( const std::string &text );
 
 private:
-
-  typedef osg::ref_ptr<osg::Vec3Array>        VerticesPtr;
-  typedef osg::ref_ptr<osg::Vec3Array>        NormalsPtr;
-  typedef osg::ref_ptr<osg::Vec4Array>        ColorsPtr;
-  typedef std::pair<NormalsPtr,NormalsPtr>    Normals;
 
   SharedVertices _shared;
   TriangleVector _triangles;

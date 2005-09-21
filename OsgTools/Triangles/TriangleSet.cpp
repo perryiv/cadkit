@@ -98,7 +98,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   // Clear the partition first.
   _partition.clear();
 
-  // Clear the map of shared vertices. (It is most likely already empty.)
+  // Clear the map of shared vertices.
   _shared.clear();
 
   // Used for progress feedback.
@@ -139,8 +139,8 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   // Clear the vertices, normals, and colors.
   _vertices->clear();
-  this->_normalsPerVertex().clear();
-  this->_normalsPerFacet().clear();
+  this->normalsPerVertex().clear();
+  this->normalsPerFacet().clear();
   _colors->clear();
 
   // Clear the Max and Min Values
@@ -159,7 +159,7 @@ void TriangleSet::reserve ( unsigned int num )
   // Reserve triangle, vertices, and per-facet normals.
   _triangles.reserve ( num );
   _vertices->reserve ( 3 * num );
-  this->_normalsPerFacet().reserve ( num );
+  this->normalsPerFacet().reserve ( num );
 
   // Note: Colors are user-defined, and per-vertex normals are calculated 
   // when done adding triangles.
@@ -175,8 +175,8 @@ void TriangleSet::reserve ( unsigned int num )
 void TriangleSet::flipNormals()
 {
   // Loop through the normals and negate them.
-  std::transform ( this->_normalsPerVertex().begin(), this->_normalsPerVertex().end(), this->_normalsPerVertex().begin(), std::negate<osg::Vec3f>() );
-  std::transform ( this->_normalsPerFacet().begin(),  this->_normalsPerFacet().end(),  this->_normalsPerFacet().begin(),  std::negate<osg::Vec3f>() );
+  std::transform ( this->normalsPerVertex().begin(), this->normalsPerVertex().end(), this->normalsPerVertex().begin(), std::negate<osg::Vec3f>() );
+  std::transform ( this->normalsPerFacet().begin(),  this->normalsPerFacet().end(),  this->normalsPerFacet().begin(),  std::negate<osg::Vec3f>() );
 }
 
 
@@ -190,11 +190,11 @@ void TriangleSet::flipNormal ( unsigned int i )
 {
   Triangle *t ( _triangles.at( i ) );
 
-  this->_normalsPerVertex().at ( t->vertex0()->index() ) *= -1;
-  this->_normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
-  this->_normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
+  this->normalsPerVertex().at ( t->vertex0()->index() ) *= -1;
+  this->normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
+  this->normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
 
-  this->_normalsPerFacet().at( i ) *= -1;
+  this->normalsPerFacet().at( i ) *= -1;
 }
 
 
@@ -245,7 +245,7 @@ const osg::Vec3f &TriangleSet::vertex2 ( unsigned int i ) const
 
 const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
 {
-  return this->_normalsPerFacet().at(i);
+  return this->normalsPerFacet().at(i);
 }
 
 
@@ -341,13 +341,13 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
   sv2->add ( t.get() );
 
   // Append normal vector.
-  this->_normalsPerFacet().push_back ( copy );
+  this->normalsPerFacet().push_back ( copy );
 
   // The primitive set will be valid after the scene is built.
   if ( rebuild )
   {
     //For convienence
-    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
+    osg::ref_ptr< osg::Vec3Array > normals ( &this->normalsPerVertex() );
 
     //How many points do we have    
     const unsigned int numPoints ( _triangles.size() * 3 );
@@ -363,9 +363,9 @@ void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVer
     if ( !normals->empty() )
     {
       // Get the normals.
-      osg::Vec3 n1 ( this->_averageNormal ( sv0 ) );
-      osg::Vec3 n2 ( this->_averageNormal ( sv1 ) );
-      osg::Vec3 n3 ( this->_averageNormal ( sv2 ) );
+      osg::Vec3 n1 ( this->averageNormal ( sv0 ) );
+      osg::Vec3 n2 ( this->averageNormal ( sv1 ) );
+      osg::Vec3 n3 ( this->averageNormal ( sv2 ) );
 
       // Make sure they are normalized.
       n1.normalize();
@@ -491,8 +491,8 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
   // Should we use averaged normals?
   const bool average ( "average" == options["normals"] );
 
-  // Rebuild if dirty or if we need per vertex normals are there aren't any.
-  if ( _dirty || ( average && this->_normalsPerVertex().empty() ) )
+  // Rebuild if dirty or if we need per vertex normals and there aren't any.
+  if ( _dirty || ( average && this->normalsPerVertex().empty() ) )
   {
     // Clear the partition.  Make sure it's cleared before subdivided.
     _partition.clear();
@@ -501,7 +501,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
     _partition.subdivide ( _bb, 6 );
 
     //For convienence
-    osg::ref_ptr< osg::Vec3Array > normals ( &this->_normalsPerVertex() );
+    osg::ref_ptr< osg::Vec3Array > normals ( &this->normalsPerVertex() );
 
     //How many points do we have    
     const unsigned int numPoints ( _triangles.size() * 3 );
@@ -529,7 +529,7 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
       USUL_ASSERT ( 0x0 != triangle );
 
       // Add the triangle to the partition
-      _partition.add ( triangle, *_vertices, this->_normalsPerFacet().at( count ) );
+      _partition.add ( triangle, *_vertices, this->normalsPerFacet().at( count ) );
 
       // If we are suppose to add averaged normals...
       if( average )
@@ -544,9 +544,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
           throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
 
         // Get the normals.
-        osg::Vec3 n1 ( this->_averageNormal ( sv0 ) );
-        osg::Vec3 n2 ( this->_averageNormal ( sv1 ) );
-        osg::Vec3 n3 ( this->_averageNormal ( sv2 ) );
+        osg::Vec3 n1 ( this->averageNormal ( sv0 ) );
+        osg::Vec3 n2 ( this->averageNormal ( sv1 ) );
+        osg::Vec3 n3 ( this->averageNormal ( sv2 ) );
 
         // Make sure they are normalized.
         n1.normalize();
@@ -574,9 +574,9 @@ osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
 
   // Get the right normals
   if ( average )
-    normals = &this->_normalsPerVertex();
+    normals = &this->normalsPerVertex();
   else
-    normals = &this->_normalsPerFacet();
+    normals = &this->normalsPerFacet();
 
   // Get the node that the partition builds.
   root->addChild ( _partition ( _vertices.get(), normals.get(), average ) );
@@ -647,14 +647,14 @@ void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 TriangleSet::_averageNormal ( const SharedVertex *sv ) const
+osg::Vec3 TriangleSet::averageNormal ( const SharedVertex *sv ) const
 {
   osg::Vec3 normal;
 
   //Add the normal of all triangles connected to this shared vertex
   for ( SharedVertex::ConstTriangleItr i = sv->begin(); i != sv->end(); ++i )
   {
-    normal += this->_normalsPerFacet().at( (*i)->index() );
+    normal += this->normalsPerFacet().at( (*i)->index() );
   }
 
   //Return the normal.  Do not normalize.
@@ -744,7 +744,7 @@ void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
   _triangles.erase( _triangles.begin() + doomed->index() );
 
   // Remove the normal.
-  this->_normalsPerFacet().erase( ( _normalsPerFacet().begin() + doomed->index() ) );
+  this->normalsPerFacet().erase( ( normalsPerFacet().begin() + doomed->index() ) );
 
   // Remove the triangle from the partition.
   _partition.remove( d, index );
@@ -763,8 +763,8 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   TriangleVector triangles ( _triangles );
 
   // Make a copy of the normals
-  NormalsPtr normals ( new osg::Vec3Array ( this->_normalsPerFacet().size() ) );
-  std::copy ( this->_normalsPerFacet().begin(), this->_normalsPerFacet().end(), normals->begin() );
+  NormalsPtr normals ( new osg::Vec3Array ( this->normalsPerFacet().size() ) );
+  std::copy ( this->normalsPerFacet().begin(), this->normalsPerFacet().end(), normals->begin() );
 
   // Make a copy of the vertices
   VerticesPtr vertices ( new osg::Vec3Array ( _vertices->size() ) );
@@ -775,8 +775,8 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
   _partition.clear();
   _triangles.clear();
   _vertices->clear();
-  this->_normalsPerVertex().clear();
-  this->_normalsPerFacet().clear();
+  this->normalsPerVertex().clear();
+  this->normalsPerFacet().clear();
   _colors->clear();
   _bb.init();
 
@@ -1015,7 +1015,7 @@ const SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigne
 
 const osg::Vec3f & TriangleSet::vertexNormal ( unsigned int i ) const
 {
-  return ( ( _normalsPerVertex().empty() ) ? _normalsPerFacet().at ( i / 3 ) : _normalsPerVertex().at ( i ) );
+  return ( ( normalsPerVertex().empty() ) ? normalsPerFacet().at ( i / 3 ) : normalsPerVertex().at ( i ) );
 }
 
 

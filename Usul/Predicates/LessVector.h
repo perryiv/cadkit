@@ -44,16 +44,19 @@ template < class E, unsigned int Size > struct LessVector;
 
 template < class E > struct LessVector < E, 3 >
 {
+  // Useful typedefs.
+  typedef E EqualPred;
+
   // Require client to set the equality functor. Rely on compiler
   // for copy constructor and assignment operator.
-  LessVector ( E e ) : _equal ( e ){}
+  LessVector ( EqualPred e ) : _equal ( e ){}
 
   // See if vector a is "less" than vector b.
   template < class V > bool operator () ( const V &a, const V &b ) const
   {
     // Require this to be true.
-    USUL_ASSERT_SAME_TYPE ( typename E::first_argument_type, 
-                            typename E::second_argument_type );
+    USUL_ASSERT_SAME_TYPE ( typename EqualPred::first_argument_type, 
+                            typename EqualPred::second_argument_type );
 
     // First, see if they are equal. See note at the top.
     if ( _equal ( a[0], b[0] ) && _equal ( a[1], b[1] ) && _equal ( a[2], b[2] ) )
@@ -74,7 +77,7 @@ template < class E > struct LessVector < E, 3 >
 
 private:
 
-  E _equal;
+  EqualPred _equal;
 };
 
 

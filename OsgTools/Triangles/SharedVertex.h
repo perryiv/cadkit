@@ -30,12 +30,12 @@ class OSG_TOOLS_EXPORT SharedVertex
 public:
 
   // Typedefs.
-  typedef std::vector < Triangle::ValidRefPtr > TriangleSequence;
-  typedef TriangleSequence::iterator        TriangleItr;
-  typedef TriangleSequence::const_iterator  ConstTriangleItr;
-  typedef TriangleSequence::size_type       SizeType;
-  typedef unsigned int                      IndexType;
-  typedef unsigned char                     ReferenceCount;
+  typedef std::vector < Triangle::ValidRefPtr >   TriangleSequence;
+  typedef TriangleSequence::iterator              TriangleItr;
+  typedef TriangleSequence::const_iterator        ConstTriangleItr;
+  typedef TriangleSequence::size_type             SizeType;
+  typedef unsigned int                            IndexType;
+  typedef unsigned char                           ReferenceCount;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SharedVertex );
@@ -43,14 +43,18 @@ public:
   // Possible flags
   enum
   {
-    VISITED  = 0x01,
-    ON_EDGE  = 0x02,
-    DELETED  = 0x04,
-    SELECTED = 0x08
+    VISITED     = 0x01,
+    ON_EDGE     = 0x02,
+    DELETED     = 0x04,
+    SELECTED    = 0x08,
+    MEMORY_POOL = 0x10
   };
 
-  // Construction.
-  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
+  // Construction
+  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned int flags = 0 );
+
+  // Use reference counting. Needs to be public to work with boost::object_pool.
+  ~SharedVertex();
 
   // Add the given triangle to the list.
   void                  add ( Triangle *t );
@@ -66,7 +70,8 @@ public:
   ConstTriangleItr      end() const { return _triangles.end(); }
   TriangleItr           end()       { return _triangles.end(); }
 
-  // Get the index.
+  // Set/get the index.
+  void                  index ( IndexType i ) { _index = i; }
   IndexType             index() const { return _index; }
 
   // Get the number of triangles.
@@ -107,17 +112,11 @@ public:
     SharedVertex::ValidRefPtr _vertex;
   };
 
-
-protected:
+private:
 
   // Do not copy.
   SharedVertex ( const SharedVertex & );
   SharedVertex &operator = ( const SharedVertex & );
-
-  // Use reference counting.
-  ~SharedVertex();
-
-private:
 
   IndexType _index;
   TriangleSequence _triangles;

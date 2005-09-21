@@ -16,6 +16,12 @@
 #ifndef _OPEN_SCENE_GRAPH_TOOLS_TRIANGLE_SET_CLASS_H_
 #define _OPEN_SCENE_GRAPH_TOOLS_TRIANGLE_SET_CLASS_H_
 
+#ifdef _MSC_VER
+#pragma warning ( disable : 4800 ) // Forcing value to bool 'true' or 'false'
+#define WIN32_LEAN_AND_MEAN        // Exclude rarely-used stuff from Windows headers.
+#define NOMINMAX                   // Do not define min and max as macros.
+#endif
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -25,17 +31,20 @@
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
 #include "OsgTools/Triangles/Partition.h"
+#include "OsgTools/Triangles/Factory.h"
 
 #include "osg/Geometry"
 #include "osg/ref_ptr"
 #include "osg/BoundingBox"
 #include "osg/Vec3f"
 
-namespace osg { class Node; }
+#include "boost/pool/pool_alloc.hpp"
 
 #include <vector>
 #include <map>
 #include <string>
+
+namespace osg { class Node; }
 
 
 namespace OsgTools {
@@ -50,7 +59,9 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Predicates::CloseFloat < float > CloseFloat;
   typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
-  typedef std::map < osg::Vec3f, SharedVertex::ValidAccessRefPtr, LessVector > SharedVertices;
+  typedef std::pair < osg::Vec3f, SharedVertex::ValidAccessRefPtr > KeyValuePair;
+  typedef boost::fast_pool_allocator < KeyValuePair > Allocator;
+  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector, Allocator > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;
@@ -69,8 +80,8 @@ public:
   TriangleSet();
 
   // Delimit the start & finish of adding triangles.
-  void                    addStart  ( );
-  void                    addFinish ( );
+  void                    addStart();
+  void                    addFinish();
 
   // Add a shared vertex.
   SharedVertex *          addSharedVertex ( const osg::Vec3f &v, bool look = true );
@@ -137,6 +148,10 @@ public:
 
   // Keep only these triangles
   void                    keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );
+
+  // Return a new shared vertex or triangle.
+  SharedVertex *          newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
+  Triangle *              newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
 
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      normal ( unsigned int ) const;
@@ -220,6 +235,7 @@ private:
   bool _dirty;
   osg::BoundingBox _bb;
   Partition _partition;
+  Factory _factory;
 };
 
 

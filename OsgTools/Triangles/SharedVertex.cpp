@@ -34,10 +34,10 @@ using namespace OsgTools::Triangles;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve ) : 
+SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve, unsigned int flags ) : 
   _index     ( index ),
   _triangles (),
-  _flags     ( 0 ),
+  _flags     ( flags ),
   _ref       ( 0 )
 {
   USUL_STATIC_ASSERT (  4 == sizeof ( _index        ) );
@@ -113,12 +113,24 @@ void SharedVertex::ref()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::unref( bool allowDeletion )
+void SharedVertex::unref ( bool allowDeletion )
 {
   USUL_ASSERT ( this );
   USUL_ASSERT ( _ref > 0 );
-  if ( 0 == --_ref && allowDeletion )
-    delete this;
+  if ( 0 == --_ref )
+  {
+    if ( allowDeletion )
+    {
+      if ( Usul::Bits::has ( _flags, MEMORY_POOL ) )
+      {
+        _triangles.clear();
+      }
+      else
+      {
+        delete this;
+      }
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

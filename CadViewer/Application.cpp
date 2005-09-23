@@ -267,7 +267,7 @@ Application::Application ( Args &args ) :
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true ),
-  _scribeBranch   ( new osg::Group )
+  _scribeBranch   ( new osg::MatrixTransform )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -307,7 +307,7 @@ Application::Application ( Args &args ) :
   _root->addChild      ( _navBranch.get()    );
   _navBranch->addChild ( _models.get()       );
   _navBranch->addChild ( _gridBranch.get()   );
-  _models->addChild ( _scribeBranch.get() );
+  _navBranch->addChild ( _scribeBranch.get() );
 
   // Name the branches.
   _root->setName         ( "_root"         );
@@ -463,6 +463,7 @@ void Application::_init()
 
   // Move the model-group so that the models are centered and visible.
   this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
+  this->viewAll ( _scribeBranch.get(), _prefs->viewAllScaleZ() );
 
   // Now that the models are centered, draw a grid in proportion to the size 
   // of the models.
@@ -812,8 +813,9 @@ void Application::_initMenu()
   _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
-  //OsgTools::State::setPolygonsFilled ( _models.get(), false );
+  OsgTools::State::setPolygonsFilled ( _models.get(), false );
   OsgTools::State::setPolygonsSmooth ( _models.get() );
+  OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
 }
 
 
@@ -1671,7 +1673,7 @@ void Application::_loadModelFile ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_loadModelStream ( std::stringstream &filestream )
+void Application::_loadModelStream ( std::stringstream &modelstream , const std::string &name )
 {
   ErrorChecker ( 1067093697u, isAppThread(), CV::NOT_APP_THREAD );
 
@@ -1680,7 +1682,7 @@ void Application::_loadModelStream ( std::stringstream &filestream )
   matrix.identity();
 
   // Append the request.
-  this->_streamModel ( filestream, matrix );
+  this->_streamModel ( modelstream, matrix, name );
 }
 
 
@@ -1798,7 +1800,7 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   // Set its name to the filename if there is no name.
   if ( node->getName().empty() )
     node->setName ( filename );
-
+ 
   // Create the scribe effect since it must attach to the model
   osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
   sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
@@ -1822,13 +1824,13 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_streamModel ( std::stringstream &filestream, const Matrix44f &matrix )
+void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f &matrix , const std::string &name )
 {
   ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067093698u, _models.valid() );
 
   // User feedback.
-  this->_update ( *_msgText, "Reading stream" );
+  this->_update ( *_msgText, "Reading model stream..." );
 
   // Stream in the file
   osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension("osg");
@@ -1836,51 +1838,79 @@ void Application::_streamModel ( std::stringstream &filestream, const Matrix44f 
 	  std::ostringstream out;
     out << "Error: OSG plugin not available, streamed file input will fail.";
     this->_update ( *_msgText, out.str() );
+    return;
   }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( filestream );
+  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( modelstream );
   if(!rr.validNode()){
 	  std::ostringstream out;
     out << "Error: Streamed input of node file failed, resulting node not vaild.";
     this->_update ( *_msgText, out.str() );
+    return;
   }
   NodePtr node = rr.getNode();
 
   // User feedback.
   this->_update ( *_msgText, "Done streaming" );
 
-  // Are we supposed to set the normalize flag? We only turn it on, 
-  // not off, because we want to inherit the global state.
-  bool norm ( _prefs->normalizeVertexNormalsModels() );
-  if ( norm )
-    OsgTools::State::setNormalize ( node.get(), norm );
+  // See if this new model node name matches any other in the scene; if so replace it
+  int branchNum;
+  int nodeNum;
+  if ( _matchModelNodeName ( name, branchNum, nodeNum ) )
+  {
+    osg::Group *branch = dynamic_cast<osg::Group*>(_models->getChild ( branchNum ) );
+    if ( branch )
+    {
+      this->_update ( *_msgText, "Match found, replacing model node" );
+      node->setName ( name );
+      branch->setChild( nodeNum, node.get() );
+    }
 
-  // Make a matrix transform for this model.
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setName ( std::string ( "Branch for: " ) + std::string ("streamed") );
+    // Also replace the scribe effect
+    osgFX::Scribe *sfx = dynamic_cast<osgFX::Scribe*>(_scribeBranch->getChild ( branchNum ) );
+    if ( sfx )
+    {
+      sfx->setChild( nodeNum, node.get() );
+    }
+  }
+ 
+  // Otherwise, add it as a new node
+  else
+  {
+    std::cout << "No match, adding model as new osg node" << std::endl;
 
-  // Set its matrix.
-  osg::Matrixf M;
-  OsgTools::Convert::matrix ( matrix, M );
-  mt->setMatrix ( M );
+    // Are we supposed to set the normalize flag? We only turn it on, 
+    // not off, because we want to inherit the global state.
+    bool norm ( _prefs->normalizeVertexNormalsModels() );
+    if ( norm )
+      OsgTools::State::setNormalize ( node.get(), norm );
 
-  // Set its name to the filename if there is no name.
-  if ( node->getName().empty() )
-    node->setName ( std::string("streamed") );
+    // Make a matrix transform for this model.
+    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+    mt->setName ( std::string ( "Branch for: " ) + name );
 
-  // Create the scribe effect since it must attach to the model
-  osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
-  sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
-  sc->addChild ( node.get() );
-  _scribeBranch->addChild ( sc.get() );
-  
-  // Hook things up.
-  mt->addChild ( node.get() );
+    // Set its matrix.
+    osg::Matrixf M;
+    OsgTools::Convert::matrix ( matrix, M );
+    mt->setMatrix ( M );
 
-  // Hook things up.
-  _models->addChild ( mt.get() );
+    // Set the node name
+    node->setName ( name );
 
-  // Do any post-processing.
-  this->_postProcessModelLoad ( std::string("streamed"), node.get() );
+    // Create the scribe effect since it must attach to the model
+    osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
+    sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
+    sc->addChild ( node.get() );
+    _scribeBranch->addChild ( sc.get() );
+    
+    // Hook things up.
+    mt->addChild ( node.get() );
+
+    // Hook things up.
+    _models->addChild ( mt.get() );
+
+    // Do any post-processing.
+    this->_postProcessModelLoad ( std::string("streamed"), node.get() );
+  }
 }
 
 
@@ -3162,6 +3192,73 @@ void Application::_updateSceneTool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if model node name matches any others in _models and returns where
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_matchModelNodeName ( const std::string &name, int &branchNum, int &nodeNum )
+{
+  ErrorChecker ( 2346088802u, isAppThread(), CV::NOT_APP_THREAD );
+  
+  int i,j;
+  osg::Group *branch;
+  osg::Node *model;
+  
+  for ( i=0; i<_models->getNumChildren(); ++i )
+  {
+    branch = dynamic_cast<osg::Group*>( _models->getChild(i) );
+    if(branch)
+    {
+      for ( j=0; j<branch->getNumChildren(); ++j )
+      {
+        model = branch->getChild(j);
+
+        // If loaded from a file, the model name will contain a path, so check for just the name
+        unsigned int loc = ( model->getName() ).find( name, 0 );
+        if ( loc != std::string::npos )
+        {
+          branchNum = i;
+          nodeNum = j;
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wipe out all models in the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_deleteScene()
+{
+  // Loop through the _models deleting every child it can find until no more exist
+  // This needs to be done since OSG apparently moves the children back up when the parent
+  // is deleted
+  while ( _models->getNumChildren() > 0 )
+  {
+    for(int k=0; k<_models->getNumChildren(); k++){
+      _models->removeChild(k);
+    }
+  }
+
+  // Also delete all scribe effects
+  while ( _scribeBranch->getNumChildren() > 0 )
+  {
+    for(int k=0; k<_scribeBranch->getNumChildren(); k++){
+      _scribeBranch->removeChild(k);
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Setup SinterPoint, if enabled
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3272,13 +3369,16 @@ void Application::_updateSceneTool()
     const std::string host    ( Usul::System::Host::name() );
     const std::string writer = _prefs->sinterPointWriter();
 
+    // Used to see if loaded node matches an existing one
+    int branch,model;
+        
     // The writer will just finish and load the file here so they all load in postframe
     // after application data has been sync'd
     if ( host == writer )
     {
       if ( _sinterNodeState == DONE ) {
         // Stream in the completed file
-        this->_loadModelStream ( _sinterStream );
+        this->_loadModelStream ( _sinterStream, _sinterNodeName );
 	
         _sinterStream.clear();
         _sinterStream.str("");
@@ -3300,7 +3400,7 @@ void Application::_updateSceneTool()
         _sinterStream.str ( _sinterAppData->_data ) ;
 
         // Stream in the completed file
-        this->_loadModelStream ( _sinterStream );
+        this->_loadModelStream ( _sinterStream, _sinterNodeName );
 
         _sinterStream.clear();
         _sinterStream.str("");
@@ -3332,12 +3432,12 @@ void Application::_updateSceneTool()
     if ( msg=="SINTERPOINT_NODE_NAME" )
     {
       _sinterNodeState = NAME;
-      std::cout << "Receive name" << std::endl;
+      std::cout << "Receive node name" << std::endl;
     }
     else if ( msg=="SINTERPOINT_NODE_RECEIVE" )
     {
       _sinterNodeState = RECEIVE;
-      std::cout << "Begin sinterpoint recieve..." << std::endl;
+      std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
       _sinterTime1 = _getClockTime();
       _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
     }
@@ -3351,9 +3451,10 @@ void Application::_updateSceneTool()
     }
     else if ( msg=="SINTERPOINT_CLEARALL" )
     {
-
+      std::cout << "Deleting all models in scene" << std::endl;
+      _deleteScene();
     }
-    // Otherwise we just have data
+	  // Otherwise we just have data
     else
     {
       if ( _sinterNodeState == NAME )
@@ -3370,6 +3471,7 @@ void Application::_updateSceneTool()
   }
 
 #endif
+
 
 
 

@@ -305,7 +305,7 @@ protected:
 
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
-  void                          _loadModelStream ( std::stringstream &filestream );
+  void                          _loadModelStream ( std::stringstream &modelstream, const std::string &name );
   void                          _loadRestartFile ( const std::string &filename );
   void                          _loadConfigFiles ( const std::list<std::string> &configs );
   void                          _loadSimConfigs  ( std::string dir );
@@ -339,7 +339,7 @@ protected:
 
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
-  void                          _streamModel ( std::stringstream &filestream, const Matrix44f &matrix );
+  void                          _streamModel ( std::stringstream &modelstream, const Matrix44f &matrix , const std::string &name);
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -389,6 +389,11 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
+  // Find similarly named models
+  bool                          _matchModelNodeName ( const std::string &name , int &branchNum, int &modelNum );
+
+  // Clear out all models in scene
+  void                          _deleteScene(); 
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
@@ -534,7 +539,7 @@ protected:
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid*> _gridFunctors;
   bool              _textures;
-  GroupPtr          _scribeBranch;
+  MatTransPtr       _scribeBranch;
 
 # if defined (USE_SINTERPOINT)
     // Functions used for networked file loading with SinterPoint, if enabled

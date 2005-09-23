@@ -924,14 +924,14 @@ void Application::_polysScribe ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( _models->containsNode ( _scribeBranch.get() ) );
+      item->checked ( _navBranch->containsNode ( _scribeBranch.get() ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      if ( item->checked() && _models->containsNode ( _scribeBranch.get() ) )
-        OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _models.get() );
+      if ( item->checked() && _navBranch->containsNode ( _scribeBranch.get() ) )
+        OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
       else
-        _models->addChild ( _scribeBranch.get() );
+        _navBranch->addChild ( _scribeBranch.get() );
       break;
   }
 }
@@ -1078,12 +1078,14 @@ void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
 
     // Perform the "view all" on the model's branch.
     this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
+    this->viewAll ( _scribeBranch.get(), _prefs->viewAllScaleZ() );
 
     // Move the navigation branch.
     _navBranch->setMatrix ( _models->getMatrix() );
 
     // Restore the model's matrix.
     _models->setMatrix ( original );
+    _scribeBranch->setMatrix ( original );
 
     // make sure the scene is visible
     this->_setNearAndFarClippingPlanes();
@@ -1149,6 +1151,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
   // Put the models-branch in a vector.
   Tool::Transforms vt;
   vt.push_back ( _models.get() );
+  vt.push_back ( _scribeBranch.get() );
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
@@ -1321,6 +1324,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
       // Put the models-branch in a vector.
       MoveTool::Transforms vt;
       vt.push_back ( _models.get() );
+      vt.push_back ( _scribeBranch.get() );
       tool->transforms ( vt );
 
       _sceneTool = tool;
@@ -1774,6 +1778,7 @@ void Application::_rotateWorld ( MenuKit::Message m, MenuKit::Item *item )
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot ( osg::Matrix::rotate ( radians, vec ) );
     _models->preMult ( rot );
+    _scribeBranch->preMult ( rot );
   }
 }
 

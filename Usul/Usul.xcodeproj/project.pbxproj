@@ -20,6 +20,290 @@
 		431E60E20891BBF300B1EC98 /* IMenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E10891BBF300B1EC98 /* IMenuBar.h */; };
 		431E60E50891BC0600B1EC98 /* MenuBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60E30891BC0600B1EC98 /* MenuBar.cpp */; };
 		431E60E60891BC0600B1EC98 /* MenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E40891BC0600B1EC98 /* MenuBar.h */; };
+		43265BE508E48D980020C22F /* Angle.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF360895337A00126128 /* Angle.h */; };
+		43265BE608E48D980020C22F /* Arguments.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C78087ED8DC002E5D22 /* Arguments.h */; settings = {ATTRIBUTES = (); }; };
+		43265BE708E48D980020C22F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C84087ED8DC002E5D22 /* Array.h */; settings = {ATTRIBUTES = (); }; };
+		43265BE808E48D980020C22F /* ArrayDelete.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D3C087ED8DC002E5D22 /* ArrayDelete.h */; };
+		43265BE908E48D980020C22F /* ArrayDeletePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D3D087ED8DC002E5D22 /* ArrayDeletePolicy.h */; };
+		43265BEA08E48D980020C22F /* Assert.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C98087ED8DC002E5D22 /* Assert.h */; };
+		43265BEB08E48D980020C22F /* AssertPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C99087ED8DC002E5D22 /* AssertPolicy.h */; };
+		43265BEC08E48D980020C22F /* Attribute.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D58087ED8DC002E5D22 /* Attribute.h */; };
+		43265BED08E48D980020C22F /* Bind.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C63087ED8DC002E5D22 /* Bind.h */; };
+		43265BEE08E48D980020C22F /* Bits.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C73087ED8DC002E5D22 /* Bits.h */; };
+		43265BEF08E48D980020C22F /* Busy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D6D087ED8DC002E5D22 /* Busy.h */; };
+		43265BF008E48D980020C22F /* Caller.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0A80895601E00126128 /* Caller.h */; };
+		43265BF108E48D980020C22F /* CancelButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D5B087ED8DC002E5D22 /* CancelButton.h */; };
+		43265BF208E48D980020C22F /* Canceled.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA2087ED8DC002E5D22 /* Canceled.h */; };
+		43265BF308E48D980020C22F /* Case.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D6F087ED8DC002E5D22 /* Case.h */; };
+		43265BF408E48D980020C22F /* Cast.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C75087ED8DC002E5D22 /* Cast.h */; };
+		43265BF508E48D980020C22F /* Checker.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C9A087ED8DC002E5D22 /* Checker.h */; };
+		43265BF608E48D980020C22F /* Clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 432FBA7E089E78E7000D01F5 /* Clock.h */; };
+		43265BF708E48D980020C22F /* CloseFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90808CDE1F90081F87F /* CloseFloat.h */; };
+		43265BF808E48D980020C22F /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FFA088DF1DE00FE58B9 /* Color.h */; };
+		43265BF908E48D980020C22F /* CompareCoordinate.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF380895338600126128 /* CompareCoordinate.h */; };
+		43265BFA08E48D980020C22F /* CompositePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C9B087ED8DC002E5D22 /* CompositePolicy.h */; };
+		43265BFB08E48D980020C22F /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D2D087ED8DC002E5D22 /* Constants.h */; };
+		43265BFC08E48D980020C22F /* Contents.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA7087ED8DC002E5D22 /* Contents.h */; };
+		43265BFD08E48D980020C22F /* ConvexHullSort.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF340895337000126128 /* ConvexHullSort.h */; };
+		43265BFE08E48D980020C22F /* Create.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C7B087ED8DC002E5D22 /* Create.h */; };
+		43265BFF08E48D980020C22F /* Delete.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CAF087ED8DC002E5D22 /* Delete.h */; };
+		43265C0008E48D980020C22F /* Direction.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D29087ED8DC002E5D22 /* Direction.h */; };
+		43265C0108E48D980020C22F /* Document.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C91087ED8DC002E5D22 /* Document.h */; };
+		43265C0208E48D980020C22F /* DoNothingPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C9C087ED8DC002E5D22 /* DoNothingPolicy.h */; };
+		43265C0308E48D980020C22F /* DynamicArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C85087ED8DC002E5D22 /* DynamicArray.h */; };
+		43265C0408E48D980020C22F /* Endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C96087ED8DC002E5D22 /* Endian.h */; };
+		43265C0508E48D980020C22F /* EndsWith.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D4E087ED8DC002E5D22 /* EndsWith.h */; };
+		43265C0608E48D980020C22F /* Equality.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D2E087ED8DC002E5D22 /* Equality.h */; };
+		43265C0708E48D980020C22F /* EqualVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90908CDE1F90081F87F /* EqualVector.h */; };
+		43265C0808E48D980020C22F /* EventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D5D087ED8DC002E5D22 /* EventQueue.h */; };
+		43265C0908E48D980020C22F /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C7C087ED8DC002E5D22 /* Exceptions.h */; };
+		43265C0A08E48D980020C22F /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C8A087ED8DC002E5D22 /* Exceptions.h */; };
+		43265C0B08E48D980020C22F /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D3E087ED8DC002E5D22 /* Exceptions.h */; };
+		43265C0C08E48D980020C22F /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA5087ED8DC002E5D22 /* Export.h */; };
+		43265C0D08E48D980020C22F /* Extract.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C69087ED8DC002E5D22 /* Extract.h */; };
+		43265C0E08E48D980020C22F /* FileExists.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D4F087ED8DC002E5D22 /* FileExists.h */; };
+		43265C0F08E48D980020C22F /* FileInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C92087ED8DC002E5D22 /* FileInfo.h */; };
+		43265C1008E48D980020C22F /* FillLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D2A087ED8DC002E5D22 /* FillLoop.h */; };
+		43265C1108E48D980020C22F /* Find.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA8087ED8DC002E5D22 /* Find.h */; };
+		43265C1208E48D980020C22F /* FindAllConnected.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C6A087ED8DC002E5D22 /* FindAllConnected.h */; };
+		43265C1308E48D980020C22F /* FindLoops.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D2B087ED8DC002E5D22 /* FindLoops.h */; };
+		43265C1408E48D980020C22F /* Finite.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D2F087ED8DC002E5D22 /* Finite.h */; };
+		43265C1508E48D980020C22F /* GLBeginEnd.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0A90895601E00126128 /* GLBeginEnd.h */; };
+		43265C1608E48D980020C22F /* GLPushPopAttrib.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0AA0895601E00126128 /* GLPushPopAttrib.h */; };
+		43265C1708E48D980020C22F /* GLPushPopMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB0AB0895601E00126128 /* GLPushPopMatrix.h */; };
+		43265C1808E48D980020C22F /* Guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D7D087ED8DC002E5D22 /* Guard.h */; };
+		43265C1908E48D980020C22F /* GUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB6087ED8DC002E5D22 /* GUID.h */; };
+		43265C1A08E48D980020C22F /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C86087ED8DC002E5D22 /* Hash.h */; };
+		43265C1B08E48D980020C22F /* Host.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D73087ED8DC002E5D22 /* Host.h */; };
+		43265C1C08E48D980020C22F /* IActiveDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB8087ED8DC002E5D22 /* IActiveDocument.h */; };
+		43265C1D08E48D980020C22F /* IActiveView.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB9087ED8DC002E5D22 /* IActiveView.h */; };
+		43265C1E08E48D980020C22F /* IAddFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBA087ED8DC002E5D22 /* IAddFrame.h */; };
+		43265C1F08E48D980020C22F /* IAddSharedVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */; };
+		43265C2008E48D980020C22F /* IAddTriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBB087ED8DC002E5D22 /* IAddTriangle.h */; };
+		43265C2108E48D980020C22F /* IAnimate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBC087ED8DC002E5D22 /* IAnimate.h */; };
+		43265C2208E48D980020C22F /* IAxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43BE6CD008D653DF00B947A2 /* IAxes.h */; };
+		43265C2308E48D980020C22F /* IBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBD087ED8DC002E5D22 /* IBackground.h */; };
+		43265C2408E48D980020C22F /* IBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBE087ED8DC002E5D22 /* IBoundingBox.h */; };
+		43265C2508E48D980020C22F /* IBoundingSphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CBF087ED8DC002E5D22 /* IBoundingSphere.h */; };
+		43265C2608E48D980020C22F /* IBuildScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC0087ED8DC002E5D22 /* IBuildScene.h */; };
+		43265C2708E48D980020C22F /* IBuildSceneVtk.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */; };
+		43265C2808E48D980020C22F /* ICamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC2087ED8DC002E5D22 /* ICamera.h */; };
+		43265C2908E48D980020C22F /* ICancelButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC3087ED8DC002E5D22 /* ICancelButton.h */; };
+		43265C2A08E48D980020C22F /* ICanClose.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC4087ED8DC002E5D22 /* ICanClose.h */; };
+		43265C2B08E48D980020C22F /* ICanInsert.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC5087ED8DC002E5D22 /* ICanInsert.h */; };
+		43265C2C08E48D980020C22F /* IClassesFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC6087ED8DC002E5D22 /* IClassesFactory.h */; };
+		43265C2D08E48D980020C22F /* IClassFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC7087ED8DC002E5D22 /* IClassFactory.h */; };
+		43265C2E08E48D980020C22F /* ICleanUp.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC8087ED8DC002E5D22 /* ICleanUp.h */; };
+		43265C2F08E48D980020C22F /* IClippingPlanes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CC9087ED8DC002E5D22 /* IClippingPlanes.h */; };
+		43265C3008E48D980020C22F /* ICommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CCA087ED8DC002E5D22 /* ICommand.h */; };
+		43265C3108E48D980020C22F /* ICreateMovie.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B608832D3B0046E5BA /* ICreateMovie.h */; };
+		43265C3208E48D980020C22F /* IDeleteAllConnected.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CCC087ED8DC002E5D22 /* IDeleteAllConnected.h */; };
+		43265C3308E48D980020C22F /* IDeletePrimitive.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CCD087ED8DC002E5D22 /* IDeletePrimitive.h */; };
+		43265C3408E48D980020C22F /* IDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CCE087ED8DC002E5D22 /* IDocument.h */; };
+		43265C3508E48D980020C22F /* IDocumentCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CCF087ED8DC002E5D22 /* IDocumentCreate.h */; };
+		43265C3608E48D980020C22F /* IExport.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD0087ED8DC002E5D22 /* IExport.h */; };
+		43265C3708E48D980020C22F /* If.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB0087ED8DC002E5D22 /* If.h */; };
+		43265C3808E48D980020C22F /* IFindLoops.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD1087ED8DC002E5D22 /* IFindLoops.h */; };
+		43265C3908E48D980020C22F /* IFlipNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C00890783900B2F004 /* IFlipNormal.h */; };
+		43265C3A08E48D980020C22F /* IFlipNormals.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD2087ED8DC002E5D22 /* IFlipNormals.h */; };
+		43265C3B08E48D980020C22F /* IFlushEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD3087ED8DC002E5D22 /* IFlushEvents.h */; };
+		43265C3C08E48D980020C22F /* IFoxAddTab.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD4087ED8DC002E5D22 /* IFoxAddTab.h */; };
+		43265C3D08E48D980020C22F /* IFoxClientArea.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD5087ED8DC002E5D22 /* IFoxClientArea.h */; };
+		43265C3E08E48D980020C22F /* IFoxDockBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD6087ED8DC002E5D22 /* IFoxDockBar.h */; };
+		43265C3F08E48D980020C22F /* IFoxEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD7087ED8DC002E5D22 /* IFoxEvent.h */; };
+		43265C4008E48D980020C22F /* IFoxImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD8087ED8DC002E5D22 /* IFoxImage.h */; };
+		43265C4108E48D980020C22F /* IFoxMDIMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CD9087ED8DC002E5D22 /* IFoxMDIMenu.h */; };
+		43265C4208E48D980020C22F /* IFoxMenuPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDA087ED8DC002E5D22 /* IFoxMenuPane.h */; };
+		43265C4308E48D980020C22F /* IFoxRadioButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDB087ED8DC002E5D22 /* IFoxRadioButton.h */; };
+		43265C4408E48D980020C22F /* IFoxSubMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDC087ED8DC002E5D22 /* IFoxSubMenu.h */; };
+		43265C4508E48D980020C22F /* IFoxTabBook.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDD087ED8DC002E5D22 /* IFoxTabBook.h */; };
+		43265C4608E48D980020C22F /* IFoxTabItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDE087ED8DC002E5D22 /* IFoxTabItem.h */; };
+		43265C4708E48D980020C22F /* IFoxToggleButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CDF087ED8DC002E5D22 /* IFoxToggleButton.h */; };
+		43265C4808E48D980020C22F /* IFoxToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE0087ED8DC002E5D22 /* IFoxToolbar.h */; };
+		43265C4908E48D980020C22F /* IFoxToolbarDock.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE1087ED8DC002E5D22 /* IFoxToolbarDock.h */; };
+		43265C4A08E48D980020C22F /* IFoxTreeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE2087ED8DC002E5D22 /* IFoxTreeList.h */; };
+		43265C4B08E48D980020C22F /* IFrameDump.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE3087ED8DC002E5D22 /* IFrameDump.h */; };
+		43265C4C08E48D980020C22F /* IGetBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C10890783900B2F004 /* IGetBoundingBox.h */; };
+		43265C4D08E48D980020C22F /* IGetDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE4087ED8DC002E5D22 /* IGetDocument.h */; };
+		43265C4E08E48D980020C22F /* IGetHeight.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE5087ED8DC002E5D22 /* IGetHeight.h */; };
+		43265C4F08E48D980020C22F /* IGetImageData.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE6087ED8DC002E5D22 /* IGetImageData.h */; };
+		43265C5008E48D980020C22F /* IGetImageProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE7087ED8DC002E5D22 /* IGetImageProperties.h */; };
+		43265C5108E48D980020C22F /* IGetLoops.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE8087ED8DC002E5D22 /* IGetLoops.h */; };
+		43265C5208E48D980020C22F /* IGetMolecules.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE9087ED8DC002E5D22 /* IGetMolecules.h */; };
+		43265C5308E48D980020C22F /* IGetNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 43887E1508B2E2250005B358 /* IGetNormal.h */; };
+		43265C5408E48D980020C22F /* IGetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B708832D3B0046E5BA /* IGetOptions.h */; };
+		43265C5508E48D980020C22F /* IGetPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEB087ED8DC002E5D22 /* IGetPosition.h */; };
+		43265C5608E48D980020C22F /* IGetTitle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEC087ED8DC002E5D22 /* IGetTitle.h */; };
+		43265C5708E48D980020C22F /* IGetVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CED087ED8DC002E5D22 /* IGetVertex.h */; };
+		43265C5808E48D980020C22F /* IGetWidth.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEE087ED8DC002E5D22 /* IGetWidth.h */; };
+		43265C5908E48D980020C22F /* IGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEF087ED8DC002E5D22 /* IGroup.h */; };
+		43265C5A08E48D980020C22F /* IGUIDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF0087ED8DC002E5D22 /* IGUIDelegate.h */; };
+		43265C5B08E48D980020C22F /* IHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF1087ED8DC002E5D22 /* IHandle.h */; };
+		43265C5C08E48D980020C22F /* IHandleActivatingDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B808832D3B0046E5BA /* IHandleActivatingDocument.h */; };
+		43265C5D08E48D980020C22F /* IImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF3087ED8DC002E5D22 /* IImage.h */; };
+		43265C5E08E48D980020C22F /* IImageList.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF4087ED8DC002E5D22 /* IImageList.h */; };
+		43265C5F08E48D980020C22F /* IImageToGrayScale.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF5087ED8DC002E5D22 /* IImageToGrayScale.h */; };
+		43265C6008E48D980020C22F /* IImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF6087ED8DC002E5D22 /* IImageView.h */; };
+		43265C6108E48D980020C22F /* IInitNewDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF7087ED8DC002E5D22 /* IInitNewDocument.h */; };
+		43265C6208E48D980020C22F /* IKeepAllConnected.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF8087ED8DC002E5D22 /* IKeepAllConnected.h */; };
+		43265C6308E48D980020C22F /* ILoadFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF9087ED8DC002E5D22 /* ILoadFileDialog.h */; };
+		43265C6408E48D980020C22F /* IMainWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFA087ED8DC002E5D22 /* IMainWindow.h */; };
+		43265C6508E48D980020C22F /* IMaterialEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B308832CE00046E5BA /* IMaterialEditor.h */; };
+		43265C6608E48D980020C22F /* IMenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E10891BBF300B1EC98 /* IMenuBar.h */; };
+		43265C6708E48D980020C22F /* IMenuEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFB087ED8DC002E5D22 /* IMenuEntry.h */; };
+		43265C6808E48D980020C22F /* IMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFC087ED8DC002E5D22 /* IMode.h */; };
+		43265C6908E48D980020C22F /* INewDocumentCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFD087ED8DC002E5D22 /* INewDocumentCreate.h */; };
+		43265C6A08E48D980020C22F /* INotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFE087ED8DC002E5D22 /* INotify.h */; };
+		43265C6B08E48D980020C22F /* INotifyClose.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CFF087ED8DC002E5D22 /* INotifyClose.h */; };
+		43265C6C08E48D980020C22F /* Intrusive.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D3F087ED8DC002E5D22 /* Intrusive.h */; };
+		43265C6D08E48D980020C22F /* IOpenGLState.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D00087ED8DC002E5D22 /* IOpenGLState.h */; };
+		43265C6E08E48D980020C22F /* IOpenSceneGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D01087ED8DC002E5D22 /* IOpenSceneGraph.h */; };
+		43265C6F08E48D980020C22F /* IOsgFoxView.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D02087ED8DC002E5D22 /* IOsgFoxView.h */; };
+		43265C7008E48D980020C22F /* IParamFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D03087ED8DC002E5D22 /* IParamFile.h */; };
+		43265C7108E48D980020C22F /* IPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D04087ED8DC002E5D22 /* IPlugin.h */; };
+		43265C7208E48D980020C22F /* IPolygonMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D05087ED8DC002E5D22 /* IPolygonMode.h */; };
+		43265C7308E48D980020C22F /* IPreferencesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D06087ED8DC002E5D22 /* IPreferencesManager.h */; };
+		43265C7408E48D980020C22F /* IProgressBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D07087ED8DC002E5D22 /* IProgressBar.h */; };
+		43265C7508E48D980020C22F /* IPsfFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D08087ED8DC002E5D22 /* IPsfFile.h */; };
+		43265C7608E48D980020C22F /* IQuestion.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D09087ED8DC002E5D22 /* IQuestion.h */; };
+		43265C7708E48D980020C22F /* IRead.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0A087ED8DC002E5D22 /* IRead.h */; };
+		43265C7808E48D980020C22F /* IReadImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0B087ED8DC002E5D22 /* IReadImage.h */; };
+		43265C7908E48D980020C22F /* IReadProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0C087ED8DC002E5D22 /* IReadProperties.h */; };
+		43265C7A08E48D980020C22F /* IReadTIFF.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0D087ED8DC002E5D22 /* IReadTIFF.h */; };
+		43265C7B08E48D980020C22F /* IRedraw.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0E087ED8DC002E5D22 /* IRedraw.h */; };
+		43265C7C08E48D980020C22F /* IReportErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D0F087ED8DC002E5D22 /* IReportErrors.h */; };
+		43265C7D08E48D980020C22F /* ISaveFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D10087ED8DC002E5D22 /* ISaveFileDialog.h */; };
+		43265C7E08E48D980020C22F /* ISceneIntersect.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D11087ED8DC002E5D22 /* ISceneIntersect.h */; };
+		43265C7F08E48D980020C22F /* ISelectionBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D12087ED8DC002E5D22 /* ISelectionBox.h */; };
+		43265C8008E48D980020C22F /* ISendMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D13087ED8DC002E5D22 /* ISendMessage.h */; };
+		43265C8108E48D980020C22F /* ISetCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D14087ED8DC002E5D22 /* ISetCursor.h */; };
+		43265C8208E48D980020C22F /* ISetTool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D15087ED8DC002E5D22 /* ISetTool.h */; };
+		43265C8308E48D980020C22F /* IShadeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D16087ED8DC002E5D22 /* IShadeModel.h */; };
+		43265C8408E48D980020C22F /* IsOfType.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D50087ED8DC002E5D22 /* IsOfType.h */; };
+		43265C8508E48D980020C22F /* ISpin.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D17087ED8DC002E5D22 /* ISpin.h */; };
+		43265C8608E48D980020C22F /* IStatusBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D18087ED8DC002E5D22 /* IStatusBar.h */; };
+		43265C8708E48D980020C22F /* IStereo.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D19087ED8DC002E5D22 /* IStereo.h */; };
+		43265C8808E48D980020C22F /* ITextMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1A087ED8DC002E5D22 /* ITextMatrix.h */; };
+		43265C8908E48D980020C22F /* ITrackball.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1B087ED8DC002E5D22 /* ITrackball.h */; };
+		43265C8A08E48D980020C22F /* ITriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C20890783900B2F004 /* ITriangle.h */; };
+		43265C8B08E48D980020C22F /* ITriangleSV.h in Headers */ = {isa = PBXBuildFile; fileRef = 43887E1608B2E2250005B358 /* ITriangleSV.h */; };
+		43265C8C08E48D980020C22F /* ITriangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D577B108BCC46900493C0A /* ITriangulate.h */; };
+		43265C8D08E48D980020C22F /* IUndo.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1C087ED8DC002E5D22 /* IUndo.h */; };
+		43265C8E08E48D980020C22F /* IUnknown.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1D087ED8DC002E5D22 /* IUnknown.h */; };
+		43265C8F08E48D980020C22F /* IUpdateTextWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1E087ED8DC002E5D22 /* IUpdateTextWindow.h */; };
+		43265C9008E48D980020C22F /* IUpdateTreeControls.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D1F087ED8DC002E5D22 /* IUpdateTreeControls.h */; };
+		43265C9108E48D980020C22F /* IView.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D20087ED8DC002E5D22 /* IView.h */; };
+		43265C9208E48D980020C22F /* IViewer.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D21087ED8DC002E5D22 /* IViewer.h */; };
+		43265C9308E48D980020C22F /* IVTKCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D22087ED8DC002E5D22 /* IVTKCanvas.h */; };
+		43265C9408E48D980020C22F /* IWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D23087ED8DC002E5D22 /* IWindow.h */; };
+		43265C9508E48D980020C22F /* LastError.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D75087ED8DC002E5D22 /* LastError.h */; };
+		43265C9608E48D980020C22F /* LessVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90A08CDE1F90081F87F /* LessVector.h */; };
+		43265C9708E48D980020C22F /* Library.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C8C087ED8DC002E5D22 /* Library.h */; };
+		43265C9808E48D980020C22F /* Loader.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C8E087ED8DC002E5D22 /* Loader.h */; };
+		43265C9908E48D980020C22F /* Manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C7E087ED8DC002E5D22 /* Manager.h */; };
+		43265C9A08E48D980020C22F /* Manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C94087ED8DC002E5D22 /* Manager.h */; };
+		43265C9B08E48D980020C22F /* Map.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D7E087ED8DC002E5D22 /* Map.h */; };
+		43265C9C08E48D980020C22F /* Math.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D30087ED8DC002E5D22 /* Math.h */; };
+		43265C9D08E48D980020C22F /* Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D54087ED8DC002E5D22 /* Matrix.h */; };
+		43265C9E08E48D980020C22F /* Matrix44.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D31087ED8DC002E5D22 /* Matrix44.h */; };
+		43265C9F08E48D980020C22F /* MemberFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C64087ED8DC002E5D22 /* MemberFunction.h */; };
+		43265CA008E48D980020C22F /* Memory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D77087ED8DC002E5D22 /* Memory.h */; };
+		43265CA108E48D980020C22F /* MenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60E40891BC0600B1EC98 /* MenuBar.h */; };
+		43265CA208E48D980020C22F /* MinMax.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D32087ED8DC002E5D22 /* MinMax.h */; };
+		43265CA308E48D980020C22F /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D80087ED8DC002E5D22 /* Mutex.h */; };
+		43265CA408E48D980020C22F /* Node.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D55087ED8DC002E5D22 /* Node.h */; };
+		43265CA508E48D980020C22F /* NoReferencePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D40087ED8DC002E5D22 /* NoReferencePolicy.h */; };
+		43265CA608E48D980020C22F /* NullPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D41087ED8DC002E5D22 /* NullPolicy.h */; };
+		43265CA708E48D980020C22F /* Object.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C80087ED8DC002E5D22 /* Object.h */; };
+		43265CA808E48D980020C22F /* ObjectDelete.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D42087ED8DC002E5D22 /* ObjectDelete.h */; };
+		43265CA908E48D980020C22F /* ObjectDeletePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D43087ED8DC002E5D22 /* ObjectDeletePolicy.h */; };
+		43265CAA08E48D980020C22F /* OctTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C87087ED8DC002E5D22 /* OctTree.h */; };
+		43265CAB08E48D980020C22F /* Pair.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB1087ED8DC002E5D22 /* Pair.h */; };
+		43265CAC08E48D980020C22F /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C79087ED8DC002E5D22 /* Parser.h */; };
+		43265CAD08E48D980020C22F /* Path.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA9087ED8DC002E5D22 /* Path.h */; };
+		43265CAE08E48D980020C22F /* Pointers.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D44087ED8DC002E5D22 /* Pointers.h */; };
+		43265CAF08E48D980020C22F /* Predicates.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D4B087ED8DC002E5D22 /* Predicates.h */; };
+		43265CB008E48D980020C22F /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D6A087ED8DC002E5D22 /* Preferences.h */; };
+		43265CB108E48D980020C22F /* PrintingPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C9D087ED8DC002E5D22 /* PrintingPolicy.h */; };
+		43265CB208E48D980020C22F /* ProgressBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D5F087ED8DC002E5D22 /* ProgressBar.h */; };
+		43265CB308E48D980020C22F /* ProgressBarUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C66087ED8DC002E5D22 /* ProgressBarUpdate.h */; };
+		43265CB408E48D980020C22F /* QueryPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D45087ED8DC002E5D22 /* QueryPointer.h */; };
+		43265CB508E48D980020C22F /* Queue.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D81087ED8DC002E5D22 /* Queue.h */; };
+		43265CB608E48D980020C22F /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C67087ED8DC002E5D22 /* Random.h */; };
+		43265CB708E48D980020C22F /* Reader.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D25087ED8DC002E5D22 /* Reader.h */; };
+		43265CB808E48D980020C22F /* Redirect.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D26087ED8DC002E5D22 /* Redirect.h */; };
+		43265CB908E48D980020C22F /* RefCountPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D46087ED8DC002E5D22 /* RefCountPolicy.h */; };
+		43265CBA08E48D980020C22F /* Referenced.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C6F087ED8DC002E5D22 /* Referenced.h */; };
+		43265CBB08E48D980020C22F /* Registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C82087ED8DC002E5D22 /* Registry.h */; };
+		43265CBC08E48D980020C22F /* ReportErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D61087ED8DC002E5D22 /* ReportErrors.h */; };
+		43265CBD08E48D980020C22F /* Reset.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D67087ED8DC002E5D22 /* Reset.h */; };
+		43265CBE08E48D980020C22F /* SameType.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D38087ED8DC002E5D22 /* SameType.h */; };
+		43265CBF08E48D980020C22F /* Screen.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D79087ED8DC002E5D22 /* Screen.h */; };
+		43265CC008E48D980020C22F /* Set.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D82087ED8DC002E5D22 /* Set.h */; };
+		43265CC108E48D980020C22F /* Slash.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CAA087ED8DC002E5D22 /* Slash.h */; };
+		43265CC208E48D980020C22F /* SmartPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D47087ED8DC002E5D22 /* SmartPointer.h */; };
+		43265CC308E48D980020C22F /* Socket.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D7B087ED8DC002E5D22 /* Socket.h */; };
+		43265CC408E48D980020C22F /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C6B087ED8DC002E5D22 /* Sphere.h */; };
+		43265CC508E48D980020C22F /* SStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CB3087ED8DC002E5D22 /* SStream.h */; };
+		43265CC608E48D980020C22F /* Stack.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C9F087ED8DC002E5D22 /* Stack.h */; };
+		43265CC708E48D980020C22F /* StaticAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D39087ED8DC002E5D22 /* StaticAssert.h */; };
+		43265CC808E48D980020C22F /* Stats.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CAB087ED8DC002E5D22 /* Stats.h */; };
+		43265CC908E48D980020C22F /* StatusBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D63087ED8DC002E5D22 /* StatusBar.h */; };
+		43265CCA08E48D980020C22F /* Temp.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CAD087ED8DC002E5D22 /* Temp.h */; };
+		43265CCB08E48D980020C22F /* TextWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D65087ED8DC002E5D22 /* TextWindow.h */; };
+		43265CCC08E48D980020C22F /* ThreadId.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D83087ED8DC002E5D22 /* ThreadId.h */; };
+		43265CCD08E48D980020C22F /* Thrower.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA3087ED8DC002E5D22 /* Thrower.h */; };
+		43265CCE08E48D980020C22F /* ThrowingPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CA0087ED8DC002E5D22 /* ThrowingPolicy.h */; };
+		43265CCF08E48D980020C22F /* Tolerance.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D51087ED8DC002E5D22 /* Tolerance.h */; };
+		43265CD008E48D980020C22F /* Transpose.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D33087ED8DC002E5D22 /* Transpose.h */; };
+		43265CD108E48D980020C22F /* Triangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D4C087ED8DC002E5D22 /* Triangle.h */; };
+		43265CD208E48D980020C22F /* Trim.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D70087ED8DC002E5D22 /* Trim.h */; };
+		43265CD308E48D980020C22F /* TriStrip.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C6C087ED8DC002E5D22 /* TriStrip.h */; };
+		43265CD408E48D980020C22F /* Typed.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C71087ED8DC002E5D22 /* Typed.h */; };
+		43265CD508E48D980020C22F /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D87087ED8DC002E5D22 /* Types.h */; };
+		43265CD608E48D980020C22F /* TypeWrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D3A087ED8DC002E5D22 /* TypeWrap.h */; };
+		43265CD708E48D980020C22F /* UnaryPair.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D52087ED8DC002E5D22 /* UnaryPair.h */; };
+		43265CD808E48D980020C22F /* Update.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D49087ED8DC002E5D22 /* Update.h */; };
+		43265CD908E48D980020C22F /* Variable.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D84087ED8DC002E5D22 /* Variable.h */; };
+		43265CDA08E48D980020C22F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992C88087ED8DC002E5D22 /* Vector.h */; };
+		43265CDB08E48D980020C22F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D56087ED8DC002E5D22 /* Vector.h */; };
+		43265CDC08E48D980020C22F /* Vector2.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D34087ED8DC002E5D22 /* Vector2.h */; };
+		43265CDD08E48D980020C22F /* Vector3.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D35087ED8DC002E5D22 /* Vector3.h */; };
+		43265CDE08E48D980020C22F /* Vector4.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D36087ED8DC002E5D22 /* Vector4.h */; };
+		43265CDF08E48D980020C22F /* Writer.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D27087ED8DC002E5D22 /* Writer.h */; };
+		43265CE108E48DB90020C22F /* Arguments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C77087ED8DC002E5D22 /* Arguments.cpp */; };
+		43265CEB08E48DB90020C22F /* Busy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D6C087ED8DC002E5D22 /* Busy.cpp */; };
+		43265CEE08E48DB90020C22F /* CancelButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D5A087ED8DC002E5D22 /* CancelButton.cpp */; };
+		43265CF408E48DB90020C22F /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 432FBA7F089E78E7000D01F5 /* Clock.cpp */; };
+		43265CF708E48DB90020C22F /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43137FF9088DF1DE00FE58B9 /* Color.cpp */; };
+		43265D0108E48DB90020C22F /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C90087ED8DC002E5D22 /* Document.cpp */; };
+		43265D0908E48DB90020C22F /* EventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D5C087ED8DC002E5D22 /* EventQueue.cpp */; };
+		43265D1B08E48DB90020C22F /* GUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992CB5087ED8DC002E5D22 /* GUID.cpp */; };
+		43265D1E08E48DB90020C22F /* Host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D72087ED8DC002E5D22 /* Host.cpp */; };
+		43265D9908E48DB90020C22F /* LastError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D74087ED8DC002E5D22 /* LastError.cpp */; };
+		43265D9C08E48DB90020C22F /* Library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C8B087ED8DC002E5D22 /* Library.cpp */; };
+		43265D9E08E48DB90020C22F /* Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C8D087ED8DC002E5D22 /* Loader.cpp */; };
+		43265DA008E48DB90020C22F /* Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C7D087ED8DC002E5D22 /* Manager.cpp */; };
+		43265DA108E48DB90020C22F /* Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C93087ED8DC002E5D22 /* Manager.cpp */; };
+		43265DA908E48DB90020C22F /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D76087ED8DC002E5D22 /* Memory.cpp */; };
+		43265DAB08E48DB90020C22F /* MenuBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60E30891BC0600B1EC98 /* MenuBar.cpp */; };
+		43265DAE08E48DB90020C22F /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D7F087ED8DC002E5D22 /* Mutex.cpp */; };
+		43265DB308E48DB90020C22F /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C7F087ED8DC002E5D22 /* Object.cpp */; };
+		43265DBD08E48DB90020C22F /* Preferences.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D69087ED8DC002E5D22 /* Preferences.cpp */; };
+		43265DC008E48DB90020C22F /* ProgressBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D5E087ED8DC002E5D22 /* ProgressBar.cpp */; };
+		43265DC208E48DB90020C22F /* ProgressBarUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C65087ED8DC002E5D22 /* ProgressBarUpdate.cpp */; };
+		43265DCA08E48DB90020C22F /* Referenced.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C6E087ED8DC002E5D22 /* Referenced.cpp */; };
+		43265DCC08E48DB90020C22F /* Registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C81087ED8DC002E5D22 /* Registry.cpp */; };
+		43265DCE08E48DB90020C22F /* ReportErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D60087ED8DC002E5D22 /* ReportErrors.cpp */; };
+		43265DD208E48DB90020C22F /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D78087ED8DC002E5D22 /* Screen.cpp */; };
+		43265DD708E48DB90020C22F /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D7A087ED8DC002E5D22 /* Socket.cpp */; };
+		43265DDB08E48DB90020C22F /* Stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C9E087ED8DC002E5D22 /* Stack.cpp */; };
+		43265DDF08E48DB90020C22F /* StatusBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D62087ED8DC002E5D22 /* StatusBar.cpp */; };
+		43265DE108E48DB90020C22F /* Temp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992CAC087ED8DC002E5D22 /* Temp.cpp */; };
+		43265DE308E48DB90020C22F /* TextWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D64087ED8DC002E5D22 /* TextWindow.cpp */; };
+		43265DED08E48DB90020C22F /* Typed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992C70087ED8DC002E5D22 /* Typed.cpp */; };
+		43265DEF08E48DB90020C22F /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D86087ED8DC002E5D22 /* Types.cpp */; };
+		43265E0E08E48DDD0020C22F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB0B00895603900126128 /* OpenGL.framework */; };
 		432FBA80089E78E7000D01F5 /* Clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 432FBA7E089E78E7000D01F5 /* Clock.h */; };
 		432FBA81089E78E7000D01F5 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 432FBA7F089E78E7000D01F5 /* Clock.cpp */; };
 		436671C30890783900B2F004 /* IFlipNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C00890783900B2F004 /* IFlipNormal.h */; };
@@ -284,12 +568,16 @@
 		43992E86087ED8DD002E5D22 /* Variable.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D84087ED8DC002E5D22 /* Variable.h */; };
 		43992E87087ED8DD002E5D22 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D86087ED8DC002E5D22 /* Types.cpp */; };
 		43992E88087ED8DD002E5D22 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D87087ED8DC002E5D22 /* Types.h */; };
+		43BE6CD108D653DF00B947A2 /* IAxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43BE6CD008D653DF00B947A2 /* IAxes.h */; };
 		43D577B208BCC46900493C0A /* ITriangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D577B108BCC46900493C0A /* ITriangulate.h */; };
 		43DA18B408832CE00046E5BA /* IMaterialEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B308832CE00046E5BA /* IMaterialEditor.h */; };
 		43DA18B908832D3B0046E5BA /* IBuildSceneVtk.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */; };
 		43DA18BA08832D3B0046E5BA /* ICreateMovie.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B608832D3B0046E5BA /* ICreateMovie.h */; };
 		43DA18BB08832D3B0046E5BA /* IGetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B708832D3B0046E5BA /* IGetOptions.h */; };
 		43DA18BC08832D3B0046E5BA /* IHandleActivatingDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B808832D3B0046E5BA /* IHandleActivatingDocument.h */; };
+		43F0E90B08CDE1F90081F87F /* CloseFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90808CDE1F90081F87F /* CloseFloat.h */; };
+		43F0E90C08CDE1F90081F87F /* EqualVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90908CDE1F90081F87F /* EqualVector.h */; };
+		43F0E90D08CDE1F90081F87F /* LessVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F0E90A08CDE1F90081F87F /* LessVector.h */; };
 		43F64A0308C6427C005F2A68 /* IAddSharedVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */; };
 /* End PBXBuildFile section */
 
@@ -331,6 +619,8 @@
 		431E60E10891BBF300B1EC98 /* IMenuBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IMenuBar.h; sourceTree = "<group>"; };
 		431E60E30891BC0600B1EC98 /* MenuBar.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MenuBar.cpp; sourceTree = "<group>"; };
 		431E60E40891BC0600B1EC98 /* MenuBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MenuBar.h; sourceTree = "<group>"; };
+		43265BDC08E48C430020C22F /* Usul.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Usul.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		43265BDD08E48C430020C22F /* Framework-info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Framework-info.plist"; sourceTree = "<group>"; };
 		432FBA7E089E78E7000D01F5 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		432FBA7F089E78E7000D01F5 /* Clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
 		436671C00890783900B2F004 /* IFlipNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IFlipNormal.h; sourceTree = "<group>"; };
@@ -595,17 +885,29 @@
 		43992D84087ED8DC002E5D22 /* Variable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Variable.h; path = Threads/Variable.h; sourceTree = SOURCE_ROOT; };
 		43992D86087ED8DC002E5D22 /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Types.cpp; path = Types/Types.cpp; sourceTree = SOURCE_ROOT; };
 		43992D87087ED8DC002E5D22 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = Types/Types.h; sourceTree = SOURCE_ROOT; };
+		43BE6CD008D653DF00B947A2 /* IAxes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IAxes.h; sourceTree = "<group>"; };
 		43D577B108BCC46900493C0A /* ITriangulate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITriangulate.h; sourceTree = "<group>"; };
 		43DA18B308832CE00046E5BA /* IMaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMaterialEditor.h; path = Interfaces/IMaterialEditor.h; sourceTree = SOURCE_ROOT; };
 		43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IBuildSceneVtk.h; path = Interfaces/IBuildSceneVtk.h; sourceTree = SOURCE_ROOT; };
 		43DA18B608832D3B0046E5BA /* ICreateMovie.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ICreateMovie.h; path = Interfaces/ICreateMovie.h; sourceTree = SOURCE_ROOT; };
 		43DA18B708832D3B0046E5BA /* IGetOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetOptions.h; path = Interfaces/IGetOptions.h; sourceTree = SOURCE_ROOT; };
 		43DA18B808832D3B0046E5BA /* IHandleActivatingDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IHandleActivatingDocument.h; path = Interfaces/IHandleActivatingDocument.h; sourceTree = SOURCE_ROOT; };
+		43F0E90808CDE1F90081F87F /* CloseFloat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CloseFloat.h; path = Predicates/CloseFloat.h; sourceTree = SOURCE_ROOT; };
+		43F0E90908CDE1F90081F87F /* EqualVector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = EqualVector.h; path = Predicates/EqualVector.h; sourceTree = SOURCE_ROOT; };
+		43F0E90A08CDE1F90081F87F /* LessVector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LessVector.h; path = Predicates/LessVector.h; sourceTree = SOURCE_ROOT; };
 		43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddSharedVertex.h; path = Interfaces/IAddSharedVertex.h; sourceTree = SOURCE_ROOT; };
 		D2AAC0630554660B00DB518D /* libUsul.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libUsul.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		43265BDA08E48C430020C22F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265E0E08E48DDD0020C22F /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D289988505E68E00004EDB86 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -620,9 +922,10 @@
 		08FB7794FE84155DC02AAC07 /* Usul */ = {
 			isa = PBXGroup;
 			children = (
-				431BB0B00895603900126128 /* OpenGL.framework */,
 				08FB7795FE84155DC02AAC07 /* Source */,
+				43265BE308E48D340020C22F /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				43265BDD08E48C430020C22F /* Framework-info.plist */,
 			);
 			name = Usul;
 			sourceTree = "<group>";
@@ -676,6 +979,7 @@
 			isa = PBXGroup;
 			children = (
 				D2AAC0630554660B00DB518D /* libUsul.dylib */,
+				43265BDC08E48C430020C22F /* Usul.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -687,6 +991,14 @@
 				43137FFA088DF1DE00FE58B9 /* Color.h */,
 			);
 			path = Functions;
+			sourceTree = "<group>";
+		};
+		43265BE308E48D340020C22F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				431BB0B00895603900126128 /* OpenGL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		43992C62087ED8DC002E5D22 /* Adaptors */ = {
@@ -886,6 +1198,7 @@
 		43992CB7087ED8DC002E5D22 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				43BE6CD008D653DF00B947A2 /* IAxes.h */,
 				43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */,
 				43887E1508B2E2250005B358 /* IGetNormal.h */,
 				43887E1608B2E2250005B358 /* ITriangleSV.h */,
@@ -1098,6 +1411,9 @@
 		43992D4D087ED8DC002E5D22 /* Predicates */ = {
 			isa = PBXGroup;
 			children = (
+				43F0E90808CDE1F90081F87F /* CloseFloat.h */,
+				43F0E90908CDE1F90081F87F /* EqualVector.h */,
+				43F0E90A08CDE1F90081F87F /* LessVector.h */,
 				431BAF380895338600126128 /* CompareCoordinate.h */,
 				43992D4E087ED8DC002E5D22 /* EndsWith.h */,
 				43992D4F087ED8DC002E5D22 /* FileExists.h */,
@@ -1232,6 +1548,264 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		43265BD708E48C430020C22F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265BE508E48D980020C22F /* Angle.h in Headers */,
+				43265BE608E48D980020C22F /* Arguments.h in Headers */,
+				43265BE708E48D980020C22F /* Array.h in Headers */,
+				43265BE808E48D980020C22F /* ArrayDelete.h in Headers */,
+				43265BE908E48D980020C22F /* ArrayDeletePolicy.h in Headers */,
+				43265BEA08E48D980020C22F /* Assert.h in Headers */,
+				43265BEB08E48D980020C22F /* AssertPolicy.h in Headers */,
+				43265BEC08E48D980020C22F /* Attribute.h in Headers */,
+				43265BED08E48D980020C22F /* Bind.h in Headers */,
+				43265BEE08E48D980020C22F /* Bits.h in Headers */,
+				43265BEF08E48D980020C22F /* Busy.h in Headers */,
+				43265BF008E48D980020C22F /* Caller.h in Headers */,
+				43265BF108E48D980020C22F /* CancelButton.h in Headers */,
+				43265BF208E48D980020C22F /* Canceled.h in Headers */,
+				43265BF308E48D980020C22F /* Case.h in Headers */,
+				43265BF408E48D980020C22F /* Cast.h in Headers */,
+				43265BF508E48D980020C22F /* Checker.h in Headers */,
+				43265BF608E48D980020C22F /* Clock.h in Headers */,
+				43265BF708E48D980020C22F /* CloseFloat.h in Headers */,
+				43265BF808E48D980020C22F /* Color.h in Headers */,
+				43265BF908E48D980020C22F /* CompareCoordinate.h in Headers */,
+				43265BFA08E48D980020C22F /* CompositePolicy.h in Headers */,
+				43265BFB08E48D980020C22F /* Constants.h in Headers */,
+				43265BFC08E48D980020C22F /* Contents.h in Headers */,
+				43265BFD08E48D980020C22F /* ConvexHullSort.h in Headers */,
+				43265BFE08E48D980020C22F /* Create.h in Headers */,
+				43265BFF08E48D980020C22F /* Delete.h in Headers */,
+				43265C0008E48D980020C22F /* Direction.h in Headers */,
+				43265C0108E48D980020C22F /* Document.h in Headers */,
+				43265C0208E48D980020C22F /* DoNothingPolicy.h in Headers */,
+				43265C0308E48D980020C22F /* DynamicArray.h in Headers */,
+				43265C0408E48D980020C22F /* Endian.h in Headers */,
+				43265C0508E48D980020C22F /* EndsWith.h in Headers */,
+				43265C0608E48D980020C22F /* Equality.h in Headers */,
+				43265C0708E48D980020C22F /* EqualVector.h in Headers */,
+				43265C0808E48D980020C22F /* EventQueue.h in Headers */,
+				43265C0908E48D980020C22F /* Exceptions.h in Headers */,
+				43265C0A08E48D980020C22F /* Exceptions.h in Headers */,
+				43265C0B08E48D980020C22F /* Exceptions.h in Headers */,
+				43265C0C08E48D980020C22F /* Export.h in Headers */,
+				43265C0D08E48D980020C22F /* Extract.h in Headers */,
+				43265C0E08E48D980020C22F /* FileExists.h in Headers */,
+				43265C0F08E48D980020C22F /* FileInfo.h in Headers */,
+				43265C1008E48D980020C22F /* FillLoop.h in Headers */,
+				43265C1108E48D980020C22F /* Find.h in Headers */,
+				43265C1208E48D980020C22F /* FindAllConnected.h in Headers */,
+				43265C1308E48D980020C22F /* FindLoops.h in Headers */,
+				43265C1408E48D980020C22F /* Finite.h in Headers */,
+				43265C1508E48D980020C22F /* GLBeginEnd.h in Headers */,
+				43265C1608E48D980020C22F /* GLPushPopAttrib.h in Headers */,
+				43265C1708E48D980020C22F /* GLPushPopMatrix.h in Headers */,
+				43265C1808E48D980020C22F /* Guard.h in Headers */,
+				43265C1908E48D980020C22F /* GUID.h in Headers */,
+				43265C1A08E48D980020C22F /* Hash.h in Headers */,
+				43265C1B08E48D980020C22F /* Host.h in Headers */,
+				43265C1C08E48D980020C22F /* IActiveDocument.h in Headers */,
+				43265C1D08E48D980020C22F /* IActiveView.h in Headers */,
+				43265C1E08E48D980020C22F /* IAddFrame.h in Headers */,
+				43265C1F08E48D980020C22F /* IAddSharedVertex.h in Headers */,
+				43265C2008E48D980020C22F /* IAddTriangle.h in Headers */,
+				43265C2108E48D980020C22F /* IAnimate.h in Headers */,
+				43265C2208E48D980020C22F /* IAxes.h in Headers */,
+				43265C2308E48D980020C22F /* IBackground.h in Headers */,
+				43265C2408E48D980020C22F /* IBoundingBox.h in Headers */,
+				43265C2508E48D980020C22F /* IBoundingSphere.h in Headers */,
+				43265C2608E48D980020C22F /* IBuildScene.h in Headers */,
+				43265C2708E48D980020C22F /* IBuildSceneVtk.h in Headers */,
+				43265C2808E48D980020C22F /* ICamera.h in Headers */,
+				43265C2908E48D980020C22F /* ICancelButton.h in Headers */,
+				43265C2A08E48D980020C22F /* ICanClose.h in Headers */,
+				43265C2B08E48D980020C22F /* ICanInsert.h in Headers */,
+				43265C2C08E48D980020C22F /* IClassesFactory.h in Headers */,
+				43265C2D08E48D980020C22F /* IClassFactory.h in Headers */,
+				43265C2E08E48D980020C22F /* ICleanUp.h in Headers */,
+				43265C2F08E48D980020C22F /* IClippingPlanes.h in Headers */,
+				43265C3008E48D980020C22F /* ICommand.h in Headers */,
+				43265C3108E48D980020C22F /* ICreateMovie.h in Headers */,
+				43265C3208E48D980020C22F /* IDeleteAllConnected.h in Headers */,
+				43265C3308E48D980020C22F /* IDeletePrimitive.h in Headers */,
+				43265C3408E48D980020C22F /* IDocument.h in Headers */,
+				43265C3508E48D980020C22F /* IDocumentCreate.h in Headers */,
+				43265C3608E48D980020C22F /* IExport.h in Headers */,
+				43265C3708E48D980020C22F /* If.h in Headers */,
+				43265C3808E48D980020C22F /* IFindLoops.h in Headers */,
+				43265C3908E48D980020C22F /* IFlipNormal.h in Headers */,
+				43265C3A08E48D980020C22F /* IFlipNormals.h in Headers */,
+				43265C3B08E48D980020C22F /* IFlushEvents.h in Headers */,
+				43265C3C08E48D980020C22F /* IFoxAddTab.h in Headers */,
+				43265C3D08E48D980020C22F /* IFoxClientArea.h in Headers */,
+				43265C3E08E48D980020C22F /* IFoxDockBar.h in Headers */,
+				43265C3F08E48D980020C22F /* IFoxEvent.h in Headers */,
+				43265C4008E48D980020C22F /* IFoxImage.h in Headers */,
+				43265C4108E48D980020C22F /* IFoxMDIMenu.h in Headers */,
+				43265C4208E48D980020C22F /* IFoxMenuPane.h in Headers */,
+				43265C4308E48D980020C22F /* IFoxRadioButton.h in Headers */,
+				43265C4408E48D980020C22F /* IFoxSubMenu.h in Headers */,
+				43265C4508E48D980020C22F /* IFoxTabBook.h in Headers */,
+				43265C4608E48D980020C22F /* IFoxTabItem.h in Headers */,
+				43265C4708E48D980020C22F /* IFoxToggleButton.h in Headers */,
+				43265C4808E48D980020C22F /* IFoxToolbar.h in Headers */,
+				43265C4908E48D980020C22F /* IFoxToolbarDock.h in Headers */,
+				43265C4A08E48D980020C22F /* IFoxTreeList.h in Headers */,
+				43265C4B08E48D980020C22F /* IFrameDump.h in Headers */,
+				43265C4C08E48D980020C22F /* IGetBoundingBox.h in Headers */,
+				43265C4D08E48D980020C22F /* IGetDocument.h in Headers */,
+				43265C4E08E48D980020C22F /* IGetHeight.h in Headers */,
+				43265C4F08E48D980020C22F /* IGetImageData.h in Headers */,
+				43265C5008E48D980020C22F /* IGetImageProperties.h in Headers */,
+				43265C5108E48D980020C22F /* IGetLoops.h in Headers */,
+				43265C5208E48D980020C22F /* IGetMolecules.h in Headers */,
+				43265C5308E48D980020C22F /* IGetNormal.h in Headers */,
+				43265C5408E48D980020C22F /* IGetOptions.h in Headers */,
+				43265C5508E48D980020C22F /* IGetPosition.h in Headers */,
+				43265C5608E48D980020C22F /* IGetTitle.h in Headers */,
+				43265C5708E48D980020C22F /* IGetVertex.h in Headers */,
+				43265C5808E48D980020C22F /* IGetWidth.h in Headers */,
+				43265C5908E48D980020C22F /* IGroup.h in Headers */,
+				43265C5A08E48D980020C22F /* IGUIDelegate.h in Headers */,
+				43265C5B08E48D980020C22F /* IHandle.h in Headers */,
+				43265C5C08E48D980020C22F /* IHandleActivatingDocument.h in Headers */,
+				43265C5D08E48D980020C22F /* IImage.h in Headers */,
+				43265C5E08E48D980020C22F /* IImageList.h in Headers */,
+				43265C5F08E48D980020C22F /* IImageToGrayScale.h in Headers */,
+				43265C6008E48D980020C22F /* IImageView.h in Headers */,
+				43265C6108E48D980020C22F /* IInitNewDocument.h in Headers */,
+				43265C6208E48D980020C22F /* IKeepAllConnected.h in Headers */,
+				43265C6308E48D980020C22F /* ILoadFileDialog.h in Headers */,
+				43265C6408E48D980020C22F /* IMainWindow.h in Headers */,
+				43265C6508E48D980020C22F /* IMaterialEditor.h in Headers */,
+				43265C6608E48D980020C22F /* IMenuBar.h in Headers */,
+				43265C6708E48D980020C22F /* IMenuEntry.h in Headers */,
+				43265C6808E48D980020C22F /* IMode.h in Headers */,
+				43265C6908E48D980020C22F /* INewDocumentCreate.h in Headers */,
+				43265C6A08E48D980020C22F /* INotify.h in Headers */,
+				43265C6B08E48D980020C22F /* INotifyClose.h in Headers */,
+				43265C6C08E48D980020C22F /* Intrusive.h in Headers */,
+				43265C6D08E48D980020C22F /* IOpenGLState.h in Headers */,
+				43265C6E08E48D980020C22F /* IOpenSceneGraph.h in Headers */,
+				43265C6F08E48D980020C22F /* IOsgFoxView.h in Headers */,
+				43265C7008E48D980020C22F /* IParamFile.h in Headers */,
+				43265C7108E48D980020C22F /* IPlugin.h in Headers */,
+				43265C7208E48D980020C22F /* IPolygonMode.h in Headers */,
+				43265C7308E48D980020C22F /* IPreferencesManager.h in Headers */,
+				43265C7408E48D980020C22F /* IProgressBar.h in Headers */,
+				43265C7508E48D980020C22F /* IPsfFile.h in Headers */,
+				43265C7608E48D980020C22F /* IQuestion.h in Headers */,
+				43265C7708E48D980020C22F /* IRead.h in Headers */,
+				43265C7808E48D980020C22F /* IReadImage.h in Headers */,
+				43265C7908E48D980020C22F /* IReadProperties.h in Headers */,
+				43265C7A08E48D980020C22F /* IReadTIFF.h in Headers */,
+				43265C7B08E48D980020C22F /* IRedraw.h in Headers */,
+				43265C7C08E48D980020C22F /* IReportErrors.h in Headers */,
+				43265C7D08E48D980020C22F /* ISaveFileDialog.h in Headers */,
+				43265C7E08E48D980020C22F /* ISceneIntersect.h in Headers */,
+				43265C7F08E48D980020C22F /* ISelectionBox.h in Headers */,
+				43265C8008E48D980020C22F /* ISendMessage.h in Headers */,
+				43265C8108E48D980020C22F /* ISetCursor.h in Headers */,
+				43265C8208E48D980020C22F /* ISetTool.h in Headers */,
+				43265C8308E48D980020C22F /* IShadeModel.h in Headers */,
+				43265C8408E48D980020C22F /* IsOfType.h in Headers */,
+				43265C8508E48D980020C22F /* ISpin.h in Headers */,
+				43265C8608E48D980020C22F /* IStatusBar.h in Headers */,
+				43265C8708E48D980020C22F /* IStereo.h in Headers */,
+				43265C8808E48D980020C22F /* ITextMatrix.h in Headers */,
+				43265C8908E48D980020C22F /* ITrackball.h in Headers */,
+				43265C8A08E48D980020C22F /* ITriangle.h in Headers */,
+				43265C8B08E48D980020C22F /* ITriangleSV.h in Headers */,
+				43265C8C08E48D980020C22F /* ITriangulate.h in Headers */,
+				43265C8D08E48D980020C22F /* IUndo.h in Headers */,
+				43265C8E08E48D980020C22F /* IUnknown.h in Headers */,
+				43265C8F08E48D980020C22F /* IUpdateTextWindow.h in Headers */,
+				43265C9008E48D980020C22F /* IUpdateTreeControls.h in Headers */,
+				43265C9108E48D980020C22F /* IView.h in Headers */,
+				43265C9208E48D980020C22F /* IViewer.h in Headers */,
+				43265C9308E48D980020C22F /* IVTKCanvas.h in Headers */,
+				43265C9408E48D980020C22F /* IWindow.h in Headers */,
+				43265C9508E48D980020C22F /* LastError.h in Headers */,
+				43265C9608E48D980020C22F /* LessVector.h in Headers */,
+				43265C9708E48D980020C22F /* Library.h in Headers */,
+				43265C9808E48D980020C22F /* Loader.h in Headers */,
+				43265C9908E48D980020C22F /* Manager.h in Headers */,
+				43265C9A08E48D980020C22F /* Manager.h in Headers */,
+				43265C9B08E48D980020C22F /* Map.h in Headers */,
+				43265C9C08E48D980020C22F /* Math.h in Headers */,
+				43265C9D08E48D980020C22F /* Matrix.h in Headers */,
+				43265C9E08E48D980020C22F /* Matrix44.h in Headers */,
+				43265C9F08E48D980020C22F /* MemberFunction.h in Headers */,
+				43265CA008E48D980020C22F /* Memory.h in Headers */,
+				43265CA108E48D980020C22F /* MenuBar.h in Headers */,
+				43265CA208E48D980020C22F /* MinMax.h in Headers */,
+				43265CA308E48D980020C22F /* Mutex.h in Headers */,
+				43265CA408E48D980020C22F /* Node.h in Headers */,
+				43265CA508E48D980020C22F /* NoReferencePolicy.h in Headers */,
+				43265CA608E48D980020C22F /* NullPolicy.h in Headers */,
+				43265CA708E48D980020C22F /* Object.h in Headers */,
+				43265CA808E48D980020C22F /* ObjectDelete.h in Headers */,
+				43265CA908E48D980020C22F /* ObjectDeletePolicy.h in Headers */,
+				43265CAA08E48D980020C22F /* OctTree.h in Headers */,
+				43265CAB08E48D980020C22F /* Pair.h in Headers */,
+				43265CAC08E48D980020C22F /* Parser.h in Headers */,
+				43265CAD08E48D980020C22F /* Path.h in Headers */,
+				43265CAE08E48D980020C22F /* Pointers.h in Headers */,
+				43265CAF08E48D980020C22F /* Predicates.h in Headers */,
+				43265CB008E48D980020C22F /* Preferences.h in Headers */,
+				43265CB108E48D980020C22F /* PrintingPolicy.h in Headers */,
+				43265CB208E48D980020C22F /* ProgressBar.h in Headers */,
+				43265CB308E48D980020C22F /* ProgressBarUpdate.h in Headers */,
+				43265CB408E48D980020C22F /* QueryPointer.h in Headers */,
+				43265CB508E48D980020C22F /* Queue.h in Headers */,
+				43265CB608E48D980020C22F /* Random.h in Headers */,
+				43265CB708E48D980020C22F /* Reader.h in Headers */,
+				43265CB808E48D980020C22F /* Redirect.h in Headers */,
+				43265CB908E48D980020C22F /* RefCountPolicy.h in Headers */,
+				43265CBA08E48D980020C22F /* Referenced.h in Headers */,
+				43265CBB08E48D980020C22F /* Registry.h in Headers */,
+				43265CBC08E48D980020C22F /* ReportErrors.h in Headers */,
+				43265CBD08E48D980020C22F /* Reset.h in Headers */,
+				43265CBE08E48D980020C22F /* SameType.h in Headers */,
+				43265CBF08E48D980020C22F /* Screen.h in Headers */,
+				43265CC008E48D980020C22F /* Set.h in Headers */,
+				43265CC108E48D980020C22F /* Slash.h in Headers */,
+				43265CC208E48D980020C22F /* SmartPointer.h in Headers */,
+				43265CC308E48D980020C22F /* Socket.h in Headers */,
+				43265CC408E48D980020C22F /* Sphere.h in Headers */,
+				43265CC508E48D980020C22F /* SStream.h in Headers */,
+				43265CC608E48D980020C22F /* Stack.h in Headers */,
+				43265CC708E48D980020C22F /* StaticAssert.h in Headers */,
+				43265CC808E48D980020C22F /* Stats.h in Headers */,
+				43265CC908E48D980020C22F /* StatusBar.h in Headers */,
+				43265CCA08E48D980020C22F /* Temp.h in Headers */,
+				43265CCB08E48D980020C22F /* TextWindow.h in Headers */,
+				43265CCC08E48D980020C22F /* ThreadId.h in Headers */,
+				43265CCD08E48D980020C22F /* Thrower.h in Headers */,
+				43265CCE08E48D980020C22F /* ThrowingPolicy.h in Headers */,
+				43265CCF08E48D980020C22F /* Tolerance.h in Headers */,
+				43265CD008E48D980020C22F /* Transpose.h in Headers */,
+				43265CD108E48D980020C22F /* Triangle.h in Headers */,
+				43265CD208E48D980020C22F /* Trim.h in Headers */,
+				43265CD308E48D980020C22F /* TriStrip.h in Headers */,
+				43265CD408E48D980020C22F /* Typed.h in Headers */,
+				43265CD508E48D980020C22F /* Types.h in Headers */,
+				43265CD608E48D980020C22F /* TypeWrap.h in Headers */,
+				43265CD708E48D980020C22F /* UnaryPair.h in Headers */,
+				43265CD808E48D980020C22F /* Update.h in Headers */,
+				43265CD908E48D980020C22F /* Variable.h in Headers */,
+				43265CDA08E48D980020C22F /* Vector.h in Headers */,
+				43265CDB08E48D980020C22F /* Vector.h in Headers */,
+				43265CDC08E48D980020C22F /* Vector2.h in Headers */,
+				43265CDD08E48D980020C22F /* Vector3.h in Headers */,
+				43265CDE08E48D980020C22F /* Vector4.h in Headers */,
+				43265CDF08E48D980020C22F /* Writer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC0600554660B00DB518D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1487,12 +2061,81 @@
 				43887E1808B2E2250005B358 /* ITriangleSV.h in Headers */,
 				43D577B208BCC46900493C0A /* ITriangulate.h in Headers */,
 				43F64A0308C6427C005F2A68 /* IAddSharedVertex.h in Headers */,
+				43F0E90B08CDE1F90081F87F /* CloseFloat.h in Headers */,
+				43F0E90C08CDE1F90081F87F /* EqualVector.h in Headers */,
+				43F0E90D08CDE1F90081F87F /* LessVector.h in Headers */,
+				43BE6CD108D653DF00B947A2 /* IAxes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		43265BDB08E48C430020C22F /* Usul.framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43265BDE08E48C440020C22F /* Build configuration list for PBXNativeTarget "Usul.framework" */;
+			buildPhases = (
+				43265BD708E48C430020C22F /* Headers */,
+				43265BD808E48C430020C22F /* Resources */,
+				43265BD908E48C430020C22F /* Sources */,
+				43265BDA08E48C430020C22F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "Framework-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Framework;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+			);
+			name = Usul.framework;
+			productName = Framework;
+			productReference = 43265BDC08E48C430020C22F /* Usul.framework */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Framework</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.Framework</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>FMWK</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.framework";
+		};
 		D2AAC0620554660B00DB518D /* Usul */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43992C58087ED8B0002E5D22 /* Build configuration list for PBXNativeTarget "Usul" */;
@@ -1539,11 +2182,61 @@
 			projectDirPath = "";
 			targets = (
 				D2AAC0620554660B00DB518D /* Usul */,
+				43265BDB08E48C430020C22F /* Usul.framework */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		43265BD808E48C430020C22F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		43265BD908E48C430020C22F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265CE108E48DB90020C22F /* Arguments.cpp in Sources */,
+				43265CEB08E48DB90020C22F /* Busy.cpp in Sources */,
+				43265CEE08E48DB90020C22F /* CancelButton.cpp in Sources */,
+				43265CF408E48DB90020C22F /* Clock.cpp in Sources */,
+				43265CF708E48DB90020C22F /* Color.cpp in Sources */,
+				43265D0108E48DB90020C22F /* Document.cpp in Sources */,
+				43265D0908E48DB90020C22F /* EventQueue.cpp in Sources */,
+				43265D1B08E48DB90020C22F /* GUID.cpp in Sources */,
+				43265D1E08E48DB90020C22F /* Host.cpp in Sources */,
+				43265D9908E48DB90020C22F /* LastError.cpp in Sources */,
+				43265D9C08E48DB90020C22F /* Library.cpp in Sources */,
+				43265D9E08E48DB90020C22F /* Loader.cpp in Sources */,
+				43265DA008E48DB90020C22F /* Manager.cpp in Sources */,
+				43265DA108E48DB90020C22F /* Manager.cpp in Sources */,
+				43265DA908E48DB90020C22F /* Memory.cpp in Sources */,
+				43265DAB08E48DB90020C22F /* MenuBar.cpp in Sources */,
+				43265DAE08E48DB90020C22F /* Mutex.cpp in Sources */,
+				43265DB308E48DB90020C22F /* Object.cpp in Sources */,
+				43265DBD08E48DB90020C22F /* Preferences.cpp in Sources */,
+				43265DC008E48DB90020C22F /* ProgressBar.cpp in Sources */,
+				43265DC208E48DB90020C22F /* ProgressBarUpdate.cpp in Sources */,
+				43265DCA08E48DB90020C22F /* Referenced.cpp in Sources */,
+				43265DCC08E48DB90020C22F /* Registry.cpp in Sources */,
+				43265DCE08E48DB90020C22F /* ReportErrors.cpp in Sources */,
+				43265DD208E48DB90020C22F /* Screen.cpp in Sources */,
+				43265DD708E48DB90020C22F /* Socket.cpp in Sources */,
+				43265DDB08E48DB90020C22F /* Stack.cpp in Sources */,
+				43265DDF08E48DB90020C22F /* StatusBar.cpp in Sources */,
+				43265DE108E48DB90020C22F /* Temp.cpp in Sources */,
+				43265DE308E48DB90020C22F /* TextWindow.cpp in Sources */,
+				43265DED08E48DB90020C22F /* Typed.cpp in Sources */,
+				43265DEF08E48DB90020C22F /* Types.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC0610554660B00DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1586,6 +2279,101 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		43265BDF08E48C440020C22F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_USUL,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = ../;
+				INFOPLIST_FILE = "Framework-info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Usul;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		43265BE008E48C440020C22F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_USUL;
+				HEADER_SEARCH_PATHS = ../;
+				INFOPLIST_FILE = "Framework-info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Usul;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		43265BE108E48C440020C22F /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				HEADER_SEARCH_PATHS = ../;
+				INFOPLIST_FILE = "Framework-info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Usul;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
 		43992C59087ED8B0002E5D22 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1599,6 +2387,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					_COMPILING_USUL,
 					_DEBUG,
@@ -1606,7 +2395,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../;
-				INSTALL_PATH = /usr/local/lib;
+				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
@@ -1618,19 +2407,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_USUL;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../;
-				INSTALL_PATH = /usr/local/lib;
+				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
 				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Usul;
 				ZERO_LINK = NO;
 			};
@@ -1648,7 +2445,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../;
-				INSTALL_PATH = /usr/local/lib;
+				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
@@ -1676,6 +2473,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		43265BDE08E48C440020C22F /* Build configuration list for PBXNativeTarget "Usul.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43265BDF08E48C440020C22F /* Debug */,
+				43265BE008E48C440020C22F /* Release */,
+				43265BE108E48C440020C22F /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		43992C58087ED8B0002E5D22 /* Build configuration list for PBXNativeTarget "Usul" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

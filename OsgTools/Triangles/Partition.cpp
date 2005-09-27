@@ -264,9 +264,10 @@ osg::Node* Partition::operator () ( osg::Vec3Array *vertices, osg::Vec3Array *no
 
 unsigned int Partition::_index ( const osg::Vec3& v0, const osg::Vec3& v1, const osg::Vec3& v2 )
 {
-  for( unsigned int i = 0; i < _cubes.size(); ++i )
+  const unsigned int size = _cubes.size();
+  for( unsigned int i = 0; i < size; ++i )
   {
-    if( _cubes.at(i).contains ( v0 ) )
+    if( _cubes[i].contains ( v0 ) )
       return i;
   }
 

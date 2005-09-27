@@ -38,7 +38,9 @@
 #include "osg/BoundingBox"
 #include "osg/Vec3f"
 
+#ifndef __APPLE__
 #include "boost/pool/pool_alloc.hpp"
+#endif
 
 #include <vector>
 #include <map>
@@ -59,9 +61,13 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Predicates::CloseFloat < float > CloseFloat;
   typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
-  typedef std::pair < osg::Vec3f, SharedVertex::ValidAccessRefPtr > KeyValuePair;
+    typedef std::pair < osg::Vec3f, SharedVertex::ValidAccessRefPtr > KeyValuePair;
+#ifdef __APPLE__
+  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
+#else 
   typedef boost::fast_pool_allocator < KeyValuePair > Allocator;
   typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector, Allocator > SharedVertices;
+#endif
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map<std::string,std::string> Options;

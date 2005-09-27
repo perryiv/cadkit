@@ -177,7 +177,7 @@ void Triangle::unref ( bool allowDeletion )
   {
     if ( allowDeletion )
     {
-      if ( Usul::Bits::has ( _flags, MEMORY_POOL ) )
+      if ( Usul::Bits::has<unsigned int, unsigned int> ( _flags, MEMORY_POOL ) )
       {
         this->clear();
       }

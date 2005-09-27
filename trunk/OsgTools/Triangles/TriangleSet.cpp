@@ -65,7 +65,9 @@ TriangleSet::TriangleSet() : BaseClass(),
   _factory   ()
 {
   // Keeping tabs on memory consumption...
-  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 200 );
+#ifdef _WIN32
+  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) == 164 );
+#endif
 }
 
 

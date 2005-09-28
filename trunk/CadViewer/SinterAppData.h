@@ -15,7 +15,7 @@
 
 namespace CV{
 
-  enum SinterNodeState { NOTHING, NAME, RECEIVE, DONE };
+  enum SinterNodeState { NOTHING, NAME, RECEIVE, DONE, DISABLED };
 
   class SinterAppData : public vpr::SerializableObject
     {

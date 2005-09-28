@@ -3291,6 +3291,8 @@ void Application::_deleteScene()
         std::cout << "ERROR in SinterPoint = " << result << std::endl;
         std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
         std::cout << "SinterPoint communication will be unusable" << std::endl;
+        _sinterNodeState = DISABLED;
+        return;
       }
       else{
         std::cout << "SinterPoint connected successfully" << std::endl;
@@ -3322,30 +3324,33 @@ void Application::_deleteScene()
 
   void Application::_sinterReceiveModelPreFrame()
   {
-    ErrorChecker ( 2346088800u, isAppThread(), CV::NOT_APP_THREAD );
-
-    // If the machine name is the same as the writer...
-    const std::string host    ( Usul::System::Host::name() );
-    const std::string writer = _prefs->sinterPointWriter();
-
-    // The writer obtains the new osg file from Sinterpoint here and sends out
-    // application data for the other machines
-    if ( host == writer )
+    if( _sinterNodeState != DISABLED )
     {
-      int size;
-      while( (size = _sinterReceiver.Receive(0)) > 0)
+      ErrorChecker ( 2346088800u, isAppThread(), CV::NOT_APP_THREAD );
+
+      // If the machine name is the same as the writer...
+      const std::string host    ( Usul::System::Host::name() );
+      const std::string writer = _prefs->sinterPointWriter();
+
+      // The writer obtains the new osg file from Sinterpoint here and sends out
+      // application data for the other machines
+      if ( host == writer )
       {
-        _sinterReceiveData(size);
-      }
-	
-      // Share the state
-      _sinterAppData->_state = _sinterNodeState;
-            
-      if ( _sinterNodeState == DONE )
-      {
-        // Share the finished file stream name and data
-        _sinterAppData->_name = _sinterNodeName;
-        _sinterAppData->_data = _sinterStream.str();
+        int size;
+        while( (size = _sinterReceiver.Receive(0)) > 0)
+        {
+          _sinterReceiveData(size);
+        }
+
+        // Share the state
+        _sinterAppData->_state = _sinterNodeState;
+
+        if ( _sinterNodeState == DONE )
+        {
+          // Share the finished file stream name and data
+          _sinterAppData->_name = _sinterNodeName;
+          _sinterAppData->_data = _sinterStream.str();
+        }
       }
     }
   }
@@ -3363,47 +3368,50 @@ void Application::_deleteScene()
 
   void Application::_sinterReceiveModelPostFrame()
   {
-    ErrorChecker ( 2346088801u, isAppThread(), CV::NOT_APP_THREAD );
-
-    // If the machine name is the same as the writer...
-    const std::string host    ( Usul::System::Host::name() );
-    const std::string writer = _prefs->sinterPointWriter();
-
-    // Used to see if loaded node matches an existing one
-    int branch,model;
-        
-    // The writer will just finish and load the file here so they all load in postframe
-    // after application data has been sync'd
-    if ( host == writer )
+    if( _sinterNodeState != DISABLED )
     {
-      if ( _sinterNodeState == DONE ) {
-        // Stream in the completed file
-        this->_loadModelStream ( _sinterStream, _sinterNodeName );
-	
-        _sinterStream.clear();
-        _sinterStream.str("");
-        _sinterNodeState = NOTHING;
+      ErrorChecker ( 2346088801u, isAppThread(), CV::NOT_APP_THREAD );
+
+      // If the machine name is the same as the writer...
+      const std::string host    ( Usul::System::Host::name() );
+      const std::string writer = _prefs->sinterPointWriter();
+
+      // Used to see if loaded node matches an existing one
+      int branch,model;
+
+      // The writer will just finish and load the file here so they all load in postframe
+      // after application data has been sync'd
+      if ( host == writer )
+      {
+        if ( _sinterNodeState == DONE ) {
+          // Stream in the completed file
+          this->_loadModelStream ( _sinterStream, _sinterNodeName );
+
+          _sinterStream.clear();
+          _sinterStream.str("");
+          _sinterNodeState = NOTHING;
+        }
       }
-    }
 
-    // Other machines receive ApplicationData and do all their work here
-    else
-    {
-      // Get the state
-      _sinterNodeState = static_cast<SinterNodeState>(_sinterAppData->_state);
-           
-      if ( _sinterNodeState == DONE ) {
-        // Get the name of the new node
-        _sinterNodeName = _sinterAppData->_name;
-        
-        // Get the data if it is finished
-        _sinterStream.str ( _sinterAppData->_data ) ;
+      // Other machines receive ApplicationData and do all their work here
+      else
+      {
+        // Get the state
+        _sinterNodeState = static_cast<SinterNodeState>(_sinterAppData->_state);
 
-        // Stream in the completed file
-        this->_loadModelStream ( _sinterStream, _sinterNodeName );
+        if ( _sinterNodeState == DONE ) {
+          // Get the name of the new node
+          _sinterNodeName = _sinterAppData->_name;
 
-        _sinterStream.clear();
-        _sinterStream.str("");
+          // Get the data if it is finished
+          _sinterStream.str ( _sinterAppData->_data ) ;
+
+          // Stream in the completed file
+          this->_loadModelStream ( _sinterStream, _sinterNodeName );
+
+          _sinterStream.clear();
+          _sinterStream.str("");
+        }
       }
     }
   }

@@ -15,7 +15,7 @@
 
 namespace CV{
 
-  enum SinterNodeState { NOTHING, NAME, RECEIVE, DONE, DISABLED };
+  enum SinterState { NOTHING, DATA, DONE, DISABLED };
 
   class SinterAppData : public vpr::SerializableObject
     {
@@ -23,7 +23,7 @@ namespace CV{
       virtual vpr::ReturnStatus readObject  ( vpr::ObjectReader* reader )
       {
         _data = reader->readString();
-		_name = reader->readString();
+        _name = reader->readString();
         _state = reader->readUint32();
         return vpr::ReturnStatus::Succeed;
       }
@@ -31,14 +31,14 @@ namespace CV{
       virtual vpr::ReturnStatus writeObject ( vpr::ObjectWriter* writer )
       {
         writer->writeString ( _data );
-		writer->writeString ( _name );
+        writer->writeString ( _name );
         writer->writeUint32 ( _state );
         return vpr::ReturnStatus::Succeed;
       }
 
     public:
       std::string _data;
-	  std::string _name;
+      std::string _name;
       int _state;
     };
 };

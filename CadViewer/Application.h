@@ -551,8 +551,9 @@ protected:
     // SinterPoint variables
     sinter::Receiver                    _sinterReceiver;
     std::stringstream                   _sinterStream;
+    int                                 _sinterDataSize;
     cluster::UserData< SinterAppData >  _sinterAppData;
-    SinterNodeState                     _sinterNodeState;
+    SinterState                         _sinterState;
     std::string                         _sinterNodeName;
     std::ofstream                       _sinterTmpFile;
 
@@ -563,10 +564,24 @@ protected:
       return((double)t.tv_sec + (double)t.tv_usec * 0.000001);
     }
     double _sinterTime1, _sinterTime2;
+
+    // Used to strip values out of sinterpoint string commands based on "=" sign
+    std::string _getCmdValue ( std::string cmd )
+    {
+      std::string whitespace = "\t\n\r ";
+      int eq = cmd.find ( "=" );
+      if ( eq != std::string::npos )
+      {
+        std::string res = cmd.substr ( eq+1 );
+        int beg = res.find_first_not_of ( whitespace );
+        int end = res.find_last_not_of ( whitespace );
+        return res.substr ( beg, end+1 ); 
+      }
+      return "";
+    }
+
 # endif
 };
-
-
 
 
 }; // namespace CV

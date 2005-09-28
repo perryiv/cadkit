@@ -3291,7 +3291,7 @@ void Application::_deleteScene()
         std::cout << "ERROR in SinterPoint = " << result << std::endl;
         std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
         std::cout << "SinterPoint communication will be unusable" << std::endl;
-        _sinterNodeState = DISABLED;
+        _sinterState = DISABLED;
         return;
       }
       else{
@@ -3299,7 +3299,7 @@ void Application::_deleteScene()
       }
 
       // Start out doing nothing
-      _sinterNodeState = NOTHING;
+      _sinterState = NOTHING;
     }
 
     // Now everyone initializes the SinterAppData
@@ -3324,7 +3324,7 @@ void Application::_deleteScene()
 
   void Application::_sinterReceiveModelPreFrame()
   {
-    if( _sinterNodeState != DISABLED )
+    if( _sinterState != DISABLED )
     {
       ErrorChecker ( 2346088800u, isAppThread(), CV::NOT_APP_THREAD );
 
@@ -3343,9 +3343,9 @@ void Application::_deleteScene()
         }
 
         // Share the state
-        _sinterAppData->_state = _sinterNodeState;
+        _sinterAppData->_state = _sinterState;
 
-        if ( _sinterNodeState == DONE )
+        if ( _sinterState == DONE )
         {
           // Share the finished file stream name and data
           _sinterAppData->_name = _sinterNodeName;
@@ -3368,7 +3368,7 @@ void Application::_deleteScene()
 
   void Application::_sinterReceiveModelPostFrame()
   {
-    if( _sinterNodeState != DISABLED )
+    if( _sinterState != DISABLED )
     {
       ErrorChecker ( 2346088801u, isAppThread(), CV::NOT_APP_THREAD );
 
@@ -3383,13 +3383,13 @@ void Application::_deleteScene()
       // after application data has been sync'd
       if ( host == writer )
       {
-        if ( _sinterNodeState == DONE ) {
+        if ( _sinterState == DONE ) {
           // Stream in the completed file
           this->_loadModelStream ( _sinterStream, _sinterNodeName );
 
           _sinterStream.clear();
           _sinterStream.str("");
-          _sinterNodeState = NOTHING;
+          _sinterState = NOTHING;
         }
       }
 
@@ -3397,9 +3397,9 @@ void Application::_deleteScene()
       else
       {
         // Get the state
-        _sinterNodeState = static_cast<SinterNodeState>(_sinterAppData->_state);
+      _sinterState = static_cast<SinterState>(_sinterAppData->_state);
 
-        if ( _sinterNodeState == DONE ) {
+      if ( _sinterState == DONE ) {
           // Get the name of the new node
           _sinterNodeName = _sinterAppData->_name;
 
@@ -3431,54 +3431,82 @@ void Application::_deleteScene()
   void Application::_sinterReceiveData(int size)
   {
     std::string msg;
+
+    // Receive the sinterpoint message
     msg = _sinterReceiver.Data();
 
     // Clean off the trailing characters SinterPoint tends to leave on
-    msg.resize(size);
+    msg.resize( size );
 
-    // Check for commands in the messages
-    if ( msg=="SINTERPOINT_NODE_NAME" )
+    // If we are in data receive mode, just keep grabbing data
+    if ( _sinterState == DATA )
     {
-      _sinterNodeState = NAME;
-      std::cout << "Receive node name" << std::endl;
+      _sinterStream.write( msg.c_str(), size );
+      _sinterTmpFile.write( msg.c_str(), size );
+      _sinterState = DATA;
+      
+      // Check to see if we are finished receiving data
+      if (_sinterStream.str().size() >= _sinterDataSize )
+      {
+        _sinterTime2 = _getClockTime();
+        std::cout << "Sinterpoint recieve completed" << std::endl;
+        std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
+        _sinterTmpFile.close();
+        _sinterDataSize = 0;
+        _sinterState = DONE; 
+      }
     }
-    else if ( msg=="SINTERPOINT_NODE_RECEIVE" )
-    {
-      _sinterNodeState = RECEIVE;
-      std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
-      _sinterTime1 = _getClockTime();
-      _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
-    }
-    else if ( msg=="SINTERPOINT_NODE_DONE" )
-    {
-      _sinterNodeState = DONE;
-      _sinterTime2 = _getClockTime();
-      std::cout << "Sinterpoint recieve completed" << std::endl;
-      std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-      _sinterTmpFile.close();
-    }
-    else if ( msg=="SINTERPOINT_CLEARALL" )
-    {
-      std::cout << "Deleting all models in scene" << std::endl;
-      _deleteScene();
-    }
-	  // Otherwise we just have data
+
+    // Otherwise parse msg for a command
     else
     {
-      if ( _sinterNodeState == NAME )
+      std::string cmd;
+      int cmdStart = msg.find ( "CV", 0 );
+      int cmdEnd = msg.find ( "\n", cmdStart );
+      
+      // Command found, parse and check against known commands
+      if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
       {
-        _sinterNodeName = msg;
-      }
-      else 
-      {
-        _sinterStream.write(msg.c_str(),size);
-        _sinterTmpFile.write(msg.c_str(),size);
-        _sinterNodeState = RECEIVE;
+        cmdStart += 2;
+        cmd.assign ( msg, cmdStart, cmdEnd-cmdStart );
+
+        // Get the node name
+        if ( cmd.find ( "SINTERPOINT_NODE_NAME", 0 ) != std::string::npos )
+        {
+          _sinterNodeName = _getCmdValue(cmd);
+          std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
+        }
+
+        // Get the node size
+        else if ( cmd.find ( "SINTERPOINT_NODE_SIZE", 0 ) != std::string::npos )
+        {
+          std::stringstream ss;
+          ss.str(_getCmdValue(cmd));
+          ss >> _sinterDataSize;
+          std::cout << "Received node size = " << _sinterDataSize << std::endl;
+        }
+        
+        // Enter receive data mode
+        else if ( cmd.find ( "SINTERPOINT_NODE_DATA", 0 ) != std::string::npos )
+        {
+          _sinterState = DATA;
+          std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
+          _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
+          _sinterTime1 = _getClockTime();
+        }
+
+        // Delete the whole scene
+        else if ( cmd.find ( "SINTERPOINT_CLEARALL", 0 ) != std::string::npos )
+        {
+          std::cout << "Deleting all models in scene" << std::endl;
+          _deleteScene();
+        }
       }
     }
   }
 
 #endif
+
 
 
 

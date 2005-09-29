@@ -1797,9 +1797,13 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   OsgTools::Convert::matrix ( matrix, M );
   mt->setMatrix ( M );
 
-  // Set its name to the filename if there is no name.
+  // Set its name to the filename, minus the pathing portion, if there is no name.
   if ( node->getName().empty() )
-    node->setName ( filename );
+  {
+    unsigned int loc = filename.find_last_of ( "/\\" );
+    std::string name = filename.substr ( loc + 1 );
+    node->setName ( name );
+  }
  
   // Create the scribe effect since it must attach to the model
   osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
@@ -1830,7 +1834,7 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
   ErrorChecker ( 1067093698u, _models.valid() );
 
   // User feedback.
-  this->_update ( *_msgText, "Reading model stream..." );
+  this->_update ( *_msgText, "Reading model stream" );
 
   // Stream in the file
   osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension("osg");
@@ -1849,34 +1853,39 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
   }
   NodePtr node = rr.getNode();
 
-  // User feedback.
-  this->_update ( *_msgText, "Done streaming" );
-
-  // See if this new model node name matches any other in the scene; if so replace it
-  int branchNum;
-  int nodeNum;
-  if ( _matchModelNodeName ( name, branchNum, nodeNum ) )
+  // See if this node name matches any other in the scene
+  bool matched = false;
+  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
+  if ( m )
   {
-    osg::Group *branch = dynamic_cast<osg::Group*>(_models->getChild ( branchNum ) );
-    if ( branch )
+    Matcher match;
+    if ( _recursiveMatchNodeName ( name, m, &match ) )
     {
-      this->_update ( *_msgText, "Match found, replacing model node" );
+      // We found a match, so replace it
+      std::cout << "Match found, replacing node" << std::endl;
       node->setName ( name );
-      branch->setChild( nodeNum, node.get() );
+      if ( match.parent->replaceChild ( match.node, node.get() ) )
+      {
+        matched = true;
+      }
     }
 
-    // Also replace the scribe effect
-    osgFX::Scribe *sfx = dynamic_cast<osgFX::Scribe*>(_scribeBranch->getChild ( branchNum ) );
-    if ( sfx )
+    // Now rebuild the scribe node corresponding to the match in _models
+    if ( matched )
     {
-      sfx->setChild( nodeNum, node.get() );
+      // Replace the scribe node at the same position in _scribeBranch
+      // as the replaced node was in _models, using match.modelNum
+      osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
+      sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
+      sc->addChild ( node.get() );
+      _scribeBranch->setChild ( match.modelNum, sc.get() );
     }
   }
  
   // Otherwise, add it as a new node
-  else
+  if ( !matched )
   {
-    std::cout << "No match, adding model as new osg node" << std::endl;
+    std::cout << "No match or failed replace, adding model as new osg node" << std::endl;
 
     // Are we supposed to set the normalize flag? We only turn it on, 
     // not off, because we want to inherit the global state.
@@ -3192,39 +3201,47 @@ void Application::_updateSceneTool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  See if model node name matches any others in _models and returns where
+//  Recursively check if model node name matches any others in _models
+//  and returns the matching node/group as a node 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_matchModelNodeName ( const std::string &name, int &branchNum, int &nodeNum )
+bool Application::_recursiveMatchNodeName ( const std::string &name, osg::Node *model, Matcher *match )
 {
-  ErrorChecker ( 2346088802u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  int i,j;
-  osg::Group *branch;
-  osg::Node *model;
-  
-  for ( i=0; i<_models->getNumChildren(); ++i )
-  {
-    branch = dynamic_cast<osg::Group*>( _models->getChild(i) );
-    if(branch)
-    {
-      for ( j=0; j<branch->getNumChildren(); ++j )
-      {
-        model = branch->getChild(j);
+  osg::Group *g;
 
-        // If loaded from a file, the model name will contain a path, so check for just the name
-        unsigned int loc = ( model->getName() ).find( name, 0 );
-        if ( loc != std::string::npos )
+  // Check for match on node name
+  if ( model->getName() == name )
+  {
+    // Only assign the model, the others are done by the caller
+    match->node = model;
+    match->parent = NULL;
+    match->modelNum = 0;
+    return true;
+  }
+  
+  // If model is a group, it may contain more nodes, so search
+  g = model->asGroup();
+  if ( g )
+  {
+    for ( int i=0; i<g->getNumChildren(); ++i )
+    {
+      if ( _recursiveMatchNodeName ( name, g->getChild(i), match ) )
+      {
+        // Only assign the parent if we just found the node
+        if ( match->parent == NULL )
         {
-          branchNum = i;
-          nodeNum = j;
-          return true;
+          match->parent = g;
         }
+        
+        // Keep reassigning the modelNum, since we need the index from _models 
+        match->modelNum = i;
+
+        return true;
       }
     }
   }
-
+  
   return false;
 }
 
@@ -3254,6 +3271,77 @@ void Application::_deleteScene()
       _scribeBranch->removeChild(k);
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Patch node with diff residing in stream nodeDiff
+//  On completion nodeDiff contains the new node ready for streamed input
+//  Note this makes use of tmp files and system calls for the "patch" command
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff )
+{
+  std::string tmpDiffFileName = "/tmp/cvDiffFile.txt";
+  std::string tmpNodeFileName = "/tmp/cvDiffedNodeFile.osg";
+  
+  // Open a temporary diffFile and drop the nodeDiff stream data in
+  std::ofstream diffFile;
+  diffFile.open ( tmpDiffFileName.c_str() );
+  if ( !diffFile.is_open() )
+  {
+    std::cout << "ERROR: diff file " << tmpDiffFileName << " failed to open" << std::endl;
+    return false;
+  }
+  diffFile << nodeDiff.rdbuf();
+  diffFile.close();
+
+  // Find the matching node based on name
+  Matcher match;
+  bool matched=false;
+  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
+  if ( m )
+  {
+    if ( _recursiveMatchNodeName ( nodeName, m, &match ) )
+    {
+      // We found a match
+      matched=true;
+    }
+  }
+
+  if ( !matched )
+  {
+    std::cout << "No matching node found to patch with diff" << std::endl;
+    return false;
+  }
+
+  // Write matching node to file
+  if ( !osgDB::writeNodeFile ( *(match.node), tmpNodeFileName ) )
+  {
+    std::cout << "ERROR: file " << tmpNodeFileName << " failed to open for writing" << std::endl;
+    return false;
+  }
+
+  // Now patch the node file with the diff
+  std::cout << "Patching node file" << std::endl;
+  std::string cmd;
+  cmd = std::string("patch ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
+  system(cmd.c_str());
+
+  // Reopen the patched file and pass back into nodeDiff stream, now a new osg model stream
+  std::ifstream nodeFile;
+  nodeFile.open ( tmpNodeFileName.c_str() );
+  if ( !nodeFile.is_open() )
+  {
+    std::cout << "ERROR: file " << tmpNodeFileName << " failed to open for reading" << std::endl;
+    return false;
+  }
+  nodeDiff << nodeFile.rdbuf();
+  diffFile.close();
+
+  return true;
 }
 
 
@@ -3300,6 +3388,7 @@ void Application::_deleteScene()
 
       // Start out doing nothing
       _sinterState = NOTHING;
+      _sinterDiffFlag = false;
     }
 
     // Now everyone initializes the SinterAppData
@@ -3442,30 +3531,36 @@ void Application::_deleteScene()
     if ( _sinterState == DATA )
     {
       _sinterStream.write( msg.c_str(), size );
-      _sinterTmpFile.write( msg.c_str(), size );
       _sinterState = DATA;
       
       // Check to see if we are finished receiving data
-      if (_sinterStream.str().size() >= _sinterDataSize )
+      if ( _sinterStream.str().size() >= _sinterDataSize )
       {
         _sinterTime2 = _getClockTime();
         std::cout << "Sinterpoint recieve completed" << std::endl;
         std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-        _sinterTmpFile.close();
         _sinterDataSize = 0;
         _sinterState = DONE; 
+
+        // If we received a diff, patch the diff against the proper node file name
+        // If successful _sinterStream will contain the patched node file
+        if ( _sinterDiffFlag == true )
+        {
+          _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
+          _sinterDiffFlag = false;
+        }
       }
     }
 
-    // Otherwise parse msg for a command
+    // Otherwise parse msg string for commands
     else
     {
       std::string cmd;
       int cmdStart = msg.find ( "CV", 0 );
       int cmdEnd = msg.find ( "\n", cmdStart );
-      
-      // Command found, parse and check against known commands
-      if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
+
+      // Keep parsing until no more CV commands are found in msg
+      while ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
       {
         cmdStart += 2;
         cmd.assign ( msg, cmdStart, cmdEnd-cmdStart );
@@ -3485,13 +3580,19 @@ void Application::_deleteScene()
           ss >> _sinterDataSize;
           std::cout << "Received node size = " << _sinterDataSize << std::endl;
         }
+
+        // The next node data transfer will be a diff
+        else if ( cmd.find ( "SINTERPOINT_NODE_DIFF", 0 ) != std::string::npos )
+        {
+          _sinterDiffFlag = true;
+          std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
+        }
         
         // Enter receive data mode
         else if ( cmd.find ( "SINTERPOINT_NODE_DATA", 0 ) != std::string::npos )
         {
           _sinterState = DATA;
           std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
-          _sinterTmpFile.open("/tmp/sinterStreamedFile.osg");
           _sinterTime1 = _getClockTime();
         }
 
@@ -3501,6 +3602,10 @@ void Application::_deleteScene()
           std::cout << "Deleting all models in scene" << std::endl;
           _deleteScene();
         }
+
+        // Search for another command in the msg
+        cmdStart = msg.find ( "CV", cmdEnd );
+        cmdEnd = msg.find ( "\n", cmdStart );
       }
     }
   }

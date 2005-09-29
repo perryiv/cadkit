@@ -65,7 +65,18 @@
 
 namespace CV {
 
+
+// Used to match nodes scene for replacement
+class Matcher
+{
+  public:
+    osg::Node *node;
+    osg::Group *parent;
+    int modelNum;
+};
+
 	
+// The CadViewer application
 class Application : public osgVRJ::Application,
                     public CV::Interfaces::IApplication,
                     public CV::Interfaces::IAuxiliaryScene,
@@ -389,11 +400,15 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-  // Find similarly named models
-  bool                          _matchModelNodeName ( const std::string &name , int &branchNum, int &modelNum );
+
+  // Find similarly named model nodes
+  bool                          _recursiveMatchNodeName ( const std::string &name , osg::Node *model, Matcher *match );
 
   // Clear out all models in scene
   void                          _deleteScene(); 
+
+  // Patch node file with diff
+  bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
@@ -542,12 +557,6 @@ protected:
   MatTransPtr       _scribeBranch;
 
 # if defined (USE_SINTERPOINT)
-    // Functions used for networked file loading with SinterPoint, if enabled
-    void            _sinterPointInit();
-    void            _sinterReceiveModelPreFrame();
-    void            _sinterReceiveModelPostFrame();
-    void            _sinterReceiveData(int size);
-
     // SinterPoint variables
     sinter::Receiver                    _sinterReceiver;
     std::stringstream                   _sinterStream;
@@ -555,8 +564,14 @@ protected:
     cluster::UserData< SinterAppData >  _sinterAppData;
     SinterState                         _sinterState;
     std::string                         _sinterNodeName;
-    std::ofstream                       _sinterTmpFile;
+    bool                                _sinterDiffFlag;
 
+    // Functions used for networked file loading with SinterPoint, if enabled
+    void            _sinterPointInit();
+    void            _sinterReceiveModelPreFrame();
+    void            _sinterReceiveModelPostFrame();
+    void            _sinterReceiveData(int size);
+    
     // Used to time sinterpoint loading
     double _getClockTime(){
       struct timeval t;

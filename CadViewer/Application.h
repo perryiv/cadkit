@@ -558,19 +558,20 @@ protected:
 
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables
-    sinter::Receiver                    _sinterReceiver;
+    sinter::Receiver*                   _sinterReceiver;
     std::stringstream                   _sinterStream;
+    int                                 _sinterStreamSize;
     int                                 _sinterDataSize;
     cluster::UserData< SinterAppData >  _sinterAppData;
     SinterState                         _sinterState;
     std::string                         _sinterNodeName;
     bool                                _sinterDiffFlag;
+    std::string                         _sinterTmpString;
 
     // Functions used for networked file loading with SinterPoint, if enabled
     void            _sinterPointInit();
-    void            _sinterReceiveModelPreFrame();
-    void            _sinterReceiveModelPostFrame();
-    void            _sinterReceiveData(int size);
+    void            _sinterReceiveData();
+    void            _sinterProcessData();
     
     // Used to time sinterpoint loading
     double _getClockTime(){

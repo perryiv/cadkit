@@ -357,6 +357,10 @@ Application::~Application()
     delete _gridFunctors[i];
   }
   _gridFunctors.clear();
+  
+# if defined (USE_SINTERPOINT)
+  if(_sinterReceiver) delete _sinterReceiver;
+# endif
 }
 
 
@@ -1021,7 +1025,8 @@ void Application::_preFrame()
 
   // Check to see if we are receiving a model, if enabled
 # if defined (USE_SINTERPOINT)
-    this->_sinterReceiveModelPreFrame();
+    //this->_sinterProcessData();
+    this->_sinterReceiveData();
 # endif
 }
 
@@ -1376,9 +1381,8 @@ void Application::_postFrame()
       this->_initText();
 #endif
 
-  // Last steps after application data sync
 # if defined (USE_SINTERPOINT)
-    this->_sinterReceiveModelPostFrame();
+    this->_sinterProcessData();
 # endif
 
 }
@@ -1920,6 +1924,9 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     // Do any post-processing.
     this->_postProcessModelLoad ( std::string("streamed"), node.get() );
   }
+  
+  // Signal user when done
+  this->_update ( *_msgText, "Done reading model stream" );
 }
 
 
@@ -3355,49 +3362,50 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
 
   void Application::_sinterPointInit()
   {
+    _sinterReceiver = NULL;
+    
     // If the machine name is the same as the writer...
-    const std::string host    ( Usul::System::Host::name() );
     const std::string writer = _prefs->sinterPointWriter();
 	std::cout << "Sinter Point Writer machine = " << writer.c_str() << std::endl;
 
     // Make sure there is a writer-machine.
     ErrorChecker ( 2519309141u, !writer.empty(), 
       "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
-
+    
+    // Now everyone initializes the SinterAppData
+    vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
+    _sinterAppData.init(newGuid, writer);
+    
     // The writer alone uses sinterpoint
-    if ( host == writer )
+    if( _sinterAppData.isLocal() )
     {
-      _sinterReceiver.SetType ( "CADVIEWER" );
-      _sinterReceiver.SetVersion ( "2.0" );
-      _sinterReceiver.SetMaxSend ( 1 );
+      _sinterReceiver = new sinter::Receiver;
+      _sinterReceiver->SetType ( "CADVIEWER" );
+      _sinterReceiver->SetVersion ( "2.0" );
+      _sinterReceiver->SetMaxSend ( 1 );
 
       // Connect to server
       std::string server = _prefs->sinterPointServer();
-      int result = _sinterReceiver.Connect ( server.c_str() );
+      int result = _sinterReceiver->Connect ( server.c_str() );
       if (result!=0) 
       {
         std::cout << "ERROR in SinterPoint = " << result << std::endl;
         std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
         std::cout << "SinterPoint communication will be unusable" << std::endl;
-        _sinterState = DISABLED;
+        delete _sinterReceiver;
+        _sinterReceiver = NULL;
         return;
       }
-      else{
+      else
+      {
         std::cout << "SinterPoint connected successfully" << std::endl;
       }
-
-      // Start out doing nothing
-      _sinterState = NOTHING;
-      _sinterDiffFlag = false;
     }
+        
+    // Start out looking for commands
+    _sinterState = COMMAND;
+    _sinterDiffFlag = false;
 
-    // Now everyone initializes the SinterAppData
-    vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
-    _sinterAppData.init(newGuid);
-
-    // Just make sure the stream is empty and ready
-    _sinterStream.clear();
-    _sinterStream.str("");
   }
 
 # endif
@@ -3411,201 +3419,164 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
 
 # if defined (USE_SINTERPOINT)
 
-  void Application::_sinterReceiveModelPreFrame()
-  {
-    if( _sinterState != DISABLED )
+  void Application::_sinterReceiveData()
+  {    
+    // sinter writer only: receive data
+    if( _sinterReceiver && _sinterAppData.isLocal() )
     {
-      ErrorChecker ( 2346088800u, isAppThread(), CV::NOT_APP_THREAD );
-
-      // If the machine name is the same as the writer...
-      const std::string host    ( Usul::System::Host::name() );
-      const std::string writer = _prefs->sinterPointWriter();
-
+      // clear the data buffer -- all processing should be done by the time we
+      // get here
+      _sinterAppData->_data.clear();
+      
       // The writer obtains the new osg file from Sinterpoint here and sends out
       // application data for the other machines
-      if ( host == writer )
-      {
-        int size;
-        while( (size = _sinterReceiver.Receive(0)) > 0)
-        {
-          _sinterReceiveData(size);
-        }
-
-        // Share the state
-        _sinterAppData->_state = _sinterState;
-
-        if ( _sinterState == DONE )
-        {
-          // Share the finished file stream name and data
-          _sinterAppData->_name = _sinterNodeName;
-          _sinterAppData->_data = _sinterStream.str();
-        }
-      }
-    }
-  }
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Obtain a model across the network with SinterPoint - postFrame portion
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-  void Application::_sinterReceiveModelPostFrame()
-  {
-    if( _sinterState != DISABLED )
-    {
-      ErrorChecker ( 2346088801u, isAppThread(), CV::NOT_APP_THREAD );
-
-      // If the machine name is the same as the writer...
-      const std::string host    ( Usul::System::Host::name() );
-      const std::string writer = _prefs->sinterPointWriter();
-
-      // Used to see if loaded node matches an existing one
-      int branch,model;
-
-      // The writer will just finish and load the file here so they all load in postframe
-      // after application data has been sync'd
-      if ( host == writer )
-      {
-        if ( _sinterState == DONE ) {
-          // Stream in the completed file
-          this->_loadModelStream ( _sinterStream, _sinterNodeName );
-
-          _sinterStream.clear();
-          _sinterStream.str("");
-          _sinterState = NOTHING;
-        }
-      }
-
-      // Other machines receive ApplicationData and do all their work here
-      else
-      {
-        // Get the state
-      _sinterState = static_cast<SinterState>(_sinterAppData->_state);
-
-      if ( _sinterState == DONE ) {
-          // Get the name of the new node
-          _sinterNodeName = _sinterAppData->_name;
-
-          // Get the data if it is finished
-          _sinterStream.str ( _sinterAppData->_data ) ;
-
-          // Stream in the completed file
-          this->_loadModelStream ( _sinterStream, _sinterNodeName );
-
-          _sinterStream.clear();
-          _sinterStream.str("");
-        }
-      }
-    }
-  }
-
-#endif
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  SinterPoint callback to obtain a model across the network
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-  void Application::_sinterReceiveData(int size)
-  {
-    std::string msg;
-
-    // Receive the sinterpoint message
-    msg = _sinterReceiver.Data();
-
-    // Clean off the trailing characters SinterPoint tends to leave on
-    msg.resize( size );
-
-    // If we are in data receive mode, just keep grabbing data
-    if ( _sinterState == DATA )
-    {
-      _sinterStream.write( msg.c_str(), size );
-      _sinterState = DATA;
+      int size;
       
-      // Check to see if we are finished receiving data
-      if ( _sinterStream.str().size() >= _sinterDataSize )
+      // we could do this in a while loop, but it overwhelms the shared
+      // application data
+      if( (size = _sinterReceiver->Receive(0)) > 0)
       {
-        _sinterTime2 = _getClockTime();
-        std::cout << "Sinterpoint recieve completed" << std::endl;
-        std::cout << "Total sinterpoint comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-        _sinterDataSize = 0;
-        _sinterState = DONE; 
-
-        // If we received a diff, patch the diff against the proper node file name
-        // If successful _sinterStream will contain the patched node file
-        if ( _sinterDiffFlag == true )
-        {
-          _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
-          _sinterDiffFlag = false;
-        }
+        _sinterTmpString = _sinterReceiver->Data();
+        _sinterTmpString.resize(size);
+        _sinterAppData->_data.append(_sinterTmpString);
       }
     }
+  }
 
-    // Otherwise parse msg string for commands
-    else
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SinterPoint data processor -- active on all cluster nodes
+//
+///////////////////////////////////////////////////////////////////////////////
+
+# if defined (USE_SINTERPOINT)
+
+  void Application::_sinterProcessData()
+  {    
+    if( !_sinterAppData->_data.empty() )
     {
-      std::string cmd;
-      int cmdStart = msg.find ( "CV", 0 );
-      int cmdEnd = msg.find ( "\n", cmdStart );
+      // get size of the message we need to process
+      int size = _sinterAppData->_data.size();
+            
+      int processed_size = 0;
+      
+      // std::cout << "MsgSize = " << size << std::endl;
+      
+      while ( processed_size < size )
+      {         
+        // If we are in data receive mode, just keep grabbing data
+        if ( _sinterState == DATA )
+        {        
+          const char *data = _sinterAppData->_data.c_str() + processed_size;
+          int data_size = size - processed_size;
 
-      // Keep parsing until no more CV commands are found in msg
-      while ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
-      {
-        cmdStart += 2;
-        cmd.assign ( msg, cmdStart, cmdEnd-cmdStart );
+          // if necessary, reduce data size so we don't copy too much data into the stream
+          if ( (_sinterStreamSize + data_size) > _sinterDataSize )
+          {
+            data_size = _sinterDataSize - _sinterStreamSize;
+          }
 
-        // Get the node name
-        if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
-        {
-          _sinterNodeName = _getCmdValue(cmd);
-          std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
-        }
-
-        // Get the node size
-        else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
-        {
-          std::stringstream ss;
-          ss.str(_getCmdValue(cmd));
-          ss >> _sinterDataSize;
-          std::cout << "Received node size = " << _sinterDataSize << std::endl;
-        }
-
-        // The next node data transfer will be a diff
-        else if ( cmd.find ( "NODE_DIFF", 0 ) != std::string::npos )
-        {
-          _sinterDiffFlag = true;
-          std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
-        }
-        
-        // Enter receive data mode
-        else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
-        {
+          // write the data to our stream
+          _sinterStream.write( data, data_size );
+          _sinterStreamSize += data_size;
           _sinterState = DATA;
-          std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
-          _sinterTime1 = _getClockTime();
+
+          // Check to see if we are finished receiving data
+          if ( _sinterStreamSize == _sinterDataSize )
+          {
+            _sinterTime2 = _getClockTime();
+            std::cout << "OSG node receive completed" << std::endl;
+            std::cout << "Total comm time = " << _sinterTime2-_sinterTime1 << std::endl;
+            _sinterDataSize = 0;
+
+            // If we received a diff, patch the diff against the proper node file name
+            // If successful _sinterStream will contain the patched node file
+            if ( _sinterDiffFlag == true )
+            {
+              _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
+              _sinterDiffFlag = false;
+            }
+
+            // Load the model into the scene
+            this->_loadModelStream ( _sinterStream, _sinterNodeName );
+
+            _sinterState = COMMAND;
+          }
+
+          processed_size += data_size;
         }
 
-        // Delete the whole scene
-        else if ( cmd.find ( "CLEARALL", 0 ) != std::string::npos )
+        // Otherwise parse for commands
+        else
         {
-          std::cout << "Deleting all models in scene" << std::endl;
-          _deleteScene();
-        }
+          std::string cmd;
+          int cmdStart = _sinterAppData->_data.find ( "CV ", processed_size );
+          int cmdEnd = _sinterAppData->_data.find ( "\n", cmdStart );
 
-        // Search for another command in the msg
-        cmdStart = msg.find ( "CV", cmdEnd );
-        cmdEnd = msg.find ( "\n", cmdStart );
+          // Keep parsing until no more CV commands are found
+          if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
+          {
+            processed_size += cmdEnd - cmdStart + 1;
+            cmdStart += 3;
+            cmd.assign ( _sinterAppData->_data, cmdStart, cmdEnd-cmdStart );
+
+            std::cout << "Got Command: " << cmd << std::endl;
+
+            // Get the node name
+            if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
+            {
+              _sinterNodeName = _getCmdValue(cmd);
+              std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
+            }
+
+            // Get the node size
+            else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
+            {
+              std::stringstream ss;
+              ss.str(_getCmdValue(cmd));
+              ss >> _sinterDataSize;
+              std::cout << "Received node size = " << _sinterDataSize << std::endl;
+            }
+
+            // The next node data transfer will be a diff
+            else if ( cmd.find ( "NODE_DIFF", 0 ) != std::string::npos )
+            {
+              _sinterDiffFlag = true;
+              std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
+            }
+
+            // Enter receive data mode
+            else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
+            {
+              _sinterStream.clear();
+              _sinterStream.str("");
+              _sinterStreamSize = 0;
+              _sinterState = DATA;
+              std::cout << "Begin receive of osg node..." << std::endl;
+              _sinterTime1 = _getClockTime();
+            }
+
+            // Delete the whole scene
+            else if ( cmd.find ( "CLEARALL", 0 ) != std::string::npos )
+            {
+              std::cout << "Deleting all models in scene" << std::endl;
+              _deleteScene();
+            }
+
+            else
+            {
+              std::cout << "Warning: Unrecognized CadViewer Command." << std::endl;
+            }
+
+          }
+          else
+          {
+            std::cout << "Warning: CadViewer Command Not Found." << std::endl;
+          }
+        }
       }
     }
   }

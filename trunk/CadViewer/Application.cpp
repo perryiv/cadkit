@@ -3566,14 +3566,14 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
         cmd.assign ( msg, cmdStart, cmdEnd-cmdStart );
 
         // Get the node name
-        if ( cmd.find ( "SINTERPOINT_NODE_NAME", 0 ) != std::string::npos )
+        if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
         {
           _sinterNodeName = _getCmdValue(cmd);
           std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
         }
 
         // Get the node size
-        else if ( cmd.find ( "SINTERPOINT_NODE_SIZE", 0 ) != std::string::npos )
+        else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
         {
           std::stringstream ss;
           ss.str(_getCmdValue(cmd));
@@ -3582,14 +3582,14 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
         }
 
         // The next node data transfer will be a diff
-        else if ( cmd.find ( "SINTERPOINT_NODE_DIFF", 0 ) != std::string::npos )
+        else if ( cmd.find ( "NODE_DIFF", 0 ) != std::string::npos )
         {
           _sinterDiffFlag = true;
           std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
         }
         
         // Enter receive data mode
-        else if ( cmd.find ( "SINTERPOINT_NODE_DATA", 0 ) != std::string::npos )
+        else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
         {
           _sinterState = DATA;
           std::cout << "Begin sinterpoint recieve of osg node..." << std::endl;
@@ -3597,7 +3597,7 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
         }
 
         // Delete the whole scene
-        else if ( cmd.find ( "SINTERPOINT_CLEARALL", 0 ) != std::string::npos )
+        else if ( cmd.find ( "CLEARALL", 0 ) != std::string::npos )
         {
           std::cout << "Deleting all models in scene" << std::endl;
           _deleteScene();

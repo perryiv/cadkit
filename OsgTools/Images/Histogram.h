@@ -22,7 +22,7 @@ namespace Images {
 
 typedef std::vector< unsigned int > Histogram;
 
-OSG_TOOLS_EXPORT   Histogram   calculateHistogram ( const osg::Image& image );
+OSG_TOOLS_EXPORT   void   calculateHistogram ( Histogram &red, Histogram &green, Histogram &blue, Histogram &gray, const osg::Image& image );
 
 }
 }

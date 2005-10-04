@@ -1025,7 +1025,6 @@ void Application::_preFrame()
 
   // Check to see if we are receiving a model, if enabled
 # if defined (USE_SINTERPOINT)
-    //this->_sinterProcessData();
     this->_sinterReceiveData();
 # endif
 }
@@ -3442,7 +3441,7 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
       
       // we could do this in a while loop, but it overwhelms the shared
       // application data
-      if( (size = _sinterReceiver->Receive(0)) > 0)
+      while( (size = _sinterReceiver->Receive(0)) > 0)
       {
         _sinterTmpString = _sinterReceiver->Data();
         _sinterTmpString.resize(size);
@@ -3471,7 +3470,7 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
             
       int processed_size = 0;
       
-      // std::cout << "MsgSize = " << size << std::endl;
+      //std::cout << "MsgSize = " << size << std::endl;
       
       while ( processed_size < size )
       {         

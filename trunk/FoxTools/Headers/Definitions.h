@@ -32,6 +32,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/System/LastError.h"
+#include "Usul/Exceptions/Canceled.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -51,29 +52,46 @@ namespace FoxTools
     template < class FoxClassPointer, class MapEntryPointer > 
     inline long handle ( FoxClassPointer fox, MapEntryPointer entry, const char *className, FX::FXObject *sender, FX::FXuint selector, void *ptr )
     {
+      // Safely...
       try
       {
         Usul::System::LastError::init();
         return ( ( fox->* entry->func ) ( sender, selector, ptr ) );
       }
+
+      // Catch cencel-exceptions.
+      catch ( const Usul::Exceptions::Canceled & )
+      {
+        throw;
+      }
+
+      // Catch standard exceptions.
       catch ( const std::exception &e )
       {
         std::cout << ( ( e.what() ) ? e.what() : "Error 2381027582: Standard exception caught while dispatching event" );
       }
+
+      // Catch all other exceptions.
       catch ( ... )
       {
         std::cout << "Error 1838942514: Unknown exception caught while dispatching event";
       }
+
+      // Print this every time.
       std::cout << "; class name = " << ( ( className ) ? className : "" )
                 << ", instance = " << fox
                 << ", entry = " << entry
                 << ", sender = " << ( ( sender ) ? sender->getClassName() : "" )
                 << ", selector = " << selector
                 << ", data = " << ptr;
+
+      // Print system error if relevant.
       if ( false == Usul::System::LastError::message().empty() )
       {
         std::cout << ". " << Usul::System::LastError::message();
       }
+
+      // Add a new-line and return.
       std::cout << std::endl;
       return 1;
     }

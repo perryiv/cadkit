@@ -34,7 +34,7 @@ FXDEFMAP ( SliderTextField ) MessageMap[] =
 };
 
 // This class, base class, array of message handlers, size of the array.
-FXIMPLEMENT ( SliderTextField, BaseClass, MessageMap, ARRAYNUMBER ( MessageMap ) );
+FOX_TOOLS_IMPLEMENT ( SliderTextField, BaseClass, MessageMap, ARRAYNUMBER ( MessageMap ) );
 
 
 ///////////////////////////////////////////////////////////////////////////////

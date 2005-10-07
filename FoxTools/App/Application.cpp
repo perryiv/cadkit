@@ -25,7 +25,6 @@
 #endif // _MSC_VER
 
 #include "FoxTools/App/Application.h"
-
 #include "FoxTools/Functions/App.h"
 #include "FoxTools/Headers/Window.h"
 
@@ -45,7 +44,7 @@ using namespace FoxTools::App;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FXIMPLEMENT ( Application, Application::BaseClass, 0x0, 0 );
+FOX_TOOLS_IMPLEMENT ( Application, Application::BaseClass, 0x0, 0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,8 +221,8 @@ void Application::_reportErrors() const
     if( report.valid() )
     {
       typedef Usul::Interfaces::IReportErrors ReportErrors;
-      const unsigned int options ( ReportErrors::ERROR_DIALOG | ReportErrors::STANDARD_OUT | ReportErrors::LOG_FILE );
-
+      //const unsigned int options ( ReportErrors::ERROR_DIALOG | ReportErrors::STANDARD_OUT | ReportErrors::LOG_FILE );
+      const unsigned int options ( ReportErrors::STANDARD_OUT | ReportErrors::LOG_FILE );
       report->reportErrors ( options, true );
     }
   }

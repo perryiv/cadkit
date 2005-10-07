@@ -68,7 +68,7 @@ FXDEFMAP ( Message ) MessageMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, Message::ID_CHECK_BUTTON,    Message::onCommandCheckButton ),
 };
 
-FXIMPLEMENT ( Message, Message::BaseClass, MessageMap, ARRAYNUMBER ( MessageMap ) );
+FOX_TOOLS_IMPLEMENT ( Message, Message::BaseClass, MessageMap, ARRAYNUMBER ( MessageMap ) );
 
 
 ///////////////////////////////////////////////////////////////////////////////

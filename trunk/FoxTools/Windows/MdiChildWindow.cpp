@@ -70,7 +70,7 @@ FXDEFMAP ( MdiChildWindow ) WindowMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_DISPLAY_LISTS_UPDATE,         MdiChildWindow::onDisplayListUpdate     ),
 };
 
-FXIMPLEMENT ( MdiChildWindow, MdiChildWindow::BaseClass, WindowMap, ARRAYNUMBER ( WindowMap ) );
+FOX_TOOLS_IMPLEMENT ( MdiChildWindow, MdiChildWindow::BaseClass, WindowMap, ARRAYNUMBER ( WindowMap ) );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -25,6 +25,7 @@
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/IGetTitle.h"
+#include "Usul/Interfaces/ISendMessage.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Checker.h"
@@ -84,8 +85,10 @@ MdiChildWindow::MdiChildWindow() : BaseClass(),
   _view(),
   _refCount( 0 )
 {
-  // If this static-assertion fails then make Document::ID_FIRST bigger.
-  USUL_STATIC_ASSERT ( Usul::Interfaces::ISendMessage::ID_FIRST > MdiChildWindow::ID_LAST );
+  // If this static-assertion fails then make ISendMessage::ID_FIRST bigger.
+  typedef Usul::Interfaces::ISendMessage ISendMessage;
+  USUL_STATIC_ASSERT ( static_cast < unsigned int > ( ISendMessage::ID_FIRST  ) >
+                       static_cast < unsigned int > ( MdiChildWindow::ID_LAST ) );
 
   // Do not use this constructor.
   USUL_ERROR_CHECKER ( false );

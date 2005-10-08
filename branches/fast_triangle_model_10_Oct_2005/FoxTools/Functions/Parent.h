@@ -1,0 +1,48 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functions to find the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _FOX_TOOLS_FIND_PARENT_FUNCTIONS_H_
+#define _FOX_TOOLS_FIND_PARENT_FUNCTIONS_H_
+
+#include "FoxTools/Headers/Window.h"
+
+
+namespace FoxTools {
+namespace Functions {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the first parent of the given type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > inline T *findParent ( FX::FXWindow *window )
+{
+  while ( window )
+  {
+    if ( window->isMemberOf ( FXMETACLASS ( T ) ) )
+      return (T *) window;
+    window = window->getParent();
+  }
+  return 0x0;
+}
+
+
+}; // namespace Functions
+}; // namespace FoxTools
+
+
+#endif // _FOX_TOOLS_FIND_PARENT_FUNCTIONS_H_

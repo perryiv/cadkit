@@ -1,0 +1,781 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		43265F3A08E499590020C22F /* Build Frameworks */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 43265F3F08E4997F0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */;
+			buildPhases = (
+			);
+			buildSettings = {
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build Frameworks";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+				43265F4608E499BF0020C22F /* PBXTargetDependency */,
+				43265F3C08E499620020C22F /* PBXTargetDependency */,
+			);
+			name = "Build Frameworks";
+			productName = "Build Frameworks";
+		};
+		43993106087EF791002E5D22 /* Build DyLibs */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 4399310B087EF7B3002E5D22 /* Build configuration list for PBXAggregateTarget "Build DyLibs" */;
+			buildPhases = (
+			);
+			buildSettings = {
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "-falign-loops=16";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+				4399310A087EF796002E5D22 /* PBXTargetDependency */,
+				43265F3408E4991B0020C22F /* PBXTargetDependency */,
+			);
+			name = "Build DyLibs";
+			productName = "Build All";
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		43265E7608E4935D0020C22F /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 439930F2087EF6D1002E5D22 /* Export.h */; };
+		43265E7708E4935E0020C22F /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439930F3087EF6D1002E5D22 /* Mutex.cpp */; };
+		43265E7808E4935F0020C22F /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 439930F4087EF6D1002E5D22 /* Mutex.h */; };
+		43265E7908E4936A0020C22F /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 439930FF087EF6ED002E5D22 /* libOpenThreads.dylib */; };
+		43265E7A08E4936C0020C22F /* Usul.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43265E4608E491CA0020C22F /* Usul.framework */; };
+		439930F5087EF6D1002E5D22 /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 439930F2087EF6D1002E5D22 /* Export.h */; };
+		439930F6087EF6D1002E5D22 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439930F3087EF6D1002E5D22 /* Mutex.cpp */; };
+		439930F7087EF6D1002E5D22 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 439930F4087EF6D1002E5D22 /* Mutex.h */; };
+		43993100087EF6EE002E5D22 /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 439930FF087EF6ED002E5D22 /* libOpenThreads.dylib */; };
+		43993101087EF6F9002E5D22 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 439930FE087EF6E1002E5D22 /* libUsul.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		014CEA520018CE5811CA2923 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		014CEA530018CE5811CA2923 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		43265E4508E491CA0020C22F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 439930F9087EF6E1002E5D22 /* Usul.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 43265BDC08E48C430020C22F;
+			remoteInfo = Framework;
+		};
+		43265F3308E4991B0020C22F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC0620554660B00DB518D;
+			remoteInfo = Threads;
+		};
+		43265F3B08E499620020C22F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43265E6608E4930D0020C22F;
+			remoteInfo = Framework;
+		};
+		43265F4508E499BF0020C22F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 439930F9087EF6E1002E5D22 /* Usul.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 43265BDB08E48C430020C22F;
+			remoteInfo = Usul.framework;
+		};
+		439930FD087EF6E1002E5D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 439930F9087EF6E1002E5D22 /* Usul.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC0630554660B00DB518D;
+			remoteInfo = Usul;
+		};
+		43993109087EF796002E5D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 439930F9087EF6E1002E5D22 /* Usul.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC0620554660B00DB518D;
+			remoteInfo = Usul;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		43265E7008E4930D0020C22F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		43265E7108E4930D0020C22F /* Threads.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Threads.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		439930F2087EF6D1002E5D22 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = SOURCE_ROOT; };
+		439930F3087EF6D1002E5D22 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = SOURCE_ROOT; };
+		439930F4087EF6D1002E5D22 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = SOURCE_ROOT; };
+		439930F9087EF6E1002E5D22 /* Usul.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Usul.xcodeproj; path = ../../Usul/Usul.xcodeproj; sourceTree = SOURCE_ROOT; };
+		439930FF087EF6ED002E5D22 /* libOpenThreads.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libOpenThreads.dylib; path = /usr/local/lib/libOpenThreads.dylib; sourceTree = "<absolute>"; };
+		D2AAC0630554660B00DB518D /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		43265E6A08E4930D0020C22F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265E7908E4936A0020C22F /* libOpenThreads.dylib in Frameworks */,
+				43265E7A08E4936C0020C22F /* Usul.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D289988505E68E00004EDB86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43993100087EF6EE002E5D22 /* libOpenThreads.dylib in Frameworks */,
+				43993101087EF6F9002E5D22 /* libUsul.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* Threads */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				43265E7508E493400020C22F /* Projects */,
+				43265E7308E493340020C22F /* Frameworks/Libs */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				43265E7008E4930D0020C22F /* Info.plist */,
+			);
+			name = Threads;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				439930F2087EF6D1002E5D22 /* Export.h */,
+				439930F3087EF6D1002E5D22 /* Mutex.cpp */,
+				439930F4087EF6D1002E5D22 /* Mutex.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC0630554660B00DB518D /* libOpenThreadsEx.dylib */,
+				43265E7108E4930D0020C22F /* Threads.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		43265E7308E493340020C22F /* Frameworks/Libs */ = {
+			isa = PBXGroup;
+			children = (
+				439930FF087EF6ED002E5D22 /* libOpenThreads.dylib */,
+			);
+			name = Frameworks/Libs;
+			sourceTree = "<group>";
+		};
+		43265E7508E493400020C22F /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				439930F9087EF6E1002E5D22 /* Usul.xcodeproj */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		439930FA087EF6E1002E5D22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				439930FE087EF6E1002E5D22 /* libUsul.dylib */,
+				43265E4608E491CA0020C22F /* Usul.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		43265E6708E4930D0020C22F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265E7608E4935D0020C22F /* Export.h in Headers */,
+				43265E7808E4935F0020C22F /* Mutex.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC0600554660B00DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				439930F5087EF6D1002E5D22 /* Export.h in Headers */,
+				439930F7087EF6D1002E5D22 /* Mutex.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		43265E6608E4930D0020C22F /* Threads.framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43265E6C08E4930D0020C22F /* Build configuration list for PBXNativeTarget "Threads.framework" */;
+			buildPhases = (
+				43265E6708E4930D0020C22F /* Headers */,
+				43265E6808E4930D0020C22F /* Resources */,
+				43265E6908E4930D0020C22F /* Sources */,
+				43265E6A08E4930D0020C22F /* Frameworks */,
+				43265E6B08E4930D0020C22F /* Rez */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRINCIPAL_CLASS = "";
+				PRODUCT_NAME = Threads.framework;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = framework;
+			};
+			dependencies = (
+			);
+			name = Threads.framework;
+			productInstallPath = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+			productName = Threads.framework;
+			productReference = 43265E7108E4930D0020C22F /* Threads.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D2AAC0620554660B00DB518D /* Threads */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 439930E8087EF6C9002E5D22 /* Build configuration list for PBXNativeTarget "Threads" */;
+			buildPhases = (
+				D2AAC0600554660B00DB518D /* Headers */,
+				D2AAC0610554660B00DB518D /* Sources */,
+				D289988505E68E00004EDB86 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = DYNAMIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = Threads;
+			};
+			dependencies = (
+			);
+			name = Threads;
+			productName = Threads;
+			productReference = D2AAC0630554660B00DB518D /* libOpenThreadsEx.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 439930EC087EF6C9002E5D22 /* Build configuration list for PBXProject "Threads" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				014CEA520018CE5811CA2923 /* Debug */,
+				014CEA530018CE5811CA2923 /* Release */,
+			);
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* Threads */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 439930FA087EF6E1002E5D22 /* Products */;
+					ProjectRef = 439930F9087EF6E1002E5D22 /* Usul.xcodeproj */;
+				},
+			);
+			targets = (
+				43993106087EF791002E5D22 /* Build DyLibs */,
+				43265F3A08E499590020C22F /* Build Frameworks */,
+				D2AAC0620554660B00DB518D /* Threads */,
+				43265E6608E4930D0020C22F /* Threads.framework */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		43265E4608E491CA0020C22F /* Usul.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Usul.framework;
+			remoteRef = 43265E4508E491CA0020C22F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		439930FE087EF6E1002E5D22 /* libUsul.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libUsul.dylib;
+			remoteRef = 439930FD087EF6E1002E5D22 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		43265E6808E4930D0020C22F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		43265E6B08E4930D0020C22F /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		43265E6908E4930D0020C22F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43265E7708E4935E0020C22F /* Mutex.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC0610554660B00DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				439930F6087EF6D1002E5D22 /* Mutex.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		43265F3408E4991B0020C22F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC0620554660B00DB518D /* Threads */;
+			targetProxy = 43265F3308E4991B0020C22F /* PBXContainerItemProxy */;
+		};
+		43265F3C08E499620020C22F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43265E6608E4930D0020C22F /* Threads.framework */;
+			targetProxy = 43265F3B08E499620020C22F /* PBXContainerItemProxy */;
+		};
+		43265F4608E499BF0020C22F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Usul.framework;
+			targetProxy = 43265F4508E499BF0020C22F /* PBXContainerItemProxy */;
+		};
+		4399310A087EF796002E5D22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Usul;
+			targetProxy = 43993109087EF796002E5D22 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		43265E6D08E4930D0020C22F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_THREADS,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = ../../;
+				INFOPLIST_FILE = Info.plist;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRINCIPAL_CLASS = "";
+				PRODUCT_NAME = Threads;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		43265E6E08E4930D0020C22F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_THREADS;
+				HEADER_SEARCH_PATHS = ../../;
+				INFOPLIST_FILE = Info.plist;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRINCIPAL_CLASS = "";
+				PRODUCT_NAME = Threads;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		43265E6F08E4930D0020C22F /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = ../../;
+				INFOPLIST_FILE = Info.plist;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRINCIPAL_CLASS = "";
+				PRODUCT_NAME = Threads;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Default;
+		};
+		43265F4008E4997F0020C22F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build Frameworks";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		43265F4108E4997F0020C22F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build Frameworks";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		43265F4208E4997F0020C22F /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build Frameworks";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		439930E9087EF6C9002E5D22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_THREADS,
+					_DEBUG,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../;
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = DYNAMIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = OpenThreadsEx;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		439930EA087EF6C9002E5D22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_THREADS;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../;
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = DYNAMIC;
+				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = OpenThreadsEx;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		439930EB087EF6C9002E5D22 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_THREADS;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../;
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = DYNAMIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = OpenThreadsEx;
+			};
+			name = Default;
+		};
+		439930ED087EF6C9002E5D22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		439930EE087EF6C9002E5D22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		439930EF087EF6C9002E5D22 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+		4399310C087EF7B3002E5D22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "-falign-loops=16";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		4399310D087EF7B3002E5D22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "-falign-loops=16";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		4399310E087EF7B3002E5D22 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "-falign-loops=16";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		43265E6C08E4930D0020C22F /* Build configuration list for PBXNativeTarget "Threads.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43265E6D08E4930D0020C22F /* Debug */,
+				43265E6E08E4930D0020C22F /* Release */,
+				43265E6F08E4930D0020C22F /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		43265F3F08E4997F0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43265F4008E4997F0020C22F /* Debug */,
+				43265F4108E4997F0020C22F /* Release */,
+				43265F4208E4997F0020C22F /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		439930E8087EF6C9002E5D22 /* Build configuration list for PBXNativeTarget "Threads" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				439930E9087EF6C9002E5D22 /* Debug */,
+				439930EA087EF6C9002E5D22 /* Release */,
+				439930EB087EF6C9002E5D22 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		439930EC087EF6C9002E5D22 /* Build configuration list for PBXProject "Threads" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				439930ED087EF6C9002E5D22 /* Debug */,
+				439930EE087EF6C9002E5D22 /* Release */,
+				439930EF087EF6C9002E5D22 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		4399310B087EF7B3002E5D22 /* Build configuration list for PBXAggregateTarget "Build DyLibs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4399310C087EF7B3002E5D22 /* Debug */,
+				4399310D087EF7B3002E5D22 /* Release */,
+				4399310E087EF7B3002E5D22 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

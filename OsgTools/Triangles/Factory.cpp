@@ -62,8 +62,18 @@ namespace OsgTools
 
       Triangle *newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index )
       {
+        // Allocate raw memory.
         Triangle *raw ( _memoryT.malloc() );
+
+        // Construct the triangle.
         Triangle::ValidRefPtr t ( ( raw ) ? ( new ( raw ) Triangle ( v0, v1, v2, index, Triangle::MEMORY_POOL ) ) : 0x0 );
+
+        // Add new triangle to the shared vertices.
+        v0->addTriangle ( t.get() );
+        v1->addTriangle ( t.get() );
+        v2->addTriangle ( t.get() );
+
+        // Return new triangle.
         return t.release();
       }
 

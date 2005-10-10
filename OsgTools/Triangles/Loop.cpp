@@ -227,11 +227,11 @@ _innerLoops.clear();
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Trianglulate loop.  Add results to Document
+//  Trianglulate loop. Add results to Document.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
+bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
 {
   // Useful typedefs.
   typedef Usul::Interfaces::ITriangulate   Triangulate;
@@ -305,9 +305,7 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
   for ( Loop::InnerLoops::iterator i = _innerLoops.begin(); i != _innerLoops.end(); ++i )
   {
     Vertices v;
-
     Detail::fillVertices ( v, shared, *i, mat, caller );
-
     innerLoops.push_back( v );
   }
 
@@ -321,9 +319,9 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
   // Add the triangles
   for ( unsigned int i = 0; i < indices.size(); i+= 3 )
   {
-    int n0 ( indices.at( i ) );
-    int n1 ( indices.at( i + 1 ) );
-    int n2 ( indices.at( i + 2 ) );
+    unsigned int n0 ( indices.at( i ) );
+    unsigned int n1 ( indices.at( i + 1 ) );
+    unsigned int n2 ( indices.at( i + 2 ) );
 
     osg::Vec3 v0 ( out.at( n0 )[0], out.at( n0 )[1], planeValue );
     osg::Vec3 v1 ( out.at( n1 )[0], out.at( n1 )[1], planeValue );
@@ -341,7 +339,7 @@ bool Loop::triangulate( Usul::Interfaces::IUnknown *caller, bool buildOnFly  )
     osg::Plane plane ( v0, v1, v2 );
 
     // Add the triangle.
-    addTriangle->addTriangle( *sv0, *sv1, *sv2, plane.getNormal(), true, buildOnFly );
+    addTriangle->addTriangle ( sv0, sv1, sv2, plane.getNormal(), buildOnFly );
   }
 
 

@@ -18,6 +18,9 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace osgUtil { class Hit; }
+
+
 namespace Usul {
 namespace Interfaces {
 
@@ -30,9 +33,9 @@ struct IDeleteAllConnected : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1313723240u };
 
-  virtual void deleteAllConnected ( Usul::Interfaces::IUnknown* caller, unsigned int seed ) = 0;
-
-}; // struct IDeleteAllConnected
+  // Delete all things connected to the "hit".
+  virtual void deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit ) = 0;
+};
 
 
 }; // namespace Interfaces

@@ -18,8 +18,13 @@
 
 
 #ifdef _MSC_VER
-# include <crtdbg.h>
-# define USUL_ASSERT _ASSERT
+# if 0
+#  include <crtdbg.h>           // Has been giving me problems with stack
+#  define USUL_ASSERT _ASSERT   // corruption after clicking on "Retry"...
+# else
+#  include <assert.h>
+#  define USUL_ASSERT assert
+# endif
 #elif __sgi
 # include <assert.h>
 # define USUL_ASSERT assert

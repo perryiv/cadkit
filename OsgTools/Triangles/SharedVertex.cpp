@@ -75,9 +75,10 @@ SharedVertex::~SharedVertex()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::remove ( Triangle *t )
+void SharedVertex::removeTriangle ( Triangle *t )
 {
   _triangles.erase ( std::find ( _triangles.begin(), _triangles.end(), Triangle::RefPtr ( t ) ) );
+  this->dirtyNormal ( true );
 }
 
 
@@ -87,9 +88,14 @@ void SharedVertex::remove ( Triangle *t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::add ( Triangle *t )
+void SharedVertex::addTriangle ( Triangle *t )
 {
+#ifdef _DEBUG
+  const unsigned int num ( std::count_if ( _triangles.begin(), _triangles.end(), TriangleSequence::value_type::IsEqual ( t ) ) );
+  USUL_ASSERT ( 0 == num );
+#endif
   _triangles.push_back ( t );
+  this->dirtyNormal ( true );
 }
 
 
@@ -121,7 +127,8 @@ void SharedVertex::unref ( bool allowDeletion )
   {
     if ( allowDeletion )
     {
-      if ( Usul::Bits::has<unsigned int, unsigned int> ( _flags, MEMORY_POOL ) )
+      const unsigned int bit ( SharedVertex::MEMORY_POOL );
+      if ( Usul::Bits::has ( _flags, bit ) )
       {
         _triangles.clear();
       }
@@ -141,7 +148,8 @@ void SharedVertex::unref ( bool allowDeletion )
 
 bool SharedVertex::visited() const
 {
-  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, VISITED );
+  const unsigned int bit ( SharedVertex::VISITED );
+  return Usul::Bits::has ( _flags, bit );
 }
 
 
@@ -151,12 +159,10 @@ bool SharedVertex::visited() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::visited ( bool v )
+void SharedVertex::visited ( bool state )
 {
-  if ( v )
-    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, VISITED );
-  else
-    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, VISITED );
+  const unsigned int bit ( SharedVertex::VISITED );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
 }
 
 
@@ -168,7 +174,8 @@ void SharedVertex::visited ( bool v )
 
 bool SharedVertex::onEdge() const
 {
-  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, ON_EDGE );
+  const unsigned int bit ( SharedVertex::ON_EDGE );
+  return Usul::Bits::has ( _flags, bit );
 }
 
 
@@ -178,10 +185,72 @@ bool SharedVertex::onEdge() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SharedVertex::onEdge ( bool e )
+void SharedVertex::onEdge ( bool state )
 {
-  if ( e )
-    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, ON_EDGE );
-  else
-    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, ON_EDGE );
+  const unsigned int bit ( SharedVertex::ON_EDGE );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all the triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SharedVertex::removeAllTriangles()
+{
+  _triangles.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SharedVertex::dirtyNormal ( bool state )
+{
+  const unsigned int bit ( SharedVertex::DIRTY_NORMAL );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SharedVertex::dirtyNormal() const
+{
+  const unsigned int bit ( SharedVertex::DIRTY_NORMAL );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the problem flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SharedVertex::problem ( bool state )
+{
+  const unsigned int bit ( SharedVertex::PROBLEM );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the problem flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SharedVertex::problem() const
+{
+  const unsigned int bit ( SharedVertex::PROBLEM );
+  return Usul::Bits::has ( _flags, bit );
 }

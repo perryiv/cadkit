@@ -691,7 +691,7 @@ void Document::delegate ( Delegate *delegate )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::Delegate* Document::delegate ( )
+Document::Delegate* Document::delegate()
 {
   return _delegate.get();
 }
@@ -718,7 +718,7 @@ void Document::createDefaultGUI ( Unknown *caller )
 
 void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 {
-  if( this->delegate() )
+  if ( this->delegate() )
     this->delegate()->refreshView ( this, viewer );
 }
 

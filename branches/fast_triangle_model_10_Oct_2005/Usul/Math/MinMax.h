@@ -34,7 +34,7 @@ template < class T, class Pred > inline const T & minimum ( const T &t1, const T
 }
 template < class T > inline const T & minimum ( const T &t1, const T &t2 )
 {
-  return Usul::Math::minimum ( t1, t2, std::less<T>() );
+  return ( ( t1 < t2 ) ? t1 : t2 );
 }
 
 
@@ -50,7 +50,7 @@ template < class T, class Pred > inline const T & maximum ( const T &t1, const T
 }
 template < class T > inline const T & maximum ( const T &t1, const T &t2 )
 {
-  return Usul::Math::maximum ( t1, t2, std::greater<T>() );
+  return ( ( t1 > t2 ) ? t1 : t2 );
 }
 
 
@@ -66,7 +66,7 @@ template < class T, class Pred > inline const T & minimum ( const T &t1, const T
 }
 template < class T > inline const T & minimum ( const T &t1, const T &t2, const T &t3 )
 {
-  return Usul::Math::minimum ( t1, t2, t3, std::less<T>() );
+  return ( ( t1 < t2 ) ? ( Usul::Math::minimum ( t1, t3 ) ) : Usul::Math::minimum ( t2, t3 ) );
 }
 
 
@@ -82,7 +82,7 @@ template < class T, class Pred > inline const T & maximum ( const T &t1, const T
 }
 template < class T > inline const T & maximum ( const T &t1, const T &t2, const T &t3 )
 {
-  return Usul::Math::maximum ( t1, t2, t3, std::greater<T>() );
+  return ( ( t1 > t2 ) ? ( Usul::Math::maximum ( t1, t3 ) ) : Usul::Math::maximum ( t2, t3 ) );
 }
 
 

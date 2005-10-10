@@ -12,12 +12,13 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace OsgTools { namespace Triangles { class SharedVertex; } }
 namespace osg { class Vec3f; }
 
-namespace OsgTools { namespace Triangles { class SharedVertex; } }
 
 namespace Usul {
 namespace Interfaces {
+
 
 template 
 < 
@@ -33,19 +34,14 @@ struct IAddTriangle : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = iid };
 
-  virtual void addTriangle ( const VertexType& v0, 
-                             const VertexType& v1, 
-                             const VertexType& v2, 
-                             const NormalType & normal, 
-                             bool correctNormal = false,
-                             bool rebuild = false ) = 0;
+  // Add a single triangle.
+  virtual void addTriangle ( VertexType v0, VertexType v1, VertexType v2, NormalType n, bool update ) = 0;
 };
 
-typedef IAddTriangle< OsgTools::Triangles::SharedVertex, osg::Vec3f, 2793935616u > IAddTriangleSharedVertex;
-typedef IAddTriangle< osg::Vec3f,                        osg::Vec3f, 2793935617u > IAddTrangleOsgVec3f;
+typedef IAddTriangle < OsgTools::Triangles::SharedVertex *, const osg::Vec3f &, 2793935616u > IAddTriangleSharedVertex;
+typedef IAddTriangle < const osg::Vec3f &,                  const osg::Vec3f &, 2793935617u > IAddTrangleOsgVec3f;
 
 }
 }
 
 #endif // __USUL_INTERFACES_ADD_TRIANGLE_H__
-

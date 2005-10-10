@@ -24,8 +24,8 @@ namespace Polygons {
 template < class IndexSequence, class Triangle >
 struct TriangleFunctor
 {
-  typedef TriangleFunctor< IndexSequence, Triangle > ThisType;
-  typedef std::vector< TriangleFunctor > TodoStack;
+  typedef TriangleFunctor < IndexSequence, Triangle > ThisType;
+  typedef std::vector < TriangleFunctor > TodoStack;
   typedef typename Triangle::SharedVertex SharedVertex;
   typedef typename SharedVertex::RefPtr SharedVertexPtr;
   typedef typename SharedVertex::TriangleItr SharedVertexItr;

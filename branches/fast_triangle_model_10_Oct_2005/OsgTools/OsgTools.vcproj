@@ -267,6 +267,9 @@
 					RelativePath="Group.h">
 				</File>
 				<File
+					RelativePath=".\HasOption.h">
+				</File>
+				<File
 					RelativePath=".\Index.h">
 				</File>
 				<File
@@ -350,6 +353,18 @@
 				Name="Triangles"
 				Filter="">
 				<File
+					RelativePath=".\Triangles\Block.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Block.h">
+				</File>
+				<File
+					RelativePath=".\Triangles\Blocks.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Blocks.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\Factory.cpp">
 				</File>
 				<File
@@ -366,12 +381,6 @@
 				</File>
 				<File
 					RelativePath=".\Triangles\LoopSplitter.h">
-				</File>
-				<File
-					RelativePath=".\Triangles\Partition.cpp">
-				</File>
-				<File
-					RelativePath=".\Triangles\Partition.h">
 				</File>
 				<File
 					RelativePath=".\Triangles\SharedVertex.cpp">

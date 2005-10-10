@@ -336,6 +336,9 @@
 					RelativePath="Functors\If.h">
 				</File>
 				<File
+					RelativePath=".\Functors\Increment.h">
+				</File>
+				<File
 					RelativePath="Functors\Pair.h">
 				</File>
 			</Filter>
@@ -738,10 +741,13 @@
 						RelativePath=".\Interfaces\IGetLoops.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetNormal.h">
+						RelativePath=".\Interfaces\IGetTriangleNormal.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetVertex.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetVertexNormal.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h">

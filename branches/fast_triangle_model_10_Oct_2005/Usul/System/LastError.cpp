@@ -66,12 +66,14 @@ LastError::Number LastError::number()
 {
 #ifdef _WIN32
 
-  USUL_ASSERT_SAME_TYPE ( unsigned long, DWORD );
+  USUL_ASSERT_SAME_TYPE ( DWORD, unsigned long );
+  USUL_ASSERT_SAME_TYPE ( DWORD, LastError::Number );
   return ::GetLastError();
 
 #else
 
   USUL_ASSERT_SAME_TYPE ( int, LastError::Number );
+  USUL_STATIC_ASSERT ( sizeof ( int ) == sizeof ( LastError::Number ) );
   return errno;
 
 #endif
@@ -132,6 +134,26 @@ std::string LastError::message()
 
   // Return the error message. Handle the null case.
   return std::string ( ( buf ) ? buf : "" );
+
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there an error?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LastError::has()
+{
+#ifdef _WIN32
+
+  return ( ERROR_SUCCESS != ::GetLastError() );
+
+#else
+
+  return ( 0 != errno ); // Is this right? TODO
 
 #endif
 }

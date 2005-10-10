@@ -35,7 +35,7 @@ public:
 
   // Typedefs.
   typedef unsigned char ReferenceCount;
-  typedef OsgTools::Triangles::SharedVertex SharedVertex;
+  typedef OsgTools::Triangles::SharedVertex SharedVertex; // Needed in templates.
   typedef unsigned int IndexType;
   typedef std::set < Triangle* > PolygonSet;
 
@@ -45,11 +45,12 @@ public:
   // Possible flags
   enum
   {
-    VISITED     = 0x01,
-    ON_EDGE     = 0x02,
-    DELETED     = 0x04,
-    SELECTED    = 0x08,
-    MEMORY_POOL = 0x10
+    VISITED      = 0x01,
+    ON_EDGE      = 0x02,
+    SELECTED     = 0x04,
+    MEMORY_POOL  = 0x08,
+    DIRTY_NORMAL = 0x10,
+    PROBLEM      = 0x11,
   };
 
   // Construction
@@ -61,9 +62,9 @@ public:
   // Sets all vertices to null.
   void                        clear();
 
-  // Get/Set the deleted flag
-  bool                        deleted() const;
-  void                        deleted ( bool );
+  // Set/get dirty flags.
+  void                        dirtyNormal ( bool );
+  bool                        dirtyNormal() const;
 
   // Get the neighbors of this Triangle
   void                        getNeighbors ( PolygonSet& ) const;
@@ -74,7 +75,11 @@ public:
 
   // Get/Set the onEdge flag
   bool                        onEdge() const;
-  void                        onEdge ( bool b );
+  void                        onEdge ( bool );
+
+  // Set/get the flags that says there was some kind of problem.
+  bool                        problem() const;
+  void                        problem ( bool );
 
   // Reference this instance.
   void                        ref();

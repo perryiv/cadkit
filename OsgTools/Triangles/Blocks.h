@@ -62,9 +62,6 @@ public:
   // Purge any excess memory.
   void                      purge();
 
-  // Remove a triangle.
-  void                      removeTriangle ( TriangleSet *ts, unsigned int );
-
   // Update the bounding box.
   void                      updateBounds ( const TriangleSet *ts, const Triangle *t );
   void                      updateBounds ( const TriangleSet *ts );

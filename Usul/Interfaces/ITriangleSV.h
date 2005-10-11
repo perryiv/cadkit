@@ -21,21 +21,23 @@ namespace Interfaces {
 
 struct ITriangleSV : public Usul::Interfaces::IUnknown
 {
+  // Typedefs.
+  typedef OsgTools::Triangles::SharedVertex SharedVertex;
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ITriangleSV );
 
   /// Id for this interface.
   enum { IID = 4260819650u };
 
-  typedef OsgTools::Triangles::SharedVertex SharedVertex;
-
   // Get the shared vertices of the i'th triangle.
   virtual const SharedVertex*         sharedVertex0 ( const osg::Drawable*, unsigned int i ) const = 0;
   virtual const SharedVertex*         sharedVertex1 ( const osg::Drawable*, unsigned int i ) const = 0;
   virtual const SharedVertex*         sharedVertex2 ( const osg::Drawable*, unsigned int i ) const = 0;
-
-
-}; //struct ITriangleSV
+  virtual SharedVertex*               sharedVertex0 ( const osg::Drawable*, unsigned int i ) = 0;
+  virtual SharedVertex*               sharedVertex1 ( const osg::Drawable*, unsigned int i ) = 0;
+  virtual SharedVertex*               sharedVertex2 ( const osg::Drawable*, unsigned int i ) = 0;
+};
 
 
 }

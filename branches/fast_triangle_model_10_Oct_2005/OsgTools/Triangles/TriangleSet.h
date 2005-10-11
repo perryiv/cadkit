@@ -155,11 +155,18 @@ public:
   unsigned int            index ( const osgUtil::Hit &hit ) const;
 
   // Keep only these triangles
-  void                    keep ( const std::vector < unsigned int>& keepers, Usul::Interfaces::IUnknown *caller );
+  void                    keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller );
 
   // Return a new shared vertex or triangle.
   SharedVertex *          newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
   Triangle *              newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
+
+  // Get the triangle given a drawable and primitive index.
+  const Triangle *        triangle ( const osg::Drawable *d, unsigned int num ) const;
+  Triangle *              triangle ( const osg::Drawable *d, unsigned int num );
+
+  // Get the center of the triangle.
+  osg::Vec3f              triangleCenter ( unsigned int ) const;
 
   // Get the normal of the i'th triangle.
   const osg::Vec3f &      triangleNormal ( unsigned int ) const;
@@ -174,7 +181,8 @@ public:
   const osg::Vec3f &      vertexNormal ( unsigned int ) const;
 
   // Remove these triangles
-  void                    remove ( std::vector < unsigned int>& remove, Usul::Interfaces::IUnknown *caller );
+  void                    removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown *caller );
+  void                    removeTriangle ( const osg::Drawable *d, unsigned int num );
 
   // Make space for the triangles.
   void                    reserve ( unsigned int );
@@ -196,6 +204,9 @@ public:
   const SharedVertex *    sharedVertex0 ( const osg::Drawable* d, unsigned int i ) const;
   const SharedVertex *    sharedVertex1 ( const osg::Drawable* d, unsigned int i ) const;
   const SharedVertex *    sharedVertex2 ( const osg::Drawable* d, unsigned int i ) const;
+  SharedVertex *          sharedVertex0 ( const osg::Drawable* d, unsigned int i );
+  SharedVertex *          sharedVertex1 ( const osg::Drawable* d, unsigned int i );
+  SharedVertex *          sharedVertex2 ( const osg::Drawable* d, unsigned int i );
 
   // Get the triangles. Use with caution.
   const TriangleVector &  triangles() const { return _triangles; }

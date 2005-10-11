@@ -42,7 +42,7 @@ public:
 
   // Build
   void            build ( bool shown = true,
-                          unsigned int layout = FX::LAYOUT_SIDE_TOP | FX::FRAME_RAISED | FX::LAYOUT_DOCK_SAME, 
+                          unsigned int layout = FX::LAYOUT_CENTER_X | FX::LAYOUT_CENTER_Y | FX::FRAME_RAISED | FX::LAYOUT_DOCK_SAME, 
                           int x = 0, 
                           int y = 0, 
                           int width = 0,

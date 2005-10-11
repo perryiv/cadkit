@@ -177,7 +177,7 @@ void Bar::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Bar::build( bool shown, unsigned int layout, int x, int y, int width, int height )
+void Bar::build ( bool shown, unsigned int layout, int x, int y, int width, int height )
 {
   USUL_ASSERT ( _dockedSite );
   USUL_ASSERT ( _undockedSite );

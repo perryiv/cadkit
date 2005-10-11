@@ -358,6 +358,45 @@ void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVert
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Remove the specified triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
+{
+  // Get the triangle.
+  // TODO: Not sure if this gives correct block in all cases because you use 
+  // vertex0 when initially putting triangle into blocks...
+  Block::RefPtr block ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Triangle::RefPtr t ( ( block.valid() ) ? block->triangle ( i ) : 0x0 );
+  if ( false == t.valid() )
+    return;
+
+  // Remove the triangle from the sequence.
+  _triangles.erase ( _triangles.begin() + t->index() );
+
+  // Remove the corresponding normal.
+  this->normalsT()->erase ( this->normalsT()->begin() + t->index() );
+
+  // Remove the triangle from the block.
+  block->removeTriangle ( i );
+
+  // Tell shared-vertices to remove this triangle.
+  t->vertex0()->removeTriangle ( t );
+  t->vertex1()->removeTriangle ( t );
+  t->vertex2()->removeTriangle ( t );
+
+  // Depending on the reference count, it may not delete here, so make sure 
+  // the triangle does not have any vertices.
+  t->clear();
+
+  // Need to update some normal vectors.
+  this->dirtyNormalsV ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update everything that depends on this triangle.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -693,7 +732,7 @@ void TriangleSet::checkStatus() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::keep ( const Indices &keepers, Usul::Interfaces::IUnknown *caller )
+void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller )
 {
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == this->normalsV()->size() );
@@ -826,7 +865,7 @@ void TriangleSet::keep ( const Indices &keepers, Usul::Interfaces::IUnknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::remove ( Indices &doomed, Usul::Interfaces::IUnknown *caller )
+void TriangleSet::removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown *caller )
 {
   // Get number of triangles.
   const unsigned int numTriangles ( _triangles.size() );
@@ -850,7 +889,7 @@ void TriangleSet::remove ( Indices &doomed, Usul::Interfaces::IUnknown *caller )
   keepers.erase ( end, keepers.end() );
 
   // We do this because keeping is faster than removing.
-  this->keep ( keepers, caller );
+  this->keepTriangles ( keepers, caller );
 }
 
 
@@ -1223,8 +1262,20 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 
 const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
 {
-  const Block *b ( _blocks->block ( d->getBound().center() ) );
-  const Triangle *t ( ( b ) ? b->triangle ( i ) : 0x0 );
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex0() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 0 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
   return ( ( t ) ? t->vertex0() : 0x0 );
 }
 
@@ -1237,8 +1288,20 @@ const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg:
 
 const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
 {
-  const Block *b ( _blocks->block ( d->getBound().center() ) );
-  const Triangle *t ( ( b ) ? b->triangle ( i ) : 0x0 );
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex1() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 1 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
   return ( ( t ) ? t->vertex1() : 0x0 );
 }
 
@@ -1251,8 +1314,20 @@ const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg:
 
 const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
 {
-  const Block *b ( _blocks->block ( d->getBound().center() ) );
-  const Triangle *t ( ( b ) ? b->triangle ( i ) : 0x0 );
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex2() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 2 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
   return ( ( t ) ? t->vertex2() : 0x0 );
 }
 
@@ -1306,8 +1381,54 @@ const osg::Vec3f &TriangleSet::vertex2 ( const osg::Drawable *d, unsigned int i 
 
 unsigned int TriangleSet::index ( const osgUtil::Hit &hit ) const
 {
-  const osg::Drawable *d ( hit._drawable.get() );
+  const Triangle *t ( this->triangle ( hit._drawable.get(), hit._primitiveIndex ) );
+  if ( 0x0 == t )
+    throw std::runtime_error ( "Error 4259806184: No triangle found for given hit information" );
+  return ( t->index() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the triangle given a drawable and primitive index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num ) const
+{
   const Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
-  const Triangle *t ( ( b ) ? b->triangle ( hit._primitiveIndex ) : 0x0 );
-  return ( ( t ) ? t->index() : hit._primitiveIndex );
+  const Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
+  return t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the triangle given a drawable and primitive index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num )
+{
+  Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
+  return t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the center of the triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3f TriangleSet::triangleCenter ( unsigned int i ) const
+{
+  const float third ( static_cast < float > ( 1 ) / static_cast < float > ( 3 ) );
+  const Triangle *t ( _triangles.at ( i ) );
+  const osg::Vec3f &v0 ( _vertices->at ( t->vertex0()->index() ) );
+  const osg::Vec3f &v1 ( _vertices->at ( t->vertex1()->index() ) );
+  const osg::Vec3f &v2 ( _vertices->at ( t->vertex2()->index() ) );
+  const osg::Vec3f center ( ( v0 + v1 + v2 ) * third );
+  return center;
 }

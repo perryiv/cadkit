@@ -63,46 +63,16 @@ void Blocks::addTriangle ( TriangleSet *ts, Triangle *t )
 {
   // Check input.
   if ( 0x0 == ts )
-    throw std::runtime_error ( "Error 3640849883: null triangle-set given" );
+    throw std::invalid_argument ( "Error 3640849883: null triangle-set given" );
   if ( 0x0 == t )
-    throw std::runtime_error ( "Error 3376676199: null triangle given" );
-
-  // Get the first vertex.
-  const osg::Vec3f &vertex ( ts->vertices()->at ( t->vertex0()->index() ) );
+    throw std::invalid_argument ( "Error 3376676199: null triangle given" );
 
   // Get the appropriate block.
-  Block::RefPtr b ( this->block ( vertex ) );
+  Block::RefPtr b ( this->block ( ts, t ) );
 
   // Add the triangle to the block.
   if ( b.valid() )
     b->addTriangle ( ts, t );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the triangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Blocks::removeTriangle ( TriangleSet *ts, unsigned int index )
-{
-  // Check input.
-  if ( 0x0 == ts )
-    throw std::runtime_error ( "Error 3570352939: null triangle-set given" );
-
-  // Get the triangle.
-  Triangle::ValidRefPtr t ( ts->triangles().at ( index ) );
-
-  // Get the first vertex.
-  const osg::Vec3f &vertex ( ts->vertices()->at ( t->vertex0()->index() ) );
-
-  // Get the appropriate block.
-  Block::RefPtr b ( this->block ( vertex ) );
-
-  // Remove the triangle from the block.
-  if ( b.valid() )
-    b->removeTriangle ( index );
 }
 
 
@@ -154,7 +124,7 @@ osg::Geode *Blocks::buildScene ( const Options &options, TriangleSet *ts )
 {
   // Check input.
   if ( 0x0 == ts )
-    throw std::runtime_error ( "Error 1098244047: null triangle-set given" );
+    throw std::invalid_argument ( "Error 1098244047: null triangle-set given" );
 
   // Remove all existing drawables.
   _geode->removeDrawable ( 0, _geode->getNumDrawables() );
@@ -235,11 +205,12 @@ const Block *Blocks::block ( const TriangleSet *ts, const Triangle *t ) const
 {
   // Check input.
   if ( 0x0 == ts )
-    throw std::runtime_error ( "Error 1269059241: null triangle-set given" );
+    throw std::invalid_argument ( "Error 1269059241: null triangle-set given" );
   if ( 0x0 == t )
-    throw std::runtime_error ( "Error 3613986077: null triangle given" );
+    throw std::invalid_argument ( "Error 3613986077: null triangle given" );
 
-  return this->block ( ts->vertices()->at ( t->vertex0()->index() ) );
+  // Use center of triangle.
+  return this->block ( ts->triangleCenter ( t->index() ) );
 }
 
 
@@ -257,7 +228,8 @@ Block *Blocks::block ( const TriangleSet *ts, const Triangle *t )
   if ( 0x0 == t )
     throw std::runtime_error ( "Error 2154079742: null triangle given" );
 
-  return this->block ( ts->vertices()->at ( t->vertex0()->index() ) );
+  // Use center of triangle.
+  return this->block ( ts->triangleCenter ( t->index() ) );
 }
 
 

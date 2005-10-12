@@ -43,7 +43,7 @@ Block::Block ( const osg::BoundingBox &box, unsigned int reserve ) : BaseClass()
   // Reserve triangles.
   this->_reserveTriangles ( reserve );
 
-  // This geometry gets one primitive-set.
+  // The geometry gets one primitive-set.
   _geometry->addPrimitiveSet ( _elements.get() );
 
 #ifdef USE_RANDOM_COLORS
@@ -53,8 +53,7 @@ Block::Block ( const osg::BoundingBox &box, unsigned int reserve ) : BaseClass()
   osg::ref_ptr < osg::Material > mat ( new osg::Material );
   mat->setDiffuse ( osg::Material::FRONT, osg::Vec4f ( random(), random(), random(), 1.0f ) );
   mat->setAmbient ( osg::Material::FRONT, mat->getDiffuse ( osg::Material::FRONT ) );
-  osg::ref_ptr < osg::StateSet > ss ( _geometry->getOrCreateStateSet() );
-  ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
+  _geometry->getOrCreateStateSet()->setAttribute ( mat.get(), osg::StateAttribute::ON );
 
 #endif
 }
@@ -253,50 +252,6 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
-  // Flag the geometry as dirty.
-  _geometry->dirtyBound();
-  _geometry->dirtyDisplayList();
-
   // Return the geometry.
   return _geometry.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the bounding box.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Block::updateBounds ( const TriangleSet *ts, const Triangle *t )
-{
-  // Check input.
-  if ( 0x0 == ts )
-    throw std::runtime_error ( "Error 3072131116: null triangle-set given" );
-  if ( 0x0 == t )
-    throw std::runtime_error ( "Error 3581925101: null triangle given" );
-
-  // Get the indices.
-  const unsigned int i0 ( t->vertex0()->index() );
-  const unsigned int i1 ( t->vertex1()->index() );
-  const unsigned int i2 ( t->vertex2()->index() );
-
-  // Update the bounding box.
-  _bbox.expandBy ( ts->vertex0 ( i0 ) );
-  _bbox.expandBy ( ts->vertex1 ( i1 ) );
-  _bbox.expandBy ( ts->vertex2 ( i2 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the bounding box.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Block::updateBounds ( const TriangleSet *ts )
-{
-  const unsigned int numTriangles ( _triangles.size() );
-  for ( unsigned int i = 0; i < numTriangles; ++i )
-    this->updateBounds ( ts, _triangles[i] );
 }

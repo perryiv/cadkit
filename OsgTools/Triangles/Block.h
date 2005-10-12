@@ -66,10 +66,6 @@ public:
   const Triangle *          triangle ( unsigned int i ) const { return _triangles.at ( i ); }
   Triangle *                triangle ( unsigned int i )       { return _triangles.at ( i ); }
 
-  // Update the bounding box.
-  void                      updateBounds ( const TriangleSet *ts, const Triangle *t );
-  void                      updateBounds ( const TriangleSet *ts );
-
 protected:
 
   // Do not copy.

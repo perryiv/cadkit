@@ -73,6 +73,9 @@ void Blocks::addTriangle ( TriangleSet *ts, Triangle *t )
   // Add the triangle to the block.
   if ( b.valid() )
     b->addTriangle ( ts, t );
+
+  // Geode is now dirty.
+  _geode->dirtyBound();
 }
 
 
@@ -134,8 +137,7 @@ osg::Geode *Blocks::buildScene ( const Options &options, TriangleSet *ts )
   for ( unsigned int i = 0; i < numBlocks; ++i )
     _geode->addDrawable ( _sequence[i]->buildScene ( options, ts ) );
 
-  // Flag the geode as dirty and return it.
-  _geode->dirtyBound();
+  // Return it.
   return _geode.get();
 }
 
@@ -264,40 +266,6 @@ Block *Blocks::block ( const osg::Vec3f &v )
 
   // Return the block.
   return _volume.at(i[0]).at(i[1]).at(i[2]);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the bounding box.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Blocks::updateBounds ( const TriangleSet *ts, const Triangle *t )
-{
-  Block::RefPtr b ( this->block ( ts, t ) );
-  if ( b.valid() )
-  {
-    b->updateBounds ( ts, t );
-    _bbox.expandBy ( b->boundingBox() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the bounding box.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Blocks::updateBounds ( const TriangleSet *ts )
-{
-  const unsigned int numBlocks ( _sequence.size() );
-  for ( unsigned int i = 0; i < numBlocks; ++i )
-  {
-    _sequence[i]->updateBounds ( ts );
-    _bbox.expandBy ( _sequence[i]->boundingBox() );
-  }
 }
 
 

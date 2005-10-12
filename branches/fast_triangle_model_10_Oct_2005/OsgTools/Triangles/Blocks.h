@@ -62,10 +62,6 @@ public:
   // Purge any excess memory.
   void                      purge();
 
-  // Update the bounding box.
-  void                      updateBounds ( const TriangleSet *ts, const Triangle *t );
-  void                      updateBounds ( const TriangleSet *ts );
-
 protected:
 
   // Do not copy.

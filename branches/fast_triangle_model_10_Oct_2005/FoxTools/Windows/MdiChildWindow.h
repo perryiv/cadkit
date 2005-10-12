@@ -85,7 +85,7 @@ public:
   long                      onCommandDocumentClose   ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandDropFile        ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandUpdateTitle     ( FX::FXObject *, FX::FXSelector, void * );
-  long                      onDisplayListUpdate      ( FX::FXObject *, FX::FXSelector, void * );
+  long                      onDisplayListSet         ( FX::FXObject *, FX::FXSelector, void * );
 
   long                      onMotion                 ( FX::FXObject *, FX::FXSelector, void * );
   long                      onBuildScene             ( FX::FXObject *, FX::FXSelector, void * );

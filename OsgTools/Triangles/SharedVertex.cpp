@@ -34,7 +34,7 @@ using namespace OsgTools::Triangles;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve, unsigned int flags ) : 
+SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve, unsigned char flags ) : 
   _index     ( index ),
   _triangles (),
   _flags     ( flags ),
@@ -226,6 +226,32 @@ void SharedVertex::dirtyNormal ( bool state )
 bool SharedVertex::dirtyNormal() const
 {
   const unsigned int bit ( SharedVertex::DIRTY_NORMAL );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SharedVertex::dirtyColor ( bool state )
+{
+  const unsigned int bit ( SharedVertex::DIRTY_COLOR );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SharedVertex::dirtyColor() const
+{
+  const unsigned int bit ( SharedVertex::DIRTY_COLOR );
   return Usul::Bits::has ( _flags, bit );
 }
 

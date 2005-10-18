@@ -48,11 +48,12 @@ public:
     SELECTED     = 0x04,
     MEMORY_POOL  = 0x08,
     DIRTY_NORMAL = 0x10,
-    PROBLEM      = 0x11,
+    DIRTY_COLOR  = 0x11,
+    PROBLEM      = 0x12,
   };
 
   // Construction
-  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned int flags = 0 );
+  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned char flags = 0 );
 
   // Use reference counting. Needs to be public to work with boost::object_pool.
   ~SharedVertex();
@@ -66,6 +67,10 @@ public:
 
   // Return the current triangle capacity.
   unsigned int          capacity() const { return _triangles.capacity(); }
+
+  // Set/get dirty flags.
+  void                  dirtyColor ( bool );
+  bool                  dirtyColor() const;
 
   // Set/get dirty flags.
   void                  dirtyNormal ( bool );

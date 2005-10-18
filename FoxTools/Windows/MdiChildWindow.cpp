@@ -567,8 +567,8 @@ void MdiChildWindow::handleMessage ( unsigned short message )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string MdiChildWindow::question ( const std::string &buttons,  const std::string &title, const std::string &text )
+std::string MdiChildWindow::question ( const std::string &buttons, const std::string &title, const std::string &text )
 {
-  return FoxTools::Dialogs::Message::question( buttons, title, text );
+  return FoxTools::Dialogs::Message::question ( buttons, title, text );
 }
 

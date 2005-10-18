@@ -77,6 +77,8 @@ protected:
 
   void                      _reserveTriangles ( unsigned int numTriangles );
 
+  osg::Vec4f                _triangleColor ( const TriangleSet *ts, const Triangle *t ) const;
+
 private:
 
   typedef osg::DrawElementsUInt Elements;
@@ -85,12 +87,14 @@ private:
   typedef Triangle::ValidAccessRefPtr TrianglePtr;
   typedef std::vector < TrianglePtr > Triangles;
   typedef osg::ref_ptr < osg::Vec3Array > Normals;
+  typedef osg::ref_ptr < osg::Vec4Array > Colors;
 
   osg::BoundingBox _bbox;
   ElementsPtr _elements;
   GeometryPtr _geometry;
   Triangles _triangles;
   Normals _normalsT;
+  Colors _colorsT;
 };
 
 

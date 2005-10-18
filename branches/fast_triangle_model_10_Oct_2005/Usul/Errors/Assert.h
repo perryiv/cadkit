@@ -18,7 +18,7 @@
 
 
 #ifdef _MSC_VER
-# if 0
+# if 1
 #  include <crtdbg.h>           // Has been giving me problems with stack
 #  define USUL_ASSERT _ASSERT   // corruption after clicking on "Retry"...
 # else

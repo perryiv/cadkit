@@ -50,17 +50,22 @@ public:
     SELECTED     = 0x04,
     MEMORY_POOL  = 0x08,
     DIRTY_NORMAL = 0x10,
-    PROBLEM      = 0x11,
+    DIRTY_COLOR  = 0x11,
+    PROBLEM      = 0x12,
   };
 
   // Construction
-  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned int flags = 0 );
+  Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned char flags = 0 );
 
   // Use reference counting. Needs to be public to work with boost::object_pool.
   ~Triangle();
 
   // Sets all vertices to null.
   void                        clear();
+
+  // Set/get dirty flags.
+  void                        dirtyColor ( bool );
+  bool                        dirtyColor() const;
 
   // Set/get dirty flags.
   void                        dirtyNormal ( bool );

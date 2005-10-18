@@ -38,7 +38,15 @@
 #include "osg/BoundingBox"
 #include "osg/Vec3f"
 
-#ifndef __APPLE__
+// Switch on/off the memory pool for std::map's allocator.
+#define USE_POOL_ALLOCATOR
+
+// Mac doesn't like the boost memory pool for containers.
+#ifdef __APPLE__
+#undef USE_POOL_ALLOCATOR
+#endif
+
+#ifdef USE_POOL_ALLOCATOR
 #include "boost/pool/pool_alloc.hpp"
 #endif
 
@@ -76,12 +84,13 @@ public:
   #endif
 
   // Mac doesn't like the boost memory pool for containers.
-  #ifdef __APPLE__
-  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
-  #else 
+  #ifdef USE_POOL_ALLOCATOR
   typedef boost::fast_pool_allocator < KeyValuePair > Allocator;
   typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector, Allocator > SharedVertices;
+  #else
+  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
   #endif
+
 
   // Remaining typedefs.
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
@@ -90,9 +99,11 @@ public:
   typedef osg::ref_ptr < osg::Vec3Array > VerticesPtr;
   typedef osg::ref_ptr < osg::Vec3Array > NormalsPtr;
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
-  typedef std::pair < NormalsPtr,NormalsPtr > Normals;
+  typedef std::pair < NormalsPtr, NormalsPtr > Normals;
   typedef Blocks::ValidAccessRefPtr BlocksPtr;
   typedef std::vector < unsigned int > Indices;
+  typedef std::pair < unsigned int, unsigned int > Progress;
+  typedef std::pair < SharedVertices::iterator, bool > InsertResult;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -122,6 +133,10 @@ public:
   // Clear existing data.
   void                    clear ( Unknown *caller = 0x0 );
 
+  // Access the container of colors. Use with caution.
+  const osg::Vec4Array *  colorsV()  const;
+  osg::Vec4Array *        colorsV();
+
   // Correct the normal vector.
   void                    correctNormal ( const Triangle *t, osg::Vec3f &normal ) const;
   void                    correctNormal ( const SharedVertex *sv0, const SharedVertex *sv1, const SharedVertex *sv2, osg::Vec3f &normal ) const;
@@ -129,6 +144,8 @@ public:
   // Set/get dirty flags.
   void                    dirtyBlocks ( bool );
   bool                    dirtyBlocks() const;
+  void                    dirtyColorsV ( bool );
+  bool                    dirtyColorsV() const;
   void                    dirtyNormalsV ( bool );
   bool                    dirtyNormalsV() const;
 
@@ -177,8 +194,11 @@ public:
   const osg::Vec3Array *  normalsV() const;
   osg::Vec3Array *        normalsV();
 
-  // Get the normal of the i'th vertex.
-  const osg::Vec3f &      vertexNormal ( unsigned int ) const;
+  // Return the number of triangles.
+  unsigned int            numTriangles() const { return _triangles.size(); }
+
+  // Purge memory.
+  void                    purge();
 
   // Remove these triangles
   void                    removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown *caller );
@@ -187,14 +207,11 @@ public:
   // Make space for the triangles.
   void                    reserve ( unsigned int );
 
-  // Set all triangles and shared vertices to unvisited
-  void                    setAllUnvisited();
-
   // Reset the on edge flag.
   void                    resetOnEdge();
 
-  // Return the number of triangles.
-  unsigned int            numTriangles() const { return _triangles.size(); }
+  // Set all triangles and shared vertices to unvisited
+  void                    setAllUnvisited();
 
   // Get the shared vertices. Be real careful when using this.
   const SharedVertices &  sharedVertices() const { return _shared; }
@@ -231,6 +248,9 @@ public:
   const osg::Vec3f &      vertex1 ( const osg::Drawable* d, unsigned int i ) const;
   const osg::Vec3f &      vertex2 ( const osg::Drawable* d, unsigned int i ) const;
 
+  // Get the normal of the i'th vertex.
+  const osg::Vec3f &      vertexNormal ( unsigned int ) const;
+
 protected:
 
   // Do not copy.
@@ -242,17 +262,24 @@ protected:
 
   void                    _addToPartitionAndPerVertexNormals ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, Triangle *t, const osg::Vec3f &n );
 
+  void                    _colorsPerVertex ( osg::Vec4Array *n );
+
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
 
-  void                    _normalsT ( osg::Vec3Array *n );
-  void                    _normalsV ( osg::Vec3Array *n );
+  void                    _incrementProgress ( bool state );
+  InsertResult            _insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv );
+
+  void                    _normalsPerTriangle ( osg::Vec3Array *n );
+  void                    _normalsPerVertex   ( osg::Vec3Array *n );
 
   void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
   void                    _setStatusBar ( const std::string &text );
 
   void                    _updateBlocks();
   void                    _updateDependencies ( Triangle *t );
+  void                    _updateColorsV();
   void                    _updateNormalsV();
+  void                    _updateColorV  ( SharedVertex *sv );
   void                    _updateNormalV ( SharedVertex *sv );
 
 private:
@@ -263,7 +290,8 @@ private:
     enum
     {
       NORMALS_V = 0x00000001,
-      BLOCKS    = 0x00000002,
+      COLORS_V  = 0x00000002,
+      BLOCKS    = 0x00000004,
     };
   };
 
@@ -271,10 +299,12 @@ private:
   TriangleVector _triangles;
   VerticesPtr _vertices;
   Normals _normals;
+  ColorsPtr _colorsV;
   unsigned int _flags;
   osg::BoundingBox _bbox;
   Factory _factory;
   BlocksPtr _blocks;
+  Progress _progress;
 };
 
 

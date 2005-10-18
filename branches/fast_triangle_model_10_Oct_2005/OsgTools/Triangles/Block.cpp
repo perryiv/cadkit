@@ -13,8 +13,10 @@
 
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Math/MinMax.h"
+#include "Usul/Math/Constants.h"
 
-#define USE_RANDOM_COLORS
+//#define USE_RANDOM_COLORS
 #ifdef USE_RANDOM_COLORS
 #include "Usul/Adaptors/Random.h"
 #include "osg/Material"
@@ -34,7 +36,8 @@ Block::Block ( const osg::BoundingBox &box, unsigned int reserve ) : BaseClass()
   _elements  ( new osg::DrawElementsUInt ( osg::PrimitiveSet::TRIANGLES ) ),
   _geometry  ( new osg::Geometry ),
   _triangles (),
-  _normalsT  ( new osg::Vec3Array )
+  _normalsT  ( new osg::Vec3Array ),
+  _colorsT   ( new osg::Vec4Array )
 {
   // Make sure the bounding-box is valid.
   if ( false == _bbox.valid() )
@@ -69,6 +72,7 @@ Block::~Block()
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+  USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 }
 
@@ -83,6 +87,7 @@ void Block::addTriangle ( TriangleSet *ts, Triangle *t )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+  USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 
   // Check input.
@@ -104,6 +109,9 @@ void Block::addTriangle ( TriangleSet *ts, Triangle *t )
   // Append the per-triangle normal vector.
   _normalsT->push_back ( ts->triangleNormal ( t->index() ) );
 
+  // Append the per-triangle color.
+  _colorsT->push_back ( this->_triangleColor ( ts, t ) );
+
   // Append the triangle to our list.
   _triangles.push_back ( t );
 
@@ -123,6 +131,7 @@ void Block::removeTriangle ( unsigned int index )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+  USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 
   // Make sure the index is in range.
@@ -140,6 +149,9 @@ void Block::removeTriangle ( unsigned int index )
 
   // Remove the per-triangle normal vector.
   _normalsT->erase ( _normalsT->begin() + index );
+
+  // Remove the per-triangle color.
+  _colorsT->erase ( _colorsT->begin() + index );
 
   // Remove the triangle.
   _triangles.erase ( _triangles.begin() + index );
@@ -161,6 +173,7 @@ void Block::_reserveTriangles ( unsigned int numTriangles )
   _elements->reserve ( numTriangles * 3 );
   _triangles.reserve ( numTriangles );
   _normalsT->reserve ( numTriangles );
+  _colorsT->reserve  ( numTriangles );
 }
 
 
@@ -213,6 +226,12 @@ void Block::purge()
     Normals temp ( new osg::Vec3Array ( *_normalsT ) );
     _normalsT->swap ( *temp );
   }
+
+  // Purge per-triangle colors.
+  {
+    Colors temp ( new osg::Vec4Array ( *_colorsT ) );
+    _colorsT->swap ( *temp );
+  }
 }
 
 
@@ -226,6 +245,7 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+  USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
   USUL_ASSERT ( 1 == _geometry->getNumPrimitiveSets() );
   USUL_ASSERT ( _elements.get() == _geometry->getPrimitiveSet ( 0 ) );
@@ -239,7 +259,7 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
   _geometry->setVertexArray ( vertices.get() );
 
   // Set the correct normal-vectors.
-  if ( OsgTools::Options::has ( options, "normals", "average" ) )
+  if ( OsgTools::Options::has ( options, "normals", "per-vertex" ) )
   {
     osg::ref_ptr<osg::Vec3Array> normals ( ts->normalsV() );
     USUL_ASSERT ( vertices->size() == normals->size() );
@@ -252,6 +272,59 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
+  // Set the correct colors.
+  if ( OsgTools::Options::has ( options, "colors", "per-vertex" ) )
+  {
+    osg::ref_ptr<osg::Vec4Array> colors ( ts->colorsV() );
+    USUL_ASSERT ( vertices->size() == colors->size() );
+    _geometry->setColorArray ( colors.get() );
+    _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+  }
+  else
+  {
+    _geometry->setColorArray ( _colorsT.get() );
+    _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  }
+
   // Return the geometry.
   return _geometry.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the color for this triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4f Block::_triangleColor ( const TriangleSet *ts, const Triangle *t ) const
+{
+  // Get all vertices.
+  const osg::Vec3Array *vertices ( ts->vertices() );
+
+  // Get the triangle's vertices.
+  const osg::Vec3f &v0 ( vertices->at ( t->vertex0()->index() ) );
+  const osg::Vec3f &v1 ( vertices->at ( t->vertex1()->index() ) );
+  const osg::Vec3f &v2 ( vertices->at ( t->vertex2()->index() ) );
+
+  // Get the edges.
+  const Usul::Math::Vec3f e01 ( v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2] );
+  const Usul::Math::Vec3f e02 ( v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2] );
+  const Usul::Math::Vec3f e12 ( v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2] );
+
+  // Get the angles between the edges.
+  const float a0 ( e01.angle (  e02 ) );
+  const float a1 ( e01.angle ( -e02 ) );
+  const float a2 ( e12.angle (  e02 ) );
+
+  // Get the minimum angle.
+  const float angle ( Usul::Math::RAD_TO_DEG * Usul::Math::minimum ( a0, a1, a2 ) );
+  const float minAngle ( 15 );
+
+  // The two possible colors.
+  static const osg::Vec4f bad  ( 0.0f, 0.0f, 0.8f, 1.0f );
+  static const osg::Vec4f good ( 0.5f, 0.5f, 0.5f, 1.0f );
+
+  // Return rgba color.
+  return ( ( angle < minAngle ) ? bad : good );
 }

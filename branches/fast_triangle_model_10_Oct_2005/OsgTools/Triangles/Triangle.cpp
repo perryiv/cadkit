@@ -56,7 +56,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned int flags ) : 
+Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned char flags ) : 
   _v0    ( v0 ),
   _v1    ( v1 ),
   _v2    ( v2 ),
@@ -268,7 +268,7 @@ bool Triangle::onEdge() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Triangle::onEdge( bool state )
+void Triangle::onEdge ( bool state )
 {
   const unsigned int bit ( Triangle::ON_EDGE );
   _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
@@ -297,6 +297,32 @@ void Triangle::dirtyNormal ( bool state )
 bool Triangle::dirtyNormal() const
 {
   const unsigned int bit ( Triangle::DIRTY_NORMAL );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::dirtyColor ( bool state )
+{
+  const unsigned int bit ( Triangle::DIRTY_COLOR );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::dirtyColor() const
+{
+  const unsigned int bit ( Triangle::DIRTY_COLOR );
   return Usul::Bits::has ( _flags, bit );
 }
 

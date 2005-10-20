@@ -400,6 +400,9 @@
 					<File
 						RelativePath=".\Interfaces\IFoxTreeList.h">
 					</File>
+					<File
+						RelativePath=".\Interfaces\IFoxWindow.h">
+					</File>
 				</Filter>
 				<Filter
 					Name="GUI"
@@ -506,6 +509,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITrackball.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IViewMatrix.h">
 					</File>
 				</Filter>
 				<Filter
@@ -1233,6 +1239,56 @@
 				</File>
 				<File
 					RelativePath=".\Headers\SStream.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Registry"
+				Filter="">
+				<File
+					RelativePath=".\Registry\Constants.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Devices"
+				Filter="">
+				<File
+					RelativePath=".\Devices\BaseDevice.cpp">
+				</File>
+				<File
+					RelativePath=".\Devices\BaseDevice.h">
+				</File>
+				<File
+					RelativePath=".\Devices\Factory.cpp">
+				</File>
+				<File
+					RelativePath=".\Devices\Factory.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IButtonListener.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IDevice.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IDeviceCreate.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IKeyboardDevice.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IKeyListener.h">
+				</File>
+				<File
+					RelativePath=".\Devices\IMotionListener.h">
+				</File>
+				<File
+					RelativePath=".\Devices\Keys.h">
+				</File>
+				<File
+					RelativePath=".\Devices\State.cpp">
+				</File>
+				<File
+					RelativePath=".\Devices\State.h">
 				</File>
 			</Filter>
 		</Filter>

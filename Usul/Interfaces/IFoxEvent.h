@@ -18,8 +18,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace FX { struct FXEvent; }
-
 namespace Usul {
 namespace Interfaces   {
     
@@ -30,14 +28,13 @@ struct IFoxEvent : public Usul::Interfaces::IUnknown
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IFoxEvent );
 
-  enum { IID = 1100798022 };
+  enum { IID = 1100798022u };
 
-  virtual bool execute( Unknown* caller, const FX::FXEvent &event) = 0;
-
+  virtual bool execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z ) = 0;
 }; //class IFoxEvent
 
-}; //namespace Interfaces
-}; //namespace Usul
+} //namespace Interfaces
+} //namespace Usul
 
 #endif // __USUL_INTERFACES_FOX_EVENT_H__
 

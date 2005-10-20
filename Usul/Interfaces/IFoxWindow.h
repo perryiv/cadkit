@@ -9,37 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for intersecting a scene
+//  Interfaces for getting FOX window.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_SCENE_INTERSECT_H_
-#define _USUL_INTERFACE_SCENE_INTERSECT_H_
+#ifndef _USUL_INTERFACE_FOX_WINDOW_H_
+#define _USUL_INTERFACE_FOX_WINDOW_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Node; };
-namespace osgUtil { class Hit; };
-namespace FX { struct FXEvent; };
+namespace FX { class FXWindow; }
 
 namespace Usul {
 namespace Interfaces {
 
-
-struct ISceneIntersect : public Usul::Interfaces::IUnknown
+struct IFoxWindow : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ISceneIntersect );
+  USUL_DECLARE_QUERY_POINTERS ( IFoxWindow );
 
   /// Id for this interface.
-  enum { IID = 1101086294u };
+  enum { IID = 2463843388u };
 
-  virtual bool intersect ( float x, float y, osgUtil::Hit &hit ) = 0;
-}; // class ISceneIntersect
+  virtual FX::FXWindow* getFoxWindow() = 0;
 
-
-}; // namespace Interfaces
-}; // namespace Usul
+}; // class IFoxWindow
 
 
-#endif // _USUL_INTERFACE_SCENE_INTERSECT_H_
+} // namespace Interfaces
+} // namespace Usul
+
+
+#endif // _USUL_INTERFACE_FOX_WINDOW_H_

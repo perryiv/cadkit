@@ -1241,6 +1241,16 @@
 					RelativePath=".\Headers\SStream.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Memory"
+				Filter="">
+				<File
+					RelativePath=".\Memory\Block.h">
+				</File>
+				<File
+					RelativePath=".\Memory\Pool.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

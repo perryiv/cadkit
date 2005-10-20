@@ -86,7 +86,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _colorsV   ( new osg::Vec4Array ),
   _flags     ( Dirty::NORMALS_V | Dirty::COLORS_V | Dirty::BLOCKS ),
   _bbox      (),
-  _factory   (),
+  _factory   ( new Factory ),
   _blocks    ( 0x0 ),
   _progress  ( 0, 1 )
 {
@@ -186,14 +186,14 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
 void TriangleSet::reserve ( unsigned int num )
 {
-  // Reserve space.
+  // Reserve space. Since there are almost never more vertices than 
+  // triangles, we reserve the same number.
   _triangles.reserve ( num );
-  _vertices->reserve ( 3 * num );
+  _vertices->reserve ( num );
   this->normalsT()->reserve ( num );
-  _colorsV->reserve ( 3 * num );
-
-  // Note: Colors are user-defined, and per-vertex normals are calculated 
-  // when done adding triangles.
+  _colorsV->reserve ( num );
+  _factory->reserveTriangles ( num );
+  _factory->reserveSharedVertices ( num );
 }
 
 
@@ -1072,7 +1072,7 @@ osg::BoundingBox TriangleSet::getBoundingBox() const
 
 OsgTools::Triangles::SharedVertex *TriangleSet::newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve )
 {
-  return _factory.newSharedVertex ( index, numTrianglesToReserve );
+  return _factory->newSharedVertex ( index, numTrianglesToReserve );
 }
 
 
@@ -1084,7 +1084,7 @@ OsgTools::Triangles::SharedVertex *TriangleSet::newSharedVertex ( unsigned int i
 
 OsgTools::Triangles::Triangle *TriangleSet::newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index )
 {
-  return _factory.newTriangle ( v0, v1, v2, index );
+  return _factory->newTriangle ( v0, v1, v2, index );
 }
 
 

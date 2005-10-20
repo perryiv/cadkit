@@ -25,8 +25,7 @@
 
 #include "Usul/System/Memory.h"
 #include "Usul/Resources/TextWindow.h"
-
-#include "boost/pool/object_pool.hpp"
+#include "Usul/Memory/Pool.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -159,7 +158,7 @@ namespace Helper
       // Print this every time.
       std::cout << "Error 1457727156: Allocation of " << name << ' ' << nf.index() << " on the memory pool failed.\n"
                 << "Memory pool probably tried to allocate a continuous block of size " 
-                << pool.get_next_size() 
+                << pool.nextSize() 
                 << " bytes, but there are only " 
                 << Usul::System::Memory::availablePhysical() 
                 << " bytes available from the system's physical memory.\n"
@@ -241,16 +240,16 @@ namespace OsgTools
     {
     public:
 
-      typedef boost::object_pool < SharedVertex > MemoryPoolSV;
-      typedef boost::object_pool < Triangle >     MemoryPoolT;
       typedef Helper::PoolAllocator < SharedVertex > PoolAllocatorSV;
       typedef Helper::PoolAllocator < Triangle >     PoolAllocatorT;
       typedef Helper::HeapAllocator < SharedVertex > HeapAllocatorSV;
       typedef Helper::HeapAllocator < Triangle >     HeapAllocatorT;
+      typedef Usul::Memory::Pool < SharedVertex > MemoryPoolSV;
+      typedef Usul::Memory::Pool < Triangle >     MemoryPoolT;
 
-      FactoryImpl ( unsigned int sizeOfFirstChunk = 1024 ) : 
-        _memorySV  ( sizeOfFirstChunk ),
-        _memoryT   ( sizeOfFirstChunk ),
+      FactoryImpl ( unsigned int firstNum, unsigned int maxNum, float growthFactor ) : 
+        _memorySV  ( firstNum, maxNum, growthFactor ),
+        _memoryT   ( firstNum, maxNum, growthFactor ),
         _usePoolSV ( true ),
         _usePoolT  ( true )
       {
@@ -325,6 +324,80 @@ namespace OsgTools
         return t;
       }
 
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Make space in the memory pool.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      void reserveTriangles ( unsigned int num )
+      {
+        if ( _usePoolT )
+          _memoryT.reserve ( num );
+      }
+
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Make space in the memory pool.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      void reserveSharedVertices ( unsigned int num )
+      {
+        if ( _usePoolSV )
+          _memorySV.reserve ( num );
+      }
+
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Return the next number to be allocated.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      unsigned int nextNumTriangles() const
+      {
+        return _memoryT.nextNum();
+      }
+
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Set the next number to be allocated.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      void nextNumTriangles ( unsigned int num )
+      {
+        _memoryT.nextNum ( num );
+      }
+
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Return the next number to be allocated.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      unsigned int nextNumSharedVertices() const
+      {
+        return _memorySV.nextNum();
+      }
+
+
+      /////////////////////////////////////////////////////////////////////////
+      //
+      //  Set the next number to be allocated.
+      //
+      /////////////////////////////////////////////////////////////////////////
+
+      void nextNumSharedVertices ( unsigned int num )
+      {
+        _memorySV.nextNum ( num );
+      }
+
     private:
 
       MemoryPoolSV _memorySV;
@@ -342,7 +415,8 @@ namespace OsgTools
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory ( unsigned int sizeOfFirstChunk ) : _factory ( new FactoryImpl ( sizeOfFirstChunk ) )
+Factory::Factory ( unsigned int firstNum, unsigned int maxNum, float growthFactor ) : BaseClass(),
+  _factory ( new FactoryImpl ( firstNum, maxNum, growthFactor ) )
 {
 }
 
@@ -380,4 +454,76 @@ SharedVertex *Factory::newSharedVertex ( unsigned int index, unsigned int numTri
 Triangle *Factory::newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index )
 {
   return _factory->newTriangle ( v0, v1, v2, index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make space in the memory pool.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::reserveTriangles ( unsigned int num )
+{
+  _factory->reserveTriangles ( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make space in the memory pool.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::reserveSharedVertices ( unsigned int num )
+{
+  _factory->reserveSharedVertices ( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return next number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Factory::nextNumTriangles() const
+{
+  return _factory->nextNumTriangles();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the next number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::nextNumTriangles ( unsigned int num ) const
+{
+  _factory->nextNumTriangles ( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return next number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Factory::nextNumSharedVertices() const
+{
+  return _factory->nextNumSharedVertices();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the next number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::nextNumSharedVertices ( unsigned int num ) const
+{
+  _factory->nextNumSharedVertices ( num );
 }

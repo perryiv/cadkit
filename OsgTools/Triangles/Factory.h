@@ -18,6 +18,11 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+
+#include <climits>
+
 
 namespace OsgTools {
 namespace Triangles {
@@ -28,15 +33,30 @@ class Triangle;
 class FactoryImpl;
 
 
-class OSG_TOOLS_EXPORT Factory
+class OSG_TOOLS_EXPORT Factory : public Usul::Base::Referenced
 {
 public:
 
-  Factory ( unsigned int sizeOfFirstChunk = 1024 );
-  ~Factory();
+  typedef Usul::Base::Referenced BaseClass;
+
+  USUL_DECLARE_REF_POINTERS ( Factory );
+
+  Factory ( unsigned int firstNum = 128, unsigned int maxNum = UINT_MAX, float growthFactor = 2.0f );
 
   SharedVertex *          newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
   Triangle *              newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
+
+  void                    nextNumTriangles ( unsigned int ) const;
+  unsigned int            nextNumTriangles() const;
+  void                    nextNumSharedVertices ( unsigned int ) const;
+  unsigned int            nextNumSharedVertices() const;
+
+  void                    reserveTriangles ( unsigned int num );
+  void                    reserveSharedVertices ( unsigned int num );
+
+protected:
+
+  virtual ~Factory();
 
 private:
 

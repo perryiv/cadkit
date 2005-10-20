@@ -104,6 +104,7 @@ public:
   typedef std::vector < unsigned int > Indices;
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef std::pair < SharedVertices::iterator, bool > InsertResult;
+  typedef Factory::ValidRefPtr FactoryPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -155,6 +156,10 @@ public:
 
   // Is the triangle set empty?
   bool                    empty() const { return _triangles.empty(); }
+
+  // Access to the factory. Use with caution.
+  const Factory *         factory() const { return _factory; }
+  Factory *               factory()       { return _factory; }
 
   // Flip the normal vectors.
   void                    flipNormals();
@@ -302,7 +307,7 @@ private:
   ColorsPtr _colorsV;
   unsigned int _flags;
   osg::BoundingBox _bbox;
-  Factory _factory;
+  FactoryPtr _factory;
   BlocksPtr _blocks;
   Progress _progress;
 };

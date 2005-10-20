@@ -15,6 +15,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Constants.h"
+#include "Usul/Shared/Preferences.h"
 
 //#define USE_RANDOM_COLORS
 #ifdef USE_RANDOM_COLORS
@@ -253,6 +254,10 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
   // Check input.
   if ( 0x0 == ts )
     throw std::runtime_error ( "Error 3206734392: null triangle-set given" );
+
+  // Set display-list flag (just in case it has been reset somehow).
+  const bool useList ( Usul::Shared::Preferences::instance().getBool ( "display_lists" ) );
+  _geometry->setUseDisplayList ( useList );
 
   // Set the vertices.
   osg::ref_ptr<osg::Vec3Array> vertices ( ts->vertices() );

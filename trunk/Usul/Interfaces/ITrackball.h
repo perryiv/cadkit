@@ -18,7 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; };
+namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; }
 
 namespace Usul {
 namespace Interfaces {
@@ -43,8 +43,8 @@ struct ITrackball : public Usul::Interfaces::IUnknown
 }; // class ITrackball
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_TRACKBALL_H_

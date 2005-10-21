@@ -58,7 +58,7 @@ public:
   // Set the properties.
   void                    setEventType  ( const EventType &type );
   void                    setWindowSize ( const Usul::Math::Vec2ui &size );
-  void                    setMouse      ( const Usul::Math::Vec2ui &xy );
+  void                    setMouse      ( const Usul::Math::Vec2f &xy );
   void                    setSeconds    ( double seconds );
   void                    setButtonMask ( bool left, bool middle, bool right );
 

@@ -37,8 +37,9 @@ struct IOpenGLState : public Usul::Interfaces::IUnknown
   virtual bool                lighting() const = 0;
   virtual void                lighting( bool ) = 0;
 
+  // Get/set stereo
   virtual bool                stereo() const = 0;
-  virtual void                stereo( bool ) = 0;
+  virtual void                stereo ( bool ) = 0;
 
 }; // class IOpenGLState
 

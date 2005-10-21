@@ -28,8 +28,6 @@
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/EventQueue.h"
 
-#include "OsgTools/State.h"
-#include "OsgTools/Callbacks/BoundingBox.h"
 
 #include "osg/Group"
 #include "osg/Geode"

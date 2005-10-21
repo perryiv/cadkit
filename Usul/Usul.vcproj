@@ -559,15 +559,6 @@
 						RelativePath="Interfaces\ICommand.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetHeight.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IGetPosition.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IGetWidth.h">
-					</File>
-					<File
 						RelativePath=".\Interfaces\IHandle.h">
 					</File>
 					<File

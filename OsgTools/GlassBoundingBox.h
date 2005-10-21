@@ -62,7 +62,6 @@ protected:
   osg::Node*          _makeBoxGlass   ( osg::Vec3Array& vertices );
   osg::Node*          _makeNumbers    ( );
   osg::Drawable*      _makeNumber     ( const std::string& name, const osg::Vec3& pos, const osg::Vec4& color, float size );
-  osg::Drawable*      _makeNumber     ( float number, const osg::Vec3& pos, const osg::Vec4& color, float size );
 
   //init each of the six sides of the Cube;
   osg::Node*          _initXYMax();

@@ -70,7 +70,7 @@ osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperText
       const float s ( images.size() );
       const float d ( std::distance ( i, images.end() ) );
       const float v ( ( s - d ) / s );
-      Usul::Resources::progressBar()->updateProgressBar ( static_cast < unsigned int > ( v * 100 ) );
+      Usul::Resources::progressBar()->updateProgressBar ( v * 100 );
     }
   }
 

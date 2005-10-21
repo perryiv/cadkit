@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -13,19 +13,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OPEN_SCENE_GRAPH_EVENT_ADAPTER_H_
-#define _OPEN_SCENE_GRAPH_EVENT_ADAPTER_H_
+#ifndef _OPEN_SCENE_GRAPH_TOOLS_EVENT_ADAPTER_H_
+#define _OPEN_SCENE_GRAPH_TOOLS_EVENT_ADAPTER_H_
 
 #include "OsgTools/Export.h"
 
-#include "osg/ref_ptr"
-
-#include "osgGA/GUIEventAdapter"
+#include "Usul/Pointers/Pointers.h"
 #include "Usul/Math/Vector2.h"
 
+#include "osgGA/GUIEventAdapter"
+#include "osg/ref_ptr"
 
 namespace OsgTools {
 namespace Render {
+
 
 class OSG_TOOLS_EXPORT EventAdapter : public osgGA::GUIEventAdapter
 {
@@ -33,7 +34,7 @@ public:
 
   // Useful typedefs.
   typedef osgGA::GUIEventAdapter BaseClass;
-  typedef osg::ref_ptr<EventAdapter> Ptr;
+  typedef osg::ref_ptr< EventAdapter > Ptr;
 
   // Constructor.
   EventAdapter();
@@ -61,7 +62,6 @@ public:
   void                    setSeconds    ( double seconds );
   void                    setButtonMask ( bool left, bool middle, bool right );
 
-
 protected:
 
   // Use reference counting.
@@ -76,8 +76,9 @@ protected:
   double _seconds;
 };
 
-} //namespace Render
+
+} // namespace Render
 } // namespace OsgTools
 
 
-#endif // _OPEN_SCENE_GRAPH_FOX_EVENT_ADAPTER_H_
+#endif // _OPEN_SCENE_GRAPH_TOOLS_EVENT_ADAPTER_H_

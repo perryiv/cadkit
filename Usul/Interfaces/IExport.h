@@ -18,6 +18,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <vector>
+
 namespace Usul {
 namespace Interfaces {
 

@@ -19,8 +19,6 @@
 #include "osgUtil/SceneView"
 #include "osg/Matrixd"
 
-#include <string>
-
 
 namespace OsgTools {
 

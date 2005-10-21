@@ -30,18 +30,12 @@ struct IShadeModel : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3260613509u };
 
-  enum ShadeMode
-  {
-    FLAT,
-    SMOOTH
-  };
+  /// Possible modes.
+  enum Mode { NONE, FLAT, SMOOTH };
 
-  virtual bool               shadingFlat  () const = 0;
-  virtual bool               shadingSmooth () const = 0;
-  virtual void               removeShadeModel () = 0;
-  virtual void               toggleShadeModel ( unsigned int ) = 0;
-  virtual bool               hasShadeModel  ( unsigned int ) const = 0;
-  virtual bool               hasShadeModel  () const = 0;
+  /// Set/get the shade model.
+  virtual void                    shadeModel ( Mode mode ) = 0;
+  virtual Mode                    shadeModel() const = 0;
 
 }; // class IShadeModel
 

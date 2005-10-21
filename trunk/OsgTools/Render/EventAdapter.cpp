@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -111,4 +111,3 @@ void EventAdapter::setButtonMask ( bool left, bool middle, bool right )
   _buttons |= ( ( middle ) ? BaseClass::MIDDLE_MOUSE_BUTTON : 0 );
   _buttons |= ( ( right  ) ? BaseClass::RIGHT_MOUSE_BUTTON  : 0 );
 }
-

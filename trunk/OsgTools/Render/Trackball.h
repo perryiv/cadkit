@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -13,18 +13,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OPEN_SCENE_GRAPH_TRACKBALL_MANIPULATOR_H_
-#define _OPEN_SCENE_GRAPH_TRACKBALL_MANIPULATOR_H_
+#ifndef _OPEN_SCENE_GRAPH_TOOLS_TRACKBALL_MANIPULATOR_H_
+#define _OPEN_SCENE_GRAPH_TOOLS_TRACKBALL_MANIPULATOR_H_
 
 #include "OsgTools/Export.h"
 
 #include "osgGA/TrackballManipulator"
 
-namespace osgGA { class GUIEventAdapter; class GUIActionAdapter; };
+namespace osgGA { class GUIEventAdapter; class GUIActionAdapter; }
 
 
 namespace OsgTools {
 namespace Render {
+
 
 class OSG_TOOLS_EXPORT Trackball : public osgGA::TrackballManipulator
 {
@@ -40,7 +41,7 @@ public:
   Trackball ( const Trackball &, const osg::CopyOp & );
 
   // Plumbing.
-  META_Object ( OsgTools, Trackball );
+  META_Object ( OsgFox, Trackball );
 
   // Set/get the center.
   void                    center ( const osg::Vec3 &c ) { _center = c; }
@@ -73,8 +74,8 @@ protected:
 };
 
 
-} // namespace Views
-} // namespace OsgFox
+} // namespace Render
+} // namespace OsgTools
 
 
-#endif // _OPEN_SCENE_GRAPH_FOX_TRACKBALL_MANIPULATOR_H_
+#endif // _OPEN_SCENE_GRAPH_TOOLS_TRACKBALL_MANIPULATOR_H_

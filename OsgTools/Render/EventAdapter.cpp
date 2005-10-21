@@ -65,7 +65,7 @@ void EventAdapter::setWindowSize ( const Usul::Math::Vec2ui &size )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void EventAdapter::setMouse ( const Usul::Math::Vec2ui &xy )
+void EventAdapter::setMouse ( const Usul::Math::Vec2f &xy )
 {
   const float height ( this->getYmax() );
   const float mouseX ( xy[0] );

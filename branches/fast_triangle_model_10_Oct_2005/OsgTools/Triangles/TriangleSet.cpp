@@ -64,7 +64,7 @@ namespace Detail
 {
   const osg::Vec4f _defaultPerVertexColor ( 0.5f, 0.5f, 0.5f, 1.0f );
   const unsigned int _milliseconds ( 250 );
-  const unsigned int _divisions ( 10 );
+  const unsigned int _averageTrianglesPerBlock ( 5000 );
 }
 
 
@@ -1305,8 +1305,8 @@ void TriangleSet::_updateBlocks()
 {
   USUL_ASSERT ( _bbox.valid() );
 
-  // Return now if we are not dirty.
-  if ( false == this->dirtyBlocks() )
+  // Return now if we are not dirty, or if there are no triangles.
+  if ( false == this->dirtyBlocks() || true == _triangles.empty() )
     return;
 
   // User feedback.
@@ -1316,8 +1316,14 @@ void TriangleSet::_updateBlocks()
   // Needed below.
   const unsigned int numTriangles ( _triangles.size() );
 
+  // Figure out how many times we need to subdivide so that the number of 
+  // triangles in each block is not too high.
+  unsigned int divisions ( 1 );
+  while ( numTriangles / Usul::Math::pow<double> ( 2, divisions ) > Detail::_averageTrianglesPerBlock )
+    ++divisions;
+
   // Make new blocks. Subdivide sufficient number of times.
-  _blocks = new Blocks ( _bbox, Detail::_divisions, numTriangles );
+  _blocks = new Blocks ( _bbox, divisions, numTriangles );
 
   // Loop through triangles.
   for ( unsigned int i = 0; i < numTriangles; ++i )

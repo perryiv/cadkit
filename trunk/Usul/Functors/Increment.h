@@ -9,32 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Absolute value functions.
+//  Helper functor to return the incremental value.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_MATH_ABSOLUTE_VALUE_H_
-#define _USUL_MATH_ABSOLUTE_VALUE_H_
+#ifndef _USUL_FUNCTORS_INCREMENT_H_
+#define _USUL_FUNCTORS_INCREMENT_H_
 
 
 namespace Usul {
-namespace Math {
+namespace Functors {
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Return the absolute value.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-template < class T > inline T absolute ( T v )
+template < class T > struct Increment
 {
-  return ( v < 0 ) ? -v : v;
-}
+  Increment ( T first ) : _value ( first ){}
+  T operator () ()
+  {
+    T current ( _value );
+    ++_value;
+    return current;
+  }
+private:
+  T _value;
+};
 
 
-}; // namespace Math
+}; // namespace Functors
 }; // namespace Usul
 
 
-#endif // _USUL_MATH_ABSOLUTE_VALUE_H_
+#endif // _USUL_FUNCTORS_INCREMENT_H_

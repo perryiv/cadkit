@@ -336,6 +336,9 @@
 					RelativePath="Functors\If.h">
 				</File>
 				<File
+					RelativePath=".\Functors\Increment.h">
+				</File>
+				<File
 					RelativePath="Functors\Pair.h">
 				</File>
 			</Filter>
@@ -509,9 +512,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITrackball.h">
-					</File>
-					<File
-						RelativePath=".\Interfaces\IViewMatrix.h">
 					</File>
 				</Filter>
 				<Filter
@@ -735,10 +735,13 @@
 						RelativePath=".\Interfaces\IGetLoops.h">
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetNormal.h">
+						RelativePath=".\Interfaces\IGetTriangleNormal.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetVertex.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetVertexNormal.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h">
@@ -1233,10 +1236,13 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Registry"
+				Name="Memory"
 				Filter="">
 				<File
-					RelativePath=".\Registry\Constants.h">
+					RelativePath=".\Memory\Block.h">
+				</File>
+				<File
+					RelativePath=".\Memory\Pool.h">
 				</File>
 			</Filter>
 			<Filter

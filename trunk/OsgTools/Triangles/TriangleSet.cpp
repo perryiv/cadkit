@@ -15,19 +15,24 @@
 
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/GlassBoundingBox.h"
+#include "OsgTools/HasOption.h"
+
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Predicates/EqualVector.h"
-
+#include "Usul/Bits/Bits.h"
+#include "Usul/Functors/Increment.h"
+#include "Usul/Errors/Checker.h"
+#include "Usul/Resources/ProgressBar.h"
+#include "Usul/Resources/StatusBar.h"
+#include "Usul/Resources/EventQueue.h"
+#include "Usul/Resources/TextWindow.h"
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
 
-#include "Usul/Resources/ProgressBar.h"
-#include "Usul/Resources/StatusBar.h"
-#include "Usul/Resources/EventQueue.h"
-
+#include "osgUtil/IntersectVisitor"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -37,6 +42,7 @@
 #include "osg/AlphaFunc"
 
 #include <algorithm>
+#include <numeric>
 #include <functional>
 #include <limits>
 
@@ -47,24 +53,43 @@ USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Constants for this file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const osg::Vec4f _defaultPerVertexColor ( 0.5f, 0.5f, 0.5f, 1.0f );
+  const unsigned int _milliseconds ( 250 );
+  const unsigned int _averageTrianglesPerBlock ( 5000 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
+#ifdef USE_CLOSE_FLOAT_COMPARISON
   _shared    ( LessVector ( CloseFloat() ) ),
+#else
+  _shared    (),
+#endif
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
-  _colors    ( new osg::Vec4Array ),
-  _dirty     ( true ),
-  _bb        (),
-  _partition (),
-  _factory   ()
+  _colorsV   ( new osg::Vec4Array ),
+  _flags     ( Dirty::NORMALS_V | Dirty::COLORS_V | Dirty::BLOCKS ),
+  _bbox      (),
+  _factory   ( new Factory ),
+  _blocks    ( 0x0 ),
+  _progress  ( 0, 1 )
 {
+#ifdef _MSC_VER
   // Keeping tabs on memory consumption...
-#ifdef _WIN32
-  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) == 164 );
+  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 200 );
 #endif
 }
 
@@ -96,8 +121,9 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   // Update every second.
   Usul::Policies::TimeBased update ( 1000 );
 
-  // Clear the partition first.
-  _partition.clear();
+  // Delete the blocks.
+  _blocks = 0x0;
+  this->dirtyBlocks ( true );
 
   // Clear the map of shared vertices.
   _shared.clear();
@@ -140,12 +166,12 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   // Clear the vertices, normals, and colors.
   _vertices->clear();
-  this->normalsPerVertex().clear();
-  this->normalsPerFacet().clear();
-  _colors->clear();
+  this->normalsV()->clear();
+  this->normalsT()->clear();
+  _colorsV->clear();
 
-  // Clear the Max and Min Values
-  _bb.init();
+  // Reset the bounding box.
+  _bbox.init();
 }
 
 
@@ -157,13 +183,14 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
 void TriangleSet::reserve ( unsigned int num )
 {
-  // Reserve triangle, vertices, and per-facet normals.
+  // Reserve space. Since there are almost never more vertices than 
+  // triangles, we reserve the same number.
   _triangles.reserve ( num );
-  _vertices->reserve ( 3 * num );
-  this->normalsPerFacet().reserve ( num );
-
-  // Note: Colors are user-defined, and per-vertex normals are calculated 
-  // when done adding triangles.
+  _vertices->reserve ( num );
+  this->normalsT()->reserve ( num );
+  _colorsV->reserve ( num );
+  _factory->reserveTriangles ( num );
+  _factory->reserveSharedVertices ( num );
 }
 
 
@@ -176,8 +203,8 @@ void TriangleSet::reserve ( unsigned int num )
 void TriangleSet::flipNormals()
 {
   // Loop through the normals and negate them.
-  std::transform ( this->normalsPerVertex().begin(), this->normalsPerVertex().end(), this->normalsPerVertex().begin(), std::negate<osg::Vec3f>() );
-  std::transform ( this->normalsPerFacet().begin(),  this->normalsPerFacet().end(),  this->normalsPerFacet().begin(),  std::negate<osg::Vec3f>() );
+  std::transform ( this->normalsV()->begin(), this->normalsV()->end(), this->normalsV()->begin(), std::negate<osg::Vec3f>() );
+  std::transform ( this->normalsT()->begin(), this->normalsT()->end(), this->normalsT()->begin(), std::negate<osg::Vec3f>() );
 }
 
 
@@ -189,13 +216,13 @@ void TriangleSet::flipNormals()
 
 void TriangleSet::flipNormal ( unsigned int i )
 {
-  Triangle *t ( _triangles.at( i ) );
+  Triangle *t ( _triangles.at ( i ) );
 
-  this->normalsPerVertex().at ( t->vertex0()->index() ) *= -1;
-  this->normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
-  this->normalsPerVertex().at ( t->vertex1()->index() ) *= -1;
+  this->normalsV()->at ( t->vertex0()->index() ) *= -1;
+  this->normalsV()->at ( t->vertex1()->index() ) *= -1;
+  this->normalsV()->at ( t->vertex2()->index() ) *= -1;
 
-  this->normalsPerFacet().at( i ) *= -1;
+  this->normalsT()->at ( i ) *= -1;
 }
 
 
@@ -244,9 +271,50 @@ const osg::Vec3f &TriangleSet::vertex2 ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
+const osg::Vec3f &TriangleSet::triangleNormal ( unsigned int i ) const
 {
-  return this->normalsPerFacet().at(i);
+  return this->normalsT()->at(i);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a correct normal vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::correctNormal ( const Triangle *t, osg::Vec3f &normal ) const
+{
+  this->correctNormal ( t->vertex0(), t->vertex1(), t->vertex2(), normal );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a correct normal vector.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::correctNormal ( const SharedVertex *sv0, const SharedVertex *sv1, const SharedVertex *sv2, osg::Vec3f &normal ) const
+{
+  // Get the three vertices of the triangle.
+  const osg::Vec3f one   ( _vertices->at ( sv0->index() ) );
+  const osg::Vec3f two   ( _vertices->at ( sv1->index() ) );
+  const osg::Vec3f three ( _vertices->at ( sv2->index() ) );
+
+  // Get the center of the triangle.
+  const osg::Vec3f center ( ( one + two + three ) / 3 );
+
+  // Get the center of the model.
+  const osg::Vec3f cg ( _bbox.center() );
+
+  // Make the reference vector.
+  const osg::Vec3f refVector ( center - cg );
+
+  // Flip the normal if it's pointing towards the center. 
+  // The '*' operator is overloaded as the dot product for osg::Vec3.
+  if ( ( refVector * normal ) < 0 )
+    normal = -normal;
 }
 
 
@@ -256,7 +324,7 @@ const osg::Vec3f &TriangleSet::normal ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
+void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update )
 {
   // Get or make the shared vertices.
   SharedVertex *sv0 ( this->addSharedVertex ( v0 ) );
@@ -264,7 +332,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv2 ( this->addSharedVertex ( v2 ) );
 
   // Add the triangle
-  this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
+  this->addTriangle ( sv0, sv1, sv2, n, update );
 }
 
 
@@ -274,121 +342,142 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const SharedVertex &v0, const SharedVertex &v1, const SharedVertex &v2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
+void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool update )
 {
-  SharedVertex *sv0 ( const_cast < SharedVertex * > ( &v0 ) );
-  SharedVertex *sv1 ( const_cast < SharedVertex * > ( &v1 ) );
-  SharedVertex *sv2 ( const_cast < SharedVertex * > ( &v2 ) );
-
-  // Add the triangle
-  this->_addTriangle ( sv0, sv1, sv2, n, correctNormal, rebuild );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a triangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n )
-{
-  this->_addTriangle ( sv0, sv1, sv2, n, false, false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a triangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::_addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool correctNormal, bool rebuild )
-{
-  // Make a copy
-  osg::Vec3f copy ( n );
-
-  // Fix the normal if we should.
-  if ( correctNormal )
-  {
-    // Get the three vertices of the triangle.
-    osg::Vec3 one   ( _vertices->at( sv0->index() ) );
-    osg::Vec3 two   ( _vertices->at( sv1->index() ) );
-    osg::Vec3 three ( _vertices->at( sv2->index() ) );
-
-    // Get the center of the triangle.
-    osg::Vec3 center ( ( one + two + three ) / 3 );
-
-    // Get the center of the model.
-    osg::Vec3 cg ( _bb.center() );
-
-    // Make the reference vector.
-    osg::Vec3 refVector ( center - cg );
-
-    // Flip the normal if it's pointing towards the center.
-    if ( ( refVector * copy ) < 0 )
-      copy *= -1;
-  }
-
   // Make the new triangle.
   Triangle::ValidRefPtr t ( this->newTriangle ( sv0, sv1, sv2, _triangles.size() ) );
 
   // Append it to the list.
   _triangles.push_back ( t.get() );
 
-  // Add new triangle to the shared vertices.
-  sv0->add ( t.get() );
-  sv1->add ( t.get() );
-  sv2->add ( t.get() );
+  // Add normal vector.
+  this->normalsT()->push_back ( n );
 
-  // Append normal vector.
-  this->normalsPerFacet().push_back ( copy );
+  // Update the bounds.
+  this->updateBounds ( t );
 
-  // The primitive set will be valid after the scene is built.
-  if ( rebuild )
-  {
-    //For convienence
-    osg::ref_ptr< osg::Vec3Array > normals ( &this->normalsPerVertex() );
+  // Set triangle's flag if appropriate.
+  t->problem ( sv0->problem() || sv1->problem() || sv2->problem() );
 
-    //How many points do we have    
-    const unsigned int numPoints ( _triangles.size() * 3 );
+  // If we supposed to update everything now...
+  if ( update )
+    this->_updateDependencies ( t );
 
-    // Make space.
-    normals->reserve   ( _vertices->size() );
-    _partition.reserve ( numPoints );
-
-    // Add the triangle
-    _partition.add ( t.get(), *_vertices, copy, true );
-
-    // Average the normals if we are suppose to
-    if ( !normals->empty() )
-    {
-      // Get the normals.
-      osg::Vec3 n1 ( this->averageNormal ( sv0 ) );
-      osg::Vec3 n2 ( this->averageNormal ( sv1 ) );
-      osg::Vec3 n3 ( this->averageNormal ( sv2 ) );
-
-      // Make sure they are normalized.
-      n1.normalize();
-      n2.normalize();
-      n3.normalize();
-
-      // Set the normal values.
-      normals->push_back( n1 );
-      normals->push_back( n2 );
-      normals->push_back( n3 );
-    }
-  }
+  // Otherwise, these things are dirty.
   else
   {
-    // Need to rebuild per-vertex normals and indices.
-    _dirty = true;
+    this->dirtyBlocks   ( true );
+    this->dirtyNormalsV ( true );
+    this->dirtyColorsV  ( true );
+    sv0->dirtyColor ( true );
+    sv1->dirtyColor ( true );
+    sv2->dirtyColor ( true );
   }
+}
 
-  // Update the max and min values.
-  this->updateBounds ( sv0 );
-  this->updateBounds ( sv1 );
-  this->updateBounds ( sv2 );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the specified triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
+{
+  // Get the triangle.
+  // TODO: Not sure if this gives correct block in all cases because you use 
+  // vertex0 when initially putting triangle into blocks...
+  Block::RefPtr block ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Triangle::RefPtr t ( ( block.valid() ) ? block->triangle ( i ) : 0x0 );
+  if ( false == t.valid() )
+    return;
+
+  // Remove the triangle from the sequence.
+  _triangles.erase ( _triangles.begin() + t->index() );
+
+  // Remove the corresponding normal.
+  this->normalsT()->erase ( this->normalsT()->begin() + t->index() );
+
+  // Remove the triangle from the block.
+  block->removeTriangle ( i );
+
+  // Tell shared-vertices to remove this triangle.
+  t->vertex0()->removeTriangle ( t );
+  t->vertex1()->removeTriangle ( t );
+  t->vertex2()->removeTriangle ( t );
+
+  // Depending on the reference count, it may not delete here, so make sure 
+  // the triangle does not have any vertices.
+  t->clear();
+
+  // Need to update these.
+  this->dirtyNormalsV ( true );
+  this->dirtyColorsV ( true );
+  this->dirtyColorsV ( true );
+  t->vertex0()->dirtyColor ( true );
+  t->vertex1()->dirtyColor ( true );
+  t->vertex2()->dirtyColor ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update everything that depends on this triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateDependencies ( Triangle *t )
+{
+  // Handle bad input.
+  if ( 0x0 == t )
+    return;
+
+  // Make sure the per-triangle normal is correct.
+  this->correctNormal ( t, this->normalsT()->at ( t->index() ) );
+
+  // Get the shared-vertices.
+  SharedVertex *sv0 ( t->vertex0() );
+  SharedVertex *sv1 ( t->vertex1() );
+  SharedVertex *sv2 ( t->vertex2() );
+
+  // Make sure the per-vertex normals are correct.
+  this->_updateNormalV ( sv0 );
+  this->_updateNormalV ( sv1 );
+  this->_updateNormalV ( sv2 );
+
+  // Make sure the per-vertex colors are correct.
+  this->_updateColorV ( sv0 );
+  this->_updateColorV ( sv1 );
+  this->_updateColorV ( sv2 );
+
+  // Get the vertices.
+  const osg::Vec3f &v0 ( _vertices->at ( sv0->index() ) );
+  const osg::Vec3f &v1 ( _vertices->at ( sv1->index() ) );
+  const osg::Vec3f &v2 ( _vertices->at ( sv2->index() ) );
+
+  // Make sure our bounding box is updated.
+  this->updateBounds ( v0 );
+  this->updateBounds ( v1 );
+  this->updateBounds ( v2 );
+
+  // Add the triangle to the blocks. Note: blocks should be able to handle 
+  // vertices that fall outside of their bounds.
+  if ( _blocks.valid() )
+    _blocks->addTriangle ( this, t );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::updateBounds ( Triangle *t ) 
+{
+  this->updateBounds ( t->vertex0() );
+  this->updateBounds ( t->vertex1() );
+  this->updateBounds ( t->vertex2() );
 }
 
 
@@ -412,41 +501,23 @@ void TriangleSet::updateBounds ( SharedVertex *sv )
 
 void TriangleSet::updateBounds ( const osg::Vec3f &v ) 
 {
-  _bb.expandBy ( v );
+  _bbox.expandBy ( v );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the shared-vertex map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::addStart()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clear the shared-vertex map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::addFinish()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make the shared vertex.  Is not added to the map.
+//  Make the shared vertex.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 {
-  // Look for and existing shared vertex if we are supposed to.
+  // Should always be true.
+  USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _colorsV->size() );
+
+  // Look for an existing shared vertex if we are supposed to.
   if ( look )
   {
     SharedVertices::iterator i = _shared.find ( v );
@@ -454,12 +525,48 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
       return i->second.get();
   }
 
-  // If we get to here then append to the vertices.
-  _vertices->push_back ( v );
+  // Should always be true.
+  USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _colorsV->size() );
 
-  // Make shared vertex with proper index.
-  SharedVertex::ValidRefPtr sv ( this->newSharedVertex ( _vertices->size() - 1  ) );
-  _shared.insert ( SharedVertices::value_type ( v, sv.get() ) );
+  // If we get to here then make shared vertex with proper index.
+  SharedVertex::ValidRefPtr sv ( this->newSharedVertex ( _vertices->size() ) );
+
+  // Insert the new shared-vertex into the map.
+  const InsertResult result ( this->_insertSharedVertex ( v, sv.get() ) );
+
+  // If insertion worked (and it should have).
+  if ( true == result.second )
+  {
+    // Append to sequence of vertices and colors.
+    _vertices->push_back ( v );
+    _colorsV->push_back ( Detail::_defaultPerVertexColor );
+  }
+
+  // In rare cases, insertion fails even though the "find" above was 
+  // executed. I've seen this using the CloseFloat and LessVector combination, 
+  // but not with the default std::less comparison predicate.
+  else
+  {
+    std::cout << "Warning 1435177723: Failed to find existing shared-vertex for "
+              << '(' << v[0] << ',' << v[1] << ',' << v[2] << ')'
+              << ", however, when attempting to insert a new shared-vertex, "
+              << "an existing one was returned" << std::endl;
+
+    // Re-assign the shared-vertex to the one returned.
+    sv = result.first->second;
+
+    // Should be true.
+    USUL_ASSERT ( sv->index() < _vertices->size() );
+    USUL_ASSERT ( sv->index() < _colorsV->size() );
+
+    // Flag it.
+    sv->problem ( true );
+  }
+
+  // Should always be true.
+  USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _colorsV->size() );
 
   // Return the new shared vertex.
   return sv.get();
@@ -468,135 +575,80 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene. 
+//  Typedefs and structs needed to declare a singleton pool that is the same 
+//  size as the one created by the shared-vertex map's allocator. 
+//  Unfortunately, the necessary information is private, so this is somewhat 
+//  of a guess.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *TriangleSet::buildScene ( const Options &opt, Unknown *caller )
+typedef TriangleSet::SharedVertices::allocator_type::user_allocator UserAllocator;
+typedef TriangleSet::SharedVertices::allocator_type::mutex MutexType;
+typedef boost::singleton_pool < boost::fast_pool_allocator_tag, sizeof ( TriangleSet::SharedVertices::allocator_type::value_type ), UserAllocator, MutexType, 32 > singleton_pool;
+typedef singleton_pool::singleton Singleton;
+//typedef Singleton::pool_type AllocatorPool;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert the given shared-vertex into the correct map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TriangleSet::InsertResult TriangleSet::_insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv )
 {
-  // Make copy of the options.
-  Options options ( opt );
-
-  // Show the progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
-
-  // User feedback.
-  this->_setStatusBar ( "Building Scene ..." );
-
-  // Start at zero.
-  this->_setProgressBar ( true, 0, 100 );
-
-  // The scene root.
-  osg::ref_ptr<osg::Group> root ( new osg::Group );
-
-  // Should we use averaged normals?
-  const bool useAverage ( "average" == options["normals"] );
-  const bool buildAverage ( useAverage && this->normalsPerVertex().empty() );
-
-  // Rebuild if dirty or if we need per vertex normals and there aren't any.
-  if ( _dirty || buildAverage )
+  // While we can still reduce the size of the next chunk of memory that 
+  // the pool-allocator will ask for...
+  //AllocatorPool &pool ( Singleton::instance().p );
+  while ( Singleton::instance().p.get_next_size() >= sizeof ( SharedVertices::value_type ) )
   {
-    // Clear the partition.  Make sure it's cleared before subdivided.
-    _partition.clear();
-
-    // Subdivide the partition
-    _partition.subdivide ( _bb, 6 );
-
-    //For convienence
-    osg::ref_ptr< osg::Vec3Array > normals ( &this->normalsPerVertex() );
-
-    //How many points do we have    
-    const unsigned int numPoints ( _triangles.size() * 3 );
-
-    // Size the normals if we should.
-    if ( buildAverage )
-      normals->resize ( _vertices->size() );
-    
-    // Make some room in the partition.
-    _partition.reserve ( numPoints );
-
-    // Initialize counter for progress.
-    unsigned int count ( 0 );
-
-    // Update progress bar every second.
-    Usul::Policies::TimeBased elapsed ( 1000 );
-
-    // Loop through the triangles.
-    for ( TriangleVector::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
+    // Safely insert the new shared-vertex into the map.
+    try
     {
-      // Shortcuts to the triangle.
-      Triangle* triangle ( i->get() );
-
-      // Should be valid.
-      USUL_ASSERT ( 0x0 != triangle );
-
-      // Add the triangle to the partition
-      _partition.add ( triangle, *_vertices, this->normalsPerFacet().at( count ) );
-
-      // If we are suppose to add averaged normals...
-      if ( buildAverage )
-      {
-        // Get the vertices.
-        const SharedVertex *sv0 ( triangle->vertex0() );
-        const SharedVertex *sv1 ( triangle->vertex1() );
-        const SharedVertex *sv2 ( triangle->vertex2() );
-
-        // Make sure we have good pointers.
-        if ( !sv0 || !sv1 || !sv2 )
-          throw std::runtime_error ( "Error 2040664771: null vertex found when trying to build scene" );
-
-        // Get the normals.
-        osg::Vec3 n1 ( this->averageNormal ( sv0 ) );
-        osg::Vec3 n2 ( this->averageNormal ( sv1 ) );
-        osg::Vec3 n3 ( this->averageNormal ( sv2 ) );
-
-        // Make sure they are normalized.
-        n1.normalize();
-        n2.normalize();
-        n3.normalize();
-
-        // Set the normal values.
-        normals->at( sv0->index() ) = n1;
-        normals->at( sv1->index() ) = n2;
-        normals->at( sv2->index() ) = n3;
-      }
-
-      // Show progress.
-      this->_setProgressBar ( elapsed(), count, _triangles.size() );
-      ++count;
+      return _shared.insert ( SharedVertices::value_type ( v, sv ) );
     }
 
-    // Purge any excess memory from the partition.
-    _partition.purge();
+    // Catch standard exceptions.
+    catch ( const std::exception &e )
+    {
+      std::cout << "Error 3695160201: Standard exception caught when inserting shared vertex " << sv->index();
+      if ( e.what() )
+        std::cout << ". " << e.what() << std::endl;
+    }
 
-    _dirty = false;
+    // Catch all other exceptions.
+    catch ( ... )
+    {
+      std::cout << "Error 1786024042: Unknown exception caught when inserting shared vertex " << sv->index();
+    }
+
+    // Calculate the size to try next time.
+    const unsigned int nextSize ( Singleton::instance().p.get_next_size() / 2 );
+
+    // Print this every time.
+    std::cout << ". The memory-pool allocator for the container of shared-vertices asked for "
+              << Singleton::instance().p.get_next_size()
+              << " bytes. Trying again with " << nextSize << " bytes."
+              << Usul::Resources::TextWindow::endl;
+
+    // Reset the "next size".
+    Singleton::instance().p.set_next_size ( nextSize );
+
+    break; // Above does not work, and creates an infinite loop. See note below.
+#if 0
+
+    TODO
+    Above "set_next_size" call does not do anything, this is an infinite loop. 
+    Need a special allocator that is under your control. Should grab all needed 
+    space in reserveTriangles(). Also, consider a sorted vector for the shared-vertices. 
+    Might want to move the "bag of shared vertices" to its own class and hide these details.
+
+#endif
   }
 
-  osg::ref_ptr< osg::Vec3Array > normals;
-
-  // Get the right normals
-  if ( useAverage )
-    normals = &this->normalsPerVertex();
-  else
-    normals = &this->normalsPerFacet();
-
-  // Get the node that the partition builds.
-  root->addChild ( _partition ( _vertices.get(), normals.get(), useAverage ) );
-
-  // Show we draw a bounding box?
-  const bool boundingBox ( options["BoundingBox"] == "Show" );
-
-  // Show we draw a glass bounding box?
-  const bool showGlassBoundingBox ( options["GlassBoundingBox"] == "Show" );
-
-  if ( boundingBox || showGlassBoundingBox )
-  {
-    OsgTools::GlassBoundingBox gbb ( _bb );
-    gbb ( root.get(), boundingBox, showGlassBoundingBox, true );
-  }
-   
-  // Return the root.
-  return root.release();
+  // If we get all the way down here then we are really out of memory.
+  throw std::bad_alloc ( "Error 4182935658: Failed to allocate a new shared vertex, \
+                          after repeated attempts of reducing the memory-pool's block size" );
 }
 
 
@@ -649,17 +701,18 @@ void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 TriangleSet::averageNormal ( const SharedVertex *sv ) const
+osg::Vec3f TriangleSet::averageNormal ( const SharedVertex *sv ) const
 {
-  osg::Vec3 normal;
+  // Initialize.
+  osg::Vec3f normal ( 0, 0, 0 );
 
-  //Add the normal of all triangles connected to this shared vertex
+  // Add the normal of all triangles connected to this shared vertex
   for ( SharedVertex::ConstTriangleItr i = sv->begin(); i != sv->end(); ++i )
   {
-    normal += this->normalsPerFacet().at( (*i)->index() );
+    normal += this->normalsT()->at( (*i)->index() );
   }
 
-  //Return the normal.  Do not normalize.
+  // Return the normal. Do not normalize.
   return normal;
 }
 
@@ -716,40 +769,74 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Delete triangle at given index
+//  Get the vertex at the index
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
+void TriangleSet::checkStatus() const
 {
-  //Get the triangle to remove.
-  Triangle::ValidRefPtr doomed ( _partition.triangle( d, index ) );
+  USUL_ERROR_CHECKER ( _shared.size() == _vertices->size() );
+  USUL_ERROR_CHECKER ( _shared.size() == _colorsV->size() );
+  USUL_ERROR_CHECKER ( _shared.size() == this->normalsV()->size() );
 
-  // Decrement the index of all triangles after doomed.
-  for( TriangleVector::iterator i = _triangles.begin() + doomed->index() + 1; i != _triangles.end(); ++i  )
+  // Check every triangle's vertices.
   {
-    unsigned int t ( (*i)->index() - 1 );
-    (*i)->index( t );
+    const unsigned int numVertices  ( _vertices->size() );
+    const unsigned int numTriangles ( _triangles.size() );
+    for ( unsigned int i = 0; i < numTriangles; ++i )
+    {
+      const Triangle *t ( _triangles[i] );
+      const SharedVertex *sv0 ( t->vertex0() );
+      const SharedVertex *sv1 ( t->vertex1() );
+      const SharedVertex *sv2 ( t->vertex2() );
+
+      // Check for null.
+      USUL_ERROR_CHECKER ( 0x0 != sv0 );
+      USUL_ERROR_CHECKER ( 0x0 != sv1 );
+      USUL_ERROR_CHECKER ( 0x0 != sv2 );
+
+      // Check reference count.
+      USUL_ERROR_CHECKER ( sv0->refCount() == sv0->numTriangles() + 1 );
+      USUL_ERROR_CHECKER ( sv1->refCount() == sv1->numTriangles() + 1 );
+      USUL_ERROR_CHECKER ( sv2->refCount() == sv2->numTriangles() + 1 );
+
+      // Make sure triangle contains the shared-vertex only once.
+      const unsigned int num0 ( std::count_if ( sv0->begin(), sv0->end(), TriangleVector::value_type::IsEqual ( t ) ) );
+      const unsigned int num1 ( std::count_if ( sv1->begin(), sv1->end(), TriangleVector::value_type::IsEqual ( t ) ) );
+      const unsigned int num2 ( std::count_if ( sv2->begin(), sv2->end(), TriangleVector::value_type::IsEqual ( t ) ) );
+      USUL_ERROR_CHECKER ( 1 == num0 );
+      USUL_ERROR_CHECKER ( 1 == num1 );
+      USUL_ERROR_CHECKER ( 1 == num2 );
+
+      // Get index.
+      const unsigned int i0 ( sv0->index() );
+      const unsigned int i1 ( sv1->index() );
+      const unsigned int i2 ( sv2->index() );
+
+      // Make sure the index is in range.
+      USUL_ERROR_CHECKER ( i0 < numVertices );
+      USUL_ERROR_CHECKER ( i1 < numVertices );
+      USUL_ERROR_CHECKER ( i2 < numVertices );
+
+      // Make sure it is in the map.
+      USUL_ERROR_CHECKER ( _shared.end() != _shared.find ( _vertices->at ( i0 ) ) );
+      USUL_ERROR_CHECKER ( _shared.end() != _shared.find ( _vertices->at ( i1 ) ) );
+      USUL_ERROR_CHECKER ( _shared.end() != _shared.find ( _vertices->at ( i2 ) ) );
+    }
   }
 
-  // Get the shared vertices.
-  SharedVertex *sv0 ( doomed->vertex0() );
-  SharedVertex *sv1 ( doomed->vertex1() );
-  SharedVertex *sv2 ( doomed->vertex2() );
-
-  //Remove the triangle from the shared vertices
-  sv0->remove( doomed.get() );
-  sv1->remove( doomed.get() );
-  sv2->remove( doomed.get() );
-
-  // Remove doomed from our vector of triangles.
-  _triangles.erase( _triangles.begin() + doomed->index() );
-
-  // Remove the normal.
-  this->normalsPerFacet().erase( ( normalsPerFacet().begin() + doomed->index() ) );
-
-  // Remove the triangle from the partition.
-  _partition.remove( d, index );
+  // Check every shared-vertex.
+  {
+    const unsigned int numVertices  ( _vertices->size() );
+    for ( SharedVertices::const_iterator i = _shared.begin(); i != _shared.end(); ++i )
+    {
+      const SharedVertex *sv ( i->second );
+      const unsigned int index ( sv->index() );
+      USUL_ERROR_CHECKER ( index < numVertices );
+      USUL_ERROR_CHECKER ( sv->numTriangles() > 0 );
+      USUL_ERROR_CHECKER ( sv->numTriangles() + 1 == sv->refCount() );
+    }
+  }
 }
 
 
@@ -759,68 +846,136 @@ void TriangleSet::deleteTriangle( const osg::Drawable *d, unsigned int index )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfaces::IUnknown *caller )
+void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller )
 {
-  // Make a copy of the triangles
-  TriangleVector triangles ( _triangles );
+  USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _colorsV->size() );
+  USUL_ASSERT ( _shared.size() == this->normalsV()->size() );
 
-  // Make a copy of the normals
-  NormalsPtr normals ( new osg::Vec3Array ( this->normalsPerFacet().size() ) );
-  std::copy ( this->normalsPerFacet().begin(), this->normalsPerFacet().end(), normals->begin() );
+  // Handle trivial case.
+  if ( keepers.size() == _triangles.size() )
+    return;
 
-  // Make a copy of the vertices
-  VerticesPtr vertices ( new osg::Vec3Array ( _vertices->size() ) );
-  std::copy ( _vertices->begin(), _vertices->end(), vertices->begin() );
-
-  // Clear every thing we have.  Don't use this->clear() because triangles ref count is not 1
-  _shared.clear();
-  _partition.clear();
-  _triangles.clear();
-  _vertices->clear();
-  this->normalsPerVertex().clear();
-  this->normalsPerFacet().clear();
-  _colors->clear();
-  _bb.init();
-
-  // Make enough room
-  this->reserve ( keepers.size() );
-
-  // Initialize the shared vertex map
-  this->addStart();
-
-  this->_setStatusBar ( "Adding Triangles..." );
-
-  // Show the progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
-
+  // For progress.
+  _progress.first = 0;
+  _progress.second = 3 * _shared.size() + keepers.size();
   Usul::Policies::TimeBased update ( 1000 );
 
-  // Go through the triangles that we need to keep
-  for ( std::vector<unsigned int>::const_iterator i = keepers.begin(); i != keepers.end(); ++i )
+#ifdef _DEBUG
+  this->checkStatus();
+#endif
+
+  // Tell all shared vertices to remove their triangles.
   {
-    // Get the triangle
-    Triangle::ValidRefPtr t ( triangles.at( *i ) );
-
-    // Get its vertices
-    const osg::Vec3f &v0 ( vertices->at( t->vertex0()->index() ) );
-    const osg::Vec3f &v1 ( vertices->at( t->vertex1()->index() ) );
-    const osg::Vec3f &v2 ( vertices->at( t->vertex2()->index() ) );
-
-    // Get it's normal
-    const osg::Vec3f &n ( normals->at ( t->index() ) );
-
-    // Add the triangle
-    this->addTriangle ( v0, v1, v2, n );
-
-    // Let the user know how much we have done
-    this->_setProgressBar ( update(), ( i - keepers.begin() ), keepers.size() );
+    this->_setStatusBar ( "Removing Triangles from Shared Vertices..." );
+    for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
+    {
+      // Save the current number of triangles and reserve them again.
+      SharedVertex *sv ( i->second );
+      const unsigned int num ( sv->numTriangles() );
+      sv->removeAllTriangles();
+      sv->reserve ( num );
+      USUL_ASSERT ( num + 1 == sv->refCount() );
+      this->_incrementProgress ( update() );
+    }
   }
 
-  // Done with the shared vertex map
-  this->addFinish();
+  // Build new triangles and per-triangle normal vectors.
+  {
+    this->_setStatusBar ( "Adding new Triangles..." );
+    TriangleVector triangles;
+    NormalsPtr normalsT ( new osg::Vec3Array );
+    const unsigned int numKeepers ( keepers.size() );
+    triangles.reserve ( numKeepers );
+    normalsT->reserve ( numKeepers );
+    for ( unsigned int i = 0; i < numKeepers; ++i )
+    {
+      // Push the triangle on to the new sequence.
+      Triangle::ValidRefPtr t ( _triangles.at ( keepers[i] ) );
+      t->index ( triangles.size() );
+      triangles.push_back ( t.get() );
 
-  // The scene needs to be rebuilt
-  _dirty = true;
+      // Push the per-triangle normal vector.
+      normalsT->push_back ( this->normalsT()->at ( keepers[i] ) );
+
+      // Tell the shared-vertices to add this triangle to themselves.
+      t->vertex0()->addTriangle ( t.get() );
+      t->vertex1()->addTriangle ( t.get() );
+      t->vertex2()->addTriangle ( t.get() );
+
+      // Feedback.
+      this->_incrementProgress ( update() );
+    }
+    _triangles.swap ( triangles ); // Important!
+    this->_normalsPerTriangle ( normalsT.get() );
+    USUL_ASSERT ( keepers.size() == _triangles.size() );
+    USUL_ASSERT ( keepers.size() == this->normalsT()->size() );
+  }
+
+  // Purge all shared-vertices that do not have any triangles.
+  {
+    this->_setStatusBar ( "Purging Shared Vertices..." );
+#ifdef USE_CLOSE_FLOAT_COMPARISON
+    CloseFloat closeFloatPred;
+    LessVector lessVectorPred ( closeFloatPred );
+    SharedVertices shared ( lessVectorPred );
+#else
+    SharedVertices shared;
+#endif
+    for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
+    {
+      if ( i->second->numTriangles() > 0 )
+        shared.insert ( shared.end(), SharedVertices::value_type ( i->first, i->second ) );
+      this->_incrementProgress ( update() );
+    }
+    _shared.swap ( shared ); // Important!
+    USUL_ASSERT ( _shared.size() < shared.size() );
+    USUL_ASSERT ( _shared.size() < keepers.size() * 3 );
+  }
+
+  // Update the vertex pool, the per-vertex normals and colors, the shared-vertices'
+  // indices, and the bounding box.
+  {
+    this->_setStatusBar ( "Updating Vertex Pool and Per-Vertex Normal Vectors..." );
+    _vertices->clear();
+    _vertices->reserve ( _shared.size() );
+    ColorsPtr colors ( new osg::Vec4Array );
+    colors->reserve ( _shared.size() );
+    NormalsPtr normalsV ( new osg::Vec3Array );
+    normalsV->reserve ( _shared.size() );
+    _bbox.init();
+    for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
+    {
+      // Order is important here... 
+      const osg::Vec3f &v ( i->first );
+      SharedVertex *sv ( i->second );
+
+      // Add normal vector and color using original index.
+      normalsV->push_back ( this->normalsV()->at ( sv->index() ) );
+      colors->push_back ( _colorsV->at ( sv->index() ) );
+
+      // Update the shared-vertex's index.
+      i->second->index ( _vertices->size() );
+
+      // Add the shared-vertex's key (the 3D vector) to the vertex pool.
+      _vertices->push_back ( v );
+
+      // Expand the bounding box and display progress.
+      this->updateBounds ( v );
+      this->_incrementProgress ( update() );
+    }
+    this->_normalsPerVertex ( normalsV.get() ); // Important!
+    this->_colorsPerVertex ( colors.get() );    // Important!
+    this->dirtyNormalsV ( false );
+    this->dirtyColorsV ( false );
+  }
+
+#ifdef _DEBUG
+  this->checkStatus();
+#endif
+
+  // These things are now dirty.
+  this->dirtyBlocks ( true );
 }
 
 
@@ -830,83 +985,31 @@ void TriangleSet::keep ( const std::vector<unsigned int>& keepers, Usul::Interfa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::remove ( std::vector<unsigned int>& remove, Usul::Interfaces::IUnknown *caller )
+void TriangleSet::removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown *caller )
 {
-  // Sort sequence
-  std::sort( remove.begin(), remove.end(), std::less_equal< unsigned int >() );
+  // Get number of triangles.
+  const unsigned int numTriangles ( _triangles.size() );
 
-  //Our current position in remove
-  std::vector<unsigned int>::const_iterator current ( remove.begin() );
+  // Handle trivial cases.
+  if ( doomed.empty() || 0 == numTriangles )
+    return;
 
-  //We are going to keep these one
-  std::vector< unsigned int > keep;
-  
-  //Reserve enough room
-  keep.reserve( _triangles.size() - remove.size() );
+  // Sort given sequence.
+  std::sort ( doomed.begin(), doomed.end() );
 
-  //Go through each index and decide if we are going to keep or not
-  for( unsigned int i = 0; i < _triangles.size(); ++i )
-  {
-    //If i is not going to be removed...
-    if( i != *current )
-      keep.push_back( i );
-    //If i is going to be remove, don't add to keepers and move to next triangle to be removed
-    else
-      ++current;
-  }
+  // Build indices of existing triangles.
+  Indices existing ( numTriangles );
+  std::generate ( existing.begin(), existing.end(), Usul::Functors::Increment<Indices::value_type> ( 0 ) );
 
-  //It's faster to rebuild than remove
-  this->keep( keep, caller );
-}
+  // We are going to keep these ones.
+  Indices keepers ( numTriangles );
 
+  // Set difference operation: keepers = existing - doomed
+  Indices::iterator end ( std::set_difference ( existing.begin(), existing.end(), doomed.begin(), doomed.end(), keepers.begin() ) );
+  keepers.erase ( end, keepers.end() );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Turn on color and set all triangles to given color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::colorOn( const osg::Vec4& color )
-{
-#if 0
-  _geometry->setColorArray( _colors.get() );
-
-  _colors->resize ( _triangles.size() );
-  std::fill ( _colors->begin(), _colors->end(), color );
-      
-  _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-  _geometry->dirtyDisplayList();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Color the ith triangle with given color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::color ( unsigned int index, const osg::Vec4& color )
-{
-#if 0
-  _colors->at( index ) = color;
-  _geometry->dirtyDisplayList();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Turn off color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::colorOff ()
-{
-#if 0
-  _geometry->setColorArray ( 0x0 );
-  _geometry->dirtyDisplayList();
-#endif
+  // We do this because keeping is faster than removing.
+  this->keepTriangles ( keepers, caller );
 }
 
 
@@ -918,7 +1021,7 @@ void TriangleSet::colorOff ()
 
 bool TriangleSet::displayList() const
 {
-  return _partition.displayList();
+  return _blocks->displayList();
 }
 
 
@@ -930,82 +1033,7 @@ bool TriangleSet::displayList() const
 
 void TriangleSet::displayList ( bool b )
 {
-  _partition.displayList( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the first vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec3f & TriangleSet::vertex0 ( const osg::Drawable* d, unsigned int i ) const
-{
-  unsigned int index ( _partition.index0 ( d, i ) );
-  return _vertices->at( index );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the second vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec3f & TriangleSet::vertex1 ( const osg::Drawable* d, unsigned int i ) const
-{
-  unsigned int index ( _partition.index1 ( d, i ) );
-  return _vertices->at( index );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the third vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec3f & TriangleSet::vertex2 ( const osg::Drawable* d, unsigned int i ) const
-{
-  unsigned int index ( _partition.index2 ( d, i ) );
-  return _vertices->at( index );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the first shared vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
-{
-  return _partition.sharedVertex0 ( d, i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the second shared vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
-{
-  return _partition.sharedVertex1 ( d, i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the third shared vertex of the i'th triangle in the drawable.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
-{
-  return _partition.sharedVertex2 ( d, i );
+  _blocks->displayList ( b );
 }
 
 
@@ -1017,19 +1045,19 @@ const SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigne
 
 const osg::Vec3f & TriangleSet::vertexNormal ( unsigned int i ) const
 {
-  return ( ( normalsPerVertex().empty() ) ? normalsPerFacet().at ( i / 3 ) : normalsPerVertex().at ( i ) );
+  return ( ( normalsV()->empty() ) ? normalsT()->at ( i / 3 ) : normalsV()->at ( i ) );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return a reference to the osg BoundingBox
+//  Return the bounding box
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::BoundingBox TriangleSet::getBoundingBox() const 
 {
-  return _bb;
+  return _bbox;
 }
 
 
@@ -1041,11 +1069,7 @@ osg::BoundingBox TriangleSet::getBoundingBox() const
 
 OsgTools::Triangles::SharedVertex *TriangleSet::newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve )
 {
-#if 1
-  return _factory.newSharedVertex ( index, numTrianglesToReserve );
-#else
-  return new SharedVertex ( index, numTrianglesToReserve );
-#endif
+  return _factory->newSharedVertex ( index, numTrianglesToReserve );
 }
 
 
@@ -1057,9 +1081,688 @@ OsgTools::Triangles::SharedVertex *TriangleSet::newSharedVertex ( unsigned int i
 
 OsgTools::Triangles::Triangle *TriangleSet::newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index )
 {
-#if 1
-  return _factory.newTriangle ( v0, v1, v2, index );
-#else
-  return new Triangle ( v0, v1, v2, index );
-#endif
+  return _factory->newTriangle ( v0, v1, v2, index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get vertex pool. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3Array *TriangleSet::vertices() const
+{
+  return _vertices.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get vertex pool. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3Array *TriangleSet::vertices()
+{
+  return _vertices.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of colors. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec4Array *TriangleSet::colorsV() const
+{
+  return _colorsV.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of colors. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4Array *TriangleSet::colorsV()
+{
+  return _colorsV.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the container of colors. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_colorsPerVertex ( osg::Vec4Array *c )
+{
+  _colorsV = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3Array *TriangleSet::normalsT() const
+{
+  return _normals.second.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3Array *TriangleSet::normalsT()
+{
+  return _normals.second.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_normalsPerTriangle ( osg::Vec3Array *n )
+{
+  _normals.second = n;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3Array *TriangleSet::normalsV() const
+{
+  return _normals.first.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3Array *TriangleSet::normalsV()
+{
+  return _normals.first.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the container of normals. Use with caution.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_normalsPerVertex ( osg::Vec3Array *n )
+{
+  _normals.first = n;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::dirtyNormalsV ( bool state )
+{
+  const unsigned int bit ( Dirty::NORMALS_V );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleSet::dirtyNormalsV() const
+{
+  return Usul::Bits::has ( _flags, Dirty::NORMALS_V );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::dirtyColorsV ( bool state )
+{
+  const unsigned int bit ( Dirty::COLORS_V );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleSet::dirtyColorsV() const
+{
+  return Usul::Bits::has ( _flags, Dirty::COLORS_V );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::dirtyBlocks ( bool state )
+{
+  const unsigned int bit ( Dirty::BLOCKS );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleSet::dirtyBlocks() const
+{
+  return Usul::Bits::has ( _flags, Dirty::BLOCKS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the blocks if needed. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateBlocks()
+{
+  USUL_ASSERT ( _bbox.valid() );
+
+  // Return now if we are not dirty, or if there are no triangles.
+  if ( false == this->dirtyBlocks() || true == _triangles.empty() )
+    return;
+
+  // User feedback.
+  Usul::Policies::TimeBased update ( Detail::_milliseconds );
+  this->_setStatusBar ( "Updating Blocks ..." );
+
+  // Needed below.
+  const unsigned int numTriangles ( _triangles.size() );
+
+  // Figure out how many times we need to subdivide so that the number of 
+  // triangles in each block is not too high.
+  unsigned int divisions ( 1 );
+  while ( numTriangles / Usul::Math::pow<double> ( 2, divisions ) > Detail::_averageTrianglesPerBlock )
+    ++divisions;
+
+  // Make new blocks. Subdivide sufficient number of times.
+  _blocks = new Blocks ( _bbox, divisions, numTriangles );
+
+  // Loop through triangles.
+  for ( unsigned int i = 0; i < numTriangles; ++i )
+  {
+    // Add a triangle.
+    _blocks->addTriangle ( this, _triangles[i] );
+
+    // Progress.
+    this->_incrementProgress ( update() );
+  }
+
+  // Purge excess memory.
+  _blocks->purge();
+
+  // No longer dirty.
+  this->dirtyBlocks ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the normal vectors if needed. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateNormalsV()
+{
+  // Return now if we are not dirty.
+  if ( false == this->dirtyNormalsV() )
+    return;
+
+  // User feedback.
+  Usul::Policies::TimeBased update ( Detail::_milliseconds );
+  this->_setStatusBar ( "Updating Per-Vertex Normal Vectors ..." );
+
+  // Make room.
+  const unsigned int numVertices ( _shared.size() );
+  this->normalsV()->resize ( numVertices );
+
+  // Loop through the shared vertices and update the normals.
+  for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
+  {
+    // This only updates the individual normals that are dirty.
+    this->_updateNormalV ( i->second );
+
+    // Progress.
+    this->_incrementProgress ( update() );
+  }
+
+  // No longer dirty.
+  this->dirtyNormalsV ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the per-vertex normal vector if needed. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateNormalV ( SharedVertex *sv )
+{
+  // Return now if we are not dirty.
+  if ( 0x0 == sv || false == sv->dirtyNormal() )
+    return;
+
+  // Update the normal.
+  osg::Vec3f &n = this->normalsV()->at ( sv->index() );
+  n = this->averageNormal ( sv );
+  n.normalize();
+
+  // No longer dirty.
+  sv->dirtyNormal ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the per-vertex colors if needed. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateColorsV()
+{
+  // Return now if we are not dirty.
+  if ( false == this->dirtyColorsV() )
+    return;
+
+  // User feedback.
+  Usul::Policies::TimeBased update ( Detail::_milliseconds );
+  this->_setStatusBar ( "Updating Per-Vertex Colors ..." );
+
+  // Make room.
+  const unsigned int numVertices ( _shared.size() );
+  _colorsV->resize ( numVertices, Detail::_defaultPerVertexColor );
+
+  // Loop through the shared vertices and update the colors.
+  for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
+  {
+    // This only updates the individual normals that are dirty.
+    this->_updateColorV ( i->second );
+
+    // Progress.
+    this->_incrementProgress ( update() );
+  }
+
+  // No longer dirty.
+  this->dirtyColorsV ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the per-vertex color if needed. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_updateColorV ( SharedVertex *sv )
+{
+  // Return now if we are not dirty.
+  if ( 0x0 == sv || false == sv->dirtyColor() )
+    return;
+
+  // Update the color.
+  osg::Vec4f &c = _colorsV->at ( sv->index() );
+  c = Detail::_defaultPerVertexColor;
+
+  // No longer dirty.
+  sv->dirtyColor ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build any decorations. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root ) const
+{
+  // Should we draw a bounding box?
+  const bool boundingBox ( OsgTools::Options::has ( options, "BoundingBox",      "Show" ) );
+  const bool showGlass   ( OsgTools::Options::has ( options, "GlassBoundingBox", "Show" ) );
+
+  // Draw the bounding box if we should.
+  if ( boundingBox || showGlass )
+  {
+    OsgTools::GlassBoundingBox gbb ( _bbox );
+    gbb ( root, boundingBox, showGlass, true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
+{
+  // The scene root.
+  osg::ref_ptr<osg::Group> root ( new osg::Group );
+
+  // Handle trivial case.
+  if ( _triangles.empty() )
+    return root.release();
+
+  // Show the progress bar.
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
+
+  // Set the progress counter and max.
+  _progress.first = 0;
+  const unsigned int numTriangles ( this->dirtyBlocks()   ? _triangles.size() : 0 );
+  const unsigned int numColors    ( this->dirtyColorsV()  ? _shared.size()  : 0 );
+  const unsigned int numNormals   ( this->dirtyNormalsV() ? _shared.size() : 0 );
+  _progress.second = numTriangles + numColors + numNormals;
+
+  // Start at zero.
+  this->_setProgressBar ( true, 0, 100 );
+
+  // Make sure we have per-vertex normal vectors if we need them.
+  this->_updateNormalsV();
+
+  // Make sure we have per-vertex colors if we need them.
+  this->_updateColorsV();
+
+  // Build the blocks if we should.
+  this->_updateBlocks();
+  USUL_ASSERT ( _blocks.valid() );
+
+  // Have the blocks build their scenes.
+  root->addChild ( _blocks->buildScene ( options, this ) );
+
+  // Add any extra decorations.
+  this->_buildDecorations ( options, root.get() );
+   
+  // Return the root.
+  return root.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 0 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex0() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 0 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex0() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 1 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex1() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 1 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex1() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 2 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex2() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shared vertex 2 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i )
+{
+  Triangle *t ( this->triangle ( d, i ) );
+  return ( ( t ) ? t->vertex2() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertex 0 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f &TriangleSet::vertex0 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const SharedVertex *sv ( this->sharedVertex0 ( d, i ) );
+  return _vertices->at ( sv->index() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertex 1 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f &TriangleSet::vertex1 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const SharedVertex *sv ( this->sharedVertex1 ( d, i ) );
+  return _vertices->at ( sv->index() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertex 2 of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f &TriangleSet::vertex2 ( const osg::Drawable *d, unsigned int i ) const
+{
+  const SharedVertex *sv ( this->sharedVertex2 ( d, i ) );
+  return _vertices->at ( sv->index() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The hit information gives us the index of the primitive with respect to 
+//  the drawable intersected. Since each block has its own drawable, translate 
+//  this primitive index to a triangle index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TriangleSet::index ( const osgUtil::Hit &hit ) const
+{
+  const Triangle *t ( this->triangle ( hit._drawable.get(), hit._primitiveIndex ) );
+  if ( 0x0 == t )
+    throw std::runtime_error ( "Error 4259806184: No triangle found for given hit information" );
+  return ( t->index() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the triangle given a drawable and primitive index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num ) const
+{
+  const Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  const Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
+  return t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the triangle given a drawable and primitive index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num )
+{
+  Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
+  return t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the center of the triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3f TriangleSet::triangleCenter ( unsigned int i ) const
+{
+  const float third ( static_cast < float > ( 1 ) / static_cast < float > ( 3 ) );
+  const Triangle *t ( _triangles.at ( i ) );
+  const osg::Vec3f &v0 ( _vertices->at ( t->vertex0()->index() ) );
+  const osg::Vec3f &v1 ( _vertices->at ( t->vertex1()->index() ) );
+  const osg::Vec3f &v2 ( _vertices->at ( t->vertex2()->index() ) );
+  const osg::Vec3f center ( ( v0 + v1 + v2 ) * third );
+  return center;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge memory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::purge()
+{
+  // Purge triangles.
+  if ( false == _triangles.empty() )
+  {
+    TriangleVector temp ( _triangles );
+    _triangles.swap ( temp );
+  }
+
+  // Purge vertices.
+  if ( _vertices.valid() && false == _vertices->empty() )
+  {
+    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *_vertices ) );
+    _vertices = temp;
+  }
+
+  // Purge normals.
+  if ( _normals.first.valid() && false == _normals.first->empty() )
+  {
+    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *(_normals.first) ) );
+    _normals.first = temp;
+  }
+
+  // Purge other normals.
+  if ( _normals.second.valid() && false == _normals.second->empty() )
+  {
+    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *(_normals.second) ) );
+    _normals.second = temp;
+  }
+
+  // Purge per-vertex colors.
+  if ( _colorsV.valid() && false == _colorsV->empty() )
+  {
+    osg::ref_ptr < osg::Vec4Array > temp ( new osg::Vec4Array ( *_colorsV ) );
+    _colorsV = temp;
+  }
+
+  // Purge the blocks.
+  if ( _blocks.valid() )
+    _blocks->purge();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::_incrementProgress ( bool state )
+{
+  unsigned int &numerator   ( _progress.first  );
+  unsigned int &denominator ( _progress.second );
+  this->_setProgressBar ( state, numerator, denominator );
+  ++numerator;
+  USUL_ASSERT ( numerator <= denominator );
 }

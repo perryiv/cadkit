@@ -14,6 +14,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Font.h"
+#include "osgText/Font"
+#include <fstream>
 
 using namespace OsgTools;
 
@@ -38,16 +40,18 @@ std::string Font::fontfile ( const std::string &name )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the default font.
+//  Return the default font for the platform.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osgText::Font* Font::defaultFont() 
 {
-  
   #ifdef _WIN32
+
      return osgText::readFontFile( "arial.ttf" );
+
   #elif __APPLE__
+
     std::vector< std::string > fonts;
     fonts.push_back("fonts/arial.ttf");
     fonts.push_back("fonts/fudd.ttf");
@@ -67,10 +71,10 @@ osgText::Font* Font::defaultFont()
       }
     }
     return 0x0;  //This will cause OSG to load its internal font
+
   #else
+
     return osgText::readFontFile( "/usr/share/fonts/TrueType/ttf-bitstream/Ver/Vera.ttf" );
+
   #endif
-
-
-
 }

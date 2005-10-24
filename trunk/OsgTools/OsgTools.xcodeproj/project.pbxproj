@@ -64,52 +64,6 @@
 		430AF96B08AAD91D00232D64 /* Partition.h in Headers */ = {isa = PBXBuildFile; fileRef = 430AF96908AAD91D00232D64 /* Partition.h */; };
 		4314705008C7685E0085613A /* LoopSplitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4314704E08C7685E0085613A /* LoopSplitter.h */; };
 		4314705108C7685E0085613A /* LoopSplitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4314704F08C7685E0085613A /* LoopSplitter.cpp */; };
-		431CB9D709088E0500C9E645 /* DisplayLists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9D409088E0500C9E645 /* DisplayLists.cpp */; };
-		431CB9D809088E0500C9E645 /* DisplayLists.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9D509088E0500C9E645 /* DisplayLists.h */; };
-		431CB9D909088E0500C9E645 /* ScopedViewport.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9D609088E0500C9E645 /* ScopedViewport.h */; };
-		431CB9DA09088E0500C9E645 /* DisplayLists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9D409088E0500C9E645 /* DisplayLists.cpp */; };
-		431CB9DB09088E0500C9E645 /* DisplayLists.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9D509088E0500C9E645 /* DisplayLists.h */; };
-		431CB9DC09088E0500C9E645 /* ScopedViewport.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9D609088E0500C9E645 /* ScopedViewport.h */; };
-		431CB9F209088E3E00C9E645 /* ActionAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9DE09088E3E00C9E645 /* ActionAdapter.cpp */; };
-		431CB9F309088E3E00C9E645 /* ActionAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9DF09088E3E00C9E645 /* ActionAdapter.h */; };
-		431CB9F409088E3E00C9E645 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E009088E3E00C9E645 /* Animation.cpp */; };
-		431CB9F509088E3E00C9E645 /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E109088E3E00C9E645 /* Animation.h */; };
-		431CB9F609088E3E00C9E645 /* ClampProjection.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E209088E3E00C9E645 /* ClampProjection.h */; };
-		431CB9F709088E3E00C9E645 /* EventAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E309088E3E00C9E645 /* EventAdapter.cpp */; };
-		431CB9F809088E3E00C9E645 /* EventAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E409088E3E00C9E645 /* EventAdapter.h */; };
-		431CB9F909088E3E00C9E645 /* FrameDump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E509088E3E00C9E645 /* FrameDump.cpp */; };
-		431CB9FA09088E3E00C9E645 /* FrameDump.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E609088E3E00C9E645 /* FrameDump.h */; };
-		431CB9FB09088E3E00C9E645 /* LodCallbacks.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E709088E3E00C9E645 /* LodCallbacks.h */; };
-		431CB9FC09088E3E00C9E645 /* RecordTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E809088E3E00C9E645 /* RecordTime.h */; };
-		431CB9FD09088E3E00C9E645 /* Trackball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E909088E3E00C9E645 /* Trackball.cpp */; };
-		431CB9FE09088E3E00C9E645 /* Trackball.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9EA09088E3E00C9E645 /* Trackball.h */; };
-		431CB9FF09088E3E00C9E645 /* PolygonMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9EC09088E3E00C9E645 /* PolygonMode.cpp */; };
-		431CBA0009088E3E00C9E645 /* PolygonMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9ED09088E3E00C9E645 /* PolygonMode.h */; };
-		431CBA0109088E3E00C9E645 /* ShadeModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9EE09088E3E00C9E645 /* ShadeModel.cpp */; };
-		431CBA0209088E3E00C9E645 /* ShadeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9EF09088E3E00C9E645 /* ShadeModel.h */; };
-		431CBA0309088E3E00C9E645 /* StateSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9F009088E3E00C9E645 /* StateSet.cpp */; };
-		431CBA0409088E3E00C9E645 /* StateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9F109088E3E00C9E645 /* StateSet.h */; };
-		431CBA0509088E3E00C9E645 /* ActionAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9DE09088E3E00C9E645 /* ActionAdapter.cpp */; };
-		431CBA0609088E3E00C9E645 /* ActionAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9DF09088E3E00C9E645 /* ActionAdapter.h */; };
-		431CBA0709088E3E00C9E645 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E009088E3E00C9E645 /* Animation.cpp */; };
-		431CBA0809088E3E00C9E645 /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E109088E3E00C9E645 /* Animation.h */; };
-		431CBA0909088E3E00C9E645 /* ClampProjection.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E209088E3E00C9E645 /* ClampProjection.h */; };
-		431CBA0A09088E3E00C9E645 /* EventAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E309088E3E00C9E645 /* EventAdapter.cpp */; };
-		431CBA0B09088E3E00C9E645 /* EventAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E409088E3E00C9E645 /* EventAdapter.h */; };
-		431CBA0C09088E3E00C9E645 /* FrameDump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E509088E3E00C9E645 /* FrameDump.cpp */; };
-		431CBA0D09088E3E00C9E645 /* FrameDump.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E609088E3E00C9E645 /* FrameDump.h */; };
-		431CBA0E09088E3E00C9E645 /* LodCallbacks.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E709088E3E00C9E645 /* LodCallbacks.h */; };
-		431CBA0F09088E3E00C9E645 /* RecordTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9E809088E3E00C9E645 /* RecordTime.h */; };
-		431CBA1009088E3E00C9E645 /* Trackball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9E909088E3E00C9E645 /* Trackball.cpp */; };
-		431CBA1109088E3E00C9E645 /* Trackball.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9EA09088E3E00C9E645 /* Trackball.h */; };
-		431CBA1209088E3E00C9E645 /* PolygonMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9EC09088E3E00C9E645 /* PolygonMode.cpp */; };
-		431CBA1309088E3E00C9E645 /* PolygonMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9ED09088E3E00C9E645 /* PolygonMode.h */; };
-		431CBA1409088E3E00C9E645 /* ShadeModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9EE09088E3E00C9E645 /* ShadeModel.cpp */; };
-		431CBA1509088E3E00C9E645 /* ShadeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9EF09088E3E00C9E645 /* ShadeModel.h */; };
-		431CBA1609088E3E00C9E645 /* StateSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431CB9F009088E3E00C9E645 /* StateSet.cpp */; };
-		431CBA1709088E3E00C9E645 /* StateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 431CB9F109088E3E00C9E645 /* StateSet.h */; };
-		431CBA210908900C00C9E645 /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431CBA200908900C00C9E645 /* libosgGA.dylib */; };
-		431CBA220908900C00C9E645 /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431CBA200908900C00C9E645 /* libosgGA.dylib */; };
 		431E60F20891BC5500B1EC98 /* SortBackToFrontCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */; };
 		431E60F30891BC5500B1EC98 /* SortBackToFrontCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */; };
 		4325665908E19E25007D323F /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4325665708E19E25007D323F /* Factory.cpp */; };
@@ -192,6 +146,8 @@
 		43265EF908E4959B0020C22F /* SortBackToFrontCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */; };
 		43265EFA08E4959B0020C22F /* SortBackToFrontCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */; };
 		43265EFB08E4959B0020C22F /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993046087EF171002E5D22 /* Sphere.h */; };
+		43265EFC08E4959B0020C22F /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993047087EF171002E5D22 /* State.cpp */; };
+		43265EFD08E4959B0020C22F /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993048087EF171002E5D22 /* State.h */; };
 		43265EFE08E4959B0020C22F /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993049087EF171002E5D22 /* Statistics.cpp */; };
 		43265EFF08E4959B0020C22F /* Statistics.h in Headers */ = {isa = PBXBuildFile; fileRef = 4399304A087EF171002E5D22 /* Statistics.h */; };
 		43265F0008E4959B0020C22F /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4399304B087EF171002E5D22 /* Text.cpp */; };
@@ -277,6 +233,8 @@
 		43993097087EF171002E5D22 /* ShapeFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993044087EF171002E5D22 /* ShapeFactory.cpp */; };
 		43993098087EF171002E5D22 /* ShapeFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993045087EF171002E5D22 /* ShapeFactory.h */; };
 		43993099087EF171002E5D22 /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993046087EF171002E5D22 /* Sphere.h */; };
+		4399309A087EF171002E5D22 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993047087EF171002E5D22 /* State.cpp */; };
+		4399309B087EF171002E5D22 /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993048087EF171002E5D22 /* State.h */; };
 		4399309C087EF171002E5D22 /* Statistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993049087EF171002E5D22 /* Statistics.cpp */; };
 		4399309D087EF171002E5D22 /* Statistics.h in Headers */ = {isa = PBXBuildFile; fileRef = 4399304A087EF171002E5D22 /* Statistics.h */; };
 		4399309E087EF171002E5D22 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4399304B087EF171002E5D22 /* Text.cpp */; };
@@ -376,29 +334,6 @@
 		430AF96908AAD91D00232D64 /* Partition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Partition.h; path = Triangles/Partition.h; sourceTree = SOURCE_ROOT; };
 		4314704E08C7685E0085613A /* LoopSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoopSplitter.h; path = Triangles/LoopSplitter.h; sourceTree = SOURCE_ROOT; };
 		4314704F08C7685E0085613A /* LoopSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LoopSplitter.cpp; path = Triangles/LoopSplitter.cpp; sourceTree = SOURCE_ROOT; };
-		431CB9D409088E0500C9E645 /* DisplayLists.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DisplayLists.cpp; sourceTree = "<group>"; };
-		431CB9D509088E0500C9E645 /* DisplayLists.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DisplayLists.h; sourceTree = "<group>"; };
-		431CB9D609088E0500C9E645 /* ScopedViewport.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScopedViewport.h; sourceTree = "<group>"; };
-		431CB9DE09088E3E00C9E645 /* ActionAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ActionAdapter.cpp; sourceTree = "<group>"; };
-		431CB9DF09088E3E00C9E645 /* ActionAdapter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ActionAdapter.h; sourceTree = "<group>"; };
-		431CB9E009088E3E00C9E645 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
-		431CB9E109088E3E00C9E645 /* Animation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
-		431CB9E209088E3E00C9E645 /* ClampProjection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ClampProjection.h; sourceTree = "<group>"; };
-		431CB9E309088E3E00C9E645 /* EventAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = EventAdapter.cpp; sourceTree = "<group>"; };
-		431CB9E409088E3E00C9E645 /* EventAdapter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = EventAdapter.h; sourceTree = "<group>"; };
-		431CB9E509088E3E00C9E645 /* FrameDump.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FrameDump.cpp; sourceTree = "<group>"; };
-		431CB9E609088E3E00C9E645 /* FrameDump.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FrameDump.h; sourceTree = "<group>"; };
-		431CB9E709088E3E00C9E645 /* LodCallbacks.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = LodCallbacks.h; sourceTree = "<group>"; };
-		431CB9E809088E3E00C9E645 /* RecordTime.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RecordTime.h; sourceTree = "<group>"; };
-		431CB9E909088E3E00C9E645 /* Trackball.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Trackball.cpp; sourceTree = "<group>"; };
-		431CB9EA09088E3E00C9E645 /* Trackball.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Trackball.h; sourceTree = "<group>"; };
-		431CB9EC09088E3E00C9E645 /* PolygonMode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonMode.cpp; sourceTree = "<group>"; };
-		431CB9ED09088E3E00C9E645 /* PolygonMode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PolygonMode.h; sourceTree = "<group>"; };
-		431CB9EE09088E3E00C9E645 /* ShadeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ShadeModel.cpp; sourceTree = "<group>"; };
-		431CB9EF09088E3E00C9E645 /* ShadeModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ShadeModel.h; sourceTree = "<group>"; };
-		431CB9F009088E3E00C9E645 /* StateSet.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = StateSet.cpp; sourceTree = "<group>"; };
-		431CB9F109088E3E00C9E645 /* StateSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = StateSet.h; sourceTree = "<group>"; };
-		431CBA200908900C00C9E645 /* libosgGA.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libosgGA.dylib; path = /usr/local/lib/libosgGA.dylib; sourceTree = "<absolute>"; };
 		431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = SortBackToFrontCallback.cpp; sourceTree = SOURCE_ROOT; };
 		431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SortBackToFrontCallback.h; sourceTree = SOURCE_ROOT; };
 		4325665708E19E25007D323F /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = Triangles/Factory.cpp; sourceTree = SOURCE_ROOT; };
@@ -471,6 +406,8 @@
 		43993044087EF171002E5D22 /* ShapeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeFactory.cpp; sourceTree = SOURCE_ROOT; };
 		43993045087EF171002E5D22 /* ShapeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ShapeFactory.h; sourceTree = SOURCE_ROOT; };
 		43993046087EF171002E5D22 /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Sphere.h; sourceTree = SOURCE_ROOT; };
+		43993047087EF171002E5D22 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = State.cpp; sourceTree = SOURCE_ROOT; };
+		43993048087EF171002E5D22 /* State.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = State.h; sourceTree = SOURCE_ROOT; };
 		43993049087EF171002E5D22 /* Statistics.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Statistics.cpp; sourceTree = SOURCE_ROOT; };
 		4399304A087EF171002E5D22 /* Statistics.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Statistics.h; sourceTree = SOURCE_ROOT; };
 		4399304B087EF171002E5D22 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = SOURCE_ROOT; };
@@ -502,7 +439,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				431CBA220908900C00C9E645 /* libosgGA.dylib in Frameworks */,
 				43265F0C08E495DC0020C22F /* libosg.dylib in Frameworks */,
 				43265F0D08E495DC0020C22F /* libosgText.dylib in Frameworks */,
 				43265F0E08E495DC0020C22F /* libOpenThreads.dylib in Frameworks */,
@@ -516,7 +452,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				431CBA210908900C00C9E645 /* libosgGA.dylib in Frameworks */,
 				439930B3087EF27F002E5D22 /* libUsul.dylib in Frameworks */,
 				439930B6087EF338002E5D22 /* libosg.dylib in Frameworks */,
 				439930B7087EF338002E5D22 /* libosgText.dylib in Frameworks */,
@@ -544,9 +479,6 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				431CB9D409088E0500C9E645 /* DisplayLists.cpp */,
-				431CB9D509088E0500C9E645 /* DisplayLists.h */,
-				431CB9D609088E0500C9E645 /* ScopedViewport.h */,
 				434D93AD08B5856900B74A7F /* Callbacks */,
 				431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */,
 				431E60F10891BC5500B1EC98 /* SortBackToFrontCallback.h */,
@@ -599,14 +531,14 @@
 				43993044087EF171002E5D22 /* ShapeFactory.cpp */,
 				43993045087EF171002E5D22 /* ShapeFactory.h */,
 				43993046087EF171002E5D22 /* Sphere.h */,
+				43993047087EF171002E5D22 /* State.cpp */,
+				43993048087EF171002E5D22 /* State.h */,
 				43993049087EF171002E5D22 /* Statistics.cpp */,
 				4399304A087EF171002E5D22 /* Statistics.h */,
 				4399304B087EF171002E5D22 /* Text.cpp */,
 				4399304C087EF171002E5D22 /* Text.h */,
 				4399304D087EF171002E5D22 /* Torus.cpp */,
 				4399304E087EF171002E5D22 /* Torus.h */,
-				431CB9DD09088E3E00C9E645 /* Render */,
-				431CB9EB09088E3E00C9E645 /* State */,
 				4399304F087EF171002E5D22 /* Triangles */,
 				43993058087EF171002E5D22 /* Visitor.h */,
 			);
@@ -620,39 +552,6 @@
 				43265EA908E4953D0020C22F /* OsgTools.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		431CB9DD09088E3E00C9E645 /* Render */ = {
-			isa = PBXGroup;
-			children = (
-				431CB9DE09088E3E00C9E645 /* ActionAdapter.cpp */,
-				431CB9DF09088E3E00C9E645 /* ActionAdapter.h */,
-				431CB9E009088E3E00C9E645 /* Animation.cpp */,
-				431CB9E109088E3E00C9E645 /* Animation.h */,
-				431CB9E209088E3E00C9E645 /* ClampProjection.h */,
-				431CB9E309088E3E00C9E645 /* EventAdapter.cpp */,
-				431CB9E409088E3E00C9E645 /* EventAdapter.h */,
-				431CB9E509088E3E00C9E645 /* FrameDump.cpp */,
-				431CB9E609088E3E00C9E645 /* FrameDump.h */,
-				431CB9E709088E3E00C9E645 /* LodCallbacks.h */,
-				431CB9E809088E3E00C9E645 /* RecordTime.h */,
-				431CB9E909088E3E00C9E645 /* Trackball.cpp */,
-				431CB9EA09088E3E00C9E645 /* Trackball.h */,
-			);
-			path = Render;
-			sourceTree = "<group>";
-		};
-		431CB9EB09088E3E00C9E645 /* State */ = {
-			isa = PBXGroup;
-			children = (
-				431CB9EC09088E3E00C9E645 /* PolygonMode.cpp */,
-				431CB9ED09088E3E00C9E645 /* PolygonMode.h */,
-				431CB9EE09088E3E00C9E645 /* ShadeModel.cpp */,
-				431CB9EF09088E3E00C9E645 /* ShadeModel.h */,
-				431CB9F009088E3E00C9E645 /* StateSet.cpp */,
-				431CB9F109088E3E00C9E645 /* StateSet.h */,
-			);
-			path = State;
 			sourceTree = "<group>";
 		};
 		434D93AD08B5856900B74A7F /* Callbacks */ = {
@@ -713,7 +612,6 @@
 		439930AC087EF176002E5D22 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				431CBA200908900C00C9E645 /* libosgGA.dylib */,
 				439930B4087EF338002E5D22 /* libosg.dylib */,
 				439930B5087EF338002E5D22 /* libosgText.dylib */,
 				439930B8087EF352002E5D22 /* libOpenThreads.dylib */,
@@ -795,6 +693,7 @@
 				43265EF808E4959B0020C22F /* SharedVertex.h in Headers */,
 				43265EFA08E4959B0020C22F /* SortBackToFrontCallback.h in Headers */,
 				43265EFB08E4959B0020C22F /* Sphere.h in Headers */,
+				43265EFD08E4959B0020C22F /* State.h in Headers */,
 				43265EFF08E4959B0020C22F /* Statistics.h in Headers */,
 				43265F0108E4959B0020C22F /* Text.h in Headers */,
 				43265F0308E4959B0020C22F /* Threshold.h in Headers */,
@@ -802,19 +701,6 @@
 				43265F0708E4959B0020C22F /* Triangle.h in Headers */,
 				43265F0908E4959B0020C22F /* TriangleSet.h in Headers */,
 				43265F0A08E4959B0020C22F /* Visitor.h in Headers */,
-				431CB9DB09088E0500C9E645 /* DisplayLists.h in Headers */,
-				431CB9DC09088E0500C9E645 /* ScopedViewport.h in Headers */,
-				431CBA0609088E3E00C9E645 /* ActionAdapter.h in Headers */,
-				431CBA0809088E3E00C9E645 /* Animation.h in Headers */,
-				431CBA0909088E3E00C9E645 /* ClampProjection.h in Headers */,
-				431CBA0B09088E3E00C9E645 /* EventAdapter.h in Headers */,
-				431CBA0D09088E3E00C9E645 /* FrameDump.h in Headers */,
-				431CBA0E09088E3E00C9E645 /* LodCallbacks.h in Headers */,
-				431CBA0F09088E3E00C9E645 /* RecordTime.h in Headers */,
-				431CBA1109088E3E00C9E645 /* Trackball.h in Headers */,
-				431CBA1309088E3E00C9E645 /* PolygonMode.h in Headers */,
-				431CBA1509088E3E00C9E645 /* ShadeModel.h in Headers */,
-				431CBA1709088E3E00C9E645 /* StateSet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -863,6 +749,7 @@
 				43993096087EF171002E5D22 /* SetDataVariance.h in Headers */,
 				43993098087EF171002E5D22 /* ShapeFactory.h in Headers */,
 				43993099087EF171002E5D22 /* Sphere.h in Headers */,
+				4399309B087EF171002E5D22 /* State.h in Headers */,
 				4399309D087EF171002E5D22 /* Statistics.h in Headers */,
 				4399309F087EF171002E5D22 /* Text.h in Headers */,
 				439930A1087EF171002E5D22 /* Torus.h in Headers */,
@@ -877,19 +764,6 @@
 				434D93AF08B5856900B74A7F /* BoundingBox.h in Headers */,
 				4314705008C7685E0085613A /* LoopSplitter.h in Headers */,
 				4325665A08E19E25007D323F /* Factory.h in Headers */,
-				431CB9D809088E0500C9E645 /* DisplayLists.h in Headers */,
-				431CB9D909088E0500C9E645 /* ScopedViewport.h in Headers */,
-				431CB9F309088E3E00C9E645 /* ActionAdapter.h in Headers */,
-				431CB9F509088E3E00C9E645 /* Animation.h in Headers */,
-				431CB9F609088E3E00C9E645 /* ClampProjection.h in Headers */,
-				431CB9F809088E3E00C9E645 /* EventAdapter.h in Headers */,
-				431CB9FA09088E3E00C9E645 /* FrameDump.h in Headers */,
-				431CB9FB09088E3E00C9E645 /* LodCallbacks.h in Headers */,
-				431CB9FC09088E3E00C9E645 /* RecordTime.h in Headers */,
-				431CB9FE09088E3E00C9E645 /* Trackball.h in Headers */,
-				431CBA0009088E3E00C9E645 /* PolygonMode.h in Headers */,
-				431CBA0209088E3E00C9E645 /* ShadeModel.h in Headers */,
-				431CBA0409088E3E00C9E645 /* StateSet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1066,21 +940,13 @@
 				43265EF508E4959B0020C22F /* ShapeFactory.cpp in Sources */,
 				43265EF708E4959B0020C22F /* SharedVertex.cpp in Sources */,
 				43265EF908E4959B0020C22F /* SortBackToFrontCallback.cpp in Sources */,
+				43265EFC08E4959B0020C22F /* State.cpp in Sources */,
 				43265EFE08E4959B0020C22F /* Statistics.cpp in Sources */,
 				43265F0008E4959B0020C22F /* Text.cpp in Sources */,
 				43265F0208E4959B0020C22F /* Threshold.cpp in Sources */,
 				43265F0408E4959B0020C22F /* Torus.cpp in Sources */,
 				43265F0608E4959B0020C22F /* Triangle.cpp in Sources */,
 				43265F0808E4959B0020C22F /* TriangleSet.cpp in Sources */,
-				431CB9DA09088E0500C9E645 /* DisplayLists.cpp in Sources */,
-				431CBA0509088E3E00C9E645 /* ActionAdapter.cpp in Sources */,
-				431CBA0709088E3E00C9E645 /* Animation.cpp in Sources */,
-				431CBA0A09088E3E00C9E645 /* EventAdapter.cpp in Sources */,
-				431CBA0C09088E3E00C9E645 /* FrameDump.cpp in Sources */,
-				431CBA1009088E3E00C9E645 /* Trackball.cpp in Sources */,
-				431CBA1209088E3E00C9E645 /* PolygonMode.cpp in Sources */,
-				431CBA1409088E3E00C9E645 /* ShadeModel.cpp in Sources */,
-				431CBA1609088E3E00C9E645 /* StateSet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,6 +978,7 @@
 				4399308F087EF171002E5D22 /* ReadModel.cpp in Sources */,
 				43993091087EF171002E5D22 /* Sample.cpp in Sources */,
 				43993097087EF171002E5D22 /* ShapeFactory.cpp in Sources */,
+				4399309A087EF171002E5D22 /* State.cpp in Sources */,
 				4399309C087EF171002E5D22 /* Statistics.cpp in Sources */,
 				4399309E087EF171002E5D22 /* Text.cpp in Sources */,
 				439930A0087EF171002E5D22 /* Torus.cpp in Sources */,
@@ -1124,15 +991,6 @@
 				430AF96A08AAD91D00232D64 /* Partition.cpp in Sources */,
 				4314705108C7685E0085613A /* LoopSplitter.cpp in Sources */,
 				4325665908E19E25007D323F /* Factory.cpp in Sources */,
-				431CB9D709088E0500C9E645 /* DisplayLists.cpp in Sources */,
-				431CB9F209088E3E00C9E645 /* ActionAdapter.cpp in Sources */,
-				431CB9F409088E3E00C9E645 /* Animation.cpp in Sources */,
-				431CB9F709088E3E00C9E645 /* EventAdapter.cpp in Sources */,
-				431CB9F909088E3E00C9E645 /* FrameDump.cpp in Sources */,
-				431CB9FD09088E3E00C9E645 /* Trackball.cpp in Sources */,
-				431CB9FF09088E3E00C9E645 /* PolygonMode.cpp in Sources */,
-				431CBA0109088E3E00C9E645 /* ShadeModel.cpp in Sources */,
-				431CBA0309088E3E00C9E645 /* StateSet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

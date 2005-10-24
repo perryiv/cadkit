@@ -399,8 +399,8 @@ public:
 
   T normalize()
   {
-    T l = this->length();
-    Usul::Types::Float64 il = 1.0 / l;
+    T l ( this->length() );
+    T il ( static_cast < T > ( 1 ) / l );
 
     _v[0] *= il;
     _v[1] *= il;

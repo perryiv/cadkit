@@ -68,7 +68,7 @@ FXDEFMAP ( MdiChildWindow ) WindowMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_UPDATE_TITLES,                MdiChildWindow::onCommandUpdateTitle    ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_CLEAR_SCENE,                  MdiChildWindow::onClearScene            ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_BUILD_SCENE,                  MdiChildWindow::onBuildScene            ),
-  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_DISPLAY_LISTS_UPDATE,         MdiChildWindow::onDisplayListUpdate     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_DISPLAY_LISTS_UPDATE,         MdiChildWindow::onDisplayListSet        ),
 };
 
 FOX_TOOLS_IMPLEMENT ( MdiChildWindow, MdiChildWindow::BaseClass, WindowMap, ARRAYNUMBER ( WindowMap ) );
@@ -531,7 +531,7 @@ long MdiChildWindow::onClearScene ( FX::FXObject *, FX::FXSelector, void * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long MdiChildWindow::onDisplayListUpdate ( FX::FXObject *, FX::FXSelector, void * )
+long MdiChildWindow::onDisplayListSet ( FX::FXObject *, FX::FXSelector, void * )
 {
   return 1;
 }
@@ -567,8 +567,8 @@ void MdiChildWindow::handleMessage ( unsigned short message )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string MdiChildWindow::question ( const std::string &buttons,  const std::string &title, const std::string &text )
+std::string MdiChildWindow::question ( const std::string &buttons, const std::string &title, const std::string &text )
 {
-  return FoxTools::Dialogs::Message::question( buttons, title, text );
+  return FoxTools::Dialogs::Message::question ( buttons, title, text );
 }
 

@@ -417,6 +417,9 @@
 						RelativePath=".\Interfaces\IGUIDelegate.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IGUIServer.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ILoadFileDialog.h">
 					</File>
 					<File

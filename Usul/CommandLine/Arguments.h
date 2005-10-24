@@ -32,19 +32,18 @@ public:
 
   // Typedefs.
   typedef std::vector < std::string > Args;
-  typedef Args::const_iterator Itr;
 
-  // Return the number of arguments.
-  unsigned int                argc() const;
+  // Get the number of arguments.
+  const int &                 argc() const { return _argc; }
+  int &                       argc()       { return _argc; }
 
-  // Get the argument.
-  const std::string &         argv ( unsigned int ) const;
+  // Get list of arguments.
+  Args                        args() const;
 
-  // Iterator access.
-  Itr                         begin() const { return _args.begin(); }
-
-  // Iterator access.
-  Itr                         end() const { return _args.end(); }
+  // Get the argument(s).
+  std::string                 argv ( unsigned int ) const;
+  char ** const               argv() const { return _argv; }
+  char **                     argv()       { return _argv; }
 
   // Return the directory that the program lives in.
   std::string                 directory() const;
@@ -53,14 +52,10 @@ public:
   static Arguments &          instance();
 
   // Return the name the program.
-  const std::string &         program() const;
+  std::string                 program() const;
 
   // Set the arguments.
-  template < class I > void set ( I first, I last )
-  {
-    _args.clear();
-    _args.insert ( _args.end(), first, last );
-  }
+  void                        set ( int argc, char **argv );
 
 private:
 
@@ -72,7 +67,8 @@ private:
   Arguments &operator = ( const Arguments & );
   Arguments ( const Arguments & );
 
-  Args _args;
+  int _argc;
+  char **_argv;
 };
 
 

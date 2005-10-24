@@ -57,9 +57,6 @@ public:
   // Construction
   Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned char flags = 0 );
 
-  // Use reference counting. Needs to be public to work with boost::object_pool.
-  ~Triangle();
-
   // Sets all vertices to null.
   void                        clear();
 
@@ -111,6 +108,11 @@ public:
   //Get/Set the visited flag
   bool                        visited() const;
   void                        visited ( bool v );
+
+protected:
+
+  // Use reference counting.
+  ~Triangle();
 
 private:
 

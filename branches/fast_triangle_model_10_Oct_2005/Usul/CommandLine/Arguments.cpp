@@ -44,7 +44,7 @@ namespace Usul
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Arguments::Arguments() : _args()
+Arguments::Arguments() : _argc ( 0 ), _argv ( 0x0 )
 {
 }
 
@@ -76,25 +76,14 @@ Arguments &Arguments::instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the number of arguments.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Arguments::argc() const
-{
-  return _args.size();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Return the argument.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Arguments::argv ( unsigned int i ) const
+std::string Arguments::argv ( unsigned int i ) const
 {
-  return _args.at(i);
+  const unsigned int argc ( static_cast < unsigned int > ( _argc ) );
+  return std::string ( ( i < argc ) ? _argv[i] : "" );
 }
 
 
@@ -104,7 +93,7 @@ const std::string &Arguments::argv ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Arguments::program() const
+std::string Arguments::program() const
 {
   return this->argv ( 0 );
 }
@@ -119,4 +108,30 @@ const std::string &Arguments::program() const
 std::string Arguments::directory() const
 {
   return Usul::File::directory ( this->program(), false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Arguments::Args Arguments::args() const
+{
+  Args args ( _argv, _argv + _argc );
+  return args;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Arguments::set ( int argc, char **argv )
+{
+  _argc = argc;
+  _argv = argv;
 }

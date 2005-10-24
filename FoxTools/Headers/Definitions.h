@@ -86,7 +86,7 @@ namespace FoxTools
                 << ", data = " << ptr;
 
       // Print system error if relevant.
-      if ( false == Usul::System::LastError::message().empty() )
+      if ( Usul::System::LastError::has() )
       {
         std::cout << ". " << Usul::System::LastError::message();
       }

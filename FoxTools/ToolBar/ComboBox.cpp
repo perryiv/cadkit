@@ -78,7 +78,7 @@ void ComboBox::_build ( FX::FXComposite *parent )
     text << "\t" << this->name() << '\t' << this->description();
 
     // Make the Combo Box.
-    unsigned int layout ( COMBOBOX_REPLACE|FRAME_SUNKEN|FRAME_THICK|LAYOUT_SIDE_TOP|LAYOUT_LEFT );
+    unsigned int layout ( FX::COMBOBOX_REPLACE | FX::FRAME_SUNKEN | FX::FRAME_THICK | FX::LAYOUT_CENTER_X | FX::LAYOUT_CENTER_Y );
     _comboBox = new FX::FXComboBox ( parent, 0, this->target(), this->selector(), layout );
     _comboBox->setNumColumns( 12 );
     

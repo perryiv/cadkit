@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib"
 				OutputFile="../bin/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib osgGA.lib OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="osgGA.lib OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib"
 				OutputFile="../bin/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -240,12 +240,6 @@
 					RelativePath=".\Dimension.h">
 				</File>
 				<File
-					RelativePath=".\DisplayLists.cpp">
-				</File>
-				<File
-					RelativePath=".\DisplayLists.h">
-				</File>
-				<File
 					RelativePath=".\FlipNormals.h">
 				</File>
 				<File
@@ -271,6 +265,9 @@
 				</File>
 				<File
 					RelativePath="Group.h">
+				</File>
+				<File
+					RelativePath=".\HasOption.h">
 				</File>
 				<File
 					RelativePath=".\Index.h">
@@ -318,9 +315,6 @@
 					RelativePath=".\ScopedProjection.h">
 				</File>
 				<File
-					RelativePath=".\ScopedViewport.h">
-				</File>
-				<File
 					RelativePath=".\SetDataVariance.h">
 				</File>
 				<File
@@ -353,6 +347,18 @@
 				Name="Triangles"
 				Filter="">
 				<File
+					RelativePath=".\Triangles\Block.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Block.h">
+				</File>
+				<File
+					RelativePath=".\Triangles\Blocks.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\Blocks.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\Factory.cpp">
 				</File>
 				<File
@@ -369,12 +375,6 @@
 				</File>
 				<File
 					RelativePath=".\Triangles\LoopSplitter.h">
-				</File>
-				<File
-					RelativePath=".\Triangles\Partition.cpp">
-				</File>
-				<File
-					RelativePath=".\Triangles\Partition.h">
 				</File>
 				<File
 					RelativePath=".\Triangles\SharedVertex.cpp">
@@ -464,6 +464,16 @@
 				</File>
 			</Filter>
 			<Filter
+				Name="Drawables"
+				Filter="">
+				<File
+					RelativePath=".\Drawables\VoxelGeometry.cpp">
+				</File>
+				<File
+					RelativePath=".\Drawables\VoxelGeometry.h">
+				</File>
+			</Filter>
+			<Filter
 				Name="Render"
 				Filter="">
 				<File
@@ -507,6 +517,16 @@
 				</File>
 			</Filter>
 			<Filter
+				Name="IO"
+				Filter="">
+				<File
+					RelativePath=".\Io\STLPrintVisitor.h">
+				</File>
+				<File
+					RelativePath=".\Io\STLWrite.h">
+				</File>
+			</Filter>
+			<Filter
 				Name="State"
 				Filter="">
 				<File
@@ -526,16 +546,6 @@
 				</File>
 				<File
 					RelativePath=".\State\StateSet.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Drawables"
-				Filter="">
-				<File
-					RelativePath=".\Drawables\VoxelGeometry.cpp">
-				</File>
-				<File
-					RelativePath=".\Drawables\VoxelGeometry.h">
 				</File>
 			</Filter>
 		</Filter>

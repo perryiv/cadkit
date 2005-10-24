@@ -43,21 +43,23 @@ public:
   // Possible flags
   enum
   {
-    VISITED     = 0x01,
-    ON_EDGE     = 0x02,
-    DELETED     = 0x04,
-    SELECTED    = 0x08,
-    MEMORY_POOL = 0x10
+    VISITED      = 0x01,
+    ON_EDGE      = 0x02,
+    SELECTED     = 0x04,
+    MEMORY_POOL  = 0x08,
+    DIRTY_NORMAL = 0x10,
+    DIRTY_COLOR  = 0x11,
+    PROBLEM      = 0x12,
   };
 
   // Construction
-  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned int flags = 0 );
+  SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned char flags = 0 );
 
   // Use reference counting. Needs to be public to work with boost::object_pool.
   ~SharedVertex();
 
   // Add the given triangle to the list.
-  void                  add ( Triangle *t );
+  void                  addTriangle ( Triangle *t );
 
   // Iterators to the triangles.
   ConstTriangleItr      begin() const { return _triangles.begin(); }
@@ -65,6 +67,14 @@ public:
 
   // Return the current triangle capacity.
   unsigned int          capacity() const { return _triangles.capacity(); }
+
+  // Set/get dirty flags.
+  void                  dirtyColor ( bool );
+  bool                  dirtyColor() const;
+
+  // Set/get dirty flags.
+  void                  dirtyNormal ( bool );
+  bool                  dirtyNormal() const;
 
   // Iterators to the triangles.
   ConstTriangleItr      end() const { return _triangles.end(); }
@@ -77,9 +87,13 @@ public:
   // Get the number of triangles.
   SizeType              numTriangles() const { return _triangles.size(); }
 
-  //Get/Set on edge flag
+  // Get/set on edge flag
   bool                  onEdge() const;
-  void                  onEdge( bool e );
+  void                  onEdge ( bool e );
+
+  // Set/get the flags that says there was some kind of problem.
+  bool                  problem() const;
+  void                  problem ( bool e );
 
   // Reference this instance.
   void                  ref();
@@ -88,7 +102,8 @@ public:
   ReferenceCount        refCount() const { return _ref; }
 
   // Remove the given triangle from the list.
-  void                  remove ( Triangle *t );
+  void                  removeTriangle ( Triangle *t );
+  void                  removeAllTriangles();
 
   // Reserve space for triangles.
   void                  reserve ( unsigned int num ) { _triangles.reserve ( num ); }

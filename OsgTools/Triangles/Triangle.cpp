@@ -56,7 +56,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned int flags ) : 
+Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, IndexType index, unsigned char flags ) : 
   _v0    ( v0 ),
   _v1    ( v1 ),
   _v2    ( v2 ),
@@ -72,6 +72,12 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref      ) );
   USUL_STATIC_ASSERT ( 20 == sizeof ( Triangle  ) ); // Why?
 
+  // Make sure the vertices are not the same.
+  if ( v0 == v1 || v0 == v2 || v1 == v2 )
+    Usul::Exceptions::Thrower<std::invalid_argument>
+      ( "Error 1437076236: Triangle vertices are not equal" );
+
+  // Reference the vertices.
   Detail::reference ( _v0 );
   Detail::reference ( _v1 );
   Detail::reference ( _v2 );
@@ -173,14 +179,21 @@ void Triangle::unref ( bool allowDeletion )
 {
   USUL_ASSERT ( this );
   USUL_ASSERT ( _ref > 0 );
+
+  // Decrement
   if ( 0 == --_ref )
   {
+    // If we are allowed to delete...
     if ( allowDeletion )
     {
-      if ( Usul::Bits::has<unsigned int, unsigned int> ( _flags, MEMORY_POOL ) )
+      // If we were allocated on a memory-pool...
+      const unsigned int bit ( Triangle::MEMORY_POOL );
+      if ( Usul::Bits::has ( _flags, bit ) )
       {
         this->clear();
       }
+
+      // Otherwise...
       else
       {
         delete this;
@@ -198,7 +211,8 @@ void Triangle::unref ( bool allowDeletion )
 
 bool Triangle::visited() const
 {
-  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, VISITED );
+  const unsigned int bit ( Triangle::VISITED );
+  return Usul::Bits::has ( _flags, bit );
 }
 
 
@@ -208,12 +222,10 @@ bool Triangle::visited() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Triangle::visited ( bool v )
+void Triangle::visited ( bool state )
 {
-  if( v )
-    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, VISITED );
-  else
-    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, VISITED );
+  const unsigned int bit ( Triangle::VISITED );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
 }
 
 
@@ -239,40 +251,14 @@ void Triangle::getNeighbors ( PolygonSet& triangles ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Has this triangle been deleted?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Triangle::deleted() const
-{
-  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, DELETED );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the deleted flag
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Triangle::deleted( bool d )
-{
-  if( d )
-    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, DELETED );
-  else
-    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, DELETED );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Is this triangle on the edge?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Triangle::onEdge() const
 {
-  return Usul::Bits::has<unsigned char, unsigned char> ( _flags, ON_EDGE );
+  const unsigned int bit ( Triangle::ON_EDGE );
+  return Usul::Bits::has ( _flags, bit );
 }
 
 
@@ -282,11 +268,86 @@ bool Triangle::onEdge() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Triangle::onEdge( bool b )
+void Triangle::onEdge ( bool state )
 {
-  if( b )
-    _flags = Usul::Bits::add<unsigned char, unsigned char> ( _flags, ON_EDGE );
-  else
-    _flags = Usul::Bits::remove<unsigned char, unsigned char> ( _flags, ON_EDGE );
+  const unsigned int bit ( Triangle::ON_EDGE );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::dirtyNormal ( bool state )
+{
+  const unsigned int bit ( Triangle::DIRTY_NORMAL );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::dirtyNormal() const
+{
+  const unsigned int bit ( Triangle::DIRTY_NORMAL );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::dirtyColor ( bool state )
+{
+  const unsigned int bit ( Triangle::DIRTY_COLOR );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::dirtyColor() const
+{
+  const unsigned int bit ( Triangle::DIRTY_COLOR );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the problem flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::problem ( bool state )
+{
+  const unsigned int bit ( Triangle::PROBLEM );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the problem flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::problem() const
+{
+  const unsigned int bit ( Triangle::PROBLEM );
+  return Usul::Bits::has ( _flags, bit );
+}

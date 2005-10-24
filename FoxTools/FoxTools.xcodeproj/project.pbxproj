@@ -7,34 +7,9 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		43265FC408E4A0050020C22F /* Build Frameworks */ = {
+		43992FE9087EE800002E5D22 /* Build All */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4326606108E4A04A0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */;
-			buildPhases = (
-			);
-			buildSettings = {
-				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Build Frameworks";
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			dependencies = (
-				43265FC808E4A00A0020C22F /* PBXTargetDependency */,
-				43265FC608E4A00A0020C22F /* PBXTargetDependency */,
-			);
-			name = "Build Frameworks";
-			productName = "Build Frameworks";
-		};
-		43992FE9087EE800002E5D22 /* Build DyLibs */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 43992FF0087EE813002E5D22 /* Build configuration list for PBXAggregateTarget "Build DyLibs" */;
+			buildConfigurationList = 43992FF0087EE813002E5D22 /* Build configuration list for PBXAggregateTarget "Build All" */;
 			buildPhases = (
 			);
 			buildSettings = {
@@ -54,7 +29,7 @@
 				43992FEB087EE809002E5D22 /* PBXTargetDependency */,
 				43992FED087EE80D002E5D22 /* PBXTargetDependency */,
 			);
-			name = "Build DyLibs";
+			name = "Build All";
 			productName = "Build All";
 		};
 /* End PBXAggregateTarget section */
@@ -62,158 +37,6 @@
 /* Begin PBXBuildFile section */
 		43137FA1088DEE9400FE58B9 /* ScrollPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FA0088DEE9400FE58B9 /* ScrollPane.h */; };
 		43137FA2088DEE9400FE58B9 /* ScrollPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FA0088DEE9400FE58B9 /* ScrollPane.h */; };
-		43265FC908E4A0200020C22F /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F0088C5B140019BCA3 /* App.h */; };
-		43265FCA08E4A0200020C22F /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867DE088C5B140019BCA3 /* App.h */; };
-		43265FCB08E4A0200020C22F /* Application.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867C9088C5B140019BCA3 /* Application.h */; };
-		43265FCC08E4A0200020C22F /* Arrays.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867CB088C5B140019BCA3 /* Arrays.h */; };
-		43265FCD08E4A0200020C22F /* Bar.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368685A088C5B150019BCA3 /* Bar.h */; };
-		43265FCE08E4A0200020C22F /* Bar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686841088C5B150019BCA3 /* Bar.h */; };
-		43265FCF08E4A0200020C22F /* BMPIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F1088C5B140019BCA3 /* BMPIcon.h */; };
-		43265FD008E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368685C088C5B150019BCA3 /* Button.h */; };
-		43265FD108E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686843088C5B150019BCA3 /* Button.h */; };
-		43265FD208E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F2088C5B140019BCA3 /* Button.h */; };
-		43265FD308E4A0200020C22F /* CarbonFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D1088C5B140019BCA3 /* CarbonFileDialog.h */; };
-		43265FD408E4A0200020C22F /* Check.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E0088C5B140019BCA3 /* Check.h */; };
-		43265FD508E4A0200020C22F /* CheckButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686845088C5B150019BCA3 /* CheckButton.h */; };
-		43265FD608E4A0200020C22F /* CheckButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F3088C5B140019BCA3 /* CheckButton.h */; };
-		43265FD708E4A0200020C22F /* Child.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E1088C5B140019BCA3 /* Child.h */; };
-		43265FD808E4A0200020C22F /* ColorBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F4088C5B140019BCA3 /* ColorBar.h */; };
-		43265FD908E4A0200020C22F /* ColorDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F5088C5B140019BCA3 /* ColorDialog.h */; };
-		43265FDA08E4A0200020C22F /* ColorSelector.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F6088C5B140019BCA3 /* ColorSelector.h */; };
-		43265FDB08E4A0200020C22F /* ColorWheel.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F7088C5B140019BCA3 /* ColorWheel.h */; };
-		43265FDC08E4A0200020C22F /* ComboBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368685E088C5B150019BCA3 /* ComboBox.h */; };
-		43265FDD08E4A0200020C22F /* ComboBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F8088C5B140019BCA3 /* ComboBox.h */; };
-		43265FDE08E4A0200020C22F /* Command.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368683C088C5B150019BCA3 /* Command.h */; };
-		43265FDF08E4A0200020C22F /* CUR.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867CC088C5B140019BCA3 /* CUR.h */; };
-		43265FE008E4A0200020C22F /* CURCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F9088C5B140019BCA3 /* CURCursor.h */; };
-		43265FE108E4A0200020C22F /* Cursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FA088C5B140019BCA3 /* Cursor.h */; };
-		43265FE208E4A0200020C22F /* Definitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FB088C5B140019BCA3 /* Definitions.h */; };
-		43265FE308E4A0200020C22F /* Delete.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E3088C5B140019BCA3 /* Delete.h */; };
-		43265FE408E4A0200020C22F /* DialogBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FC088C5B140019BCA3 /* DialogBox.h */; };
-		43265FE508E4A0200020C22F /* DirDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FD088C5B140019BCA3 /* DirDialog.h */; };
-		43265FE608E4A0200020C22F /* DockSite.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686860088C5B150019BCA3 /* DockSite.h */; };
-		43265FE708E4A0200020C22F /* DockSite.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FE088C5B140019BCA3 /* DockSite.h */; };
-		43265FE808E4A0200020C22F /* Drawable.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867FF088C5B140019BCA3 /* Drawable.h */; };
-		43265FE908E4A0200020C22F /* Enable.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E5088C5B140019BCA3 /* Enable.h */; };
-		43265FEA08E4A0200020C22F /* ErrorChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D9088C5B140019BCA3 /* ErrorChecker.h */; };
-		43265FEB08E4A0200020C22F /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867DB088C5B140019BCA3 /* Export.h */; };
-		43265FEC08E4A0200020C22F /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686862088C5B150019BCA3 /* Factory.h */; };
-		43265FED08E4A0200020C22F /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686838088C5B150019BCA3 /* Factory.h */; };
-		43265FEE08E4A0200020C22F /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867CE088C5B140019BCA3 /* Factory.h */; };
-		43265FEF08E4A0200020C22F /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686800088C5B140019BCA3 /* File.h */; };
-		43265FF008E4A0200020C22F /* FileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686801088C5B140019BCA3 /* FileDialog.h */; };
-		43265FF108E4A0200020C22F /* FileSelection.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D3088C5B140019BCA3 /* FileSelection.h */; };
-		43265FF208E4A0200020C22F /* GIFCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686802088C5B140019BCA3 /* GIFCursor.h */; };
-		43265FF308E4A0200020C22F /* GIFIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686803088C5B140019BCA3 /* GIFIcon.h */; };
-		43265FF408E4A0200020C22F /* GLCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686804088C5B140019BCA3 /* GLCanvas.h */; };
-		43265FF508E4A0200020C22F /* GLVisual.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686805088C5B140019BCA3 /* GLVisual.h */; };
-		43265FF608E4A0200020C22F /* GLVisual.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E7088C5B140019BCA3 /* GLVisual.h */; };
-		43265FF708E4A0200020C22F /* Group.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686847088C5B150019BCA3 /* Group.h */; };
-		43265FF808E4A0200020C22F /* GroupBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686806088C5B140019BCA3 /* GroupBox.h */; };
-		43265FF908E4A0200020C22F /* HasText.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686850088C5B150019BCA3 /* HasText.h */; };
-		43265FFA08E4A0200020C22F /* HorizontalFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686807088C5B140019BCA3 /* HorizontalFrame.h */; };
-		43265FFB08E4A0200020C22F /* Icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686808088C5B140019BCA3 /* Icon.h */; };
-		43265FFC08E4A0200020C22F /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686809088C5B140019BCA3 /* Image.h */; };
-		43265FFD08E4A0200020C22F /* Images.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686839088C5B150019BCA3 /* Images.h */; };
-		43265FFE08E4A0200020C22F /* ImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680A088C5B140019BCA3 /* ImageView.h */; };
-		43265FFF08E4A0200020C22F /* IsChildNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686852088C5B150019BCA3 /* IsChildNumber.h */; };
-		4326600008E4A0200020C22F /* IsMemberOf.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686854088C5B150019BCA3 /* IsMemberOf.h */; };
-		4326600108E4A0200020C22F /* Item.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368683E088C5B150019BCA3 /* Item.h */; };
-		4326600208E4A0200020C22F /* Label.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680B088C5B140019BCA3 /* Label.h */; };
-		4326600308E4A0200020C22F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680C088C5B140019BCA3 /* List.h */; };
-		4326600408E4A0200020C22F /* MainWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E9088C5B140019BCA3 /* MainWindow.h */; };
-		4326600508E4A0200020C22F /* MainWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680D088C5B140019BCA3 /* MainWindow.h */; };
-		4326600608E4A0200020C22F /* Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680E088C5B140019BCA3 /* Matrix.h */; };
-		4326600708E4A0200020C22F /* MDIButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368680F088C5B140019BCA3 /* MDIButton.h */; };
-		4326600808E4A0200020C22F /* MDIChild.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686810088C5B140019BCA3 /* MDIChild.h */; };
-		4326600908E4A0200020C22F /* MdiChildWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368686C088C5B150019BCA3 /* MdiChildWindow.h */; };
-		4326600A08E4A0200020C22F /* MenuBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686811088C5B140019BCA3 /* MenuBar.h */; };
-		4326600B08E4A0200020C22F /* MenuCascade.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686812088C5B140019BCA3 /* MenuCascade.h */; };
-		4326600C08E4A0200020C22F /* MenuCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686813088C5B140019BCA3 /* MenuCheck.h */; };
-		4326600D08E4A0200020C22F /* MenuCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686814088C5B140019BCA3 /* MenuCommand.h */; };
-		4326600E08E4A0200020C22F /* MenuPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686815088C5B140019BCA3 /* MenuPane.h */; };
-		4326600F08E4A0200020C22F /* MenuRadio.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686816088C5B140019BCA3 /* MenuRadio.h */; };
-		4326601008E4A0200020C22F /* MenuSeparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686817088C5B140019BCA3 /* MenuSeparator.h */; };
-		4326601108E4A0200020C22F /* MenuTitle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686818088C5B140019BCA3 /* MenuTitle.h */; };
-		4326601208E4A0200020C22F /* Message.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D5088C5B140019BCA3 /* Message.h */; };
-		4326601308E4A0200020C22F /* MessageBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686819088C5B140019BCA3 /* MessageBox.h */; };
-		4326601408E4A0200020C22F /* Mouse.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867EB088C5B140019BCA3 /* Mouse.h */; };
-		4326601508E4A0200020C22F /* Object.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681A088C5B140019BCA3 /* Object.h */; };
-		4326601608E4A0200020C22F /* Parent.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867EC088C5B140019BCA3 /* Parent.h */; };
-		4326601708E4A0200020C22F /* PNGIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681B088C5B140019BCA3 /* PNGIcon.h */; };
-		4326601808E4A0200020C22F /* ProgressBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681C088C5B140019BCA3 /* ProgressBar.h */; };
-		4326601908E4A0200020C22F /* RadioButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681D088C5B140019BCA3 /* RadioButton.h */; };
-		4326601A08E4A0200020C22F /* RadioButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686849088C5B150019BCA3 /* RadioButton.h */; };
-		4326601B08E4A0200020C22F /* RealSpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681E088C5B140019BCA3 /* RealSpinner.h */; };
-		4326601C08E4A0200020C22F /* RecentFiles.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368681F088C5B140019BCA3 /* RecentFiles.h */; };
-		4326601D08E4A0200020C22F /* RecentFiles.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368684B088C5B150019BCA3 /* RecentFiles.h */; };
-		4326601E08E4A0200020C22F /* Registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686820088C5B140019BCA3 /* Registry.h */; };
-		4326601F08E4A0200020C22F /* Registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686857088C5B150019BCA3 /* Registry.h */; };
-		4326602008E4A0200020C22F /* ScrollPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FA0088DEE9400FE58B9 /* ScrollPane.h */; };
-		4326602108E4A0200020C22F /* Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686822088C5B140019BCA3 /* Separator.h */; };
-		4326602208E4A0200020C22F /* Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368684D088C5B150019BCA3 /* Separator.h */; };
-		4326602308E4A0200020C22F /* Separator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686864088C5B150019BCA3 /* Separator.h */; };
-		4326602408E4A0200020C22F /* SetText.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867EE088C5B140019BCA3 /* SetText.h */; };
-		4326602508E4A0200020C22F /* Slider.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686823088C5B140019BCA3 /* Slider.h */; };
-		4326602608E4A0200020C22F /* SliderTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686869088C5B150019BCA3 /* SliderTextField.h */; };
-		4326602708E4A0200020C22F /* Spinner.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686824088C5B140019BCA3 /* Spinner.h */; };
-		4326602808E4A0200020C22F /* Splitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686825088C5B140019BCA3 /* Splitter.h */; };
-		4326602908E4A0200020C22F /* StatusBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686826088C5B140019BCA3 /* StatusBar.h */; };
-		4326602A08E4A0200020C22F /* StatusLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686827088C5B140019BCA3 /* StatusLine.h */; };
-		4326602B08E4A0200020C22F /* TabBook.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686828088C5B140019BCA3 /* TabBook.h */; };
-		4326602C08E4A0200020C22F /* TabItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686829088C5B140019BCA3 /* TabItem.h */; };
-		4326602D08E4A0200020C22F /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682A088C5B140019BCA3 /* Text.h */; };
-		4326602E08E4A0200020C22F /* TextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682B088C5B140019BCA3 /* TextField.h */; };
-		4326602F08E4A0200020C22F /* ToggleButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682C088C5B140019BCA3 /* ToggleButton.h */; };
-		4326603008E4A0200020C22F /* ToggleButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686866088C5B150019BCA3 /* ToggleButton.h */; };
-		4326603108E4A0200020C22F /* ToolBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682D088C5B140019BCA3 /* ToolBar.h */; };
-		4326603208E4A0200020C22F /* ToolBarGrip.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682E088C5B140019BCA3 /* ToolBarGrip.h */; };
-		4326603308E4A0200020C22F /* ToolBarShell.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368682F088C5B140019BCA3 /* ToolBarShell.h */; };
-		4326603408E4A0200020C22F /* ToolTip.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686830088C5B150019BCA3 /* ToolTip.h */; };
-		4326603508E4A0200020C22F /* TreeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686831088C5B150019BCA3 /* TreeList.h */; };
-		4326603608E4A0200020C22F /* Vec4f.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686832088C5B150019BCA3 /* Vec4f.h */; };
-		4326603708E4A0200020C22F /* VerticalFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686833088C5B150019BCA3 /* VerticalFrame.h */; };
-		4326603808E4A0200020C22F /* Visual.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686834088C5B150019BCA3 /* Visual.h */; };
-		4326603908E4A0200020C22F /* Wait.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867C6088C5B140019BCA3 /* Wait.h */; };
-		4326603A08E4A0200020C22F /* Window.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686835088C5B150019BCA3 /* Window.h */; };
-		4326603B08E4A02E0020C22F /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867DD088C5B140019BCA3 /* App.cpp */; };
-		4326603C08E4A02E0020C22F /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867C8088C5B140019BCA3 /* Application.cpp */; };
-		4326603D08E4A02E0020C22F /* Bar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686859088C5B150019BCA3 /* Bar.cpp */; };
-		4326603E08E4A02E0020C22F /* Bar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686840088C5B150019BCA3 /* Bar.cpp */; };
-		4326603F08E4A02E0020C22F /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368685B088C5B150019BCA3 /* Button.cpp */; };
-		4326604008E4A02E0020C22F /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686842088C5B150019BCA3 /* Button.cpp */; };
-		4326604108E4A02E0020C22F /* CarbonFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */; };
-		4326604208E4A02E0020C22F /* Check.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867DF088C5B140019BCA3 /* Check.cpp */; };
-		4326604308E4A02E0020C22F /* CheckButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686844088C5B150019BCA3 /* CheckButton.cpp */; };
-		4326604408E4A02E0020C22F /* ComboBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368685D088C5B150019BCA3 /* ComboBox.cpp */; };
-		4326604508E4A02E0020C22F /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368683B088C5B150019BCA3 /* Command.cpp */; };
-		4326604608E4A02E0020C22F /* Delete.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867E2088C5B140019BCA3 /* Delete.cpp */; };
-		4326604708E4A02E0020C22F /* DockSite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368685F088C5B150019BCA3 /* DockSite.cpp */; };
-		4326604808E4A02E0020C22F /* Enable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867E4088C5B140019BCA3 /* Enable.cpp */; };
-		4326604908E4A02E0020C22F /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867CD088C5B140019BCA3 /* Factory.cpp */; };
-		4326604A08E4A02E0020C22F /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686861088C5B150019BCA3 /* Factory.cpp */; };
-		4326604B08E4A02E0020C22F /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686837088C5B150019BCA3 /* Factory.cpp */; };
-		4326604C08E4A02E0020C22F /* FileSelection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D2088C5B140019BCA3 /* FileSelection.cpp */; };
-		4326604D08E4A02E0020C22F /* GLVisual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867E6088C5B140019BCA3 /* GLVisual.cpp */; };
-		4326604E08E4A02E0020C22F /* Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686846088C5B150019BCA3 /* Group.cpp */; };
-		4326604F08E4A02E0020C22F /* HasText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368684F088C5B150019BCA3 /* HasText.cpp */; };
-		4326605008E4A02E0020C22F /* IsChildNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686851088C5B150019BCA3 /* IsChildNumber.cpp */; };
-		4326605108E4A02E0020C22F /* IsMemberOf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686853088C5B150019BCA3 /* IsMemberOf.cpp */; };
-		4326605208E4A02E0020C22F /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368683D088C5B150019BCA3 /* Item.cpp */; };
-		4326605308E4A02E0020C22F /* MainWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867E8088C5B140019BCA3 /* MainWindow.cpp */; };
-		4326605408E4A02E0020C22F /* MdiChildWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368686B088C5B150019BCA3 /* MdiChildWindow.cpp */; };
-		4326605508E4A02E0020C22F /* Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D4088C5B140019BCA3 /* Message.cpp */; };
-		4326605608E4A02E0020C22F /* Mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867EA088C5B140019BCA3 /* Mouse.cpp */; };
-		4326605708E4A02E0020C22F /* RadioButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686848088C5B150019BCA3 /* RadioButton.cpp */; };
-		4326605808E4A02E0020C22F /* RecentFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368684A088C5B150019BCA3 /* RecentFiles.cpp */; };
-		4326605908E4A02E0020C22F /* Registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686856088C5B150019BCA3 /* Registry.cpp */; };
-		4326605A08E4A02E0020C22F /* Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686863088C5B150019BCA3 /* Separator.cpp */; };
-		4326605B08E4A02E0020C22F /* Separator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368684C088C5B150019BCA3 /* Separator.cpp */; };
-		4326605C08E4A02E0020C22F /* SliderTextField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686868088C5B150019BCA3 /* SliderTextField.cpp */; };
-		4326605D08E4A02E0020C22F /* ToggleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686865088C5B150019BCA3 /* ToggleButton.cpp */; };
-		4326605E08E4A02E0020C22F /* Wait.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867C5088C5B140019BCA3 /* Wait.cpp */; };
-		4326605F08E4A0380020C22F /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */; };
-		4326606008E4A03F0020C22F /* Usul.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43265FAB08E49FA90020C22F /* Usul.framework */; };
 		434E035F088C61FB0064BA35 /* CarbonFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */; };
 		434E0360088C61FB0064BA35 /* CarbonFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D1088C5B140019BCA3 /* CarbonFileDialog.h */; };
 		43685F33088C19C70019BCA3 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */; };
@@ -545,27 +368,6 @@
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
-		43265FAA08E49FA90020C22F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 43265BDC08E48C430020C22F;
-			remoteInfo = Usul.framework;
-		};
-		43265FC508E4A00A0020C22F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 43265FB808E49FEB0020C22F;
-			remoteInfo = FoxTools.framework;
-		};
-		43265FC708E4A00A0020C22F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 43265BDB08E48C430020C22F;
-			remoteInfo = Usul.framework;
-		};
 		43992FE1087EE4E4002E5D22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */;
@@ -591,11 +393,6 @@
 
 /* Begin PBXFileReference section */
 		43137FA0088DEE9400FE58B9 /* ScrollPane.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScrollPane.h; sourceTree = "<group>"; };
-		43265FC208E49FEB0020C22F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		43265FC308E49FEB0020C22F /* FoxTools.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FoxTools.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		434D935508B581DD00B74A7F /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Factory.h; sourceTree = "<group>"; };
-		434D935608B581DD00B74A7F /* Reader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Reader.cpp; sourceTree = "<group>"; };
-		434D935708B581DD00B74A7F /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Reader.h; sourceTree = "<group>"; };
 		43685F32088C195B0019BCA3 /* libFoxToolsCarbon.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFoxToolsCarbon.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		436867C5088C5B140019BCA3 /* Wait.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Wait.cpp; path = Adaptors/Wait.cpp; sourceTree = SOURCE_ROOT; };
 		436867C6088C5B140019BCA3 /* Wait.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Wait.h; path = Adaptors/Wait.h; sourceTree = SOURCE_ROOT; };
@@ -753,15 +550,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		43265FBC08E49FEB0020C22F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4326606008E4A03F0020C22F /* Usul.framework in Frameworks */,
-				4326605F08E4A0380020C22F /* libFOX-1.4.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		43685F30088C195B0019BCA3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -787,10 +575,10 @@
 			isa = PBXGroup;
 			children = (
 				08FB7795FE84155DC02AAC07 /* Source */,
-				43992FCC087EDBD9002E5D22 /* Projects */,
-				431564300883FBE5002778F8 /* Frameworks/Libs */,
+				43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */,
+				43992FCC087EDBD9002E5D22 /* Libs */,
+				431564300883FBE5002778F8 /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				43265FC208E49FEB0020C22F /* Info.plist */,
 			);
 			name = FoxTools;
 			sourceTree = "<group>";
@@ -800,7 +588,6 @@
 			children = (
 				436867C4088C5B140019BCA3 /* Adaptors */,
 				436867C7088C5B140019BCA3 /* App */,
-				434D935408B581DD00B74A7F /* Builder */,
 				436867CA088C5B140019BCA3 /* Cursors */,
 				436867CF088C5B140019BCA3 /* Dialogs */,
 				436867D8088C5B140019BCA3 /* Errors */,
@@ -825,27 +612,15 @@
 			children = (
 				D2AAC0630554660B00DB518D /* libFoxTools.dylib */,
 				43685F32088C195B0019BCA3 /* libFoxToolsCarbon.dylib */,
-				43265FC308E49FEB0020C22F /* FoxTools.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		431564300883FBE5002778F8 /* Frameworks/Libs */ = {
+		431564300883FBE5002778F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */,
 			);
-			name = Frameworks/Libs;
-			sourceTree = "<group>";
-		};
-		434D935408B581DD00B74A7F /* Builder */ = {
-			isa = PBXGroup;
-			children = (
-				434D935508B581DD00B74A7F /* Factory.h */,
-				434D935608B581DD00B74A7F /* Reader.cpp */,
-				434D935708B581DD00B74A7F /* Reader.h */,
-			);
-			path = Builder;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		436867C4088C5B140019BCA3 /* Adaptors */ = {
@@ -1118,19 +893,18 @@
 			path = Windows;
 			sourceTree = SOURCE_ROOT;
 		};
-		43992FCC087EDBD9002E5D22 /* Projects */ = {
+		43992FCC087EDBD9002E5D22 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */,
+				43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */,
 			);
-			name = Projects;
+			name = Libs;
 			sourceTree = "<group>";
 		};
 		43992FDE087EE4E4002E5D22 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				43992FE2087EE4E4002E5D22 /* libUsul.dylib */,
-				43265FAB08E49FA90020C22F /* Usul.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1138,127 +912,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		43265FB908E49FEB0020C22F /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				43265FC908E4A0200020C22F /* App.h in Headers */,
-				43265FCA08E4A0200020C22F /* App.h in Headers */,
-				43265FCB08E4A0200020C22F /* Application.h in Headers */,
-				43265FCC08E4A0200020C22F /* Arrays.h in Headers */,
-				43265FCD08E4A0200020C22F /* Bar.h in Headers */,
-				43265FCE08E4A0200020C22F /* Bar.h in Headers */,
-				43265FCF08E4A0200020C22F /* BMPIcon.h in Headers */,
-				43265FD008E4A0200020C22F /* Button.h in Headers */,
-				43265FD108E4A0200020C22F /* Button.h in Headers */,
-				43265FD208E4A0200020C22F /* Button.h in Headers */,
-				43265FD308E4A0200020C22F /* CarbonFileDialog.h in Headers */,
-				43265FD408E4A0200020C22F /* Check.h in Headers */,
-				43265FD508E4A0200020C22F /* CheckButton.h in Headers */,
-				43265FD608E4A0200020C22F /* CheckButton.h in Headers */,
-				43265FD708E4A0200020C22F /* Child.h in Headers */,
-				43265FD808E4A0200020C22F /* ColorBar.h in Headers */,
-				43265FD908E4A0200020C22F /* ColorDialog.h in Headers */,
-				43265FDA08E4A0200020C22F /* ColorSelector.h in Headers */,
-				43265FDB08E4A0200020C22F /* ColorWheel.h in Headers */,
-				43265FDC08E4A0200020C22F /* ComboBox.h in Headers */,
-				43265FDD08E4A0200020C22F /* ComboBox.h in Headers */,
-				43265FDE08E4A0200020C22F /* Command.h in Headers */,
-				43265FDF08E4A0200020C22F /* CUR.h in Headers */,
-				43265FE008E4A0200020C22F /* CURCursor.h in Headers */,
-				43265FE108E4A0200020C22F /* Cursor.h in Headers */,
-				43265FE208E4A0200020C22F /* Definitions.h in Headers */,
-				43265FE308E4A0200020C22F /* Delete.h in Headers */,
-				43265FE408E4A0200020C22F /* DialogBox.h in Headers */,
-				43265FE508E4A0200020C22F /* DirDialog.h in Headers */,
-				43265FE608E4A0200020C22F /* DockSite.h in Headers */,
-				43265FE708E4A0200020C22F /* DockSite.h in Headers */,
-				43265FE808E4A0200020C22F /* Drawable.h in Headers */,
-				43265FE908E4A0200020C22F /* Enable.h in Headers */,
-				43265FEA08E4A0200020C22F /* ErrorChecker.h in Headers */,
-				43265FEB08E4A0200020C22F /* Export.h in Headers */,
-				43265FEC08E4A0200020C22F /* Factory.h in Headers */,
-				43265FED08E4A0200020C22F /* Factory.h in Headers */,
-				43265FEE08E4A0200020C22F /* Factory.h in Headers */,
-				43265FEF08E4A0200020C22F /* File.h in Headers */,
-				43265FF008E4A0200020C22F /* FileDialog.h in Headers */,
-				43265FF108E4A0200020C22F /* FileSelection.h in Headers */,
-				43265FF208E4A0200020C22F /* GIFCursor.h in Headers */,
-				43265FF308E4A0200020C22F /* GIFIcon.h in Headers */,
-				43265FF408E4A0200020C22F /* GLCanvas.h in Headers */,
-				43265FF508E4A0200020C22F /* GLVisual.h in Headers */,
-				43265FF608E4A0200020C22F /* GLVisual.h in Headers */,
-				43265FF708E4A0200020C22F /* Group.h in Headers */,
-				43265FF808E4A0200020C22F /* GroupBox.h in Headers */,
-				43265FF908E4A0200020C22F /* HasText.h in Headers */,
-				43265FFA08E4A0200020C22F /* HorizontalFrame.h in Headers */,
-				43265FFB08E4A0200020C22F /* Icon.h in Headers */,
-				43265FFC08E4A0200020C22F /* Image.h in Headers */,
-				43265FFD08E4A0200020C22F /* Images.h in Headers */,
-				43265FFE08E4A0200020C22F /* ImageView.h in Headers */,
-				43265FFF08E4A0200020C22F /* IsChildNumber.h in Headers */,
-				4326600008E4A0200020C22F /* IsMemberOf.h in Headers */,
-				4326600108E4A0200020C22F /* Item.h in Headers */,
-				4326600208E4A0200020C22F /* Label.h in Headers */,
-				4326600308E4A0200020C22F /* List.h in Headers */,
-				4326600408E4A0200020C22F /* MainWindow.h in Headers */,
-				4326600508E4A0200020C22F /* MainWindow.h in Headers */,
-				4326600608E4A0200020C22F /* Matrix.h in Headers */,
-				4326600708E4A0200020C22F /* MDIButton.h in Headers */,
-				4326600808E4A0200020C22F /* MDIChild.h in Headers */,
-				4326600908E4A0200020C22F /* MdiChildWindow.h in Headers */,
-				4326600A08E4A0200020C22F /* MenuBar.h in Headers */,
-				4326600B08E4A0200020C22F /* MenuCascade.h in Headers */,
-				4326600C08E4A0200020C22F /* MenuCheck.h in Headers */,
-				4326600D08E4A0200020C22F /* MenuCommand.h in Headers */,
-				4326600E08E4A0200020C22F /* MenuPane.h in Headers */,
-				4326600F08E4A0200020C22F /* MenuRadio.h in Headers */,
-				4326601008E4A0200020C22F /* MenuSeparator.h in Headers */,
-				4326601108E4A0200020C22F /* MenuTitle.h in Headers */,
-				4326601208E4A0200020C22F /* Message.h in Headers */,
-				4326601308E4A0200020C22F /* MessageBox.h in Headers */,
-				4326601408E4A0200020C22F /* Mouse.h in Headers */,
-				4326601508E4A0200020C22F /* Object.h in Headers */,
-				4326601608E4A0200020C22F /* Parent.h in Headers */,
-				4326601708E4A0200020C22F /* PNGIcon.h in Headers */,
-				4326601808E4A0200020C22F /* ProgressBar.h in Headers */,
-				4326601908E4A0200020C22F /* RadioButton.h in Headers */,
-				4326601A08E4A0200020C22F /* RadioButton.h in Headers */,
-				4326601B08E4A0200020C22F /* RealSpinner.h in Headers */,
-				4326601C08E4A0200020C22F /* RecentFiles.h in Headers */,
-				4326601D08E4A0200020C22F /* RecentFiles.h in Headers */,
-				4326601E08E4A0200020C22F /* Registry.h in Headers */,
-				4326601F08E4A0200020C22F /* Registry.h in Headers */,
-				4326602008E4A0200020C22F /* ScrollPane.h in Headers */,
-				4326602108E4A0200020C22F /* Separator.h in Headers */,
-				4326602208E4A0200020C22F /* Separator.h in Headers */,
-				4326602308E4A0200020C22F /* Separator.h in Headers */,
-				4326602408E4A0200020C22F /* SetText.h in Headers */,
-				4326602508E4A0200020C22F /* Slider.h in Headers */,
-				4326602608E4A0200020C22F /* SliderTextField.h in Headers */,
-				4326602708E4A0200020C22F /* Spinner.h in Headers */,
-				4326602808E4A0200020C22F /* Splitter.h in Headers */,
-				4326602908E4A0200020C22F /* StatusBar.h in Headers */,
-				4326602A08E4A0200020C22F /* StatusLine.h in Headers */,
-				4326602B08E4A0200020C22F /* TabBook.h in Headers */,
-				4326602C08E4A0200020C22F /* TabItem.h in Headers */,
-				4326602D08E4A0200020C22F /* Text.h in Headers */,
-				4326602E08E4A0200020C22F /* TextField.h in Headers */,
-				4326602F08E4A0200020C22F /* ToggleButton.h in Headers */,
-				4326603008E4A0200020C22F /* ToggleButton.h in Headers */,
-				4326603108E4A0200020C22F /* ToolBar.h in Headers */,
-				4326603208E4A0200020C22F /* ToolBarGrip.h in Headers */,
-				4326603308E4A0200020C22F /* ToolBarShell.h in Headers */,
-				4326603408E4A0200020C22F /* ToolTip.h in Headers */,
-				4326603508E4A0200020C22F /* TreeList.h in Headers */,
-				4326603608E4A0200020C22F /* Vec4f.h in Headers */,
-				4326603708E4A0200020C22F /* VerticalFrame.h in Headers */,
-				4326603808E4A0200020C22F /* Visual.h in Headers */,
-				4326603908E4A0200020C22F /* Wait.h in Headers */,
-				4326603A08E4A0200020C22F /* Window.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		43685F2E088C195B0019BCA3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1506,45 +1159,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		43265FB808E49FEB0020C22F /* FoxTools.framework */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 43265FBE08E49FEB0020C22F /* Build configuration list for PBXNativeTarget "FoxTools.framework" */;
-			buildPhases = (
-				43265FB908E49FEB0020C22F /* Headers */,
-				43265FBA08E49FEB0020C22F /* Resources */,
-				43265FBB08E49FEB0020C22F /* Sources */,
-				43265FBC08E49FEB0020C22F /* Frameworks */,
-				43265FBD08E49FEB0020C22F /* Rez */,
-			);
-			buildRules = (
-			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRINCIPAL_CLASS = "";
-				PRODUCT_NAME = framework;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = framework;
-			};
-			dependencies = (
-			);
-			name = FoxTools.framework;
-			productInstallPath = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-			productName = framework;
-			productReference = 43265FC308E49FEB0020C22F /* FoxTools.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 		43685F31088C195B0019BCA3 /* FoxToolsCarbon */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43685F35088C19CC0019BCA3 /* Build configuration list for PBXNativeTarget "FoxToolsCarbon" */;
@@ -1638,23 +1252,14 @@
 				},
 			);
 			targets = (
-				43992FE9087EE800002E5D22 /* Build DyLibs */,
-				43265FC408E4A0050020C22F /* Build Frameworks */,
+				43992FE9087EE800002E5D22 /* Build All */,
 				D2AAC0620554660B00DB518D /* FoxTools */,
 				43685F31088C195B0019BCA3 /* FoxToolsCarbon */,
-				43265FB808E49FEB0020C22F /* FoxTools.framework */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		43265FAB08E49FA90020C22F /* Usul.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Usul.framework;
-			remoteRef = 43265FAA08E49FA90020C22F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		43992FE2087EE4E4002E5D22 /* libUsul.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -1664,70 +1269,7 @@
 		};
 /* End PBXReferenceProxy section */
 
-/* Begin PBXResourcesBuildPhase section */
-		43265FBA08E49FEB0020C22F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXRezBuildPhase section */
-		43265FBD08E49FEB0020C22F /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		43265FBB08E49FEB0020C22F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4326603B08E4A02E0020C22F /* App.cpp in Sources */,
-				4326603C08E4A02E0020C22F /* Application.cpp in Sources */,
-				4326603D08E4A02E0020C22F /* Bar.cpp in Sources */,
-				4326603E08E4A02E0020C22F /* Bar.cpp in Sources */,
-				4326603F08E4A02E0020C22F /* Button.cpp in Sources */,
-				4326604008E4A02E0020C22F /* Button.cpp in Sources */,
-				4326604108E4A02E0020C22F /* CarbonFileDialog.cpp in Sources */,
-				4326604208E4A02E0020C22F /* Check.cpp in Sources */,
-				4326604308E4A02E0020C22F /* CheckButton.cpp in Sources */,
-				4326604408E4A02E0020C22F /* ComboBox.cpp in Sources */,
-				4326604508E4A02E0020C22F /* Command.cpp in Sources */,
-				4326604608E4A02E0020C22F /* Delete.cpp in Sources */,
-				4326604708E4A02E0020C22F /* DockSite.cpp in Sources */,
-				4326604808E4A02E0020C22F /* Enable.cpp in Sources */,
-				4326604908E4A02E0020C22F /* Factory.cpp in Sources */,
-				4326604A08E4A02E0020C22F /* Factory.cpp in Sources */,
-				4326604B08E4A02E0020C22F /* Factory.cpp in Sources */,
-				4326604C08E4A02E0020C22F /* FileSelection.cpp in Sources */,
-				4326604D08E4A02E0020C22F /* GLVisual.cpp in Sources */,
-				4326604E08E4A02E0020C22F /* Group.cpp in Sources */,
-				4326604F08E4A02E0020C22F /* HasText.cpp in Sources */,
-				4326605008E4A02E0020C22F /* IsChildNumber.cpp in Sources */,
-				4326605108E4A02E0020C22F /* IsMemberOf.cpp in Sources */,
-				4326605208E4A02E0020C22F /* Item.cpp in Sources */,
-				4326605308E4A02E0020C22F /* MainWindow.cpp in Sources */,
-				4326605408E4A02E0020C22F /* MdiChildWindow.cpp in Sources */,
-				4326605508E4A02E0020C22F /* Message.cpp in Sources */,
-				4326605608E4A02E0020C22F /* Mouse.cpp in Sources */,
-				4326605708E4A02E0020C22F /* RadioButton.cpp in Sources */,
-				4326605808E4A02E0020C22F /* RecentFiles.cpp in Sources */,
-				4326605908E4A02E0020C22F /* Registry.cpp in Sources */,
-				4326605A08E4A02E0020C22F /* Separator.cpp in Sources */,
-				4326605B08E4A02E0020C22F /* Separator.cpp in Sources */,
-				4326605C08E4A02E0020C22F /* SliderTextField.cpp in Sources */,
-				4326605D08E4A02E0020C22F /* ToggleButton.cpp in Sources */,
-				4326605E08E4A02E0020C22F /* Wait.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		43685F2F088C195B0019BCA3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1817,16 +1359,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		43265FC608E4A00A0020C22F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 43265FB808E49FEB0020C22F /* FoxTools.framework */;
-			targetProxy = 43265FC508E4A00A0020C22F /* PBXContainerItemProxy */;
-		};
-		43265FC808E4A00A0020C22F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Usul.framework;
-			targetProxy = 43265FC708E4A00A0020C22F /* PBXContainerItemProxy */;
-		};
 		43992FEB087EE809002E5D22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Usul;
@@ -1840,158 +1372,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		43265FBF08E49FEB0020C22F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_DEBUG,
-					_COMPILING_FOX_TOOLS,
-				);
-				HEADER_SEARCH_PATHS = (
-					../,
-					"/usr/local/include/fox-1.4",
-				);
-				INFOPLIST_FILE = Info.plist;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRINCIPAL_CLASS = "";
-				PRODUCT_NAME = FoxTools;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = framework;
-			};
-			name = Debug;
-		};
-		43265FC008E49FEB0020C22F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_FOX_TOOLS;
-				HEADER_SEARCH_PATHS = (
-					../,
-					"/usr/local/include/fox-1.4",
-				);
-				INFOPLIST_FILE = Info.plist;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRINCIPAL_CLASS = "";
-				PRODUCT_NAME = FoxTools;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = framework;
-			};
-			name = Release;
-		};
-		43265FC108E49FEB0020C22F /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					../,
-					"/usr/local/include/fox-1.4",
-				);
-				INFOPLIST_FILE = Info.plist;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRINCIPAL_CLASS = "";
-				PRODUCT_NAME = FoxTools;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = framework;
-			};
-			name = Default;
-		};
-		4326606208E4A04A0020C22F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Build Frameworks";
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Debug;
-		};
-		4326606308E4A04A0020C22F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Build Frameworks";
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Release;
-		};
-		4326606408E4A04A0020C22F /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Build Frameworks";
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Default;
-		};
 		43685F36088C19CC0019BCA3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1999,7 +1379,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2113,7 +1492,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -2129,7 +1507,7 @@
 					../,
 					"/usr/local/include/fox-1.4",
 				);
-				INSTALL_PATH = "";
+				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../XcodeBuild/Debug\"";
 				LIBRARY_STYLE = DYNAMIC;
 				OTHER_LDFLAGS = "";
@@ -2143,27 +1521,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_FOX_TOOLS;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					../,
 					"/usr/local/include/fox-1.4",
 				);
-				INSTALL_PATH = "";
+				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../XcodeBuild/Release",
 					/usr/local/lib,
@@ -2171,7 +1542,6 @@
 				LIBRARY_STYLE = DYNAMIC;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = FoxTools;
 				ZERO_LINK = NO;
 			};
@@ -2191,7 +1561,7 @@
 					../,
 					"/usr/local/include/fox-1.4",
 				);
-				INSTALL_PATH = "";
+				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../XcodeBuild/Debug\"";
 				LIBRARY_STYLE = DYNAMIC;
 				OTHER_LDFLAGS = "";
@@ -2276,24 +1646,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		43265FBE08E49FEB0020C22F /* Build configuration list for PBXNativeTarget "FoxTools.framework" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				43265FBF08E49FEB0020C22F /* Debug */,
-				43265FC008E49FEB0020C22F /* Release */,
-				43265FC108E49FEB0020C22F /* Default */,
-			);
-			defaultConfigurationIsVisible = 0;
-		};
-		4326606108E4A04A0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4326606208E4A04A0020C22F /* Debug */,
-				4326606308E4A04A0020C22F /* Release */,
-				4326606408E4A04A0020C22F /* Default */,
-			);
-			defaultConfigurationIsVisible = 0;
-		};
 		43685F35088C19CC0019BCA3 /* Build configuration list for PBXNativeTarget "FoxToolsCarbon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2323,7 +1675,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		43992FF0087EE813002E5D22 /* Build configuration list for PBXAggregateTarget "Build DyLibs" */ = {
+		43992FF0087EE813002E5D22 /* Build configuration list for PBXAggregateTarget "Build All" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43992FF1087EE813002E5D22 /* Debug */,

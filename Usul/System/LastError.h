@@ -37,6 +37,9 @@ struct USUL_EXPORT LastError
   // Initialize the last error.
   static void             init();
 
+  // Is there an error?
+  static bool             has();
+
   // Get the last error message.
   static std::string      message();
 

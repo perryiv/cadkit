@@ -38,6 +38,7 @@ using namespace OsgTools;
 Grid::Grid() :
   _numBlocks   ( 10, 10 ),
   _color       ( 1, 0, 0, 1 ),
+  _fillColor       ( 0, 0, 0, 0 ),
   _size        ( 1, 1 ),
   _center      ( 0, 0, 0 ),
   _orientation ( 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ),
@@ -156,7 +157,7 @@ osg::Node* Grid::operator()() const
   // Set the line-width.
   osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
   lw->setWidth ( _lineWidth );
-  osg::ref_ptr<osg::StateSet> ss = geode->getOrCreateStateSet();
+  osg::ref_ptr<osg::StateSet> ss = geometry->getOrCreateStateSet();
   ss->setAttribute ( lw.get() );
 
   // Tell the grid to draw wire-frame.
@@ -173,7 +174,41 @@ osg::Node* Grid::operator()() const
   colors->at ( 0 ).set ( _color[0], _color[1], _color[2], _color[3] );
   geometry->setColorArray ( colors.get() );
   geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
-
+  
+  if( _fillColor[3] != 0 ) // if not completely transparent, fill the grid with a color
+  {
+    // Allocate a new geometry with the same vertices & normals
+    osg::ref_ptr<osg::Geometry> geometry2 ( new osg::Geometry );
+    geometry2->setVertexArray ( vertices.get() );
+    geometry2->setNormalArray ( normals.get() );
+    geometry2->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+    geometry2->setPrimitiveSetList ( primSetList );
+    
+    // add geometry to geode
+    geode->addDrawable ( geometry2.get() );
+    
+    // create a new StateSet for this geometry
+    osg::ref_ptr<osg::StateSet> ss2 ( new osg::StateSet );
+    geometry2->setStateSet( ss2.get() );
+    
+    // Tell the grid to draw filled.
+    osg::ref_ptr<osg::PolygonMode> mode2 ( new osg::PolygonMode );
+    mode2->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL );
+    ss2->setAttributeAndModes ( mode2.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+    
+    // Tell the grid to draw both sides
+    ss2->setMode(GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+    
+    // Tell it to use color instead of materials.
+    ss2->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
+    ss2->setMode ( GL_BLEND, osg::StateAttribute::ON );
+    ss2->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+    osg::ref_ptr<osg::Vec4Array> colors2 ( new osg::Vec4Array ( 1 ) );
+    colors2->at ( 0 ).set ( _fillColor[0], _fillColor[1], _fillColor[2], _fillColor[3] );
+    geometry2->setColorArray ( colors2.get() );
+    geometry2->setColorBinding ( osg::Geometry::BIND_OVERALL );
+  }  
+  
   // Return the geode.
   return geode.release();
 }

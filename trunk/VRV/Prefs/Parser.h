@@ -83,6 +83,8 @@ protected:
   void                  _setSinterServer   ( const std::string & );
   void                  _setSinterWriter   ( const std::string & );
   void                  _setSinterTmpFile  ( const std::string & );
+  void                  _setScribeColor    ( const std::string & );
+  void                  _setScribeWidth    ( const std::string & );
 
 private:
 

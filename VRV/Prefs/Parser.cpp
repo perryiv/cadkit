@@ -153,6 +153,8 @@ void Parser::_read ( const std::string &filename )
   MemFun setSinterServer   ( this, &Parser::_setSinterServer   );
   MemFun setSinterWriter   ( this, &Parser::_setSinterWriter   );
   MemFun setSinterTmpFile  ( this, &Parser::_setSinterTmpFile  );
+  MemFun setScribeColor    ( this, &Parser::_setScribeColor  );
+  MemFun setScribeWidth    ( this, &Parser::_setScribeWidth  );
 
   // Declare the reader and add the callbacks.
   XmlReader reader;
@@ -194,6 +196,8 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "sinterpoint/server",       setSinterServer   );
   Helper::add ( reader, start, "sinterpoint/writer",       setSinterWriter   );
   Helper::add ( reader, start, "sinterpoint/tmp_file",     setSinterTmpFile  );
+  Helper::add ( reader, start, "display/scribe_color",     setScribeColor    );
+  Helper::add ( reader, start, "display/scribe_width",     setScribeWidth    );
 
   // Read the file.
   try
@@ -330,7 +334,7 @@ void Parser::_setGridColor ( const std::string &s )
 
 void Parser::_setGridFillColor ( const std::string &s )
 {
-  ErrorChecker ( 1083817589u, !s.empty() );
+  ErrorChecker ( 1083817590u, !s.empty() );
   _settings->gridFillColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
 }
 
@@ -756,4 +760,30 @@ void Parser::_setSinterTmpFile ( const std::string &s )
 {
   ErrorChecker ( 2973371106u, !s.empty() );
   _settings->sinterPointTmpFile( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scribe color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setScribeColor ( const std::string &s )
+{
+  ErrorChecker ( 2973371107u, !s.empty() );
+  _settings->scribeColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scribe line width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setScribeWidth ( const std::string &s )
+{
+  ErrorChecker ( 2973371108u, !s.empty() );
+  _settings->scribeWidth ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }

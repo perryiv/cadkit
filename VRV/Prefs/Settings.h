@@ -195,7 +195,13 @@ public:
   const std::string     sinterPointWriter() { return _sinterWriter; }
   void                  sinterPointTmpFile ( std::string s ) { _sinterTmpFile = s; }
   const std::string     sinterPointTmpFile() { return _sinterTmpFile; }
-
+  
+  // Set/get scribe drawing related settings
+  const Color &         scribeColor () const { return _scribeColor; }
+  void                  scribeColor (const Color &c ) { _scribeColor = c; }
+  float                 scribeWidth() const { return _scribeWidth; }
+  void                  scribeWidth ( float w ) { _scribeWidth = w; }  
+  
 protected:
 
   // Use reference counting.
@@ -238,6 +244,8 @@ private:
   std::string _sinterServer;
   std::string _sinterWriter;
   std::string _sinterTmpFile;
+  Vec4f _scribeColor;
+  float _scribeWidth;
 };
 
 

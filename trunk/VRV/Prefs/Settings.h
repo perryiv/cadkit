@@ -25,6 +25,7 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Matrix44.h"
+#include "Usul/Math/Absolute.h"
 
 #include <string>
 #include <vector>
@@ -38,6 +39,7 @@ class Grids
   Usul::Math::Vec2ui _numGridBlocks;
   Usul::Math::Vec2f _gridScale;
   Usul::Math::Vec4f _gridColor;
+  Usul::Math::Vec4f _gridFillColor;
   float _gridRotationAngleRad;
   Usul::Math::Vec3f _gridRotationVector;
   bool _offsetGrid;
@@ -71,6 +73,8 @@ public:
   void                  addGrid() { _grids.push_back(Grids()); }
   const Color &         gridColor ( int i ) const { return _grids[i]._gridColor; }
   void                  gridColor (const Color &c ) { _grids[_grids.size()-1]._gridColor = c; }
+  const Color &         gridFillColor ( int i ) const { return _grids[i]._gridFillColor; }
+  void                  gridFillColor (const Color &c ) { _grids[_grids.size()-1]._gridFillColor = c; }
   const Vec2f &         gridScale ( int i ) const { return _grids[i]._gridScale; }
   void                  gridScale ( const Vec2f & s ) { _grids[_grids.size()-1]._gridScale = s; }
   const Vec2ui &        numGridBlocks ( int i ) const { return _grids[i]._numGridBlocks; }

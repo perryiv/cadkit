@@ -44,6 +44,10 @@ public:
   void                color ( float r, float g, float b, float a ) { _color.set ( r, g, b, a ); }
   const Vec4f &       color() const { return _color; }
 
+  void                fillColor ( const Vec4f &c ) { _fillColor = c; }
+  void                fillColor ( float r, float g, float b, float a ) { _fillColor.set ( r, g, b, a ); }
+  const Vec4f &       fillColor() const { return _fillColor; }
+
   void                numBlocks ( const Vec2ui &num ) { _numBlocks = num; }
   const Vec2ui &      numBlocks() const { return _numBlocks; }
 
@@ -65,6 +69,7 @@ private:
 
   Vec2ui _numBlocks;
   Vec4f _color;  // rgba
+  Vec4f _fillColor; // rgba
   Vec2f _size;   // xz
   Vec3f _center; // xyz
   Matrix44f _orientation;

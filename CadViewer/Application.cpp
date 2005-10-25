@@ -601,6 +601,7 @@ void Application::_initGrid ( osg::Node *node )
     grid->numBlocks ( _prefs->numGridBlocks(i) );
     grid->size ( r * _prefs->gridScale(i) );
     grid->color ( _prefs->gridColor(i) );
+    grid->fillColor ( _prefs->gridFillColor(i) );
     Usul::Math::Matrix44f o;
     o.makeRotation ( _prefs->gridRotationAngleRad(i), _prefs->gridRotationVector(i) );
     grid->orientation ( o );

@@ -23,6 +23,7 @@
 #include "osg/LineWidth"
 #include "osg/MatrixTransform"
 #include "osg/CullFace"
+#include "osg/Depth"
 
 #include <stdexcept>
 
@@ -202,7 +203,9 @@ osg::Node* Grid::operator()() const
     // Tell it to use color instead of materials.
     ss2->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
     ss2->setMode ( GL_BLEND, osg::StateAttribute::ON );
-    ss2->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+    osg::ref_ptr<osg::Depth> depth (new osg::Depth);
+    depth->setWriteMask( false );
+    ss2->setAttribute( depth.get() );
     osg::ref_ptr<osg::Vec4Array> colors2 ( new osg::Vec4Array ( 1 ) );
     colors2->at ( 0 ).set ( _fillColor[0], _fillColor[1], _fillColor[2], _fillColor[3] );
     geometry2->setColorArray ( colors2.get() );

@@ -272,7 +272,7 @@ private:
   // Possible dirty flags.
   struct Dirty
   {
-    enum
+    enum DIRTY_FLAGS
     {
       NORMALS_V = 0x00000001,
       COLORS_V  = 0x00000002,

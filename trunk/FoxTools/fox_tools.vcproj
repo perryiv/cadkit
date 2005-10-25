@@ -230,6 +230,9 @@
 					RelativePath=".\Functions\Child.h">
 				</File>
 				<File
+					RelativePath=".\Functions\Create.h">
+				</File>
+				<File
 					RelativePath=".\Functions\Delete.cpp">
 				</File>
 				<File

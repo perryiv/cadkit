@@ -120,6 +120,7 @@ void Parser::_read ( const std::string &filename )
   MemFun setNumGridBlocks  ( this, &Parser::_setNumGridBlocks  );
   MemFun setGridScale      ( this, &Parser::_setGridScale      );
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
+  MemFun setGridFillColor      ( this, &Parser::_setGridFillColor      );
   MemFun setGridRotationAngleRad ( this, &Parser::_setGridRotationAngleRad );
   MemFun setGridRotationVector   ( this, &Parser::_setGridRotationVector   );
   MemFun offsetGrid        ( this, &Parser::_offsetGrid        );
@@ -160,6 +161,7 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "grid/num_blocks",          setNumGridBlocks  );
   Helper::add ( reader, start, "grid/scale",               setGridScale      );
   Helper::add ( reader, start, "grid/color",               setGridColor      );
+  Helper::add ( reader, start, "grid/fill_color",          setGridFillColor  );
   Helper::add ( reader, start, "grid/rotation_angle_rad",  setGridRotationAngleRad );
   Helper::add ( reader, start, "grid/rotation_vector",     setGridRotationVector   );
   Helper::add ( reader, start, "grid/offset",              offsetGrid        );
@@ -322,6 +324,19 @@ void Parser::_setGridColor ( const std::string &s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the grid fill color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setGridFillColor ( const std::string &s )
+{
+  ErrorChecker ( 1083817589u, !s.empty() );
+  _settings->gridFillColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set grid rotation angle in radians
 //  
 ///////////////////////////////////////////////////////////////////////////////
@@ -372,7 +387,7 @@ void Parser::_offsetGrid ( const std::string &s )
 void Parser::_setNearClip ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->nearClippingDistance ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->nearClippingDistance ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -385,7 +400,7 @@ void Parser::_setNearClip ( const std::string &s )
 void Parser::_setViewAllScale ( const std::string &s )
 {
   ErrorChecker ( 1083817591u, !s.empty() );
-  _settings->viewAllScaleZ ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->viewAllScaleZ ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -676,7 +691,7 @@ void Parser::_scaleStatus ( const std::string &s )
 void Parser::_setTransSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->translationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->translationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -689,7 +704,7 @@ void Parser::_setTransSpeed ( const std::string &s )
 void Parser::_setRotSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->rotationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->rotationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -702,7 +717,7 @@ void Parser::_setRotSpeed ( const std::string &s )
 void Parser::_setScaleSpeed ( const std::string &s )
 {
   ErrorChecker ( 2973371103u, !s.empty() );
-  _settings->scaleSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->scaleSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 

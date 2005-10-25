@@ -50,6 +50,7 @@ protected:
   void                  _setNumGridBlocks  ( const std::string & );
   void                  _setGridScale      ( const std::string & );
   void                  _setGridColor      ( const std::string & );
+  void                  _setGridFillColor      ( const std::string & );
   void                  _setGridRotationAngleRad ( const std::string & );
   void                  _setGridRotationVector   ( const std::string & );
   void                  _offsetGrid        ( const std::string & );

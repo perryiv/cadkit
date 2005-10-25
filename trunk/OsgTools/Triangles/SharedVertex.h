@@ -55,9 +55,6 @@ public:
   // Construction
   SharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0, unsigned char flags = 0 );
 
-  // Use reference counting. Needs to be public to work with boost::object_pool.
-  ~SharedVertex();
-
   // Add the given triangle to the list.
   void                  addTriangle ( Triangle *t );
 
@@ -126,6 +123,11 @@ public:
   private:
     SharedVertex::ValidRefPtr _vertex;
   };
+
+protected:
+
+  // Use reference counting.
+  ~SharedVertex();
 
 private:
 

@@ -38,18 +38,6 @@
 #include "osg/BoundingBox"
 #include "osg/Vec3f"
 
-// Switch on/off the memory pool for std::map's allocator.
-#define USE_POOL_ALLOCATOR
-
-// Mac doesn't like the boost memory pool for containers.
-#ifdef __APPLE__
-#undef USE_POOL_ALLOCATOR
-#endif
-
-#ifdef USE_POOL_ALLOCATOR
-#include "boost/pool/pool_alloc.hpp"
-#endif
-
 #include <vector>
 #include <map>
 #include <string>
@@ -83,16 +71,8 @@ public:
   typedef std::less < KeyValuePair::first_type > LessVector;
   #endif
 
-  // Mac doesn't like the boost memory pool for containers.
-  #ifdef USE_POOL_ALLOCATOR
-  typedef boost::fast_pool_allocator < KeyValuePair > Allocator;
-  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector, Allocator > SharedVertices;
-  #else
-  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
-  #endif
-
-
   // Remaining typedefs.
+  typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
   typedef std::vector < Triangle::ValidAccessRefPtr > TriangleVector;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map < std::string,std::string > Options;

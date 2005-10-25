@@ -575,80 +575,14 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Typedefs and structs needed to declare a singleton pool that is the same 
-//  size as the one created by the shared-vertex map's allocator. 
-//  Unfortunately, the necessary information is private, so this is somewhat 
-//  of a guess.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-typedef TriangleSet::SharedVertices::allocator_type::user_allocator UserAllocator;
-typedef TriangleSet::SharedVertices::allocator_type::mutex MutexType;
-typedef boost::singleton_pool < boost::fast_pool_allocator_tag, sizeof ( TriangleSet::SharedVertices::allocator_type::value_type ), UserAllocator, MutexType, 32 > singleton_pool;
-typedef singleton_pool::singleton Singleton;
-//typedef Singleton::pool_type AllocatorPool;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Insert the given shared-vertex into the correct map.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::InsertResult TriangleSet::_insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv )
 {
-  // While we can still reduce the size of the next chunk of memory that 
-  // the pool-allocator will ask for...
-  //AllocatorPool &pool ( Singleton::instance().p );
-  while ( Singleton::instance().p.get_next_size() >= sizeof ( SharedVertices::value_type ) )
-  {
-    // Safely insert the new shared-vertex into the map.
-    try
-    {
-      return _shared.insert ( SharedVertices::value_type ( v, sv ) );
-    }
-
-    // Catch standard exceptions.
-    catch ( const std::exception &e )
-    {
-      std::cout << "Error 3695160201: Standard exception caught when inserting shared vertex " << sv->index();
-      if ( e.what() )
-        std::cout << ". " << e.what() << std::endl;
-    }
-
-    // Catch all other exceptions.
-    catch ( ... )
-    {
-      std::cout << "Error 1786024042: Unknown exception caught when inserting shared vertex " << sv->index();
-    }
-
-    // Calculate the size to try next time.
-    const unsigned int nextSize ( Singleton::instance().p.get_next_size() / 2 );
-
-    // Print this every time.
-    std::cout << ". The memory-pool allocator for the container of shared-vertices asked for "
-              << Singleton::instance().p.get_next_size()
-              << " bytes. Trying again with " << nextSize << " bytes."
-              << Usul::Resources::TextWindow::endl;
-
-    // Reset the "next size".
-    Singleton::instance().p.set_next_size ( nextSize );
-
-    break; // Above does not work, and creates an infinite loop. See note below.
-#if 0
-
-    TODO
-    Above "set_next_size" call does not do anything, this is an infinite loop. 
-    Need a special allocator that is under your control. Should grab all needed 
-    space in reserveTriangles(). Also, consider a sorted vector for the shared-vertices. 
-    Might want to move the "bag of shared vertices" to its own class and hide these details.
-
-#endif
-  }
-
-  // If we get all the way down here then we are really out of memory.
-  throw std::bad_alloc ( "Error 4182935658: Failed to allocate a new shared vertex, \
-                          after repeated attempts of reducing the memory-pool's block size" );
+  // Using default heap-allocator for now...
+  return _shared.insert ( SharedVertices::value_type ( v, sv ) );
 }
 
 

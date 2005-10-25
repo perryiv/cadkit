@@ -45,7 +45,7 @@
       <near>0.1</near>
     </clipping_plane>
     <view_all>
-      <scale>1.5</scale>
+      <scale>1.0</scale>
     </view_all>
     <light>
       <ambient> 0.2  0.2  0.2  1.0</ambient>
@@ -79,7 +79,7 @@
         The results are order-dependent.
       </comment>
       <scale>      0.25  0.25  1.0 </scale>
-      <translate> -2.0   6.0  -4.0 </translate>
+      <translate> -2.0   6.0  -5.0 </translate>
       <color>
         <comment>customizable menu color scheme</comment>
 
@@ -129,9 +129,13 @@
       </comment>
       <scale>      0.75 </scale>
     </speed>
-	<sinterpoint>
-	  <server>my_server</server>
-	  <writer>my_writer</writer>
-	</sinterpoint>
+    <sinterpoint>
+      <server>my_server</server>
+      <writer>my_writer</writer>
+    </sinterpoint>
+    <display>
+      <scribe_color>1.0 0.0 0.0 1.0</scribe_color>
+      <scribe_width>4.0</scribe_width>
+    </display>
   </preferences>
 </cv>

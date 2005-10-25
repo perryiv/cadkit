@@ -1810,10 +1810,12 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   }
  
   // Create the scribe effect since it must attach to the model
-  osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
-  sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
-  sc->addChild ( node.get() );
-  _scribeBranch->addChild ( sc.get() );
+  osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
+  const Preferences::Vec4f &sc = _prefs->scribeColor();
+  scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
+  scribe->setWireframeLineWidth( _prefs->scribeWidth() );
+  scribe->addChild ( node.get() );
+  _scribeBranch->addChild ( scribe.get() );
   
   // Hook things up.
   mt->addChild ( node.get() );
@@ -1879,10 +1881,12 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     {
       // Replace the scribe node at the same position in _scribeBranch
       // as the replaced node was in _models, using match.modelNum
-      osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
-      sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
-      sc->addChild ( node.get() );
-      _scribeBranch->setChild ( match.modelNum, sc.get() );
+      osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
+      const Preferences::Vec4f &sc = _prefs->scribeColor();
+      scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
+      scribe->setWireframeLineWidth( _prefs->scribeWidth() );
+      scribe->addChild ( node.get() );
+      _scribeBranch->setChild ( match.modelNum, scribe.get() );
     }
   }
  
@@ -1910,10 +1914,12 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     node->setName ( name );
 
     // Create the scribe effect since it must attach to the model
-    osg::ref_ptr<osgFX::Scribe> sc = new osgFX::Scribe;
-    sc->setWireframeColor ( osg::Vec4 ( 1.0,1.0,1.0,1.0 ) );
-    sc->addChild ( node.get() );
-    _scribeBranch->addChild ( sc.get() );
+    osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
+    const Preferences::Vec4f &sc = _prefs->scribeColor();
+    scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
+    scribe->setWireframeLineWidth( _prefs->scribeWidth() );
+    scribe->addChild ( node.get() );
+    _scribeBranch->addChild ( scribe.get() );
     
     // Hook things up.
     mt->addChild ( node.get() );

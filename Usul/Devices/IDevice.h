@@ -36,6 +36,8 @@ struct IDevice : public Usul::Interfaces::IUnknown
   virtual void addButtonListener( unsigned int button, IButtonListener* ) = 0;
   virtual void addMotionListener( IMotionListener* ) = 0;
 
+  virtual void clear() = 0;
+
 #if 0
   
   virtual void addJoystickListener( unsigned int number, IJoystickListener* ) = 0;

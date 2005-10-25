@@ -44,6 +44,8 @@ public:
   virtual void addButtonListener( unsigned int button, IButtonListener* );
   virtual void addMotionListener( IMotionListener* );
 
+  virtual void clear();
+
 protected:
   void _notifyButtonPressed  ( unsigned int button, const State& state );
   void _notifyButtonReleased ( unsigned int button, const State& state );

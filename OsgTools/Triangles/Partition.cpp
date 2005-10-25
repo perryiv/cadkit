@@ -19,7 +19,7 @@
 using namespace OsgTools::Triangles;
 
 #define DRAW_CUBES 0
-#define DRAW_MATERIALS 0
+#define DRAW_MATERIALS 1
 
 ///////////////////////////////////////////////////////////////////////////////
 //

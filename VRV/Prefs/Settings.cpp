@@ -51,7 +51,8 @@ Settings::Settings()  : BaseClass(),
                         _transSpeed     ( 0.05f ), // percent / second
                         _rotSpeed       ( 30 ),    // degrees / second
                         _scaleSpeed     ( 0.05f ),
-                        _selectColor    ( 1, 1, 0, 1 )
+                        _selectColor    ( 1, 1, 0, 1 ),
+                        _autoPlacement  ( false )
 {
   _menuMatrix.identity();
   _statusMatrix.identity();

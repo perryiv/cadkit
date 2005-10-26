@@ -85,6 +85,9 @@ protected:
   void                  _setSinterTmpFile  ( const std::string & );
   void                  _setScribeColor    ( const std::string & );
   void                  _setScribeWidth    ( const std::string & );
+  void                  _setAutoPlacement  ( const std::string & );
+  void                  _setAutoPlaceCenter ( const std::string & );
+  void                  _setAutoPlaceRadius ( const std::string & );
 
 private:
 

@@ -202,6 +202,14 @@ public:
   float                 scribeWidth() const { return _scribeWidth; }
   void                  scribeWidth ( float w ) { _scribeWidth = w; }  
   
+  // Set/get auto-placement settings
+  bool                  autoPlacement() const { return _autoPlacement; }
+  void                  autoPlacement ( bool state ) { _autoPlacement = state; }
+  const Vec3f &         autoPlaceCenter () { return _autoPlaceCenter; }
+  void                  autoPlaceCenter ( Vec3f v ) { _autoPlaceCenter = v; }
+  float                 autoPlaceRadius () { return _autoPlaceRadius; }
+  void                  autoPlaceRadius ( float r ) { _autoPlaceRadius = r; }
+  
 protected:
 
   // Use reference counting.
@@ -246,6 +254,9 @@ private:
   std::string _sinterTmpFile;
   Vec4f _scribeColor;
   float _scribeWidth;
+  bool _autoPlacement;
+  Vec3f _autoPlaceCenter;
+  float _autoPlaceRadius;
 };
 
 

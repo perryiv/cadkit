@@ -155,6 +155,9 @@ void Parser::_read ( const std::string &filename )
   MemFun setSinterTmpFile  ( this, &Parser::_setSinterTmpFile  );
   MemFun setScribeColor    ( this, &Parser::_setScribeColor  );
   MemFun setScribeWidth    ( this, &Parser::_setScribeWidth  );
+  MemFun setAutoPlacement  ( this, &Parser::_setAutoPlacement  );
+  MemFun setAutoPlaceCenter  ( this, &Parser::_setAutoPlaceCenter  );
+  MemFun setAutoPlaceRadius  ( this, &Parser::_setAutoPlaceRadius  );
 
   // Declare the reader and add the callbacks.
   XmlReader reader;
@@ -198,6 +201,9 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "sinterpoint/tmp_file",     setSinterTmpFile  );
   Helper::add ( reader, start, "display/scribe_color",     setScribeColor    );
   Helper::add ( reader, start, "display/scribe_width",     setScribeWidth    );
+  Helper::add ( reader, start, "auto_placement/enable",    setAutoPlacement  );
+  Helper::add ( reader, start, "auto_placement/center",    setAutoPlaceCenter );
+  Helper::add ( reader, start, "auto_placement/radius",    setAutoPlaceRadius );
 
   // Read the file.
   try
@@ -786,4 +792,43 @@ void Parser::_setScribeWidth ( const std::string &s )
 {
   ErrorChecker ( 2973371108u, !s.empty() );
   _settings->scribeWidth ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set auto placement
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAutoPlacement ( const std::string &s )
+{
+  ErrorChecker ( 3652665668u, !s.empty() );
+  _settings->autoPlacement ( Helper::toBool ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set auto placement center
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAutoPlaceCenter ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->autoPlaceCenter ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set auto placement radius
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAutoPlaceRadius ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->autoPlaceRadius ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }

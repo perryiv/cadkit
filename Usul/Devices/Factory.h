@@ -39,4 +39,4 @@ private:
 }
 }
 
-#endif __DEVICES_FACTORY_H__
+#endif //__DEVICES_FACTORY_H__

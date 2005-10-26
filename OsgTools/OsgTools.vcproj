@@ -359,6 +359,15 @@
 					RelativePath=".\Triangles\Blocks.h">
 				</File>
 				<File
+					RelativePath=".\Triangles\ColorFunctor.cpp">
+				</File>
+				<File
+					RelativePath=".\Triangles\ColorFunctor.h">
+				</File>
+				<File
+					RelativePath=".\Triangles\Constants.h">
+				</File>
+				<File
 					RelativePath=".\Triangles\Factory.cpp">
 				</File>
 				<File

@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/TriangleSet.h"
+#include "OsgTools/Triangles/Constants.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/HasOption.h"
 
@@ -39,7 +40,7 @@
 #include "osg/Geometry"
 #include "osg/Vec4"
 #include "osg/StateSet"
-#include "osg/AlphaFunc"
+#include "osg/Material"
 
 #include <algorithm>
 #include <numeric>
@@ -59,7 +60,6 @@ USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 
 namespace Detail
 {
-  const osg::Vec4f _defaultPerVertexColor ( 0.5f, 0.5f, 0.5f, 1.0f );
   const unsigned int _milliseconds ( 250 );
   const unsigned int _averageTrianglesPerBlock ( 5000 );
 }
@@ -72,11 +72,7 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
-#ifdef USE_CLOSE_FLOAT_COMPARISON
   _shared    ( LessVector ( CloseFloat() ) ),
-#else
-  _shared    (),
-#endif
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
@@ -85,7 +81,8 @@ TriangleSet::TriangleSet() : BaseClass(),
   _bbox      (),
   _factory   ( new Factory ),
   _blocks    ( 0x0 ),
-  _progress  ( 0, 1 )
+  _progress  ( 0, 1 ),
+  _color     ( new ColorFunctor )
 {
 #ifdef _MSC_VER
   // Keeping tabs on memory consumption...
@@ -509,6 +506,12 @@ void TriangleSet::updateBounds ( const osg::Vec3f &v )
 //
 //  Make the shared vertex.
 //
+//  TODO
+//  Figure out what the problem is here... std::map::find fails but 
+//  std::map::insert returns existing element... why? This creates 
+//  problems because different osg::Vec3f end up becoming the same 
+//  SharedVertex, which makes a degenerate triangle.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
@@ -540,7 +543,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
   {
     // Append to sequence of vertices and colors.
     _vertices->push_back ( v );
-    _colorsV->push_back ( Detail::_defaultPerVertexColor );
+    _colorsV->push_back ( this->color ( sv ) );
   }
 
   // In rare cases, insertion fails even though the "find" above was 
@@ -849,13 +852,9 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
   // Purge all shared-vertices that do not have any triangles.
   {
     this->_setStatusBar ( "Purging Shared Vertices..." );
-#ifdef USE_CLOSE_FLOAT_COMPARISON
     CloseFloat closeFloatPred;
     LessVector lessVectorPred ( closeFloatPred );
     SharedVertices shared ( lessVectorPred );
-#else
-    SharedVertices shared;
-#endif
     for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
     {
       if ( i->second->numTriangles() > 0 )
@@ -1349,7 +1348,7 @@ void TriangleSet::_updateColorsV()
 
   // Make room.
   const unsigned int numVertices ( _shared.size() );
-  _colorsV->resize ( numVertices, Detail::_defaultPerVertexColor );
+  _colorsV->resize ( numVertices, OsgTools::Triangles::DEFAULT_COLOR );
 
   // Loop through the shared vertices and update the colors.
   for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
@@ -1380,7 +1379,7 @@ void TriangleSet::_updateColorV ( SharedVertex *sv )
 
   // Update the color.
   osg::Vec4f &c = _colorsV->at ( sv->index() );
-  c = Detail::_defaultPerVertexColor;
+  c = this->color ( sv );
 
   // No longer dirty.
   sv->dirtyColor ( false );
@@ -1699,4 +1698,32 @@ void TriangleSet::_incrementProgress ( bool state )
   this->_setProgressBar ( state, numerator, denominator );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the color for this triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4f TriangleSet::color ( const Triangle *t ) const
+{
+  return ( ( t && _color.valid() ) ? 
+           ( _color->color ( this, t ) ) : 
+           ( OsgTools::Triangles::DEFAULT_COLOR ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the color for this vertex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4f TriangleSet::color ( const SharedVertex *sv ) const
+{
+  return ( ( sv && _color.valid() ) ? 
+           ( _color->color ( this, sv ) ) : 
+           ( OsgTools::Triangles::DEFAULT_COLOR ) );
 }

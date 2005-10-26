@@ -77,8 +77,6 @@ protected:
 
   void                      _reserveTriangles ( unsigned int numTriangles );
 
-  osg::Vec4f                _triangleColor ( const TriangleSet *ts, const Triangle *t ) const;
-
 private:
 
   typedef osg::DrawElementsUInt Elements;

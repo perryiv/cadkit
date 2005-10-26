@@ -13,15 +13,7 @@
 
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Math/MinMax.h"
-#include "Usul/Math/Constants.h"
 #include "Usul/Shared/Preferences.h"
-
-//#define USE_RANDOM_COLORS
-#ifdef USE_RANDOM_COLORS
-#include "Usul/Adaptors/Random.h"
-#include "osg/Material"
-#endif
 
 using namespace OsgTools::Triangles;
 
@@ -49,17 +41,6 @@ Block::Block ( const osg::BoundingBox &box, unsigned int reserve ) : BaseClass()
 
   // The geometry gets one primitive-set.
   _geometry->addPrimitiveSet ( _elements.get() );
-
-#ifdef USE_RANDOM_COLORS
-
-  // Give the geometry a random material.
-  Usul::Adaptors::Random < float > random ( 0.2f, 0.8f );
-  osg::ref_ptr < osg::Material > mat ( new osg::Material );
-  mat->setDiffuse ( osg::Material::FRONT, osg::Vec4f ( random(), random(), random(), 1.0f ) );
-  mat->setAmbient ( osg::Material::FRONT, mat->getDiffuse ( osg::Material::FRONT ) );
-  _geometry->getOrCreateStateSet()->setAttribute ( mat.get(), osg::StateAttribute::ON );
-
-#endif
 }
 
 
@@ -111,7 +92,7 @@ void Block::addTriangle ( TriangleSet *ts, Triangle *t )
   _normalsT->push_back ( ts->triangleNormal ( t->index() ) );
 
   // Append the per-triangle color.
-  _colorsT->push_back ( this->_triangleColor ( ts, t ) );
+  _colorsT->push_back ( ts->color ( t ) );
 
   // Append the triangle to our list.
   _triangles.push_back ( t );
@@ -293,43 +274,4 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
 
   // Return the geometry.
   return _geometry.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate the color for this triangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4f Block::_triangleColor ( const TriangleSet *ts, const Triangle *t ) const
-{
-  // Get all vertices.
-  const osg::Vec3Array *vertices ( ts->vertices() );
-
-  // Get the triangle's vertices.
-  const osg::Vec3f &v0 ( vertices->at ( t->vertex0()->index() ) );
-  const osg::Vec3f &v1 ( vertices->at ( t->vertex1()->index() ) );
-  const osg::Vec3f &v2 ( vertices->at ( t->vertex2()->index() ) );
-
-  // Get the edges.
-  const Usul::Math::Vec3f e01 ( v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2] );
-  const Usul::Math::Vec3f e02 ( v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2] );
-  const Usul::Math::Vec3f e12 ( v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2] );
-
-  // Get the angles between the edges.
-  const float a0 ( e01.angle (  e02 ) );
-  const float a1 ( e01.angle ( -e02 ) );
-  const float a2 ( e12.angle (  e02 ) );
-
-  // Get the minimum angle.
-  const float angle ( Usul::Math::RAD_TO_DEG * Usul::Math::minimum ( a0, a1, a2 ) );
-  const float minAngle ( 15 );
-
-  // The two possible colors.
-  static const osg::Vec4f bad  ( 0.0f, 0.0f, 0.8f, 1.0f );
-  static const osg::Vec4f good ( 0.5f, 0.5f, 0.5f, 1.0f );
-
-  // Return rgba color.
-  return ( ( angle < minAngle ) ? bad : good );
 }

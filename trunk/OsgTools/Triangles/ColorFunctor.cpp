@@ -113,7 +113,7 @@ protected: \
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DECLARE_COLOR_FUNCTOR ( ColorFunctor, SmallAngleColorFunctor, "Angles Below 15 Degrees" );
+DECLARE_COLOR_FUNCTOR ( ColorFunctor, SmallAngleColorFunctor, "Angles <= 15 Degrees" );
 osg::Vec4f SmallAngleColorFunctor::color ( const TriangleSet *ts, const SharedVertex *sv ) const
 {
   return BaseClass::color ( ts, sv );

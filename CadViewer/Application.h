@@ -555,6 +555,7 @@ protected:
   std::vector<OsgTools::Grid*> _gridFunctors;
   bool              _textures;
   MatTransPtr       _scribeBranch;
+  bool              _autoPlacement;
 
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables

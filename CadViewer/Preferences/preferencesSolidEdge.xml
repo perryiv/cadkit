@@ -137,5 +137,10 @@
       <scribe_color>1.0 0.0 0.0 1.0</scribe_color>
       <scribe_width>4.0</scribe_width>
     </display>
+    <auto_placement>
+      <enable>true</enable>
+      <center>0.0 4.0 -5.0</center>
+      <radius>4.0</radius>
+    </auto_placement>
   </preferences>
 </cv>

@@ -267,7 +267,8 @@ Application::Application ( Args &args ) :
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true ),
-  _scribeBranch   ( new osg::MatrixTransform )
+  _scribeBranch   ( new osg::MatrixTransform ),
+  _autoPlacement  ( false )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -443,7 +444,10 @@ void Application::_init()
 
   // Set the global GL_NORMALIZE flag.
   this->normalize ( _prefs->normalizeVertexNormalsGlobal() );
-
+  
+  // Set Auto-Placement flag
+  _autoPlacement = _prefs->autoPlacement();
+  
   // Set the background color.
   const Preferences::Vec4f &bc = _prefs->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
@@ -1838,7 +1842,10 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
 {
   ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067093698u, _models.valid() );
-
+  
+  // reset this boolean
+  _autoPlacement = _prefs->autoPlacement();
+  
   // User feedback.
   this->_update ( *_msgText, "Reading model stream" );
 
@@ -1869,15 +1876,17 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     {
       // We found a match, so replace it
       std::cout << "Match found, replacing node" << std::endl;
-      node->setName ( name );
+      //matched = true;
+      _autoPlacement = false; // do not relocate model if it isn't new
+/*      node->setName ( name );
       if ( match.parent->replaceChild ( match.node, node.get() ) )
       {
         matched = true;
-      }
+      }*/
     }
 
     // Now rebuild the scribe node corresponding to the match in _models
-    if ( matched )
+/*    if ( matched )
     {
       // Replace the scribe node at the same position in _scribeBranch
       // as the replaced node was in _models, using match.modelNum
@@ -1887,13 +1896,15 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
       scribe->setWireframeLineWidth( _prefs->scribeWidth() );
       scribe->addChild ( node.get() );
       _scribeBranch->setChild ( match.modelNum, scribe.get() );
-    }
+    }*/
   }
- 
+  
+  _deleteScene(); // still delete the scene
+  
   // Otherwise, add it as a new node
   if ( !matched )
   {
-    std::cout << "No match or failed replace, adding model as new osg node" << std::endl;
+    std::cout << "Adding model as new osg node" << std::endl;
 
     // Are we supposed to set the normalize flag? We only turn it on, 
     // not off, because we want to inherit the global state.
@@ -2879,6 +2890,25 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
 
     // Call the function.
     pp->postProcessModelLoad ( filename, model );
+  }
+  
+  if ( _autoPlacement )
+  {
+    // get _models bounding sphere and translate & scale accordingly
+    const osg::BoundingSphere &sphere = _models->getBound();
+    
+    // center the models
+    osg::Matrixf autoPlaceXform;
+    
+    // scale model only, not grid
+    const float scale = _prefs->autoPlaceRadius() / sphere.radius();
+    autoPlaceXform.makeScale( scale, scale, scale );
+    _models->preMult( autoPlaceXform );
+    
+    // translate grid & model
+    const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
+    autoPlaceXform.makeTranslate( osg::Vec3 ( ac[0], ac[1], ac[2] ) - sphere.center() );
+    _navBranch->setMatrix( autoPlaceXform );
   }
 }
 

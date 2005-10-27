@@ -9,31 +9,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for setting the view matrix.
+//  Interface for getting/setting the matrix manipulator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEW_MATRIX_H_
-#define _USUL_INTERFACE_VIEW_MATRIX_H_
+#ifndef _USUL_INTERFACE_MATRIX_MANIP_H_
+#define _USUL_INTERFACE_MATRIX_MANIP_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Matrixf; class Matrixd; }
+namespace osgGA { class MatrixManipulator; }
 
 namespace Usul {
 namespace Interfaces {
 
-struct IViewMatrix : public Usul::Interfaces::IUnknown
+struct IMatrixManip : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewMatrix );
+  USUL_DECLARE_QUERY_POINTERS ( IMatrixManip );
 
   /// Id for this interface.
-  enum { IID = 1479567401u };
+  enum { IID = 2351855661u };
 
-  virtual void                 setViewMatrix ( const osg::Matrixf& ) = 0;
-  virtual void                 setViewMatrix ( const osg::Matrixd& ) = 0;
-  virtual const osg::Matrixd&  getViewMatrix (  ) const = 0;
+  virtual void                        setMatrixManip ( osgGA::MatrixManipulator * ) = 0;
+  virtual osgGA::MatrixManipulator *  getMatrixManip (  ) = 0;
 
 
 }; // class IViewMatrix
@@ -43,4 +42,4 @@ struct IViewMatrix : public Usul::Interfaces::IUnknown
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEW_MATRIX_H_
+#endif // _USUL_INTERFACE_MATRIX_MANIP_H_

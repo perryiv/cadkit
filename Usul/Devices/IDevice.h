@@ -12,7 +12,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Node; }
 
 namespace Usul {
 namespace Devices {
@@ -30,8 +29,6 @@ struct IDevice : public Usul::Interfaces::IUnknown
 
   virtual void navigating( bool ) = 0;
   virtual bool navigating() = 0;
-
-  virtual void setNode ( osg::Node* ) = 0;
 
   virtual void addButtonListener( unsigned int button, IButtonListener* ) = 0;
   virtual void addMotionListener( IMotionListener* ) = 0;

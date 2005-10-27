@@ -20,8 +20,13 @@ namespace Devices {
 class USUL_EXPORT State
 {
 public:
+  typedef std::map < unsigned int, bool > ButtonsPressed;
+  typedef ButtonsPressed::const_iterator const_iterator;
   State();
   State( float x, float y, float z );
+
+  const_iterator begin() { return _buttons.begin(); }
+  const_iterator end() { return _buttons.end(); }
 
   //TODO.  Is a button pressed and button held needed?
   bool buttonPressed ( unsigned int button ) const;
@@ -46,7 +51,7 @@ public:
   unsigned int rootY() const;
 
 private:
-  typedef std::map < unsigned int, bool > ButtonsPressed;
+  
 
   ButtonsPressed _buttons;
   float _x;

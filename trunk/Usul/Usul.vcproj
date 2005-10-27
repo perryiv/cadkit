@@ -496,6 +496,9 @@
 						RelativePath=".\Interfaces\IGroup.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IMatrixManip.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\IOpenSceneGraph.h">
 					</File>
 					<File
@@ -515,6 +518,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITrackball.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IViewMatrix.h">
 					</File>
 				</Filter>
 				<Filter

@@ -74,7 +74,6 @@ public:
   typedef osg::ref_ptr < osg::Vec3Array > VerticesPtr;
   typedef osg::ref_ptr < osg::Vec3Array > NormalsPtr;
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
-  typedef std::pair < NormalsPtr, NormalsPtr > Normals;
   typedef Blocks::ValidAccessRefPtr BlocksPtr;
   typedef std::vector < unsigned int > Indices;
   typedef std::pair < unsigned int, unsigned int > Progress;
@@ -255,17 +254,10 @@ protected:
   // Use reference counting.
   virtual ~TriangleSet();
 
-  void                    _addToPartitionAndPerVertexNormals ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, Triangle *t, const osg::Vec3f &n );
-
-  void                    _colorsPerVertex ( osg::Vec4Array *n );
-
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
 
   void                    _incrementProgress ( bool state );
   InsertResult            _insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv );
-
-  void                    _normalsPerTriangle ( osg::Vec3Array *n );
-  void                    _normalsPerVertex   ( osg::Vec3Array *n );
 
   void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
   void                    _setStatusBar ( const std::string &text );
@@ -282,7 +274,7 @@ private:
   // Possible dirty flags.
   struct Dirty
   {
-    enum DIRTY_FLAGS
+    enum DirtyFlags
     {
       NORMALS_V = 0x00000001,
       COLORS_V  = 0x00000002,
@@ -293,7 +285,8 @@ private:
   SharedVertices _shared;
   TriangleVector _triangles;
   VerticesPtr _vertices;
-  Normals _normals;
+  NormalsPtr _normalsV;
+  NormalsPtr _normalsT;
   ColorsPtr _colorsV;
   unsigned int _flags;
   osg::BoundingBox _bbox;

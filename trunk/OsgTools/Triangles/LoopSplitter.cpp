@@ -21,6 +21,7 @@
 
 using namespace OsgTools::Triangles;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Useful typedefs.
@@ -53,7 +54,7 @@ namespace Detail
       
       unsigned int index ( iter - loop.begin() );
 
-      fixedLoop.push_back(*iter);
+      fixedLoop.append(*iter);
       
       if ( start != index && stop != index ) 
       {
@@ -660,7 +661,7 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
    // std::cout << "[ " << startIndex << ", " << stopIndex << " ]" << std::endl;
     UsedIndices local;
     
-    fixedLoop.push_back(sv); //Add the corner point to the loop
+    fixedLoop.append(sv); //Add the corner point to the loop
 
     if ( Detail::buildLoop( loop, fixedLoop, startIndex, stopIndex, transitionPoints, local ) )
     {
@@ -670,7 +671,7 @@ void LoopSplitter::_tripleEdge( const OsgTools::Triangles::Loop& loop, EdgeMap &
     {
       local.clear();
       fixedLoop.clear();
-      fixedLoop.push_back(sv); //Add the corner point to the loop first
+      fixedLoop.append(sv); //Add the corner point to the loop first
       // try it again with opposite starting points.
       if ( false == Detail::buildLoop( loop, fixedLoop, stopIndex, startIndex, transitionPoints, local ) )
         throw std::runtime_error ("Cannot split this loop." );

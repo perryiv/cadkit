@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="foxdlld-1.4.lib"
-				OutputFile="$(OSG_FOX_LIB_DIR)/FoxToolsd.dll"
+				OutputFile="$(USUL_LIB_DIR)/FoxToolsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
@@ -114,7 +114,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="foxdll-1.4.lib"
-				OutputFile="$(OSG_FOX_LIB_DIR)/FoxTools.dll"
+				OutputFile="$(USUL_LIB_DIR)/FoxTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"

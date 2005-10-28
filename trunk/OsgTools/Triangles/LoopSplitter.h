@@ -22,6 +22,11 @@ namespace Detail { struct Edge; }
 #include <vector>
 #include <list>
 
+
+namespace OsgTools {
+namespace Triangles {
+
+
 class OSG_TOOLS_EXPORT LoopSplitter
 {
   public:
@@ -122,6 +127,10 @@ class OSG_TOOLS_EXPORT LoopSplitter
     osg::BoundingBox _boundBox;
     Usul::Interfaces::IUnknown::ValidAccessQueryPtr  _caller;
 };
+
+
+} // namespace Triangles
+} // namespace OsgTools
 
 
 #endif //__LOOP_SPLITTER_H__

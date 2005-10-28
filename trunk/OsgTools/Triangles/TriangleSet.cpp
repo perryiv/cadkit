@@ -78,7 +78,8 @@ TriangleSet::TriangleSet() : BaseClass(),
   _shared    ( LessVector ( CloseFloat() ) ),
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
-  _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
+  _normalsV  ( new osg::Vec3Array ),
+  _normalsT  ( new osg::Vec3Array ),
   _colorsV   ( new osg::Vec4Array ),
   _flags     ( Dirty::NORMALS_V | Dirty::COLORS_V | Dirty::BLOCKS ),
   _bbox      (),
@@ -350,7 +351,7 @@ void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVert
   // Append it to the list.
   _triangles.push_back ( t.get() );
 
-  // Add normal vector.
+  // Add normal vector for this triangle. We have to add this now.
   this->normalsT()->push_back ( n );
 
   // Update the bounds.
@@ -359,7 +360,7 @@ void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVert
   // Set triangle's flag if appropriate.
   t->problem ( sv0->problem() || sv1->problem() || sv2->problem() );
 
-  // If we supposed to update everything now...
+  // If we are supposed to update everything now...
   if ( update )
     this->_updateDependencies ( t );
 
@@ -406,10 +407,6 @@ void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
   t->vertex1()->removeTriangle ( t );
   t->vertex2()->removeTriangle ( t );
 
-  // Depending on the reference count, it may not delete here, so make sure 
-  // the triangle does not have any vertices.
-  t->clear();
-
   // Need to update these.
   this->dirtyNormalsV ( true );
   this->dirtyColorsV ( true );
@@ -417,6 +414,9 @@ void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
   t->vertex0()->dirtyColor ( true );
   t->vertex1()->dirtyColor ( true );
   t->vertex2()->dirtyColor ( true );
+
+  // Remove references to help it get deleted.
+  t->clear();
 }
 
 
@@ -511,10 +511,11 @@ void TriangleSet::updateBounds ( const osg::Vec3f &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
+SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
 {
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _normalsV->size() );
   USUL_ASSERT ( _shared.size() == _colorsV->size() );
 
   // Look for an existing shared vertex if we are supposed to.
@@ -527,6 +528,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _normalsV->size() );
   USUL_ASSERT ( _shared.size() == _colorsV->size() );
 
   // If we get to here then make shared vertex with proper index.
@@ -538,9 +540,21 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
   // If insertion worked (and it should have).
   if ( true == result.second )
   {
-    // Append to sequence of vertices and colors.
+    // Append to sequence.
     _vertices->push_back ( v );
-    _colorsV->push_back ( this->color ( sv ) );
+
+    // Add dummy normal value because this keeps the vector sizes consistant, 
+    // and prevents accessing values off the end. We don't want to add the 
+    // real value because this requires averaging the normals from all the 
+    // triangles that contain this vector, which is expensive.
+    _normalsV->push_back ( OsgTools::Triangles::DEFAULT_NORMAL );
+
+    // For similar reasons as above, add default color.
+    _colorsV->push_back ( OsgTools::Triangles::DEFAULT_COLOR );
+
+    // Set appropriate dirty-flags.
+    sv->dirtyColor  ( true );
+    sv->dirtyNormal ( true );
   }
 
   // In rare cases, insertion fails even though the "find" above was 
@@ -566,6 +580,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
 
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
+  USUL_ASSERT ( _shared.size() == _normalsV->size() );
   USUL_ASSERT ( _shared.size() == _colorsV->size() );
 
   // Return the new shared vertex.
@@ -750,7 +765,7 @@ void TriangleSet::checkStatus() const
 {
   USUL_ERROR_CHECKER ( _shared.size() == _vertices->size() );
   USUL_ERROR_CHECKER ( _shared.size() == _colorsV->size() );
-  USUL_ERROR_CHECKER ( _shared.size() == this->normalsV()->size() );
+  USUL_ERROR_CHECKER ( _shared.size() == _normalsV->size() );
 
   // Check every triangle's vertices.
   {
@@ -823,7 +838,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
 {
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _colorsV->size() );
-  USUL_ASSERT ( _shared.size() == this->normalsV()->size() );
+  USUL_ASSERT ( _shared.size() == _normalsV->size() );
 
   // Handle trivial case.
   if ( keepers.size() == _triangles.size() )
@@ -880,7 +895,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
       this->_incrementProgress ( update() );
     }
     _triangles.swap ( triangles ); // Important!
-    this->_normalsPerTriangle ( normalsT.get() );
+    _normalsT = normalsT.get();
     USUL_ASSERT ( keepers.size() == _triangles.size() );
     USUL_ASSERT ( keepers.size() == this->normalsT()->size() );
   }
@@ -933,8 +948,8 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
       this->updateBounds ( v );
       this->_incrementProgress ( update() );
     }
-    this->_normalsPerVertex ( normalsV.get() ); // Important!
-    this->_colorsPerVertex ( colors.get() );    // Important!
+    _normalsV = normalsV.get(); // Important!
+    _colorsV = colors.get();    // Important!
     this->dirtyNormalsV ( false );
     this->dirtyColorsV ( false );
   }
@@ -1130,25 +1145,13 @@ osg::Vec4Array *TriangleSet::colorsV()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the container of colors. Use with caution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::_colorsPerVertex ( osg::Vec4Array *c )
-{
-  _colorsV = c;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Access the container of normals. Use with caution.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 const osg::Vec3Array *TriangleSet::normalsT() const
 {
-  return _normals.second.get();
+  return _normalsT.get();
 }
 
 
@@ -1160,19 +1163,7 @@ const osg::Vec3Array *TriangleSet::normalsT() const
 
 osg::Vec3Array *TriangleSet::normalsT()
 {
-  return _normals.second.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the container of normals. Use with caution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::_normalsPerTriangle ( osg::Vec3Array *n )
-{
-  _normals.second = n;
+  return _normalsT.get();
 }
 
 
@@ -1184,7 +1175,7 @@ void TriangleSet::_normalsPerTriangle ( osg::Vec3Array *n )
 
 const osg::Vec3Array *TriangleSet::normalsV() const
 {
-  return _normals.first.get();
+  return _normalsV.get();
 }
 
 
@@ -1196,19 +1187,7 @@ const osg::Vec3Array *TriangleSet::normalsV() const
 
 osg::Vec3Array *TriangleSet::normalsV()
 {
-  return _normals.first.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the container of normals. Use with caution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::_normalsPerVertex ( osg::Vec3Array *n )
-{
-  _normals.first = n;
+  return _normalsV.get();
 }
 
 
@@ -1721,17 +1700,17 @@ void TriangleSet::purge()
   }
 
   // Purge normals.
-  if ( _normals.first.valid() && false == _normals.first->empty() )
+  if ( _normalsV.valid() && false == _normalsV->empty() )
   {
-    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *(_normals.first) ) );
-    _normals.first = temp;
+    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *_normalsV ) );
+    _normalsV = temp;
   }
 
   // Purge other normals.
-  if ( _normals.second.valid() && false == _normals.second->empty() )
+  if ( _normalsT.valid() && false == _normalsT->empty() )
   {
-    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *(_normals.second) ) );
-    _normals.second = temp;
+    osg::ref_ptr < osg::Vec3Array > temp ( new osg::Vec3Array ( *_normalsT ) );
+    _normalsT = temp;
   }
 
   // Purge per-vertex colors.

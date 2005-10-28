@@ -31,8 +31,15 @@ struct IMatrixManip : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2351855661u };
 
-  virtual void                        setMatrixManip ( osgGA::MatrixManipulator * ) = 0;
-  virtual osgGA::MatrixManipulator *  getMatrixManip (  ) = 0;
+  enum ManipTypes
+  {
+    TRACKBALL,
+    FLIGHT,
+    DRIVE
+  };
+
+  virtual void                        setMatrixManip ( ManipTypes type ) = 0;
+  virtual osgGA::MatrixManipulator *  getMatrixManip ( ManipTypes type ) = 0;
 
 
 }; // class IViewMatrix

@@ -26,7 +26,6 @@
 #include "OsgTools/Triangles/Triangle.h"
 #include "OsgTools/Triangles/Factory.h"
 #include "OsgTools/Triangles/Blocks.h"
-#include "OsgTools/Triangles/ColorFunctor.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -46,6 +45,11 @@
 namespace osgUtil { class Hit; }
 namespace osg { class Node; class Group; }
 
+// Figure out what the problem is here... std::map::find fails but 
+// std::map::insert returns existing element... why? This creates 
+// problems because different osg::Vec3f end up becoming the same 
+// SharedVertex, which makes a degenerate triangle.
+#define USE_CLOSE_FLOAT_COMPARISON
 
 namespace OsgTools {
 namespace Triangles {
@@ -59,9 +63,13 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef std::pair < osg::Vec3f, SharedVertex::ValidAccessRefPtr > KeyValuePair;
 
-  // The comparison predicate.
+  // Switch on/off the comparison predicate.
+  #ifdef USE_CLOSE_FLOAT_COMPARISON
   typedef Usul::Predicates::CloseFloat < float > CloseFloat;
   typedef Usul::Predicates::LessVector < CloseFloat, 3 > LessVector;
+  #else
+  typedef std::less < KeyValuePair::first_type > LessVector;
+  #endif
 
   // Remaining typedefs.
   typedef std::map < KeyValuePair::first_type, KeyValuePair::second_type, LessVector > SharedVertices;
@@ -105,14 +113,6 @@ public:
 
   // Clear existing data.
   void                    clear ( Unknown *caller = 0x0 );
-
-  // Return the color.
-  osg::Vec4f              color ( const Triangle *t ) const;
-  osg::Vec4f              color ( const SharedVertex *t ) const;
-
-  // Set/get the color functor.
-  void                    colorFunctor ( ColorFunctor * );
-  ColorFunctor *          colorFunctor() const;
 
   // Access the container of colors. Use with caution.
   const osg::Vec4Array *  colorsV()  const;
@@ -158,6 +158,7 @@ public:
 
   // Keep only these triangles
   void                    keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller );
+  void                    createSubset (const Indices &keepers, TriangleSet *triSet, Usul::Interfaces::IUnknown *caller );
 
   // Return a new shared vertex or triangle.
   SharedVertex *          newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
@@ -245,6 +246,8 @@ protected:
   // Use reference counting.
   virtual ~TriangleSet();
 
+  void                    _addToPartitionAndPerVertexNormals ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, Triangle *t, const osg::Vec3f &n );
+
   void                    _colorsPerVertex ( osg::Vec4Array *n );
 
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
@@ -278,9 +281,9 @@ private:
     };
   };
 
-  SharedVertices _shared;
-  TriangleVector _triangles;
-  VerticesPtr _vertices;
+  SharedVertices _shared;  //Map
+  TriangleVector _triangles; //Std::Vector <Triangle>
+  VerticesPtr _vertices; //Osg::Vec3Array
   Normals _normals;
   ColorsPtr _colorsV;
   unsigned int _flags;
@@ -288,7 +291,6 @@ private:
   FactoryPtr _factory;
   BlocksPtr _blocks;
   Progress _progress;
-  ColorFunctor::RefPtr _color;
 };
 
 

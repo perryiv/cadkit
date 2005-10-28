@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/TriangleSet.h"
-#include "OsgTools/Triangles/Constants.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/HasOption.h"
 
@@ -32,6 +31,7 @@
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Types/Types.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -40,7 +40,7 @@
 #include "osg/Geometry"
 #include "osg/Vec4"
 #include "osg/StateSet"
-#include "osg/Material"
+#include "osg/AlphaFunc"
 
 #include <algorithm>
 #include <numeric>
@@ -48,6 +48,7 @@
 #include <limits>
 
 using namespace OsgTools::Triangles;
+using namespace Usul::Types;
 
 USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 
@@ -60,6 +61,7 @@ USUL_IMPLEMENT_TYPE_ID ( TriangleSet );
 
 namespace Detail
 {
+  const osg::Vec4f _defaultPerVertexColor ( 0.5f, 0.5f, 0.5f, 1.0f );
   const unsigned int _milliseconds ( 250 );
   const unsigned int _averageTrianglesPerBlock ( 5000 );
 }
@@ -72,7 +74,11 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
+#ifdef USE_CLOSE_FLOAT_COMPARISON
   _shared    ( LessVector ( CloseFloat() ) ),
+#else
+  _shared    (),
+#endif
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normals   ( new osg::Vec3Array, new osg::Vec3Array ),
@@ -81,8 +87,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _bbox      (),
   _factory   ( new Factory ),
   _blocks    ( 0x0 ),
-  _progress  ( 0, 1 ),
-  _color     ( new ColorFunctor )
+  _progress  ( 0, 1 )
 {
 #ifdef _MSC_VER
   // Keeping tabs on memory consumption...
@@ -403,10 +408,6 @@ void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
   t->vertex1()->removeTriangle ( t );
   t->vertex2()->removeTriangle ( t );
 
-  // Depending on the reference count, it may not delete here, so make sure 
-  // the triangle does not have any vertices.
-  t->clear();
-
   // Need to update these.
   this->dirtyNormalsV ( true );
   this->dirtyColorsV ( true );
@@ -414,6 +415,10 @@ void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
   t->vertex0()->dirtyColor ( true );
   t->vertex1()->dirtyColor ( true );
   t->vertex2()->dirtyColor ( true );
+  
+  // Depending on the reference count, it may not delete here, so make sure 
+  // the triangle does not have any vertices.
+  t->clear();
 }
 
 
@@ -506,12 +511,6 @@ void TriangleSet::updateBounds ( const osg::Vec3f &v )
 //
 //  Make the shared vertex.
 //
-//  TODO
-//  Figure out what the problem is here... std::map::find fails but 
-//  std::map::insert returns existing element... why? This creates 
-//  problems because different osg::Vec3f end up becoming the same 
-//  SharedVertex, which makes a degenerate triangle.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
@@ -543,7 +542,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f& v, bool look )
   {
     // Append to sequence of vertices and colors.
     _vertices->push_back ( v );
-    _colorsV->push_back ( this->color ( sv ) );
+    _colorsV->push_back ( Detail::_defaultPerVertexColor );
   }
 
   // In rare cases, insertion fails even though the "find" above was 
@@ -852,9 +851,13 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
   // Purge all shared-vertices that do not have any triangles.
   {
     this->_setStatusBar ( "Purging Shared Vertices..." );
+#ifdef USE_CLOSE_FLOAT_COMPARISON
     CloseFloat closeFloatPred;
     LessVector lessVectorPred ( closeFloatPred );
     SharedVertices shared ( lessVectorPred );
+#else
+    SharedVertices shared;
+#endif
     for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
     {
       if ( i->second->numTriangles() > 0 )
@@ -943,6 +946,28 @@ void TriangleSet::removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown 
 
   // We do this because keeping is faster than removing.
   this->keepTriangles ( keepers, caller );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new TriangleSet that contains only the triangles listed in 
+//   keepers
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::createSubset ( const Indices &keepers, TriangleSet *triSet, Usul::Interfaces::IUnknown *caller )
+{
+    Uint32 numKeepers = keepers.size();
+    //TriangleSet triSet; //Create a new TriangleSet Object
+    for ( unsigned int i = 0; i < numKeepers; ++i )
+    {
+        // Push the triangle on to the new sequence.
+        Triangle::ValidRefPtr t ( _triangles.at ( keepers[i] ) );
+        //Add this triangle to the new TriangleSet
+       // SharedVertex *sv0 = new SharedVertex(t->vertex0() );
+        triSet->addTriangle( t->vertex0(), t->vertex1(), t->vertex2(), this->normalsT()->at ( keepers[i] )  , false);
+    }
+    //return triSet;
 }
 
 
@@ -1171,7 +1196,7 @@ void TriangleSet::dirtyNormalsV ( bool state )
 
 bool TriangleSet::dirtyNormalsV() const
 {
-  return Usul::Bits::has ( _flags, Dirty::NORMALS_V );
+    return Usul::Bits::has ( _flags, Dirty::NORMALS_V );
 }
 
 
@@ -1348,7 +1373,7 @@ void TriangleSet::_updateColorsV()
 
   // Make room.
   const unsigned int numVertices ( _shared.size() );
-  _colorsV->resize ( numVertices, OsgTools::Triangles::DEFAULT_COLOR );
+  _colorsV->resize ( numVertices, Detail::_defaultPerVertexColor );
 
   // Loop through the shared vertices and update the colors.
   for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
@@ -1379,7 +1404,7 @@ void TriangleSet::_updateColorV ( SharedVertex *sv )
 
   // Update the color.
   osg::Vec4f &c = _colorsV->at ( sv->index() );
-  c = this->color ( sv );
+  c = Detail::_defaultPerVertexColor;
 
   // No longer dirty.
   sv->dirtyColor ( false );
@@ -1698,32 +1723,4 @@ void TriangleSet::_incrementProgress ( bool state )
   this->_setProgressBar ( state, numerator, denominator );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate the color for this triangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4f TriangleSet::color ( const Triangle *t ) const
-{
-  return ( ( t && _color.valid() ) ? 
-           ( _color->color ( this, t ) ) : 
-           ( OsgTools::Triangles::DEFAULT_COLOR ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate the color for this vertex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4f TriangleSet::color ( const SharedVertex *sv ) const
-{
-  return ( ( sv && _color.valid() ) ? 
-           ( _color->color ( this, sv ) ) : 
-           ( OsgTools::Triangles::DEFAULT_COLOR ) );
 }

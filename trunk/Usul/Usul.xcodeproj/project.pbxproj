@@ -9,6 +9,16 @@
 /* Begin PBXBuildFile section */
 		43137FFB088DF1DE00FE58B9 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43137FF9088DF1DE00FE58B9 /* Color.cpp */; };
 		43137FFC088DF1DE00FE58B9 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 43137FFA088DF1DE00FE58B9 /* Color.h */; };
+		4313E430090DAB79006C228F /* IGetTriangleNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E42E090DAB79006C228F /* IGetTriangleNormal.h */; };
+		4313E431090DAB79006C228F /* IGetVertexNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E42F090DAB79006C228F /* IGetVertexNormal.h */; };
+		4313E432090DAB79006C228F /* IGetTriangleNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E42E090DAB79006C228F /* IGetTriangleNormal.h */; };
+		4313E433090DAB79006C228F /* IGetVertexNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E42F090DAB79006C228F /* IGetVertexNormal.h */; };
+		4313E437090DAB95006C228F /* Block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E435090DAB95006C228F /* Block.h */; };
+		4313E438090DAB95006C228F /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E436090DAB95006C228F /* Pool.h */; };
+		4313E439090DAB95006C228F /* Block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E435090DAB95006C228F /* Block.h */; };
+		4313E43A090DAB95006C228F /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E436090DAB95006C228F /* Pool.h */; };
+		4313E43C090DABA5006C228F /* Increment.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E43B090DABA5006C228F /* Increment.h */; };
+		4313E43D090DABA5006C228F /* Increment.h in Headers */ = {isa = PBXBuildFile; fileRef = 4313E43B090DABA5006C228F /* Increment.h */; };
 		431BAF350895337000126128 /* ConvexHullSort.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF340895337000126128 /* ConvexHullSort.h */; };
 		431BAF370895337A00126128 /* Angle.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF360895337A00126128 /* Angle.h */; };
 		431BAF390895338600126128 /* CompareCoordinate.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAF380895338600126128 /* CompareCoordinate.h */; };
@@ -306,6 +316,40 @@
 		43265E0E08E48DDD0020C22F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB0B00895603900126128 /* OpenGL.framework */; };
 		432FBA80089E78E7000D01F5 /* Clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 432FBA7E089E78E7000D01F5 /* Clock.h */; };
 		432FBA81089E78E7000D01F5 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 432FBA7F089E78E7000D01F5 /* Clock.cpp */; };
+		4346A4680907DD4000D1A120 /* BaseDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A45B0907DD3F00D1A120 /* BaseDevice.cpp */; };
+		4346A4690907DD4000D1A120 /* BaseDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45C0907DD3F00D1A120 /* BaseDevice.h */; };
+		4346A46A0907DD4000D1A120 /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A45D0907DD4000D1A120 /* Factory.cpp */; };
+		4346A46B0907DD4000D1A120 /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45E0907DD4000D1A120 /* Factory.h */; };
+		4346A46C0907DD4000D1A120 /* IButtonListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45F0907DD4000D1A120 /* IButtonListener.h */; };
+		4346A46D0907DD4000D1A120 /* IDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4600907DD4000D1A120 /* IDevice.h */; };
+		4346A46E0907DD4000D1A120 /* IDeviceCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4610907DD4000D1A120 /* IDeviceCreate.h */; };
+		4346A46F0907DD4000D1A120 /* IKeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4620907DD4000D1A120 /* IKeyboardDevice.h */; };
+		4346A4700907DD4000D1A120 /* IKeyListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4630907DD4000D1A120 /* IKeyListener.h */; };
+		4346A4710907DD4000D1A120 /* IMotionListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4640907DD4000D1A120 /* IMotionListener.h */; };
+		4346A4720907DD4000D1A120 /* Keys.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4650907DD4000D1A120 /* Keys.h */; };
+		4346A4730907DD4000D1A120 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A4660907DD4000D1A120 /* State.cpp */; };
+		4346A4740907DD4000D1A120 /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4670907DD4000D1A120 /* State.h */; };
+		4346A4750907DD4000D1A120 /* BaseDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A45B0907DD3F00D1A120 /* BaseDevice.cpp */; };
+		4346A4760907DD4000D1A120 /* BaseDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45C0907DD3F00D1A120 /* BaseDevice.h */; };
+		4346A4770907DD4000D1A120 /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A45D0907DD4000D1A120 /* Factory.cpp */; };
+		4346A4780907DD4000D1A120 /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45E0907DD4000D1A120 /* Factory.h */; };
+		4346A4790907DD4000D1A120 /* IButtonListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A45F0907DD4000D1A120 /* IButtonListener.h */; };
+		4346A47A0907DD4000D1A120 /* IDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4600907DD4000D1A120 /* IDevice.h */; };
+		4346A47B0907DD4000D1A120 /* IDeviceCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4610907DD4000D1A120 /* IDeviceCreate.h */; };
+		4346A47C0907DD4000D1A120 /* IKeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4620907DD4000D1A120 /* IKeyboardDevice.h */; };
+		4346A47D0907DD4000D1A120 /* IKeyListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4630907DD4000D1A120 /* IKeyListener.h */; };
+		4346A47E0907DD4000D1A120 /* IMotionListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4640907DD4000D1A120 /* IMotionListener.h */; };
+		4346A47F0907DD4000D1A120 /* Keys.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4650907DD4000D1A120 /* Keys.h */; };
+		4346A4800907DD4000D1A120 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4346A4660907DD4000D1A120 /* State.cpp */; };
+		4346A4810907DD4000D1A120 /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4670907DD4000D1A120 /* State.h */; };
+		4346A4840907DD5800D1A120 /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4830907DD5800D1A120 /* Constants.h */; };
+		4346A4850907DD5800D1A120 /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4830907DD5800D1A120 /* Constants.h */; };
+		4346A48A0907DD7F00D1A120 /* IFoxWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4870907DD7F00D1A120 /* IFoxWindow.h */; };
+		4346A48B0907DD7F00D1A120 /* IUpdateGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4880907DD7F00D1A120 /* IUpdateGUI.h */; };
+		4346A48C0907DD7F00D1A120 /* IViewMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4890907DD7F00D1A120 /* IViewMatrix.h */; };
+		4346A48D0907DD7F00D1A120 /* IFoxWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4870907DD7F00D1A120 /* IFoxWindow.h */; };
+		4346A48E0907DD7F00D1A120 /* IUpdateGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4880907DD7F00D1A120 /* IUpdateGUI.h */; };
+		4346A48F0907DD7F00D1A120 /* IViewMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4346A4890907DD7F00D1A120 /* IViewMatrix.h */; };
 		436671C30890783900B2F004 /* IFlipNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C00890783900B2F004 /* IFlipNormal.h */; };
 		436671C40890783900B2F004 /* IGetBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C10890783900B2F004 /* IGetBoundingBox.h */; };
 		436671C50890783900B2F004 /* ITriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C20890783900B2F004 /* ITriangle.h */; };
@@ -569,6 +613,10 @@
 		43992E87087ED8DD002E5D22 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D86087ED8DC002E5D22 /* Types.cpp */; };
 		43992E88087ED8DD002E5D22 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D87087ED8DC002E5D22 /* Types.h */; };
 		43BE6CD108D653DF00B947A2 /* IAxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43BE6CD008D653DF00B947A2 /* IAxes.h */; };
+		43CB704C090E85D9004D0D65 /* Remove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43CB704A090E85D9004D0D65 /* Remove.cpp */; };
+		43CB704D090E85D9004D0D65 /* Remove.h in Headers */ = {isa = PBXBuildFile; fileRef = 43CB704B090E85D9004D0D65 /* Remove.h */; };
+		43CB704E090E85D9004D0D65 /* Remove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43CB704A090E85D9004D0D65 /* Remove.cpp */; };
+		43CB704F090E85D9004D0D65 /* Remove.h in Headers */ = {isa = PBXBuildFile; fileRef = 43CB704B090E85D9004D0D65 /* Remove.h */; };
 		43D577B208BCC46900493C0A /* ITriangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D577B108BCC46900493C0A /* ITriangulate.h */; };
 		43DA18B408832CE00046E5BA /* IMaterialEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B308832CE00046E5BA /* IMaterialEditor.h */; };
 		43DA18B908832D3B0046E5BA /* IBuildSceneVtk.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */; };
@@ -608,6 +656,11 @@
 /* Begin PBXFileReference section */
 		43137FF9088DF1DE00FE58B9 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		43137FFA088DF1DE00FE58B9 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
+		4313E42E090DAB79006C228F /* IGetTriangleNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IGetTriangleNormal.h; sourceTree = "<group>"; };
+		4313E42F090DAB79006C228F /* IGetVertexNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IGetVertexNormal.h; sourceTree = "<group>"; };
+		4313E435090DAB95006C228F /* Block.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Block.h; sourceTree = "<group>"; };
+		4313E436090DAB95006C228F /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Pool.h; sourceTree = "<group>"; };
+		4313E43B090DABA5006C228F /* Increment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Increment.h; sourceTree = "<group>"; };
 		431BAF340895337000126128 /* ConvexHullSort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConvexHullSort.h; sourceTree = "<group>"; };
 		431BAF360895337A00126128 /* Angle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Angle.h; sourceTree = "<group>"; };
 		431BAF380895338600126128 /* CompareCoordinate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompareCoordinate.h; sourceTree = "<group>"; };
@@ -623,6 +676,23 @@
 		43265BDD08E48C430020C22F /* Framework-info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Framework-info.plist"; sourceTree = "<group>"; };
 		432FBA7E089E78E7000D01F5 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		432FBA7F089E78E7000D01F5 /* Clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
+		4346A45B0907DD3F00D1A120 /* BaseDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = BaseDevice.cpp; sourceTree = "<group>"; };
+		4346A45C0907DD3F00D1A120 /* BaseDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = BaseDevice.h; sourceTree = "<group>"; };
+		4346A45D0907DD4000D1A120 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Factory.cpp; sourceTree = "<group>"; };
+		4346A45E0907DD4000D1A120 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Factory.h; sourceTree = "<group>"; };
+		4346A45F0907DD4000D1A120 /* IButtonListener.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IButtonListener.h; sourceTree = "<group>"; };
+		4346A4600907DD4000D1A120 /* IDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IDevice.h; sourceTree = "<group>"; };
+		4346A4610907DD4000D1A120 /* IDeviceCreate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IDeviceCreate.h; sourceTree = "<group>"; };
+		4346A4620907DD4000D1A120 /* IKeyboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IKeyboardDevice.h; sourceTree = "<group>"; };
+		4346A4630907DD4000D1A120 /* IKeyListener.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IKeyListener.h; sourceTree = "<group>"; };
+		4346A4640907DD4000D1A120 /* IMotionListener.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IMotionListener.h; sourceTree = "<group>"; };
+		4346A4650907DD4000D1A120 /* Keys.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Keys.h; sourceTree = "<group>"; };
+		4346A4660907DD4000D1A120 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = State.cpp; sourceTree = "<group>"; };
+		4346A4670907DD4000D1A120 /* State.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = State.h; sourceTree = "<group>"; };
+		4346A4830907DD5800D1A120 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		4346A4870907DD7F00D1A120 /* IFoxWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IFoxWindow.h; sourceTree = "<group>"; };
+		4346A4880907DD7F00D1A120 /* IUpdateGUI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IUpdateGUI.h; sourceTree = "<group>"; };
+		4346A4890907DD7F00D1A120 /* IViewMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IViewMatrix.h; sourceTree = "<group>"; };
 		436671C00890783900B2F004 /* IFlipNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IFlipNormal.h; sourceTree = "<group>"; };
 		436671C10890783900B2F004 /* IGetBoundingBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IGetBoundingBox.h; sourceTree = "<group>"; };
 		436671C20890783900B2F004 /* ITriangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ITriangle.h; sourceTree = "<group>"; };
@@ -886,6 +956,8 @@
 		43992D86087ED8DC002E5D22 /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Types.cpp; path = Types/Types.cpp; sourceTree = SOURCE_ROOT; };
 		43992D87087ED8DC002E5D22 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = Types/Types.h; sourceTree = SOURCE_ROOT; };
 		43BE6CD008D653DF00B947A2 /* IAxes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IAxes.h; sourceTree = "<group>"; };
+		43CB704A090E85D9004D0D65 /* Remove.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Remove.cpp; sourceTree = "<group>"; };
+		43CB704B090E85D9004D0D65 /* Remove.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Remove.h; sourceTree = "<group>"; };
 		43D577B108BCC46900493C0A /* ITriangulate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITriangulate.h; sourceTree = "<group>"; };
 		43DA18B308832CE00046E5BA /* IMaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMaterialEditor.h; path = Interfaces/IMaterialEditor.h; sourceTree = SOURCE_ROOT; };
 		43DA18B508832D3B0046E5BA /* IBuildSceneVtk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IBuildSceneVtk.h; path = Interfaces/IBuildSceneVtk.h; sourceTree = SOURCE_ROOT; };
@@ -941,6 +1013,7 @@
 				43992C76087ED8DC002E5D22 /* CommandLine */,
 				43992C7A087ED8DC002E5D22 /* Components */,
 				43992C83087ED8DC002E5D22 /* Containers */,
+				4346A45A0907DD3F00D1A120 /* Devices */,
 				43992C89087ED8DC002E5D22 /* DLL */,
 				43992C8F087ED8DC002E5D22 /* Documents */,
 				43992C95087ED8DC002E5D22 /* Endian */,
@@ -956,6 +1029,7 @@
 				43992D24087ED8DC002E5D22 /* IO */,
 				43992D28087ED8DC002E5D22 /* Loops */,
 				43992D2C087ED8DC002E5D22 /* Math */,
+				4313E434090DAB95006C228F /* Memory */,
 				43992D37087ED8DC002E5D22 /* MPL */,
 				43992D3B087ED8DC002E5D22 /* Pointers */,
 				43992D48087ED8DC002E5D22 /* Policies */,
@@ -963,6 +1037,7 @@
 				43992D4D087ED8DC002E5D22 /* Predicates */,
 				43992D53087ED8DC002E5D22 /* Print */,
 				43992D57087ED8DC002E5D22 /* Properties */,
+				4346A4820907DD5800D1A120 /* Registry */,
 				43992D59087ED8DC002E5D22 /* Resources */,
 				43992D66087ED8DC002E5D22 /* Scope */,
 				43992D68087ED8DC002E5D22 /* Shared */,
@@ -993,12 +1068,49 @@
 			path = Functions;
 			sourceTree = "<group>";
 		};
+		4313E434090DAB95006C228F /* Memory */ = {
+			isa = PBXGroup;
+			children = (
+				4313E435090DAB95006C228F /* Block.h */,
+				4313E436090DAB95006C228F /* Pool.h */,
+			);
+			path = Memory;
+			sourceTree = "<group>";
+		};
 		43265BE308E48D340020C22F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				431BB0B00895603900126128 /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4346A45A0907DD3F00D1A120 /* Devices */ = {
+			isa = PBXGroup;
+			children = (
+				4346A45B0907DD3F00D1A120 /* BaseDevice.cpp */,
+				4346A45C0907DD3F00D1A120 /* BaseDevice.h */,
+				4346A45D0907DD4000D1A120 /* Factory.cpp */,
+				4346A45E0907DD4000D1A120 /* Factory.h */,
+				4346A45F0907DD4000D1A120 /* IButtonListener.h */,
+				4346A4600907DD4000D1A120 /* IDevice.h */,
+				4346A4610907DD4000D1A120 /* IDeviceCreate.h */,
+				4346A4620907DD4000D1A120 /* IKeyboardDevice.h */,
+				4346A4630907DD4000D1A120 /* IKeyListener.h */,
+				4346A4640907DD4000D1A120 /* IMotionListener.h */,
+				4346A4650907DD4000D1A120 /* Keys.h */,
+				4346A4660907DD4000D1A120 /* State.cpp */,
+				4346A4670907DD4000D1A120 /* State.h */,
+			);
+			path = Devices;
+			sourceTree = "<group>";
+		};
+		4346A4820907DD5800D1A120 /* Registry */ = {
+			isa = PBXGroup;
+			children = (
+				4346A4830907DD5800D1A120 /* Constants.h */,
+			);
+			path = Registry;
 			sourceTree = "<group>";
 		};
 		43992C62087ED8DC002E5D22 /* Adaptors */ = {
@@ -1157,6 +1269,8 @@
 		43992CA6087ED8DC002E5D22 /* File */ = {
 			isa = PBXGroup;
 			children = (
+				43CB704A090E85D9004D0D65 /* Remove.cpp */,
+				43CB704B090E85D9004D0D65 /* Remove.h */,
 				43992CA7087ED8DC002E5D22 /* Contents.h */,
 				43992CA8087ED8DC002E5D22 /* Find.h */,
 				43992CA9087ED8DC002E5D22 /* Path.h */,
@@ -1171,6 +1285,7 @@
 		43992CAE087ED8DC002E5D22 /* Functors */ = {
 			isa = PBXGroup;
 			children = (
+				4313E43B090DABA5006C228F /* Increment.h */,
 				43992CAF087ED8DC002E5D22 /* Delete.h */,
 				43992CB0087ED8DC002E5D22 /* If.h */,
 				43992CB1087ED8DC002E5D22 /* Pair.h */,
@@ -1198,6 +1313,11 @@
 		43992CB7087ED8DC002E5D22 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				4313E42E090DAB79006C228F /* IGetTriangleNormal.h */,
+				4313E42F090DAB79006C228F /* IGetVertexNormal.h */,
+				4346A4870907DD7F00D1A120 /* IFoxWindow.h */,
+				4346A4880907DD7F00D1A120 /* IUpdateGUI.h */,
+				4346A4890907DD7F00D1A120 /* IViewMatrix.h */,
 				43BE6CD008D653DF00B947A2 /* IAxes.h */,
 				43F64A0208C6427C005F2A68 /* IAddSharedVertex.h */,
 				43887E1508B2E2250005B358 /* IGetNormal.h */,
@@ -1803,6 +1923,26 @@
 				43265CDD08E48D980020C22F /* Vector3.h in Headers */,
 				43265CDE08E48D980020C22F /* Vector4.h in Headers */,
 				43265CDF08E48D980020C22F /* Writer.h in Headers */,
+				4346A4760907DD4000D1A120 /* BaseDevice.h in Headers */,
+				4346A4780907DD4000D1A120 /* Factory.h in Headers */,
+				4346A4790907DD4000D1A120 /* IButtonListener.h in Headers */,
+				4346A47A0907DD4000D1A120 /* IDevice.h in Headers */,
+				4346A47B0907DD4000D1A120 /* IDeviceCreate.h in Headers */,
+				4346A47C0907DD4000D1A120 /* IKeyboardDevice.h in Headers */,
+				4346A47D0907DD4000D1A120 /* IKeyListener.h in Headers */,
+				4346A47E0907DD4000D1A120 /* IMotionListener.h in Headers */,
+				4346A47F0907DD4000D1A120 /* Keys.h in Headers */,
+				4346A4810907DD4000D1A120 /* State.h in Headers */,
+				4346A4850907DD5800D1A120 /* Constants.h in Headers */,
+				4346A48D0907DD7F00D1A120 /* IFoxWindow.h in Headers */,
+				4346A48E0907DD7F00D1A120 /* IUpdateGUI.h in Headers */,
+				4346A48F0907DD7F00D1A120 /* IViewMatrix.h in Headers */,
+				4313E432090DAB79006C228F /* IGetTriangleNormal.h in Headers */,
+				4313E433090DAB79006C228F /* IGetVertexNormal.h in Headers */,
+				4313E439090DAB95006C228F /* Block.h in Headers */,
+				4313E43A090DAB95006C228F /* Pool.h in Headers */,
+				4313E43D090DABA5006C228F /* Increment.h in Headers */,
+				43CB704F090E85D9004D0D65 /* Remove.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2065,6 +2205,26 @@
 				43F0E90C08CDE1F90081F87F /* EqualVector.h in Headers */,
 				43F0E90D08CDE1F90081F87F /* LessVector.h in Headers */,
 				43BE6CD108D653DF00B947A2 /* IAxes.h in Headers */,
+				4346A4690907DD4000D1A120 /* BaseDevice.h in Headers */,
+				4346A46B0907DD4000D1A120 /* Factory.h in Headers */,
+				4346A46C0907DD4000D1A120 /* IButtonListener.h in Headers */,
+				4346A46D0907DD4000D1A120 /* IDevice.h in Headers */,
+				4346A46E0907DD4000D1A120 /* IDeviceCreate.h in Headers */,
+				4346A46F0907DD4000D1A120 /* IKeyboardDevice.h in Headers */,
+				4346A4700907DD4000D1A120 /* IKeyListener.h in Headers */,
+				4346A4710907DD4000D1A120 /* IMotionListener.h in Headers */,
+				4346A4720907DD4000D1A120 /* Keys.h in Headers */,
+				4346A4740907DD4000D1A120 /* State.h in Headers */,
+				4346A4840907DD5800D1A120 /* Constants.h in Headers */,
+				4346A48A0907DD7F00D1A120 /* IFoxWindow.h in Headers */,
+				4346A48B0907DD7F00D1A120 /* IUpdateGUI.h in Headers */,
+				4346A48C0907DD7F00D1A120 /* IViewMatrix.h in Headers */,
+				4313E430090DAB79006C228F /* IGetTriangleNormal.h in Headers */,
+				4313E431090DAB79006C228F /* IGetVertexNormal.h in Headers */,
+				4313E437090DAB95006C228F /* Block.h in Headers */,
+				4313E438090DAB95006C228F /* Pool.h in Headers */,
+				4313E43C090DABA5006C228F /* Increment.h in Headers */,
+				43CB704D090E85D9004D0D65 /* Remove.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2234,6 +2394,10 @@
 				43265DE308E48DB90020C22F /* TextWindow.cpp in Sources */,
 				43265DED08E48DB90020C22F /* Typed.cpp in Sources */,
 				43265DEF08E48DB90020C22F /* Types.cpp in Sources */,
+				4346A4750907DD4000D1A120 /* BaseDevice.cpp in Sources */,
+				4346A4770907DD4000D1A120 /* Factory.cpp in Sources */,
+				4346A4800907DD4000D1A120 /* State.cpp in Sources */,
+				43CB704E090E85D9004D0D65 /* Remove.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2273,6 +2437,10 @@
 				43137FFB088DF1DE00FE58B9 /* Color.cpp in Sources */,
 				431E60E50891BC0600B1EC98 /* MenuBar.cpp in Sources */,
 				432FBA81089E78E7000D01F5 /* Clock.cpp in Sources */,
+				4346A4680907DD4000D1A120 /* BaseDevice.cpp in Sources */,
+				4346A46A0907DD4000D1A120 /* Factory.cpp in Sources */,
+				4346A4730907DD4000D1A120 /* State.cpp in Sources */,
+				43CB704C090E85D9004D0D65 /* Remove.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

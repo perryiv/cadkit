@@ -672,6 +672,45 @@ void TriangleSet::setAllUnvisited()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the triangles as visited.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::setVisited(Indices &keepers)
+{
+    Uint32 numTri = keepers.size();
+    Uint32 index = 0;
+  //Go to each triangle and it's shared vertices in the list and set the visited flag to false
+  for( index = 0; index < numTri; index++)
+  {
+      Triangle::ValidRefPtr t ( _triangles.at ( keepers[index] ) );
+      t->visited( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns the first triangle flagged as visited=FALSE or -1 if all the indices
+//   have their visited flags marked as true.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Uint32 TriangleSet::firstUnvisited() 
+{
+  for( TriangleVector::iterator i = _triangles.begin(); i != _triangles.end(); ++ i )
+  {
+    if ( (*i)->visited() == false) 
+    {
+        std::cout << "Triangle Not Visited: " << (*i)->index() << std::endl;
+       return (*i)->index();
+    }
+  }
+  return -1; //-1 works good as it is unambiguous if an index exists or not.
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Reset the on edge flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -959,7 +998,11 @@ void TriangleSet::createSubset ( const Indices &keepers, TriangleSet *triSet, Us
         Triangle::ValidRefPtr t ( _triangles.at ( keepers[i] ) );
         //Add this triangle to the new TriangleSet
        // SharedVertex *sv0 = new SharedVertex(t->vertex0() );
-        triSet->addTriangle( t->vertex0(), t->vertex1(), t->vertex2(), this->normalsT()->at ( keepers[i] )  , false);
+		osg::Vec3 v0 ( this->vertex0 ( t->index() ) );
+		osg::Vec3 v1 ( this->vertex1 ( t->index() ) );
+		osg::Vec3 v2 ( this->vertex2 ( t->index() ) );
+
+        triSet->addTriangle( v0, v1, v2, this->normalsT()->at ( keepers[i] )  , false);
     }
     //return triSet;
 }
@@ -1434,8 +1477,8 @@ void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root )
 
 osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 {
-  // The scene root.
-  osg::ref_ptr<osg::Group> root ( new osg::Group );
+  // The scene root  
+    osg::ref_ptr<osg::Group> root ( new osg::Group );
 
   // Handle trivial case.
   if ( _triangles.empty() )

@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Predicates/LessVector.h"
+#include "Usul/Types/Types.h"
 
 #include "osg/Geometry"
 #include "osg/ref_ptr"
@@ -42,6 +43,8 @@
 #include <vector>
 #include <map>
 #include <string>
+
+using namespace Usul::Types;
 
 namespace osgUtil { class Hit; }
 namespace osg { class Node; class Group; }
@@ -198,6 +201,12 @@ public:
 
   // Set all triangles and shared vertices to unvisited
   void                    setAllUnvisited();
+
+  // Sets triangles as visited based on a vector of indices
+  void                    setVisited(Indices &keepers);
+  // Returns the index of the first triangle flagged as visited=FALSE
+  Uint32                  firstUnvisited();
+
 
   // Get the shared vertices. Be real careful when using this.
   const SharedVertices &  sharedVertices() const { return _shared; }

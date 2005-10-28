@@ -49,7 +49,7 @@ inline void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, 
   if( v1->numTriangles() == 1 )
   {
     //Add the shared vertex to the current loop
-    loop.push_back( v1 );
+    loop.append ( v1 );
 
     v1->visited ( true );
 
@@ -59,7 +59,7 @@ inline void findEmptySharedVertex( Polygons& polygons, IndexSequence& uncapped, 
   else if( v2->numTriangles() == 1 )
   {
     //Add the shared vertex to the current loop
-    loop.push_back( v2 );
+    loop.append ( v2 );
 
     v2->visited( true );
 
@@ -252,7 +252,7 @@ inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop
   if ( polyCandidates.size() == 1 ) 
   {
     //Add the vertex to the current loop
-    loop.push_back( sv );
+    loop.append ( sv );
     
     // Get the index.
     const unsigned index ( polyCandidates.front()->index() );
@@ -269,7 +269,7 @@ inline void visitSharedVertex( Polygons& polygons, IndexSequence& uncapped, Loop
   else if ( polyCandidates.size() > 1) //else check for proper Poly
   {
     // Add the vertex to the current loop.
-    loop.push_back( sv );
+    loop.append ( sv );
 
     // Sort the polygons based on the order to visit.
     std::sort ( polyCandidates.begin(), polyCandidates.end(), PolygonSort() );

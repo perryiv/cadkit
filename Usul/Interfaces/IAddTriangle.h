@@ -38,8 +38,8 @@ struct IAddTriangle : public Usul::Interfaces::IUnknown
   virtual void addTriangle ( VertexType v0, VertexType v1, VertexType v2, NormalType n, bool update ) = 0;
 };
 
-typedef IAddTriangle < OsgTools::Triangles::SharedVertex *, const osg::Vec3f &, 2793935616u > IAddTriangleSharedVertex;
-typedef IAddTriangle < const osg::Vec3f &,                  const osg::Vec3f &, 2793935617u > IAddTrangleOsgVec3f;
+typedef IAddTriangle < OsgTools::Triangles::SharedVertex *, const osg::Vec3f &, 2793935616u > IAddTriangleWithSharedVertex;
+typedef IAddTriangle < const osg::Vec3f &,                  const osg::Vec3f &, 2793935617u > IAddTrangleWithOsgVec3f;
 
 }
 }

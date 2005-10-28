@@ -41,7 +41,7 @@ public:
   Loop ( const Points & );
   ~Loop();
 
-  void                  push_back ( const value_type& v ) { _loop.push_back( v ); }
+  void                  append ( const value_type& v ) { _loop.push_back( v ); }
 
   bool                  triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly );
 

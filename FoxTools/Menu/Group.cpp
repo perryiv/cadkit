@@ -109,10 +109,10 @@ void Group::clear()
 
 void Group::_deleteWindows()
 {
-  if( _pane )
+  if ( _pane )
     delete _pane;
   _pane = 0x0;
-  if( _caption )
+  if ( _caption )
     delete _caption;
   _caption = 0x0;
 }
@@ -354,7 +354,7 @@ bool Group::scroll() const
 void Group::rebuild()
 {
   // Return now if no pane.
-  if( 0x0 == _pane )
+  if ( 0x0 == _pane )
     return;
 
   // Loop through the items.
@@ -370,7 +370,7 @@ void Group::rebuild()
 
     // Or, if we have a group...
     else if ( group.valid() )
-      group->_build( FoxTools::Functions::mainWindow(), _pane);
+      group->_build ( FoxTools::Functions::mainWindow(), _pane );
 
     // Otherwise, punt.
     else

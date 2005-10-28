@@ -23,7 +23,8 @@ namespace OsgTools
 {
   namespace Triangles
   {
-    const osg::Vec4f    DEFAULT_COLOR ( 20.0f / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
+    const osg::Vec3f    DEFAULT_NORMAL ( 1.0f, 0.0f, 0.0f );
+    const osg::Vec4f    DEFAULT_COLOR  ( 20.0f / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
   }
 }
 

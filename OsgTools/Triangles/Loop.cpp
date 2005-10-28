@@ -245,15 +245,15 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
   }
   // Get needed interfaces
   Triangulate::ValidQueryPtr tri ( PluginManager::instance().getInterface( Triangulate::IID ) );
-  Usul::Interfaces::IGetVertex::ValidQueryPtr               getVertex       ( caller );
-  Usul::Interfaces::IAddTriangleSharedVertex::ValidQueryPtr addTriangle     ( caller );
+  Usul::Interfaces::IGetVertex::ValidQueryPtr                   getVertex       ( caller );
+  Usul::Interfaces::IAddTriangleWithSharedVertex::ValidQueryPtr addTriangle     ( caller );
   
   // Data structures needed to triangulate.
   Vertices vertices;
   InnerLoops innerLoops;
   UIntArray indices;
   Vertices out;
-  
+
   // Get the first three shared vertices
   SharedVertexPtr sv1 ( _loop.at( 0 ) );
   SharedVertexPtr sv2 ( _loop.at( 1 ) );
@@ -691,4 +691,3 @@ void Loop::clear()
   _innerLoops.clear();
   _valid = true;
 }
-

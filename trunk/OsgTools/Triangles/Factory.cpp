@@ -220,7 +220,7 @@ namespace Helper
       // Memory allocation failed.
       std::ostringstream message;
       message << "Error 2727406310: Allocation of " << name << " failed";
-      throw std::bad_alloc ( message.str().c_str() );
+      throw std::runtime_error ( message.str().c_str() );
     }
   };
 }

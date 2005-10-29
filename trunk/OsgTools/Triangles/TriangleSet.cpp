@@ -711,7 +711,7 @@ void TriangleSet::setVisited(Indices &keepers)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Uint32 TriangleSet::firstUnvisited() 
+Int32 TriangleSet::firstUnvisited() 
 {
   for( TriangleVector::iterator i = _triangles.begin(); i != _triangles.end(); ++ i )
   {

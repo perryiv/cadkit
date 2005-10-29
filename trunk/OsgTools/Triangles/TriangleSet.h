@@ -204,7 +204,7 @@ public:
   // Sets triangles as visited based on a vector of indices
   void                    setVisited(Indices &keepers);
   // Returns the index of the first triangle flagged as visited=FALSE
-  Uint32                  firstUnvisited();
+  Int32                  firstUnvisited();
 
 
   // Get the shared vertices. Be real careful when using this.

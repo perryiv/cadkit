@@ -60,8 +60,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		430AF96A08AAD91D00232D64 /* Partition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 430AF96808AAD91D00232D64 /* Partition.cpp */; };
-		430AF96B08AAD91D00232D64 /* Partition.h in Headers */ = {isa = PBXBuildFile; fileRef = 430AF96908AAD91D00232D64 /* Partition.h */; };
 		4314705008C7685E0085613A /* LoopSplitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4314704E08C7685E0085613A /* LoopSplitter.h */; };
 		4314705108C7685E0085613A /* LoopSplitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4314704F08C7685E0085613A /* LoopSplitter.cpp */; };
 		431E60F20891BC5500B1EC98 /* SortBackToFrontCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */; };
@@ -125,8 +123,6 @@
 		43265EE408E4959B0020C22F /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993039087EF171002E5D22 /* Mesh.h */; };
 		43265EE508E4959B0020C22F /* Morphology.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43993028087EF171002E5D22 /* Morphology.cpp */; };
 		43265EE608E4959B0020C22F /* Morphology.h in Headers */ = {isa = PBXBuildFile; fileRef = 43993029087EF171002E5D22 /* Morphology.h */; };
-		43265EE708E4959B0020C22F /* Partition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 430AF96808AAD91D00232D64 /* Partition.cpp */; };
-		43265EE808E4959B0020C22F /* Partition.h in Headers */ = {isa = PBXBuildFile; fileRef = 430AF96908AAD91D00232D64 /* Partition.h */; };
 		43265EE908E4959B0020C22F /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4399303A087EF171002E5D22 /* Ray.cpp */; };
 		43265EEA08E4959B0020C22F /* Ray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4399303B087EF171002E5D22 /* Ray.h */; };
 		43265EEB08E4959B0020C22F /* ReadModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4399303C087EF171002E5D22 /* ReadModel.cpp */; };
@@ -165,6 +161,14 @@
 		43265F0F08E495DC0020C22F /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 439930B9087EF352002E5D22 /* libosgDB.dylib */; };
 		43265F1008E495DC0020C22F /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 439930BC087EF36D002E5D22 /* libosgUtil.dylib */; };
 		43265F1208E495E00020C22F /* Usul.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43265EAC08E4953E0020C22F /* Usul.framework */; };
+		434958180913124200BC2931 /* HasOption.h in Headers */ = {isa = PBXBuildFile; fileRef = 434958170913124200BC2931 /* HasOption.h */; };
+		434958190913124200BC2931 /* HasOption.h in Headers */ = {isa = PBXBuildFile; fileRef = 434958170913124200BC2931 /* HasOption.h */; };
+		4349581F0913126E00BC2931 /* ColorFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4349581C0913126E00BC2931 /* ColorFunctor.cpp */; };
+		434958200913126E00BC2931 /* ColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4349581D0913126E00BC2931 /* ColorFunctor.h */; };
+		434958210913126E00BC2931 /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 4349581E0913126E00BC2931 /* Constants.h */; };
+		434958220913126E00BC2931 /* ColorFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4349581C0913126E00BC2931 /* ColorFunctor.cpp */; };
+		434958230913126E00BC2931 /* ColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4349581D0913126E00BC2931 /* ColorFunctor.h */; };
+		434958240913126E00BC2931 /* Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 4349581E0913126E00BC2931 /* Constants.h */; };
 		434D93AF08B5856900B74A7F /* BoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 434D93AE08B5856900B74A7F /* BoundingBox.h */; };
 		43832436090D9C1B00FC2C53 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43832432090D9C1B00FC2C53 /* Block.cpp */; };
 		43832437090D9C1B00FC2C53 /* Block.h in Headers */ = {isa = PBXBuildFile; fileRef = 43832433090D9C1B00FC2C53 /* Block.h */; };
@@ -386,8 +390,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		430AF96808AAD91D00232D64 /* Partition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Partition.cpp; path = Triangles/Partition.cpp; sourceTree = SOURCE_ROOT; };
-		430AF96908AAD91D00232D64 /* Partition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Partition.h; path = Triangles/Partition.h; sourceTree = SOURCE_ROOT; };
 		4314704E08C7685E0085613A /* LoopSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoopSplitter.h; path = Triangles/LoopSplitter.h; sourceTree = SOURCE_ROOT; };
 		4314704F08C7685E0085613A /* LoopSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LoopSplitter.cpp; path = Triangles/LoopSplitter.cpp; sourceTree = SOURCE_ROOT; };
 		431E60F00891BC5500B1EC98 /* SortBackToFrontCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = SortBackToFrontCallback.cpp; sourceTree = SOURCE_ROOT; };
@@ -396,6 +398,10 @@
 		4325665808E19E25007D323F /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = Triangles/Factory.h; sourceTree = SOURCE_ROOT; };
 		43265EA808E4953D0020C22F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
 		43265EA908E4953D0020C22F /* OsgTools.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OsgTools.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		434958170913124200BC2931 /* HasOption.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HasOption.h; sourceTree = "<group>"; };
+		4349581C0913126E00BC2931 /* ColorFunctor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ColorFunctor.cpp; sourceTree = "<group>"; };
+		4349581D0913126E00BC2931 /* ColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ColorFunctor.h; sourceTree = "<group>"; };
+		4349581E0913126E00BC2931 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		434D93AE08B5856900B74A7F /* BoundingBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BoundingBox.h; path = Callbacks/BoundingBox.h; sourceTree = SOURCE_ROOT; };
 		43832432090D9C1B00FC2C53 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Block.cpp; sourceTree = "<group>"; };
 		43832433090D9C1B00FC2C53 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Block.h; sourceTree = "<group>"; };
@@ -597,6 +603,7 @@
 				43993017087EF171002E5D22 /* Grid.h */,
 				43993018087EF171002E5D22 /* Group.cpp */,
 				43993019087EF171002E5D22 /* Group.h */,
+				434958170913124200BC2931 /* HasOption.h */,
 				4399301A087EF171002E5D22 /* Images */,
 				4399302E087EF171002E5D22 /* Index.h */,
 				4399302F087EF171002E5D22 /* Jitter.cpp */,
@@ -716,6 +723,9 @@
 		4399304F087EF171002E5D22 /* Triangles */ = {
 			isa = PBXGroup;
 			children = (
+				4349581C0913126E00BC2931 /* ColorFunctor.cpp */,
+				4349581D0913126E00BC2931 /* ColorFunctor.h */,
+				4349581E0913126E00BC2931 /* Constants.h */,
 				43832432090D9C1B00FC2C53 /* Block.cpp */,
 				43832433090D9C1B00FC2C53 /* Block.h */,
 				43832434090D9C1B00FC2C53 /* Blocks.cpp */,
@@ -724,8 +734,6 @@
 				4325665808E19E25007D323F /* Factory.h */,
 				43993050087EF171002E5D22 /* Loop.cpp */,
 				43993051087EF171002E5D22 /* Loop.h */,
-				430AF96808AAD91D00232D64 /* Partition.cpp */,
-				430AF96908AAD91D00232D64 /* Partition.h */,
 				43993052087EF171002E5D22 /* SharedVertex.cpp */,
 				43993053087EF171002E5D22 /* SharedVertex.h */,
 				43993054087EF171002E5D22 /* Triangle.cpp */,
@@ -820,7 +828,6 @@
 				43265EE208E4959B0020C22F /* Matrix.h in Headers */,
 				43265EE408E4959B0020C22F /* Mesh.h in Headers */,
 				43265EE608E4959B0020C22F /* Morphology.h in Headers */,
-				43265EE808E4959B0020C22F /* Partition.h in Headers */,
 				43265EEA08E4959B0020C22F /* Ray.h in Headers */,
 				43265EEC08E4959B0020C22F /* ReadModel.h in Headers */,
 				43265EEE08E4959B0020C22F /* Sample.h in Headers */,
@@ -856,6 +863,9 @@
 				4388CC78090E810300358CFB /* RecordTime.h in Headers */,
 				4388CC7A090E810300358CFB /* Trackball.h in Headers */,
 				43CB7011090E84AA004D0D65 /* VoxelGeometry.h in Headers */,
+				434958180913124200BC2931 /* HasOption.h in Headers */,
+				434958200913126E00BC2931 /* ColorFunctor.h in Headers */,
+				434958210913126E00BC2931 /* Constants.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,7 +924,6 @@
 				439930AA087EF171002E5D22 /* Visitor.h in Headers */,
 				431E60F30891BC5500B1EC98 /* SortBackToFrontCallback.h in Headers */,
 				43A1BCBB0898838900E1421E /* GlassBoundingBox.h in Headers */,
-				430AF96B08AAD91D00232D64 /* Partition.h in Headers */,
 				434D93AF08B5856900B74A7F /* BoundingBox.h in Headers */,
 				4314705008C7685E0085613A /* LoopSplitter.h in Headers */,
 				4325665A08E19E25007D323F /* Factory.h in Headers */,
@@ -934,6 +943,9 @@
 				4388CC6B090E810300358CFB /* RecordTime.h in Headers */,
 				4388CC6D090E810300358CFB /* Trackball.h in Headers */,
 				43CB700F090E84AA004D0D65 /* VoxelGeometry.h in Headers */,
+				434958190913124200BC2931 /* HasOption.h in Headers */,
+				434958230913126E00BC2931 /* ColorFunctor.h in Headers */,
+				434958240913126E00BC2931 /* Constants.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1102,7 +1114,6 @@
 				43265EE008E4959B0020C22F /* MaterialSetter.cpp in Sources */,
 				43265EE308E4959B0020C22F /* Mesh.cpp in Sources */,
 				43265EE508E4959B0020C22F /* Morphology.cpp in Sources */,
-				43265EE708E4959B0020C22F /* Partition.cpp in Sources */,
 				43265EE908E4959B0020C22F /* Ray.cpp in Sources */,
 				43265EEB08E4959B0020C22F /* ReadModel.cpp in Sources */,
 				43265EED08E4959B0020C22F /* Sample.cpp in Sources */,
@@ -1128,6 +1139,7 @@
 				4388CC75090E810300358CFB /* FrameDump.cpp in Sources */,
 				4388CC79090E810300358CFB /* Trackball.cpp in Sources */,
 				43CB7010090E84AA004D0D65 /* VoxelGeometry.cpp in Sources */,
+				4349581F0913126E00BC2931 /* ColorFunctor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1168,7 +1180,6 @@
 				439930A8087EF171002E5D22 /* TriangleSet.cpp in Sources */,
 				431E60F20891BC5500B1EC98 /* SortBackToFrontCallback.cpp in Sources */,
 				43A1BCBA0898838900E1421E /* GlassBoundingBox.cpp in Sources */,
-				430AF96A08AAD91D00232D64 /* Partition.cpp in Sources */,
 				4314705108C7685E0085613A /* LoopSplitter.cpp in Sources */,
 				4325665908E19E25007D323F /* Factory.cpp in Sources */,
 				43832436090D9C1B00FC2C53 /* Block.cpp in Sources */,
@@ -1183,6 +1194,7 @@
 				4388CC68090E810300358CFB /* FrameDump.cpp in Sources */,
 				4388CC6C090E810300358CFB /* Trackball.cpp in Sources */,
 				43CB700E090E84AA004D0D65 /* VoxelGeometry.cpp in Sources */,
+				434958220913126E00BC2931 /* ColorFunctor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

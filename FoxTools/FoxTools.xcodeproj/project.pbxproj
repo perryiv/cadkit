@@ -74,7 +74,6 @@
 		43265FD008E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368685C088C5B150019BCA3 /* Button.h */; };
 		43265FD108E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686843088C5B150019BCA3 /* Button.h */; };
 		43265FD208E4A0200020C22F /* Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F2088C5B140019BCA3 /* Button.h */; };
-		43265FD308E4A0200020C22F /* CarbonFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D1088C5B140019BCA3 /* CarbonFileDialog.h */; };
 		43265FD408E4A0200020C22F /* Check.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867E0088C5B140019BCA3 /* Check.h */; };
 		43265FD508E4A0200020C22F /* CheckButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686845088C5B150019BCA3 /* CheckButton.h */; };
 		43265FD608E4A0200020C22F /* CheckButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867F3088C5B140019BCA3 /* CheckButton.h */; };
@@ -184,7 +183,6 @@
 		4326603E08E4A02E0020C22F /* Bar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686840088C5B150019BCA3 /* Bar.cpp */; };
 		4326603F08E4A02E0020C22F /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368685B088C5B150019BCA3 /* Button.cpp */; };
 		4326604008E4A02E0020C22F /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686842088C5B150019BCA3 /* Button.cpp */; };
-		4326604108E4A02E0020C22F /* CarbonFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */; };
 		4326604208E4A02E0020C22F /* Check.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867DF088C5B140019BCA3 /* Check.cpp */; };
 		4326604308E4A02E0020C22F /* CheckButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43686844088C5B150019BCA3 /* CheckButton.cpp */; };
 		4326604408E4A02E0020C22F /* ComboBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368685D088C5B150019BCA3 /* ComboBox.cpp */; };
@@ -216,8 +214,6 @@
 		4326605E08E4A02E0020C22F /* Wait.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867C5088C5B140019BCA3 /* Wait.cpp */; };
 		4326605F08E4A0380020C22F /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */; };
 		4326606008E4A03F0020C22F /* Usul.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43265FAB08E49FA90020C22F /* Usul.framework */; };
-		434E035F088C61FB0064BA35 /* CarbonFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */; };
-		434E0360088C61FB0064BA35 /* CarbonFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D1088C5B140019BCA3 /* CarbonFileDialog.h */; };
 		43685F33088C19C70019BCA3 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */; };
 		43685F34088C19C90019BCA3 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43992FE2087EE4E4002E5D22 /* libUsul.dylib */; };
 		43686905088C5B150019BCA3 /* Wait.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867C5088C5B140019BCA3 /* Wait.cpp */; };
@@ -228,8 +224,6 @@
 		4368690A088C5B150019BCA3 /* CUR.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867CC088C5B140019BCA3 /* CUR.h */; };
 		4368690B088C5B150019BCA3 /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867CD088C5B140019BCA3 /* Factory.cpp */; };
 		4368690C088C5B150019BCA3 /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867CE088C5B140019BCA3 /* Factory.h */; };
-		4368690D088C5B150019BCA3 /* CarbonFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */; };
-		4368690E088C5B150019BCA3 /* CarbonFileDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D1088C5B140019BCA3 /* CarbonFileDialog.h */; };
 		4368690F088C5B150019BCA3 /* FileSelection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D2088C5B140019BCA3 /* FileSelection.cpp */; };
 		43686910088C5B150019BCA3 /* FileSelection.h in Headers */ = {isa = PBXBuildFile; fileRef = 436867D3088C5B140019BCA3 /* FileSelection.h */; };
 		43686911088C5B150019BCA3 /* Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 436867D4088C5B140019BCA3 /* Message.cpp */; };
@@ -605,8 +599,6 @@
 		436867CC088C5B140019BCA3 /* CUR.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CUR.h; path = Cursors/CUR.h; sourceTree = SOURCE_ROOT; };
 		436867CD088C5B140019BCA3 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = Cursors/Factory.cpp; sourceTree = SOURCE_ROOT; };
 		436867CE088C5B140019BCA3 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = Cursors/Factory.h; sourceTree = SOURCE_ROOT; };
-		436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CarbonFileDialog.cpp; path = Dialogs/CarbonFileDialog.cpp; sourceTree = SOURCE_ROOT; };
-		436867D1088C5B140019BCA3 /* CarbonFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CarbonFileDialog.h; path = Dialogs/CarbonFileDialog.h; sourceTree = SOURCE_ROOT; };
 		436867D2088C5B140019BCA3 /* FileSelection.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FileSelection.cpp; path = Dialogs/FileSelection.cpp; sourceTree = SOURCE_ROOT; };
 		436867D3088C5B140019BCA3 /* FileSelection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FileSelection.h; path = Dialogs/FileSelection.h; sourceTree = SOURCE_ROOT; };
 		436867D4088C5B140019BCA3 /* Message.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Message.cpp; path = Dialogs/Message.cpp; sourceTree = SOURCE_ROOT; };
@@ -880,8 +872,6 @@
 		436867CF088C5B140019BCA3 /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
-				436867D0088C5B140019BCA3 /* CarbonFileDialog.cpp */,
-				436867D1088C5B140019BCA3 /* CarbonFileDialog.h */,
 				436867D2088C5B140019BCA3 /* FileSelection.cpp */,
 				436867D3088C5B140019BCA3 /* FileSelection.h */,
 				436867D4088C5B140019BCA3 /* Message.cpp */,
@@ -1152,7 +1142,6 @@
 				43265FD008E4A0200020C22F /* Button.h in Headers */,
 				43265FD108E4A0200020C22F /* Button.h in Headers */,
 				43265FD208E4A0200020C22F /* Button.h in Headers */,
-				43265FD308E4A0200020C22F /* CarbonFileDialog.h in Headers */,
 				43265FD408E4A0200020C22F /* Check.h in Headers */,
 				43265FD508E4A0200020C22F /* CheckButton.h in Headers */,
 				43265FD608E4A0200020C22F /* CheckButton.h in Headers */,
@@ -1376,7 +1365,6 @@
 				43686A30088C5B150019BCA3 /* ToggleButton.h in Headers */,
 				43686A32088C5B150019BCA3 /* SliderTextField.h in Headers */,
 				43686A34088C5B150019BCA3 /* MdiChildWindow.h in Headers */,
-				434E0360088C61FB0064BA35 /* CarbonFileDialog.h in Headers */,
 				43137FA2088DEE9400FE58B9 /* ScrollPane.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1390,7 +1378,6 @@
 				43686909088C5B150019BCA3 /* Arrays.h in Headers */,
 				4368690A088C5B150019BCA3 /* CUR.h in Headers */,
 				4368690C088C5B150019BCA3 /* Factory.h in Headers */,
-				4368690E088C5B150019BCA3 /* CarbonFileDialog.h in Headers */,
 				43686910088C5B150019BCA3 /* FileSelection.h in Headers */,
 				43686912088C5B150019BCA3 /* Message.h in Headers */,
 				43686915088C5B150019BCA3 /* ErrorChecker.h in Headers */,
@@ -1695,7 +1682,6 @@
 				4326603E08E4A02E0020C22F /* Bar.cpp in Sources */,
 				4326603F08E4A02E0020C22F /* Button.cpp in Sources */,
 				4326604008E4A02E0020C22F /* Button.cpp in Sources */,
-				4326604108E4A02E0020C22F /* CarbonFileDialog.cpp in Sources */,
 				4326604208E4A02E0020C22F /* Check.cpp in Sources */,
 				4326604308E4A02E0020C22F /* CheckButton.cpp in Sources */,
 				4326604408E4A02E0020C22F /* ComboBox.cpp in Sources */,
@@ -1767,7 +1753,6 @@
 				43686A2F088C5B150019BCA3 /* ToggleButton.cpp in Sources */,
 				43686A31088C5B150019BCA3 /* SliderTextField.cpp in Sources */,
 				43686A33088C5B150019BCA3 /* MdiChildWindow.cpp in Sources */,
-				434E035F088C61FB0064BA35 /* CarbonFileDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1778,7 +1763,6 @@
 				43686905088C5B150019BCA3 /* Wait.cpp in Sources */,
 				43686907088C5B150019BCA3 /* Application.cpp in Sources */,
 				4368690B088C5B150019BCA3 /* Factory.cpp in Sources */,
-				4368690D088C5B150019BCA3 /* CarbonFileDialog.cpp in Sources */,
 				4368690F088C5B150019BCA3 /* FileSelection.cpp in Sources */,
 				43686911088C5B150019BCA3 /* Message.cpp in Sources */,
 				43686917088C5B150019BCA3 /* App.cpp in Sources */,

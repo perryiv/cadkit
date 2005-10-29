@@ -345,8 +345,8 @@
 			);
 			targets = (
 				43993106087EF791002E5D22 /* Build DyLibs */,
-				43265F3A08E499590020C22F /* Build Frameworks */,
 				D2AAC0620554660B00DB518D /* Threads */,
+				43265F3A08E499590020C22F /* Build Frameworks */,
 				43265E6608E4930D0020C22F /* Threads.framework */,
 			);
 		};

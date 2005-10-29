@@ -23,6 +23,7 @@
 #include "fxver.h"
 #include "fxdefs.h"
 #include "fxkeys.h"
+#include "fx.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,55 +48,55 @@
 
 namespace FoxTools
 {
-  namespace Handler
-  {
+    namespace Handler
+{
     template < class FoxClassPointer, class MapEntryPointer > 
     inline long handle ( FoxClassPointer fox, MapEntryPointer entry, const char *className, FX::FXObject *sender, FX::FXuint selector, void *ptr )
+{
+        // Safely...
+        try
     {
-      // Safely...
-      try
-      {
         Usul::System::LastError::init();
         return ( ( fox->* entry->func ) ( sender, selector, ptr ) );
-      }
-
-      // Catch cencel-exceptions.
-      catch ( const Usul::Exceptions::Canceled & )
-      {
-        throw;
-      }
-
-      // Catch standard exceptions.
-      catch ( const std::exception &e )
-      {
-        std::cout << ( ( e.what() ) ? e.what() : "Error 2381027582: Standard exception caught while dispatching event" );
-      }
-
-      // Catch all other exceptions.
-      catch ( ... )
-      {
-        std::cout << "Error 1838942514: Unknown exception caught while dispatching event";
-      }
-
-      // Print this every time.
-      std::cout << "; class name = " << ( ( className ) ? className : "" )
-                << ", instance = " << fox
-                << ", entry = " << entry
-                << ", sender = " << ( ( sender ) ? sender->getClassName() : "" )
-                << ", selector = " << selector
-                << ", data = " << ptr;
-
-      // Print system error if relevant.
-      if ( Usul::System::LastError::has() )
-      {
-        std::cout << ". " << Usul::System::LastError::message();
-      }
-
-      // Add a new-line and return.
-      std::cout << std::endl;
-      return 1;
     }
-  }
+        
+        // Catch cencel-exceptions.
+        catch ( const Usul::Exceptions::Canceled & )
+    {
+            throw;
+    }
+        
+        // Catch standard exceptions.
+        catch ( const std::exception &e )
+    {
+            std::cout << ( ( e.what() ) ? e.what() : "Error 2381027582: Standard exception caught while dispatching event" );
+    }
+        
+        // Catch all other exceptions.
+        catch ( ... )
+    {
+            std::cout << "Error 1838942514: Unknown exception caught while dispatching event";
+    }
+        
+        // Print this every time.
+        std::cout << "; class name = " << ( ( className ) ? className : "" )
+        << ", instance = " << fox
+        << ", entry = " << entry
+        << ", sender = " << ( ( sender ) ? sender->getClassName() : "" )
+        << ", selector = " << selector
+        << ", data = " << ptr;
+        
+        // Print system error if relevant.
+        if ( Usul::System::LastError::has() )
+        {
+            std::cout << ". " << Usul::System::LastError::message();
+        }
+        
+        // Add a new-line and return.
+        std::cout << std::endl;
+        return 1;
+}
+}
 }
 
 
@@ -108,13 +109,13 @@ namespace FoxTools
 #define FOX_TOOLS_IMPLEMENT(class_name,base_class_name,mapping,num_mappings)\
 FX::FXObject* class_name::manufacture()\
 {\
-  return new class_name;\
+    return new class_name;\
 }\
 const FX::FXMetaClass class_name::metaClass ( #class_name, class_name::manufacture, &base_class_name::metaClass, mapping, num_mappings, sizeof ( class_name::FXMapEntry ) );\
 long class_name::handle ( FX::FXObject *sender, FX::FXuint selector, void *ptr )\
 {\
-  const FXMapEntry *entry ( ( const FXMapEntry * ) metaClass.search ( selector ) );\
-  return ( ( entry ) ? ( FoxTools::Handler::handle ( this, entry, #class_name, sender, selector, ptr ) ) : ( base_class_name::handle ( sender, selector, ptr ) ) );\
+    const FXMapEntry *entry ( ( const FXMapEntry * ) metaClass.search ( selector ) );\
+        return ( ( entry ) ? ( FoxTools::Handler::handle ( this, entry, #class_name, sender, selector, ptr ) ) : ( base_class_name::handle ( sender, selector, ptr ) ) );\
 }
 
 
@@ -128,8 +129,8 @@ long class_name::handle ( FX::FXObject *sender, FX::FXuint selector, void *ptr )
 const FX::FXMetaClass class_name::metaClass ( #class_name, 0x0, &base_class_name::metaClass, mapping, num_mappings, sizeof ( class_name::FXMapEntry ) );\
 long class_name::handle ( FX::FXObject *sender, FX::FXSelector selector, void *ptr )\
 {\
-  const FXMapEntry *entry ( ( const FXMapEntry * ) metaClass.search ( selector ) );\
-  return ( ( entry ) ? ( FoxTools::Handler::handle ( this, entry, #class_name, sender, selector, ptr ) ) : ( base_class_name::handle ( sender, selector, ptr ) ) );\
+    const FXMapEntry *entry ( ( const FXMapEntry * ) metaClass.search ( selector ) );\
+        return ( ( entry ) ? ( FoxTools::Handler::handle ( this, entry, #class_name, sender, selector, ptr ) ) : ( base_class_name::handle ( sender, selector, ptr ) ) );\
 }
 
 

@@ -277,7 +277,7 @@ Block *Blocks::block ( const osg::Vec3f &v )
 
 namespace Helper
 {
-  template < class T > split ( const T &t1, T &t2, unsigned int &times )
+  template < class T > int split ( const T &t1, T &t2, unsigned int &times )
   {
     if ( t1 == t2 && times > 0 )
     {

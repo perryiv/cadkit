@@ -24,7 +24,8 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Condition::Condition() : BaseClass()
+Condition::Condition ( bool want ) : BaseClass(),
+  _want ( want )
 {
 }
 

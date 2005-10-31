@@ -39,7 +39,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Group );
 
   // Constructor
-  Group();
+  Group ( bool want = true );
 
   // Iterators to the children.
   Iterator              begin()       { return _kids.begin(); }

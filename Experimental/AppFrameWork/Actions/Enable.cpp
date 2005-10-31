@@ -27,7 +27,8 @@ using namespace AFW::Actions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Enable::Enable() : BaseClass()
+Enable::Enable ( bool state ) : BaseClass(),
+  _state ( state )
 {
 }
 
@@ -53,5 +54,5 @@ void Enable::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
   AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
   if ( window.valid() )
-    AFW::Core::Application::instance().guiServer()->enableWindow ( true, window.get(), data );
+    AFW::Core::Application::instance().guiServer()->enableWindow ( _state, window.get(), data );
 }

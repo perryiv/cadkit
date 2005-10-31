@@ -24,7 +24,7 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HasActiveEditor::HasActiveEditor() : BaseClass()
+HasActiveEditor::HasActiveEditor ( bool want ) : BaseClass ( want )
 {
 }
 

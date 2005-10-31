@@ -18,6 +18,8 @@
 
 #include "AppFrameWork/Actions/CommandAction.h"
 
+#include <string>
+
 
 namespace AFW {
 namespace Actions {
@@ -43,6 +45,8 @@ protected:
 
   // Use reference counting.
   virtual ~OpenModelAction();
+
+  void                                _open ( const std::string & );
 
 private:
 

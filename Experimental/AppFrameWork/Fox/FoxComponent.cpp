@@ -19,7 +19,10 @@
 #include "FoxTools/Icons/Factory.h"
 #include "FoxTools/Functions/Create.h"
 #include "FoxTools/Functions/Delete.h"
+#include "FoxTools/Functions/Enable.h"
+#include "FoxTools/Functions/MainWindow.h"
 #include "FoxTools/Registry/Registry.h"
+#include "FoxTools/Dialogs/FileSelection.h"
 
 #include "FoxTools/Headers/Icon.h"
 #include "FoxTools/Headers/MainWindow.h"
@@ -135,6 +138,8 @@ Usul::Interfaces::IUnknown *FoxComponent::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IGUIServer * > ( this );
   case Usul::Interfaces::INotifyClose::IID:
     return static_cast < Usul::Interfaces::INotifyClose * > ( this );
+  case Usul::Interfaces::ILoadFileDialog::IID:
+    return static_cast < Usul::Interfaces::ILoadFileDialog * > ( this );
   default:
     return 0x0;
   }
@@ -189,6 +194,7 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
 
   // Make sure we do not use this again.
   _mainWin = 0x0;
+  FoxTools::Functions::mainWindow ( 0x0 );
 
   // It worked.
   return true;
@@ -267,6 +273,7 @@ void FoxComponent::_buildMainWindow()
     // Make main window and create it if we should.
     _mainWin = new FX::FXMainWindow ( _foxApp, _foxApp->getAppName(), icon, icon, FX::DECOR_ALL, size[0], size[1], size[2], size[3] );
     FoxTools::Functions::create ( _mainWin );
+    FoxTools::Functions::mainWindow ( _mainWin );
 
     // Set target to this instance.
     _mainWin->setTarget ( this );
@@ -672,9 +679,11 @@ FX::FXIcon *FoxComponent::_makeIcon ( AFW::Core::Window *w )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window, Usul::Base::Referenced *data )
+void FoxComponent::enableWindow ( bool state, AFW::Core::Window *, Usul::Base::Referenced *data )
 {
-  // TODO
+  FoxObjectWrapper::RefPtr fox ( dynamic_cast < FoxObjectWrapper * > ( data ) );
+  if ( fox.valid() )
+    FoxTools::Functions::enable ( state, fox->value() );
 }
 
 
@@ -684,7 +693,37 @@ void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window, Usul::B
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *, Usul::Base::Referenced * )
+bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *, Usul::Base::Referenced *data )
 {
-  return true; // TODO
+  FoxObjectWrapper *fox ( dynamic_cast < FoxObjectWrapper * > ( data ) );
+  FX::FXObject *object ( ( fox ) ? fox->value() : 0x0 );
+  FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
+  return ( ( window && window->isEnabled() ) ? true : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show dialog to get file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string FoxComponent::getLoadFileName ( const std::string &title, const Filters &filters )
+{
+  Filenames filenames ( this->getLoadFileNames ( title, filters ) );
+  return ( ( filenames.empty() ) ? "" : filenames.front() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show dialog to get list of file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FoxComponent::Filenames FoxComponent::getLoadFileNames ( const std::string &title, const Filters &filters )
+{
+  typedef FoxTools::Dialogs::FileSelection FileDialog;
+  FileDialog::FilesResult result ( FileDialog::askForFileNames ( FileDialog::OPEN, title, filters ) );
+  return result.first;
 }

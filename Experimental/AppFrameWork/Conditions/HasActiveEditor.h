@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( HasActiveEditor );
 
   // Constructor
-  HasActiveEditor();
+  HasActiveEditor ( bool want = true );
 
   // Returns true if there is an active editor.
   virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );

@@ -81,24 +81,31 @@ void MenuBar::buildDefault()
 
 void MenuBar::_buildDefault()
 {
+  // Actions reused below.
+  AFW::Actions::Enable::RefPtr enable  ( new AFW::Actions::Enable ( true  ) );
+  AFW::Actions::Enable::RefPtr disable ( new AFW::Actions::Enable ( false ) );
+
   // File menu.
   AFW::Core::Group::ValidRefPtr fileMenu ( new AFW::Core::Group ( "File" ) );
   {
     {
-      Button::ValidRefPtr button ( new Button ( "New...",  new AFW::Core::Icon ( "new"   ) ) );
-      button->append ( new AFW::Conditions::HasNewModelPlugin, new AFW::Actions::Enable );
+      Button::ValidRefPtr button ( new Button ( "New...",  new AFW::Core::Icon ( "new" ) ) );
+      button->append ( new AFW::Conditions::HasNewModelPlugin ( true  ), enable  );
+      button->append ( new AFW::Conditions::HasNewModelPlugin ( false ), disable );
       button->append ( new AFW::Actions::NewModelAction );
       fileMenu->append ( button.get() );
     }
     {
-      Button::ValidRefPtr button ( new Button ( "Open...", new AFW::Core::Icon ( "open"  ) ) );
-      button->append ( new AFW::Conditions::HasOpenModelPlugin, new AFW::Actions::Enable );
+      Button::ValidRefPtr button ( new Button ( "Open...", new AFW::Core::Icon ( "open" ) ) );
+      button->append ( new AFW::Conditions::HasOpenModelPlugin ( true  ), enable  );
+      button->append ( new AFW::Conditions::HasOpenModelPlugin ( false ), disable );
       button->append ( new AFW::Actions::OpenModelAction );
       fileMenu->append ( button.get() );
     }
     {
       Button::ValidRefPtr button ( new Button ( "Close",   new AFW::Core::Icon ( "close" ) ) );
-      button->append ( new AFW::Conditions::HasActiveEditor, new AFW::Actions::Enable );
+      button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );
+      button->append ( new AFW::Conditions::HasActiveEditor ( false ), disable );
       button->append ( new AFW::Actions::CloseActiveEditor );
       fileMenu->append ( button.get() );
     }

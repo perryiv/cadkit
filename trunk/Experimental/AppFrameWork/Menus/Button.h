@@ -9,54 +9,49 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Menu button class.
+//  Base class for all menu commands.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _APP_FRAME_WORK_MENU_BUTTON_CLASS_H_
 #define _APP_FRAME_WORK_MENU_BUTTON_CLASS_H_
 
-#include "AppFrameWork/Menus/MenuCommand.h"
-
-#include "Usul/Pointers/Pointers.h"
-
-#include <string>
+#include "AppFrameWork/Core/Window.h"
 
 
 namespace AFW {
 namespace Menus {
 
 
-class APP_FRAME_WORK_EXPORT MenuButton : public MenuCommand
+class APP_FRAME_WORK_EXPORT Button : public AFW::Core::Window
 {
 public:
 
   // Typedefs.
-  typedef MenuCommand BaseClass;
+  typedef AFW::Core::Window BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MenuButton );
+  USUL_DECLARE_REF_POINTERS ( Button );
 
-  // Constructors
-  MenuButton();
-  MenuButton ( const std::string &text, unsigned short underline = 0 );
+  // Constructor
+  Button ( const std::string &text = "", AFW::Core::Icon *icon = 0x0, unsigned short underline = 0xFFFF );
 
-  // Set/get the icon file.
-  const std::string &                 icon() const { return _icon; }
-  void                                icon ( const std::string &i ) { _icon = i; }
+  // Set/get the character to underline.
+  unsigned short                      underline() const;
+  void                                underline ( unsigned short );
 
 protected:
 
   // Use reference counting.
-  virtual ~MenuButton();
+  virtual ~Button();
 
 private:
 
   // No copying.
-  MenuButton ( const MenuButton & );
-  MenuButton &operator = ( const MenuButton & );
+  Button ( const Button & );
+  Button &operator = ( const Button & );
 
-  std::string _icon;
+  unsigned short _underline;
 };
 
 

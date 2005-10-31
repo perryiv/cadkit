@@ -46,6 +46,6 @@ OpenModelAction::~OpenModelAction()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenModelAction::execute()
+void OpenModelAction::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
 }

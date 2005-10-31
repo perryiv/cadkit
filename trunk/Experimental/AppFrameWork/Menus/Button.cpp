@@ -9,13 +9,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update according to the condition.
+//  Base class for all menu commands.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Actions/NeedsActiveEditor.h"
+#include "AppFrameWork/Menus/Button.h"
 
-using namespace AFW::Actions;
+using namespace AFW::Menus;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,8 @@ using namespace AFW::Actions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsActiveEditor::NeedsActiveEditor() : BaseClass()
+Button::Button ( const std::string &text, AFW::Core::Icon *icon, unsigned short underline ) : BaseClass ( text, icon ),
+  _underline ( underline )
 {
 }
 
@@ -35,18 +36,18 @@ NeedsActiveEditor::NeedsActiveEditor() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsActiveEditor::~NeedsActiveEditor()
+Button::~Button()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the proper state.
+//  Return the underline index.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool NeedsActiveEditor::state()
+unsigned short Button::underline() const
 {
-  return true;
+  return _underline;
 }

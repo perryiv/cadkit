@@ -30,18 +30,20 @@
 
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Constants.h"
-#include "AppFrameWork/Menus/MenuBar.h"
 #include "AppFrameWork/Menus/MenuGroup.h"
-#include "AppFrameWork/Menus/MenuButton.h"
+#include "AppFrameWork/Menus/MenuBar.h"
+#include "AppFrameWork/Menus/Button.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/System/Screen.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include <stdexcept>
 #include <iostream>
+#include <limits>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FoxComponent , FoxComponent::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( FoxComponent );
@@ -75,7 +77,10 @@ namespace
 
 FXDEFMAP ( FoxComponent ) MessageMap[] = 
 {
-  FXMAPFUNC ( FX::SEL_CLOSE, 0, FoxComponent::onCommandClose ),
+  FXMAPFUNC ( FX::SEL_CLOSE,   0, FoxComponent::onCommandClose  ),
+  FXMAPFUNC ( FX::SEL_COMMAND, 0, FoxComponent::onCommandButton ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  0, FoxComponent::onUpdateButton  ),
+  FXMAPFUNC ( FX::SEL_DESTROY, 0, FoxComponent::onDestroyButton ),
 };
 FOX_TOOLS_IMPLEMENT ( FoxComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
 
@@ -91,7 +96,8 @@ FoxComponent::FoxComponent() : BaseClass(),
   _foxApp    ( 0x0 ),
   _mainWin   ( 0x0 ),
   _menuBar   ( 0x0 ),
-  _menuPanes ()
+  _menuPanes (),
+  _windows   ()
 {
 }
 
@@ -137,6 +143,41 @@ Usul::Interfaces::IUnknown *FoxComponent::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Form the text in the appropriate way.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class T > inline std::string makeMenuText ( T *t )
+  {
+    std::string s;
+    if ( t )
+    {
+      s = t->text();
+      unsigned short u ( std::numeric_limits<unsigned short>::max() );
+      AFW::Menus::Button    *b ( dynamic_cast < AFW::Menus::Button    * > ( t ) );
+      AFW::Menus::MenuGroup *g ( dynamic_cast < AFW::Menus::MenuGroup * > ( t ) );
+      if ( b )
+      {
+        u = b->underline();
+      }
+      else if ( g )
+      {
+        u = g->underline();
+      }
+      if ( u < s.length() )
+      {
+        s.insert ( u, "&" );
+      }
+    }
+    return s;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notify the component.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,7 +187,7 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
   // Write to the registry.
   this->_registryWrite();
 
-  // make sure we do not use this again.
+  // Make sure we do not use this again.
   _mainWin = 0x0;
 
   // It worked.
@@ -162,6 +203,10 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
 
 void FoxComponent::buildApplication()
 {
+  // Return now if we are not dirty.
+  if ( false == AFW::Core::Application::instance().dirty() )
+    return;
+
   // Initialize.
   const bool firstTime ( 0x0 == _foxApp );
 
@@ -188,6 +233,9 @@ void FoxComponent::buildApplication()
     // Create the application.
     _foxApp->create();
   }
+
+  // Application is no longer dirty.
+  AFW::Core::Application::instance().dirty ( false );
 }
 
 
@@ -201,9 +249,9 @@ void FoxComponent::_buildMainWindow()
 {
   USUL_ASSERT ( 0x0 != _foxApp );
 
-  // Punt if there is no main window.
+  // Punt if there is no main window, or if it is not dirty.
   AFW::Core::MainWindow::RefPtr mw ( _app.mainWindow() );
-  if ( false == mw.valid() )
+  if ( false == mw.valid() || false == mw->dirty() )
     return;
 
   // If this is the first time...
@@ -234,6 +282,9 @@ void FoxComponent::_buildMainWindow()
   this->_buildPanelBottom();
   this->_buildClientArea();
 #endif
+
+  // No longer dirty.
+  mw->dirty ( false );
 }
 
 
@@ -257,7 +308,7 @@ void FoxComponent::_buildMenuBar()
   if ( 0x0 == _menuBar )
   {
     // Menu bar.
-    _menuBar = new FX::FXMenuBar ( _mainWin );
+    _menuBar = new FX::FXMenuBar ( _mainWin, FX::LAYOUT_SIDE_TOP | FX::LAYOUT_FILL_X );
     FoxTools::Functions::create ( _menuBar );
   }
 
@@ -265,11 +316,14 @@ void FoxComponent::_buildMenuBar()
   this->_cleanTopMenus();
 
   // Build all top-level menus.
-  for ( AFW::Menus::MenuBar::Menus::iterator i = menuBar->menus().begin(); i != menuBar->menus().end(); ++i )
+  for ( AFW::Core::Group::Itr i = menuBar->begin(); i != menuBar->end(); ++i )
   {
-    AFW::Menus::MenuItem::ValidRefPtr item ( *i );
-    this->_buildTopMenu ( dynamic_cast < AFW::Menus::MenuGroup * > ( item.get() ) );
+    AFW::Core::Window::ValidRefPtr w ( *i );
+    this->_buildTopMenu ( dynamic_cast < AFW::Core::Group * > ( w.get() ) );
   }
+
+  // Not dirty now.
+  menuBar->dirty ( false );
 }
 
 
@@ -288,7 +342,7 @@ void FoxComponent::_cleanTopMenus()
 
   // This should delete all the menu panes that are children of the main 
   // window and are on the menu-bar.
-  _menuPanes[MenuBarPaneKey(_mainWin,_menuBar)].clear();
+  _menuPanes[WindowMapKey(_mainWin,_menuBar)].clear();
 }
 
 
@@ -298,7 +352,7 @@ void FoxComponent::_cleanTopMenus()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildTopMenu ( AFW::Menus::MenuGroup *group )
+void FoxComponent::_buildTopMenu ( AFW::Core::Group *group )
 {
   USUL_ASSERT ( 0x0 != _mainWin );
 
@@ -306,22 +360,26 @@ void FoxComponent::_buildTopMenu ( AFW::Menus::MenuGroup *group )
   if ( 0x0 == group || false == group->dirty() )
     return;
 
+  // Handle no text.
+  const std::string text ( Detail::makeMenuText ( group ) );
+  if ( text.empty() )
+    return;
+
   // Make the menu pane.
   MenuPanePtr pane ( new FX::FXMenuPane ( _mainWin ) );
-  _menuPanes[MenuBarPaneKey(_mainWin,_menuBar)].push_back ( pane );
+  _menuPanes[WindowMapKey(_mainWin,_menuBar)].push_back ( pane );
   FoxTools::Functions::create ( pane.get() );
 
   // Make the menu title.
-  const std::string text ( this->_formatItemText ( group ) );
   FX::FXMenuTitle *title ( new FX::FXMenuTitle ( _menuBar, text.c_str(), 0x0, pane.get() ) );
   FoxTools::Functions::create ( title );
 
   // Build all sub-menus.
-  for ( AFW::Menus::MenuGroup::Items::iterator i = group->begin(); i != group->end(); ++i )
+  for ( AFW::Core::Group::Itr i = group->begin(); i != group->end(); ++i )
   {
-    AFW::Menus::MenuItem::ValidRefPtr item ( *i );
-    this->_buildSubMenu    ( pane.get(), dynamic_cast < AFW::Menus::MenuGroup  * > ( item.get() ) );
-    this->_buildMenuButton ( pane.get(), dynamic_cast < AFW::Menus::MenuButton * > ( item.get() ) );
+    AFW::Core::Window::ValidRefPtr w ( *i );
+    this->_buildSubMenu    ( pane.get(), dynamic_cast < AFW::Core::Group   * > ( w.get() ) );
+    this->_buildMenuButton ( pane.get(), dynamic_cast < AFW::Menus::Button * > ( w.get() ) );
   }
 
   // Not dirty now.
@@ -343,6 +401,7 @@ void FoxComponent::destroyApplication()
   try
   {
     _menuPanes.clear();
+    _windows.clear();
     delete _foxApp;
   }
 
@@ -440,6 +499,64 @@ long FoxComponent::onCommandClose ( FXObject *object, FXSelector selector, void 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Called when the button is pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FoxComponent::onCommandButton ( FXObject *object, FXSelector selector, void *data )
+{
+  // Look for a command-action.
+  AFW::Core::Window::RefPtr window ( _windows[object] );
+  if ( window.valid() )
+  {
+    FoxObjectWrapper::RefPtr wrapper ( new FoxObjectWrapper ( object ) );
+    window->callCommandActions ( window, wrapper );
+  }
+
+  // Message handled.
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the button needs to be updated.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FoxComponent::onUpdateButton ( FXObject *object, FXSelector selector, void *data )
+{
+  // Look for a window.
+  AFW::Core::Window::RefPtr window ( _windows[object] );
+  if ( window.valid() )
+  {
+    FoxObjectWrapper::RefPtr wrapper ( new FoxObjectWrapper ( object ) );
+    window->callUpdateActions ( window, wrapper );
+  }
+
+  // Message handled.
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the button is destroyed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FoxComponent::onDestroyButton ( FXObject *object, FXSelector selector, void *data )
+{
+  // Erase the command-action if there is any.
+  _windows.erase ( object );
+
+  // Continue propagation of message.
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the size to make the main window.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -483,12 +600,12 @@ FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildSubMenu ( FX::FXMenuPane *pane, AFW::Menus::MenuGroup *group )
+void FoxComponent::_buildSubMenu ( FX::FXMenuPane *pane, AFW::Core::Group *group )
 {
   USUL_ASSERT ( 0x0 != _menuBar );
 
-  // Return if group is null.
-  if ( 0x0 == group )
+  // Return if group is null, or not dirty.
+  if ( 0x0 == group || false == group->dirty() )
     return;
 
   // TODO
@@ -501,16 +618,21 @@ void FoxComponent::_buildSubMenu ( FX::FXMenuPane *pane, AFW::Menus::MenuGroup *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildMenuButton ( FX::FXMenuPane *pane, AFW::Menus::MenuButton *button )
+void FoxComponent::_buildMenuButton ( FX::FXMenuPane *pane, AFW::Menus::Button *button )
 {
   // Return if null or not dirty.
   if ( 0x0 == button || 0x0 == pane || false == button->dirty() )
     return;
 
   // Make the button.
-  const std::string text ( this->_formatItemText ( button ) );
-  FX::FXMenuCommand *command ( new FX::FXMenuCommand ( pane, text.c_str() ) );
+  const std::string text ( Detail::makeMenuText ( button ) );
+  FX::FXMenuCommand *command ( new FX::FXMenuCommand ( pane, text.c_str(), this->_makeIcon ( button ) ) );
+  command->setTarget ( this );
+  command->setSelector ( 0 );
   FoxTools::Functions::create ( command );
+
+  // Save in our map.
+  _windows[command] = button;
 
   // Not dirty now.
   button->dirty ( false );
@@ -519,21 +641,50 @@ void FoxComponent::_buildMenuButton ( FX::FXMenuPane *pane, AFW::Menus::MenuButt
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Form the text in the appropriate way.
+//  Make an icon. Returns null if it fails.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string FoxComponent::_formatItemText ( AFW::Menus::MenuItem *item ) const
+FX::FXIcon *FoxComponent::_makeIcon ( AFW::Core::Window *w )
 {
-  std::string s;
-  if ( item )
+  // If we have an icon...
+  if ( w && w->icon() )
   {
-    s = item->text();
-    const unsigned short u ( item->underline() );
-    if ( u < s.length() )
+    // If the file exists...
+    const std::string file ( w->icon()->file() );
+    Usul::Predicates::FileExists exists;
+    if ( exists ( file ) )
     {
-      s.insert ( u, "&" );
+      // Make the icon.
+      typedef FoxTools::Icons::Factory Icons;
+      return Icons::instance()->icon ( file );
     }
   }
-  return s;
+
+  // It did not work.
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enable/disable the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window, Usul::Base::Referenced *data )
+{
+  // TODO
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the window is enabled or disabled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *, Usul::Base::Referenced * )
+{
+  return true; // TODO
 }

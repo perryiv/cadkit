@@ -48,11 +48,11 @@ And::~And()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool And::evaluate()
+bool And::evaluate ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
   for ( Group::Iterator i = this->begin(); i != this->end(); ++i )
   {
-    if ( false == (*i)->evaluate() )
+    if ( false == (*i)->evaluate ( object, data ) )
     {
       return false;
     }

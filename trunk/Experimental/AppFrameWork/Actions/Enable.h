@@ -9,23 +9,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update according to the condition.
+//  Enable the control.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _APP_FRAME_WORK_NEEDS_OPEN_MODEL_PLUGIN_UPDATE_ACTION_CLASS_H_
-#define _APP_FRAME_WORK_NEEDS_OPEN_MODEL_PLUGIN_UPDATE_ACTION_CLASS_H_
+#ifndef _APP_FRAME_WORK_ENABLE_ACTION_CLASS_H_
+#define _APP_FRAME_WORK_ENABLE_ACTION_CLASS_H_
 
 #include "AppFrameWork/Actions/UpdateAction.h"
-
-#include "Usul/Pointers/Pointers.h"
 
 
 namespace AFW {
 namespace Actions {
 
 
-class APP_FRAME_WORK_EXPORT NeedsOpenModelPlugin : public UpdateAction
+class APP_FRAME_WORK_EXPORT Enable : public UpdateAction
 {
 public:
 
@@ -33,24 +31,24 @@ public:
   typedef UpdateAction BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( NeedsOpenModelPlugin );
+  USUL_DECLARE_REF_POINTERS ( Enable );
 
   // Constructor
-  NeedsOpenModelPlugin();
+  Enable();
 
-  // Get the proper state.
-  virtual bool                        state();
+  // Perform the action.
+  virtual void                        execute ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
 
 protected:
 
   // Use reference counting.
-  virtual ~NeedsOpenModelPlugin();
+  virtual ~Enable();
 
 private:
 
   // No copying.
-  NeedsOpenModelPlugin ( const NeedsOpenModelPlugin & );
-  NeedsOpenModelPlugin &operator = ( const NeedsOpenModelPlugin & );
+  Enable ( const Enable & );
+  Enable &operator = ( const Enable & );
 };
 
 
@@ -58,4 +56,4 @@ private:
 } // namespace AFW
 
 
-#endif //_APP_FRAME_WORK_NEEDS_OPEN_MODEL_PLUGIN_UPDATE_ACTION_CLASS_H_
+#endif //_APP_FRAME_WORK_ENABLE_ACTION_CLASS_H_

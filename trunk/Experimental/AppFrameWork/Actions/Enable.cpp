@@ -9,11 +9,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update according to the condition.
+//  Enable the control.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Actions/NeedsNewModelPlugin.h"
+#include "AppFrameWork/Actions/Enable.h"
+
+#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Core/Application.h"
 
 using namespace AFW::Actions;
 
@@ -24,7 +27,7 @@ using namespace AFW::Actions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsNewModelPlugin::NeedsNewModelPlugin() : BaseClass()
+Enable::Enable() : BaseClass()
 {
 }
 
@@ -35,18 +38,20 @@ NeedsNewModelPlugin::NeedsNewModelPlugin() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsNewModelPlugin::~NeedsNewModelPlugin()
+Enable::~Enable()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the proper state.
+//  Perform the action.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool NeedsNewModelPlugin::state()
+void Enable::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
-  return true;
+  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  if ( window.valid() )
+    AFW::Core::Application::instance().guiServer()->enableWindow ( true, window.get(), data );
 }

@@ -16,45 +16,29 @@
 #ifndef _APP_FRAME_WORK_MENU_GROUP_CLASS_H_
 #define _APP_FRAME_WORK_MENU_GROUP_CLASS_H_
 
-#include "AppFrameWork/Menus/MenuItem.h"
-
-#include "Usul/Pointers/Pointers.h"
-
-#include <vector>
-#include <string>
+#include "AppFrameWork/Core/Group.h"
 
 
 namespace AFW {
 namespace Menus {
 
 
-class APP_FRAME_WORK_EXPORT MenuGroup : public MenuItem
+class APP_FRAME_WORK_EXPORT MenuGroup : public AFW::Core::Group
 {
 public:
 
   // Typedefs.
-  typedef MenuItem BaseClass;
-  typedef std::vector < MenuItem::ValidAccessRefPtr > Items;
-  typedef Items::iterator Itr;
-  typedef Items::const_iterator ConstItr;
+  typedef AFW::Core::Group BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MenuGroup );
 
-  // Constructors
-  MenuGroup();
-  MenuGroup ( const std::string &text, unsigned short underline = 0 );
+  // Constructor
+  MenuGroup ( const std::string &text = "", unsigned short underline = 0xFFFF );
 
-  // Append the item.
-  void                                append ( MenuItem * );
-
-  // Iterators.
-  ConstItr                            begin() const { return _items.begin(); }
-  Itr                                 begin()       { return _items.begin(); }
-
-  // Iterators.
-  ConstItr                            end() const { return _items.end(); }
-  Itr                                 end()       { return _items.end(); }
+  // Set/get the character to underline.
+  unsigned short                      underline() const;
+  void                                underline ( unsigned short );
 
 protected:
 
@@ -67,7 +51,7 @@ private:
   MenuGroup ( const MenuGroup & );
   MenuGroup &operator = ( const MenuGroup & );
 
-  Items _items;
+  unsigned short _underline;
 };
 
 

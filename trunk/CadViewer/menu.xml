@@ -178,7 +178,7 @@
           <info>Jump to the top view</info>
         </button>
         <button>
-          <text>Botton</text>
+          <text>Bottom</text>
           <id>goto_bottom_view</id>
           <info>Jump to the bottom view</info>
         </button>

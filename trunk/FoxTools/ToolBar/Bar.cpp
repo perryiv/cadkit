@@ -29,7 +29,8 @@ Bar::Bar ( FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : BaseCl
   _commands     (),
   _bar          ( 0x0 ),
   _dockedSite   ( dockedSite ),
-  _undockedSite ( undockedSite )
+  _undockedSite ( undockedSite ),
+  _layout       ( 0 )
 {
 }
 
@@ -44,7 +45,8 @@ Bar::Bar ( const std::string& name, FX::FXComposite *dockedSite, FX::FXComposite
   _commands     (),
   _bar          ( 0x0 ),
   _dockedSite   ( dockedSite ),
-  _undockedSite ( undockedSite )
+  _undockedSite ( undockedSite ),
+  _layout       ( 0 )
 {
 }
 
@@ -177,7 +179,7 @@ void Bar::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Bar::build ( bool shown, unsigned int layout, int x, int y, int width, int height )
+void Bar::build ( bool shown, int x, int y, int width, int height )
 {
   USUL_ASSERT ( _dockedSite );
   USUL_ASSERT ( _undockedSite );
@@ -185,7 +187,8 @@ void Bar::build ( bool shown, unsigned int layout, int x, int y, int width, int 
   // Make sure we have a toolbar bar.
   if ( !_bar )
   {
-    _bar = new FX::FXToolBar ( _dockedSite, _undockedSite, layout, x, y, width, height );
+    // Use internal layout if it exists.
+    _bar = new FX::FXToolBar ( _dockedSite, _undockedSite, _layout, x, y, width, height );
     new FX::FXToolBarGrip ( _bar, _bar, FX::FXMenuBar::ID_TOOLBARGRIP, FX::TOOLBARGRIP_DOUBLE );
   }
 
@@ -293,4 +296,14 @@ void Bar::hide()
   window->hide();
 }
 
+
+void Bar::layout ( unsigned int lo ) 
+{ 
+  _layout = lo; 
+}
+
+unsigned int Bar::layout () const
+{ 
+  return _layout; 
+}
 

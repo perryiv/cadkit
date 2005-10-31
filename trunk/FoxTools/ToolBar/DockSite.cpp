@@ -84,7 +84,8 @@ void DockSite::build()
   unsigned int layout ( FX::LAYOUT_SIDE_TOP | FX::FRAME_RAISED );
 
   // We know we have at least one
-  _bars.front()->build( true, layout | FX::LAYOUT_DOCK_NEXT );
+  _bars.front()->layout ( _bars.front()->layout() | layout | FX::LAYOUT_DOCK_NEXT );
+  _bars.front()->build( true );
 
   // Go through the rest
   for( Bars::iterator i = _bars.begin() + 1; i != _bars.end(); ++i )
@@ -168,7 +169,8 @@ void DockSite::build()
     toolBar->undock( x, y );
   }
 #endif
-    (*i)->build( true, layout | FX::LAYOUT_DOCK_SAME );
+    (*i)->layout ( (*i)->layout() | layout | FX::LAYOUT_DOCK_SAME );
+    (*i)->build( true );
   }
 }
 

@@ -1875,10 +1875,9 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     if ( _recursiveMatchNodeName ( name, m, &match ) )
     {
       // We found a match, so replace it
-      std::cout << "Match found, replacing node" << std::endl;
-      //matched = true;
+      //std::cout << "Match found, replacing node" << std::endl;
       _autoPlacement = false; // do not relocate model if it isn't new
-/*      node->setName ( name );
+      /*node->setName ( name );
       if ( match.parent->replaceChild ( match.node, node.get() ) )
       {
         matched = true;
@@ -1886,7 +1885,7 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     }
 
     // Now rebuild the scribe node corresponding to the match in _models
-/*    if ( matched )
+    if ( matched )
     {
       // Replace the scribe node at the same position in _scribeBranch
       // as the replaced node was in _models, using match.modelNum
@@ -1896,11 +1895,9 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
       scribe->setWireframeLineWidth( _prefs->scribeWidth() );
       scribe->addChild ( node.get() );
       _scribeBranch->setChild ( match.modelNum, scribe.get() );
-    }*/
+    }
   }
-  
-  _deleteScene(); // still delete the scene
-  
+    
   // Otherwise, add it as a new node
   if ( !matched )
   {
@@ -2893,23 +2890,7 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
   }
   
   if ( _autoPlacement )
-  {
-    // get _models bounding sphere and translate & scale accordingly
-    const osg::BoundingSphere &sphere = _models->getBound();
-    
-    // center the models
-    osg::Matrixf autoPlaceXform;
-    
-    // scale model only, not grid
-    const float scale = _prefs->autoPlaceRadius() / sphere.radius();
-    autoPlaceXform.makeScale( scale, scale, scale );
-    _models->preMult( autoPlaceXform );
-    
-    // translate grid & model
-    const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
-    autoPlaceXform.makeTranslate( osg::Vec3 ( ac[0], ac[1], ac[2] ) - sphere.center() );
-    _navBranch->setMatrix( autoPlaceXform );
-  }
+    _doAutoPlacement(true);
 }
 
 
@@ -3628,6 +3609,34 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
 #endif
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Navigation -- auto place & size model
+//
+///////////////////////////////////////////////////////////////////////////////
 
+void Application::_doAutoPlacement( const bool replace_matrix )
+{
+  // get _models bounding sphere and translate & scale accordingly
+  const osg::BoundingSphere &sphere = _models->getBound();
+
+  // center the models
+  osg::Matrixf autoPlaceXform;
+
+  // scale model only, not grid
+  const float scale = _prefs->autoPlaceRadius() / sphere.radius();
+  autoPlaceXform.makeScale( scale, scale, scale );
+  _models->preMult( autoPlaceXform );
+
+  // translate grid & model
+  const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
+  autoPlaceXform.makeTranslate( osg::Vec3 ( ac[0], ac[1], ac[2] ) - sphere.center() );
+
+  // either replace the nav matrix or multiply the current one
+  if( replace_matrix )
+    _navBranch->setMatrix( autoPlaceXform );
+  else
+    _navBranch->postMult( autoPlaceXform );
+}
 
 

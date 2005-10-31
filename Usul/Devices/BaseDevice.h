@@ -35,9 +35,6 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  BaseDevice ( );
-  virtual ~BaseDevice();
-
   virtual void navigating( bool b ) { _navigating = b; }
   virtual bool navigating()         { return _navigating; }
 
@@ -47,6 +44,9 @@ public:
   virtual void clear();
 
 protected:
+  BaseDevice ( );
+  virtual ~BaseDevice();
+
   void _notifyButtonPressed  ( unsigned int button, const State& state );
   void _notifyButtonReleased ( unsigned int button, const State& state );
 

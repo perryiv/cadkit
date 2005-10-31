@@ -42,7 +42,6 @@ public:
 
   // Build
   void            build ( bool shown = true,
-                          unsigned int layout = FX::LAYOUT_CENTER_X | FX::LAYOUT_CENTER_Y | FX::FRAME_RAISED | FX::LAYOUT_DOCK_SAME, 
                           int x = 0, 
                           int y = 0, 
                           int width = 0,
@@ -63,6 +62,10 @@ public:
   void            show();
   void            hide();
 
+  // Add layout options.  This is replace of the layout sent to build.
+  void            layout ( unsigned int lo );
+  unsigned int    layout () const;
+
 protected:
   // Use reference counting
   virtual ~Bar();
@@ -73,7 +76,7 @@ private:
   FX::FXComposite *_dockedSite;
   FX::FXComposite *_undockedSite;
   FX::FXToolBar   *_bar;
-
+  unsigned int     _layout;
 
 };
 

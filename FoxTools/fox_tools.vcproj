@@ -368,6 +368,12 @@
 					RelativePath=".\ToolBar\Separator.h">
 				</File>
 				<File
+					RelativePath=".\ToolBar\Slider.cpp">
+				</File>
+				<File
+					RelativePath=".\ToolBar\Slider.h">
+				</File>
+				<File
 					RelativePath=".\ToolBar\ToggleButton.cpp">
 				</File>
 				<File

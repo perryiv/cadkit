@@ -152,10 +152,18 @@ bool Application::cleanup()
 
 void Application::_notifyClose()
 {
+  // Loop through the plugins.
   PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::INotifyClose::IID ) );
   for ( PluginSet::iterator i = plugins.begin(); i != plugins.end(); ++i )
   {
     Usul::Interfaces::INotifyClose::QueryPtr notify ( (*i).get() );
+    if ( notify.valid() )
+      notify->notifyClose ( 0x0 );
+  }
+
+  // Explicitely notify our GUI server.
+  {
+    Usul::Interfaces::INotifyClose::QueryPtr notify ( _gui );
     if ( notify.valid() )
       notify->notifyClose ( 0x0 );
   }

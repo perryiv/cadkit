@@ -9,47 +9,46 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  One of the contained conditions has to be true.
+//  Returns true if there is an active editor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _APP_FRAME_WORK_OR_CONDITION_CLASS_H_
-#define _APP_FRAME_WORK_OR_CONDITION_CLASS_H_
+#ifndef _APP_FRAME_WORK_HAS_ACTIVE_EDITOR_CONDITION_CLASS_H_
+#define _APP_FRAME_WORK_HAS_ACTIVE_EDITOR_CONDITION_CLASS_H_
 
-#include "AppFrameWork/Conditions/Group.h"
+#include "AppFrameWork/Conditions/Condition.h"
 
 
 namespace AFW {
 namespace Conditions {
 
 
-class APP_FRAME_WORK_EXPORT Or : public Group
+class APP_FRAME_WORK_EXPORT HasActiveEditor : public Condition
 {
 public:
 
   // Typedefs.
-  typedef Group BaseClass;
-  typedef std::vector < Condition::ValidRefPtr > Components;
+  typedef Condition BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Or );
+  USUL_DECLARE_REF_POINTERS ( HasActiveEditor );
 
   // Constructor
-  Or();
+  HasActiveEditor();
 
-  // One of the contained conditions has to be true.
+  // Returns true if there is an active editor.
   virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
 
 protected:
 
   // Use reference counting.
-  virtual ~Or();
+  virtual ~HasActiveEditor();
 
 private:
 
   // No copying.
-  Or ( const Or & );
-  Or &operator = ( const Or & );
+  HasActiveEditor ( const HasActiveEditor & );
+  HasActiveEditor &operator = ( const HasActiveEditor & );
 };
 
 
@@ -57,4 +56,4 @@ private:
 } // namespace AFW
 
 
-#endif //_APP_FRAME_WORK_OR_CONDITION_CLASS_H_
+#endif //_APP_FRAME_WORK_HAS_ACTIVE_EDITOR_CONDITION_CLASS_H_

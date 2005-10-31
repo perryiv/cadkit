@@ -15,8 +15,6 @@
 
 #include "AppFrameWork/Menus/MenuGroup.h"
 
-#include "usul/Exceptions/Thrower.h"
-
 using namespace AFW::Menus;
 
 
@@ -26,20 +24,8 @@ using namespace AFW::Menus;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuGroup::MenuGroup() : BaseClass(),
-  _items()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuGroup::MenuGroup ( const std::string &text, unsigned short underline ) : BaseClass ( text, underline ),
-  _items()
+MenuGroup::MenuGroup ( const std::string &text, unsigned short underline ) : BaseClass ( text ),
+  _underline ( underline )
 {
 }
 
@@ -57,28 +43,11 @@ MenuGroup::~MenuGroup()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Append the item.
+//  Return the underline index.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MenuGroup::append ( MenuItem *item )
+unsigned short MenuGroup::underline() const
 {
-  // Ignore invalid items.
-  if ( 0x0 == item )
-    return;
-
-  // Check for parent.
-  if ( 0x0 != item->parent() )
-    Usul::Exceptions::Thrower<std::runtime_error> 
-      ( "Error 2607246966: menu item '", this->text(), "' already has a parent" );
-
-  // Append to our list.
-  _items.push_back ( item );
-
-  // Set the parent.
-  item->_setParent ( this );
-
-  // Set dirty flags.
-  item->dirty ( true );
-  this->dirty ( true );
+  return _underline;
 }

@@ -37,7 +37,7 @@ public:
   Always();
 
   // The condition is always met.
-  virtual bool                    evaluate();
+  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
 
 protected:
 

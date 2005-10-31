@@ -14,10 +14,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Menus/MenuBar.h"
-#include "AppFrameWork/Menus/MenuButton.h"
-#include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Menus/Button.h"
+#include "AppFrameWork/Core/Group.h"
 #include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Conditions/HasNewModelPlugin.h"
+#include "AppFrameWork/Conditions/HasOpenModelPlugin.h"
+#include "AppFrameWork/Conditions/HasActiveEditor.h"
+#include "AppFrameWork/Actions/Enable.h"
+#include "AppFrameWork/Actions/NewModelAction.h"
+#include "AppFrameWork/Actions/OpenModelAction.h"
+#include "AppFrameWork/Actions/CloseActiveEditor.h"
 
 #include "Usul/Bits/Bits.h"
 
@@ -32,10 +38,7 @@ using namespace AFW::Menus;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuBar::MenuBar() : BaseClass(),
-  _menus  (),
-  _flags  ( DIRTY ),
-  _parent ( 0x0 )
+MenuBar::MenuBar() : BaseClass()
 {
 }
 
@@ -48,43 +51,6 @@ MenuBar::MenuBar() : BaseClass(),
 
 MenuBar::~MenuBar()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the dirty flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MenuBar::dirty ( bool state )
-{
-  const unsigned int bit ( MenuBar::DIRTY );
-  if ( state )
-  {
-    _flags = Usul::Bits::add ( _flags, bit );
-
-    // Set parent as dirty too.
-    if ( _parent )
-      _parent->dirty ( true );
-  }
-  else
-  {
-    _flags = Usul::Bits::remove ( _flags, bit );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the dirty flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MenuBar::dirty() const
-{
-  const unsigned int bit ( MenuBar::DIRTY );
-  return Usul::Bits::has ( _flags, bit );
 }
 
 
@@ -116,12 +82,26 @@ void MenuBar::buildDefault()
 void MenuBar::_buildDefault()
 {
   // File menu.
-  MenuGroup::ValidRefPtr fileMenu ( new MenuGroup ( "File" ) );
-    MenuButton::ValidRefPtr newButton   ( new MenuButton ( "New..."  ) );
-    MenuButton::ValidRefPtr openButton  ( new MenuButton ( "Open..." ) );
-    MenuButton::ValidRefPtr closeButton ( new MenuButton ( "Close"   ) );
-    fileMenu->append ( newButton.get() );
-    fileMenu->append ( openButton.get() );
-    fileMenu->append ( closeButton.get() );
-  _menus.push_back ( fileMenu.get() );
+  AFW::Core::Group::ValidRefPtr fileMenu ( new AFW::Core::Group ( "File" ) );
+  {
+    {
+      Button::ValidRefPtr button ( new Button ( "New...",  new AFW::Core::Icon ( "new"   ) ) );
+      button->append ( new AFW::Conditions::HasNewModelPlugin, new AFW::Actions::Enable );
+      button->append ( new AFW::Actions::NewModelAction );
+      fileMenu->append ( button.get() );
+    }
+    {
+      Button::ValidRefPtr button ( new Button ( "Open...", new AFW::Core::Icon ( "open"  ) ) );
+      button->append ( new AFW::Conditions::HasOpenModelPlugin, new AFW::Actions::Enable );
+      button->append ( new AFW::Actions::OpenModelAction );
+      fileMenu->append ( button.get() );
+    }
+    {
+      Button::ValidRefPtr button ( new Button ( "Close",   new AFW::Core::Icon ( "close" ) ) );
+      button->append ( new AFW::Conditions::HasActiveEditor, new AFW::Actions::Enable );
+      button->append ( new AFW::Actions::CloseActiveEditor );
+      fileMenu->append ( button.get() );
+    }
+  }
+  this->append ( fileMenu.get() );
 }

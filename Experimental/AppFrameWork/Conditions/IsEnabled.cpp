@@ -14,6 +14,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Conditions/IsEnabled.h"
+#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Core/Application.h"
 
 using namespace AFW::Conditions;
 
@@ -46,7 +48,8 @@ IsEnabled::~IsEnabled()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool IsEnabled::evaluate()
+bool IsEnabled::evaluate ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
-  return false; // TODO
+  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  return ( ( window.valid() ) ? AFW::Core::Application::instance().guiServer()->isWindowEnabled ( window.get(), data ) : false );
 }

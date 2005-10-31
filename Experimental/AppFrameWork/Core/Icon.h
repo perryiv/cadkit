@@ -9,48 +9,56 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Base class for all update actions.
+//  Icon class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _APP_FRAME_WORK_UPDATE_ACTION_CLASS_H_
-#define _APP_FRAME_WORK_UPDATE_ACTION_CLASS_H_
+#ifndef _APP_FRAME_WORK_ICON_CLASS_H_
+#define _APP_FRAME_WORK_ICON_CLASS_H_
 
-#include "AppFrameWork/Actions/Action.h"
+#include "AppFrameWork/Core/Object.h"
+
+#include <string>
 
 
 namespace AFW {
-namespace Actions {
+namespace Core {
 
 
-class APP_FRAME_WORK_EXPORT UpdateAction : public Action
+class APP_FRAME_WORK_EXPORT Icon : public Object
 {
 public:
 
   // Typedefs.
-  typedef Action BaseClass;
+  typedef Object BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( UpdateAction );
+  USUL_DECLARE_REF_POINTERS ( Icon );
+
+  // Constructor
+  Icon ( const std::string &file = "" );
+
+  // Set/get the filename.
+  void                                file ( const std::string & );
+  const std::string &                 file() const;
 
 protected:
 
-  // Constructor
-  UpdateAction();
-
   // Use reference counting.
-  virtual ~UpdateAction();
+  virtual ~Icon();
 
 private:
 
   // No copying.
-  UpdateAction ( const UpdateAction & );
-  UpdateAction &operator = ( const UpdateAction & );
+  Icon ( const Icon & );
+  Icon &operator = ( const Icon & );
+
+  std::string _file;
 };
 
 
-} // namespace Actions
+} // namespace Core
 } // namespace AFW
 
 
-#endif //_APP_FRAME_WORK_UPDATE_ACTION_CLASS_H_
+#endif //_APP_FRAME_WORK_ICON_CLASS_H_

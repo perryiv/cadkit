@@ -16,28 +16,25 @@
 #ifndef _APP_FRAME_WORK_BASE_CONDITION_CLASS_H_
 #define _APP_FRAME_WORK_BASE_CONDITION_CLASS_H_
 
-#include "AppFrameWork/Core/Export.h"
-
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
+#include "AppFrameWork/Core/Object.h"
 
 
 namespace AFW {
 namespace Conditions {
 
 
-class APP_FRAME_WORK_EXPORT Condition : public Usul::Base::Referenced
+  class APP_FRAME_WORK_EXPORT Condition : public AFW::Core::Object
 {
 public:
 
   // Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef AFW::Core::Object BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Condition );
 
   // See if the condition is met.
-  virtual bool                    evaluate() = 0;
+  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 ) = 0;
 
 protected:
 

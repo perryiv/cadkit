@@ -9,25 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Menu button class.
+//  Icon class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Menus/MenuButton.h"
+#include "AppFrameWork/Core/Icon.h"
 
-using namespace AFW::Menus;
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/Errors/Stack.h"
+#include "Usul/CommandLine/Arguments.h"
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuButton::MenuButton() : BaseClass(),
-  _icon()
-{
-}
+using namespace AFW::Core;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,9 +28,27 @@ MenuButton::MenuButton() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuButton::MenuButton ( const std::string &text, unsigned short underline ) : BaseClass ( text, underline ),
-  _icon()
+Icon::Icon ( const std::string &file ) : BaseClass(),
+  _file ( file )
 {
+  // Does the file exist?
+  Usul::Predicates::FileExists exists;
+  if ( false == exists ( _file ) )
+  {
+    // Try the application's directory.
+    std::ostringstream path;
+    path << Usul::CommandLine::Arguments::instance().directory() << '/' << _file << ".gif";
+    if ( false == exists ( path.str() ) )
+    {
+      std::ostringstream out;
+      out << "Warning 1499293566: icon file " << file << " not found. Tried: '" << _file << "' and '" << path.str() << "'";
+      Usul::Errors::Stack::instance().push ( out.str() );
+    }
+    else
+    {
+      _file = path.str();
+    }
+  }
 }
 
 
@@ -48,6 +58,18 @@ MenuButton::MenuButton ( const std::string &text, unsigned short underline ) : B
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuButton::~MenuButton()
+Icon::~Icon()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string &Icon::file() const
+{
+  return _file;
 }

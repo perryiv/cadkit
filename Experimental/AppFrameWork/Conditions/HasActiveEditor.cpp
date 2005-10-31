@@ -9,13 +9,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Enable the control if the condition is met.
+//  Returns true if there is an active editor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Actions/EnableIf.h"
+#include "AppFrameWork/Conditions/HasActiveEditor.h"
 
-using namespace AFW::Actions;
+using namespace AFW::Conditions;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,8 +24,7 @@ using namespace AFW::Actions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-EnableIf::EnableIf ( UpdateAction *condition ) : BaseClass(),
-  _condition ( condition )
+HasActiveEditor::HasActiveEditor() : BaseClass()
 {
 }
 
@@ -36,18 +35,18 @@ EnableIf::EnableIf ( UpdateAction *condition ) : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-EnableIf::~EnableIf()
+HasActiveEditor::~HasActiveEditor()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Perform the action.
+//  Returns true if there is an active editor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool EnableIf::state()
+bool HasActiveEditor::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
 {
-  return _condition->state();
+  return true; // TODO
 }

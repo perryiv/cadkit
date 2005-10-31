@@ -9,17 +9,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Base class for all menu items window class.
+//  Base class for all groups.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Menus/MenuGroup.h"
+#include "AppFrameWork/Core/Group.h"
 
-#include "Usul/Bits/Bits.h"
-
-#include <limits>
-
-using namespace AFW::Menus;
+using namespace AFW::Core;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,26 +24,8 @@ using namespace AFW::Menus;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuItem::MenuItem() : BaseClass(),
-  _text      (),
-  _underline ( std::numeric_limits<unsigned short>::max() ),
-  _flags     ( DIRTY ),
-  _parent    ( 0x0 )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuItem::MenuItem ( const std::string &text, unsigned short underline ) : BaseClass(),
-  _text      ( text ),
-  _underline ( underline ),
-  _flags     ( DIRTY ),
-  _parent    ( 0x0 )
+Group::Group ( const std::string &text, Icon *icon ) : BaseClass ( text, icon ),
+  _windows()
 {
 }
 
@@ -58,55 +36,69 @@ MenuItem::MenuItem ( const std::string &text, unsigned short underline ) : BaseC
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuItem::~MenuItem()
+Group::~Group()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the dirty flag.
+//  Append the window.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MenuItem::dirty ( bool state )
+void Group::append ( Window *w )
 {
-  const unsigned int bit ( MenuItem::DIRTY );
-  if ( state )
-  {
-    _flags = Usul::Bits::add ( _flags, bit );
-
-    // Set parent as dirty too.
-    if ( _parent )
-      _parent->dirty ( true );
-  }
-  else
-  {
-    _flags = Usul::Bits::remove ( _flags, bit );
-  }
+  _windows.push_back ( w );
+  this->dirty ( true );
+  w->dirty ( true );
+  w->_setParent ( this );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the dirty flag.
+//  Iterators to the contained windows.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MenuItem::dirty() const
+Group::Itr Group::begin()
 {
-  const unsigned int bit ( MenuItem::DIRTY );
-  return Usul::Bits::has ( _flags, bit );
+  return _windows.begin();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the parent.
+//  Iterators to the contained windows.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MenuItem::_setParent ( MenuGroup *group )
+Group::ConstItr Group::begin() const
 {
-  _parent = group;
+  return _windows.begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterators to the contained windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Group::Itr Group::end()
+{
+  return _windows.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterators to the contained windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Group::ConstItr Group::end() const
+{
+  return _windows.end();
 }

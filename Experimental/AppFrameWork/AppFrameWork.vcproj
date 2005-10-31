@@ -58,7 +58,8 @@
 				TypeLibraryName=".\Debug/AppFrameWorkd.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y Icons\*.* %USUL_LIB_DIR%"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -125,7 +126,8 @@
 				TypeLibraryName=".\Release/AppFrameWork.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y Icons\*.* %USUL_LIB_DIR%"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -171,10 +173,46 @@
 					RelativePath=".\Core\Export.h">
 				</File>
 				<File
+					RelativePath=".\Core\Group.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Core\Group.h">
+				</File>
+				<File
+					RelativePath=".\Core\Icon.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Icon.h">
+				</File>
+				<File
 					RelativePath=".\Core\MainWindow.cpp">
 				</File>
 				<File
 					RelativePath=".\Core\MainWindow.h">
+				</File>
+				<File
+					RelativePath=".\Core\Object.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Object.h">
+				</File>
+				<File
+					RelativePath=".\Core\Window.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Window.h">
 				</File>
 			</Filter>
 			<Filter
@@ -218,28 +256,10 @@
 					Name="Update"
 					Filter="">
 					<File
-						RelativePath=".\Actions\EnableIf.cpp">
+						RelativePath=".\Actions\Enable.cpp">
 					</File>
 					<File
-						RelativePath=".\Actions\EnableIf.h">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsActiveEditor.cpp">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsActiveEditor.h">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsNewModelPlugin.cpp">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsNewModelPlugin.h">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsOpenModelPlugin.cpp">
-					</File>
-					<File
-						RelativePath=".\Actions\NeedsOpenModelPlugin.h">
+						RelativePath=".\Actions\Enable.h">
 					</File>
 					<File
 						RelativePath=".\Actions\UpdateAction.cpp">
@@ -253,34 +273,22 @@
 				Name="Menus"
 				Filter="">
 				<File
+					RelativePath=".\Menus\Button.cpp">
+				</File>
+				<File
+					RelativePath=".\Menus\Button.h">
+				</File>
+				<File
 					RelativePath=".\Menus\MenuBar.cpp">
 				</File>
 				<File
 					RelativePath=".\Menus\MenuBar.h">
 				</File>
 				<File
-					RelativePath=".\Menus\MenuButton.cpp">
-				</File>
-				<File
-					RelativePath=".\Menus\MenuButton.h">
-				</File>
-				<File
-					RelativePath=".\Menus\MenuCommand.cpp">
-				</File>
-				<File
-					RelativePath=".\Menus\MenuCommand.h">
-				</File>
-				<File
 					RelativePath=".\Menus\MenuGroup.cpp">
 				</File>
 				<File
 					RelativePath=".\Menus\MenuGroup.h">
-				</File>
-				<File
-					RelativePath=".\Menus\MenuItem.cpp">
-				</File>
-				<File
-					RelativePath=".\Menus\MenuItem.h">
 				</File>
 			</Filter>
 			<Filter
@@ -309,6 +317,24 @@
 				</File>
 				<File
 					RelativePath=".\Conditions\Group.h">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasActiveEditor.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasActiveEditor.h">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasNewModelPlugin.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasNewModelPlugin.h">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasOpenModelPlugin.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasOpenModelPlugin.h">
 				</File>
 				<File
 					RelativePath=".\Conditions\IsEnabled.cpp">

@@ -48,11 +48,11 @@ Or::~Or()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Or::evaluate()
+bool Or::evaluate ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
   for ( Group::Iterator i = this->begin(); i != this->end(); ++i )
   {
-    if ( true == (*i)->evaluate() )
+    if ( true == (*i)->evaluate ( object, data ) )
     {
       return true;
     }

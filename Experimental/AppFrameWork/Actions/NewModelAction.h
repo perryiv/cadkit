@@ -18,8 +18,6 @@
 
 #include "AppFrameWork/Actions/CommandAction.h"
 
-#include "Usul/Pointers/Pointers.h"
-
 
 namespace AFW {
 namespace Actions {
@@ -39,7 +37,7 @@ public:
   NewModelAction();
 
   // Perform the action.
-  virtual void                        execute();
+  virtual void                        execute ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
 
 protected:
 

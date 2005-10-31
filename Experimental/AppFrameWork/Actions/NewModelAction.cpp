@@ -46,6 +46,6 @@ NewModelAction::~NewModelAction()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void NewModelAction::execute()
+void NewModelAction::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
 {
 }

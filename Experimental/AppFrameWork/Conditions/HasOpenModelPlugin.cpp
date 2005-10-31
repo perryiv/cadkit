@@ -9,13 +9,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update according to the condition.
+//  Returns true if there is an appropriate plugin.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Actions/NeedsOpenModelPlugin.h"
+#include "AppFrameWork/Conditions/HasOpenModelPlugin.h"
 
-using namespace AFW::Actions;
+using namespace AFW::Conditions;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ using namespace AFW::Actions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsOpenModelPlugin::NeedsOpenModelPlugin() : BaseClass()
+HasOpenModelPlugin::HasOpenModelPlugin() : BaseClass()
 {
 }
 
@@ -35,18 +35,18 @@ NeedsOpenModelPlugin::NeedsOpenModelPlugin() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NeedsOpenModelPlugin::~NeedsOpenModelPlugin()
+HasOpenModelPlugin::~HasOpenModelPlugin()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the proper state.
+//  Returns true if there is an appropriate plugin.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool NeedsOpenModelPlugin::state()
+bool HasOpenModelPlugin::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
 {
-  return true;
+  return true; // TODO
 }

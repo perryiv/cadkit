@@ -1608,8 +1608,15 @@ void Application::_gotoViewFront ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
-    _navBranch->setMatrix( trans );
+    if ( !_autoPlacement )
+    {
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
+      _navBranch->setMatrix( trans );
+    }
+    else
+    {
+      _doAutoPlacement( true );
+    }
   }
 }
 
@@ -1632,10 +1639,18 @@ void Application::_gotoViewBack ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    if ( !_autoPlacement )
+    {
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      _navBranch->setMatrix( zero*rot*trans );
+    }
+    else
+    {
+      _navBranch->setMatrix( rot );
+      _doAutoPlacement( false );
+    }
   }
 }
 
@@ -1658,10 +1673,18 @@ void Application::_gotoViewTop ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    if ( !_autoPlacement )
+    {
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      _navBranch->setMatrix( zero*rot*trans );
+    }
+    else
+    {
+      _navBranch->setMatrix( rot );
+      _doAutoPlacement( false );
+    }
   }
 }
 
@@ -1684,10 +1707,18 @@ void Application::_gotoViewBottom ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    if ( !_autoPlacement )
+    {
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      _navBranch->setMatrix( zero*rot*trans );
+    }
+    else
+    {
+      _navBranch->setMatrix( rot );
+      _doAutoPlacement( false );
+    }
   }
 }
 
@@ -1710,10 +1741,18 @@ void Application::_gotoViewRight ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    if ( !_autoPlacement )
+    {
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      _navBranch->setMatrix( zero*rot*trans );
+    }
+    else
+    {
+      _navBranch->setMatrix( rot );
+      _doAutoPlacement( false );
+    }
   }
 }
 
@@ -1736,10 +1775,18 @@ void Application::_gotoViewLeft ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    if ( !_autoPlacement )
+    {    
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      _navBranch->setMatrix( zero*rot*trans );
+    }
+    else
+    {
+      _navBranch->setMatrix( rot );
+      _doAutoPlacement( false );
+    }
   }
 }
 

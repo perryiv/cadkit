@@ -409,7 +409,10 @@ protected:
 
   // Patch node file with diff
   bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
-
+  
+  // Perform Auto Placement of model
+  void                          _doAutoPlacement( const bool replace_matrix );
+  
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hideSelected     ( MenuKit::Message m, MenuKit::Item *item );

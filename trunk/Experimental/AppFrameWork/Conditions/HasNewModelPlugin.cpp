@@ -24,7 +24,7 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HasNewModelPlugin::HasNewModelPlugin() : BaseClass()
+HasNewModelPlugin::HasNewModelPlugin ( bool want ) : BaseClass ( want )
 {
 }
 

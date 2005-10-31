@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( HasOpenModelPlugin );
 
   // Constructor
-  HasOpenModelPlugin();
+  HasOpenModelPlugin ( bool want = true );
 
   // Returns true if there is an appropriate plugin.
   virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );

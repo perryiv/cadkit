@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Enable );
 
   // Constructor
-  Enable();
+  Enable ( bool state = true );
 
   // Perform the action.
   virtual void                        execute ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
@@ -49,6 +49,8 @@ private:
   // No copying.
   Enable ( const Enable & );
   Enable &operator = ( const Enable & );
+
+  bool _state;
 };
 
 

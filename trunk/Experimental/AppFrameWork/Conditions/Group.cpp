@@ -24,7 +24,7 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Group() : BaseClass(),
+Group::Group ( bool want ) : BaseClass ( want ),
   _kids()
 {
 }

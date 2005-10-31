@@ -24,7 +24,7 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-HasOpenModelPlugin::HasOpenModelPlugin() : BaseClass()
+HasOpenModelPlugin::HasOpenModelPlugin ( bool want ) : BaseClass ( want )
 {
 }
 
@@ -48,5 +48,5 @@ HasOpenModelPlugin::~HasOpenModelPlugin()
 
 bool HasOpenModelPlugin::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
 {
-  return true; // TODO
+  return ( true == _want ); // TODO
 }

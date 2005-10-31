@@ -29,6 +29,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IGUIServer.h"
 #include "Usul/Interfaces/INotifyClose.h"
+#include "Usul/Interfaces/ILoadFileDialog.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -45,7 +46,8 @@ class FoxComponent : public Usul::Base::Referenced,
                      public FX::FXObject,
                      public Usul::Interfaces::IPlugin,
                      public Usul::Interfaces::IGUIServer,
-                     public Usul::Interfaces::INotifyClose
+                     public Usul::Interfaces::INotifyClose,
+                     public Usul::Interfaces::ILoadFileDialog
 {
 public:
 
@@ -79,6 +81,9 @@ public:
 
   // Enable/disable the window.
   virtual void                  enableWindow ( bool state, AFW::Core::Window *window, Usul::Base::Referenced *data );
+
+  virtual std::string           getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
+  virtual Filenames             getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() );
 
   // Return name of plugin
   virtual std::string           getPluginName() const { return "FOX GUI Server"; }

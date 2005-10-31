@@ -23,7 +23,7 @@ namespace AFW {
 namespace Conditions {
 
 
-  class APP_FRAME_WORK_EXPORT Condition : public AFW::Core::Object
+class APP_FRAME_WORK_EXPORT Condition : public AFW::Core::Object
 {
 public:
 
@@ -39,10 +39,12 @@ public:
 protected:
 
   // Constructor
-  Condition();
+  Condition ( bool want = true );
 
   // Use reference counting.
   virtual ~Condition();
+
+  bool _want;
 
 private:
 

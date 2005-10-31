@@ -26,7 +26,7 @@ using namespace AFW::Conditions;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsEnabled::IsEnabled() : BaseClass()
+IsEnabled::IsEnabled ( bool want ) : BaseClass ( want )
 {
 }
 

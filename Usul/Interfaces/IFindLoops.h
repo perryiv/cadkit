@@ -53,7 +53,6 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
     template < class IndexSequence >
     void operator() ( const IndexSequence& uncapped, bool forceRedraw = false )
     {
-#ifndef __APPLE__ // TODO, fix
       if( _updatePolicy() )
       {
         //Set the status bar
@@ -65,7 +64,6 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
         if( _flush.valid() )
           _flush->flushEventQueue();
       }
-#endif
     }
 
     void operator () ( unsigned int current, unsigned int total )

@@ -22,7 +22,7 @@ template
   class Functor,
   class UpdateFunctor
 >
-inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater, bool showProgress )
+inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsigned int selectedPolygon, UpdateFunctor& updater )
 {
   typedef typename Polygons::value_type Polygon;
   typedef typename IndexSequence::iterator IndexIterator;
@@ -60,17 +60,11 @@ inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsign
     ++todoIterator;
 
     //Send a progress upate
-    if (showProgress)
-    {
-        updater ( answer );
-    }
+    updater ( answer );
   }
 
   //Send a progress upate, make sure it updates
-  if (showProgress)
-  {
-    updater ( answer, true ); 
-  }
+  updater ( answer, true ); 
 }
 
 }

@@ -43,7 +43,11 @@ includes = \
 flags = -D_COMPILING_OSG_TOOLS
 
 BUILD=$(OS)
+DRAWABLES=Drawables
 IMAGES=Images
+IO=IO
+RENDER=Render
+STATE=State
 TRIANGLES=Triangles
 
 shared_libname = lib$(PKG_NAME)_s.so
@@ -53,9 +57,11 @@ OBJS=\
 	$(BUILD)/Axes.o \
 	$(BUILD)/Circle.o \
 	$(BUILD)/ColorSetter.o \
+	$(BUILD)/DisplayLists.o \
 	$(BUILD)/Font.o \
 	$(BUILD)/Grid.o \
 	$(BUILD)/Group.o \
+	$(BUILD)/GlassBoundingBox.o \
 	$(BUILD)/Jitter.o \
 	$(BUILD)/Lod.o \
 	$(BUILD)/MaterialFactory.o \
@@ -65,10 +71,11 @@ OBJS=\
 	$(BUILD)/ReadModel.o\
 	$(BUILD)/Sample.o \
 	$(BUILD)/ShapeFactory.o \
-	$(BUILD)/State.o \
+	$(BUILD)/SortBackToFrontCallback.o \
 	$(BUILD)/Statistics.o \
 	$(BUILD)/Text.o \
 	$(BUILD)/Torus.o \
+	$(BUILD)/$(DRAWABLES)/VoxelGeometry.o \
 	$(BUILD)/$(IMAGES)/EdgeDetect.o \
 	$(BUILD)/$(IMAGES)/Grayscale.o \
 	$(BUILD)/$(IMAGES)/Histogram.o \
@@ -77,14 +84,26 @@ OBJS=\
 	$(BUILD)/$(IMAGES)/Morphology.o \
 	$(BUILD)/$(IMAGES)/Scale.o \
 	$(BUILD)/$(IMAGES)/Threshold.o \
-	$(BUILD)/$(TRIANGLES)/Loop.o \
-	$(BUILD)/$(TRIANGLES)/SharedVertex.o \
-	$(BUILD)/$(TRIANGLES)/Triangle.o \
-	$(BUILD)/$(TRIANGLES)/TriangleSet.o 
+	$(BUILD)/$(IO)/WriteEPS.o \
+	$(BUILD)/$(STATE)/PolygonMode.o \
+	$(BUILD)/$(STATE)/ShadeModel.o \
+	$(BUILD)/$(STATE)/StateSet.o 
+	#$(BUILD)/$(TRIANGLES)/Block.o \
+	#$(BUILD)/$(TRIANGLES)/Blocks.o \
+	#$(BUILD)/$(TRIANGLES)/ColorFunctor.o \
+	#$(BUILD)/$(TRIANGLES)/Factory.o \
+	#$(BUILD)/$(TRIANGLES)/Loop.o \
+	#$(BUILD)/$(TRIANGLES)/LoopSplitter.o \
+	#$(BUILD)/$(TRIANGLES)/SharedVertex.o \
+	#$(BUILD)/$(TRIANGLES)/Triangle.o \
+	#$(BUILD)/$(TRIANGLES)/TriangleSet.o 
 
 make_dirs:
 	mkdir -p $(BUILD)
+	mkdir -p $(BUILD)/$(DRAWABLES)
 	mkdir -p $(BUILD)/$(IMAGES)
+	mkdir -p $(BUILD)/$(IO)
+	mkdir -p $(BUILD)/$(STATE)
 	mkdir -p $(BUILD)/$(TRIANGLES)
 
 shared_lib: $(OBJS)

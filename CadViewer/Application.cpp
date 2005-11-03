@@ -75,7 +75,7 @@
 #include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
 #include "OsgTools/Font.h"
-#include "OsgTools/State.h"
+#include "OsgTools/State/StateSet.h"
 #include "OsgTools/Visitor.h"
 
 #include "MenuKit/MemFunCallback.h"
@@ -268,7 +268,8 @@ Application::Application ( Args &args ) :
   _colorMap       (),
   _textures       ( true ),
   _scribeBranch   ( new osg::MatrixTransform ),
-  _autoPlacement  ( false )
+  _autoPlacement  ( false ),
+  _animations     ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -536,7 +537,7 @@ void Application::_initText()
   _textBranch->setMatrix ( osg::Matrix::ortho2D ( x, w, y, h ) );
 
   // Set the text font.
-  std::string f ( OsgTools::Font::filename ( "courbd" ) ); // Courier New Bold
+  std::string f ( OsgTools::Font::fontfile ( "courbd" ) ); // Courier New Bold
   _pickText->font  ( f );
   _navText->font   ( f );
   _frameText->font ( f );
@@ -822,8 +823,8 @@ void Application::_initMenu()
   _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
-  OsgTools::State::setPolygonsFilled ( _models.get(), false );
-  OsgTools::State::setPolygonsSmooth ( _models.get() );
+  OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
+  OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
   OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
 }
 
@@ -1794,7 +1795,7 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   // not off, because we want to inherit the global state.
   bool norm ( _prefs->normalizeVertexNormalsModels() );
   if ( norm )
-    OsgTools::State::setNormalize ( node.get(), norm );
+    OsgTools::State::StateSet::setNormalize ( node.get(), norm );
 
   // Make a matrix transform for this model.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -1907,7 +1908,7 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     // not off, because we want to inherit the global state.
     bool norm ( _prefs->normalizeVertexNormalsModels() );
     if ( norm )
-      OsgTools::State::setNormalize ( node.get(), norm );
+      OsgTools::State::StateSet::setNormalize ( node.get(), norm );
 
     // Make a matrix transform for this model.
     osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -3379,6 +3380,54 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Find all animations and turn them on/off
+//  Also a recursive functin to find every animation possible under model
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationsOnOff ( bool onOff, osg::Node *model )
+{
+  osg::Group *g;
+  osg::NodeCallback *nc;
+  osg::AnimationPathCallback *apc;
+  osg::AnimationPath *ap;
+
+  // Check to see if we have an animation path
+  nc = model->getUpdateCallback();
+  if (nc)
+  {
+    apc = dynamic_cast<osg::AnimationPathCallback*>(nc);
+    if (apc)
+    {
+      ap = apc->getAnimationPath();
+      if (ap)
+      {
+        // Set to loop or not loop as requested
+        if(onOff)
+          ap->setLoopMode(osg::AnimationPath::LOOP);
+        else
+          ap->setLoopMode(osg::AnimationPath::NO_LOOPING);
+      }
+    }
+  }
+  
+  // If model is a group, it may contain more nodes, so search
+  g = model->asGroup();
+  if ( g ) {
+    for ( int i=0; i<g->getNumChildren(); ++i )
+    {
+      _animationsOnOff ( onOff, g->getChild(i) );
+    }
+  }
+  
+  return;
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Setup SinterPoint, if enabled
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3638,5 +3687,6 @@ void Application::_doAutoPlacement( const bool replace_matrix )
   else
     _navBranch->postMult( autoPlaceXform );
 }
+
 
 

@@ -409,6 +409,9 @@ protected:
 
   // Patch node file with diff
   bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
+
+  // Turn animations on/off
+  void							_animationsOnOff ( bool onOff, osg::Node *model );
   
   // Perform Auto Placement of model
   void                          _doAutoPlacement( const bool replace_matrix );
@@ -472,6 +475,7 @@ protected:
   void                          _gotoViewLeft     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _rotateWorld      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dropToFloor      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _toggleAnimations ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;
@@ -559,6 +563,7 @@ protected:
   bool              _textures;
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;
+  bool              _animations;
 
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables

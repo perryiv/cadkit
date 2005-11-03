@@ -51,7 +51,7 @@
 #include "osgFX/Scribe"
 
 #include "OsgTools/Group.h"
-#include "OsgTools/State.h"
+#include "OsgTools/State/StateSet.h"
 #include "OsgTools/Visitor.h"
 #include "OsgTools/Axes.h"
 
@@ -823,13 +823,13 @@ void Application::_polysSmooth ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::getPolygonsFilled ( _models.get(), false ) &&
-                      OsgTools::State::getPolygonsSmooth ( _models.get() ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( _models.get(), false ) &&
+                      OsgTools::State::StateSet::getPolygonsSmooth ( _models.get() ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::setPolygonsFilled ( _models.get(), false );
-      OsgTools::State::setPolygonsSmooth ( _models.get() );
+      OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
+      OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
       break;
   }
 }
@@ -849,13 +849,13 @@ void Application::_polysFlat ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::getPolygonsFilled ( _models.get(), false ) &&
-                      OsgTools::State::getPolygonsFlat   ( _models.get() ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( _models.get(), false ) &&
+                      OsgTools::State::StateSet::getPolygonsFlat   ( _models.get() ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::setPolygonsFilled ( _models.get(), false );
-      OsgTools::State::setPolygonsFlat   ( _models.get() );
+      OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
+      OsgTools::State::StateSet::setPolygonsFlat   ( _models.get() );
       break;
   }
 }
@@ -875,11 +875,11 @@ void Application::_polysWireframe ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::getPolygonsLines ( _models.get(), false ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsLines ( _models.get(), false ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::setPolygonsLines ( _models.get(), true );
+      OsgTools::State::StateSet::setPolygonsLines ( _models.get(), true );
       break;
   }
 }
@@ -899,11 +899,11 @@ void Application::_polysPoints ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::getPolygonsPoints ( _models.get(), false ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsPoints ( _models.get(), false ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::setPolygonsPoints ( _models.get(), true );
+      OsgTools::State::StateSet::setPolygonsPoints ( _models.get(), true );
       break;
   }
 }
@@ -955,15 +955,15 @@ void Application::_polysTexture ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      //item->checked ( OsgTools::State::getPolygonsTextures ( _models->getStateSet() ) );
+      //item->checked ( OsgTools::State::StateSet::getPolygonsTextures ( _models->getStateSet() ) );
       item->checked ( _textures );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      //bool state = OsgTools::State::getPolygonsTextures ( _models->getStateSet() );
-      //OsgTools::State::setPolygonsTextures (  _models->getStateSet() , state );
+      //bool state = OsgTools::State::StateSet::getPolygonsTextures ( _models->getStateSet() );
+      //OsgTools::State::StateSet::setPolygonsTextures (  _models->getStateSet() , state );
       _textures = !_textures;
-      OsgTools::State::setPolygonsTextures( _models->getOrCreateStateSet(), _textures );
+      OsgTools::State::StateSet::setPolygonsTextures( _models->getOrCreateStateSet(), _textures );
       break;
   }
 }
@@ -1872,3 +1872,39 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
     this->postMultiply ( M );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Turn on or off all animations
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_toggleAnimations ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 3042741394u, isAppThread(), CV::NOT_APP_THREAD );
+
+  bool onOff = true;
+
+  // Process the message.
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_UPDATE:
+      item->checked ( _animations );
+      break;
+    
+    case MenuKit::MESSAGE_SELECTED:
+      if ( _animations ){
+        _animations = false;
+      }
+      else{
+        _animations = true;
+      }
+      osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
+      if (m){
+        _animationsOnOff ( _animations, m );
+      }
+      break;
+  }
+}
+

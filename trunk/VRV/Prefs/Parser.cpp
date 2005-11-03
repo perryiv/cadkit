@@ -397,7 +397,7 @@ void Parser::_offsetGrid ( const std::string &s )
 void Parser::_setNearClip ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->nearClippingDistance ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->nearClippingDistance ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -410,7 +410,7 @@ void Parser::_setNearClip ( const std::string &s )
 void Parser::_setViewAllScale ( const std::string &s )
 {
   ErrorChecker ( 1083817591u, !s.empty() );
-  _settings->viewAllScaleZ ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->viewAllScaleZ ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -701,7 +701,7 @@ void Parser::_scaleStatus ( const std::string &s )
 void Parser::_setTransSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->translationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->translationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -714,7 +714,7 @@ void Parser::_setTransSpeed ( const std::string &s )
 void Parser::_setRotSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->rotationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->rotationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -727,7 +727,7 @@ void Parser::_setRotSpeed ( const std::string &s )
 void Parser::_setScaleSpeed ( const std::string &s )
 {
   ErrorChecker ( 2973371103u, !s.empty() );
-  _settings->scaleSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->scaleSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -791,7 +791,7 @@ void Parser::_setScribeColor ( const std::string &s )
 void Parser::_setScribeWidth ( const std::string &s )
 {
   ErrorChecker ( 2973371108u, !s.empty() );
-  _settings->scribeWidth ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->scribeWidth ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -830,5 +830,5 @@ void Parser::_setAutoPlaceCenter ( const std::string &s )
 void Parser::_setAutoPlaceRadius ( const std::string &s )
 {
   ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoPlaceRadius ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->autoPlaceRadius ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }

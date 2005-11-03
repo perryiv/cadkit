@@ -63,7 +63,7 @@ INCLUDES = \
 LOCAL_LIBS = \
 	-L$(BIN_DIR) \
 	-lOsgTools_s \
-	-lUsul_s \
+	-lUsul \
 	-losgVRJ \
 	-lvrjGA \
 	-lMenuKit \

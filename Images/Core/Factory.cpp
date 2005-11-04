@@ -13,6 +13,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// Disable deprecated warning in Visual Studio 8 for std::basic_istream<_Elem,_Traits>::read
+#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#pragma warning ( disable : 4996 )
+#endif
+
 #include "Images/Core/Factory.h"
 #include "Images/Core/ImageImpl.h"
 

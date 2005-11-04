@@ -16,6 +16,11 @@
 #ifndef _IMAGES_TEMPLATE_IMAGE_IMPLEMENTATION_CLASS_H_
 #define _IMAGES_TEMPLATE_IMAGE_IMPLEMENTATION_CLASS_H_
 
+// Disable deprecated warning in Visual Studio 8 for std::basic_istream<_Elem,_Traits>::read
+#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#pragma warning ( disable : 4996 )
+#endif
+
 #include "Images/Core/BaseImage.h"
 #include "Images/Core/Iterator.h"
 #include "Images/Core/TypeTraits.h"
@@ -444,7 +449,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class ContainerType > scalars ( ContainerType &v ) const
+  template < class ContainerType > void scalars ( ContainerType &v ) const
   {
     typedef typename ContainerType::iterator Itr;
     typedef typename ContainerType::value_type Type;

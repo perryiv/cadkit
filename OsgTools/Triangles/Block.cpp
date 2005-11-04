@@ -232,6 +232,14 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
   USUL_ASSERT ( 1 == _geometry->getNumPrimitiveSets() );
   USUL_ASSERT ( _elements.get() == _geometry->getPrimitiveSet ( 0 ) );
 
+  // If we don't have any triangles, return a null geometry.
+  // This is because with Visual Studio 8, an empty vector (i.e. PrimitiveSetUInt )
+  // has null pointers for it's member variables.  So when OSG trys to draw with an
+  // empty primitive set, an exception is thrown.  The geode ignores null geometry,
+  // so this is safe wrt the geode's internal list of geometries.
+  if( _triangles.empty() )
+    return 0x0;
+
   // Check input.
   if ( 0x0 == ts )
     throw std::runtime_error ( "Error 3206734392: null triangle-set given" );

@@ -17,6 +17,11 @@
 #define _CPP_CMATH 1
 #endif
 
+// Disable deprecated warning in Visual Studio 8 for strcpy
+#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#pragma warning ( disable : 4996 )
+#endif
+
 #include "FoxTools/Dialogs/FileSelection.h"
 #include "FoxTools/Functions/App.h"
 #include "FoxTools/Functions/MainWindow.h"

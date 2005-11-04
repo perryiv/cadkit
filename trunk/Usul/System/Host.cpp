@@ -16,6 +16,11 @@
 #include "Usul/System/Host.h"
 #include "Usul/Exceptions/Thrower.h"
 
+// Disable deprecated warning in Visual Studio 8 for getenv
+#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#pragma warning ( disable : 4996 )
+#endif
+
 #ifdef _WIN32
 # include <windows.h> // For GetComputerName()
 #endif

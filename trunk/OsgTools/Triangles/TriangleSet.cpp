@@ -1457,7 +1457,7 @@ void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root )
 osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 {
   // The scene root  
-    osg::ref_ptr<osg::Group> root ( new osg::Group );
+  osg::ref_ptr<osg::Group> root ( new osg::Group );
 
   // Handle trivial case.
   if ( _triangles.empty() )

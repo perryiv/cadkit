@@ -7,6 +7,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// Disable decorated name length exceeded, name was truncated warning in Visual Studio 8
+// This warning is coming from a header file provided with VS (iterator).
+// Hopefully this will be fixed for the final VS 8 release.
+#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#pragma warning ( disable : 4503 )
+#endif
+
 #include "OsgTools/Triangles/Blocks.h"
 #include "OsgTools/Triangles/TriangleSet.h"
 

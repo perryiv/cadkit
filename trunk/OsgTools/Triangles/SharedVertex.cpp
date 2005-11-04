@@ -43,9 +43,18 @@ SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToRese
   USUL_STATIC_ASSERT (  4 == sizeof ( _index        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _flags        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref          ) );
-#ifdef _WIN32
+
+#if defined ( _MSC_VER ) && _MSC_VER < 1400
   USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles    ) );
   USUL_STATIC_ASSERT ( 24 == sizeof ( SharedVertex  ) ); // Why?
+#elif defined ( _MSC_VER ) && _MSC_VER == 1400
+#ifdef _DEBUG
+  USUL_STATIC_ASSERT ( 20 == sizeof ( _triangles    ) );
+  USUL_STATIC_ASSERT ( 28 == sizeof ( SharedVertex  ) ); // Why?
+#else
+  USUL_STATIC_ASSERT ( 16 == sizeof ( _triangles    ) );
+  USUL_STATIC_ASSERT ( 24 == sizeof ( SharedVertex  ) ); // Why?
+#endif
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles    ) );
   USUL_STATIC_ASSERT ( 20 == sizeof ( SharedVertex  ) ); // Why?

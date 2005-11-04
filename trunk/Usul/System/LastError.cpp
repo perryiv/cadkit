@@ -106,7 +106,7 @@ std::string LastError::message()
     NULL );
 
   // Copy the message.
-  std::string message ( reinterpret_cast<LPCTSTR> ( buffer ) );
+  std::string message ( buffer ? reinterpret_cast<LPCTSTR> ( buffer ) : "" );
 
   // Free the buffer.
   ::LocalFree ( buffer );

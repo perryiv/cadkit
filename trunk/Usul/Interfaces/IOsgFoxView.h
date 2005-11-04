@@ -18,7 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgFox { namespace Views { class View; }  }
+namespace OsgFox { namespace Views { class Canvas; }  }
 
 namespace Usul {
 namespace Interfaces {
@@ -32,8 +32,8 @@ struct IOsgFoxView : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2445428656u };
 
-  virtual OsgFox::Views::View*       osgFoxView() = 0;
-  virtual const OsgFox::Views::View* osgFoxView() const = 0;
+  virtual OsgFox::Views::Canvas*       osgFoxView() = 0;
+  virtual const OsgFox::Views::Canvas* osgFoxView() const = 0;
 }; // struct IOsgFoxView
 
 

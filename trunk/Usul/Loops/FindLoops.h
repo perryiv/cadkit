@@ -12,8 +12,12 @@
 
 #include "Usul/Polygons/Predicates.h"
 #include "Usul/Polygons/Triangle.h"
+#include "Usul/Types/Types.h"
+
 #include <iostream>
 #include <vector>
+
+using namespace Usul::Types;
 
 namespace Usul {
 namespace Loops {
@@ -21,6 +25,18 @@ namespace Detail {
 
   std::vector< unsigned int > cache;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Estimates the number of seconds to completion of a process
+//
+///////////////////////////////////////////////////////////////////////////////
+    
+Uint32 timeLeft (Uint64 startTime, Uint64 now, Uint32 current, Uint32 size) 
+{
+    Float32 percent ( (float)current/ (float)size );
+    return (Uint32) ( ( (now-startTime)/percent ) - (now - startTime) )/ 1000;
+}
+    
 //////////////////////////////////////////////////////////////////////////////
 //
 //  Does the loop already contain this vertex
@@ -353,95 +369,114 @@ inline void findEdge ( PolygonList& polygons, Polygon* check )
 
 template
 <
-  class Polygons,
-  class Loops, 
-  class AdjacencyTest,
-  class UpdateFunctor
+class Polygons,
+class Loops, 
+class AdjacencyTest,
+class UpdateFunctor
 >
 inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest& adjacent, unsigned int vertsPerPoly, UpdateFunctor& updater )
 {
-  // Typedefs.
-  typedef typename Polygons::value_type PolygonPtr;
-  typedef typename PolygonPtr::element_type Polygon;
-  typedef typename Polygon::PolygonSet  PolygonSet;
-  typedef typename Loops::value_type Loop;
-  typedef std::list < unsigned int > IndexSequence;
-
-  IndexSequence uncapped;
-
-  // Needed for user feedback.
-  const unsigned int size ( polygons.size() );
-
-  // Make the cache big enough.
-  Detail::cache.resize ( size );
-
-  //Walk through all the polygons
-  for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
-  {    
-    //Get list of neighbors that share one point
-    PolygonSet neighbors; 
-        
-    (*iter)->getNeighbors( neighbors );
-
-    PolygonSet adjacentPolygons;
+    // Typedefs.
+    typedef typename Polygons::value_type PolygonPtr;
+    typedef typename PolygonPtr::element_type Polygon;
+    typedef typename Polygon::PolygonSet  PolygonSet;
+    typedef typename Loops::value_type Loop;
+    typedef std::list < unsigned int > IndexSequence;
     
-    //Loop through all this polygon's neighbors
-    for( typename PolygonSet::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
-    {
-      //If these two polygons are adjacent...
-      if( adjacent ( *(*iter), *(*i) ) )
-        adjacentPolygons.insert( *i );
+    IndexSequence uncapped;
+    
+    // Needed for user feedback.
+    unsigned int size ( polygons.size() );
+    unsigned int current ( 0 ); //reusable variable
+    Usul::Types::Uint64 now (Usul::System::Clock::milliseconds());
+    Usul::Types::Uint64 startTime (Usul::System::Clock::milliseconds());
+    
+    // Make the cache big enough.
+    Detail::cache.resize ( size );
+    
+    //Walk through all the polygons
+    for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
+    {    
+        //Get list of neighbors that share one point
+        PolygonSet neighbors; 
+        
+        /** ************************
+        *** HOT SPOT - This call takes a large amount of time
+        ** ************************* */
+        (*iter)->getNeighbors( neighbors );
+        
+        PolygonSet adjacentPolygons;
+        
+        //Loop through all this polygon's neighbors
+        for( typename PolygonSet::iterator i = neighbors.begin(); i != neighbors.end(); ++i )
+        {
+            //If these two polygons are adjacent...
+            if( adjacent ( *(*iter), *(*i) ) )
+                adjacentPolygons.insert( *i );
+        }
+        
+        //If we don't have the right number of adjacent polygons...
+        if( adjacentPolygons.size() < vertsPerPoly + 1 )
+        {
+            uncapped.push_back( (*iter)->index() );
+            Detail::findEdge( adjacentPolygons, iter->get() );
+            (*iter)->onEdge( true );
+        }
+        
+        Detail::cache.at( (*iter)->index() ) = adjacentPolygons.size();
+        
+        //Send a progress update
+        
+        current = iter - polygons.begin() ;
+        // Update the ProgressBar
+        updater ( current, size );
+        // Update the Status Bar
+        now = Usul::System::Clock::milliseconds();
+        Uint32 estimate (  Detail::timeLeft(startTime, now, current, size) );
+        std::ostringstream os;
+        os << "[" << estimate << " Sec Remain in Step 1 of 3] Edge Polygons Found: ";
+        updater ( uncapped, os.str(), false);
     }
-
-    //If we don't have the right number of adjacent polygons...
-    if( adjacentPolygons.size() < vertsPerPoly + 1 )
+    
+    //Sort for binary search
+    uncapped.sort( std::less<unsigned int>() );
+    size = uncapped.size();
+    current = 0;
+    startTime = Usul::System::Clock::milliseconds();
+    
+    while( !uncapped.empty() )
     {
-      uncapped.push_back( (*iter)->index() );
-      Detail::findEdge( adjacentPolygons, iter->get() );
-      (*iter)->onEdge( true );
+        // Get the first element in the list.
+        typename IndexSequence::iterator i ( uncapped.begin() );
+        
+        //Create a loop.
+        Loop loop;
+        
+        //Get the polygon
+        PolygonPtr p ( polygons.at( *i ) );
+        
+        //this will loop around the gap and build the proper loop
+        Detail::visitPolygon( polygons, uncapped, loop, p.get() );
+        
+        //Only add if the loop's size is greater than or equal to 3
+        if( loop.size() >= 3 )
+        {
+            //Push the loop onto the answer
+            loops.push_back( loop );
+        }
+        current = size - uncapped.size();
+        // Update the ProgressBar
+        updater ( current, size );
+        // Update the Status Bar
+        now = Usul::System::Clock::milliseconds();
+        Uint32 estimate (  Detail::timeLeft(startTime, now, current, size) );
+        std::ostringstream os;
+        os << "[" << estimate << " Sec Remain in Step 2 of 3] Loops Created: ";
+        updater (  loops.size(), os.str(), true );
     }
-
-    Detail::cache.at( (*iter)->index() ) = adjacentPolygons.size();
-
-    //Send a progress upate
-    updater ( uncapped );
-
-    unsigned int current ( iter - polygons.begin() );
-
-    updater ( current, size );
-  }
-
-  updater( uncapped, true );
-
-  //Sort for binary search
-  uncapped.sort( std::less<unsigned int>() );
-  
-  while( !uncapped.empty() )
-  {
-    // Get the first element in the list.
-    typename IndexSequence::iterator i ( uncapped.begin() );
-
-    //Create a loop.
-    Loop loop;
-
-    //Get the polygon
-    PolygonPtr p ( polygons.at( *i ) );
-
-    //this will loop around the gap and build the proper loop
-    Detail::visitPolygon( polygons, uncapped, loop, p.get() );
-
-    //Only add if the loop's size is greater than or equal to 3
-    if( loop.size() >= 3 )
-    {
-      //Push the loop onto the answer
-      loops.push_back( loop );
-    }
-
-    updater( loops.size() );
-  }
-
-  // Clear the cache
-  Detail::cache.clear();
+    
+    // Clear the cache
+    Detail::cache.clear();
 }
 
 }

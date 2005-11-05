@@ -17,10 +17,12 @@
 #define _USUL_FILE_PATH_H_
 
 #include "Usul/Predicates/UnaryPair.h"
+#include "Usul/Types/Types.h"
 
 #include <string>
 #include <algorithm>
-
+#include <iostream>
+using namespace Usul::Types;
 
 namespace Usul {
 namespace File {
@@ -72,19 +74,15 @@ inline std::string directory ( const std::string &path, bool wantSlash )
 
 inline std::string extension ( const std::string &path )
 {
-  typedef std::string::value_type Char;
-  typedef std::string::const_reverse_iterator Itr;
-  typedef std::equal_to<Char> IsEqual;
-  typedef std::logical_or<bool> Or;
-
-  // Look for the last period.
-  Itr i ( std::find_if ( path.rbegin(), path.rend(), std::bind2nd ( IsEqual(), '.' ) ) );
-
-  // Return the result.
-  const std::string ext ( i.base(), path.end() );
-  return ext;
+  std::string::size_type size ( path.size() ); 
+  std::string::size_type dotPos = path.find_last_of('.') ;
+  if (dotPos == std::string::npos) 
+  {
+    const std::string ext ("");
+    return ext;
+  } 
+  return path.substr (dotPos +1, size); 
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -52,8 +52,8 @@ public:
   virtual ~FileSelection();
 
   // Ask the user for file names.
-  static FilesResult            askForFileNames ( const Type &type, const std::string &title, const Filters &filters = Filters(), FX::FXWindow *owner = 0x0 );
-  static FileResult             askForFileName  ( const Type &type, const std::string &title, const Filters &filters = Filters(), FX::FXWindow *owner = 0x0 );
+  static FilesResult            askForFileNames ( const Type &type, const std::string &title, const Filters &filters = Filters(), FX::FXWindow *owner = 0x0, bool appendExtension = false);
+  static FileResult             askForFileName  ( const Type &type, const std::string &title, const Filters &filters = Filters(), FX::FXWindow *owner = 0x0, bool appendExtension = false);
 
   // Get the i'th filename selected. Throws if not available.
   const Filename &              filename ( unsigned int i ) const { return _filenames.at ( i ); }

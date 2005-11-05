@@ -1750,9 +1750,9 @@ void TriangleSet::_incrementProgress ( bool state )
 
 osg::Vec4f TriangleSet::color ( const Triangle *t ) const
 {
-  return ( ( t && _color.valid() ) ? 
-           ( _color->color ( this, t ) ) : 
-           ( OsgTools::Triangles::DEFAULT_COLOR ) );
+    return ( ( t && _color.valid() ) ? 
+             ( _color->color ( this, t ) ) :
+       ( OsgTools::Triangles::DEFAULT_COLOR ) );
 }
 
 

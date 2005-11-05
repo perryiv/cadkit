@@ -52,6 +52,7 @@ public:
     DIRTY_NORMAL = 0x10,
     DIRTY_COLOR  = 0x11,
     PROBLEM      = 0x12,
+    ORIGINAL     = 0x14,
   };
 
   // Construction
@@ -82,6 +83,10 @@ public:
   // Set/get the flags that says there was some kind of problem.
   bool                        problem() const;
   void                        problem ( bool );
+
+  // Set/get the flags that says this triangle is original (e.g., read from file).
+  bool                        original() const;
+  void                        original ( bool );
 
   // Reference this instance.
   void                        ref();

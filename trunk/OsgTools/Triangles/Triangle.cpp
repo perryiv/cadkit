@@ -351,3 +351,29 @@ bool Triangle::problem() const
   const unsigned int bit ( Triangle::PROBLEM );
   return Usul::Bits::has ( _flags, bit );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the original-status flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Triangle::original ( bool state )
+{
+  const unsigned int bit ( Triangle::ORIGINAL );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the original-status flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Triangle::original() const
+{
+  const unsigned int bit ( Triangle::ORIGINAL );
+  return Usul::Bits::has ( _flags, bit );
+}

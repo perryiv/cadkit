@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IProgressBar.h"
 
 #include "Usul/Policies/Update.h"
+#include <list>
 
 
 namespace Usul {
@@ -39,6 +40,8 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
 
   virtual void findLoops( Usul::Interfaces::IUnknown* caller ) = 0;
 
+  typedef std::list < unsigned int > IndexSequence;
+    
   //Helper to update progress
   struct UpdateFindingLoops
   {
@@ -50,40 +53,61 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
     {
     }
 
-    template < class IndexSequence >
-    void operator() ( const IndexSequence& uncapped, bool forceRedraw = false )
-    {
-      if( _updatePolicy() )
-      {
-        //Set the status bar
-        std::ostringstream os;
-        unsigned long numCapped ( uncapped.size() );
-        os << "Number of polygons found: " << numCapped;
-        _statusBar ( os.str(), true );
+      
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
 
-        if( _flush.valid() )
-          _flush->flushEventQueue();
-      }
-    }
+template < class IndexSequence >
+void operator() ( IndexSequence& uncapped, std::string str, bool forceRedraw = false )
+{
+  if( _updatePolicy() || forceRedraw )
+  {
+    //Set the status bar
+    std::ostringstream os;
+    unsigned long numCapped ( uncapped.size() );
+    os << str << numCapped;
+    _statusBar ( os.str(), true );
 
-    void operator () ( unsigned int current, unsigned int total )
-    {
-      if( _updatePolicy() )
-        _progressBar ( current, total );
-    }
+    if( _flush.valid() )
+      _flush->flushEventQueue();
+  }
+}
 
-    void operator () ( unsigned int numLoops, bool force = false )
-    {
-      if( _updatePolicy() || force )
-      {
-        std::ostringstream os;
-        os << "Number of Loops found: " << numLoops;
-        _statusBar ( os.str(), true );
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
 
-        if( _flush.valid() )
-          _flush->flushEventQueue();
-      }
-    }
+void operator () ( unsigned int current, unsigned int total )
+{
+  if( _updatePolicy() )
+    _progressBar ( current, total );
+}
+
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void operator () ( unsigned int numLoops, std::string str, bool force = false )
+{
+  if( _updatePolicy() || force )
+  {
+    std::ostringstream os;
+    os << str << numLoops;
+    _statusBar ( os.str(), true );
+
+    if( _flush.valid() )
+      _flush->flushEventQueue();
+  }
+}
 
   private:
     Usul::Interfaces::IProgressBar::UpdateProgressBar _progressBar;

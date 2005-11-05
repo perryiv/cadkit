@@ -10,7 +10,7 @@
 #ifndef __USUL_POLICIES_UPDATE_H__
 #define __USUL_POLICIES_UPDATE_H__
 
-#include <ctime>
+#include "Usul/System/Clock.h"
 
 namespace Usul {
 namespace Policies {
@@ -24,7 +24,7 @@ namespace Policies {
 struct TimeBased
 {
   TimeBased( double updateTime ) : 
-    _lastTime ( ::clock() ), 
+    _lastTime ( Usul::System::Clock::milliseconds() ), 
     _updateTime( updateTime ) 
     { }
 
@@ -38,7 +38,7 @@ struct TimeBased
   bool operator() ()
   {
     //Get the current time
-    double currentTime ( ::clock() );
+    double currentTime ( Usul::System::Clock::milliseconds() );
 
     //Get the time elasped since true returned last
     double elapsedTime ( currentTime - _lastTime );

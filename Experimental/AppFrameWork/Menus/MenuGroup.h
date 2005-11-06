@@ -36,6 +36,9 @@ public:
   // Constructor
   MenuGroup ( const std::string &text = "", unsigned short underline = 0xFFFF );
 
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
+
   // Set/get the character to underline.
   unsigned short                      underline() const;
   void                                underline ( unsigned short );

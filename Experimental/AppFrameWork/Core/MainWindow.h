@@ -16,7 +16,8 @@
 #ifndef _APP_FRAME_WORK_MAIN_WINDOW_CLASS_H_
 #define _APP_FRAME_WORK_MAIN_WINDOW_CLASS_H_
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Core/Frame.h"
+#include "AppFrameWork/Core/TextWindow.h"
 #include "AppFrameWork/Menus/MenuBar.h"
 
 
@@ -24,18 +25,21 @@ namespace AFW {
 namespace Core {
 
 
-class APP_FRAME_WORK_EXPORT MainWindow : public Window
+class APP_FRAME_WORK_EXPORT MainWindow : public Frame
 {
 public:
 
   // Typedefs.
-  typedef Window BaseClass;
+  typedef Frame BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
 
   // Constructor
   MainWindow();
+
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
 
   // Build a default GUI.
   void                                buildDefault();
@@ -47,7 +51,12 @@ public:
   // Set/get the menu bar.
   const AFW::Menus::MenuBar *         menuBar() const;
   AFW::Menus::MenuBar *               menuBar();
-  void                                menuBar ( AFW::Menus::MenuBar *mb );
+  void                                menuBar ( AFW::Menus::MenuBar * );
+
+  // Set/get the text window.
+  const TextWindow *                  textWindow() const;
+  TextWindow *                        textWindow();
+  void                                textWindow ( TextWindow * );
 
 protected:
 
@@ -63,6 +72,8 @@ private:
   MainWindow &operator = ( const MainWindow & );
 
   AFW::Menus::MenuBar::RefPtr _menuBar;
+  Frame::RefPtr _editors;
+  TextWindow::RefPtr _textWindow;
 };
 
 

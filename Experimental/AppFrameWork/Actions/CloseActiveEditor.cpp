@@ -46,6 +46,6 @@ CloseActiveEditor::~CloseActiveEditor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CloseActiveEditor::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
+void CloseActiveEditor::execute ( AFW::Core::Object *object )
 {
 }

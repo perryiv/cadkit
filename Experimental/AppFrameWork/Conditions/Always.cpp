@@ -46,7 +46,7 @@ Always::~Always()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Always::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
+bool Always::evaluate ( AFW::Core::Object * )
 {
   return true;
 }

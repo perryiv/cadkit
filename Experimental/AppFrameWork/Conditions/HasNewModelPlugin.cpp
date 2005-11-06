@@ -46,7 +46,7 @@ HasNewModelPlugin::~HasNewModelPlugin()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool HasNewModelPlugin::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
+bool HasNewModelPlugin::evaluate ( AFW::Core::Object * )
 {
-  return true; // TODO
+  return ( false == _want ); // TODO
 }

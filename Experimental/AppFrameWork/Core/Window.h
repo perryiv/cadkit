@@ -17,17 +17,23 @@
 #define _APP_FRAME_WORK_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Core/Icon.h"
+#include "AppFrameWork/Core/Constants.h"
 #include "AppFrameWork/Actions/CommandAction.h"
 #include "AppFrameWork/Actions/UpdateAction.h"
 #include "AppFrameWork/Conditions/Condition.h"
 
+#include "Usul/Math/Vector2.h"
+#include "Usul/Interfaces/IGUIServer.h"
+
 #include <vector>
+#include <list>
+
+namespace AFW { namespace Core { class Group; class BaseVisitor; } }
 
 
 namespace AFW {
 namespace Core {
 
-class Group;
 
 class APP_FRAME_WORK_EXPORT Window : public Object
 {
@@ -45,33 +51,52 @@ public:
   typedef std::vector < UpdatePair > UpdatePairs;
   typedef UpdatePairs::iterator UpdatePairsItr;
   typedef UpdatePairs::const_iterator UpdatePairsConstItr;
+  typedef std::list < Window * > WindowList; // Not reference-counted by design!
+  typedef WindowList::iterator WindowListItr;
+  typedef Usul::Interfaces::IGUIServer IGUIServer;
+  typedef Usul::Base::Referenced GuiObject;
+  typedef USUL_REF_POINTER ( GuiObject ) GuiObjectPtr;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Window );
 
-  // Possible flags
-  enum
-  {
-    DIRTY = 0x01
-  };
+  // Iterators to the list of all windows.
+  static WindowListItr                allWindowsBegin();
+  static WindowListItr                allWindowsEnd();
+
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
 
   // Append an action.
   void                                append ( AFW::Actions::CommandAction * );
   void                                append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
 
   // Call all the actions.
-  void                                callCommandActions ( Window *, Usul::Base::Referenced *data );
-  void                                callUpdateActions  ( Window *, Usul::Base::Referenced *data );
+  void                                callCommandActions();
+  void                                callUpdateActions();
 
   // Iterators to the command-actions.
   CommandActionsConstItr              commandsBegin() const;
   CommandActionsItr                   commandsBegin();
   CommandActionsConstItr              commandsEnd() const;
   CommandActionsItr                   commandsEnd();
- 
+
   // Set/get the dirty flag.
   virtual void                        dirty ( bool );
   virtual bool                        dirty() const;
+
+  // Set/get the dockabls flag.
+  virtual void                        dockable ( bool );
+  virtual bool                        dockable() const;
+
+  // Set/get the docked flag.
+  virtual void                        docked ( bool );
+  virtual bool                        docked() const;
+
+  // Set/get the handle to the graphical object. The gui-server uses these.
+  void                                guiObject ( GuiObject * );
+  const GuiObject *                   guiObject() const;
+  GuiObject *                         guiObject();
 
   // Set/get the icon.
   void                                icon ( Icon * );
@@ -85,6 +110,12 @@ public:
   // Get the parent.
   const Group *                       parent() const;
   Group *                             parent();
+
+  // Set/get the percentage of the parent this window should take up.
+  // This is a hint, and thus, not always used.
+  void                                percent ( float x, float y );
+  void                                percent ( const Usul::Math::Vec2f & );
+  Usul::Math::Vec2f                   percent() const;
 
   // Set/get the text.
   const std::string &                 text() const;
@@ -106,21 +137,27 @@ protected:
 
   void                                _setParent ( Group * );
 
+  virtual void                        _traverse ( AFW::Core::BaseVisitor * );
+
 private:
 
   // No copying.
   Window ( const Window & );
   Window &operator = ( const Window & );
 
-  // Calls _setParent()
-  friend class Group;
+  friend class Group;       // Calls _setParent()
+  friend class BaseVisitor; // Calls _traverse()
 
-  unsigned int _flags;
+  static WindowList _allWindows;
+  WindowListItr _whichWindow;
+  AFW::Core::State::Type _flags;
   Group *_parent;
   Icon::RefPtr _icon;
   std::string _text;
   CommandActions _commands;
   UpdatePairs _updates;
+  Usul::Math::Vec2f _percent;
+  GuiObjectPtr _guiObject;
 };
 
 

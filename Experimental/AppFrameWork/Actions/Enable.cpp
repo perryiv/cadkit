@@ -50,9 +50,9 @@ Enable::~Enable()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Enable::execute ( AFW::Core::Object *object, Usul::Base::Referenced *data )
+void Enable::execute ( AFW::Core::Object *object )
 {
   AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
   if ( window.valid() )
-    AFW::Core::Application::instance().guiServer()->enableWindow ( _state, window.get(), data );
+    AFW::Core::Application::instance().enableWindow ( _state, window.get() );
 }

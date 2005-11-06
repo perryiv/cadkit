@@ -46,7 +46,7 @@ Action::~Action()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Action::canUndo ( AFW::Core::Object *, Usul::Base::Referenced * ) const
+bool Action::canUndo ( AFW::Core::Object * ) const
 {
   return false;
 }
@@ -58,6 +58,6 @@ bool Action::canUndo ( AFW::Core::Object *, Usul::Base::Referenced * ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Action::undo ( AFW::Core::Object *, Usul::Base::Referenced * )
+void Action::undo ( AFW::Core::Object * )
 {
 }

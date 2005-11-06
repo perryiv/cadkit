@@ -19,6 +19,11 @@
 
 #include "Usul/Threads/Mutex.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/IO/Redirect.h"
+#include "Usul/File/Remove.h"
+#include "Usul/System/DateTime.h"
+
+#include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,6 +38,15 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newMutex );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Redirect stdout and stderr.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::IO::Redirect redirect ( "Helios.log", true, false );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Main function.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,6 +55,11 @@ int main ( int argc, char **argv )
 {
   // Set command-line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
+
+  // Application name.
+  const std::string name ( "Helios" );
+
+  std::cout << name << " started: " << Usul::System::DateTime::now() << std::endl;
 
   // Shortcut to the application.
   AFW::Core::Application &app ( AFW::Core::Application::instance() );
@@ -53,6 +72,8 @@ int main ( int argc, char **argv )
 
   // Tell the application to clean up.
   app.cleanup();
+
+  std::cout << name << " stopped: " << Usul::System::DateTime::now() << std::endl;
 
   // Return the result.
   return ( ( result ) ? 1 : 0 );

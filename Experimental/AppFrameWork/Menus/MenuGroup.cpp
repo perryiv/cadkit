@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Menus/MenuGroup.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
 
 using namespace AFW::Menus;
 
@@ -50,4 +51,17 @@ MenuGroup::~MenuGroup()
 unsigned short MenuGroup::underline() const
 {
   return _underline;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MenuGroup::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
 }

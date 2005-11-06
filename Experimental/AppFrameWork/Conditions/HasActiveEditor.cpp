@@ -46,7 +46,7 @@ HasActiveEditor::~HasActiveEditor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool HasActiveEditor::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
+bool HasActiveEditor::evaluate ( AFW::Core::Object * )
 {
-  return true; // TODO
+  return ( false == _want ); // TODO
 }

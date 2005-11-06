@@ -14,6 +14,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Core/Define.h"
+
+#include "Usul/Errors/Assert.h"
+
+#include <stdexcept>
+#include <iostream>
+#include <algorithm>
 
 using namespace AFW::Core;
 
@@ -38,6 +47,14 @@ Group::Group ( const std::string &text, Icon *icon ) : BaseClass ( text, icon ),
 
 Group::~Group()
 {
+  // Safely...
+  try
+  {
+    _windows.clear();
+  }
+
+  // Catch exceptions.
+  AFW_CATCH_BLOCK ( "1996818293", "3353672048" );
 }
 
 
@@ -49,10 +66,79 @@ Group::~Group()
 
 void Group::append ( Window *w )
 {
-  _windows.push_back ( w );
-  this->dirty ( true );
-  w->dirty ( true );
-  w->_setParent ( this );
+  // If the window is valid and it does not already have a parent...
+  if ( 0x0 != w && 0x0 == w->parent() )
+  {
+    // Should be true.
+    USUL_ASSERT ( _windows.end() == this->find ( w ) );
+
+    // Add it to our list.
+    _windows.push_back ( w );
+
+    // We are now the parent.
+    w->_setParent ( this );
+
+    // Set dirty flags.
+    w->dirty ( true );
+    this->dirty ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::remove ( Window *w )
+{
+  // Find the window.
+  Group::Itr i ( this->find ( w ) );
+
+  // If the window is a child...
+  if ( _windows.end() != i )
+  {
+    // Erase it.
+    _windows.erase ( i );
+
+    // The window does not have a parent now.
+    w->_setParent ( 0x0 );
+
+    // Set dirty flags.
+    w->dirty ( true );
+    this->dirty ( true );
+
+    // Should be true.
+    USUL_ASSERT ( _windows.end() == this->find ( w ) );
+
+    // Let the application know that the object is no longer in the scene.
+    Application::instance().removeNotify ( w );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Look for the child window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Group::ConstItr Group::find ( Window *w ) const
+{
+  return ( ( 0x0 == w ) ? _windows.end() : std::find ( _windows.begin(), _windows.end(), Windows::value_type ( w ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Look for the child window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Group::Itr Group::find ( Window *w )
+{
+  return ( ( 0x0 == w ) ? _windows.end() : std::find ( _windows.begin(), _windows.end(), Windows::value_type ( w ) ) );
 }
 
 
@@ -101,4 +187,51 @@ Group::Itr Group::end()
 Group::ConstItr Group::end() const
 {
   return _windows.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Group::numChildren() const
+{
+  return _windows.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This function is plumbing for the visitor pattern.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
+{
+  if ( 0x0 == visitor )
+    return;
+
+  for ( Group::Itr i = this->begin(); i != this->end(); ++i )
+  {
+    AFW::Core::Window::RefPtr window ( i->get() );
+    if ( true == window.valid() )
+    {
+      window->accept ( visitor );
+    }
+  }
 }

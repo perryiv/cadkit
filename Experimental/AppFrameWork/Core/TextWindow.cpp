@@ -9,16 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Main window class.
+//  Displays text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/MainWindow.h"
-#include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/TextWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
-#include "AppFrameWork/Core/Define.h"
-
-#include <iostream>
 
 using namespace AFW::Core;
 
@@ -29,12 +25,10 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MainWindow::MainWindow() : BaseClass(),
-  _menuBar    ( 0x0 ),
-  _editors    ( new Frame ( Frame::VERTICAL ) ),
-  _textWindow ( 0x0 )
+TextWindow::TextWindow() : BaseClass(),
+  _lines    (),
+  _maxLines ( 1000 )
 {
-  this->append ( _editors.get() );
 }
 
 
@@ -44,150 +38,133 @@ MainWindow::MainWindow() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MainWindow::~MainWindow()
+TextWindow::~TextWindow()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build a default GUI.
+//  Make sure there is one line.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::buildDefault()
+void TextWindow::_oneLineMin()
 {
-  // Safely...
-  try
+  if ( _lines.empty() )
+    _lines.push_back ( "" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make sure we do not have too many.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::_keepUnderMax()
+{
+  while ( _lines.size() > this->maxLines() )
+    _lines.pop_front();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::append ( const std::string &s )
+{
+  if ( false == s.empty() )
   {
-    this->_buildDefault();
+    this->_oneLineMin();
+    _lines.back() += s;
+    this->_keepUnderMax();
   }
-
-  // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2275617693", "2075124085" );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build a default GUI.
+//  Append the value.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_buildDefault()
+void TextWindow::append ( const char *s )
 {
-  // Add a menu bar.
-  this->menuBar ( new AFW::Menus::MenuBar );
-  this->menuBar()->buildDefault();
-
-  // Add a text window.
-  TextWindow::ValidRefPtr text ( new TextWindow );
-  this->textWindow ( text.get() );
-  text->percent ( 100.0f, 20.0f );
-
-  // Give it some default words.
-  AFW::Core::Application &app ( AFW::Core::Application::instance() );
-  (*text) << "Welcome to " << app.name() << TextWindow::ENDL;
+  if ( s )
+  {
+    this->_oneLineMin();
+    _lines.back() += std::string ( s );
+    this->_keepUnderMax();
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the dirty flag.
+//  Append the value.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::dirty ( bool state )
+void TextWindow::append ( TextWindow::Flusher f )
 {
-  BaseClass::dirty ( state );
-  if ( state )
-    AFW::Core::Application::instance().dirty ( true );
+  if ( TextWindow::ENDL == f )
+  {
+    this->_oneLineMin();
+    _lines.push_back ( "" );
+    this->_keepUnderMax();
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Just helps the compiler...
+//  Set the max lines.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MainWindow::dirty() const
+void TextWindow::maxLines ( unsigned int m )
 {
-  return BaseClass::dirty();
+  _maxLines = m;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the menu bar.
+//  Get the max lines.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::menuBar ( AFW::Menus::MenuBar *m )
+unsigned int TextWindow::maxLines() const
 {
-  _menuBar = m;
+  return _maxLines;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the menu bar.
+//  Iterators.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AFW::Menus::MenuBar *MainWindow::menuBar()
+TextWindow::ConstIterator TextWindow::begin() const
 {
-  return _menuBar.get();
+  return _lines.begin();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the menu bar.
+//  Iterators.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const AFW::Menus::MenuBar *MainWindow::menuBar() const
+TextWindow::ConstIterator TextWindow::end() const
 {
-  return _menuBar.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::textWindow ( TextWindow *t )
-{
-  this->remove ( _textWindow.get() );
-  _textWindow = t;
-  this->append ( _textWindow.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TextWindow *MainWindow::textWindow()
-{
-  return _textWindow.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const TextWindow *MainWindow::textWindow() const
-{
-  return _textWindow.get();
+  return _lines.end();
 }
 
 
@@ -197,7 +174,7 @@ const TextWindow *MainWindow::textWindow() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::accept ( AFW::Core::BaseVisitor *v )
+void TextWindow::accept ( AFW::Core::BaseVisitor *v )
 {
   if ( v )
     v->visit ( this );

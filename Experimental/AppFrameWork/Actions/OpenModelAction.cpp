@@ -50,12 +50,13 @@ OpenModelAction::~OpenModelAction()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenModelAction::execute ( AFW::Core::Object *, Usul::Base::Referenced *data )
+void OpenModelAction::execute ( AFW::Core::Object * )
 {
   // Local typedefs.
   typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
   typedef ILoadFileDialog::Filenames Filenames;
   typedef ILoadFileDialog::Filters Filters;
+  typedef ILoadFileDialog::FilesResult FilesResult;
 
   // Get interface.
   Usul::Interfaces::ILoadFileDialog::QueryPtr dialog ( AFW::Core::Application::instance().guiServer() );
@@ -66,7 +67,8 @@ void OpenModelAction::execute ( AFW::Core::Object *, Usul::Base::Referenced *dat
   Filters filters ( Usul::Documents::Manager::instance().filtersOpen() );
 
   // Ask for file names.
-  Filenames names ( dialog->getLoadFileNames ( "Open", filters ) );
+  FilesResult result ( dialog->getLoadFileNames ( "Open", filters ) );
+  const Filenames &names ( result.first );
 
   // Open files.
   for ( Filenames::const_iterator i = names.begin(); i != names.end(); ++i )

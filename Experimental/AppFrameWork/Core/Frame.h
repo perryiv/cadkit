@@ -9,56 +9,64 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Menu-bar window class.
+//  Frame class to arrange child windows.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _APP_FRAME_WORK_MENU_BAR_CLASS_H_
-#define _APP_FRAME_WORK_MENU_BAR_CLASS_H_
+#ifndef _APP_FRAME_WORK_FRAME_CLASS_H_
+#define _APP_FRAME_WORK_FRAME_CLASS_H_
 
 #include "AppFrameWork/Core/Group.h"
 
 
 namespace AFW {
-namespace Menus {
+namespace Core {
 
 
-class APP_FRAME_WORK_EXPORT MenuBar : public AFW::Core::Group
+class APP_FRAME_WORK_EXPORT Frame : public Group
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::Group BaseClass;
+  typedef Group BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MenuBar );
+  USUL_DECLARE_REF_POINTERS ( Frame );
+
+  // Possible layouts.
+  enum ChildLayout
+  {
+    HORIZONTAL,
+    VERTICAL
+  };
 
   // Constructor
-  MenuBar();
+  Frame ( ChildLayout = Frame::VERTICAL );
 
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
-  // Build a default GUI.
-  void                                buildDefault();
+  // Set/get the child layout.
+  void                                layout ( ChildLayout );
+  ChildLayout                         layout();
 
 protected:
 
   // Use reference counting.
-  virtual ~MenuBar();
-
-  void                                _buildDefault();
+  virtual ~Frame();
 
 private:
 
   // No copying.
-  MenuBar ( const MenuBar & );
-  MenuBar &operator = ( const MenuBar & );
+  Frame ( const Frame & );
+  Frame &operator = ( const Frame & );
+
+  ChildLayout _layout;
 };
 
 
-} // namespace Menus
+} // namespace Core
 } // namespace AFW
 
 
-#endif //_APP_FRAME_WORK_MENU_BAR_CLASS_H_
+#endif //_APP_FRAME_WORK_FRAME_CLASS_H_

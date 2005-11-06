@@ -30,9 +30,11 @@
 #include "FoxTools/Headers/MenuBar.h"
 #include "FoxTools/Headers/MenuTitle.h"
 #include "FoxTools/Headers/MenuCommand.h"
+#include "FoxTools/Headers/Splitter.h"
 
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Constants.h"
+#include "AppFrameWork/Core/GenericVisitor.h"
 #include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Menus/MenuBar.h"
 #include "AppFrameWork/Menus/Button.h"
@@ -43,6 +45,7 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Cast/Cast.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Adaptors/MemberFunction.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -80,10 +83,10 @@ namespace
 
 FXDEFMAP ( FoxComponent ) MessageMap[] = 
 {
-  FXMAPFUNC ( FX::SEL_CLOSE,   0, FoxComponent::onCommandClose  ),
-  FXMAPFUNC ( FX::SEL_COMMAND, 0, FoxComponent::onCommandButton ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  0, FoxComponent::onUpdateButton  ),
-  FXMAPFUNC ( FX::SEL_DESTROY, 0, FoxComponent::onDestroyButton ),
+  FXMAPFUNC ( FX::SEL_CLOSE,   0, FoxComponent::onClose   ),
+  FXMAPFUNC ( FX::SEL_COMMAND, 0, FoxComponent::onCommand ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  0, FoxComponent::onUpdate  ),
+  FXMAPFUNC ( FX::SEL_DESTROY, 0, FoxComponent::onDestroy ),
 };
 FOX_TOOLS_IMPLEMENT ( FoxComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
 
@@ -97,9 +100,6 @@ FOX_TOOLS_IMPLEMENT ( FoxComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( Mess
 FoxComponent::FoxComponent() : BaseClass(),
   _app       ( AFW::Core::Application::instance() ),
   _foxApp    ( 0x0 ),
-  _mainWin   ( 0x0 ),
-  _menuBar   ( 0x0 ),
-  _menuPanes (),
   _windows   ()
 {
 }
@@ -183,6 +183,67 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to get the fox object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class T > struct FoxObject
+  {
+    typedef FoxComponent::FoxObjectWrapper FoxObjectWrapper;
+    static T *get ( AFW::Core::Window *window )
+    {
+      // See if there is a window.
+      if ( 0x0 == window || 0x0 == window->guiObject() )
+        return 0x0;
+
+      // See if there is a gui-object.
+      FoxComponent::GuiObjectPtr gui ( window->guiObject() );
+      if ( false == gui.valid() )
+        return 0x0;
+
+      // See if the gui-object is a fox-wrapper.
+      FoxObjectWrapper::RefPtr fox ( dynamic_cast < FoxObjectWrapper * > ( gui.get() ) );
+      if ( true == fox.valid() )
+        return SAFE_CAST_FOX ( T, fox->value() );
+
+      // If we get to here then it did not work.
+      return 0x0;
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to hook up the wires.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_newWindow ( FX::FXWindow *fox, AFW::Core::Window *window )
+{
+  // Handle null input.
+  if ( 0x0 == fox )
+    return;
+
+  // Add it to our map.
+  _windows[fox] = window;
+
+  // This will create it now if the parent is created.
+  FoxTools::Functions::create ( fox );
+
+  // Have the window hang on to the fox-window.
+  window->guiObject ( new FoxObjectWrapper ( fox ) );
+
+  // Send all events here.
+  fox->setTarget ( this );
+  fox->setSelector ( 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notify the component.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -192,12 +253,45 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
   // Write to the registry.
   this->_registryWrite();
 
-  // Make sure we do not use this again.
-  _mainWin = 0x0;
-  FoxTools::Functions::mainWindow ( 0x0 );
+  // Clean this instance.
+  this->_cleanup();
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean up this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_cleanup()
+{
+  // Clear the map of windows.
+  _windows.clear();
+
+  // Tell every window to detach from its gui-object.
+  this->_detachAllWindows();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tell every window to detach from its gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_detachAllWindows()
+{
+  typedef AFW::Core::Window Window;
+  for ( Window::WindowListItr i = Window::allWindowsBegin(); i != Window::allWindowsEnd(); ++i )
+  {
+    Window::RefPtr window ( *i );
+    if ( window.valid() )
+      window->guiObject ( 0x0 );
+  }
 }
 
 
@@ -210,7 +304,7 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
 void FoxComponent::buildApplication()
 {
   // Return now if we are not dirty.
-  if ( false == AFW::Core::Application::instance().dirty() )
+  if ( false == _app.dirty() )
     return;
 
   // Initialize.
@@ -231,7 +325,7 @@ void FoxComponent::buildApplication()
   }
 
   // Build the main window.
-  this->_buildMainWindow();
+  this->_buildMainWindow ( _app.mainWindow() );
 
   // If this is the first time...
   if ( firstTime )
@@ -241,7 +335,7 @@ void FoxComponent::buildApplication()
   }
 
   // Application is no longer dirty.
-  AFW::Core::Application::instance().dirty ( false );
+  _app.dirty ( false );
 }
 
 
@@ -251,17 +345,17 @@ void FoxComponent::buildApplication()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildMainWindow()
+void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
 {
-  USUL_ASSERT ( 0x0 != _foxApp );
-
-  // Punt if there is no main window, or if it is not dirty.
-  AFW::Core::MainWindow::RefPtr mw ( _app.mainWindow() );
-  if ( false == mw.valid() || false == mw->dirty() )
+  // Make sure we are supposed to be here.
+  if ( 0x0 == _foxApp || 0x0 == mainWin || false == mainWin->dirty() )
     return;
 
+  // Get the existing fox main window.
+  FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( mainWin ) );
+
   // If this is the first time...
-  if ( 0x0 == _mainWin )
+  if ( 0x0 == foxMainWin )
   {
     // Application icon.
     typedef FoxTools::Icons::Factory Icons;
@@ -270,28 +364,18 @@ void FoxComponent::_buildMainWindow()
     // Get appropriate size.
     FoxRect size ( this->_initialMainWindowSize() );
 
-    // Make main window and create it if we should.
-    _mainWin = new FX::FXMainWindow ( _foxApp, _foxApp->getAppName(), icon, icon, FX::DECOR_ALL, size[0], size[1], size[2], size[3] );
-    FoxTools::Functions::create ( _mainWin );
-    FoxTools::Functions::mainWindow ( _mainWin );
-
-    // Set target to this instance.
-    _mainWin->setTarget ( this );
-    _mainWin->setSelector ( 0 );
- }
+    // Make main window.
+    foxMainWin = new FX::FXMainWindow ( _foxApp, _foxApp->getAppName(), icon, icon, FX::DECOR_ALL, size[0], size[1], size[2], size[3] );
+    this->_newWindow ( foxMainWin, mainWin );
+  }
 
   // Make these other components.
-  this->_buildMenuBar();
-#if 0
-  this->_buildToolBar();
-  this->_buildPanelLeft();
-  this->_buildPanelRight();
-  this->_buildPanelBottom();
-  this->_buildClientArea();
-#endif
+  this->_buildMenuBar ( foxMainWin, mainWin->menuBar() );
+  this->_buildToolBars();
+  this->_buildChildren ( mainWin );
 
   // No longer dirty.
-  mw->dirty ( false );
+  mainWin->dirty ( false );
 }
 
 
@@ -301,32 +385,34 @@ void FoxComponent::_buildMainWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildMenuBar()
+void FoxComponent::_buildMenuBar ( FX::FXMainWindow *foxMainWin, AFW::Menus::MenuBar *menuBar )
 {
-  USUL_ASSERT ( 0x0 != _mainWin );
-  USUL_ASSERT ( 0x0 != _app.mainWindow() );
-
-  // Punt if there is no menu-bar or if not dirty.
-  AFW::Menus::MenuBar::RefPtr menuBar ( _app.mainWindow()->menuBar() );
-  if ( false == menuBar.valid() || false == menuBar->dirty() )
+  // Make sure we are supposed to be here.
+  if ( 0x0 == foxMainWin || 0x0 == menuBar )
     return;
 
+  // Get the existing fox main window.
+  FX::FXMenuBar *foxMenuBar ( Detail::FoxObject<FX::FXMenuBar>::get ( menuBar ) );
+
   // If this is the first time...
-  if ( 0x0 == _menuBar )
+  if ( 0x0 == foxMenuBar )
   {
     // Menu bar.
-    _menuBar = new FX::FXMenuBar ( _mainWin, FX::LAYOUT_SIDE_TOP | FX::LAYOUT_FILL_X );
-    FoxTools::Functions::create ( _menuBar );
+    foxMenuBar = new FX::FXMenuBar ( foxMainWin, FX::LAYOUT_SIDE_TOP | FX::LAYOUT_FILL_X );
+    this->_newWindow ( foxMenuBar, menuBar );
   }
 
-  // Make sure there are not any top-level menus.
-  this->_cleanTopMenus();
+  // Clean existing menus.
+  this->_cleanChildren ( menuBar );
+
+  // This will delete the top-level menu-titles.
+  FoxTools::Functions::deleteChildren ( foxMenuBar );
 
   // Build all top-level menus.
   for ( AFW::Core::Group::Itr i = menuBar->begin(); i != menuBar->end(); ++i )
   {
     AFW::Core::Window::ValidRefPtr w ( *i );
-    this->_buildTopMenu ( dynamic_cast < AFW::Core::Group * > ( w.get() ) );
+    this->_buildTopMenu ( foxMainWin, foxMenuBar, dynamic_cast < AFW::Core::Group * > ( w.get() ) );
   }
 
   // Not dirty now.
@@ -336,35 +422,14 @@ void FoxComponent::_buildMenuBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clear all top-level menus.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FoxComponent::_cleanTopMenus()
-{
-  USUL_ASSERT ( 0x0 != _mainWin );
-
-  // Make sure the menu-bar does not have any child windows.
-  FoxTools::Functions::deleteChildren ( _menuBar );
-
-  // This should delete all the menu panes that are children of the main 
-  // window and are on the menu-bar.
-  _menuPanes[WindowMapKey(_mainWin,_menuBar)].clear();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the top-level menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_buildTopMenu ( AFW::Core::Group *group )
+void FoxComponent::_buildTopMenu ( FX::FXMainWindow *foxMainWin, FX::FXMenuBar *foxMenuBar, AFW::Core::Group *group )
 {
-  USUL_ASSERT ( 0x0 != _mainWin );
-
-  // Punt if there is no group or if not dirty.
-  if ( 0x0 == group || false == group->dirty() )
+  // Make sure we are supposed to be here.
+  if ( 0x0 == foxMainWin || 0x0 == foxMenuBar || 0x0 == group || false == group->dirty() )
     return;
 
   // Handle no text.
@@ -372,25 +437,90 @@ void FoxComponent::_buildTopMenu ( AFW::Core::Group *group )
   if ( text.empty() )
     return;
 
-  // Make the menu pane.
-  MenuPanePtr pane ( new FX::FXMenuPane ( _mainWin ) );
-  _menuPanes[WindowMapKey(_mainWin,_menuBar)].push_back ( pane );
-  FoxTools::Functions::create ( pane.get() );
+  // Make the menu pane and associate it with the group.
+  FX::FXMenuPane *pane ( new FX::FXMenuPane ( foxMainWin ) );
+  this->_newWindow ( pane, group );
 
-  // Make the menu title.
-  FX::FXMenuTitle *title ( new FX::FXMenuTitle ( _menuBar, text.c_str(), 0x0, pane.get() ) );
+  // Make the title but do not associate it with the group.
+  FX::FXMenuTitle *title ( new FX::FXMenuTitle ( foxMenuBar, text.c_str(), 0x0, pane ) );
   FoxTools::Functions::create ( title );
 
   // Build all sub-menus.
   for ( AFW::Core::Group::Itr i = group->begin(); i != group->end(); ++i )
   {
     AFW::Core::Window::ValidRefPtr w ( *i );
-    this->_buildSubMenu    ( pane.get(), dynamic_cast < AFW::Core::Group   * > ( w.get() ) );
-    this->_buildMenuButton ( pane.get(), dynamic_cast < AFW::Menus::Button * > ( w.get() ) );
+    this->_buildSubMenu    ( pane, dynamic_cast < AFW::Core::Group   * > ( w.get() ) );
+    this->_buildMenuButton ( pane, dynamic_cast < AFW::Menus::Button * > ( w.get() ) );
   }
 
   // Not dirty now.
   group->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the menu group.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildSubMenu ( FX::FXComposite *parent, AFW::Core::Group *group )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent || 0x0 == group || false == group->dirty() )
+    return;
+
+  // TODO
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the menu button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Button *button )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent || 0x0 == button || false == button->dirty() )
+    return;
+
+  // Make the button.
+  const std::string text ( Detail::makeMenuText ( button ) );
+  FX::FXMenuCommand *command ( new FX::FXMenuCommand ( parent, text.c_str(), this->_makeIcon ( button ) ) );
+  this->_newWindow ( command, button );
+
+  // Not dirty now.
+  button->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean the children by deleting the gui-objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_cleanChildren ( AFW::Core::Group *group )
+{
+  // Handle null input.
+  if ( 0x0 == group )
+    return;
+
+  // Make the visitor.
+  AFW::Core::BaseVisitor::RefPtr visitor 
+    ( AFW::Core::MakeVisitor<AFW::Core::Window>::make 
+      ( Usul::Adaptors::memberFunction 
+        ( this, &FoxComponent::_deleteGuiObject ) ) );
+
+  // Visit the group's children.
+  for ( AFW::Core::Group::Itr i = group->begin(); i != group->end(); ++i )
+  {
+    AFW::Core::Window::RefPtr window ( *i );
+    if ( window.valid() )
+      window->accept ( visitor.get() );
+  }
 }
 
 
@@ -407,8 +537,7 @@ void FoxComponent::destroyApplication()
 
   try
   {
-    _menuPanes.clear();
-    _windows.clear();
+    this->_cleanup();
     delete _foxApp;
   }
 
@@ -434,8 +563,9 @@ void FoxComponent::runApplication()
   this->buildApplication();
 
   // Show the main window if we have one.
-  if ( 0x0 != _mainWin )
-    _mainWin->show ( FX::PLACEMENT_DEFAULT );
+  FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
+  if ( 0x0 != foxMainWin )
+    foxMainWin->show ( FX::PLACEMENT_DEFAULT );
 
   // Run the application.
   _foxApp->run();
@@ -463,19 +593,20 @@ void FoxComponent::updateApplication()
 void FoxComponent::_registryWrite()
 {
   // If we have a main window...
-  if ( 0x0 != _mainWin )
+  FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
+  if ( 0x0 != foxMainWin )
   {
     // Is it maximized?
-    FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::MAXIMIZED, _mainWin->isMaximized() );
+    FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::MAXIMIZED, foxMainWin->isMaximized() );
 
     // If the main window is not maximized...
-    if ( false == _mainWin->isMaximized() )
+    if ( false == foxMainWin->isMaximized() )
     {
       // Write the size and position to the registry.
-      FX::FXint x ( Usul::Math::maximum ( ( _mainWin->getX() ), 0 ) );
-      FX::FXint y ( Usul::Math::maximum ( ( _mainWin->getY() ), 0 ) );
-      FX::FXint w ( _mainWin->getWidth() );
-      FX::FXint h ( _mainWin->getHeight() );
+      FX::FXint x ( Usul::Math::maximum ( ( foxMainWin->getX() ), 0 ) );
+      FX::FXint y ( Usul::Math::maximum ( ( foxMainWin->getY() ), 0 ) );
+      FX::FXint w ( foxMainWin->getWidth() );
+      FX::FXint h ( foxMainWin->getHeight() );
       FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::X,      x );
       FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::Y,      y );
       FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::WIDTH,  w );
@@ -494,7 +625,7 @@ void FoxComponent::_registryWrite()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long FoxComponent::onCommandClose ( FXObject *object, FXSelector selector, void *data )
+long FoxComponent::onClose ( FXObject *object, FXSelector selector, void *data )
 {
   // Close down.
   this->notifyClose ( 0x0 );
@@ -510,15 +641,12 @@ long FoxComponent::onCommandClose ( FXObject *object, FXSelector selector, void 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long FoxComponent::onCommandButton ( FXObject *object, FXSelector selector, void *data )
+long FoxComponent::onCommand ( FXObject *object, FXSelector selector, void *data )
 {
   // Look for a command-action.
-  AFW::Core::Window::RefPtr window ( _windows[object] );
+  AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
   if ( window.valid() )
-  {
-    FoxObjectWrapper::RefPtr wrapper ( new FoxObjectWrapper ( object ) );
-    window->callCommandActions ( window, wrapper );
-  }
+    window->callCommandActions();
 
   // Message handled.
   return 1;
@@ -531,15 +659,12 @@ long FoxComponent::onCommandButton ( FXObject *object, FXSelector selector, void
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long FoxComponent::onUpdateButton ( FXObject *object, FXSelector selector, void *data )
+long FoxComponent::onUpdate ( FXObject *object, FXSelector selector, void *data )
 {
   // Look for a window.
-  AFW::Core::Window::RefPtr window ( _windows[object] );
+  AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
   if ( window.valid() )
-  {
-    FoxObjectWrapper::RefPtr wrapper ( new FoxObjectWrapper ( object ) );
-    window->callUpdateActions ( window, wrapper );
-  }
+    window->callUpdateActions();
 
   // Message handled.
   return 1;
@@ -548,13 +673,21 @@ long FoxComponent::onUpdateButton ( FXObject *object, FXSelector selector, void 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Called when the button is destroyed.
+//  Called when the window is destroyed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long FoxComponent::onDestroyButton ( FXObject *object, FXSelector selector, void *data )
+long FoxComponent::onDestroy ( FXObject *object, FXSelector selector, void *data )
 {
-  // Erase the command-action if there is any.
+  // Find the window.
+  AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
+  if ( true == window.valid() )
+  {
+    // This window no longer has a corresponding gui-object.
+    window->guiObject ( 0x0 );
+  }
+
+  // Erase the entry if there is any.
   _windows.erase ( object );
 
   // Continue propagation of message.
@@ -603,51 +736,6 @@ FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the menu group.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FoxComponent::_buildSubMenu ( FX::FXMenuPane *pane, AFW::Core::Group *group )
-{
-  USUL_ASSERT ( 0x0 != _menuBar );
-
-  // Return if group is null, or not dirty.
-  if ( 0x0 == group || false == group->dirty() )
-    return;
-
-  // TODO
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the menu button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FoxComponent::_buildMenuButton ( FX::FXMenuPane *pane, AFW::Menus::Button *button )
-{
-  // Return if null or not dirty.
-  if ( 0x0 == button || 0x0 == pane || false == button->dirty() )
-    return;
-
-  // Make the button.
-  const std::string text ( Detail::makeMenuText ( button ) );
-  FX::FXMenuCommand *command ( new FX::FXMenuCommand ( pane, text.c_str(), this->_makeIcon ( button ) ) );
-  command->setTarget ( this );
-  command->setSelector ( 0 );
-  FoxTools::Functions::create ( command );
-
-  // Save in our map.
-  _windows[command] = button;
-
-  // Not dirty now.
-  button->dirty ( false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Make an icon. Returns null if it fails.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -679,11 +767,11 @@ FX::FXIcon *FoxComponent::_makeIcon ( AFW::Core::Window *w )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::enableWindow ( bool state, AFW::Core::Window *, Usul::Base::Referenced *data )
+void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window )
 {
-  FoxObjectWrapper::RefPtr fox ( dynamic_cast < FoxObjectWrapper * > ( data ) );
-  if ( fox.valid() )
-    FoxTools::Functions::enable ( state, fox->value() );
+  FX::FXWindow *foxWindow ( Detail::FoxObject<FX::FXWindow>::get ( window ) );
+  if ( foxWindow )
+    FoxTools::Functions::enable ( state, foxWindow );
 }
 
 
@@ -693,12 +781,10 @@ void FoxComponent::enableWindow ( bool state, AFW::Core::Window *, Usul::Base::R
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *, Usul::Base::Referenced *data )
+bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *window )
 {
-  FoxObjectWrapper *fox ( dynamic_cast < FoxObjectWrapper * > ( data ) );
-  FX::FXObject *object ( ( fox ) ? fox->value() : 0x0 );
-  FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
-  return ( ( window && window->isEnabled() ) ? true : false );
+  const FX::FXWindow *foxWindow ( Detail::FoxObject<FX::FXWindow>::get ( const_cast < AFW::Core::Window * > ( window ) ) );
+  return ( ( foxWindow && foxWindow->isEnabled() ) ? true : false );
 }
 
 
@@ -708,10 +794,10 @@ bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *, Usul::Base::Refe
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string FoxComponent::getLoadFileName ( const std::string &title, const Filters &filters )
+FoxComponent::FileResult FoxComponent::getLoadFileName ( const std::string &title, const Filters &filters )
 {
-  Filenames filenames ( this->getLoadFileNames ( title, filters ) );
-  return ( ( filenames.empty() ) ? "" : filenames.front() );
+  FilesResult result ( this->getLoadFileNames ( title, filters ) );
+  return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }
 
 
@@ -721,9 +807,176 @@ std::string FoxComponent::getLoadFileName ( const std::string &title, const Filt
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FoxComponent::Filenames FoxComponent::getLoadFileNames ( const std::string &title, const Filters &filters )
+FoxComponent::FilesResult FoxComponent::getLoadFileNames ( const std::string &title, const Filters &filters )
 {
+  // Need this up here.
+  FilesResult result;
+
+  // Get main window.
+  FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
+  if ( 0x0 == foxMainWin )
+    return result;
+
+  // Call the file-dialog.
   typedef FoxTools::Dialogs::FileSelection FileDialog;
-  FileDialog::FilesResult result ( FileDialog::askForFileNames ( FileDialog::OPEN, title, filters ) );
-  return result.first;
+  result = FileDialog::askForFileNames ( FileDialog::OPEN, title, filters, foxMainWin );
+
+  // Return the list of file names, which may be empty.
+  return result;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the toolbars.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildToolBars()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildChildren ( AFW::Core::Frame *parentFrame )
+{
+  // Get the fox-composite.
+  FX::FXComposite *foxParentComposite ( Detail::FoxObject<FX::FXComposite>::get ( parentFrame ) );
+  if ( 0x0 == foxParentComposite )
+    return;
+
+#if 0
+
+  // Handle no input.
+  if ( 0x0 == parentFrame || 0x0 == foxParentComposite )
+    return;
+
+  // Are there children?
+  if ( 0 == parentFrame->numChildren() )
+    return;
+
+  // Initialize.
+  FX::FXComposite *childC ( 0x0 );
+
+  // If there is more then one child...
+  if ( parentFrame->numChildren() > 1 )
+  {
+    // Make a splitter to hold the children.
+    unsigned int options ( ( AFW::Core::Frame::HORIZONTAL == parentFrame->layout() ) ? FX::SPLITTER_HORIZONTAL : FX::SPLITTER_VERTICAL ); 
+    childC = new FX::FXSplitter ( foxParentComposite, options );
+  }
+
+  // Otherwise...
+  else
+  {
+    childC = new FX::FXComposite ( foxParentComposite );
+  }
+
+  // Hook up the wires.
+  this->_newWindow ( childC, parentFrame );
+
+  // For each child...
+  for ( AFW::Core::Group::Itr i = parentFrame->begin(); i != parentFrame->end(); ++i )
+  {
+    // Need to keep making splitters...
+  }
+
+  // Not dirty now.
+  parent->dirty ( false );
+
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that the object is being destroyed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::destroyNotify ( AFW::Core::Window *window )
+{
+  this->_deleteGuiObject ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that the object is being removed from the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::removeNotify ( AFW::Core::Window *window )
+{
+  this->_deleteGuiObject ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete the gui-object, if any.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_deleteGuiObject ( AFW::Core::Window *window )
+{
+  // Handle null input.
+  if ( 0x0 == window )
+    return;
+
+  // Get the fox-object.
+  FX::FXObject *fox ( Detail::FoxObject<FX::FXObject>::get ( window ) );
+  if ( 0x0 == fox )
+    return;
+
+  // Remove the object from our map.
+  _windows.erase ( fox );
+
+  // Delete the fox-object safely.
+  this->_deleteFoxObject ( fox );
+
+  // This object no longer has a corresponding gui-object.
+  window->guiObject ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete the fox object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_deleteFoxObject ( FX::FXObject *object )
+{
+  try
+  {
+    delete object;
+  }
+  AFW_CATCH_BLOCK ( "1912870980", "3050351572" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Window *FoxComponent::_findWindow ( FX::FXObject *object )
+{
+  WindowsMap::iterator i ( _windows.find ( object ) );
+  return ( ( _windows.end() == i ) ? 0x0 : i->second );
+}
+
+
+#if 0
+clear the maps in notifyClose?
+null all gui objects in notifyClose?
+set target for all fox objects we make?
+use FoxObjectWrappers from the objects, rather than make new ones in callbacks.
+#endif

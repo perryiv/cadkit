@@ -16,6 +16,7 @@
 #include "AppFrameWork/Menus/MenuBar.h"
 #include "AppFrameWork/Menus/Button.h"
 #include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Conditions/HasNewModelPlugin.h"
 #include "AppFrameWork/Conditions/HasOpenModelPlugin.h"
@@ -111,4 +112,17 @@ void MenuBar::_buildDefault()
     }
   }
   this->append ( fileMenu.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MenuBar::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
 }

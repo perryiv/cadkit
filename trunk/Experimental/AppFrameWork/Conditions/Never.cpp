@@ -46,7 +46,7 @@ Never::~Never()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Never::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
+bool Never::evaluate ( AFW::Core::Object * )
 {
   return true;
 }

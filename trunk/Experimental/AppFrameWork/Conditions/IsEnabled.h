@@ -38,7 +38,7 @@ public:
   IsEnabled ( bool want = true );
 
   // Returns true of the window is enabled.
-  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
+  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0 );
 
 protected:
 

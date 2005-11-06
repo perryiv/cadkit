@@ -14,10 +14,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Core/Define.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/MPL/SameType.h"
+
+#include <iostream>
+#include <stdexcept>
 
 using namespace AFW::Core;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Static data member(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::WindowList Window::_allWindows;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,13 +44,25 @@ using namespace AFW::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 Window::Window ( const std::string &text, Icon *icon ) : BaseClass(),
-  _flags   ( DIRTY ),
-  _parent  ( 0x0 ),
-  _icon    ( icon ),
-  _text    ( text ),
-  _commands(),
-  _updates ()
+  _whichWindow ( _allWindows.end() ),
+  _flags       ( State::DIRTY ),
+  _parent      ( 0x0 ),
+  _icon        ( icon ),
+  _text        ( text ),
+  _commands    (),
+  _updates     (),
+  _percent     ( 100.0f, 100.0f ),
+  _guiObject   ()
 {
+  typedef std::list < Window::ValidRefPtr > ListOfWindows;
+  typedef std::iterator_traits < Window::WindowList::iterator > Traits1;
+  typedef std::iterator_traits < ListOfWindows::iterator > Traits2;
+  typedef Traits1::iterator_category Category1;
+  typedef Traits2::iterator_category Category2;
+  USUL_ASSERT_SAME_TYPE ( Category1, Category2 );
+
+  // Relies on the fact that list iterators are not invalidated.
+  _whichWindow = _allWindows.insert ( _allWindows.end(), this );
 }
 
 
@@ -45,6 +74,24 @@ Window::Window ( const std::string &text, Icon *icon ) : BaseClass(),
 
 Window::~Window()
 {
+  // Safely...
+  try
+  {
+    USUL_ASSERT ( false == _allWindows.empty() );
+
+    // Relies on the fact that list iterators are not invalidated.
+    _allWindows.erase ( _whichWindow );
+
+    // The parent is now dirty.
+    if ( _parent )
+      _parent->dirty ( true );
+
+    // Tell the application that we are being destroyed.
+    Application::instance().destroyNotify ( this );
+  }
+
+  // Catch exceptions.
+  AFW_CATCH_BLOCK ( "3539223479", "3180678094" );
 }
 
 
@@ -56,7 +103,7 @@ Window::~Window()
 
 void Window::dirty ( bool state )
 {
-  const unsigned int bit ( Window::DIRTY );
+  const unsigned int bit ( State::DIRTY );
   if ( state )
   {
     _flags = Usul::Bits::add ( _flags, bit );
@@ -80,7 +127,7 @@ void Window::dirty ( bool state )
 
 bool Window::dirty() const
 {
-  const unsigned int bit ( Window::DIRTY );
+  const unsigned int bit ( State::DIRTY );
   return Usul::Bits::has ( _flags, bit );
 }
 
@@ -295,14 +342,14 @@ Window::UpdatePairsConstItr Window::updatesEnd() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::callCommandActions ( Window *window, Usul::Base::Referenced *data )
+void Window::callCommandActions()
 {
   for ( CommandActionsItr i = _commands.begin(); i != _commands.end(); ++i )
   {
     CommandAction::RefPtr command ( *i );
     if ( command.valid() )
     {
-      command->execute ( window, data );
+      command->execute ( this );
     }
   }
 }
@@ -314,7 +361,7 @@ void Window::callCommandActions ( Window *window, Usul::Base::Referenced *data )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::callUpdateActions ( Window *window, Usul::Base::Referenced *data )
+void Window::callUpdateActions()
 {
   for ( UpdatePairsItr i = _updates.begin(); i != _updates.end(); ++i )
   {
@@ -323,8 +370,188 @@ void Window::callUpdateActions ( Window *window, Usul::Base::Referenced *data )
     AFW::Actions::UpdateAction::RefPtr action ( update.second );
     if ( condition.valid() && action.valid() )
     {
-      if ( condition->evaluate ( window, data ) )
-        action->execute ( window, data );
+      if ( condition->evaluate ( this ) )
+        action->execute ( this );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dockable flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::dockable ( bool state )
+{
+  const unsigned int bit ( State::DOCKABLE );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dockable flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Window::dockable() const
+{
+  const unsigned int bit ( State::DOCKABLE );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the docked flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::docked ( bool state )
+{
+  // Handle unchanged case.
+  if ( this->docked() == state )
+    return;
+
+  // Set the flag.
+  const unsigned int bit ( State::DOCKED );
+  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+
+  // We are dirty.
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the docked flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Window::docked() const
+{
+  const unsigned int bit ( State::DOCKED );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the percent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::percent ( const Usul::Math::Vec2f &p )
+{
+  _percent = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the percent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::percent ( float x, float y )
+{
+  _percent.set ( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the percent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec2f Window::percent() const
+{
+  return _percent;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterator to the list of all windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::WindowListItr Window::allWindowsBegin()
+{
+  return _allWindows.begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterator to the list of all windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::WindowListItr Window::allWindowsEnd()
+{
+  return _allWindows.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Window::GuiObject *Window::guiObject() const
+{
+  return _guiObject.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the user-data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::GuiObject *Window::guiObject()
+{
+  return _guiObject.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the user-data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::guiObject ( Window::GuiObject *object )
+{
+  _guiObject = object;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This function is plumbing for the visitor pattern.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::_traverse ( AFW::Core::BaseVisitor * )
+{
 }

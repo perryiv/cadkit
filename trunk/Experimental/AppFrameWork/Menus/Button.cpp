@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Menus/Button.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
 
 using namespace AFW::Menus;
 
@@ -50,4 +51,17 @@ Button::~Button()
 unsigned short Button::underline() const
 {
   return _underline;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Button::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
 }

@@ -46,7 +46,7 @@ HasOpenModelPlugin::~HasOpenModelPlugin()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool HasOpenModelPlugin::evaluate ( AFW::Core::Object *, Usul::Base::Referenced * )
+bool HasOpenModelPlugin::evaluate ( AFW::Core::Object * )
 {
   return ( true == _want ); // TODO
 }

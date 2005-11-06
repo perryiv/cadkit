@@ -36,6 +36,9 @@ public:
   // Constructor
   Button ( const std::string &text = "", AFW::Core::Icon *icon = 0x0, unsigned short underline = 0xFFFF );
 
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
+
   // Set/get the character to underline.
   unsigned short                      underline() const;
   void                                underline ( unsigned short );

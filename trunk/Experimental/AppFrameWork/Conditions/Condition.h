@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Condition );
 
   // See if the condition is met.
-  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 ) = 0;
+  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0 ) = 0;
 
 protected:
 

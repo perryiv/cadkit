@@ -48,8 +48,8 @@ IsEnabled::~IsEnabled()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool IsEnabled::evaluate ( AFW::Core::Object *object, Usul::Base::Referenced *data )
+bool IsEnabled::evaluate ( AFW::Core::Object *object )
 {
   AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
-  return ( ( window.valid() ) ? AFW::Core::Application::instance().guiServer()->isWindowEnabled ( window.get(), data ) : false );
+  return ( ( window.valid() ) ? ( AFW::Core::Application::instance().isWindowEnabled ( window.get() ) == _want ) : false );
 }

@@ -34,13 +34,13 @@ public:
   USUL_DECLARE_REF_POINTERS ( Action );
 
   // Can we undo the action?
-  virtual bool                        canUndo ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 ) const;
+  virtual bool                        canUndo ( AFW::Core::Object *object = 0x0 ) const;
 
   // Perform the action.
-  virtual void                        execute ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 ) = 0;
+  virtual void                        execute ( AFW::Core::Object *object = 0x0 ) = 0;
 
   // Undo the command.
-  virtual void                        undo ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
+  virtual void                        undo ( AFW::Core::Object *object = 0x0 );
 
 protected:
 

@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
 #include "Usul/Exceptions/Thrower.h"
@@ -63,7 +64,7 @@ Application::Application() :
   _type       ( Application::MULTIPLE_DOCUMENT_INTERFACE ),
   _mainWindow ( 0x0 ),
   _gui        (),
-  _flags      ( DIRTY )
+  _flags      ( State::DIRTY )
 {
 #ifdef _DEBUG
   _plugExts.insert ( "plugd" );
@@ -272,7 +273,8 @@ void Application::_run()
     this->buildDefault();
 
   // Run the GUI application.
-  _gui->runApplication();
+  if ( _gui.valid() )
+    _gui->runApplication();
 }
 
 
@@ -324,7 +326,8 @@ void Application::_buildDefault()
 {
   this->mainWindow ( new MainWindow );
   this->mainWindow()->buildDefault();
-  _gui->buildApplication();
+  if ( _gui.valid() )
+    _gui->buildApplication();
 }
 
 
@@ -336,7 +339,7 @@ void Application::_buildDefault()
 
 void Application::dirty ( bool state )
 {
-  const unsigned int bit ( Application::DIRTY );
+  const unsigned int bit ( State::DIRTY );
   _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
 }
 
@@ -349,6 +352,70 @@ void Application::dirty ( bool state )
 
 bool Application::dirty() const
 {
-  const unsigned int bit ( Application::DIRTY );
+  const unsigned int bit ( State::DIRTY );
   return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Perform the action.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::enableWindow ( bool state, Window *window )
+{
+  if ( _gui.valid() && 0x0 != window )
+    _gui->enableWindow ( state, window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns true of the window is enabled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isWindowEnabled ( const Window *window )
+{
+  return ( ( _gui.valid() && 0x0 != window ) ? _gui->isWindowEnabled ( window ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that the object is being removed from the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeNotify ( Window *window )
+{
+  if ( _gui.valid() && 0x0 != window )
+    _gui->removeNotify ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that the object is being destroyed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::destroyNotify ( Window *window )
+{
+  if ( _gui.valid() && 0x0 != window )
+    _gui->destroyNotify ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::accept ( AFW::Core::BaseVisitor *v )
+{
+  if ( v )
+    v->visit ( this );
 }

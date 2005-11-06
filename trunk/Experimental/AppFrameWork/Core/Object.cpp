@@ -14,8 +14,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Object.h"
+#include "AppFrameWork/Core/Define.h"
+
+#include "Usul/Errors/Assert.h"
+#include "Usul/MPL/SameType.h"
+
+#include <iostream>
+#include <stdexcept>
 
 using namespace AFW::Core;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Static data member(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Object::ObjectList Object::_allObjects;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,9 +41,18 @@ using namespace AFW::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 Object::Object() : BaseClass(),
-  _userData (),
-  _guiObject()
+  _whichObject ( _allObjects.end() ),
+  _userData    ()
 {
+  typedef std::list < Object::ValidRefPtr > ListOfObjects;
+  typedef std::iterator_traits < Object::ObjectList::iterator > Traits1;
+  typedef std::iterator_traits < ListOfObjects::iterator > Traits2;
+  typedef Traits1::iterator_category Category1;
+  typedef Traits2::iterator_category Category2;
+  USUL_ASSERT_SAME_TYPE ( Category1, Category2 );
+
+  // Relies on the fact that list iterators are not invalidated.
+  _whichObject = _allObjects.insert ( _allObjects.end(), this );
 }
 
 
@@ -39,6 +64,17 @@ Object::Object() : BaseClass(),
 
 Object::~Object()
 {
+  // Safely...
+  try
+  {
+    USUL_ASSERT ( false == _allObjects.empty() );
+
+    // Relies on the fact that list iterators are not invalidated.
+    _allObjects.erase ( _whichObject );
+  }
+
+  // Catch exceptions.
+  AFW_CATCH_BLOCK ( "1072220024", "2486162374" );
 }
 
 
@@ -80,35 +116,23 @@ void Object::userData ( UserData *data )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the gui-object.
+//  Iterator to the list of all objects.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Object::UserData *Object::guiObject() const
+Object::ObjectListItr Object::allObjectsBegin()
 {
-  return _guiObject.get();
+  return _allObjects.begin();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the user-data.
+//  Iterator to the list of all objects.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Object::UserData *Object::guiObject()
+Object::ObjectListItr Object::allObjectsEnd()
 {
-  return _guiObject.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the user-data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Object::guiObject ( GuiObject *object )
-{
-  _guiObject = object;
+  return _allObjects.end();
 }

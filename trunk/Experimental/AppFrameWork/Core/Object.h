@@ -21,6 +21,8 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include <list>
+
 
 namespace AFW {
 namespace Core {
@@ -33,22 +35,21 @@ public:
   // Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Base::Referenced UserData;
-  typedef Usul::Base::Referenced GuiObject;
   typedef USUL_REF_POINTER ( UserData ) UserDataPtr;
-  typedef USUL_REF_POINTER ( GuiObject ) GuiObjectPtr;
+  typedef std::list < Object * > ObjectList; // Not reference-counted by design!
+  typedef ObjectList::iterator ObjectListItr;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Object );
+
+  // Iterators to the list of all objects.
+  static ObjectListItr                allObjectsBegin();
+  static ObjectListItr                allObjectsEnd();
 
   // Set/get the user-data.
   void                                userData ( UserData * );
   const UserData *                    userData() const;
   UserData *                          userData();
-
-  // Set/get the handle to the graphical object. The gui-server uses these.
-  void                                guiObject ( GuiObject * );
-  const UserData *                    guiObject() const;
-  UserData *                          guiObject();
 
 protected:
 
@@ -64,8 +65,9 @@ private:
   Object ( const Object & );
   Object &operator = ( const Object & );
 
+  static ObjectList _allObjects;
+  ObjectListItr _whichObject;
   UserDataPtr _userData;
-  GuiObjectPtr _guiObject;
 };
 
 

@@ -41,6 +41,9 @@ public:
   // Constructor
   Group ( const std::string &text = "", Icon *icon = 0x0 );
 
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
+
   // Append a window.
   void                                append ( Window * );
 
@@ -52,8 +55,18 @@ public:
   Itr                                 end();
   ConstItr                            end() const;
 
+  // Find the child window.
+  ConstItr                            find ( Window *w ) const;
+  Itr                                 find ( Window *w );
+
   // Insert a window.
   void                                insert ( Itr where, Window * );
+
+  // Return the number of children.
+  unsigned int                        numChildren() const;
+
+  // Remove a window.
+  void                                remove ( Window * );
 
   // Prepend a window.
   void                                prepend ( Window * );
@@ -63,11 +76,15 @@ protected:
   // Use reference counting.
   virtual ~Group();
 
+  virtual void                        _traverse ( AFW::Core::BaseVisitor * );
+
 private:
 
   // No copying.
   Group ( const Group & );
   Group &operator = ( const Group & );
+
+  friend class BaseVisitor; // Calls _traverse()
 
   Windows _windows;
 };

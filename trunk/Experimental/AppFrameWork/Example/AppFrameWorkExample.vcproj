@@ -165,6 +165,9 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\Helios.log">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

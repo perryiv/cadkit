@@ -38,7 +38,7 @@ public:
   Or();
 
   // One of the contained conditions has to be true.
-  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0, Usul::Base::Referenced *data = 0x0 );
+  virtual bool                    evaluate ( AFW::Core::Object *object = 0x0 );
 
 protected:
 

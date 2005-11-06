@@ -24,6 +24,8 @@
 #include <set>
 #include <string>
 
+namespace AFW { namespace Core { class BaseVisitor; } }
+
 
 namespace AFW {
 namespace Core {
@@ -44,11 +46,8 @@ public:
     SINGLE_DOCUMENT_INTERFACE
   };
 
-  // Possible flags
-  enum
-  {
-    DIRTY = 0x01
-  };
+  // Accept the visitor.
+  virtual void                        accept ( AFW::Core::BaseVisitor * );
 
   // Build a default GUI.
   bool                                buildDefault();
@@ -56,9 +55,18 @@ public:
   // Clean up all that we can.
   bool                                cleanup();
 
+  // Notification that the window is being destroyed.
+  void                                destroyNotify ( Window * );
+
+  // Notification that the window is being removed from the scene.
+  void                                removeNotify ( Window * );
+
   // Set/get the dirty flag.
   void                                dirty ( bool );
   bool                                dirty() const;
+
+  // Enable/disable the window.
+  void                                enableWindow ( bool state, Window *window );
 
   // Set/get the GUI factory.
   void                                guiServer ( IGUIServer *gui ) { _gui = gui; }
@@ -66,6 +74,9 @@ public:
 
   // It's a singleton.
   static Application &                instance();
+
+  // Return the enabled/disabled state.
+  bool                                isWindowEnabled ( const Window *window );
 
   // Set/get the main window.
   const MainWindow *                  mainWindow() const { return _mainWindow.get(); }
@@ -125,7 +136,7 @@ private:
   Type _type;
   MainWindow::RefPtr _mainWindow;
   IGUIServer::QueryPtr _gui;
-  unsigned int _flags;
+  AFW::Core::State::Type _flags;
 };
 
 

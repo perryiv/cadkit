@@ -11,6 +11,7 @@
 #define __USUL_POLICIES_UPDATE_H__
 
 #include "Usul/System/Clock.h"
+#include "Usul/Types/Types.h"
 
 namespace Usul {
 namespace Policies {
@@ -23,7 +24,7 @@ namespace Policies {
 
 struct TimeBased
 {
-  TimeBased( double updateTime ) : 
+  TimeBased( Usul::Types::Uint64 updateTime ) : 
     _lastTime ( Usul::System::Clock::milliseconds() ), 
     _updateTime( updateTime ) 
     { }
@@ -38,10 +39,10 @@ struct TimeBased
   bool operator() ()
   {
     //Get the current time
-    double currentTime ( Usul::System::Clock::milliseconds() );
+    Usul::Types::Uint64 currentTime ( Usul::System::Clock::milliseconds() );
 
     //Get the time elasped since true returned last
-    double elapsedTime ( currentTime - _lastTime );
+    Usul::Types::Uint64 elapsedTime ( currentTime - _lastTime );
 
     //Is the elapsed time greater than our update time
     if ( elapsedTime > _updateTime )
@@ -57,7 +58,7 @@ struct TimeBased
     return false;
   }
 private:
-  double _lastTime, _updateTime;
+  Usul::Types::Uint64 _lastTime, _updateTime;
 };
 
 

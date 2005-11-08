@@ -74,14 +74,14 @@ inline std::string directory ( const std::string &path, bool wantSlash )
 
 inline std::string extension ( const std::string &path )
 {
-  std::string::size_type size ( path.size() ); 
   std::string::size_type dotPos = path.find_last_of('.') ;
-  if (dotPos == std::string::npos) 
+    //Check for not extension or just a trailing '.'
+    if (dotPos == std::string::npos || dotPos == path.size() - 1 ) 
   {
     const std::string ext ("");
     return ext;
   } 
-  return path.substr (dotPos +1, size); 
+  return path.substr (dotPos +1); 
 }
 
 ///////////////////////////////////////////////////////////////////////////////

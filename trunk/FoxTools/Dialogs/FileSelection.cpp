@@ -87,12 +87,12 @@ namespace Detail
 
 namespace Detail
 {
-    void _appendExtension ( const FileSelection::Filter &filter, FileSelection::Filenames &names )
+    bool _appendExtension ( const FileSelection::Filter &filter, FileSelection::Filenames &names, FX::FXWindow *owner )
     {
         // Get extension from filter. Filters are like this: "*.stl", so we drop the "*."
         std::string fe ( filter.second );
         if ( fe.size() < 3 )
-            return;
+            return false;
         fe.erase ( 0, 2 );
         
         // Loop through the names.
@@ -104,13 +104,28 @@ namespace Detail
             // Get extension.
             std::string ext ( Usul::File::extension ( name ) );
             
-            // If wetension is empty then append filter's extension.
+            // If extension is empty then append filter's extension.
             if ( ext.empty() )
             {
-                name += ".";
+                std::string::size_type dotPos = name.find_last_of('.') ;
+                //Check for not extension or just a trailing '.'
+                if ( dotPos != name.size() - 1 ) 
+                {
+                    name += "."; //Only append a '.' if the name does not have one
+                }
                 name += fe;
+
+                FX::FXString path (name.c_str() );
+                if(FXFile::exists(path))
+                {
+                    if(MBOX_CLICKED_NO==FXMessageBox::question(owner, MBOX_YES_NO, "Overwrite Document","Overwrite existing document: %s?", path.text() ) ) 
+                    {
+                        return false;
+                    } 
+                }
             }
         }
+        return true;
     }
 }
 
@@ -325,7 +340,7 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
     {
       // Get the filename.
       FX::FXString path = dialog.getFilename();
-  
+
       if(FXFile::exists(path))
       {
           if(MBOX_CLICKED_NO==FXMessageBox::question(&dialog,MBOX_YES_NO,"Overwrite Document","Overwrite existing document: %s?",path.text())) 
@@ -533,8 +548,14 @@ FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, co
     
     // Are we supposed to make sure there is an extension? 
     // Note: do not use filenames() member.
-    if ( appendExtension )
-        Detail::_appendExtension ( filter, dialog._filenames );
+    if ( appendExtension ) 
+    {
+      if ( false == Detail::_appendExtension ( filter, dialog._filenames, owner ) )
+      {
+          return FilesResult(); //Return empty data if the user canceled the operation
+      }
+    }
+        
     
     // Return the file names.
     return FilesResult ( dialog.filenames(), filter );

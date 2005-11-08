@@ -428,14 +428,15 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
         //Send a progress update
         
         current = iter - polygons.begin() ;
-        // Update the ProgressBar
-        updater ( current, size );
+
         // Update the Status Bar
         now = Usul::System::Clock::milliseconds();
         Uint32 estimate (  Detail::timeLeft(startTime, now, current, size) );
         std::ostringstream os;
         os << "[" << estimate << " Sec Remain in Step 1 of 3] Edge Polygons Found: ";
-        updater ( uncapped, os.str(), false);
+        updater ( uncapped, os.str(), current, size );
+        // Update the ProgressBar
+        //updater ( current, size );
     }
     
     //Sort for binary search
@@ -465,14 +466,15 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
             loops.push_back( loop );
         }
         current = size - uncapped.size();
-        // Update the ProgressBar
-        updater ( current, size );
+
         // Update the Status Bar
         now = Usul::System::Clock::milliseconds();
         Uint32 estimate (  Detail::timeLeft(startTime, now, current, size) );
         std::ostringstream os;
         os << "[" << estimate << " Sec Remain in Step 2 of 3] Loops Created: ";
-        updater (  loops.size(), os.str(), true );
+        updater (  loops.size(), os.str(), current, size );
+        // Update the ProgressBar
+        //updater ( current, size );
     }
     
     // Clear the cache

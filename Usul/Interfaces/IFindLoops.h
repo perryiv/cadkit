@@ -24,7 +24,7 @@
 
 #include "Usul/Policies/Update.h"
 #include <list>
-
+#include <iostream>
 
 namespace Usul {
 namespace Interfaces {
@@ -53,60 +53,42 @@ struct IFindLoops : public Usul::Interfaces::IUnknown
     {
     }
 
-      
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+// Updates both the ProgressBar and the Status Text Area.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class IndexSequence >
-void operator() ( IndexSequence& uncapped, std::string str, bool forceRedraw = false )
-{
-  if( _updatePolicy() || forceRedraw )
-  {
-    //Set the status bar
-    std::ostringstream os;
-    unsigned long numCapped ( uncapped.size() );
-    os << str << numCapped;
-    _statusBar ( os.str(), true );
 
-    if( _flush.valid() )
-      _flush->flushEventQueue();
-  }
+void operator() ( IndexSequence& uncapped, std::string str, unsigned int current, unsigned int total )
+{    
+    if( _updatePolicy()  )
+    {
+        //Set the status bar
+        std::ostringstream os;
+        unsigned long numCapped ( uncapped.size() );
+        os << str << numCapped;
+        _statusBar ( os.str(), true );
+        _progressBar ( current, total );  
+    }
 }
 
-  
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+// Updates both the ProgressBar and the Status Text Area.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void operator () ( unsigned int current, unsigned int total )
+void operator () ( unsigned int numLoops, std::string str, unsigned int current, unsigned int total, bool force = false )
 {
-  if( _updatePolicy() )
-    _progressBar ( current, total );
-}
-
-  
-///////////////////////////////////////////////////////////////////////////////
-//
-//
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void operator () ( unsigned int numLoops, std::string str, bool force = false )
-{
-  if( _updatePolicy() || force )
-  {
-    std::ostringstream os;
-    os << str << numLoops;
-    _statusBar ( os.str(), true );
-
-    if( _flush.valid() )
-      _flush->flushEventQueue();
-  }
+    if( _updatePolicy() || force )
+    {
+        std::ostringstream os;
+        os << str << numLoops;
+        _statusBar ( os.str(), true );
+        _progressBar ( current, total );
+    }
 }
 
   private:

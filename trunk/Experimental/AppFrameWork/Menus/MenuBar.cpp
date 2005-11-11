@@ -15,7 +15,7 @@
 
 #include "AppFrameWork/Menus/MenuBar.h"
 #include "AppFrameWork/Menus/Button.h"
-#include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Conditions/HasNewModelPlugin.h"
@@ -87,7 +87,7 @@ void MenuBar::_buildDefault()
   AFW::Actions::Enable::RefPtr disable ( new AFW::Actions::Enable ( false ) );
 
   // File menu.
-  AFW::Core::Group::ValidRefPtr fileMenu ( new AFW::Core::Group ( "File" ) );
+  AFW::Menus::MenuGroup::ValidRefPtr fileMenu ( new AFW::Menus::MenuGroup ( "File", 0 ) );
   {
     {
       Button::ValidRefPtr button ( new Button ( "New...",  new AFW::Core::Icon ( "new" ) ) );

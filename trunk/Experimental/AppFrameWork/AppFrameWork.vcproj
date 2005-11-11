@@ -283,6 +283,12 @@
 						RelativePath=".\Actions\Enable.h">
 					</File>
 					<File
+						RelativePath=".\Actions\SetTextFromFile.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\SetTextFromFile.h">
+					</File>
+					<File
 						RelativePath=".\Actions\UpdateAction.cpp">
 					</File>
 					<File

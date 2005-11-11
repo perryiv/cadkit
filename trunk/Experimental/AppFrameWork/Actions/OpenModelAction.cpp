@@ -18,6 +18,9 @@
 
 #include "Usul/Interfaces/ILoadFileDialog.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Resources/TextWindow.h"
+
+#include <iostream>
 
 using namespace AFW::Actions;
 
@@ -84,5 +87,9 @@ void OpenModelAction::execute ( AFW::Core::Object * )
 
 void OpenModelAction::_open ( const std::string &name )
 {
+  // Feedback.
+  std::cout << "Opening file: " << name << Usul::Resources::TextWindow::endl;
 
+  // Feedback.
+  std::cout << "Done opening: " << name << Usul::Resources::TextWindow::endl;
 }

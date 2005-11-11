@@ -15,6 +15,7 @@
 
 #include "AppFrameWork/Core/TextWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Core/Application.h"
 
 using namespace AFW::Core;
 
@@ -25,10 +26,10 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::TextWindow() : BaseClass(),
-  _lines    (),
-  _maxLines ( 1000 )
+TextWindow::TextWindow() : BaseClass()
 {
+  this->title ( "Text Output" );
+  this->icon ( new AFW::Core::Icon ( "text_output" ) );
 }
 
 
@@ -45,126 +46,98 @@ TextWindow::~TextWindow()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make sure there is one line.
+//  Get the text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::_oneLineMin()
+std::string TextWindow::textGet() const
 {
-  if ( _lines.empty() )
-    _lines.push_back ( "" );
+  std::string s;
+  this->textGet ( s );
+  return s;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make sure we do not have too many.
+//  Get the text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::_keepUnderMax()
+void TextWindow::textGet ( std::string &s ) const
 {
-  while ( _lines.size() > this->maxLines() )
-    _lines.pop_front();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Append the value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::append ( const std::string &s )
-{
-  if ( false == s.empty() )
+  if ( 0x0 != this->guiObject() )
   {
-    this->_oneLineMin();
-    _lines.back() += s;
-    this->_keepUnderMax();
+    AFW::Core::Application::instance().windowTextGet ( this, s );
+  }
+  else
+  {
+    BaseClass::textGet ( s );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Append the value.
+//  Set the text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::append ( const char *s )
+void TextWindow::textSet ( const std::string &s )
 {
-  if ( s )
+  this->textSet ( s.c_str(), s.size() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::textSet ( const char *s, unsigned int length )
+{
+  if ( 0x0 != this->guiObject() )
   {
-    this->_oneLineMin();
-    _lines.back() += std::string ( s );
-    this->_keepUnderMax();
+    AFW::Core::Application::instance().windowTextSet ( this, s, length );
+    BaseClass::textSet ( "" ); // Make sure this is empty.
+  }
+  else
+  {
+    BaseClass::textSet ( s, length );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Append the value.
+//  Append to the text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::append ( TextWindow::Flusher f )
+void TextWindow::textAppend ( const std::string &s )
 {
-  if ( TextWindow::ENDL == f )
+  this->textAppend ( s.c_str(), s.size() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append to the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::textAppend ( const char *s, unsigned int length )
+{
+  if ( 0x0 != this->guiObject() )
   {
-    this->_oneLineMin();
-    _lines.push_back ( "" );
-    this->_keepUnderMax();
+    AFW::Core::Application::instance().windowTextAppend ( this, s, length );
+    BaseClass::textSet ( "" ); // Make sure this is empty.
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the max lines.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::maxLines ( unsigned int m )
-{
-  _maxLines = m;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the max lines.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int TextWindow::maxLines() const
-{
-  return _maxLines;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Iterators.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TextWindow::ConstIterator TextWindow::begin() const
-{
-  return _lines.begin();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Iterators.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TextWindow::ConstIterator TextWindow::end() const
-{
-  return _lines.end();
+  else
+  {
+    BaseClass::textAppend ( s, length );
+  }
 }
 
 
@@ -178,4 +151,28 @@ void TextWindow::accept ( AFW::Core::BaseVisitor *v )
 {
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Keeps the compiler happy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::append ( AFW::Actions::CommandAction *a )
+{
+  BaseClass::append ( a );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Keeps the compiler happy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction *u )
+{
+  BaseClass::append ( c, u );
 }

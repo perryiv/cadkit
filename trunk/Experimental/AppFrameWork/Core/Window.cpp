@@ -49,10 +49,13 @@ Window::Window ( const std::string &text, Icon *icon ) : BaseClass(),
   _parent      ( 0x0 ),
   _icon        ( icon ),
   _text        ( text ),
+  _title       (),
   _commands    (),
   _updates     (),
   _percent     ( 100.0f, 100.0f ),
-  _guiObject   ()
+  _guiObject   (),
+  _dockState   ( AFW::Core::DockSite::NONE, 0 ),
+  _devices     ()
 {
   typedef std::list < Window::ValidRefPtr > ListOfWindows;
   typedef std::iterator_traits < Window::WindowList::iterator > Traits1;
@@ -162,7 +165,7 @@ Group *Window::parent()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Window::text() const
+std::string Window::textGet() const
 {
   return _text;
 }
@@ -174,9 +177,92 @@ const std::string &Window::text() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::text ( const std::string &t )
+void Window::textGet ( std::string &s ) const
+{
+  s = _text;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::textSet ( const std::string &t )
 {
   _text = t;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::textSet ( const char *t, unsigned int length )
+{
+  if ( t )
+  {
+    _text.assign ( t, t + length );
+    this->dirty ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::textAppend ( const std::string &t )
+{
+  _text += t;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::textAppend ( const char *t, unsigned int length )
+{
+  if ( t )
+  {
+    _text.insert ( _text.end(), t, t + length );
+    this->dirty ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the title.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string &Window::title() const
+{
+  return _title;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the title.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::title ( const std::string &t )
+{
+  _title = t;
+  this->dirty ( true );
 }
 
 
@@ -188,7 +274,8 @@ void Window::text ( const std::string &t )
 
 void Window::append ( AFW::Actions::CommandAction *c )
 {
-  _commands.push_back ( c );
+  if ( c )
+    _commands.push_back ( c );
 }
 
 
@@ -200,7 +287,21 @@ void Window::append ( AFW::Actions::CommandAction *c )
 
 void Window::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction *u )
 {
-  _updates.push_back ( UpdatePair ( c, u ) );
+  if ( c && u )
+    _updates.push_back ( UpdatePair ( c, u ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append a device.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::append ( BaseDevice *d )
+{
+  if ( d )
+    _devices.push_back ( d );
 }
 
 
@@ -237,6 +338,18 @@ const AFW::Core::Icon *Window::icon() const
 AFW::Core::Icon *Window::icon()
 {
   return _icon.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the icon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::icon ( AFW::Core::Icon *i )
+{
+  _icon = i;
 }
 
 
@@ -338,6 +451,54 @@ Window::UpdatePairsConstItr Window::updatesEnd() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Iterators to the actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::DevicesItr Window::devicesBegin()
+{
+  return _devices.begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterators to the actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::DevicesConstItr Window::devicesBegin() const
+{
+  return _devices.begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterators to the actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::DevicesItr Window::devicesEnd()
+{
+  return _devices.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Iterators to the devices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Window::DevicesConstItr Window::devicesEnd() const
+{
+  return _devices.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Call the actions.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -379,45 +540,18 @@ void Window::callUpdateActions()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the dockable flag.
+//  Set the docked state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::dockable ( bool state )
-{
-  const unsigned int bit ( State::DOCKABLE );
-  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the dockable flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Window::dockable() const
-{
-  const unsigned int bit ( State::DOCKABLE );
-  return Usul::Bits::has ( _flags, bit );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the docked flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Window::docked ( bool state )
+void Window::dockState ( DockState state )
 {
   // Handle unchanged case.
-  if ( this->docked() == state )
+  if ( this->dockState() == state )
     return;
 
   // Set the flag.
-  const unsigned int bit ( State::DOCKED );
-  _flags = ( ( state ) ? Usul::Bits::add ( _flags, bit ) : Usul::Bits::remove ( _flags, bit ) );
+  _dockState = state;
 
   // We are dirty.
   this->dirty ( true );
@@ -426,14 +560,13 @@ void Window::docked ( bool state )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the docked flag.
+//  Get the docked state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Window::docked() const
+Window::DockState Window::dockState() const
 {
-  const unsigned int bit ( State::DOCKED );
-  return Usul::Bits::has ( _flags, bit );
+  return _dockState;
 }
 
 

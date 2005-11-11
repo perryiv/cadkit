@@ -18,6 +18,9 @@
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
+#include "AppFrameWork/Conditions/Always.h"
+#include "AppFrameWork/Actions/SetTextFromFile.h"
+
 #include <iostream>
 
 using namespace AFW::Core;
@@ -31,8 +34,7 @@ using namespace AFW::Core;
 
 MainWindow::MainWindow() : BaseClass(),
   _menuBar    ( 0x0 ),
-  _editors    ( new Frame ( Frame::VERTICAL ) ),
-  _textWindow ( 0x0 )
+  _editors    ( new Frame ( Frame::VERTICAL ) )
 {
   this->append ( _editors.get() );
 }
@@ -80,14 +82,31 @@ void MainWindow::_buildDefault()
   this->menuBar ( new AFW::Menus::MenuBar );
   this->menuBar()->buildDefault();
 
-  // Add a text window.
-  TextWindow::ValidRefPtr text ( new TextWindow );
-  this->textWindow ( text.get() );
-  text->percent ( 100.0f, 20.0f );
+  // The file that stdio and stderr are being redirected to.
+  const std::string file ( AFW::Core::Application::instance().redirect() );
 
-  // Give it some default words.
-  AFW::Core::Application &app ( AFW::Core::Application::instance() );
-  (*text) << "Welcome to " << app.name() << TextWindow::ENDL;
+  // Update functors.
+  AFW::Conditions::Always::RefPtr always ( new AFW::Conditions::Always );
+
+  for ( unsigned int i = 0; i < 5; ++i )
+  {
+    // Add a text window.
+    TextWindow::ValidRefPtr text ( new TextWindow );
+    text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+    text->append ( always.get(), new AFW::Actions::SetTextFromFile ( file ) );
+    this->append ( text.get() );
+  }
+
+  for ( unsigned int i = 0; i < 5; ++i )
+  {
+    // Add a scene-view.
+    Frame::ValidRefPtr sceneTree ( new Frame );
+    this->append ( sceneTree.get() );
+    sceneTree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
+    std::ostringstream out; out << "Scene Tree " << i;
+    sceneTree->title ( out.str() );
+    sceneTree->icon ( new Icon ( "open" ) );
+  }
 }
 
 
@@ -150,44 +169,6 @@ AFW::Menus::MenuBar *MainWindow::menuBar()
 const AFW::Menus::MenuBar *MainWindow::menuBar() const
 {
   return _menuBar.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::textWindow ( TextWindow *t )
-{
-  this->remove ( _textWindow.get() );
-  _textWindow = t;
-  this->append ( _textWindow.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TextWindow *MainWindow::textWindow()
-{
-  return _textWindow.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const TextWindow *MainWindow::textWindow() const
-{
-  return _textWindow.get();
 }
 
 

@@ -23,10 +23,12 @@
 #include "AppFrameWork/Conditions/Condition.h"
 
 #include "Usul/Math/Vector2.h"
+#include "Usul/Devices/BaseDevice.h"
 #include "Usul/Interfaces/IGUIServer.h"
 
 #include <vector>
 #include <list>
+#include <sstream>
 
 namespace AFW { namespace Core { class Group; class BaseVisitor; } }
 
@@ -56,6 +58,11 @@ public:
   typedef Usul::Interfaces::IGUIServer IGUIServer;
   typedef Usul::Base::Referenced GuiObject;
   typedef USUL_REF_POINTER ( GuiObject ) GuiObjectPtr;
+  typedef std::pair < AFW::Core::DockSite::Type, unsigned int > DockState;
+  typedef Usul::Devices::BaseDevice BaseDevice;
+  typedef std::vector < BaseDevice::RefPtr > BaseDevices;
+  typedef BaseDevices::iterator DevicesItr;
+  typedef BaseDevices::const_iterator DevicesConstItr;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Window );
@@ -67,9 +74,10 @@ public:
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
-  // Append an action.
-  void                                append ( AFW::Actions::CommandAction * );
-  void                                append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
+  // Append actions and devices.
+  virtual void                        append ( AFW::Actions::CommandAction * );
+  virtual void                        append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
+  virtual void                        append ( BaseDevice * );
 
   // Call all the actions.
   void                                callCommandActions();
@@ -81,17 +89,19 @@ public:
   CommandActionsConstItr              commandsEnd() const;
   CommandActionsItr                   commandsEnd();
 
+  // Iterators to the devices.
+  DevicesConstItr                     devicesBegin() const;
+  DevicesItr                          devicesBegin();
+  DevicesConstItr                     devicesEnd() const;
+  DevicesItr                          devicesEnd();
+
   // Set/get the dirty flag.
   virtual void                        dirty ( bool );
   virtual bool                        dirty() const;
 
-  // Set/get the dockabls flag.
-  virtual void                        dockable ( bool );
-  virtual bool                        dockable() const;
-
-  // Set/get the docked flag.
-  virtual void                        docked ( bool );
-  virtual bool                        docked() const;
+  // Set/get the docked site.
+  virtual void                        dockState ( DockState );
+  virtual DockState                   dockState() const;
 
   // Set/get the handle to the graphical object. The gui-server uses these.
   void                                guiObject ( GuiObject * );
@@ -117,9 +127,18 @@ public:
   void                                percent ( const Usul::Math::Vec2f & );
   Usul::Math::Vec2f                   percent() const;
 
-  // Set/get the text.
-  const std::string &                 text() const;
-  void                                text ( const std::string &t );
+  // Set/get/append the text.
+  virtual void                        textAppend ( const std::string &t );
+  virtual void                        textAppend ( const char *t, unsigned int length );
+  template < class T > void           textAppend ( T value );
+  virtual std::string                 textGet() const;
+  virtual void                        textGet ( std::string & ) const;
+  virtual void                        textSet ( const std::string &t );
+  virtual void                        textSet ( const char *t, unsigned int length );
+
+  // Set/get the title.
+  virtual void                        title ( const std::string & );
+  virtual const std::string &         title() const;
 
   // Iterators to the update-actions.
   UpdatePairsConstItr                 updatesBegin() const;
@@ -154,11 +173,32 @@ private:
   Group *_parent;
   Icon::RefPtr _icon;
   std::string _text;
+  std::string _title;
   CommandActions _commands;
   UpdatePairs _updates;
   Usul::Math::Vec2f _percent;
   GuiObjectPtr _guiObject;
+  DockState _dockState;
+  BaseDevices _devices;
 };
+
+
+// Append generic type to text.
+template < class T > inline void Window::textAppend ( T value )
+{
+  std::ostringstream s;
+  s << value;
+  this->textAppend ( s.str() );
+  return *this;
+}
+
+
+// Output operator to add text.
+template < class T > inline Window &operator << ( Window &window, T value )
+{
+  window.textAppend ( value );
+  return window;
+}
 
 
 } // namespace Core

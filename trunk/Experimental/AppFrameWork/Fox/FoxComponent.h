@@ -25,11 +25,13 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Vector4.h"
+#include "Usul/Math/Vector3.h"
 #include "Usul/Properties/Attribute.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IGUIServer.h"
 #include "Usul/Interfaces/INotifyClose.h"
 #include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/IUpdateTextWindow.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -39,8 +41,8 @@
 namespace FoxTools { namespace App { class Application; } }
 namespace FX { class FXObject; class FXWindow; class FXMainWindow; }
 namespace FX { class FXMenuBar; class FXToolBarShell; class FXIcon; }
-namespace FX { class FXComposite; }
-namespace AFW { namespace Menus { class Button; class MenuGroup; class Frame; } }
+namespace FX { class FXComposite; class FXSplitter; class FXPacker; class FXText; }
+namespace AFW { namespace Menus { class Button; class MenuGroup; class Frame; class TextWindow; } }
 
 
 class FoxComponent : public Usul::Base::Referenced,
@@ -48,7 +50,8 @@ class FoxComponent : public Usul::Base::Referenced,
                      public Usul::Interfaces::IPlugin,
                      public Usul::Interfaces::IGUIServer,
                      public Usul::Interfaces::INotifyClose,
-                     public Usul::Interfaces::ILoadFileDialog
+                     public Usul::Interfaces::ILoadFileDialog,
+                     public Usul::Interfaces::IUpdateTextWindow
 {
 public:
 
@@ -60,6 +63,9 @@ public:
   typedef Usul::Properties::Attribute < FX::FXObject * > FoxObjectWrapper;
   typedef AFW::Core::Window::GuiObject GuiObject;
   typedef AFW::Core::Window::GuiObjectPtr GuiObjectPtr;
+  typedef Usul::Math::Vector3 < FX::FXComposite * > ThreeWaySplit;
+  typedef std::map < AFW::Core::DockSite::Type, FX::FXComposite * > SplitRegions;
+  typedef std::vector < SplitRegions > DockCircles;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Fox );
@@ -101,16 +107,24 @@ public:
   virtual bool                  notifyClose ( Usul::Interfaces::IUnknown *caller );
 
   // FOX message callback.
-  long                          onClose   ( FX::FXObject *, FX::FXSelector, void * );
-  long                          onCommand ( FX::FXObject *, FX::FXSelector, void * );
-  long                          onUpdate  ( FX::FXObject *, FX::FXSelector, void * );
-  long                          onDestroy ( FX::FXObject *, FX::FXSelector, void * );
+  long                          onClose       ( FX::FXObject *, FX::FXSelector, void * );
+  long                          onCommand     ( FX::FXObject *, FX::FXSelector, void * );
+  long                          onUpdate      ( FX::FXObject *, FX::FXSelector, void * );
+  long                          onDestroy     ( FX::FXObject *, FX::FXSelector, void * );
+  long                          onMouseMotion ( FX::FXObject *, FX::FXSelector, void * );
 
   // Run the application.
   virtual void                  runApplication();
 
-  // Update the application.
-  virtual void                  updateApplication();
+  // Update the text window(s).
+  virtual void                  updateTextWindow ( bool force );
+
+  // Update the window's text.
+  virtual void                  windowTextAppend ( AFW::Core::Window *window, const std::string & );
+  virtual void                  windowTextAppend ( AFW::Core::Window *window, const char *, unsigned int length );
+  virtual void                  windowTextGet    ( const AFW::Core::Window *window, std::string & );
+  virtual void                  windowTextSet    ( AFW::Core::Window *window, const std::string & );
+  virtual void                  windowTextSet    ( AFW::Core::Window *window, const char *, unsigned int length );
 
 protected: 
 
@@ -121,7 +135,9 @@ protected:
   // Use reference counting.
   virtual ~FoxComponent();
 
-  void                          _buildChildren ( AFW::Core::Frame * );
+  void                          _buildChildren ( FX::FXMainWindow *foxMainWin, AFW::Core::MainWindow *mainWin );
+  void                          _buildDockedWindow ( AFW::Core::Window * );
+  void                          _buildTextWindow ( FX::FXComposite *parent, AFW::Core::TextWindow *text );
   void                          _buildMainWindow ( AFW::Core::MainWindow *mainWin );
   void                          _buildMenuBar ( FX::FXMainWindow *, AFW::Menus::MenuBar * );
   void                          _buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Button *button );
@@ -129,6 +145,7 @@ protected:
   void                          _buildToolBars();
   void                          _buildTopMenu ( FX::FXMainWindow *, FX::FXMenuBar *, AFW::Core::Group * );
 
+  void                          _callUpdateActions ( AFW::Core::Window * );
   void                          _cleanChildren ( AFW::Core::Group *group );
   void                          _cleanup();
 
@@ -136,21 +153,45 @@ protected:
   void                          _deleteGuiObject ( AFW::Core::Window * );
   void                          _detachAllWindows();
 
+  FX::FXComposite *             _dockSiteParent ( AFW::Core::Window *window );
+
   AFW::Core::Window *           _findWindow ( FX::FXObject * );
+  void                          _flush();
 
   FoxRect                       _initialMainWindowSize();
 
-  FX::FXIcon *                  _makeIcon ( AFW::Core::Window * );
+  FX::FXComposite *             _makeFrame ( FX::FXSplitter *parent );
+  FX::FXComposite *             _makeFrame ( FX::FXComposite *parent, AFW::Core::DockSite::Type type );
+  FX::FXIcon *                  _makeIcon ( const AFW::Core::Window * ) const;
+  FX::FXComposite *             _makeTabItem ( const AFW::Core::Window *window, FX::FXComposite *parent );
+  void                          _makeThreeWaySplit ( FX::FXComposite *parent, unsigned int direction, ThreeWaySplit & );
+  FX::FXComposite *             _makeShutterItem ( const AFW::Core::Window *window, FX::FXComposite *parent );
+  void                          _makeSplitRegions ( FX::FXComposite *parent, SplitRegions & );
 
   void                          _newWindow ( FX::FXWindow *, AFW::Core::Window * );
 
   void                          _registryWrite();
+
+  void                          _scrollWindowToEnd ( FX::FXText *window );
+  void                          _setColor ( FX::FXWindow * ) const;
+
+  std::string                   _tabItemText ( const AFW::Core::Window * ) const;
+
+  Usul::Interfaces::IUnknown *  _unknown();
+
+  void                          _updateWindowText ( AFW::Core::Window *window );
+
+  void                          _windowTextAppend ( FX::FXText *, const char *, unsigned int length );
+  void                          _windowTextGet    ( const FX::FXText *, std::string & ) const;
+  void                          _windowTextSet    ( FX::FXText *, const char *, unsigned int length );
 
 private:
 
   AFW::Core::Application &_app;
   FoxTools::App::Application *_foxApp;
   WindowsMap _windows;
+  DockCircles _dockCircles;
+  bool _force;
 
   FXDECLARE ( FoxComponent );
 };

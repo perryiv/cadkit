@@ -53,11 +53,6 @@ public:
   AFW::Menus::MenuBar *               menuBar();
   void                                menuBar ( AFW::Menus::MenuBar * );
 
-  // Set/get the text window.
-  const TextWindow *                  textWindow() const;
-  TextWindow *                        textWindow();
-  void                                textWindow ( TextWindow * );
-
 protected:
 
   // Use reference counting.
@@ -73,7 +68,6 @@ private:
 
   AFW::Menus::MenuBar::RefPtr _menuBar;
   Frame::RefPtr _editors;
-  TextWindow::RefPtr _textWindow;
 };
 
 

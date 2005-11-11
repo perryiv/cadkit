@@ -15,6 +15,14 @@
 
 #include "FoxComponent.h"
 
+#include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Core/Constants.h"
+#include "AppFrameWork/Core/GenericVisitor.h"
+#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Menus/MenuGroup.h"
+#include "AppFrameWork/Menus/MenuBar.h"
+#include "AppFrameWork/Menus/Button.h"
+
 #include "FoxTools/App/Application.h"
 #include "FoxTools/Icons/Factory.h"
 #include "FoxTools/Functions/Create.h"
@@ -31,21 +39,27 @@
 #include "FoxTools/Headers/MenuTitle.h"
 #include "FoxTools/Headers/MenuCommand.h"
 #include "FoxTools/Headers/Splitter.h"
-
-#include "AppFrameWork/Core/Define.h"
-#include "AppFrameWork/Core/Constants.h"
-#include "AppFrameWork/Core/GenericVisitor.h"
-#include "AppFrameWork/Menus/MenuGroup.h"
-#include "AppFrameWork/Menus/MenuBar.h"
-#include "AppFrameWork/Menus/Button.h"
+#include "FoxTools/Headers/HorizontalFrame.h"
+#include "FoxTools/Headers/VerticalFrame.h"
+#include "FoxTools/Headers/MDIChild.h"
+#include "FoxTools/Headers/Text.h"
+#include "FoxTools/Headers/TabBook.h"
+#include "FoxTools/Headers/TabItem.h"
+#include "FoxTools/Headers/Shutter.h"
+#include "FoxTools/Headers/Button.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/System/Screen.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/Bits/Bits.h"
+#include "Usul/Adaptors/Random.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Resources/TextWindow.h"
+#include "Usul/Functors/Pair.h"
+#include "Usul/Scope/Reset.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -77,6 +91,15 @@ namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Definitions for this file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define FRAME_BORDER_SPACING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Message map.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,6 +110,7 @@ FXDEFMAP ( FoxComponent ) MessageMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, 0, FoxComponent::onCommand ),
   FXMAPFUNC ( FX::SEL_UPDATE,  0, FoxComponent::onUpdate  ),
   FXMAPFUNC ( FX::SEL_DESTROY, 0, FoxComponent::onDestroy ),
+  FXMAPFUNC ( FX::SEL_MOTION,  0, FoxComponent::onMouseMotion ),
 };
 FOX_TOOLS_IMPLEMENT ( FoxComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
 
@@ -98,10 +122,14 @@ FOX_TOOLS_IMPLEMENT ( FoxComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( Mess
 ///////////////////////////////////////////////////////////////////////////////
 
 FoxComponent::FoxComponent() : BaseClass(),
-  _app       ( AFW::Core::Application::instance() ),
-  _foxApp    ( 0x0 ),
-  _windows   ()
+  _app         ( AFW::Core::Application::instance() ),
+  _foxApp      ( 0x0 ),
+  _windows     (),
+  _dockCircles (),
+  _force       ( false )
 {
+  // Set these resources.
+  Usul::Resources::textWindow ( this->_unknown() );
 }
 
 
@@ -140,9 +168,32 @@ Usul::Interfaces::IUnknown *FoxComponent::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::INotifyClose * > ( this );
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast < Usul::Interfaces::ILoadFileDialog * > ( this );
+  case Usul::Interfaces::IUpdateTextWindow::IID:
+    return static_cast < Usul::Interfaces::IUpdateTextWindow * > ( this );
   default:
     return 0x0;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set appropriate color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_setColor ( FX::FXWindow *window ) const
+{
+#ifdef _DEBUG
+  static Usul::Adaptors::Random<double> random ( 0, 255 );
+  if ( window )
+  {
+    unsigned int r ( static_cast < unsigned int > ( random() ) );
+    unsigned int g ( static_cast < unsigned int > ( random() ) );
+    unsigned int b ( static_cast < unsigned int > ( random() ) );
+    window->setBackColor ( FXRGB ( r, g, b ) );
+  }
+#endif
 }
 
 
@@ -159,7 +210,7 @@ namespace Detail
     std::string s;
     if ( t )
     {
-      s = t->text();
+      t->textGet ( s );
       unsigned short u ( std::numeric_limits<unsigned short>::max() );
       AFW::Menus::Button    *b ( dynamic_cast < AFW::Menus::Button    * > ( t ) );
       AFW::Menus::MenuGroup *g ( dynamic_cast < AFW::Menus::MenuGroup * > ( t ) );
@@ -372,7 +423,9 @@ void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
   // Make these other components.
   this->_buildMenuBar ( foxMainWin, mainWin->menuBar() );
   this->_buildToolBars();
-  this->_buildChildren ( mainWin );
+
+  // Build the children.
+  this->_buildChildren ( foxMainWin, mainWin );
 
   // No longer dirty.
   mainWin->dirty ( false );
@@ -388,7 +441,7 @@ void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
 void FoxComponent::_buildMenuBar ( FX::FXMainWindow *foxMainWin, AFW::Menus::MenuBar *menuBar )
 {
   // Make sure we are supposed to be here.
-  if ( 0x0 == foxMainWin || 0x0 == menuBar )
+  if ( 0x0 == foxMainWin || 0x0 == menuBar || false == menuBar->dirty() )
     return;
 
   // Get the existing fox main window.
@@ -498,6 +551,317 @@ void FoxComponent::_buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Butto
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make the main-window's children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildChildren ( FX::FXMainWindow *foxMainWin, AFW::Core::MainWindow *mainWin )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == foxMainWin || 0x0 == mainWin || false == mainWin->dirty() || 0 == mainWin->numChildren() )
+    return;
+
+  // Make the dock-sites and middle region.
+  {
+    _dockCircles.clear();
+    SplitRegions regions;
+    regions[AFW::Core::DockSite::NONE] = foxMainWin;
+    const unsigned int numCircles ( 4 );
+    for ( unsigned int i = 0; i < numCircles; ++i )
+    {
+      this->_makeSplitRegions ( regions[AFW::Core::DockSite::NONE], regions );
+      _dockCircles.push_back ( regions );
+    }
+  }
+
+  // Make the mdi-client area.
+  FX::FXMDIClient *clientArea ( new FX::FXMDIClient ( _dockCircles.back()[AFW::Core::DockSite::NONE], FX::LAYOUT_FILL ) );
+  clientArea->setTarget ( this );
+  clientArea->setSelector ( 0 );
+
+  // Loop through the children.
+  {
+    for ( AFW::Core::Group::Itr i = mainWin->begin(); i != mainWin->end(); ++i )
+    {
+      AFW::Core::Window::RefPtr window ( *i );
+      this->_buildDockedWindow ( window.get() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a docked window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildDockedWindow ( AFW::Core::Window *window )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == window || false == window->dirty() || AFW::Core::DockSite::NONE == window->dockState().first )
+    return;
+
+  // Get the docking-site window.
+  FX::FXComposite *parent ( this->_dockSiteParent ( window ) );
+  if ( 0x0 == parent )
+    return;
+
+  // Make sure the parent is shown.
+  parent->show();
+
+  // Determine the proper container.
+  const bool topOrBottom ( AFW::Core::DockSite::TOP    == window->dockState().first ||
+                           AFW::Core::DockSite::BOTTOM == window->dockState().first );
+
+  // Build the tab.
+  FX::FXComposite *container ( ( topOrBottom ) ? this->_makeTabItem ( window, parent ) : this->_makeShutterItem ( window, parent ) );
+  FX::FXComposite *foxWindow ( this->_makeFrame ( container, window->dockState().first ) );
+  this->_setColor ( foxWindow );
+
+  // Build the contents.
+  this->_buildTextWindow ( foxWindow, dynamic_cast < AFW::Core::TextWindow * > ( window ) );
+
+  // Not dirty now.
+  window->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a text-window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildTextWindow ( FX::FXComposite *parent, AFW::Core::TextWindow *window )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent || 0x0 == window || false == window->dirty() )
+    return;
+
+  // Build the text-window.
+  const unsigned int layout ( FX::TEXT_READONLY | FX::TEXT_WORDWRAP | FX::TEXT_SHOWACTIVE | FX::LAYOUT_FILL );
+  FX::FXText *foxWindow ( new FX::FXText ( parent, this, 0, layout ) );
+  this->_newWindow ( foxWindow, window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the fox window for the docking site.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXComposite *FoxComponent::_dockSiteParent ( AFW::Core::Window *window )
+{
+  // Make sure we are supposed to be here.
+  if ( true == _dockCircles.empty() || 0x0 == window || AFW::Core::DockSite::NONE == window->dockState().first )
+    return 0x0;
+
+  // Determine the site and circle. Keep the circle in range.
+  const AFW::Core::DockSite::Type site ( window->dockState().first );
+  const unsigned int circle ( Usul::Math::minimum ( window->dockState().second, _dockCircles.size() - 1 ) );
+
+  // Get the region.
+  SplitRegions &regions ( _dockCircles.at ( circle ) );
+  SplitRegions::iterator i ( regions.find ( site ) );
+  return ( ( regions.end() == i ) ? 0x0 : i->second );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a tab-item. Make the book too if necessary. Return the book.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXComposite *FoxComponent::_makeTabItem ( const AFW::Core::Window *window, FX::FXComposite *parent )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent || 0x0 == window )
+    return 0x0;
+
+  // Determine the layout.
+  const bool top ( ( AFW::Core::DockSite::TOP == window->dockState().first ) ? true : false );
+  const unsigned int bookLayout ( ( top ) ? FX::TABBOOK_TOPTABS : FX::TABBOOK_BOTTOMTABS );
+  const unsigned int itemLayout ( ( top ) ? FX::TAB_TOP_NORMAL  : FX::TAB_BOTTOM_NORMAL );
+
+  // Get the tab-book, add it if we need to.
+  FX::FXWindow *child0 ( ( parent->numChildren() > 0 ) ? parent->childAtIndex ( 0 ) : 0x0 );
+  FX::FXTabBook *book ( SAFE_CAST_FOX ( FX::FXTabBook, child0 ) );
+  if ( 0x0 == book )
+    book = new FX::FXTabBook ( parent, this, 0, bookLayout | FX::LAYOUT_FILL );
+
+  // Should always have an even number of children.
+  USUL_ASSERT ( 0 == book->numChildren() % 2 );
+
+  // Build the tab.
+  const std::string text ( this->_tabItemText ( window ) );
+  new FX::FXTabItem ( book, text.c_str(), this->_makeIcon ( window ), itemLayout | FX::LAYOUT_FILL );
+
+  // Return the book.
+  return book;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a shutter-item. Make the shutter too if necessary. Return the 
+//  contents of the shutter item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXComposite *FoxComponent::_makeShutterItem ( const AFW::Core::Window *window, FX::FXComposite *parent )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent || 0x0 == window )
+    return 0x0;
+
+  // Common layout.
+  const unsigned int layout ( FX::LAYOUT_FILL | FX::LAYOUT_TOP | FX::LAYOUT_LEFT );
+
+  // Get the shutter, add it if we need to.
+  FX::FXWindow *child0 ( ( parent->numChildren() > 0 ) ? parent->childAtIndex ( 0 ) : 0x0 );
+  FX::FXShutter *shutter ( SAFE_CAST_FOX ( FX::FXShutter, child0 ) );
+  if ( 0x0 == shutter )
+    shutter = new FX::FXShutter ( parent, this, 0, FX::FRAME_SUNKEN | layout );
+
+  // Build the tab.
+  const std::string text ( this->_tabItemText ( window ) );
+  FX::FXShutterItem *item ( new FX::FXShutterItem ( shutter, text.c_str(), this->_makeIcon ( window ), layout ) );
+  item->getButton()->setIconPosition ( FX::ICON_BEFORE_TEXT );
+  item->getContent()->setTarget ( this );
+  item->getContent()->setSelector ( 0 );
+
+  // Return the contents.
+  return item->getContent();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create splitters to contain the docked children.
+//  See: http://www.codeproject.com/docking/prod_profuis.asp
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_makeSplitRegions ( FX::FXComposite *parent, SplitRegions &regions )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent )
+    return;
+
+  // Make the two regions.
+  ThreeWaySplit v, h;
+  this->_makeThreeWaySplit ( parent, FX::SPLITTER_VERTICAL,   v );
+  this->_makeThreeWaySplit ( v[1],   FX::SPLITTER_HORIZONTAL, h );
+
+  // Fill the regions.
+  regions[AFW::Core::DockSite::TOP]    = v[0];
+  regions[AFW::Core::DockSite::BOTTOM] = v[2];
+  regions[AFW::Core::DockSite::LEFT]   = h[0];
+  regions[AFW::Core::DockSite::NONE]   = h[1];
+  regions[AFW::Core::DockSite::RIGHT]  = h[2];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a three-way split.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_makeThreeWaySplit ( FX::FXComposite *foxParent, unsigned int direction, ThreeWaySplit &split )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == foxParent )
+    return;
+
+  // This creates the nested splitters and the contained frame windows.
+  FX::FXSplitter  *outer  ( new FX::FXSplitter ( foxParent, direction | FX::LAYOUT_FILL ) );
+  FX::FXComposite *dock1  ( this->_makeFrame ( outer ) );
+  FX::FXSplitter  *inner  ( new FX::FXSplitter ( outer, direction | FX::SPLITTER_REVERSED | FX::LAYOUT_FILL ) );
+  FX::FXComposite *middle ( this->_makeFrame ( inner ) );
+  FX::FXComposite *dock2  ( this->_makeFrame ( inner ) );
+
+  // Hide the dock-sites.
+  dock1->hide();
+  dock2->hide();
+
+  // Set colors.
+  this->_setColor ( outer );
+  this->_setColor ( dock1 );
+  this->_setColor ( inner );
+  this->_setColor ( middle );
+  this->_setColor ( dock2 );
+
+  // Set the result.
+  split.set ( dock1, middle, dock2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the appropriate frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXComposite *FoxComponent::_makeFrame ( FX::FXSplitter *splitter )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == splitter )
+    return 0x0;
+
+  // Create the appropriate frame. It will be a child of a splitter.
+  if ( Usul::Bits::has ( splitter->getSplitterStyle(), FX::SPLITTER_HORIZONTAL ) )
+  {
+    FX::FXHorizontalFrame *frame ( new FX::FXHorizontalFrame ( splitter, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    frame->setTarget ( this );
+    frame->setSelector ( 0 );
+    return frame;
+  }
+  else
+  {
+    FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( splitter, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    frame->setTarget ( this );
+    frame->setSelector ( 0 );
+    return frame;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the appropriate frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXComposite *FoxComponent::_makeFrame ( FX::FXComposite *parent, AFW::Core::DockSite::Type type )
+{
+  // Make sure we are supposed to be here.
+  if ( 0x0 == parent )
+    return 0x0;
+
+  // Create the appropriate frame. It will be a child of a splitter.
+  if ( AFW::Core::DockSite::TOP == type || AFW::Core::DockSite::BOTTOM == type )
+  {
+    FX::FXHorizontalFrame *frame ( new FX::FXHorizontalFrame ( parent, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    frame->setTarget ( this );
+    frame->setSelector ( 0 );
+    return frame;
+  }
+  else
+  {
+    FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( parent, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    frame->setTarget ( this );
+    frame->setSelector ( 0 );
+    return frame;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Clean the children by deleting the gui-objects.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -538,6 +902,7 @@ void FoxComponent::destroyApplication()
   try
   {
     this->_cleanup();
+    Usul::Resources::textWindow ( 0x0 );
     delete _foxApp;
   }
 
@@ -574,13 +939,170 @@ void FoxComponent::runApplication()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the application.
+//  Update the text window(s).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::updateApplication()
+void FoxComponent::updateTextWindow ( bool force )
 {
-  // TODO
+  // Set and reset this flag.
+  const bool saved ( _force );
+  Usul::Scope::Reset<bool> reset ( _force, true, saved );
+
+  // Make the visitor.
+  AFW::Core::BaseVisitor::RefPtr visitor 
+    ( AFW::Core::MakeVisitor<AFW::Core::TextWindow>::make 
+      ( Usul::Adaptors::memberFunction 
+        ( this, &FoxComponent::_callUpdateActions ) ) );
+
+  // Visit the tree.
+  AFW::Core::Application::instance().accept ( visitor.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Don't allow this to throw because it may create an infinite loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const std::string &text )
+{
+  try { this->_windowTextAppend ( Detail::FoxObject<FXText>::get ( window ), text.c_str(), text.size() ); }
+  AFW_CATCH_BLOCK ( 4258938551, 3759973417 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Don't allow this to throw because it may create an infinite loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const char *text, unsigned int length )
+{
+  try { this->_windowTextAppend ( Detail::FoxObject<FXText>::get ( window ), text, length ); }
+  AFW_CATCH_BLOCK ( 3804786765, 1284080828 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Don't allow this to throw because it may create an infinite loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::windowTextSet ( AFW::Core::Window *window, const std::string &text )
+{
+  try { this->_windowTextSet ( Detail::FoxObject<FXText>::get ( window ), text.c_str(), text.size() ); }
+  AFW_CATCH_BLOCK ( 1370382751, 3745159501 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Don't allow this to throw because it may create an infinite loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::windowTextSet ( AFW::Core::Window *window, const char *text, unsigned int length )
+{
+  try { this->_windowTextSet ( Detail::FoxObject<FXText>::get ( window ), text, length ); }
+  AFW_CATCH_BLOCK ( 3969755668, 2414501198 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Don't allow this to throw because it may create an infinite loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::windowTextGet ( const AFW::Core::Window *window, std::string &text )
+{
+  try { this->_windowTextGet ( Detail::FoxObject<FXText>::get ( const_cast < AFW::Core::Window * > ( window ) ), text ); }
+  AFW_CATCH_BLOCK ( 1114033505, 1989253250 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the window's text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_windowTextGet ( const FX::FXText *window, std::string &s ) const
+{
+  if ( window )
+    s = window->getText().text();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the window's text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_windowTextSet ( FX::FXText *window, const char *text, unsigned int length )
+{
+  // Check input.
+  if ( 0x0 == window || 0x0 == text || 0 == length )
+    return;
+
+  // Set the text.
+  window->setText ( text, length );
+
+  // Scroll the window.
+  this->_scrollWindowToEnd ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the window's text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_windowTextAppend ( FX::FXText *window, const char *text, unsigned int length )
+{
+  // Check input.
+  if ( 0x0 == window || 0x0 == text || 0 == length )
+    return;
+
+  // Set the text.
+  window->appendText ( text, length );
+
+  // Scroll the window.
+  this->_scrollWindowToEnd ( window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scroll the window to the end.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_scrollWindowToEnd ( FX::FXText *window )
+{
+  // Handle bad input.
+  if ( 0x0 == window )
+    return;
+
+  // Move cursor to the end.
+  window->setCursorPos ( ( window->getLength() > 0 ) ? ( window->getLength() - 1 ) : 0 );
+
+  // Scroll to the end.
+  window->makePositionVisible ( window->getCursorPos() );
+
+  // Force it if we should.
+  if ( _force )
+  {
+    window->getParent()->layout();
+    window->getParent()->repaint();
+    this->_flush();
+  }
 }
 
 
@@ -592,6 +1114,10 @@ void FoxComponent::updateApplication()
 
 void FoxComponent::_registryWrite()
 {
+  // Make sure there is an application.
+  if ( 0x0 == _foxApp )
+    return;
+
   // If we have a main window...
   FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
   if ( 0x0 != foxMainWin )
@@ -661,10 +1187,8 @@ long FoxComponent::onCommand ( FXObject *object, FXSelector selector, void *data
 
 long FoxComponent::onUpdate ( FXObject *object, FXSelector selector, void *data )
 {
-  // Look for a window.
-  AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
-  if ( window.valid() )
-    window->callUpdateActions();
+  // Try to call the update actions.
+  this->_callUpdateActions ( this->_findWindow ( object ) );
 
   // Message handled.
   return 1;
@@ -689,6 +1213,26 @@ long FoxComponent::onDestroy ( FXObject *object, FXSelector selector, void *data
 
   // Erase the entry if there is any.
   _windows.erase ( object );
+
+  // Continue propagation of message.
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the window is destroyed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FoxComponent::onMouseMotion ( FXObject *object, FXSelector selector, void *data )
+{
+  FX::FXEvent *event ( reinterpret_cast < FX::FXEvent * > ( data ) );
+  if ( event )
+  {
+    std::string name ( ( object ) ? object->getClassName() : "Unknown" );
+    std::cout << "FoxComponent::onMouseMotion(), object = " << name << ", x = " << event->win_x << ", y = " << event->win_y << Usul::Resources::TextWindow::endl;
+  }
 
   // Continue propagation of message.
   return 0;
@@ -740,7 +1284,7 @@ FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FX::FXIcon *FoxComponent::_makeIcon ( AFW::Core::Window *w )
+FX::FXIcon *FoxComponent::_makeIcon ( const AFW::Core::Window *w ) const
 {
   // If we have an icon...
   if ( w && w->icon() )
@@ -839,62 +1383,6 @@ void FoxComponent::_buildToolBars()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the children.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FoxComponent::_buildChildren ( AFW::Core::Frame *parentFrame )
-{
-  // Get the fox-composite.
-  FX::FXComposite *foxParentComposite ( Detail::FoxObject<FX::FXComposite>::get ( parentFrame ) );
-  if ( 0x0 == foxParentComposite )
-    return;
-
-#if 0
-
-  // Handle no input.
-  if ( 0x0 == parentFrame || 0x0 == foxParentComposite )
-    return;
-
-  // Are there children?
-  if ( 0 == parentFrame->numChildren() )
-    return;
-
-  // Initialize.
-  FX::FXComposite *childC ( 0x0 );
-
-  // If there is more then one child...
-  if ( parentFrame->numChildren() > 1 )
-  {
-    // Make a splitter to hold the children.
-    unsigned int options ( ( AFW::Core::Frame::HORIZONTAL == parentFrame->layout() ) ? FX::SPLITTER_HORIZONTAL : FX::SPLITTER_VERTICAL ); 
-    childC = new FX::FXSplitter ( foxParentComposite, options );
-  }
-
-  // Otherwise...
-  else
-  {
-    childC = new FX::FXComposite ( foxParentComposite );
-  }
-
-  // Hook up the wires.
-  this->_newWindow ( childC, parentFrame );
-
-  // For each child...
-  for ( AFW::Core::Group::Itr i = parentFrame->begin(); i != parentFrame->end(); ++i )
-  {
-    // Need to keep making splitters...
-  }
-
-  // Not dirty now.
-  parent->dirty ( false );
-
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Notification that the object is being destroyed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -974,9 +1462,53 @@ AFW::Core::Window *FoxComponent::_findWindow ( FX::FXObject *object )
 }
 
 
-#if 0
-clear the maps in notifyClose?
-null all gui objects in notifyClose?
-set target for all fox objects we make?
-use FoxObjectWrappers from the objects, rather than make new ones in callbacks.
-#endif
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush the event queue.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_flush()
+{
+  // Passing TRUE on unix calls XSync instead of XFlush. No effect on Windows.
+  if ( _foxApp )
+    _foxApp->flush ( TRUE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return unknown pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *FoxComponent::_unknown()
+{
+  return this->queryInterface ( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call the update actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_callUpdateActions ( AFW::Core::Window *window )
+{
+  if ( window )
+    window->callUpdateActions();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the appropriate text for this window's tab-item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string FoxComponent::_tabItemText ( const AFW::Core::Window *window ) const
+{
+  const char *typeName ( window->typeId().name() );
+  return ( ( 0x0 != window && false == window->title().empty() ) ? window->title() : ( ( typeName ) ? typeName : "" ) );
+}

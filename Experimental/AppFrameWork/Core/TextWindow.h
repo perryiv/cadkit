@@ -18,9 +18,6 @@
 
 #include "AppFrameWork/Core/Window.h"
 
-#include <sstream>
-#include <list>
-
 
 namespace AFW {
 namespace Core {
@@ -32,14 +29,9 @@ public:
 
   // Typedefs.
   typedef Window BaseClass;
-  typedef std::list < std::string > Lines;
-  typedef Lines::const_iterator ConstIterator;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( TextWindow );
-
-  // Enumeration to make output similar to std::cout, etc.
-  enum Flusher { ENDL, FLUSH };
 
   // Constructor
   TextWindow();
@@ -47,55 +39,29 @@ public:
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
-  // Append the text.
-  void                                append ( const std::string & );
-  void                                append ( const char * );
-  void                                append ( Flusher );
-  template < class T > void           append ( T value );
+  // Set/get/append the text.
+  virtual void                        textAppend ( const std::string & );
+  virtual void                        textAppend ( const char *s, unsigned int length );
+  virtual std::string                 textGet() const;
+  virtual void                        textGet ( std::string & ) const;
+  virtual void                        textSet ( const std::string & );
+  virtual void                        textSet ( const char *s, unsigned int length );
 
-  // Iterators to the lines.
-  ConstIterator                       begin() const;
-  ConstIterator                       end() const;
-
-  // Set/get the maximum number of lines.
-  void                                maxLines ( unsigned int );
-  unsigned int                        maxLines() const;
+  // Append an action.
+  virtual void                        append ( AFW::Actions::CommandAction * );
+  virtual void                        append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
 
 protected:
 
   // Use reference counting.
   virtual ~TextWindow();
 
-  void                                _oneLineMin();
-  void                                _keepUnderMax();
-
 private:
 
   // No copying.
   TextWindow ( const TextWindow & );
   TextWindow &operator = ( const TextWindow & );
-
-  Lines _lines;
-  unsigned int _maxLines;
 };
-
-
-// Append generic type.
-template < class T > inline void TextWindow::append ( T value )
-{
-  std::ostringstream s;
-  s << value;
-  this->append ( s.str() );
-  return *this;
-}
-
-
-// Output operator to add text.
-template < class T > inline TextWindow &operator << ( TextWindow &text, T value )
-{
-  text.append ( value );
-  return text;
-}
 
 
 } // namespace Core

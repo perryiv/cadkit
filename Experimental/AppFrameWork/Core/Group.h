@@ -47,6 +47,10 @@ public:
   // Append a window.
   void                                append ( Window * );
 
+  // Append an action.
+  void                                append ( AFW::Actions::CommandAction * );
+  void                                append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
+
   // Iterators to the contained windows.
   Itr                                 begin();
   ConstItr                            begin() const;

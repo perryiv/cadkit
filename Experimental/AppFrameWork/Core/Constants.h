@@ -29,7 +29,7 @@ namespace AFW
     {
       // Registry sections.
       const std::string MAIN_WINDOW               ( "main_window" );
-    };
+    }
 
     namespace Keys
     {
@@ -39,8 +39,8 @@ namespace AFW
       const std::string WIDTH                     ( "width" );
       const std::string HEIGHT                    ( "height" );
       const std::string MAXIMIZED                 ( "maximized" );
-    };
-  };
+    }
+  }
 
   namespace Core
   {
@@ -48,11 +48,17 @@ namespace AFW
     {
       typedef Usul::Types::Uint64 Type;
       const Type  DIRTY     ( 1 << 0 );
-      const Type  DOCKABLE  ( 1 << 1 );
-      const Type  DOCKED    ( 1 << 2 );
+    }
+
+    namespace DockSite
+    {
+      enum Type
+      {
+        LEFT, RIGHT, TOP, BOTTOM, NONE
+      };
     }
   }
-};
+}
 
 
 #endif // _APP_FRAME_WORK_CONSTANTS_H_

@@ -91,6 +91,10 @@ public:
   PluginExtensions                    pluginExtensions() const { return _plugExts; }
   void                                pluginExtensions ( const PluginExtensions &p ) { _plugExts = p; }
 
+  // Set/get the name of the file that stdio and stderr are redirected to.
+  const std::string &                 redirect() const { return _redirect; }
+  void                                redirect ( const std::string &n ) { _redirect = n; }
+
   // Run the application.
   bool                                run();
 
@@ -101,6 +105,13 @@ public:
   // Set/get the name of the vendor.
   const std::string &                 vendor() const { return _vendor; }
   void                                vendor ( const std::string &v ) { _vendor = v; }
+
+  // Update the text of the window's gui-object.
+  void                                windowTextAppend ( Window *window, const std::string & );
+  void                                windowTextAppend ( Window *window, const char *, unsigned int length );
+  void                                windowTextGet    ( const Window *window, std::string & );
+  void                                windowTextSet    ( Window *window, const std::string & );
+  void                                windowTextSet    ( Window *window, const char *, unsigned int length );
 
 protected:
 
@@ -131,6 +142,7 @@ private:
 
   static Application *_instance;
   std::string _name;
+  std::string _redirect;
   std::string _vendor;
   PluginExtensions _plugExts;
   Type _type;

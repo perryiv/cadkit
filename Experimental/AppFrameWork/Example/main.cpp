@@ -21,6 +21,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/IO/Redirect.h"
 #include "Usul/File/Remove.h"
+#include "Usul/File/Path.h"
 #include "Usul/System/DateTime.h"
 
 #include <iostream>
@@ -42,7 +43,7 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newMutex );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::IO::Redirect redirect ( "Helios.log", true, false );
+Usul::IO::Redirect redirect ( Usul::File::fullPath ( "Helios.log" ), true, false );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,9 @@ int main ( int argc, char **argv )
 
   // Set name.
   app.name ( "Helios" );
+
+  // Set the name of the redirected output file.
+  app.redirect ( redirect.file() );
 
   // Run the application.
   const bool result ( app.run() );

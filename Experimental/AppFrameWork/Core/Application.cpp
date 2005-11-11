@@ -59,6 +59,7 @@ AFW::Core::Application *AFW::Core::Application::_instance ( 0x0 );
 
 Application::Application() : 
   _name       ( "Default Application Name" ),
+  _redirect   (),
   _vendor     ( "CadKit" ),
   _plugExts   (),
   _type       ( Application::MULTIPLE_DOCUMENT_INTERFACE ),
@@ -245,7 +246,7 @@ void Application::_loadPlugins()
 
   // Feedback about plugins.
   const PluginManager::Strings names ( PluginManager::instance().names() );
-  std::cout << "Found " << names.size() << " plugins: ";
+  std::cout << "Found " << names.size() << ( ( names.size() > 1 ) ? " plugins: " : "plugin: " );
   std::copy ( names.begin(), names.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
   std::cout << std::endl;
 }
@@ -418,4 +419,69 @@ void Application::accept ( AFW::Core::BaseVisitor *v )
 {
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text from the window's gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::windowTextGet ( const Window *window, std::string &text )
+{
+  if ( _gui.valid() && 0x0 != window )
+    _gui->windowTextGet ( window, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the text of the window's gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::windowTextSet ( Window *window, const std::string &text )
+{
+  if ( _gui.valid() && 0x0 != window && false == text.empty() )
+    _gui->windowTextSet ( window, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the text of the window's gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::windowTextSet ( Window *window, const char *text, unsigned int length )
+{
+  if ( _gui.valid() && 0x0 != window && length > 0 )
+    _gui->windowTextSet ( window, text, length );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the text of the window's gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::windowTextAppend ( Window *window, const std::string &text )
+{
+  if ( _gui.valid() && 0x0 != window && false == text.empty() )
+    _gui->windowTextAppend ( window, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the text of the window's gui-object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::windowTextAppend ( Window *window, const char *text, unsigned int length )
+{
+  if ( _gui.valid() && 0x0 != window && length > 0 )
+    _gui->windowTextAppend ( window, text, length );
 }

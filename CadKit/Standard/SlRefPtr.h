@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -60,13 +88,13 @@ public:
   SlRefPtr<T> &     operator =  ( const SlRefPtr<T> &p ) { this->setValue ( p ); return *this; }
   SlRefPtr<T> &     operator =  ( T *p )                 { this->setValue ( p ); return *this; }
 
-  bool              operator == ( const SlRefPtr<T> &p ) const { return _p == p._p; }
-  bool              operator == ( const T *p ) const           { return _p == p; }
-  bool              operator == ( T *p ) const                 { return _p == p; }
+  bool              operator == ( const SlRefPtr<T> &p )               { return _p == p._p; }
+  bool              operator == ( const T *p )                         { return _p == p; }
+  friend bool       operator == ( const T *p1, const SlRefPtr<T> &p2 ) { return p1 == p2._p; }
 
-  bool              operator != ( const SlRefPtr<T> &p ) const { return _p != p._p; }
-  bool              operator != ( const T *p ) const           { return _p != p; }
-  bool              operator != ( T *p ) const                 { return _p != p; }
+  bool              operator != ( const SlRefPtr<T> &p )               { return _p != p._p; }
+  bool              operator != ( const T *p )                         { return _p != p; }
+  friend bool       operator != ( const T *p1, const SlRefPtr<T> &p2 ) { return p1 != p2._p; }
 
   /// Set the internal pointer.
   void              setValue ( const SlRefPtr<T> &p );
@@ -76,20 +104,6 @@ protected:
 
   T *_p;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Additional operators. These are not members of the class because compilers
-//  vary too much in the proper syntax for friend functions in templates. 
-//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class P> bool operator == ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
-template <class P> bool operator == ( P *p1,       const SlRefPtr<P> &p2 ) { return p1 == p2._p; }
-template <class P> bool operator != ( const P *p1, const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
-template <class P> bool operator != ( P *p1,       const SlRefPtr<P> &p2 ) { return p1 != p2._p; }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,32 +202,6 @@ template <class T> inline void SlRefPtr<T>::setValue ( const SlRefPtr<T> &p )
   // Call the other one.
   this->setValue ( p._p );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  These are for class SlRefPtr. The client can overload these functions to
-//  use SlRefPtr with another kind of pointer (like IUnknown). By making 
-//  SlRefPtr call these functions instead of it's contained pointer's
-//  ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
-//  API of it's contained pointer. To use SlRefPtr with a pointer type 
-//  that does not have "ref/unref" members, make a specific (non-template) 
-//  overload of these functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
-template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Safely reference/unreference the pointer. Provided as a convenience.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline void safeRef   ( T *ptr ) { if ( ptr ) ptr->ref(); }
-template <class T> inline void safeUnref ( T *ptr ) { if ( ptr ) ptr->unref(); }
 
 
 }; // namespace CadKit

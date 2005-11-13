@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,9 +44,8 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_BOUNDING_BOX_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_BOUNDING_BOX_H_
 
-#include "SlMatrix44.h"
+#include "SlMatrix4.h"
 #include "SlAssert.h"
-#include "Standard/SlMinMax.h"
 
 // For convenience.
 #define SL_BBOX_ZERO ( static_cast<T> ( 0 ) )
@@ -33,7 +60,7 @@ template<class T> class SlBoundingBox
 public:
 
   typedef T Type; // For the client.
-  typedef SlMatrix44<T> Matrix4;
+  typedef SlMatrix4<T> Matrix4;
   typedef SlVec3<T> Vec3;
   typedef SlBoundingBox<T> BoundingBox;
 
@@ -52,16 +79,15 @@ public:
   T                           getDepth()  const { return _max[2] - _min[2]; }
   T                           getHeight() const { return _max[1] - _min[1]; }
   T                           getWidth()  const { return _max[0] - _min[0]; }
-  static void                 grow ( const SlBoundingBox &bbox1, const SlBoundingBox &bbox2, SlBoundingBox &sum );
   void                        grow ( const SlBoundingBox &bbox );
 
   void                        init();
   bool                        intersect ( const Vec3 &linePt, const Vec3 &lineVec, Vec3 &coord );
   const bool &                isValid() const { return _valid; }
 
-  static void                 multiply ( const Matrix4 &M, const SlBoundingBox &bbox, SlBoundingBox &result );
-
   SlBoundingBox &             operator += ( const SlBoundingBox &bbox );
+  friend SlBoundingBox        operator *  ( const Matrix4 &M, const SlBoundingBox &bbox );
+  friend SlBoundingBox        operator +  ( const SlBoundingBox &bbox1, const SlBoundingBox &bbox2 );
 
   void                        setValue ( const Vec3 &min, const Vec3 &max );
   void                        setValue ( const SlBoundingBox &bbox );
@@ -73,26 +99,18 @@ protected:
   SlVec3<T> _min;
   SlVec3<T> _max;
   bool _valid;
+
+  static void                 _grow ( const SlBoundingBox &bbox1, const SlBoundingBox &bbox2, SlBoundingBox &sum );
+
+  static void                 _multiply ( const Matrix4 &M, const SlBoundingBox &bbox, SlBoundingBox &result );
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Additional operators. These are not members of the class because compilers
-//  vary too much in the proper syntax for friend functions in templates. 
-//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> SlBoundingBox<T> operator * ( const SlMatrix44<T> &M, const SlBoundingBox<T> &bbox );
-template<class T> SlBoundingBox<T> operator + ( const SlBoundingBox<T> &bbox1, const SlBoundingBox<T> &bbox2 );
-
-
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
 template<class T> inline SlBoundingBox<T>::SlBoundingBox() :
   _min ( 0, 0, 0 ),
@@ -325,7 +343,7 @@ template<class T> inline void SlBoundingBox<T>::grow ( const BoundingBox &bbox )
   else
   {
     // Grow to include the given box.
-    this->grow ( *this, bbox, *this );
+    this->_grow ( *this, bbox, *this );
 
     // Now we are _valid.
     _valid = true;
@@ -339,18 +357,18 @@ template<class T> inline void SlBoundingBox<T>::grow ( const BoundingBox &bbox )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlBoundingBox<T>::grow ( const BoundingBox &b1, const BoundingBox &b2, BoundingBox &sum )
+template<class T> inline void SlBoundingBox<T>::_grow ( const BoundingBox &b1, const BoundingBox &b2, BoundingBox &sum )
 {
   // Only add _valid bounding boxes.
   SL_ASSERT ( b1._valid && b2._valid );
 
-  sum._max[0] = CadKit::max ( b1._max[0], b2._max[0], sum._max[0] );
-  sum._max[1] = CadKit::max ( b1._max[1], b2._max[1], sum._max[1] );
-  sum._max[2] = CadKit::max ( b1._max[2], b2._max[2], sum._max[2] );
+  sum._max[0] = SL_MAX ( b1._max[0], b2._max[0] );
+  sum._max[1] = SL_MAX ( b1._max[1], b2._max[1] );
+  sum._max[2] = SL_MAX ( b1._max[2], b2._max[2] );
 
-  sum._min[0] = CadKit::min ( b1._min[0], b2._min[0], sum._min[0] );
-  sum._min[1] = CadKit::min ( b1._min[1], b2._min[1], sum._min[1] );
-  sum._min[2] = CadKit::min ( b1._min[2], b2._min[2], sum._min[2] );
+  sum._min[0] = SL_MIN ( b1._min[0], b2._min[0] );
+  sum._min[1] = SL_MIN ( b1._min[1], b2._min[1] );
+  sum._min[2] = SL_MIN ( b1._min[2], b2._min[2] );
 
   // Don't assume the sum is valid.
 }
@@ -362,7 +380,7 @@ template<class T> inline void SlBoundingBox<T>::grow ( const BoundingBox &b1, co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlBoundingBox<T>::multiply ( const Matrix4 &M, const BoundingBox &b1, BoundingBox &b2 )
+template<class T> inline void SlBoundingBox<T>::_multiply ( const Matrix4 &M, const BoundingBox &b1, BoundingBox &b2 )
 {
   // Have to make all eight vertives.
   SlVec3<T> v[8];
@@ -386,12 +404,12 @@ template<class T> inline void SlBoundingBox<T>::multiply ( const Matrix4 &M, con
   v[7] = M * v[7];
 
   // Pick the max and min coordinates.
-  b2._min[0] = CadKit::min ( v[0][0], v[1][0], v[2][0], v[3][0], v[4][0], v[5][0], v[6][0], v[7][0] );
-  b2._min[1] = CadKit::min ( v[0][1], v[1][1], v[2][1], v[3][1], v[4][1], v[5][1], v[6][1], v[7][1] );
-  b2._min[2] = CadKit::min ( v[0][2], v[1][2], v[2][2], v[3][2], v[4][2], v[5][2], v[6][2], v[7][2] );
-  b2._max[0] = CadKit::max ( v[0][0], v[1][0], v[2][0], v[3][0], v[4][0], v[5][0], v[6][0], v[7][0] );
-  b2._max[1] = CadKit::max ( v[0][1], v[1][1], v[2][1], v[3][1], v[4][1], v[5][1], v[6][1], v[7][1] );
-  b2._max[2] = CadKit::max ( v[0][2], v[1][2], v[2][2], v[3][2], v[4][2], v[5][2], v[6][2], v[7][2] );
+  b2._min[0] = SL_MIN ( v[0][0], SL_MIN ( v[1][0], SL_MIN ( v[2][0], SL_MIN ( v[3][0], SL_MIN ( v[4][0], SL_MIN ( v[5][0], SL_MIN ( v[6][0], v[7][0] ) ) ) ) ) ) );
+  b2._min[1] = SL_MIN ( v[0][1], SL_MIN ( v[1][1], SL_MIN ( v[2][1], SL_MIN ( v[3][1], SL_MIN ( v[4][1], SL_MIN ( v[5][1], SL_MIN ( v[6][1], v[7][1] ) ) ) ) ) ) );
+  b2._min[2] = SL_MIN ( v[0][2], SL_MIN ( v[1][2], SL_MIN ( v[2][2], SL_MIN ( v[3][2], SL_MIN ( v[4][2], SL_MIN ( v[5][2], SL_MIN ( v[6][2], v[7][2] ) ) ) ) ) ) );
+  b2._max[0] = SL_MAX ( v[0][0], SL_MAX ( v[1][0], SL_MAX ( v[2][0], SL_MAX ( v[3][0], SL_MAX ( v[4][0], SL_MAX ( v[5][0], SL_MAX ( v[6][0], v[7][0] ) ) ) ) ) ) );
+  b2._max[1] = SL_MAX ( v[0][1], SL_MAX ( v[1][1], SL_MAX ( v[2][1], SL_MAX ( v[3][1], SL_MAX ( v[4][1], SL_MAX ( v[5][1], SL_MAX ( v[6][1], v[7][1] ) ) ) ) ) ) );
+  b2._max[2] = SL_MAX ( v[0][2], SL_MAX ( v[1][2], SL_MAX ( v[2][2], SL_MAX ( v[3][2], SL_MAX ( v[4][2], SL_MAX ( v[5][2], SL_MAX ( v[6][2], v[7][2] ) ) ) ) ) ) );
 
   // You have to set this so that you can do this: bbox2 = M * bbox1;
   b2._valid = b1._valid;
@@ -407,7 +425,7 @@ template<class T> inline void SlBoundingBox<T>::multiply ( const Matrix4 &M, con
 template<class T> inline void SlBoundingBox<T>::transform ( const Matrix4 &M )
 {
   BoundingBox result;
-  BoundingBox::multiply ( M, *this, result );
+  BoundingBox::_multiply ( M, *this, result );
   this->setValue ( result );
 }
 
@@ -421,7 +439,7 @@ template<class T> inline void SlBoundingBox<T>::transform ( const Matrix4 &M )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlBoundingBox<T> &SlBoundingBox<T>::operator += ( const SlBoundingBox<T> &bbox ) 
+template<class T> inline SlBoundingBox<T> &SlBoundingBox<T>::operator += ( const BoundingBox &bbox ) 
 {
   this->grow ( bbox );
   return *this;
@@ -434,10 +452,10 @@ template<class T> inline SlBoundingBox<T> &SlBoundingBox<T>::operator += ( const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline SlBoundingBox<T> operator * ( const SlMatrix44<T> &M, const SlBoundingBox<T> &bbox ) 
+template<class T> inline SlBoundingBox<T> operator * ( const SlMatrix4<T> &M, const SlBoundingBox<T> &bbox ) 
 {
   SlBoundingBox<T> result;
-  SlBoundingBox<T>::multiply ( M, bbox, result );
+  SlBoundingBox<T>::_multiply ( M, bbox, result );
   return result;
 }
 
@@ -451,7 +469,7 @@ template<class T> inline SlBoundingBox<T> operator * ( const SlMatrix44<T> &M, c
 template<class T> inline SlBoundingBox<T> operator + ( const SlBoundingBox<T> &bbox1, const SlBoundingBox<T> &bbox2 ) 
 {
   SlBoundingBox<T> result;
-  SlBoundingBox<T>::grow ( bbox1, bbox2, result );
+  SlBoundingBox<T>::_grow ( bbox1, bbox2, result );
   return result;
 }
 

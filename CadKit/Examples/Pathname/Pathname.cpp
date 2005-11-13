@@ -2,28 +2,11 @@
 #define CADKIT_DEFINE_SL_TEMPLATE_STRING_SPLIT_INTO_LIST_FUNCTION
 #define CADKIT_DEFINE_SL_VECTOR_STD_OSTREAM_OPERATOR
 
-#ifdef _WIN32
-#pragma warning(disable:4786) // Truncated debug names.
-#endif
-
 #include "Standard/SlPathname.h"
-#include "Standard/SlString.h"
-#include "Standard/SlStringIO.h"
 using namespace CadKit;
 
 #include <iostream>
-
-// Works with either, take your pick (except VC++ using STLport).
-#if 1
-typedef std::basic_string<char>    StringA;
-typedef std::basic_string<wchar_t> StringW;
-#else
-typedef SlString<char>             StringA;
-typedef SlString<wchar_t>          StringW;
-#endif
-
-typedef SlPathname<StringA>      SlAPathname;
-typedef SlPathname<StringW>      SlWPathname;
+using namespace std;
 
 
 void test ( const char *filename )
@@ -37,7 +20,7 @@ void test ( const char *filename )
   std::cout << "extension: " << path1.getExtension() << std::endl;
   std::cout << std::endl;
 
-  SlAPathname path2 ( "../../test" );
+  SlAPathname path2 ( "test" );
   std::cout << " pathname: " << path2.getPathname() << std::endl;
   std::cout << " fullpath: " << path2.getFullpath() << std::endl;
   std::cout << "    drive: " << path2.getDrive() << std::endl;

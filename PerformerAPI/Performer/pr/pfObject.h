@@ -1,25 +1,14 @@
-#ifndef _PF_OBJECT_H_
-#define _PF_OBJECT_H_
+#ifndef e43bba1c_7c8c_440f_93de_15c566f7ac49
+#define e43bba1c_7c8c_440f_93de_15c566f7ac49
 
 #include "Performer/pr/pfMemory.h"
 
 class pfObject : public pfMemory
 {
 public:
-
-  virtual const char *          className() const { return "pfObject"; }
-
-  virtual void                  write ( std::ostream &out ) const;
-
-protected:
-
   pfObject() : pfMemory(){}
+protected:
   virtual ~pfObject(){}
 };
-
-inline void pfObject::write ( std::ostream &out ) const
-{
-  pfMemory::write ( out );
-}
 
 #endif

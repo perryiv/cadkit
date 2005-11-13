@@ -1,7 +1,0 @@
-
-
-all:
-
-default:
-
-clean:

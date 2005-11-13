@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,10 +44,31 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_
 #define _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_
 
+#include "SlInlineMath.h"
 #include "SlAssert.h"
-#include "SlAbsolute.h"
 #include "SlTemplateSupport.h"
-#include "SlConstants.h"
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
+#include <iostream.h>
+#endif
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
+#include <iostream>
+#endif
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
+#include <iostream.h>
+#endif
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
+#include <iostream>
+#endif
+
+// For convenience.
+#define SL_VEC3_ZERO ( static_cast<T>(0) )
+#define SL_VEC3_HALF ( static_cast<T>(0.5) )
+#define SL_VEC3_ONE  ( static_cast<T>(1) )
+#define SL_VEC3_TWO  ( static_cast<T>(2) )
 
 
 namespace CadKit
@@ -38,14 +87,12 @@ public:
 
   void                    bisect ( const SlVec3 &pt0, const SlVec3 &pt1 );
 
-  void                    clamp ( const T &minValue, const T &maxValue );
-
   T                       dot ( const SlVec3 &vec ) const;
 
   SlVec3                  cross ( const SlVec3 &vec ) const;
 
   Real                    getAngle ( const SlVec3 &vec ) const;
-  static unsigned short   getDimension() { return 3; }
+  static short            getDimension() { return 3; }
   Real                    getDistance ( const SlVec3 &vec ) const;
   Real                    getDistanceSquared ( const SlVec3 &vec ) const;
   Real                    getLength() const;
@@ -55,18 +102,15 @@ public:
   void                    getValue ( T &v0, T &v1, T &v2 ) const;
 
   void                    interpolate ( const SlVec3 &pt0, const SlVec3 &pt1, const Real &u );
-  bool                    isEqual ( const SlVec3 &vec ) const;
-  bool                    isEqual ( const SlVec3 &vec, const T &tolerance ) const;
-  bool                    isNotEqual ( const SlVec3 &vec ) const;
-  bool                    isNotEqual ( const SlVec3 &vec, const T &tolerance ) const;
-
-  const Real &            maximum() const;
-  const Real &            minimum() const;
+  bool                    isEqualTo ( const SlVec3 &vec ) const;
+  bool                    isEqualTo ( const SlVec3 &vec, const T &tolerance ) const;
+  bool                    isNotEqualTo ( const SlVec3 &vec ) const;
+  bool                    isNotEqualTo ( const SlVec3 &vec, const T &tolerance ) const;
 
   Real                    normalize();
 
   // Typecast operators.
-  operator       T *()       { return _v; }
+  operator T *()             { return _v; }
   operator const T *() const { return _v; }
 
   // Bracket operators.
@@ -81,6 +125,27 @@ public:
   SlVec3 &                operator += ( const SlVec3 &vec );
   SlVec3 &                operator -= ( const SlVec3 &vec );
   SlVec3                  operator - () const;
+  friend SlVec3           operator * ( const SlVec3 &vec, const T &value );
+  friend SlVec3           operator * ( const T &value, const SlVec3 &vec );
+  friend SlVec3           operator / ( const SlVec3 &vec, const T &value );
+  friend SlVec3           operator + ( const SlVec3 &vecA, const SlVec3 &vecB );
+  friend SlVec3           operator - ( const SlVec3 &vecA, const SlVec3 &vecB );
+  friend bool             operator == ( const SlVec3 &vecA, const SlVec3 &vecB );
+  friend bool             operator != ( const SlVec3 &vecA, const SlVec3 &vecB );
+
+  // I/O.
+  #ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
+  friend ::ostream &      operator << ( ::ostream &out, const SlVec3 &vec );
+  #endif
+  #ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
+  friend std::ostream &   operator << ( std::ostream &out, const SlVec3 &vec );
+  #endif
+  #ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
+  friend ::istream &      operator >> ( ::istream &in, SlVec3 &vec );
+  #endif
+  #ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
+  friend std::istream &   operator >> ( std::istream &in, SlVec3 &vec );
+  #endif
 
   void                    orthogonal ( const SlVec3 &vec );
 
@@ -91,45 +156,10 @@ public:
   void                    setValue ( const SlVec3 &vec );
   void                    setValue ( const T &v0, const T &v1, const T &v2 );
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Execute the functor with all the elements. Make sure the argument is 
-  //  a reference or else you will faul things up.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  template < class Functor > void operator () ( Functor &functor ) const
-  {
-    functor ( _v[0] );
-    functor ( _v[1] );
-    functor ( _v[2] );
-  }
-
 protected:
 
   T _v[3];
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Additional operators. These are not members of the class because compilers
-//  vary too much in the proper syntax for friend functions in templates. 
-//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> SlVec3<T> operator *  ( const SlVec3<T> &vec,  const T &value );
-template<class T> SlVec3<T> operator *  ( const T &value,        const SlVec3<T> &vec );
-template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vec,  const T &value );
-template<class T> SlVec3<T> operator +  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
-template<class T> SlVec3<T> operator -  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
-template<class T> bool      operator == ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
-template<class T> bool      operator != ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
-
-#ifdef _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
-template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vecA, const SlVec3<T> &vecB );
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,7 +170,7 @@ template<class T> SlVec3<T> operator /  ( const SlVec3<T> &vecA, const SlVec3<T>
 
 template<class T> inline SlVec3<T>::SlVec3()
 {
-  _v[0] = _v[1] = _v[2] = CadKit::SlConstants<T>::zero();
+  _v[0] = _v[1] = _v[2] = SL_VEC3_ZERO;
 }
 
 
@@ -206,7 +236,7 @@ template<class T> inline void SlVec3<T>::getValue ( T &v0, T &v1, T &v2 ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec, const T &tolerance ) const
 {
   return (
     ( SL_ABS ( _v[0] - vec._v[0] ) ) <= tolerance &&
@@ -221,9 +251,9 @@ template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec, const T
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec, const T &tolerance ) const
+template<class T> inline bool SlVec3<T>::isNotEqualTo ( const SlVec3<T> &vec, const T &tolerance ) const
 {
-  return ( false == this->isEqual ( vec, tolerance ) );
+  return ( false == this->isEqualTo ( vec, tolerance ) );
 }
 
 
@@ -233,7 +263,7 @@ template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec ) const
+template<class T> inline bool SlVec3<T>::isEqualTo ( const SlVec3<T> &vec ) const
 {
   return (
     _v[0] == vec._v[0] && 
@@ -248,58 +278,9 @@ template<class T> inline bool SlVec3<T>::isEqual ( const SlVec3<T> &vec ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlVec3<T>::isNotEqual ( const SlVec3<T> &vec ) const
+template<class T> inline bool SlVec3<T>::isNotEqualTo ( const SlVec3<T> &vec ) const
 {
-  return ( false == this->isEqual ( vec ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the vectors are equal within the given tolerance. Deliberately not 
-//  a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline bool isEqual ( const SlVec3<T> &v1, const SlVec3<T> &v2, const T &tolerance )
-{
-  return v1.isEqual ( v2, tolerance );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the array of vectors are equal within the given tolerance. 
-//  Deliberately not a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T, class I> inline bool isEqualArray ( const SlVec3<T> *v1, const SlVec3<T> *v2, const I &size )
-{
-  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
-
-  for ( I i = 0; i < size; ++i )
-    if ( false == v1[i].isEqual ( v2[i] ) )
-      return false;
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the array of vectors are equal within the given tolerance. 
-//  Deliberately not a member function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T, class I> inline bool isEqualArray ( const SlVec3<T> *v1, const SlVec3<T> *v2, const I &size, const T &tolerance )
-{
-  SL_ASSERT ( ( size > 0 && NULL != v1 && NULL != v2 ) || ( size == 0 && NULL == v1 && NULL == v2 ) );
-
-  for ( I i = 0; i < size; ++i )
-    if ( false == v1[i].isEqual ( v2[i], tolerance ) )
-      return false;
-  return true;
+  return ( false == this->isEqualTo ( vec ) );
 }
 
 
@@ -343,7 +324,7 @@ template<class T> inline SlVec3<T> &SlVec3<T>::operator *= ( const SlVec3<T> &ve
 
 template<class T> inline SlVec3<T> &SlVec3<T>::operator /= ( const T &value )
 {
-  T invValue = CadKit::SlConstants<T>::one() / value;
+  T invValue = SL_VEC3_ONE / value;
 
   _v[0] *= invValue;
   _v[1] *= invValue;
@@ -406,9 +387,9 @@ template<class T> inline SlVec3<T> SlVec3<T>::operator - () const
 template<class T> inline SlVec3<T> operator * ( const SlVec3<T> &vec, const T &value )
 {
   return SlVec3<T> ( 
-    vec[0] * value, 
-    vec[1] * value, 
-    vec[2] * value );
+    vec._v[0] * value, 
+    vec._v[1] * value, 
+    vec._v[2] * value );
 }
 
 
@@ -421,9 +402,9 @@ template<class T> inline SlVec3<T> operator * ( const SlVec3<T> &vec, const T &v
 template<class T> inline SlVec3<T> operator * ( const T &value, const SlVec3<T> &vec )
 {
   return SlVec3<T> ( 
-    vec[0] * value, 
-    vec[1] * value, 
-    vec[2] * value );
+    vec._v[0] * value, 
+    vec._v[1] * value, 
+    vec._v[2] * value );
 }
 
 
@@ -437,32 +418,10 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vec, const T &v
 {
   // Do not multiply by inverse because that fauls up integer vectors.
   return SlVec3<T> ( 
-    vec[0] / value, 
-    vec[1] / value, 
-    vec[2] / value );
+    vec._v[0] / value, 
+    vec._v[1] / value, 
+    vec._v[2] / value );
 }
-
-
-#ifdef _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the component-wise division of the given vectors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
-{
-  // Do not multiply by inverse because that fauls up integer vectors.
-  return SlVec3<T> ( 
-    vecA[0] / vecB[0], 
-    vecA[1] / vecB[1], 
-    vecA[2] / vecB[2] );
-}
-
-
-#endif // _CADKIT_SL_VEC3_DECLARE_SCALAR_MEMBERS
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -474,9 +433,9 @@ template<class T> inline SlVec3<T> operator / ( const SlVec3<T> &vecA, const SlV
 template<class T> inline SlVec3<T> operator + ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
   return SlVec3<T> ( 
-    vecA[0] + vecB[0], 
-    vecA[1] + vecB[1], 
-    vecA[2] + vecB[2] );
+    vecA._v[0] + vecB._v[0], 
+    vecA._v[1] + vecB._v[1], 
+    vecA._v[2] + vecB._v[2] );
 }
 
 
@@ -489,9 +448,9 @@ template<class T> inline SlVec3<T> operator + ( const SlVec3<T> &vecA, const SlV
 template<class T> inline SlVec3<T> operator - ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
   return SlVec3<T> ( 
-    vecA[0] - vecB[0], 
-    vecA[1] - vecB[1], 
-    vecA[2] - vecB[2] );
+    vecA._v[0] - vecB._v[0], 
+    vecA._v[1] - vecB._v[1], 
+    vecA._v[2] - vecB._v[2] );
 }
 
 
@@ -503,7 +462,7 @@ template<class T> inline SlVec3<T> operator - ( const SlVec3<T> &vecA, const SlV
 
 template<class T> inline bool operator == ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
-  return vecA.isEqual ( vecB );
+  return vecA.isEqualTo ( vecB );
 }
 
 
@@ -515,7 +474,7 @@ template<class T> inline bool operator == ( const SlVec3<T> &vecA, const SlVec3<
 
 template<class T> inline bool operator != ( const SlVec3<T> &vecA, const SlVec3<T> &vecB )
 {
-  return vecA.isNotEqual ( vecB );
+  return vecA.isNotEqualTo ( vecB );
 }
 
 
@@ -543,6 +502,82 @@ template<class T> inline const T &SlVec3<T>::operator [] ( int i ) const
   SL_ASSERT ( this && i >= 0 && i <= 2 );
   return _v[i];
 }
+
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream operator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline ::ostream &operator << ( ::ostream &out, const SlVec3<T> &vec )
+{
+  out << vec[0] << " " << vec[1] << " " << vec[2];
+  return out;
+}
+
+
+#endif // CADKIT_DEFINE_SL_VECTOR_3_OSTREAM_OPERATOR
+
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream operator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline std::ostream &operator << ( std::ostream &out, const SlVec3<T> &vec )
+{
+  out << vec[0] << " " << vec[1] << " " << vec[2];
+  return out;
+}
+
+
+#endif // CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
+
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream operator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline ::istream &operator >> ( ::istream &in, SlVec3<T> &vec )
+{
+  in >> vec[0] >> vec[1] >> vec[2];
+  return in;
+}
+
+
+#endif // CADKIT_DEFINE_SL_VECTOR_3_ISTREAM_OPERATOR
+
+
+#ifdef CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream operator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class T> inline std::istream &operator >> ( std::istream &in, SlVec3<T> &vec )
+{
+  in >> vec[0] >> vec[1] >> vec[2];
+  return in;
+}
+
+
+#endif // CADKIT_DEFINE_SL_VECTOR_3_STD_ISTREAM_OPERATOR
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -654,21 +689,7 @@ template<class T> inline void SlVec3<T>::bisect ( const SlVec3<T> &pt0, const Sl
 {
   // Do not call interpolate with "0.5" because that fauls up integer vectors.
   SlVec3<T> vec ( pt0 + pt1 );
-  this->setValue ( vec / CadKit::SlConstants<T>::two() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clamp the vector's elements to the given range.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> inline void SlVec3<T>::clamp ( const T &minValue, const T &maxValue )
-{
-  CadKit::clamp ( minValue, maxValue, _v[0] );
-  CadKit::clamp ( minValue, maxValue, _v[1] );
-  CadKit::clamp ( minValue, maxValue, _v[2] );
+  this->setValue ( vec / SL_VEC3_TWO );
 }
 
 
@@ -680,7 +701,7 @@ template<class T> inline void SlVec3<T>::clamp ( const T &minValue, const T &max
 
 template<class T> inline void SlVec3<T>::getRealPart ( T &v0, T &v1 ) const
 {
-  T invW = CadKit::SlConstants<T>::one() / _v[2];
+  T invW = SL_VEC3_ONE / _v[2];
   v0 = _v[0] * invW;
   v1 = _v[1] * invW;
 }
@@ -708,7 +729,7 @@ template<class T> inline void SlVec3<T>::interpolate ( const SlVec3<T> &pt0, con
 template<class T> inline T SlVec3<T>::normalize()
 {
   T length = this->getLength();
-  T invLength = CadKit::SlConstants<T>::one() / length;
+  T invLength = SL_VEC3_ONE / length;
 
   _v[0] *= invLength;
   _v[1] *= invLength;
@@ -726,28 +747,25 @@ template<class T> inline T SlVec3<T>::normalize()
 
 template<class T> inline void SlVec3<T>::orthogonal ( const SlVec3<T> &vec )
 {
-  const T CONST_0 ( CadKit::SlConstants<T>::zero() );
-  const T CONST_1 ( CadKit::SlConstants<T>::one() );
-
   // Check impossible case.
-  SL_ASSERT ( !( CONST_0 == vec._v[0] && CONST_0 == vec._v[1] && CONST_0 == vec._v[2] ) );
+  SL_ASSERT ( !( SL_VEC3_ZERO == vec._v[0] && SL_VEC3_ZERO == vec._v[1] && SL_VEC3_ZERO == vec._v[2] ) );
 
   // Check degenerate cases.
   if ( _v[0] == 0 )
   {
-    this->setValue ( CONST_1, CONST_0, CONST_0 );
+    this->setValue ( SL_VEC3_ONE, SL_VEC3_ZERO, SL_VEC3_ZERO );
     return;
   }
 
   if ( _v[1] == 0 )
   {
-    this->setValue ( CONST_0, CONST_1, CONST_0 );
+    this->setValue ( SL_VEC3_ZERO, SL_VEC3_ONE, SL_VEC3_ZERO );
     return;
   }
 
   if ( _v[2] == 0 )
   {
-    this->setValue ( CONST_0, CONST_0, CONST_1 );
+    this->setValue ( SL_VEC3_ZERO, SL_VEC3_ZERO, SL_VEC3_ONE );
     return;
   }
 
@@ -835,54 +853,6 @@ typedef SlVec3<int>         SlVec3i;
 typedef SlVec3<short>       SlVec3s;
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Explicit declaration of constant types.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
-  SlVec3ld, 
-  SlVec3ld ( 0.0, 0.0, 0.0 ), 
-  SlVec3ld ( 0.5, 0.5, 0.5 ), 
-  SlVec3ld ( 1.0, 1.0, 1.0 ),
-  SlVec3ld ( 2.0, 2.0, 2.0 ) 
-  );
-CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
-  SlVec3d,  
-  SlVec3d ( 0.0, 0.0, 0.0 ), 
-  SlVec3d ( 0.5, 0.5, 0.5 ), 
-  SlVec3d ( 1.0, 1.0, 1.0 ),
-  SlVec3d ( 2.0, 2.0, 2.0 ) 
-  );
-CADKIT_DECLARE_CONSTANT_CLASS_FLOAT ( 
-  SlVec3f,  
-  SlVec3f ( 0.0f, 0.0f, 0.0f ), 
-  SlVec3f ( 0.5f, 0.5f, 0.5f ), 
-  SlVec3f ( 1.0f, 1.0f, 1.0f ),
-  SlVec3f ( 2.0f, 2.0f, 2.0f ) 
-  );
-CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
-  SlVec3l,  
-  SlVec3l ( 0, 0, 0 ), 
-  SlVec3l ( 1, 1, 1 ),
-  SlVec3l ( 2, 2, 2 ) 
-  );
-CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
-  SlVec3i,  
-  SlVec3i ( 0, 0, 0 ), 
-  SlVec3i ( 1, 1, 1 ),
-  SlVec3i ( 2, 2, 2 ) 
-  );
-CADKIT_DECLARE_CONSTANT_CLASS_INTEGER ( 
-  SlVec3s,  
-  SlVec3s ( 0, 0, 0 ), 
-  SlVec3s ( 1, 1, 1 ),
-  SlVec3s ( 2, 2, 2 ) 
-  );
-
-
 }; // namespace CadKit
-
 
 #endif // _CADKIT_STANDARD_LIBRARY_TEMPLATE_VECTOR_OF_3_CLASS_H_

@@ -42,8 +42,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Yu"SgMfcPrecompiled.h" /FD /c
-# ADD CPP /nologo /MD /W3 /WX /GX /O2 /I "../../" /D "NDEBUG" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_AFXEXT" /D "_WINDOWS" /D "WIN32" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /YX"SgMfcPrecompiled.h" /FD /c
-# SUBTRACT CPP /Fr
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../" /D "NDEBUG" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_AFXEXT" /D "_WINDOWS" /D "WIN32" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /YX"SgMfcPrecompiled.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -53,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"../../bin/CkSgMfc.dll" /libpath:"$(MODELSPACE_HOME)\lib"
+# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"../../bin/CadKitSgMfc.dll" /libpath:"$(MODELSPACE_HOME)\lib"
 # SUBTRACT LINK32 /profile
 
 !ELSEIF  "$(CFG)" == "SceneGraphMfc - Win32 Debug"
@@ -70,8 +69,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=fl32.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "$(LOCAL_INCLUDE_DIR)" /I "$(MODELSPACE_HOME)\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_AFXEXT" /YX"SgMfcPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /WX /GX /Zi /Od /I "../../" /D "_WINDLL" /D "_AFXEXT" /D "_AFXDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /YX"SgMfcPrecompiled.h" /FD /GZ /c
-# SUBTRACT CPP /Fr
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "../../" /D "_WINDLL" /D "_AFXEXT" /D "_AFXDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_SL_PRINT_DEBUG" /D "_CADKIT_COMPILING_SCENEGRAPH_MFC_WRAPPER_LIBRARY" /Fr /YX"SgMfcPrecompiled.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -81,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 Sgd.lib Sld.lib glu32.lib opengl32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Debug/CadKitSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
-# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../bin/CkSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
+# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../bin/CadKitSgMfcd.dll" /pdbtype:sept /libpath:"$(MODELSPACE_HOME)\lib"
 
 !ENDIF 
 
@@ -191,14 +189,6 @@ SOURCE=.\SgMfcApi.h
 # Begin Source File
 
 SOURCE=.\SgMfcDll.cpp
-# End Source File
-# End Group
-# Begin Group "Notes"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\Notes\SceneGraph.txt
 # End Source File
 # End Group
 # End Target

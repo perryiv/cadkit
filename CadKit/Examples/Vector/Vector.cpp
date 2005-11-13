@@ -1,33 +1,18 @@
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copyright (c) 2002, Perry L. Miller IV
-//  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Example program demonstrating how to use the vector classes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
+#define CADKIT_DEFINE_SL_VECTOR_4_STD_OSTREAM_OPERATOR
+#define CADKIT_DEFINE_SL_VECTOR_3_STD_OSTREAM_OPERATOR
+#define CADKIT_DEFINE_SL_VECTOR_2_STD_OSTREAM_OPERATOR
 #include "Standard/SlVec4.h"
 #include "Standard/SlVec3.h"
 #include "Standard/SlVec2.h"
-#include "Standard/SlVec4IO.h"
-#include "Standard/SlVec3IO.h"
-#include "Standard/SlVec2IO.h"
 #include <iostream>
+#include <assert.h>
 
 using namespace CadKit;
 
 
-template<class Vec> void testVector ( Vec &v1, Vec &v2 )
+template<class Vec> testVector ( Vec &v1, Vec &v2 )
 {
-  typedef typename Vec::Type Type;
-
   // Print them to stdout using vector's "<<" operator.
   std::cout << "A01: v1 = " << v1 << std::endl;
   std::cout << "A02: v2 = " << v2 << std::endl;
@@ -81,40 +66,38 @@ template<class Vec> void testVector ( Vec &v1, Vec &v2 )
 
   // Interpolate.
   Vec v9;
-  Type u = static_cast<Type>(0.25);
+  Vec::Type u = static_cast<Vec::Type>(0.25);
   v9.interpolate ( v1, v2, u );
   std::cout << "A19: v9.interpolate ( v1, v2, " << u << " ), v9 = " << v9 << std::endl;
 
   // Equality test.
-  std::cout << "A20: v1.isEqual ( v2 ) = " << v1.isEqual ( v2 ) << std::endl;
-  Type tol = static_cast<Type>(0.0001);
-  std::cout << "A21: v1.isEqual ( v2, " << tol << " ) = " << v1.isEqual ( v2, tol ) << std::endl;
+  std::cout << "A20: v1.isEqualTo ( v2 ) = " << v1.isEqualTo ( v2 ) << std::endl;
+  Vec::Type tol = static_cast<Vec::Type>(0.0001);
+  std::cout << "A21: v1.isEqualTo ( v2, " << tol << " ) = " << v1.isEqualTo ( v2, tol ) << std::endl;
 
   // Inequality test.
-  std::cout << "A22: v1.isNotEqual ( v2 ) = " << v1.isNotEqual ( v2 ) << std::endl;
-  std::cout << "A23: v1.isNotEqual ( v2, " << tol << " ) = " << v1.isNotEqual ( v2, tol ) << std::endl;
+  std::cout << "A22: v1.isNotEqualTo ( v2 ) = " << v1.isNotEqualTo ( v2 ) << std::endl;
+  std::cout << "A23: v1.isNotEqualTo ( v2, " << tol << " ) = " << v1.isNotEqualTo ( v2, tol ) << std::endl;
 
   // Normalize, catch the old length.
   Vec v10 = v1;
-  Type oldLength1 = v10.getLength();
+  Vec::Type oldLength1 = v10.getLength();
   std::cout << "A24: before normalizing, v10 = " << v10 << ", length = " << oldLength1 << std::endl;
-  Type oldLength2 = v10.normalize();
-  SL_ASSERT ( oldLength1 == oldLength2 );
-  Type newLength = v10.getLength();
+  Vec::Type oldLength2 = v10.normalize();
+  assert ( oldLength1 == oldLength2 );
+  Vec::Type newLength = v10.getLength();
   std::cout << "A25: after normalizing, v10 = " << v10 << ", length = " << newLength << std::endl;
-  std::cout << "A26: 1 - length = " << static_cast<Type>(1) - newLength << std::endl;
+  std::cout << "A26: 1 - length = " << static_cast<Vec::Type>(1) - newLength << std::endl;
 
   // Print the dimension.
   std::cout << "A27: Vec::getDimension() = " << Vec::getDimension() << std::endl;
 }
 
 
-template<class Vec> void testVector4 ( Vec &v1, Vec &v2 )
+template<class Vec> testVector4 ( Vec &v1, Vec &v2 )
 {
-  typedef typename Vec::Type Type;
-
   // Print the vector's elements.
-  Type x, y, z, w;
+  Vec::Type x, y, z, w;
   v1.getValue ( x, y, z, w );
   std::cout << "B01: v1's (x,y,z,w) = " << x << " " << y << " " << z << " " << w << std::endl;
   v2.getValue ( x, y, z, w );
@@ -125,12 +108,10 @@ template<class Vec> void testVector4 ( Vec &v1, Vec &v2 )
 }
 
 
-template<class Vec> void testVector3 ( Vec &v1, Vec &v2 )
+template<class Vec> testVector3 ( Vec &v1, Vec &v2 )
 {
-  typedef typename Vec::Type Type;
-
   // Print the vector's elements.
-  Type x, y, z;
+  Vec::Type x, y, z;
   v1.getValue ( x, y, z );
   std::cout << "C01: v1's (x,y,z) = " << x << " " << y << " " << z << std::endl;
   v2.getValue ( x, y, z );
@@ -141,12 +122,10 @@ template<class Vec> void testVector3 ( Vec &v1, Vec &v2 )
 }
 
 
-template<class Vec> void testVector2 ( Vec &v1, Vec &v2 )
+template<class Vec> testVector2 ( Vec &v1, Vec &v2 )
 {
-  typedef typename Vec::Type Type;
-
   // Print the vector's elements.
-  Type x, y;
+  Vec::Type x, y;
   v1.getValue ( x, y );
   std::cout << "D01: v1's (x,y) = " << x << " " << y << std::endl;
   v2.getValue ( x, y );
@@ -228,10 +207,10 @@ int main ( int argc, char **argv )
   std::cout << "Z01: rtz = " << pt << std::endl;
   pt.rtz2xyz();
   std::cout << "Z02: xyz = " << pt << std::endl;
-  SL_ASSERT ( pt.isEqual ( save, 1e-10 ) );
+  SL_ASSERT ( pt.isEqualTo ( save, 1e-10 ) );
 
   // Wait for user to press the 'any' key.
-  std::cin.get();
+  //std::cin.get();
 
   return 0;
 }

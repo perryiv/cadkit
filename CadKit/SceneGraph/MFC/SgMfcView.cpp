@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,9 +46,8 @@
 #include "SgMfcView.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# include "SceneGraph/Core/SgMessageIds.h"
 # include "Standard/SlBitmask.h"
-# include "Standard/SlSystem.h"
+# include "SceneGraph/Core/SgMessageIds.h"
 #endif
 
 #ifdef _DEBUG
@@ -47,8 +74,7 @@ BEGIN_MESSAGE_MAP(SgMfcView, CView)
   ON_WM_RBUTTONDOWN()
   ON_WM_RBUTTONUP()
   ON_WM_SETCURSOR()
-	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -62,7 +88,7 @@ SgMfcView::SgMfcView() : CView(),
   _viewer ( NULL ),
   _cursor ( NULL )
 {
-  SL_PRINT2 ( "SgMfcView::SgMfcView(), this = %X\n", this );
+  SL_PRINT ( "SgMfcView::SgMfcView(), this = %X\n", this );
 }
 
 
@@ -74,7 +100,7 @@ SgMfcView::SgMfcView() : CView(),
 
 SgMfcView::~SgMfcView()
 {
-  SL_PRINT2 ( "SgMfcView::~SgMfcView(), this = %X\n", this );
+  SL_PRINT ( "SgMfcView::~SgMfcView(), this = %X\n", this );
 
   // The _viewer is a reference-pointer, no need to do anything.
 }
@@ -111,17 +137,9 @@ void SgMfcView::setViewer ( SgViewer *viewer )
   // Automatically does a ref/unref.
   _viewer = viewer;
 
-  // If we have a good viewer...
+  // Hook up callback.
   if ( _viewer )
-  {
-    // Hook up callback.
     _viewer->setCallback ( &SgMfcView::_viewerCallback, this );
-
-    // Set the default mouse button interaction.
-    _viewer->setMouseButtonsForRotating    ( SgViewer::MOUSE_LEFT );
-    _viewer->setMouseButtonsForTranslating ( 2 == SlSystem::getNumMouseButtons() ? SgViewer::MOUSE_RIGHT : SgViewer::MOUSE_MIDDLE );
-    _viewer->setMouseButtonsForScaling     ( 2 == SlSystem::getNumMouseButtons() ? SgViewer::MOUSE_LEFT | SgViewer::MOUSE_RIGHT : SgViewer::MOUSE_LEFT | SgViewer::MOUSE_MIDDLE );
-  }
 }
 
 
@@ -519,21 +537,4 @@ void SgMfcView::stopMotion()
 {
   // Kill the timer (may not be one).
   this->KillTimer ( (unsigned int) this );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	Clean up here. If you wait for the destructor then the virtual tables
-//  are no longer valid.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgMfcView::OnDestroy() 
-{
-  // This will release the viewer's pointer and unreference it.
-  _viewer.setValue ( NULL );
-
-  // Call the base class's function.
-	CView::OnDestroy();
 }

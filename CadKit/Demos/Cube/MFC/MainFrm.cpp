@@ -7,7 +7,6 @@
 #include "Cube.h"
 
 #include "MainFrm.h"
-#include "BuildScene.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,17 +40,44 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 {
-  // Build the scene.
-  _root->addChild ( CadKit::Demos::buildScene ( 10, true ) );
+  // Add some material to the scene.
+	SgMaterial *material = new SgMaterial;
+	material->diffuse.setValue ( 0.7f, 0.2f, 0.2f, 1.0f );
+	material->side = SgMaterial::FRONT_AND_BACK;
+	_root->addChild ( material );
+
+  // Now the cube.
+	SgCube *cube = new SgCube;
+	cube->size = 10.0f;
+	cube->center.setValue ( 3.0f, 0.0f, -10.0f );
+	_root->addChild ( cube );
+
+  // Make a translation.
+  SgTranslation *trans = new SgTranslation;
+  trans->setTranslation ( SlVec3f ( cube->size * 2, 0.0f, 0.0f ) );
+
+  // Add some more cubes with translations in between.
+  SgSeparator::Ptr root = new SgSeparator;
+  _root->addChild ( root );
+  for ( int i = 0; i < 0; ++i )
+  {
+    SgSeparator::Ptr branch = new SgSeparator;
+    branch->removePushPopFlags ( SgSeparator::PROJECTION );
+	  branch->addChild ( trans );
+
+    SlVec3f axis ( 1.0f, 1.0f, (float) i );
+    axis.normalize();
+    branch->addChild ( new SgRotation ( axis, 10.0f ) );
+
+	  branch->addChild ( cube );
+    root->addChild ( branch );
+    root = branch;
+  }
 }
 
 
 CMainFrame::~CMainFrame()
 {
-  // Should be zero.
-#ifdef _DEBUG
-  TRACE ( "In CMainFrame::~CMainFrame(), final number of nodes = %d\n", SgNode::getNumNodes() );
-#endif
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

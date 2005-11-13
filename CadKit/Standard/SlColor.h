@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,7 +46,6 @@
 
 #include "SlVec4.h"
 #include "SlTypedefs.h"
-#include "SlDeclareConst.h"
 
 // For convenience.
 #define SL_COLOR_CLASS_ARGS class Real, class Integer, Integer MAX_INTEGER, class PackedInteger
@@ -350,8 +377,8 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::_rgb2hsv
   const Real CONST_0   ( static_cast<Real> ( 0 ) );
 
   Real delta ( 0 );
-  Real maximum ( CadKit::max ( r, g, b ) );
-  Real minimum ( CadKit::min ( r, g, b ) );
+  Real maximum ( SL_MAX ( r, g, b ) );
+  Real minimum ( SL_MIN ( r, g, b ) );
   
   // Set the value.
   v = maximum;
@@ -577,10 +604,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::truncate
 {
   const Real CONST_1 ( static_cast<Real> ( 1 ) );
   const Real CONST_0 ( static_cast<Real> ( 0 ) );
-  _v[0] = std::max ( CONST_0, std::min ( CONST_1, _v[0] ) );
-  _v[1] = std::max ( CONST_0, std::min ( CONST_1, _v[1] ) );
-  _v[2] = std::max ( CONST_0, std::min ( CONST_1, _v[2] ) );
-  _v[3] = std::max ( CONST_0, std::min ( CONST_1, _v[3] ) );
+  _v[0] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[0] ) );
+  _v[1] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[1] ) );
+  _v[2] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[2] ) );
+  _v[3] = SL_MAX ( CONST_0, SL_MIN ( CONST_1, _v[3] ) );
 }
 
 
@@ -600,10 +627,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::setColor
   {
   case 8: // 64 bits
 
-    c0 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x000000000000FFFF ) ) >>  0 );
-    c1 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x00000000FFFF0000 ) ) >> 16 );
-    c2 =                   static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0x0000FFFF00000000 ) ) >> 32 );
-    alpha = ( hasAlpha ) ? static_cast<Integer> ( ( color & SL_CONST_UINT64 ( 0xFFFF000000000000 ) ) >> 48 ) : MAX_INTEGER;
+    c0 =                   static_cast<Integer> ( ( color & 0x000000000000FFFF ) >>  0 );
+    c1 =                   static_cast<Integer> ( ( color & 0x00000000FFFF0000 ) >> 16 );
+    c2 =                   static_cast<Integer> ( ( color & 0x0000FFFF00000000 ) >> 32 );
+    alpha = ( hasAlpha ) ? static_cast<Integer> ( ( color & 0xFFFF000000000000 ) >> 48 ) : MAX_INTEGER;
     break;
 
   case 4: // 32 bits

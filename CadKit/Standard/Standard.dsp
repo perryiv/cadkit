@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /WX /GX /O2 /I "../" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "_MBCS" /D "WIN32" /D "NDEBUG" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "_MBCS" /D "WIN32" /D "NDEBUG" /FD /c
 # SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CkSl.lib"
+# ADD LIB32 /nologo /out:"../bin/CadKitSl.lib"
 
 !ELSEIF  "$(CFG)" == "Standard - Win32 Debug"
 
@@ -65,8 +65,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /WX /Gm /GX /Zi /Od /I "../" /D "_MBCS" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /FD /GZ /c
-# SUBTRACT CPP /Fr /YX
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../" /D "_MBCS" /D "_LIB" /D "_CADKIT_USE_PRECOMPILED_HEADERS" /D "WIN32" /D "_DEBUG" /Fr /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../bin/CkSld.lib"
+# ADD LIB32 /nologo /out:"../bin/CadKitSld.lib"
 
 !ENDIF 
 
@@ -107,23 +107,11 @@ SOURCE=.\SlVec2.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlVec2IO.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlVec3.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlVec3IO.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlVec4.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlVec4IO.h
 # End Source File
 # End Group
 # Begin Group "Misc"
@@ -131,15 +119,7 @@ SOURCE=.\SlVec4IO.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlAbsolute.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlAssert.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlBinaryRecordParser.h
 # End Source File
 # Begin Source File
 
@@ -152,14 +132,6 @@ SOURCE=.\SlCallback.h
 # Begin Source File
 
 SOURCE=.\SlCallbackList.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlCharacters.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlClamp.h
 # End Source File
 # Begin Source File
 
@@ -179,15 +151,15 @@ SOURCE=.\SlFunctionDefines.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlInline.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlInlineMath.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlMinMax.h
+SOURCE=.\SlMessage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlPathname.h
 # End Source File
 # Begin Source File
 
@@ -199,27 +171,11 @@ SOURCE=.\SlPreComputedArrays.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlScopedSet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlSwap.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlTemplateSupport.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlTestEquality.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlTrackball.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlTruncate.h
 # End Source File
 # Begin Source File
 
@@ -251,10 +207,6 @@ SOURCE=.\SlBaseMacros.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlType.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlType.h
 # End Source File
 # End Group
@@ -263,39 +215,23 @@ SOURCE=.\SlType.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\SlAString.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SlConvertStrings.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlString.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringCase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringCompare.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringFunctions.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringIO.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringReplace.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStringTrim.h
+SOURCE=.\SlTString.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\SlUnicode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SlWString.h
 # End Source File
 # End Group
 # Begin Group "Threads"
@@ -303,23 +239,15 @@ SOURCE=.\SlUnicode.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlSingleThreaded.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlThread.h
 # End Source File
 # End Group
-# Begin Group "Color and Material"
+# Begin Group "Color"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\SlColor.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMaterial.h
 # End Source File
 # End Group
 # Begin Group "Matrix"
@@ -327,19 +255,7 @@ SOURCE=.\SlMaterial.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\SlMatrix44.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMatrix44IO.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMatrixNN.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMatrixNNIO.h
+SOURCE=.\SlMatrix4.h
 # End Source File
 # End Group
 # Begin Group "Geometry"
@@ -389,6 +305,10 @@ SOURCE=.\SlRefBase.cpp
 
 SOURCE=.\SlRefBase.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SlRefPtr.h
+# End Source File
 # End Group
 # Begin Group "Containers"
 
@@ -399,103 +319,7 @@ SOURCE=.\SlList.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SlMatrixStack.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlPartitionedVector.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SlStack.h
-# End Source File
-# End Group
-# Begin Group "System"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlSystem.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlSystem.h
-# End Source File
-# End Group
-# Begin Group "Messages"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlMessage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlMessageIds.h
-# End Source File
-# End Group
-# Begin Group "Pointers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlArrayPtr.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlAutoPtr.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlQueryPtr.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlRefPtr.h
-# End Source File
-# End Group
-# Begin Group "File System"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlFileStats.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlFileVerify.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlPathname.h
-# End Source File
-# End Group
-# Begin Group "Functors"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlErrorPolicy.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlFindExtreme.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlTruncateFunctor.h
-# End Source File
-# End Group
-# Begin Group "IO"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\SlManip.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SlStreamSetReset.h
 # End Source File
 # End Group
 # End Target

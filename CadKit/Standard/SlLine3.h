@@ -1,11 +1,39 @@
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
 //
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
-///////////////////////////////////////////////////////////////////////////////
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -20,7 +48,7 @@
 #include "SlGeometry.h"
 
 #ifdef CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
-# include "SlMatrix44.h"
+# include "SlMatrix4.h"
 #endif
 
 
@@ -51,13 +79,16 @@ public:
   void            getPoint ( Vec3 &pt ) { pt = _pt; }
   void            getValue ( Vec3 &pt, Vec3 &vec ) const { pt = _pt; vec = _vec; }
 
-  bool            isEqual ( const Line3 &line ) const;
-  bool            isEqual ( const Line3 &line, const T &tolerance ) const;
-  bool            isNotEqual ( const Line3 &line ) const;
-  bool            isNotEqual ( const Line3 &line, const T &tolerance ) const;
+  bool            isEqualTo ( const Line3 &line ) const;
+  bool            isEqualTo ( const Line3 &line, const T &tolerance ) const;
+  bool            isNotEqualTo ( const Line3 &line ) const;
+  bool            isNotEqualTo ( const Line3 &line, const T &tolerance ) const;
   bool            isOnLine ( const Vec3 &pt ) const;
   bool            isParallelTo ( const Line3 &line ) const;
   bool            isPerpendicularTo ( const Line3 &line ) const;
+
+  friend bool     operator == ( const Line3 &line1, const Line3 &line2 );
+  friend bool     operator != ( const Line3 &line1, const Line3 &line2 );
 
   void            normalize() { _vec.normalize(); }
 
@@ -67,7 +98,7 @@ public:
   void            setValue ( const Vec3 &pt, const Vec3 &vec );
 
   #ifdef CADKIT_DEFINE_SL_LINE_3_MATRIX_FUNCTIONS
-  void            transform ( const SlMatrix44<T> &M );
+  void            transform ( const SlMatrix4<T> &M );
   #endif
 
 protected:
@@ -76,17 +107,6 @@ protected:
   Vec3 _vec; // The direction vector.
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Additional operators. These are not members of the class because compilers
-//  vary too much in the proper syntax for friend functions in templates. 
-//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> bool operator == ( const SlLine3<T> &line1, const SlLine3<T> &line2 );
-template<class T> bool operator != ( const SlLine3<T> &line1, const SlLine3<T> &line2 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,7 +211,7 @@ template<class T> inline SlVec3<T> SlLine3<T>::getClosestPoint ( const Vec3 &pt 
 
 template<class T> inline T SlLine3<T>::getDistanceSquared ( const Vec3 &pt ) const
 {
-  Vec3 temp ( pt - _pt );
+  SlVec3 temp ( pt - _pt );
   temp = temp.cross ( _vec );
   return temp.dot ( temp );
 }
@@ -216,11 +236,11 @@ template<class T> inline T SlLine3<T>::getDistance ( const Vec3 &pt ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line, const T &tolerance ) const
 {
   return 
-    _pt.isEqual ( line._pt, tolerance ) && 
-    _vec.isEqual ( line._vec, tolerance );
+    _pt.isEqualTo ( line._pt, tolerance ) && 
+    _vec.isEqualTo ( line._vec, tolerance );
 }
 
 
@@ -230,9 +250,9 @@ template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line, const T &tolerance ) const
 {
-  return ( false == this->isEqual ( vec, tolerance ) );
+  return ( false == this->isEqualTo ( vec, tolerance ) );
 }
 
 
@@ -242,11 +262,11 @@ template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line, c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line ) const
+template<class T> inline bool SlLine3<T>::isEqualTo ( const SlLine3<T> &line ) const
 {
   return 
-    _pt.isEqual ( line._pt ) && 
-    _vec.isEqual ( line._vec );
+    _pt.isEqualTo ( line._pt ) && 
+    _vec.isEqualTo ( line._vec );
 }
 
 
@@ -256,9 +276,9 @@ template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line ) con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line ) const
+template<class T> inline bool SlLine3<T>::isNotEqualTo ( const SlLine3<T> &line ) const
 {
-  return ( false == this->isEqual ( vec ) );
+  return ( false == this->isEqualTo ( vec ) );
 }
 
 
@@ -270,7 +290,7 @@ template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line ) 
 
 template<class T> inline bool operator == ( const SlLine3<T> &line1, const SlLine3<T> &line2 )
 {
-  return line1.isEqual ( line2 );
+  return line1.isEqualTo ( line2 );
 }
 
 
@@ -282,7 +302,7 @@ template<class T> inline bool operator == ( const SlLine3<T> &line1, const SlLin
 
 template<class T> inline bool operator != ( const SlLine3<T> &line1, const SlLine3<T> &line2 )
 {
-  return line1.isNotEqual ( line2 );
+  return line1.isNotEqualTo ( line2 );
 }
 
 
@@ -360,13 +380,13 @@ template<class T> inline void SlLine3<T>::setValue ( const Line3 &line )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void SlLine3<T>::transform ( const SlMatrix44<T> &M )
+template<class T> inline void SlLine3<T>::transform ( const SlMatrix4<T> &M )
 {
   // Transform the point with the given matrix.
   _pt = M * _pt;
 
   // Get a matrix that doesn't have any translations.
-  SlMatrix44<T> RS;
+  SlMatrix4<T> RS;
   M.getRotationAndScale ( RS );
 
   // Transform the vector with the rotation-and-scale matrix (we don't want 

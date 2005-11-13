@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -13,7 +41,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SlPrecompiled.h"
 #include "SlBase.h"
 #include "SlAssert.h"
 #include "SlPrint.h"
@@ -44,7 +71,7 @@ const SlType SlBase::typeSlBase = { "SlBase", 0x0, 0x0 };
 
 SlBase::SlBase()
 {
-  SL_PRINT2 ( "In SlBase::SlBase(), this = %X\n", this );
+  SL_PRINT3 ( "SlBase::SlBase(), this = %X\n", this );
 }
 
 #endif
@@ -95,7 +122,7 @@ const SlType *SlBase::getClassType()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SlUint32 SlBase::getClassTypeId()
+const SlUint32 SlBase::getClassTypeId()
 {
   return SL_CLASS_ID ( SlBase );
 }
@@ -121,7 +148,7 @@ const SlType *SlBase::getType() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SlUint32 SlBase::getTypeId() const
+const SlUint32 SlBase::getTypeId() const
 {
   return SL_CLASS_ID ( SlBase );
 }
@@ -153,4 +180,40 @@ bool SlBase::isOfExactType ( const SlType *classType ) const
   SL_ASSERT ( this && classType );
 
   return ( classType == this->getType() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if this instance is derived from the given type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SlType::isDerivedFrom ( const SlType *baseClass ) const
+{
+  SL_ASSERT ( this && baseClass );
+
+  const SlType *classType = this;
+
+  while ( classType != 0x0 )
+  {
+    if ( classType == baseClass ) return true;
+    classType = classType->_baseClass;
+  }
+
+  return false; // No match.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a new instance of the class that this runtime class is 
+//  associated with.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SlBase *SlType::createObject() const
+{
+  SL_ASSERT ( this && _createFunction );
+  return (*_createFunction)();
 }

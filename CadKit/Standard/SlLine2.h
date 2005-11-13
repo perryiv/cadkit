@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -41,15 +69,18 @@ public:
   Real            getDistanceSquared ( const Vec2 &pt ) const;
   void            getValue ( Vec2 &pt, Vec2 &vec ) const { pt = _pt; vec = _vec; }
 
-  bool            isEqual ( const SlLine2 &line ) const;
-  bool            isEqual ( const SlLine2 &line, const T &tolerance ) const;
-  bool            isNotEqual ( const SlLine2 &line ) const;
-  bool            isNotEqual ( const SlLine2 &line, const T &tolerance ) const;
+  bool            isEqualTo ( const SlLine2 &line ) const;
+  bool            isEqualTo ( const SlLine2 &line, const T &tolerance ) const;
+  bool            isNotEqualTo ( const SlLine2 &line ) const;
+  bool            isNotEqualTo ( const SlLine2 &line, const T &tolerance ) const;
   bool            isOnLine ( const Vec2 &pt ) const;
   bool            isParallelTo ( const SlLine2 &line ) const;
   bool            isPerpendicularTo ( const SlLine2 &line ) const;
   bool            intersect ( const SlLine2 &line, Vec2 &answer ) const;
   bool            intersect ( const Vec2 &linePoint, const Vec2 &lineDir, Vec2 &answer ) const;
+
+  friend bool     operator == ( const SlLine2 &line1, const SlLine2 &line2 );
+  friend bool     operator != ( const SlLine2 &line1, const SlLine2 &line2 );
 
   void            normalize() { _vec.normalize(); }
 
@@ -61,18 +92,6 @@ protected:
   Vec2 _pt;  // A point on the line.
   Vec2 _vec; // The direction vector.
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Additional operators. These are not members of the class because compilers
-//  vary too much in the proper syntax for friend functions in templates. 
-//  See http://gcc.gnu.org/faq.html#friend and http://www.bero.org/gcc296.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T> bool operator == ( const SlLine2<T> &line1, const SlLine2<T> &line2 );
-template<class T> bool operator != ( const SlLine2<T> &line1, const SlLine2<T> &line2 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,11 +191,11 @@ template<class T> inline T SlLine2<T>::getDistanceSquared ( const Vec2 &pt ) con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine2<T>::isEqualTo ( const SlLine2<T> &line, const T &tolerance ) const
 {
   return 
-    _pt.isEqual ( line._pt, tolerance ) && 
-    _vec.isEqual ( line._vec, tolerance );
+    _pt.isEqualTo ( line._pt, tolerance ) && 
+    _vec.isEqualTo ( line._vec, tolerance );
 }
 
 
@@ -186,9 +205,9 @@ template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line, const T &tolerance ) const
+template<class T> inline bool SlLine2<T>::isNotEqualTo ( const SlLine2<T> &line, const T &tolerance ) const
 {
-  return ( false == this->isEqual ( vec, tolerance ) );
+  return ( false == this->isEqualTo ( vec, tolerance ) );
 }
 
 
@@ -198,11 +217,11 @@ template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line, c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line ) const
+template<class T> inline bool SlLine2<T>::isEqualTo ( const SlLine2<T> &line ) const
 {
   return 
-    _pt.isEqual ( line._pt ) && 
-    _vec.isEqual ( line._vec );
+    _pt.isEqualTo ( line._pt ) && 
+    _vec.isEqualTo ( line._vec );
 }
 
 
@@ -212,9 +231,9 @@ template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line ) con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line ) const
+template<class T> inline bool SlLine2<T>::isNotEqualTo ( const SlLine2<T> &line ) const
 {
-  return ( false == this->isEqual ( vec ) );
+  return ( false == this->isEqualTo ( vec ) );
 }
 
 
@@ -226,7 +245,7 @@ template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line ) 
 
 template<class T> inline bool operator == ( const SlLine2<T> &line1, const SlLine2<T> &line2 )
 {
-  return line1.isEqual ( line2 );
+  return line1.isEqualTo ( line2 );
 }
 
 
@@ -238,7 +257,7 @@ template<class T> inline bool operator == ( const SlLine2<T> &line1, const SlLin
 
 template<class T> inline bool operator != ( const SlLine2<T> &line1, const SlLine2<T> &line2 )
 {
-  return line1.isNotEqual ( line2 );
+  return line1.isNotEqualTo ( line2 );
 }
 
 

@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,16 +46,13 @@
 #include "SgGlConstants.h"
 #include "SgGlInternalMacros.h"
 
-#include "Standard/SlPrint.h"
-#include "Standard/SlConstants.h"
-#include "Standard/SlTrace.h"
-#include "Standard/SlVec3.h"
-#include "Standard/SlMinMax.h"
-
-#include "SceneGraph/Core/SgAllNodes.h"
-
-#include <limits>
-
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+# include "Standard/SlConstants.h"
+# include "Standard/SlTrace.h"
+# include "Standard/SlVec3.h"
+# include "SceneGraph/Core/SgAllNodes.h"
+#endif
 
 using namespace CadKit;
 
@@ -52,7 +77,7 @@ SgGlFeedback::SgGlFeedback() : SgGlRenderer(),
   _buffer ( NULL ),
   _flags ( 0 )
 {
-  SL_PRINT2 ( "SgGlFeedback::SgGlFeedback(), this = %X\n", this );
+  SL_PRINT ( "SgGlFeedback::SgGlFeedback(), this = %X\n", this );
 }
 
 
@@ -64,7 +89,7 @@ SgGlFeedback::SgGlFeedback() : SgGlRenderer(),
 
 SgGlFeedback::~SgGlFeedback()
 {
-  SL_PRINT2 ( "SgGlFeedback::~SgGlFeedback(), this = %X\n", this );
+  SL_PRINT ( "SgGlFeedback::~SgGlFeedback(), this = %X\n", this );
 
   // Delete the arrays.
   this->_deleteBuffer();
@@ -92,14 +117,14 @@ bool SgGlFeedback::_calculateBufferSize ( GLint &size, SgNode &scene ) const
   // Otherwise, we double it. We stop if the GLint will overflow.
   GLuint temp = ( 0 == _bufferSize ) ? DEFAULT_BUFFER_SIZE : _bufferSize * 2;
 
-  // Check for overflow of GLint. We assume that a GLuint will always safely 
+  // Check for overflow if GLint. We assume that a GLuint will always safely 
   // hold the maximum value of a GLint.
   bool newSizeOk = false;
   switch ( sizeof ( GLint ) )
   {
-  case 2: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt16>::max() ) ); break;
-  case 4: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt32>::max() ) ); break;
-  case 8: newSizeOk = ( temp <= static_cast<GLuint>( std::numeric_limits<SlInt64>::max() ) ); break;
+  case 2: newSizeOk = ( temp <= SL_MAX_SIGNED_16_BIT_INT ); break;
+  case 4: newSizeOk = ( temp <= SL_MAX_SIGNED_32_BIT_INT ); break;
+  case 8: newSizeOk = ( temp <= SL_MAX_SIGNED_64_BIT_INT ); break;
   default:
 
     SL_ASSERT ( 0 ); // What kind of an OS is this?
@@ -285,7 +310,7 @@ bool SgGlFeedback::postRender ( SgNode &scene )
   // Return to rendering mode. This will return the number of values in 
   // the feedback buffer.
   _numValuesInBuffer = ::glRenderMode ( GL_RENDER );
-  SL_TRACE2 ( "_numValuesInBuffer = %d\n", _numValuesInBuffer );
+  SL_TRACE ( "_numValuesInBuffer = %d\n", _numValuesInBuffer );
 
   // Should be true.
   SL_ASSERT ( _numValuesInBuffer <= _bufferSize );
@@ -393,8 +418,8 @@ void SgGlFeedback::_calculatePrimitiveDebths()
       switch ( sortOption )
       {
       case AVERAGE:  _primitive[index].depth = ( vertex[0].z + vertex[1].z ) * 0.5f; break;
-      case MIN_Z:    _primitive[index].depth = std::min ( vertex[0].z, vertex[1].z );  break;
-      case MAX_Z:    _primitive[index].depth = std::max ( vertex[0].z, vertex[1].z );  break;
+      case MIN_Z:    _primitive[index].depth = SL_MIN ( vertex[0].z, vertex[1].z );  break;
+      case MAX_Z:    _primitive[index].depth = SL_MAX ( vertex[0].z, vertex[1].z );  break;
       default: SL_ASSERT ( 0 );
       }
 
@@ -415,8 +440,8 @@ void SgGlFeedback::_calculatePrimitiveDebths()
       switch ( sortOption )
       {
       case AVERAGE: _primitive[index].depth = ( vertex[0].z + vertex[1].z + vertex[2].z ) / numVertices; break;
-      case MIN_Z:   _primitive[index].depth = CadKit::min ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
-      case MAX_Z:   _primitive[index].depth = CadKit::max ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
+      case MIN_Z:   _primitive[index].depth = SL_MIN ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
+      case MAX_Z:   _primitive[index].depth = SL_MAX ( vertex[0].z, vertex[1].z, vertex[2].z );          break;
       default: SL_ASSERT ( 0 );
       }
 
@@ -697,7 +722,6 @@ SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION ( SgTranslation );
 SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION ( SgTriangle );
 SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION ( SgTriStrip );
 SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION ( SgUnScale );
-SG_GL_IMPLEMENT_FEEDBACK_VISITOR_FUNCTION ( SgText );
 
 
 ///////////////////////////////////////////////////////////////////////////////

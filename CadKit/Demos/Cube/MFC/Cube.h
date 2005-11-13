@@ -23,7 +23,6 @@ class CCubeApp : public CWinApp
 {
 public:
 	CCubeApp();
-	virtual ~CCubeApp();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

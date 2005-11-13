@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +57,7 @@ template<class FT, class DT, class CT> class SlCallbackList : public std::vector
 {
 public:
 
-  typedef typename std::vector<SlCallback<FT,DT,CT> >::size_type SizeType;
+  typedef std::vector::size_type SizeType;
 
   void                          add ( const SlCallback<FT,DT,CT> &callback );
   void                          add ( const FT &function, const DT &clientData, const CT &callData );
@@ -109,7 +137,7 @@ template<class FT, class DT, class CT> inline SlCallback<FT,DT,CT> &SlCallbackLi
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function ) const
+template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function ) const
 {
   SizeType count = 0;
 
@@ -130,7 +158,7 @@ template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>:
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function, const DT &clientData ) const
+template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::getCount ( const FT &function, const DT &clientData ) const
 {
   SizeType count = 0;
 
@@ -187,7 +215,7 @@ template<class FT, class DT, class CT> inline bool SlCallbackList<FT,DT,CT>::has
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function )
+template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function )
 {
   SizeType count = 0;
   std::vector<SlCallback<FT,DT,CT> >::iterator i = this->begin();
@@ -219,7 +247,7 @@ template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>:
 //
 //////////////////////////////////////////////////////////////////////////
 
-template<class FT, class DT, class CT> inline typename SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function, const DT &clientData )
+template<class FT, class DT, class CT> inline SlCallbackList<FT,DT,CT>::SizeType SlCallbackList<FT,DT,CT>::removeAll ( const FT &function, const DT &clientData )
 {
   SizeType count = 0;
   std::vector<SlCallback<FT,DT,CT> >::iterator i = this->begin();

@@ -1,9 +1,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,13 +46,11 @@
 #include "SgGlConstants.h"
 #include "SgGlDefine.h"
 #include "SgGlInternalMacros.h"
-#include "SgGlErrorCheck.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include "SceneGraph/Core/SgAllNodes.h"
 # include "Standard/SlViewport.h"
 # include "Standard/SlPrint.h"
-# include "Standard/SlTrace.h"
 # include "Standard/SlBoundingBox.h"
 # include "Standard/SlPreComputedArrays.h"
 # include "Standard/SlConstants.h"
@@ -36,6 +62,43 @@ using namespace CadKit;
 #define SHININESS_SCALE 128.0f // OpenGL is [0,128].
 
 SG_IMPLEMENT_DYNAMIC_VISITOR(SgGlRenderer,SgScreenRenderer);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  I made these macros so that I could easily take them out (for debugging).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define PUSH_MATRIX _state->pushModelviewMatrix()
+#define POP_MATRIX  _state->popModelviewMatrix()
+#define PUSH_NAME   ::glPushName ( (GLuint) this )
+#define POP_NAME    ::glPopName()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This array holds the mapping between this class's graphics state flags 
+//  and the OpenGL equivalent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CadKit
+{
+const GLenum _glStateIndex[] = {
+  GL_AUTO_NORMAL,
+  GL_DEPTH_TEST,
+  GL_NORMALIZE,
+  GL_BLEND,
+};
+const int LAST_GRAPHICS_STATE = sizeof ( _glStateIndex ) / sizeof ( GLenum );
+
+
+const bool _glState[] = {
+  true, // GL_AUTO_NORMAL is on by default.
+};
+
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,22 +151,18 @@ bool SgGlRenderer::preRender ( SgNode &scene )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
-  // Reset this visitor.
-  if ( false == this->reset() )
-    return false;
-
   // Clear the background.
   ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   // Should be true.
   SL_ASSERT ( 1 == _state->getModelviewMatrixStackDepth() );
   SL_ASSERT ( 1 == _state->getProjectionMatrixStackDepth() );
+  SL_ASSERT ( 0 == _state->getNameStackDepth() );
 
   // Initialize the stacks.
   _state->initModelviewMatrixStack();
   _state->initProjectionMatrixStack();
+  _state->initNameStack();
 
   // All is good.
   return true;
@@ -119,10 +178,6 @@ bool SgGlRenderer::preRender ( SgNode &scene )
 bool SgGlRenderer::render ( SgNode &scene )
 {
   SL_ASSERT ( this );
-
-  // Reset this visitor.
-  if ( false == this->reset() )
-    return false;
 
   // This will draw the scene graph.
   if ( false == scene.accept ( *this ) ) 
@@ -146,10 +201,6 @@ bool SgGlRenderer::postRender ( SgNode &scene )
 {
   SL_ASSERT ( this );
 
-  // Reset this visitor.
-  if ( false == this->reset() )
-    return false;
-
   // Draw everything right now.
   ::glFlush();
 
@@ -160,6 +211,7 @@ bool SgGlRenderer::postRender ( SgNode &scene )
   // Should be true.
   SL_ASSERT ( 1 == _state->getModelviewMatrixStackDepth() );
   SL_ASSERT ( 1 == _state->getProjectionMatrixStackDepth() );
+  SL_ASSERT ( 0 == _state->getNameStackDepth() );
 
   // All is good.
   return true;
@@ -191,8 +243,6 @@ bool SgGlRenderer::init ( const SlViewporti &viewport, SgGlContext *context )
   // Make our new context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
-
-  SG_GL_ERROR_CHECKER;
 
   // If we are given good width and height values...
   if ( viewport.getWidth() > 0 && viewport.getHeight() > 0 )
@@ -294,8 +344,6 @@ bool SgGlRenderer::setClearDepth ( const float &depth )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
   // Set the clear debth.
   ::glClearDepth ( depth );
 
@@ -317,7 +365,7 @@ void SgGlRenderer::_setContext ( SgGlContext *context )
   SL_ASSERT ( _state.isValid() );
 
   // If this is a new context then clear the state.
-  if ( _context.getValue() != context )
+  if ( _context != context )
     _state->clear();
 
   // Set the new context.
@@ -341,8 +389,6 @@ bool SgGlRenderer::setBackgroundColor ( const SlColorf &color )
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
   // Call the base class's function to set the data member.
   if ( !SgScreenRenderer::setBackgroundColor ( color ) ) 
     return false;
@@ -361,19 +407,24 @@ bool SgGlRenderer::setBackgroundColor ( const SlColorf &color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SgGlRenderer::enable ( const GLenum &state )
+bool SgGlRenderer::enable ( const GraphicsState &state )
 {
   SL_PRINT ( "SgGlRenderer::enable()\n" );
   SL_ASSERT ( this );
+
+  // Ignore if out of range.
+  if ( state < 0 || state >= LAST_GRAPHICS_STATE )
+  {
+    SL_ASSERT ( 0 );
+    return false;
+  }
 
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
   // Enable the flags.
-  _state->enable ( state );
+  _state->enable ( _glStateIndex[state] );
 
   // It worked.
   return true;
@@ -386,19 +437,24 @@ bool SgGlRenderer::enable ( const GLenum &state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SgGlRenderer::disable ( const GLenum &state )
+bool SgGlRenderer::disable ( const GraphicsState &state )
 {
   SL_PRINT ( "SgGlRenderer::disable()\n" );
   SL_ASSERT ( this );
+
+  // Ignore if out of range.
+  if ( state < 0 || state >= LAST_GRAPHICS_STATE )
+  {
+    SL_ASSERT ( 0 );
+    return false;
+  }
 
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
   // Disable the flags.
-  _state->disable ( state );
+  _state->disable ( _glStateIndex[state] );
 
   // It worked.
   return true;
@@ -411,19 +467,24 @@ bool SgGlRenderer::disable ( const GLenum &state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SgGlRenderer::isEnabled ( const GLenum &state )
+bool SgGlRenderer::isEnabled ( const GraphicsState &state )
 {
   SL_PRINT ( "SgGlRenderer::isEnabled()\n" );
   SL_ASSERT ( this );
+
+  // Ignore if out of range.
+  if ( state < 0 || state >= LAST_GRAPHICS_STATE )
+  {
+    SL_ASSERT ( 0 );
+    return false;
+  }
 
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() ) 
     return false;
 
-  SG_GL_ERROR_CHECKER;
-
   // See if the flag is enabled.
-  return _state->isEnabled ( state );
+  return GL_TRUE == ::glIsEnabled ( _glStateIndex[state] );
 }
 
 
@@ -433,7 +494,7 @@ bool SgGlRenderer::isEnabled ( const GLenum &state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SgGlRenderer::isDisabled ( const GLenum &state )
+bool SgGlRenderer::isDisabled ( const GraphicsState &state )
 {
   SL_PRINT ( "SgGlRenderer::isDisabled()\n" );
   SL_ASSERT ( this );
@@ -458,8 +519,6 @@ bool SgGlRenderer::setViewport ( const SlViewporti &viewport )
   // Make our context the current one.
   if ( false == this->_makeContextCurrent() )
     return false;
-
-  SG_GL_ERROR_CHECKER;
 
   // Set the viewport.
   ::glViewport ( viewport.getX(), viewport.getY(), viewport.getWidth(), viewport.getHeight() );
@@ -486,8 +545,6 @@ bool SgGlRenderer::getViewport ( SlViewporti &viewport ) const
     SL_ASSERT ( 0 );
     return false;
   }
-
-  SG_GL_ERROR_CHECKER;
 
   // Get the OpenGL viewport.
   int vp[4];
@@ -657,72 +714,66 @@ bool SgGlRenderer::visit ( SgCube &cube )
   SL_ASSERT ( this );
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
-  float halfSize ( cube.getSize() * 0.5f );
-  const SlVec3f &center = cube.getCenter();
+  PUSH_NAME;
 
-  float a ( center[0] - halfSize );
-  float b ( center[0] + halfSize );
-  float c ( center[1] - halfSize );
-  float d ( center[1] + halfSize );
-  float e ( center[2] + halfSize );
-  float f ( center[2] - halfSize );
+  float halfSize = cube.size * 0.5f;
 
-  // I thought about making this tri-strips or perhaps individual triangles,
-  // but this way there are fewer calls to glVertex().
   ::glBegin ( GL_QUADS );
   {
     ::glNormal3f ( 0.0f, 0.0f, 1.0f );
-    ::glVertex3f ( a, c, e );
-    ::glVertex3f ( b, c, e );
-    ::glVertex3f ( b, d, e );
-    ::glVertex3f ( a, d, e );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
 
     ::glNormal3f ( 0.0f, 1.0f, 0.0f );
-    ::glVertex3f ( a, d, e );
-    ::glVertex3f ( b, d, e );
-    ::glVertex3f ( b, d, f );
-    ::glVertex3f ( a, d, f );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
 
     ::glNormal3f ( 0.0f, 0.0f, -1.0f );
-    ::glVertex3f ( a, d, f );
-    ::glVertex3f ( b, d, f );
-    ::glVertex3f ( b, c, f );
-    ::glVertex3f ( a, c, f );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
 
     ::glNormal3f ( 0.0f, -1.0f, 0.0f );
-    ::glVertex3f ( a, c, f );
-    ::glVertex3f ( b, c, f );
-    ::glVertex3f ( b, c, e );
-    ::glVertex3f ( a, c, e );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
 
     ::glNormal3f ( -1.0f, 0.0f, 0.0f );
-    ::glVertex3f ( a, c, f );
-    ::glVertex3f ( a, c, e );
-    ::glVertex3f ( a, d, e );
-    ::glVertex3f ( a, d, f );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] - halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
 
     ::glNormal3f ( 1.0f, 0.0f, 0.0f );
-    ::glVertex3f ( b, c, e );
-    ::glVertex3f ( b, c, f );
-    ::glVertex3f ( b, d, f );
-    ::glVertex3f ( b, d, e );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] + halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] - halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] - halfSize );
+    ::glVertex3f ( cube.center[0] + halfSize, cube.center[1] + halfSize, cube.center[2] + halfSize );
   }
   ::glEnd();
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  POP_NAME;
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
 #ifdef _DEBUG
 
   // Draw the bounding box in global space.
+  const SlVec3f &c = cube.center;
   float hs = halfSize;
-  SlVec3f min ( center[0] - hs, center[1] - hs, center[2] - hs );
-  SlVec3f max ( center[0] + hs, center[1] + hs, center[2] + hs );
-  SlBoundingBoxf lbbox ( min, max );
+  SlBoundingBoxf lbbox ( SlVec3f ( c[0] - hs, c[1] - hs, c[2] - hs ), SlVec3f ( c[0] + hs, c[1] + hs, c[2] + hs ) );
 
   // Put it in global space.
-  const SlMatrix44f &M = _state->getModelviewMatrix();
+  const SlMatrix4f &M = _state->getModelviewMatrix();
   SlBoundingBoxf gbbox = M * lbbox;
-  min = gbbox.getMin();
-  max = gbbox.getMax();
+  const SlVec3f &min = gbbox.getMin();
+  const SlVec3f &max = gbbox.getMax();
   //SL_TRACE ( "      gbbox = %12.7f%12.7f%12.7f%12.7f%12.7f%12.7f\n", min[0], min[1], min[2], max[0], max[1], max[2] );
 
   _state->pushModelviewMatrix();
@@ -807,9 +858,6 @@ bool SgGlRenderer::visit ( SgDrawStyle &drawStyle )
 {
   SL_ASSERT ( this );
 
-  // Set the current node.
-  this->_setCurrentDrawStyle ( &drawStyle );
-
   // Set the polygon mode.
   switch ( drawStyle.polygonStyle )
   {
@@ -884,6 +932,34 @@ bool SgGlRenderer::visit ( SgEllipse & )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+bool SgGlRenderer::visit ( SgGroup &group )
+{
+  SL_ASSERT ( this );
+
+  // Get the number of children.
+  int numChildren = group.getNumChildren();
+
+  // Loop through all the nodes.
+  for ( int i = 0; i < numChildren; ++i )
+  {
+    // Give the node this visitor.
+    if ( !group.getChild ( i )->accept ( *this ) ) 
+    {
+      SL_ASSERT ( 0 ); // Why didn't it render?
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit this kind of node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool SgGlRenderer::visit ( SgIdentity & )
 {
   SL_ASSERT ( this );
@@ -906,35 +982,6 @@ bool SgGlRenderer::visit ( SgLineSet & )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convenient function used to set the material.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace CadKit
-{
-void _setMaterial ( const GLenum &which, SlMaterialf &material )
-{
-  // Set the colors and values that are valid.
-  if ( material.isValid ( SlMaterialf::AMBIENT ) )
-    ::glMaterialfv ( GL_FRONT, GL_AMBIENT, material.getAmbient() );
-
-  if ( material.isValid ( SlMaterialf::DIFFUSE ) )
-    ::glMaterialfv ( GL_FRONT, GL_DIFFUSE, material.getDiffuse() );
-
-  if ( material.isValid ( SlMaterialf::SPECULAR ) )
-    ::glMaterialfv ( GL_FRONT, GL_SPECULAR, material.getSpecular() );
-
-  if ( material.isValid ( SlMaterialf::EMISSIVE ) )
-    ::glMaterialfv ( GL_FRONT, GL_EMISSION, material.getEmissive() );
-
-  if ( material.isValid ( SlMaterialf::SHININESS ) )
-    ::glMaterialf  ( GL_FRONT, GL_SHININESS, material.getShininess() * SHININESS_SCALE );
-}
-}; // namespace CadKit
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Visit this kind of node.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -943,18 +990,15 @@ bool SgGlRenderer::visit ( SgMaterial &material )
 {
   SL_ASSERT ( this );
 
-  // Set the current node.
-  this->_setCurrentMaterial ( &material );
-
   // Have to have this to do materials.
   _state->disable ( GL_COLOR_MATERIAL );
   _state->enable  ( GL_LIGHTING );
 
 	// For transparency.
-	if ( 1.0f != material.material.getDiffuse()[3] )
+	if ( 1.0f != material.diffuse[3] )
 	{
 		_state->enable ( GL_BLEND );
-    ::glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+		glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	}
 
   // Process the material side.
@@ -962,17 +1006,29 @@ bool SgGlRenderer::visit ( SgMaterial &material )
   {
   case SgMaterial::FRONT:
 
-    CadKit::_setMaterial ( GL_FRONT, material.material );
+    ::glMaterialfv ( GL_FRONT, GL_AMBIENT, material.ambient );
+    ::glMaterialfv ( GL_FRONT, GL_DIFFUSE, material.diffuse );
+    ::glMaterialfv ( GL_FRONT, GL_SPECULAR, material.specular );
+    ::glMaterialfv ( GL_FRONT, GL_EMISSION, material.emissive );
+    ::glMaterialf  ( GL_FRONT, GL_SHININESS, material.shininess * SHININESS_SCALE );
     break;
 
   case SgMaterial::BACK:
 
-    CadKit::_setMaterial ( GL_BACK, material.material );
+    ::glMaterialfv ( GL_BACK, GL_AMBIENT, material.ambient );
+    ::glMaterialfv ( GL_BACK, GL_DIFFUSE, material.diffuse );
+    ::glMaterialfv ( GL_BACK, GL_SPECULAR, material.specular );
+    ::glMaterialfv ( GL_BACK, GL_EMISSION, material.emissive );
+    ::glMaterialf  ( GL_BACK, GL_SHININESS, material.shininess * SHININESS_SCALE );
     break;
 
   case SgMaterial::FRONT_AND_BACK:
 
-    CadKit::_setMaterial ( GL_FRONT_AND_BACK, material.material );
+    ::glMaterialfv ( GL_FRONT_AND_BACK, GL_AMBIENT, material.ambient );
+    ::glMaterialfv ( GL_FRONT_AND_BACK, GL_DIFFUSE, material.diffuse );
+    ::glMaterialfv ( GL_FRONT_AND_BACK, GL_SPECULAR, material.specular );
+    ::glMaterialfv ( GL_FRONT_AND_BACK, GL_EMISSION, material.emissive );
+    ::glMaterialf  ( GL_FRONT_AND_BACK, GL_SHININESS, material.shininess * SHININESS_SCALE );
     break;
 
   default:
@@ -1047,8 +1103,11 @@ bool SgGlRenderer::visit ( SgPerspectiveCamera &camera )
 {
   SL_ASSERT ( this );
 
+  // First set the projection matrix.
+  _state->makeProjectionMatrixIdentity();
+
   // Set the projection.
-  SlMatrix44f P ( false );
+  SlMatrix4f P ( false );
   P.setPerspective ( SL_DEG_TO_RAD_F * camera.getFieldOfView(), camera.getAspectRatio(), camera.getZNear(), camera.getZFar() );
   _state->setProjectionMatrix ( P );
 
@@ -1119,11 +1178,10 @@ bool SgGlRenderer::visit ( SgRotation &rotation )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SgGlRenderer::visit ( SgScale &scale )
+bool SgGlRenderer::visit ( SgScale &s )
 {
   SL_ASSERT ( this );
-  const SlVec3f &s = scale.getScale();
-  ::glScalef ( s[0], s[1], s[2] );
+  ::glScalef ( s.scale[0], s.scale[1], s.scale[2] );
   return true;
 }
 
@@ -1162,52 +1220,17 @@ bool SgGlRenderer::visit ( SgSeparator &separator )
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
 
   // Save the current state.
-  this->_pushStateNodes ( separator );
-  this->_pushMatrices ( separator );
+  SG_GL_RENDER_SEPARATOR_SAVE_STATE;
   SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Pass this to the group function.
-  if ( false == this->visit ( (SgGroup &) separator ) )
-  {
-    SL_ASSERT ( 0 ); // Why didn't it render?
-    return false;
-  }
-
-  // Pop everything we pushed.
-  this->_popStateNodes ( separator );
-  this->_popMatrices ( separator );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // It worked.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit this kind of node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SgGlRenderer::visit ( SgGroup &group )
-{
-  SL_ASSERT ( this );
-  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-  // Used below.
-  SgNode *child = NULL;
 
   // Get the number of children.
-  unsigned int numChildren = group.getNumChildren();
+  int numChildren = separator.getNumChildren();
 
   // Loop through all the nodes.
-  for ( unsigned int i = 0; i < numChildren; ++i )
+  for ( int i = 0; i < numChildren; ++i )
   {
-    // Get the child.
-    child = group.getChild ( i );
-
-    // Give the child this visitor.
-    if ( false == child->accept ( *this ) ) 
+    // Give the node this visitor.
+    if ( !separator.getChild ( i )->accept ( *this ) ) 
     {
       SL_ASSERT ( 0 ); // Why didn't it render?
       return false;
@@ -1215,11 +1238,13 @@ bool SgGlRenderer::visit ( SgGroup &group )
 
     // Should be true.
     SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
-
-    // How long did it take?
-    //SL_TRACE ( "node = %X, name = %s, type = %s, time = %d\n", child, ( ( NULL != child->getName() ) ? child->getName() : "" ), child->getClassName(), child->getRenderTime() );
   }
 
+  // Pop everything we pushed.
+  SG_GL_RENDER_SEPARATOR_RESTORE_STATE;
+  SL_ASSERT ( GL_NO_ERROR == ::glGetError() );
+
+  // It worked.
   return true;
 }
 
@@ -1243,14 +1268,16 @@ bool SgGlRenderer::visit ( SgShading & )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
-{
+//namespace CadKit
+//{
 void _subdivideSphere (
   const float &x1, const float &y1, const float &z1, 
   const float &x2, const float &y2, const float &z2, 
   const float &x3, const float &y3, const float &z3, 
   const float &r,  unsigned int depth )
 {
+  SL_ASSERT ( depth >= 0 );
+
   if ( depth == 0 )
   {
     // The vertices are all a unit length from the center, so they are also the normal.
@@ -1307,7 +1334,7 @@ void _subdivideSphere (
   _subdivideSphere (  x3,  y3,  z3, x31, y31, z31, x23, y23, z23, r, depth );
   _subdivideSphere ( x12, y12, z12, x23, y23, z23, x31, y31, z31, r, depth );
 }
-}; // namespace CadKit
+//};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1316,8 +1343,8 @@ void _subdivideSphere (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
-{
+//namespace CadKit
+//{
 void _renderTriangles ( const float *pts, const int &numPts, const float &cx, const float &cy, const float &cz, const float &r )
 {
   SL_ASSERT ( pts );
@@ -1359,7 +1386,7 @@ void _renderTriangles ( const float *pts, const int &numPts, const float &cx, co
   // Check for walking off the end.
   SL_ASSERT ( i == numPts );
 }
-}; // namespace CadKit
+//};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1371,7 +1398,9 @@ void _renderTriangles ( const float *pts, const int &numPts, const float &cx, co
 bool SgGlRenderer::visit ( SgSphere &sphere )
 {
   SL_ASSERT ( this && _quadric );
-  SL_ASSERT ( ( sphere.getTessellationType() == SgSphere::POLES && ( sphere.getNumSlices() > 1 && sphere.getNumStacks() > 1 ) ) || ( sphere.getTessellationType() == SgSphere::NO_POLES ) );
+  SL_ASSERT ( ( sphere.getTessellationType() == SgSphere::POLES && ( sphere.getNumSlices() > 1 && sphere.getNumStacks() > 1 ) ) || ( sphere.getTessellationType() == SgSphere::NO_POLES && sphere.getNumSubdivisions() >= 0 ) );
+
+  PUSH_NAME;
 
   // For convenience.
   const float &r = sphere.getRadius();
@@ -1382,6 +1411,7 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
   if ( SgSphere::NO_POLES == sphere.getTessellationType() )
   {
     const unsigned int &n = sphere.getNumSubdivisions();
+    SL_ASSERT ( n >= 0 );
     const float X = 0.525731112119133606f;
     const float Z = 0.8506508083528655993f;
 
@@ -1394,7 +1424,7 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
     case 4: _renderTriangles ( SlPreComputedArrays::getSphereVerts4(), SlPreComputedArrays::getNumSphereVerts4(), c[0], c[1], c[2], r ); break;
     default:
 
-      _state->pushModelviewMatrix();
+      PUSH_MATRIX;
 
       // Translate to where you belong.
       ::glTranslatef ( c[0], c[1], c[2] );
@@ -1420,7 +1450,7 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
       _subdivideSphere ( -Z,  X,  0,  0,  Z, -X, -X,  0, -Z, r, n );
       _subdivideSphere (  0, -Z, -X, -Z, -X,  0, -X,  0, -Z, r, n );
 
-      _state->popModelviewMatrix();
+      POP_MATRIX;
 
       break;
     }
@@ -1429,7 +1459,7 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
   // Draw the sphere with poles.
   else
   {
-    _state->pushModelviewMatrix();
+    PUSH_MATRIX;
 
     // Translate to where you belong.
     ::glTranslatef ( c[0], c[1], c[2] );
@@ -1437,8 +1467,10 @@ bool SgGlRenderer::visit ( SgSphere &sphere )
     // Draw the sphere with two poles.
     ::gluSphere ( (GLUquadricObj *) _quadric, r, sphere.getNumSlices(), sphere.getNumStacks() );
 
-    _state->popModelviewMatrix();
+    POP_MATRIX;
   }
+
+  POP_NAME;
 
   return true;
 }
@@ -1543,19 +1575,6 @@ bool SgGlRenderer::visit ( SgUnScale & )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Visit this kind of node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SgGlRenderer::visit ( SgText & )
-{
-  SL_ASSERT ( this );
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  These are all the visit functions that we don't use. They should never 
 //  get called. However, the base class requires that we overload them.
 //
@@ -1567,39 +1586,3 @@ bool SgGlRenderer::visit ( SgCoordinate & ) { SL_ASSERT ( 0 ); return true; }
 bool SgGlRenderer::visit ( SgLight & )      { SL_ASSERT ( 0 ); return true; }
 bool SgGlRenderer::visit ( SgVertexSet & )  { SL_ASSERT ( 0 ); return true; }
 bool SgGlRenderer::visit ( SgPrimitive & )  { SL_ASSERT ( 0 ); return true; }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Push the appropriate matrices.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SgGlRenderer::_pushMatrices ( const SgSeparator &separator )
-{
-  SL_ASSERT ( this );
-
-  if ( separator.hasPushPopFlags ( SgSeparator::PROJECTION ) )
-    _state->pushProjectionMatrix();
-
-  if ( separator.hasPushPopFlags ( SgSeparator::MODELVIEW ) )
-    _state->pushModelviewMatrix();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Pop the appropriate matrices.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SgGlRenderer::_popMatrices ( const SgSeparator &separator )
-{
-  SL_ASSERT ( this );
-
-  if ( separator.hasPushPopFlags ( SgSeparator::MODELVIEW ) )
-    _state->popModelviewMatrix();
-
-  if ( separator.hasPushPopFlags ( SgSeparator::PROJECTION ) )
-    _state->popProjectionMatrix();
-}

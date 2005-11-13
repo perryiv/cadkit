@@ -43,9 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 F90=fl32.exe
-# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgGlPrecompiled.h" /FD /c
-# ADD CPP /nologo /MD /W3 /WX /GR /GX /O2 /I "../../" /D "_MBCS" /D "_USRDLL" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /YX"SgGlPrecompiled.h" /FD /c
-# SUBTRACT CPP /Fr
+# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SL2_EXPORTS" /Yu"SgGlPrecompiled.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../" /D "_MBCS" /D "_USRDLL" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /Fr /YX"SgGlPrecompiled.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -55,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib /nologo /dll /machine:I386 /out:"../../bin/CkSgGl.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib /nologo /dll /machine:I386 /out:"../../bin/CadKitSgGl.dll"
 
 !ELSEIF  "$(CFG)" == "SceneGraphOpenGL - Win32 Debug"
 
@@ -71,9 +70,8 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 F90=fl32.exe
-# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /Yu"SgGlPrecompiled.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /WX /Gm /GR /GX /Zi /Od /I "../../" /D "_USRDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /YX"SgGlPrecompiled.h" /FD /GZ /c
-# SUBTRACT CPP /Fr
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SL2_EXPORTS" /Yu"SgGlPrecompiled.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../" /D "_USRDLL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_CADKIT_COMPILING_SCENEGRAPH_OPENGL_LIBRARY" /Fr /YX"SgGlPrecompiled.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -83,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib /nologo /dll /debug /machine:I386 /out:"../../bin/CkSgGld.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib /nologo /dll /debug /machine:I386 /out:"../../bin/CadKitSgGld.dll" /pdbtype:sept
 
 !ENDIF 
 
@@ -128,14 +126,6 @@ SOURCE=.\SgGlDefine.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SgGlErrorCheck.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\SgGlErrorCheck.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SgGlFeedback.cpp
 # End Source File
 # Begin Source File
@@ -162,6 +152,14 @@ SOURCE=.\SgGlState.cpp
 
 SOURCE=.\SgGlState.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\SgGlWinContext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SgGlWinContext.h
+# End Source File
 # End Group
 # Begin Group "Dll"
 
@@ -173,14 +171,6 @@ SOURCE=.\SgGlApi.h
 # Begin Source File
 
 SOURCE=.\SgGlDll.cpp
-# End Source File
-# End Group
-# Begin Group "Notes"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\Notes\SceneGraph.txt
 # End Source File
 # End Group
 # End Target

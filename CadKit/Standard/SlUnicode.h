@@ -1,18 +1,43 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  BSD License
+//  http://www.opensource.org/licenses/bsd-license.html
+//
 //  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+//  Redistribution and use in source and binary forms, with or without 
+//  modification, are permitted provided that the following conditions are met:
+//
+//  - Redistributions of source code must retain the above copyright notice, 
+//    this list of conditions and the following disclaimer. 
+//
+//  - Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution. 
+//
+//  - Neither the name of the CAD Toolkit nor the names of its contributors may
+//    be used to endorse or promote products derived from this software without
+//    specific prior written permission. 
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  SlUnicode: Inline functions for unicode. 
-//
-//  Note: If CadKit::convert() works correctly then this file will be 
-//  depreciated.
+//  SlUnicode: Inline functions for unicode.
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -21,15 +46,12 @@
 
 #include "SlAssert.h"
 
-#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
-# ifdef _WIN32
-#  define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers.
-#  define NOMINMAX            // Do not define min and max as macros.
-#  include <windows.h>
-# endif // _WIN32
-# include <string>
-#endif
-
+#ifdef _WIN32
+# define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers.
+# define NOMINMAX            // Do not define min and max as macros.
+# include <windows.h>
+#endif // _WIN32
+#include <string>
 
 namespace CadKit 
 {
@@ -59,7 +81,7 @@ inline HRESULT ansiToUnicode ( const unsigned int &csize, const char *chars, con
     return HRESULT_FROM_WIN32 ( error );
   }
 
-#elif __GNUC__
+#elif _LINUX
 
   SL_ASSERT ( 0 ); // TODO.
 
@@ -102,7 +124,7 @@ inline HRESULT unicodeToAnsi ( const unsigned int &wsize, const wchar_t *wchars,
     return HRESULT_FROM_WIN32 ( error );
   }
 
-#elif __GNUC__
+#elif _LINUX
 
   SL_ASSERT ( 0 ); // TODO.
 
@@ -125,14 +147,12 @@ inline HRESULT unicodeToAnsi ( const unsigned int &wsize, const wchar_t *wchars,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Converts the ANSI string chars to a Unicode string and returns the Unicode 
-//  string through wchars.
-//
-//  Note: this could probably be a template based on the string type.
+// Converts the ANSI string chars to a Unicode string and returns the Unicode 
+// string through wchars.
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
-inline HRESULT ansiToUnicode ( const std::basic_string<char> &chars, std::basic_string<wchar_t> &wchars )
+inline HRESULT ansiToUnicode ( const std::string &chars, std::wstring &wchars )
 {
   // Handle trivial case.
   if ( 0 == chars.size() )
@@ -155,8 +175,7 @@ inline HRESULT ansiToUnicode ( const std::basic_string<char> &chars, std::basic_
   SL_ASSERT ( ::wcslen ( wtemp ) == wsize - 1 );
 
   // Copy to the given wide string.
-  if ( SUCCEEDED ( hr ) ) 
-    wchars = wtemp;
+  if ( SUCCEEDED ( hr ) ) wchars = wtemp;
 
   // Done with this.
   delete [] wtemp;
@@ -168,14 +187,12 @@ inline HRESULT ansiToUnicode ( const std::basic_string<char> &chars, std::basic_
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Converts the Unicode string wchars to an ANSI string and returns the ANSI 
-//  string through chars.
-//
-//  Note: this could probably be a template based on the string type.
+// Converts the Unicode string wchars to an ANSI string and returns the ANSI 
+// string through chars.
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
-inline HRESULT unicodeToAnsi ( const std::basic_string<wchar_t> &wchars, std::basic_string<char> &chars )
+inline HRESULT unicodeToAnsi ( const std::wstring &wchars, std::string &chars )
 {
   // Handle trivial case.
   if ( 0 == wchars.size() )
@@ -200,8 +217,7 @@ inline HRESULT unicodeToAnsi ( const std::basic_string<wchar_t> &wchars, std::ba
   SL_ASSERT ( ::strlen ( ctemp ) <= csize - 1 );
 
   // Copy to the given wide string.
-  if ( SUCCEEDED ( hr ) ) 
-    chars = ctemp;
+  if ( SUCCEEDED ( hr ) ) chars = ctemp;
 
   // Done with this.
   delete [] ctemp;

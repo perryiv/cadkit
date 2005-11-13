@@ -15,6 +15,10 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Shared/Preferences.h"
 
+#include <iostream>
+
+using namespace std;
+using namespace Usul::Types;
 using namespace OsgTools::Triangles;
 
 
@@ -56,6 +60,26 @@ Block::~Block()
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
   USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of triangles in this block
+//
+///////////////////////////////////////////////////////////////////////////////
+Uint32 Block::getNumberOfTriangles() {
+    return _triangles.size();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the normal of the i'th triangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3f & Block::triangleNormal ( unsigned int i ) const
+{
+    return _normalsT->at(i);
 }
 
 

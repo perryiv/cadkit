@@ -15,6 +15,11 @@
 
 #include "Font.h"
 #include "osgText/Font"
+#include "osgDB/Registry"
+#include "osgDB/FileUtils"
+#include <osgDB/ReadFile>
+
+
 #include <fstream>
 
 using namespace OsgTools;
@@ -51,26 +56,18 @@ osgText::Font* Font::defaultFont()
      return osgText::readFontFile( "arial.ttf" );
 
   #elif __APPLE__
-
-    std::vector< std::string > fonts;
-    fonts.push_back("fonts/arial.ttf");
-    fonts.push_back("fonts/fudd.ttf");
-    fonts.push_back("/Library/Fonts/fudd.ttf");
-    fonts.push_back("/Library/Fonts/Vera.ttf");
-    fonts.push_back("~/Library/Fonts/fudd.ttf");
-    fonts.push_back("~/Library/Fonts/Vera.ttf");
+    // get the existing high level path list
+    osgDB::FilePathList wFilePathList = osgDB::Registry::instance()->getDataFilePathList();
     
-    for (int i=0;i<fonts.size();++i) 
-    {
-      std::ifstream file (fonts[i].c_str(), std::ios::in );
-      if ( file.is_open() ) {
-        osgText::Font* dFont = osgText::readFontFile( fonts[i]);
-        if (dFont != 0x0 ) {
-          return dFont;
-        }
-      }
-    }
-    return 0x0;  //This will cause OSG to load its internal font
+    // add additional paths of interest to the path list
+    wFilePathList.push_back( "/Library/Fonts" ); //Look in the Global Fonts
+    wFilePathList.push_back( "./fonts" ); //Look for a "fonts" Folder in the working directory
+    wFilePathList.push_back( "/System/Library/Fonts" ); //Look in the System Fonts
+    
+    // re-assign the expanded path list
+    osgDB::Registry::instance()->setDataFilePathList( wFilePathList );
+
+    return osgText::readFontFile( "fudd.ttf" );
 
   #else
 
@@ -78,3 +75,6 @@ osgText::Font* Font::defaultFont()
 
   #endif
 }
+
+
+

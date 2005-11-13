@@ -16,7 +16,7 @@
 #ifndef _USUL_TEMPLATE_3D_VECTOR_CLASS_H_
 #define _USUL_TEMPLATE_3D_VECTOR_CLASS_H_
 
-#include "Usul/Math/Math.h"
+#include "Usul/Math/UMath.h"
 #include "Usul/Errors/AssertPolicy.h"
 #include "Usul/Types/Types.h"
 

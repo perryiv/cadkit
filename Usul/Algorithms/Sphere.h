@@ -17,7 +17,7 @@
 #define _USUL_ALGORITHMS_SPHERE_SUB_DIVISION_H_
 
 #include "Usul/Math/Constants.h"
-#include "Usul/Math/Math.h"
+#include "Usul/Math/UMath.h"
 
 #include <stdexcept>
 #include <cassert>

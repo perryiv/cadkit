@@ -16,7 +16,7 @@
 #ifndef _USUL_MATH_VECTOR_ANGLE_H_
 #define _USUL_MATH_VECTOR_ANGLE_H_
 
-#include "Usul/Math/Math.h"
+#include "Usul/Math/UMath.h"
 
 
 namespace Usul {

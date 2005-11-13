@@ -723,8 +723,8 @@
 		4399304F087EF171002E5D22 /* Triangles */ = {
 			isa = PBXGroup;
 			children = (
-				4349581C0913126E00BC2931 /* ColorFunctor.cpp */,
 				4349581D0913126E00BC2931 /* ColorFunctor.h */,
+				4349581C0913126E00BC2931 /* ColorFunctor.cpp */,
 				4349581E0913126E00BC2931 /* Constants.h */,
 				43832432090D9C1B00FC2C53 /* Block.cpp */,
 				43832433090D9C1B00FC2C53 /* Block.h */,
@@ -1396,6 +1396,7 @@
 				);
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OBJROOT = /Users/Shared/XcodeIntermediates;
 				OTHER_CFLAGS = "-falign-loops=16";
 				PREBINDING = NO;
@@ -1431,6 +1432,7 @@
 				);
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OBJROOT = /Users/Shared/XcodeIntermediates;
 				OTHER_CFLAGS = "-falign-loops=16";
 				PREBINDING = NO;
@@ -1458,6 +1460,7 @@
 				);
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OBJROOT = /Users/Shared/XcodeIntermediates;
 				OTHER_CFLAGS = "-falign-loops=16";
 				PREBINDING = NO;
@@ -1550,6 +1553,7 @@
 				43265EA708E4953D0020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43265F4E08E49AD30020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */ = {
 			isa = XCConfigurationList;
@@ -1559,6 +1563,7 @@
 				43265F5108E49AD30020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43992FFB087EF15B002E5D22 /* Build configuration list for PBXNativeTarget "OsgTools" */ = {
 			isa = XCConfigurationList;
@@ -1588,6 +1593,7 @@
 				439930CC087EF56D002E5D22 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 /* End XCConfigurationList section */
 	};

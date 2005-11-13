@@ -512,6 +512,12 @@
 		43686A32088C5B150019BCA3 /* SliderTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 43686869088C5B150019BCA3 /* SliderTextField.h */; };
 		43686A33088C5B150019BCA3 /* MdiChildWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4368686B088C5B150019BCA3 /* MdiChildWindow.cpp */; };
 		43686A34088C5B150019BCA3 /* MdiChildWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4368686C088C5B150019BCA3 /* MdiChildWindow.h */; };
+		439923E2091BBE6900FBBC7F /* Slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439923E0091BBE6900FBBC7F /* Slider.cpp */; };
+		439923E3091BBE6900FBBC7F /* Slider.h in Headers */ = {isa = PBXBuildFile; fileRef = 439923E1091BBE6900FBBC7F /* Slider.h */; };
+		439923E4091BBE6900FBBC7F /* Slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439923E0091BBE6900FBBC7F /* Slider.cpp */; };
+		439923E5091BBE6900FBBC7F /* Slider.h in Headers */ = {isa = PBXBuildFile; fileRef = 439923E1091BBE6900FBBC7F /* Slider.h */; };
+		439923E6091BBE6900FBBC7F /* Slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439923E0091BBE6900FBBC7F /* Slider.cpp */; };
+		439923E7091BBE6900FBBC7F /* Slider.h in Headers */ = {isa = PBXBuildFile; fileRef = 439923E1091BBE6900FBBC7F /* Slider.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -739,6 +745,8 @@
 		43686869088C5B150019BCA3 /* SliderTextField.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SliderTextField.h; path = Widgets/SliderTextField.h; sourceTree = SOURCE_ROOT; };
 		4368686B088C5B150019BCA3 /* MdiChildWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MdiChildWindow.cpp; path = Windows/MdiChildWindow.cpp; sourceTree = SOURCE_ROOT; };
 		4368686C088C5B150019BCA3 /* MdiChildWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MdiChildWindow.h; path = Windows/MdiChildWindow.h; sourceTree = SOURCE_ROOT; };
+		439923E0091BBE6900FBBC7F /* Slider.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Slider.cpp; sourceTree = "<group>"; };
+		439923E1091BBE6900FBBC7F /* Slider.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Slider.h; sourceTree = "<group>"; };
 		43992FD8087EE024002E5D22 /* libFOX-1.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libFOX-1.4.dylib"; path = "/usr/local/lib/libFOX-1.4.0.0.15.dylib"; sourceTree = "<absolute>"; };
 		43992FDD087EE4E4002E5D22 /* Usul.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Usul.xcodeproj; path = ../Usul/Usul.xcodeproj; sourceTree = SOURCE_ROOT; };
 		D2AAC0630554660B00DB518D /* libFoxTools.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFoxTools.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1072,6 +1080,8 @@
 		43686858088C5B150019BCA3 /* ToolBar */ = {
 			isa = PBXGroup;
 			children = (
+				439923E0091BBE6900FBBC7F /* Slider.cpp */,
+				439923E1091BBE6900FBBC7F /* Slider.h */,
 				43686859088C5B150019BCA3 /* Bar.cpp */,
 				4368685A088C5B150019BCA3 /* Bar.h */,
 				4368685B088C5B150019BCA3 /* Button.cpp */,
@@ -1245,6 +1255,7 @@
 				4326603808E4A0200020C22F /* Visual.h in Headers */,
 				4326603908E4A0200020C22F /* Wait.h in Headers */,
 				4326603A08E4A0200020C22F /* Window.h in Headers */,
+				439923E7091BBE6900FBBC7F /* Slider.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1366,6 +1377,7 @@
 				43686A32088C5B150019BCA3 /* SliderTextField.h in Headers */,
 				43686A34088C5B150019BCA3 /* MdiChildWindow.h in Headers */,
 				43137FA2088DEE9400FE58B9 /* ScrollPane.h in Headers */,
+				439923E5091BBE6900FBBC7F /* Slider.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1487,6 +1499,7 @@
 				4368699A088C5B150019BCA3 /* SliderTextField.h in Headers */,
 				4368699C088C5B150019BCA3 /* MdiChildWindow.h in Headers */,
 				43137FA1088DEE9400FE58B9 /* ScrollPane.h in Headers */,
+				439923E3091BBE6900FBBC7F /* Slider.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1711,6 +1724,7 @@
 				4326605C08E4A02E0020C22F /* SliderTextField.cpp in Sources */,
 				4326605D08E4A02E0020C22F /* ToggleButton.cpp in Sources */,
 				4326605E08E4A02E0020C22F /* Wait.cpp in Sources */,
+				439923E6091BBE6900FBBC7F /* Slider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1753,6 +1767,7 @@
 				43686A2F088C5B150019BCA3 /* ToggleButton.cpp in Sources */,
 				43686A31088C5B150019BCA3 /* SliderTextField.cpp in Sources */,
 				43686A33088C5B150019BCA3 /* MdiChildWindow.cpp in Sources */,
+				439923E4091BBE6900FBBC7F /* Slider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1795,6 +1810,7 @@
 				43686997088C5B150019BCA3 /* ToggleButton.cpp in Sources */,
 				43686999088C5B150019BCA3 /* SliderTextField.cpp in Sources */,
 				4368699B088C5B150019BCA3 /* MdiChildWindow.cpp in Sources */,
+				439923E2091BBE6900FBBC7F /* Slider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1999,6 +2015,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
@@ -2038,6 +2055,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
@@ -2072,6 +2090,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-falign-loops=16";
 				OTHER_LDFLAGS = (
@@ -2116,6 +2135,7 @@
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxTools;
@@ -2150,6 +2170,7 @@
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
@@ -2175,6 +2196,7 @@
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxTools;
@@ -2265,6 +2287,7 @@
 				43265FC108E49FEB0020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		4326606108E4A04A0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */ = {
 			isa = XCConfigurationList;
@@ -2274,6 +2297,7 @@
 				4326606408E4A04A0020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43685F35088C19CC0019BCA3 /* Build configuration list for PBXNativeTarget "FoxToolsCarbon" */ = {
 			isa = XCConfigurationList;
@@ -2283,6 +2307,7 @@
 				43685F38088C19CC0019BCA3 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43992E94087EDAEC002E5D22 /* Build configuration list for PBXNativeTarget "FoxTools" */ = {
 			isa = XCConfigurationList;
@@ -2312,6 +2337,7 @@
 				43992FF3087EE813002E5D22 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 /* End XCConfigurationList section */
 	};

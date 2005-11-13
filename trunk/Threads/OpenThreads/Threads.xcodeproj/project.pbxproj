@@ -597,6 +597,7 @@
 				HEADER_SEARCH_PATHS = ../../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = OpenThreadsEx;
 				ZERO_LINK = NO;
@@ -626,6 +627,7 @@
 				HEADER_SEARCH_PATHS = ../../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = OpenThreadsEx;
@@ -647,6 +649,7 @@
 				HEADER_SEARCH_PATHS = ../../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = OpenThreadsEx;
 			};
@@ -736,6 +739,7 @@
 				43265E6F08E4930D0020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43265F3F08E4997F0020C22F /* Build configuration list for PBXAggregateTarget "Build Frameworks" */ = {
 			isa = XCConfigurationList;
@@ -745,6 +749,7 @@
 				43265F4208E4997F0020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		439930E8087EF6C9002E5D22 /* Build configuration list for PBXNativeTarget "Threads" */ = {
 			isa = XCConfigurationList;
@@ -774,6 +779,7 @@
 				4399310E087EF7B3002E5D22 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 /* End XCConfigurationList section */
 	};

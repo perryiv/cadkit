@@ -135,17 +135,14 @@
 		43265C4B08E48D980020C22F /* IFrameDump.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE3087ED8DC002E5D22 /* IFrameDump.h */; };
 		43265C4C08E48D980020C22F /* IGetBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 436671C10890783900B2F004 /* IGetBoundingBox.h */; };
 		43265C4D08E48D980020C22F /* IGetDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE4087ED8DC002E5D22 /* IGetDocument.h */; };
-		43265C4E08E48D980020C22F /* IGetHeight.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE5087ED8DC002E5D22 /* IGetHeight.h */; };
 		43265C4F08E48D980020C22F /* IGetImageData.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE6087ED8DC002E5D22 /* IGetImageData.h */; };
 		43265C5008E48D980020C22F /* IGetImageProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE7087ED8DC002E5D22 /* IGetImageProperties.h */; };
 		43265C5108E48D980020C22F /* IGetLoops.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE8087ED8DC002E5D22 /* IGetLoops.h */; };
 		43265C5208E48D980020C22F /* IGetMolecules.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE9087ED8DC002E5D22 /* IGetMolecules.h */; };
 		43265C5308E48D980020C22F /* IGetNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 43887E1508B2E2250005B358 /* IGetNormal.h */; };
 		43265C5408E48D980020C22F /* IGetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43DA18B708832D3B0046E5BA /* IGetOptions.h */; };
-		43265C5508E48D980020C22F /* IGetPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEB087ED8DC002E5D22 /* IGetPosition.h */; };
 		43265C5608E48D980020C22F /* IGetTitle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEC087ED8DC002E5D22 /* IGetTitle.h */; };
 		43265C5708E48D980020C22F /* IGetVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CED087ED8DC002E5D22 /* IGetVertex.h */; };
-		43265C5808E48D980020C22F /* IGetWidth.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEE087ED8DC002E5D22 /* IGetWidth.h */; };
 		43265C5908E48D980020C22F /* IGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEF087ED8DC002E5D22 /* IGroup.h */; };
 		43265C5A08E48D980020C22F /* IGUIDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF0087ED8DC002E5D22 /* IGUIDelegate.h */; };
 		43265C5B08E48D980020C22F /* IHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF1087ED8DC002E5D22 /* IHandle.h */; };
@@ -467,16 +464,13 @@
 		43992DF5087ED8DD002E5D22 /* IFoxTreeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE2087ED8DC002E5D22 /* IFoxTreeList.h */; };
 		43992DF6087ED8DD002E5D22 /* IFrameDump.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE3087ED8DC002E5D22 /* IFrameDump.h */; };
 		43992DF7087ED8DD002E5D22 /* IGetDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE4087ED8DC002E5D22 /* IGetDocument.h */; };
-		43992DF8087ED8DD002E5D22 /* IGetHeight.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE5087ED8DC002E5D22 /* IGetHeight.h */; };
 		43992DF9087ED8DD002E5D22 /* IGetImageData.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE6087ED8DC002E5D22 /* IGetImageData.h */; };
 		43992DFA087ED8DD002E5D22 /* IGetImageProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE7087ED8DC002E5D22 /* IGetImageProperties.h */; };
 		43992DFB087ED8DD002E5D22 /* IGetLoops.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE8087ED8DC002E5D22 /* IGetLoops.h */; };
 		43992DFC087ED8DD002E5D22 /* IGetMolecules.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CE9087ED8DC002E5D22 /* IGetMolecules.h */; };
 		43992DFD087ED8DD002E5D22 /* IGetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEA087ED8DC002E5D22 /* IGetOptions.h */; };
-		43992DFE087ED8DD002E5D22 /* IGetPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEB087ED8DC002E5D22 /* IGetPosition.h */; };
 		43992DFF087ED8DD002E5D22 /* IGetTitle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEC087ED8DC002E5D22 /* IGetTitle.h */; };
 		43992E00087ED8DD002E5D22 /* IGetVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CED087ED8DC002E5D22 /* IGetVertex.h */; };
-		43992E01087ED8DD002E5D22 /* IGetWidth.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEE087ED8DC002E5D22 /* IGetWidth.h */; };
 		43992E02087ED8DD002E5D22 /* IGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CEF087ED8DC002E5D22 /* IGroup.h */; };
 		43992E03087ED8DD002E5D22 /* IGUIDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF0087ED8DC002E5D22 /* IGUIDelegate.h */; };
 		43992E04087ED8DD002E5D22 /* IHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992CF1087ED8DC002E5D22 /* IHandle.h */; };
@@ -613,6 +607,8 @@
 		43992E87087ED8DD002E5D22 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43992D86087ED8DC002E5D22 /* Types.cpp */; };
 		43992E88087ED8DD002E5D22 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 43992D87087ED8DC002E5D22 /* Types.h */; };
 		43BE6CD108D653DF00B947A2 /* IAxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 43BE6CD008D653DF00B947A2 /* IAxes.h */; };
+		43CA0AA8091BEA030056B2A9 /* IColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43CA0AA7091BEA030056B2A9 /* IColorFunctor.h */; };
+		43CA0AA9091BEA030056B2A9 /* IColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43CA0AA7091BEA030056B2A9 /* IColorFunctor.h */; };
 		43CB704C090E85D9004D0D65 /* Remove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43CB704A090E85D9004D0D65 /* Remove.cpp */; };
 		43CB704D090E85D9004D0D65 /* Remove.h in Headers */ = {isa = PBXBuildFile; fileRef = 43CB704B090E85D9004D0D65 /* Remove.h */; };
 		43CB704E090E85D9004D0D65 /* Remove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43CB704A090E85D9004D0D65 /* Remove.cpp */; };
@@ -810,16 +806,13 @@
 		43992CE2087ED8DC002E5D22 /* IFoxTreeList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFoxTreeList.h; path = Interfaces/IFoxTreeList.h; sourceTree = SOURCE_ROOT; };
 		43992CE3087ED8DC002E5D22 /* IFrameDump.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFrameDump.h; path = Interfaces/IFrameDump.h; sourceTree = SOURCE_ROOT; };
 		43992CE4087ED8DC002E5D22 /* IGetDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetDocument.h; path = Interfaces/IGetDocument.h; sourceTree = SOURCE_ROOT; };
-		43992CE5087ED8DC002E5D22 /* IGetHeight.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetHeight.h; path = Interfaces/IGetHeight.h; sourceTree = SOURCE_ROOT; };
 		43992CE6087ED8DC002E5D22 /* IGetImageData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetImageData.h; path = Interfaces/IGetImageData.h; sourceTree = SOURCE_ROOT; };
 		43992CE7087ED8DC002E5D22 /* IGetImageProperties.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetImageProperties.h; path = Interfaces/IGetImageProperties.h; sourceTree = SOURCE_ROOT; };
 		43992CE8087ED8DC002E5D22 /* IGetLoops.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetLoops.h; path = Interfaces/IGetLoops.h; sourceTree = SOURCE_ROOT; };
 		43992CE9087ED8DC002E5D22 /* IGetMolecules.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetMolecules.h; path = Interfaces/IGetMolecules.h; sourceTree = SOURCE_ROOT; };
 		43992CEA087ED8DC002E5D22 /* IGetOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetOptions.h; path = Interfaces/IGetOptions.h; sourceTree = SOURCE_ROOT; };
-		43992CEB087ED8DC002E5D22 /* IGetPosition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetPosition.h; path = Interfaces/IGetPosition.h; sourceTree = SOURCE_ROOT; };
 		43992CEC087ED8DC002E5D22 /* IGetTitle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetTitle.h; path = Interfaces/IGetTitle.h; sourceTree = SOURCE_ROOT; };
 		43992CED087ED8DC002E5D22 /* IGetVertex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetVertex.h; path = Interfaces/IGetVertex.h; sourceTree = SOURCE_ROOT; };
-		43992CEE087ED8DC002E5D22 /* IGetWidth.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGetWidth.h; path = Interfaces/IGetWidth.h; sourceTree = SOURCE_ROOT; };
 		43992CEF087ED8DC002E5D22 /* IGroup.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGroup.h; path = Interfaces/IGroup.h; sourceTree = SOURCE_ROOT; };
 		43992CF0087ED8DC002E5D22 /* IGUIDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IGUIDelegate.h; path = Interfaces/IGUIDelegate.h; sourceTree = SOURCE_ROOT; };
 		43992CF1087ED8DC002E5D22 /* IHandle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IHandle.h; path = Interfaces/IHandle.h; sourceTree = SOURCE_ROOT; };
@@ -956,6 +949,7 @@
 		43992D86087ED8DC002E5D22 /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Types.cpp; path = Types/Types.cpp; sourceTree = SOURCE_ROOT; };
 		43992D87087ED8DC002E5D22 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = Types/Types.h; sourceTree = SOURCE_ROOT; };
 		43BE6CD008D653DF00B947A2 /* IAxes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IAxes.h; sourceTree = "<group>"; };
+		43CA0AA7091BEA030056B2A9 /* IColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IColorFunctor.h; sourceTree = "<group>"; };
 		43CB704A090E85D9004D0D65 /* Remove.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Remove.cpp; sourceTree = "<group>"; };
 		43CB704B090E85D9004D0D65 /* Remove.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Remove.h; sourceTree = "<group>"; };
 		43D577B108BCC46900493C0A /* ITriangulate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITriangulate.h; sourceTree = "<group>"; };
@@ -1376,16 +1370,13 @@
 				43992CE2087ED8DC002E5D22 /* IFoxTreeList.h */,
 				43992CE3087ED8DC002E5D22 /* IFrameDump.h */,
 				43992CE4087ED8DC002E5D22 /* IGetDocument.h */,
-				43992CE5087ED8DC002E5D22 /* IGetHeight.h */,
 				43992CE6087ED8DC002E5D22 /* IGetImageData.h */,
 				43992CE7087ED8DC002E5D22 /* IGetImageProperties.h */,
 				43992CE8087ED8DC002E5D22 /* IGetLoops.h */,
 				43992CE9087ED8DC002E5D22 /* IGetMolecules.h */,
 				43992CEA087ED8DC002E5D22 /* IGetOptions.h */,
-				43992CEB087ED8DC002E5D22 /* IGetPosition.h */,
 				43992CEC087ED8DC002E5D22 /* IGetTitle.h */,
 				43992CED087ED8DC002E5D22 /* IGetVertex.h */,
-				43992CEE087ED8DC002E5D22 /* IGetWidth.h */,
 				43992CEF087ED8DC002E5D22 /* IGroup.h */,
 				43992CF0087ED8DC002E5D22 /* IGUIDelegate.h */,
 				43992CF1087ED8DC002E5D22 /* IHandle.h */,
@@ -1440,6 +1431,7 @@
 				43992D22087ED8DC002E5D22 /* IVTKCanvas.h */,
 				43992D23087ED8DC002E5D22 /* IWindow.h */,
 				43D577B108BCC46900493C0A /* ITriangulate.h */,
+				43CA0AA7091BEA030056B2A9 /* IColorFunctor.h */,
 			);
 			path = Interfaces;
 			sourceTree = SOURCE_ROOT;
@@ -1777,17 +1769,14 @@
 				43265C4B08E48D980020C22F /* IFrameDump.h in Headers */,
 				43265C4C08E48D980020C22F /* IGetBoundingBox.h in Headers */,
 				43265C4D08E48D980020C22F /* IGetDocument.h in Headers */,
-				43265C4E08E48D980020C22F /* IGetHeight.h in Headers */,
 				43265C4F08E48D980020C22F /* IGetImageData.h in Headers */,
 				43265C5008E48D980020C22F /* IGetImageProperties.h in Headers */,
 				43265C5108E48D980020C22F /* IGetLoops.h in Headers */,
 				43265C5208E48D980020C22F /* IGetMolecules.h in Headers */,
 				43265C5308E48D980020C22F /* IGetNormal.h in Headers */,
 				43265C5408E48D980020C22F /* IGetOptions.h in Headers */,
-				43265C5508E48D980020C22F /* IGetPosition.h in Headers */,
 				43265C5608E48D980020C22F /* IGetTitle.h in Headers */,
 				43265C5708E48D980020C22F /* IGetVertex.h in Headers */,
-				43265C5808E48D980020C22F /* IGetWidth.h in Headers */,
 				43265C5908E48D980020C22F /* IGroup.h in Headers */,
 				43265C5A08E48D980020C22F /* IGUIDelegate.h in Headers */,
 				43265C5B08E48D980020C22F /* IHandle.h in Headers */,
@@ -1943,6 +1932,7 @@
 				4313E43A090DAB95006C228F /* Pool.h in Headers */,
 				4313E43D090DABA5006C228F /* Increment.h in Headers */,
 				43CB704F090E85D9004D0D65 /* Remove.h in Headers */,
+				43CA0AA9091BEA030056B2A9 /* IColorFunctor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2048,16 +2038,13 @@
 				43992DF5087ED8DD002E5D22 /* IFoxTreeList.h in Headers */,
 				43992DF6087ED8DD002E5D22 /* IFrameDump.h in Headers */,
 				43992DF7087ED8DD002E5D22 /* IGetDocument.h in Headers */,
-				43992DF8087ED8DD002E5D22 /* IGetHeight.h in Headers */,
 				43992DF9087ED8DD002E5D22 /* IGetImageData.h in Headers */,
 				43992DFA087ED8DD002E5D22 /* IGetImageProperties.h in Headers */,
 				43992DFB087ED8DD002E5D22 /* IGetLoops.h in Headers */,
 				43992DFC087ED8DD002E5D22 /* IGetMolecules.h in Headers */,
 				43992DFD087ED8DD002E5D22 /* IGetOptions.h in Headers */,
-				43992DFE087ED8DD002E5D22 /* IGetPosition.h in Headers */,
 				43992DFF087ED8DD002E5D22 /* IGetTitle.h in Headers */,
 				43992E00087ED8DD002E5D22 /* IGetVertex.h in Headers */,
-				43992E01087ED8DD002E5D22 /* IGetWidth.h in Headers */,
 				43992E02087ED8DD002E5D22 /* IGroup.h in Headers */,
 				43992E03087ED8DD002E5D22 /* IGUIDelegate.h in Headers */,
 				43992E04087ED8DD002E5D22 /* IHandle.h in Headers */,
@@ -2225,6 +2212,7 @@
 				4313E438090DAB95006C228F /* Pool.h in Headers */,
 				4313E43C090DABA5006C228F /* Increment.h in Headers */,
 				43CB704D090E85D9004D0D65 /* Remove.h in Headers */,
+				43CA0AA8091BEA030056B2A9 /* IColorFunctor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2565,6 +2553,7 @@
 				HEADER_SEARCH_PATHS = ../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
 				ZERO_LINK = NO;
@@ -2594,6 +2583,7 @@
 				HEADER_SEARCH_PATHS = ../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Usul;
@@ -2615,6 +2605,7 @@
 				HEADER_SEARCH_PATHS = ../;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
 			};
@@ -2649,6 +2640,7 @@
 				43265BE108E48C440020C22F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		43992C58087ED8B0002E5D22 /* Build configuration list for PBXNativeTarget "Usul" */ = {
 			isa = XCConfigurationList;

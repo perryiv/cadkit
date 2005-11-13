@@ -30,8 +30,8 @@ struct OSG_TOOLS_EXPORT Font
 {
   //  Return the font filename.
   static std::string         fontfile ( const std::string &fontName );
-  static osgText::Font*       defaultFont();
-
+  static osgText::Font*      defaultFont();
+  
 };
 
 

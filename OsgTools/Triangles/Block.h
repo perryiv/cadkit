@@ -13,6 +13,7 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Triangles/Triangle.h"
 
+#include "Usul/Types/Types.h"
 #include "Usul/Base/Referenced.h"
 
 #include "osg/BoundingBox"
@@ -23,6 +24,7 @@
 #include <map>
 #include <string>
 
+using namespace Usul::Types;
 
 namespace OsgTools {
 namespace Triangles {
@@ -65,7 +67,13 @@ public:
   // Return the i'th triangle in the block.
   const Triangle *          triangle ( unsigned int i ) const { return _triangles.at ( i ); }
   Triangle *                triangle ( unsigned int i )       { return _triangles.at ( i ); }
-
+  
+  // Get the normal of the i'th triangle.
+  const osg::Vec3f &        triangleNormal ( unsigned int ) const;
+  
+  /// Get the Number of Triangles in this block
+  Uint32                    getNumberOfTriangles();
+  
 protected:
 
   // Do not copy.

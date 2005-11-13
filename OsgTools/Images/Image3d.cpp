@@ -12,9 +12,12 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Types/Types.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
+
+using namespace Usul::Types;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -38,7 +41,7 @@ osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperText
   int new_s ( front->computeNearestPowerOfTwo( width  ) );
   int new_t ( front->computeNearestPowerOfTwo( height ) );
 
-  Usul::Policies::TimeBased elapsed ( updateTime );
+  Usul::Policies::TimeBased elapsed ( (Uint64)updateTime );
 
   if( ensureProperTextureSize )
   {

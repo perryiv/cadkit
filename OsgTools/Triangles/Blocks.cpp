@@ -20,7 +20,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Math/MinMax.h"
-#include "Usul/Math/Math.h"
+#include "Usul/Math/UMath.h"
 
 #include <algorithm>
 #include <functional>

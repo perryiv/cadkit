@@ -77,7 +77,8 @@ TARGET_DYNAMIC_SUFFIX := .dylib
 OS_LINK_FLAGS := -dynamiclib -install_name $(TARGET_PREFIX)$(PKG_NAME)$(TARGET_DYNAMIC_SUFFIX)
 CXX:=g++
 flags+=-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
-	-O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -ffix-and-continue  -mtune=G4
+-Os -Wreturn-type -Wunused-variable -D_COMPILING_USUL -fmessage-length=0 \
+-mtune=G5 -fvisibility-inlines-hidden -Wno-invalid-offsetof
 endif
 
 ifeq ($(findstring IRIX,$(OS)),IRIX)

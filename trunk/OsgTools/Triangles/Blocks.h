@@ -61,7 +61,7 @@ public:
 
   // Purge any excess memory.
   void                      purge();
-
+  void                      setDirtyDisplayList();
 protected:
 
   // Do not copy.

@@ -135,6 +135,7 @@ public:
   // Get/Set the display list flag
   bool                    displayList () const;
   void                    displayList ( bool );
+  void                    setDirtyDisplayList();
 
   // Is the triangle set empty?
   bool                    empty() const { return _triangles.empty(); }

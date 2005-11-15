@@ -111,6 +111,20 @@ void Blocks::displayList ( bool state )
     _sequence[i]->displayList ( state );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Sets the Display to dirty so it is rebuilt
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Blocks::setDirtyDisplayList()
+{
+    unsigned int numDrawables = _geode->getNumDrawables();
+    for (unsigned int i = 0; i < numDrawables; ++i ) 
+    {
+        _geode->getDrawable(i)->dirtyDisplayList();
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

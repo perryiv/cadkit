@@ -1832,6 +1832,38 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   this->_postProcessModelLoad ( filename, node.get() );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the group node child that is a MatrixTransform
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
+{
+  int num_children = grp->getNumChildren();
+  int i = 0;
+  osg::Transform *xform;
+  
+  // First test the group node
+  if( xform = grp->asTransform() )
+  {
+    return xform->asMatrixTransform();
+  }
+  
+  // next test its children
+  while ( i < num_children )
+  {
+    xform = grp->getChild(i)->asTransform();
+    if(xform)
+    {
+      return xform->asMatrixTransform();
+    }
+    i++;
+  }
+  
+  return NULL;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1875,14 +1907,36 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
     Matcher match;
     if ( _recursiveMatchNodeName ( name, m, &match ) )
     {
-      // We found a match, so replace it
-      //std::cout << "Match found, replacing node" << std::endl;
+      // We found a match
+      std::cout << "Match found, replacing node" << std::endl;
       _autoPlacement = false; // do not relocate model if it isn't new
-      /*node->setName ( name );
+      node->setName ( name );
+      
+      // Get matrix from original (old) node and apply it to new node
+      osg::Matrix mtx;
+      osg::Group *old_grp = match.node->asGroup();
+      osg::Group *new_grp = node->asGroup();
+            
+      if ( old_grp && new_grp )
+      {
+        osg::MatrixTransform *mxform_old = _getGroupMatrixTransform( old_grp );
+        if ( mxform_old )
+        {
+          mtx = mxform_old->getMatrix();
+          
+          osg::MatrixTransform *mxform_new = _getGroupMatrixTransform( new_grp );
+          if ( mxform_new )
+          {
+            mxform_new->setMatrix( mtx );
+          }
+        }
+      }
+      
+      // replace the node
       if ( match.parent->replaceChild ( match.node, node.get() ) )
       {
         matched = true;
-      }*/
+      }
     }
 
     // Now rebuild the scribe node corresponding to the match in _models
@@ -3231,6 +3285,49 @@ void Application::_updateSceneTool()
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Compare new & old node names for a match 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_matchNodeNames( const std::string &new_name, const std::string &old_name )
+{
+  // Make copies of the strings to compare.
+  std::string newname = new_name;
+  std::string oldname = old_name;
+  
+  // Convert names to lowercase because match is case-insensitive.
+  std::transform ( newname.begin(), newname.end(), newname.begin(), ::tolower );
+  std::transform ( oldname.begin(), oldname.end(), oldname.begin(), ::tolower );
+  
+  if( newname == oldname )
+  {
+    return true;
+  }
+  else
+  {
+    // If we don't find an exact match, we need to look for a looser match.
+    // New name_par_4.jt may match old name.par_4
+    std::string::size_type nsz = newname.rfind(std::string("_par"), newname.size() - 1);
+    std::string::size_type osz = oldname.rfind(std::string(".par"), oldname.size() - 1);
+    
+    // If that format seems to be the case, truncate the strings and re-test.
+    if( nsz != std::string::npos && osz != std::string::npos )
+    {
+      newname = newname.substr( 0, nsz );
+      oldname = oldname.substr( 0, osz );
+      
+      if( newname == oldname )
+      {
+        return true;
+      }
+    }
+    
+  }
+  
+  return false;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3244,7 +3341,7 @@ bool Application::_recursiveMatchNodeName ( const std::string &name, osg::Node *
   osg::Group *g;
 
   // Check for match on node name
-  if ( model->getName() == name )
+  if ( _matchNodeNames( name, model->getName() ) )
   {
     // Only assign the model, the others are done by the caller
     match->node = model;

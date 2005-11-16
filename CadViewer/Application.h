@@ -347,7 +347,10 @@ protected:
   // Called by the kernel after the frame.
   virtual void                  postFrame();
   void                          _postFrame();
-
+  
+  // return a MatrixTransform belonging to a Group
+  osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp );
+  
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
   void                          _streamModel ( std::stringstream &modelstream, const Matrix44f &matrix , const std::string &name);
@@ -400,7 +403,10 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-
+  
+  // Compare incoming & existing node names
+  bool                          _matchNodeNames( const std::string &new_name, const std::string &old_name );
+  
   // Find similarly named model nodes
   bool                          _recursiveMatchNodeName ( const std::string &name , osg::Node *model, Matcher *match );
 

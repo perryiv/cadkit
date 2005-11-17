@@ -21,6 +21,7 @@
 
 #include "osg/Material"
 
+
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #endif
 
@@ -36,10 +37,9 @@ namespace CadKit
 ///////////////////////////////////////////////////////////////////////////////
 
 void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
-{
+{   
   SL_ASSERT ( 0 != material.getValid() );
   SL_ASSERT ( state );
-
   // Make a material.
   SlRefPtr<osg::Material> mat = new osg::Material;
   if ( mat.isNull() )
@@ -47,6 +47,11 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
     SL_ASSERT ( 0 ); // Heads up.
     return;
   }
+  
+  
+  // Initialize blending flag.
+
+  bool blending = false;
 
   // Set the colors that are valid.
 
@@ -55,6 +60,12 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getAmbient();
     mat->setAmbient ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
+    
+    if ( v[3] < 1 )
+    {
+      blending = true;
+    }
+
   }
 
   // Diffuse.
@@ -62,6 +73,12 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getDiffuse();
     mat->setDiffuse ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
+
+    if ( !blending && ( v[3] < 1 ) )
+    {
+      blending = true;
+    }
+
   }
 
   // Specular.
@@ -69,13 +86,24 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getSpecular();
     mat->setSpecular ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
+    if ( !blending && ( v[3] < 1 ) )
+    {
+      blending = true;
+    }
+
   }
+
 
   // Emissive.
   if ( material.isValid ( SlMaterialf::EMISSIVE ) )
   {
     const SlVec4f &v = material.getEmissive();
     mat->setEmission ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
+    if ( !blending && ( v[3] < 1 ) )
+    {
+      blending = true;
+    }
+
   }
 
   // Shininess.
@@ -85,6 +113,17 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
     mat->setShininess ( osg::Material::FRONT, material.getShininess() );
   }
 
+  // Enable blending and transparency sorting if any colors are transparent.
+  
+  if ( blending )
+
+  {
+    
+    state->setMode ( GL_BLEND, osg::StateAttribute::ON );
+
+    state->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+
+  }
   // Set the state's material.
   state->setAttribute ( mat );
 }

@@ -59,17 +59,6 @@ namespace Usul
       const std::string HIGH_LODS                 = "high_lods";
     };
   };
-
-  namespace Constants
-  {
-    // Canvas' group-map.
-    const std::string BOUNDING_BOX                = "bounding_box";
-    const std::string BOUNDING_SPHERE             = "bounding_sphere";
-    const std::string TEXT_MATRIX                 = "text_matrix";
-    const std::string SELECTION_BOX               = "selection_box";
-    const std::string CLIPPING_PLANES             = "cliping_planes";
-    const std::string AXES                        = "axes";
-  };
 };
 
 

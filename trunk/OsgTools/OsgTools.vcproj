@@ -240,6 +240,9 @@
 					RelativePath=".\Dimension.h">
 				</File>
 				<File
+					RelativePath=".\Utilities\DirtyBounds.h">
+				</File>
+				<File
 					RelativePath=".\FlipNormals.h">
 				</File>
 				<File
@@ -300,6 +303,9 @@
 					RelativePath=".\ReadModel.h">
 				</File>
 				<File
+					RelativePath=".\Utilities\ReferenceFrame.h">
+				</File>
+				<File
 					RelativePath=".\Sample.cpp">
 				</File>
 				<File
@@ -316,12 +322,6 @@
 				</File>
 				<File
 					RelativePath=".\SetDataVariance.h">
-				</File>
-				<File
-					RelativePath=".\SortBackToFrontCallback.cpp">
-				</File>
-				<File
-					RelativePath=".\SortBackToFrontCallback.h">
 				</File>
 				<File
 					RelativePath=".\Statistics.cpp">
@@ -473,6 +473,18 @@
 				Filter="">
 				<File
 					RelativePath=".\Callbacks\BoundingBox.h">
+				</File>
+				<File
+					RelativePath=".\Callbacks\BoundingSphere.cpp">
+				</File>
+				<File
+					RelativePath=".\Callbacks\BoundingSphere.h">
+				</File>
+				<File
+					RelativePath=".\Callbacks\SortBackToFront.cpp">
+				</File>
+				<File
+					RelativePath=".\Callbacks\SortBackToFront.h">
 				</File>
 			</Filter>
 			<Filter

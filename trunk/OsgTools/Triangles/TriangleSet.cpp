@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
 #include "Usul/Types/Types.h"
+#include "Usul/Adaptors/Random.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -84,13 +85,14 @@ TriangleSet::TriangleSet() : BaseClass(),
   _flags     ( Dirty::NORMALS_V | Dirty::COLORS_V | Dirty::BLOCKS ),
   _bbox      (),
   _factory   ( new Factory ),
-  _blocks    ( 0x0 ),
+  _blocks    ( ),
   _progress  ( 0, 1 ),
-  _color     ( new ColorFunctor )
+  _color     ( new ColorFunctor ),
+  _root      ( new osg::Group )
 {
 #ifdef _MSC_VER
   // Keeping tabs on memory consumption...
-  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 200 );
+  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 204 );
 #endif
 }
 
@@ -123,7 +125,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   Usul::Policies::TimeBased update ( 1000 );
 
   // Delete the blocks.
-  _blocks = 0x0;
+  _blocks.clear();
   this->dirtyBlocks ( true );
 
   // Clear the map of shared vertices.
@@ -383,12 +385,14 @@ void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVert
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::removeTriangle ( const osg::Drawable *d, unsigned int i )
+void TriangleSet::removeTriangle ( const osg::Geode* g, const osg::Drawable *d, unsigned int i )
 {
   // Get the triangle.
+  Blocks::RefPtr blocks ( this->_blocksGet( g ) );
+
   // TODO: Not sure if this gives correct block in all cases because you use 
   // vertex0 when initially putting triangle into blocks...
-  Block::RefPtr block ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Block::RefPtr block ( ( d ) ? blocks->block ( d->getBound().center() ) : 0x0 );
   Triangle::RefPtr t ( ( block.valid() ) ? block->triangle ( i ) : 0x0 );
   if ( false == t.valid() )
     return;
@@ -462,8 +466,9 @@ void TriangleSet::_updateDependencies ( Triangle *t )
 
   // Add the triangle to the blocks. Note: blocks should be able to handle 
   // vertices that fall outside of their bounds.
-  if ( _blocks.valid() )
-    _blocks->addTriangle ( this, t );
+  // TODO: For now add triangle to the first blocks.
+  if ( _blocks.front().valid() )
+    _blocks.front()->addTriangle ( this, t );
 }
 
 
@@ -693,13 +698,13 @@ void TriangleSet::setAllUnvisited()
 
 void TriangleSet::setVisited(Indices &keepers)
 {
-    Uint32 numTri = keepers.size();
-    Uint32 index = 0;
+  unsigned int numTri ( keepers.size() );
+  
   //Go to each triangle and it's shared vertices in the list and set the visited flag to false
-  for( index = 0; index < numTri; index++)
+  for( unsigned int index = 0; index < numTri; index++)
   {
-      Triangle::ValidRefPtr t ( _triangles.at ( keepers[index] ) );
-      t->visited( true );
+    Triangle::ValidRefPtr t ( _triangles.at ( keepers[index] ) );
+    t->visited( true );
   }
 }
 
@@ -723,6 +728,7 @@ Int32 TriangleSet::firstUnvisited()
   }
   return -1; //-1 works good as it is unambiguous if an index exists or not.
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -996,32 +1002,6 @@ void TriangleSet::removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown 
   this->keepTriangles ( keepers, caller );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a new TriangleSet that contains only the triangles listed in 
-//   keepers
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::createSubset ( const Indices &keepers, TriangleSet *triSet, Usul::Interfaces::IUnknown *caller )
-{
-    Uint32 numKeepers = keepers.size();
-    //TriangleSet triSet; //Create a new TriangleSet Object
-    for ( unsigned int i = 0; i < numKeepers; ++i )
-    {
-        // Push the triangle on to the new sequence.
-        Triangle::ValidRefPtr t ( _triangles.at ( keepers[i] ) );
-        //Add this triangle to the new TriangleSet
-       // SharedVertex *sv0 = new SharedVertex(t->vertex0() );
-		osg::Vec3 v0 ( this->vertex0 ( t->index() ) );
-		osg::Vec3 v1 ( this->vertex1 ( t->index() ) );
-		osg::Vec3 v2 ( this->vertex2 ( t->index() ) );
-
-        triSet->addTriangle( v0, v1, v2, this->normalsT()->at ( keepers[i] )  , false);
-    }
-    //return triSet;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1031,7 +1011,8 @@ void TriangleSet::createSubset ( const Indices &keepers, TriangleSet *triSet, Us
 
 bool TriangleSet::displayList() const
 {
-  return _blocks->displayList();
+  // TODO: We may want to revisit this.  For now just return the first value.
+  return _blocks.front()->displayList();
 }
 
 
@@ -1043,8 +1024,10 @@ bool TriangleSet::displayList() const
 
 void TriangleSet::displayList ( bool b )
 {
-  _blocks->displayList ( b );
+  for( BlocksVector::iterator iter = _blocks.begin(); iter != _blocks.end(); ++iter )
+    (*iter)->displayList ( b );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1054,8 +1037,10 @@ void TriangleSet::displayList ( bool b )
 
 void TriangleSet::setDirtyDisplayList() 
 {
-    _blocks->setDirtyDisplayList();
+  for( BlocksVector::iterator iter = _blocks.begin(); iter != _blocks.end(); ++iter )
+    (*iter)->setDirtyDisplayList();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1297,27 +1282,26 @@ void TriangleSet::_updateBlocks()
   // Needed below.
   const unsigned int numTriangles ( _triangles.size() );
 
-  // Figure out how many times we need to subdivide so that the number of 
-  // triangles in each block is not too high.
-  unsigned int divisions ( 1 );
-  while ( numTriangles / Usul::Math::pow<double> ( 2, divisions ) > Detail::_averageTrianglesPerBlock )
-    ++divisions;
+  // Get the number of divisions.
+  unsigned int divisions ( this->numberSubDivisions ( numTriangles ) );
 
   // Make new blocks. Subdivide sufficient number of times.
-  _blocks = new Blocks ( _bbox, divisions, numTriangles );
+  _blocks.clear();
+  Blocks::RefPtr blocks ( new Blocks ( _bbox, divisions, numTriangles ) );
+  _blocks.push_back ( blocks.get() );
 
   // Loop through triangles.
   for ( unsigned int i = 0; i < numTriangles; ++i )
   {
     // Add a triangle.
-    _blocks->addTriangle ( this, _triangles[i] );
+    blocks->addTriangle ( this, _triangles[i] );
 
     // Progress.
     this->_incrementProgress ( update() );
   }
 
   // Purge excess memory.
-  _blocks->purge();
+  blocks->purge();
 
   // No longer dirty.
   this->dirtyBlocks ( false );
@@ -1466,12 +1450,12 @@ void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root )
 
 osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 {
-  // The scene root  
-  osg::ref_ptr<osg::Group> root ( new osg::Group );
+  // Clear the root.
+  _root->removeChild( 0, _root->getNumChildren() );
 
   // Handle trivial case.
   if ( _triangles.empty() )
-    return root.release();
+    return _root.get();
 
   // Show the progress bar.
   Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
@@ -1494,16 +1478,17 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 
   // Build the blocks if we should.
   this->_updateBlocks();
-  USUL_ASSERT ( _blocks.valid() );
+  USUL_ASSERT ( _blocks.front().valid() );
 
   // Have the blocks build their scenes.
-  root->addChild ( _blocks->buildScene ( options, this ) );
+  for( BlocksVector::iterator iter = _blocks.begin(); iter != _blocks.end(); ++iter )
+    _root->addChild ( (*iter)->buildScene ( options, this ) );
 
   // Add any extra decorations.
-  this->_buildDecorations ( options, root.get() );
+  this->_buildDecorations ( options, _root.get() );
    
   // Return the root.
-  return root.release();
+  return _root.get();
 }
 
 
@@ -1513,9 +1498,9 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i ) const
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const Triangle *t ( this->triangle ( d, i ) );
+  const Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex0() : 0x0 );
 }
 
@@ -1526,9 +1511,9 @@ const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawable *d, unsigned int i )
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i )
 {
-  Triangle *t ( this->triangle ( d, i ) );
+  Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex0() : 0x0 );
 }
 
@@ -1539,9 +1524,9 @@ OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex0 ( const osg::Drawa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i ) const
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const Triangle *t ( this->triangle ( d, i ) );
+  const Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex1() : 0x0 );
 }
 
@@ -1552,9 +1537,9 @@ const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawable *d, unsigned int i )
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i )
 {
-  Triangle *t ( this->triangle ( d, i ) );
+  Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex1() : 0x0 );
 }
 
@@ -1565,9 +1550,9 @@ OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex1 ( const osg::Drawa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i ) const
+const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const Triangle *t ( this->triangle ( d, i ) );
+  const Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex2() : 0x0 );
 }
 
@@ -1578,9 +1563,9 @@ const OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawable *d, unsigned int i )
+OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i )
 {
-  Triangle *t ( this->triangle ( d, i ) );
+  Triangle *t ( this->triangle ( g, d, i ) );
   return ( ( t ) ? t->vertex2() : 0x0 );
 }
 
@@ -1591,9 +1576,9 @@ OsgTools::Triangles::SharedVertex* TriangleSet::sharedVertex2 ( const osg::Drawa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f &TriangleSet::vertex0 ( const osg::Drawable *d, unsigned int i ) const
+const osg::Vec3f &TriangleSet::vertex0 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const SharedVertex *sv ( this->sharedVertex0 ( d, i ) );
+  const SharedVertex *sv ( this->sharedVertex0 ( g, d, i ) );
   return _vertices->at ( sv->index() );
 }
 
@@ -1604,9 +1589,9 @@ const osg::Vec3f &TriangleSet::vertex0 ( const osg::Drawable *d, unsigned int i 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f &TriangleSet::vertex1 ( const osg::Drawable *d, unsigned int i ) const
+const osg::Vec3f &TriangleSet::vertex1 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const SharedVertex *sv ( this->sharedVertex1 ( d, i ) );
+  const SharedVertex *sv ( this->sharedVertex1 ( g, d, i ) );
   return _vertices->at ( sv->index() );
 }
 
@@ -1617,9 +1602,9 @@ const osg::Vec3f &TriangleSet::vertex1 ( const osg::Drawable *d, unsigned int i 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f &TriangleSet::vertex2 ( const osg::Drawable *d, unsigned int i ) const
+const osg::Vec3f &TriangleSet::vertex2 ( const osg::Geode* g, const osg::Drawable *d, unsigned int i ) const
 {
-  const SharedVertex *sv ( this->sharedVertex2 ( d, i ) );
+  const SharedVertex *sv ( this->sharedVertex2 ( g, d, i ) );
   return _vertices->at ( sv->index() );
 }
 
@@ -1634,7 +1619,7 @@ const osg::Vec3f &TriangleSet::vertex2 ( const osg::Drawable *d, unsigned int i 
 
 unsigned int TriangleSet::index ( const osgUtil::Hit &hit ) const
 {
-  const Triangle *t ( this->triangle ( hit._drawable.get(), hit._primitiveIndex ) );
+  const Triangle *t ( this->triangle ( hit._geode.get(), hit._drawable.get(), hit._primitiveIndex ) );
   if ( 0x0 == t )
     throw std::runtime_error ( "Error 4259806184: No triangle found for given hit information" );
   return ( t->index() );
@@ -1647,9 +1632,10 @@ unsigned int TriangleSet::index ( const osgUtil::Hit &hit ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num ) const
+const Triangle *TriangleSet::triangle ( const osg::Geode* g, const osg::Drawable *d, unsigned int num ) const
 {
-  const Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  const Blocks *blocks ( this->_blocksGet( g ) );
+  const Block *b ( ( d ) ? blocks->block ( d->getBound().center() ) : 0x0 );
   const Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
   return t;
 }
@@ -1661,9 +1647,10 @@ const Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Triangle *TriangleSet::triangle ( const osg::Drawable *d, unsigned int num )
+Triangle *TriangleSet::triangle ( const osg::Geode *g, const osg::Drawable *d, unsigned int num )
 {
-  Block *b ( ( d ) ? _blocks->block ( d->getBound().center() ) : 0x0 );
+  Blocks *blocks ( this->_blocksGet( g ) );
+  Block *b ( ( d ) ? blocks->block ( d->getBound().center() ) : 0x0 );
   Triangle *t ( ( b ) ? b->triangle ( num ) : 0x0 );
   return t;
 }
@@ -1731,8 +1718,8 @@ void TriangleSet::purge()
   }
 
   // Purge the blocks.
-  if ( _blocks.valid() )
-    _blocks->purge();
+  for( BlocksVector::iterator iter = _blocks.begin(); iter != _blocks.end(); ++iter )
+    (*iter)->purge();
 }
 
 
@@ -1778,3 +1765,131 @@ osg::Vec4f TriangleSet::color ( const SharedVertex *sv ) const
            ( _color->color ( this, sv ) ) : 
            ( OsgTools::Triangles::DEFAULT_COLOR ) );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the blocks for the given geode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Blocks* TriangleSet::_blocksGet( const osg::Geode *g ) const
+{
+  for( BlocksVector::const_iterator iter = _blocks.begin(); iter != _blocks.end(); ++iter )
+  {
+    if( g == (*iter)->geode() )
+      return iter->get();
+  }
+
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the blocks for the given geode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TriangleSet::numberSubDivisions( unsigned int numberTriangles )
+{
+  // Figure out how many times we need to subdivide so that the number of 
+  // triangles in each block is not too high.
+  unsigned int divisions ( 1 );
+  while ( numberTriangles / Usul::Math::pow<double> ( 2, divisions ) > Detail::_averageTrianglesPerBlock )
+    ++divisions;
+
+  return divisions;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create blocks from the subsets.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
+{
+  // Set the status bar.
+  this->_setStatusBar( "Updating blocks" );
+
+  // Get the number divisions.
+  unsigned int divisions ( this->numberSubDivisions( this->numTriangles() ) );
+
+  // Clear the blocks.
+  _blocks.clear();
+
+  // Seed the random number generator.
+  ::srand( 0 );
+
+  for( Subsets::const_iterator subsetsIter = subsets.begin(); subsetsIter != subsets.end(); ++subsetsIter )
+  {
+    // Progress
+    this->_setProgressBar( true, subsetsIter - subsets.begin(), subsets.size() );
+
+    OsgTools::Triangles::Blocks::ValidRefPtr blocks ( new OsgTools::Triangles::Blocks( this->getBoundingBox(), divisions, subsetsIter->size() ) );
+
+    // Random number generator for the colors.
+    Usul::Adaptors::Random< float > rd ( 0.0, 1.0 );
+    float red ( rd() ), green ( rd() ), blue ( rd() );
+    
+    // Get the colors.
+    osg::Vec4Array *colors ( this->colorsV() );
+
+    for( Connected::const_iterator connectedIter = subsetsIter->begin(); connectedIter != subsetsIter->end(); ++connectedIter )
+    {
+      Triangle::ValidRefPtr triangle ( _triangles.at( *connectedIter ) );
+
+      blocks->addTriangle( this, triangle.get() );
+
+      colors->at( triangle->vertex0()->index() ).set(red, green, blue, 1.0f );
+      colors->at( triangle->vertex1()->index() ).set(red, green, blue, 1.0f );
+      colors->at( triangle->vertex2()->index() ).set(red, green, blue, 1.0f );
+      triangle->vertex0()->dirtyColor(true);
+      triangle->vertex1()->dirtyColor(true);
+      triangle->vertex2()->dirtyColor(true);
+    }
+
+    // Add the blocks to our list.
+    _blocks.push_back( blocks.get() );
+  }
+
+  this->dirtyBlocks( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of blocks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TriangleSet::blocks() const
+{
+  return _blocks.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the blocks that correspond to the given number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::blocksHide ( unsigned int num )
+{
+  _root->removeChild( _blocks.at( num )->geode() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the blocks that correspond to the given number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::blocksShow ( unsigned int num )
+{
+  _root->addChild( _blocks.at( num )->geode() );
+}
+

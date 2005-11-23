@@ -35,7 +35,7 @@ struct FlipNormals
       return;
 
     // Get the normal array.
-    osg::Vec3Array *normals = geometry->getNormalArray();
+    osg::Vec3Array *normals = dynamic_cast < osg::Vec3Array * > ( geometry->getNormalArray() );
     if ( normals )
     {
       // Loop through the normals and negate them.

@@ -867,6 +867,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ILights.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IMode.h"
 						>
 					</File>
@@ -980,6 +984,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetVertexNormal.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGroupPrimitives.h"
 						>
 					</File>
 					<File
@@ -1669,6 +1677,26 @@
 				</File>
 				<File
 					RelativePath=".\Devices\State.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="App"
+				>
+				<File
+					RelativePath=".\App\Controller.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Controller.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Registry"
+				>
+				<File
+					RelativePath=".\Registry\Constants.h"
 					>
 				</File>
 			</Filter>

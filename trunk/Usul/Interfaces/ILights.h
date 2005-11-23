@@ -9,37 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Delete a primitive
+//  Interface for toggling lights.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_DELETE_PRIMITIVE_H_
-#define _USUL_INTERFACE_DELETE_PRIMITIVE_H_
+#ifndef _USUL_INTERFACE_LIGHTS_H_
+#define _USUL_INTERFACE_LIGHTS_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osgUtil { class Hit; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IDeletePrimitive : public Usul::Interfaces::IUnknown
+struct ILights : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDeletePrimitive );
+  USUL_DECLARE_QUERY_POINTERS ( ILights );
 
   /// Id for this interface.
-  enum { IID = 1744889731u };
+  enum { IID = 3798770287u };
 
-  // Delete primitive at the hit.
-  virtual void deletePrimitive ( const osgUtil::Hit& hit ) = 0;
+  virtual void               setLights ( bool ) = 0;
+  virtual bool               hasLights ( ) const = 0;
 
-}; // struct IDeletePrimitive
+}; // class ILights
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_DELETE_PRIMITIVE_H_
+#endif // _USUL_INTERFACE_LIGHTS_H_

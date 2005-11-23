@@ -39,6 +39,7 @@
 #include "osg/ref_ptr"
 #include "osg/BoundingBox"
 #include "osg/Vec3f"
+#include "osg/Group"
 
 #include <vector>
 #include <map>
@@ -75,10 +76,14 @@ public:
   typedef osg::ref_ptr < osg::Vec3Array > NormalsPtr;
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
   typedef Blocks::ValidAccessRefPtr BlocksPtr;
+  typedef std::vector < BlocksPtr > BlocksVector;
   typedef std::vector < unsigned int > Indices;
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef std::pair < SharedVertices::iterator, bool > InsertResult;
   typedef Factory::ValidRefPtr FactoryPtr;
+  typedef std::vector< unsigned int > Connected;
+  typedef std::vector < Connected > Subsets;
+  typedef osg::ref_ptr< osg::Group > GroupPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -98,6 +103,10 @@ public:
 
   // Get the averaged normal for the shared vertex.
   osg::Vec3f              averageNormal ( const SharedVertex *sv ) const;
+
+  unsigned int            blocks() const;
+  void                    blocksHide ( unsigned int );
+  void                    blocksShow ( unsigned int );
 
   // Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
@@ -124,6 +133,9 @@ public:
   void                    correctNormal ( const Triangle *t, osg::Vec3f &normal ) const;
   void                    correctNormal ( const SharedVertex *sv0, const SharedVertex *sv1, const SharedVertex *sv2, osg::Vec3f &normal ) const;
 
+  // Create subsets.
+  void                    createSubsets ( const Subsets& subsets, Unknown *caller );
+
   // Set/get dirty flags.
   void                    dirtyBlocks ( bool );
   bool                    dirtyBlocks() const;
@@ -132,7 +144,7 @@ public:
   void                    dirtyNormalsV ( bool );
   bool                    dirtyNormalsV() const;
 
-  // Get/Set the display list flag
+  // Get/Set the display list flag.
   bool                    displayList () const;
   void                    displayList ( bool );
   void                    setDirtyDisplayList();
@@ -147,29 +159,31 @@ public:
   // Flip the normal vectors.
   void                    flipNormals();
 
-  // Flip the normal of the i'th triangle
+  // Flip the normal of the i'th triangle.
   void                    flipNormal( unsigned int );
 
   // Get the bounding box.
   osg::BoundingBox        getBoundingBox() const;
 
-  // Get the vertex at the index
+  // Get the vertex at the index.
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
 
   // Convert hit to triangle index.
   unsigned int            index ( const osgUtil::Hit &hit ) const;
 
-  // Keep only these triangles
+  // Keep only these triangles.
   void                    keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller );
-  void                    createSubset (const Indices &keepers, TriangleSet *triSet, Usul::Interfaces::IUnknown *caller );
 
   // Return a new shared vertex or triangle.
   SharedVertex *          newSharedVertex ( unsigned int index, unsigned int numTrianglesToReserve = 0 );
   Triangle *              newTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, unsigned int index );
 
+  // Get the number of subdivisions.
+  unsigned int            numberSubDivisions( unsigned int numberTriangles );
+
   // Get the triangle given a drawable and primitive index.
-  const Triangle *        triangle ( const osg::Drawable *d, unsigned int num ) const;
-  Triangle *              triangle ( const osg::Drawable *d, unsigned int num );
+  const Triangle *        triangle ( const osg::Geode* g, const osg::Drawable *d, unsigned int num ) const;
+  Triangle *              triangle ( const osg::Geode* g, const osg::Drawable *d, unsigned int num );
 
   // Get the center of the triangle.
   osg::Vec3f              triangleCenter ( unsigned int ) const;
@@ -191,7 +205,7 @@ public:
 
   // Remove these triangles
   void                    removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown *caller );
-  void                    removeTriangle ( const osg::Drawable *d, unsigned int num );
+  void                    removeTriangle ( const osg::Geode* g, const osg::Drawable *d, unsigned int num );
 
   // Make space for the triangles.
   void                    reserve ( unsigned int );
@@ -204,21 +218,21 @@ public:
 
   // Sets triangles as visited based on a vector of indices
   void                    setVisited(Indices &keepers);
+  
   // Returns the index of the first triangle flagged as visited=FALSE
-  Int32                  firstUnvisited();
-
+  Int32                   firstUnvisited();
 
   // Get the shared vertices. Be real careful when using this.
   const SharedVertices &  sharedVertices() const { return _shared; }
   SharedVertices &        sharedVertices()       { return _shared; }
 
   // Get the shared-vertices of the i'th triangle.
-  const SharedVertex *    sharedVertex0 ( const osg::Drawable* d, unsigned int i ) const;
-  const SharedVertex *    sharedVertex1 ( const osg::Drawable* d, unsigned int i ) const;
-  const SharedVertex *    sharedVertex2 ( const osg::Drawable* d, unsigned int i ) const;
-  SharedVertex *          sharedVertex0 ( const osg::Drawable* d, unsigned int i );
-  SharedVertex *          sharedVertex1 ( const osg::Drawable* d, unsigned int i );
-  SharedVertex *          sharedVertex2 ( const osg::Drawable* d, unsigned int i );
+  const SharedVertex *    sharedVertex0 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
+  const SharedVertex *    sharedVertex1 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
+  const SharedVertex *    sharedVertex2 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
+  SharedVertex *          sharedVertex0 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i );
+  SharedVertex *          sharedVertex1 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i );
+  SharedVertex *          sharedVertex2 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i );
 
   // Get the triangles. Use with caution.
   const TriangleVector &  triangles() const { return _triangles; }
@@ -239,9 +253,9 @@ public:
   const osg::Vec3f &      vertex2 ( unsigned int ) const;
 
   // Get the vertices of the i'th triangle.
-  const osg::Vec3f &      vertex0 ( const osg::Drawable* d, unsigned int i ) const;
-  const osg::Vec3f &      vertex1 ( const osg::Drawable* d, unsigned int i ) const;
-  const osg::Vec3f &      vertex2 ( const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex0 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex1 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
+  const osg::Vec3f &      vertex2 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i ) const;
 
   // Get the normal of the i'th vertex.
   const osg::Vec3f &      vertexNormal ( unsigned int ) const;
@@ -254,6 +268,8 @@ protected:
 
   // Use reference counting.
   virtual ~TriangleSet();
+
+  Blocks*                 _blocksGet ( const osg::Geode* g ) const;
 
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
 
@@ -292,9 +308,10 @@ private:
   unsigned int _flags;
   osg::BoundingBox _bbox;
   FactoryPtr _factory;
-  BlocksPtr _blocks;
+  BlocksVector _blocks;
   Progress _progress;
   ColorFunctor::RefPtr _color;
+  GroupPtr _root;
 };
 
 

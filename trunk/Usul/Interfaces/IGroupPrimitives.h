@@ -33,6 +33,16 @@ struct IGroupPrimitives : public Usul::Interfaces::IUnknown
 
   // Delete all things connected to the "hit".
   virtual void groupPrimitives ( Usul::Interfaces::IUnknown *caller ) = 0;
+
+  // Get the number of groups.
+  virtual unsigned int groupsNumber () const = 0;
+
+  // Hide/Show group by number
+  virtual void groupHide ( unsigned int ) = 0;
+  virtual void groupShow ( unsigned int ) = 0;
+
+  // Is the given group shown?
+  virtual bool groupShown ( unsigned int ) const = 0;
 };
 
 

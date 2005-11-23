@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: OsgTools"
 	ProjectGUID="{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -328,6 +327,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utilities\DirtyBounds.h"
+					>
+				</File>
+				<File
 					RelativePath=".\FlipNormals.h"
 					>
 				</File>
@@ -408,6 +411,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utilities\ReferenceFrame.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sample.cpp"
 					>
 				</File>
@@ -429,14 +436,6 @@
 				</File>
 				<File
 					RelativePath=".\SetDataVariance.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SortBackToFrontCallback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SortBackToFrontCallback.h"
 					>
 				</File>
 				<File
@@ -635,6 +634,22 @@
 					RelativePath=".\Callbacks\BoundingBox.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Callbacks\BoundingSphere.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Callbacks\BoundingSphere.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Callbacks\SortBackToFront.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Callbacks\SortBackToFront.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Drawables"
@@ -669,6 +684,10 @@
 				</File>
 				<File
 					RelativePath=".\Render\ClampProjection.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Constants.h"
 					>
 				</File>
 				<File

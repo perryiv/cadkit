@@ -17,7 +17,7 @@
 #include "osg/Geode"
 
 namespace OsgTools {
-
+  namespace Callbacks {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -25,13 +25,13 @@ namespace OsgTools {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class OSG_TOOLS_EXPORT SortBackToFrontCallback : public osg::NodeCallback
+class OSG_TOOLS_EXPORT SortBackToFront : public osg::NodeCallback
 {
 public:
   typedef osg::NodeCallback BaseClass;
 
-  SortBackToFrontCallback();
-  virtual ~SortBackToFrontCallback();
+  SortBackToFront();
+  virtual ~SortBackToFront();
 
   virtual void operator() ( osg::Node* node, osg::NodeVisitor* nv );
     
@@ -49,7 +49,7 @@ class OSG_TOOLS_EXPORT SetSortToFrontCallback : public osg::NodeVisitor
 public:
   typedef osg::NodeVisitor BaseClass;
 
-  SetSortToFrontCallback ( TraversalMode mode = BaseClass::TRAVERSE_ALL_CHILDREN ) : BaseClass( mode ), _cb ( new SortBackToFrontCallback ) 
+  SetSortToFrontCallback ( TraversalMode mode = BaseClass::TRAVERSE_ALL_CHILDREN ) : BaseClass( mode ), _cb ( new SortBackToFront ) 
   { 
     // Always hit every node.
     const unsigned int all ( 0xffffffff );
@@ -68,7 +68,7 @@ protected:
   virtual ~SetSortToFrontCallback () { }
 
 private:
-  osg::ref_ptr< SortBackToFrontCallback > _cb;
+  osg::ref_ptr< SortBackToFront > _cb;
 };
 
 
@@ -98,6 +98,7 @@ protected:
 
 };
 
+  }
 }
 
 

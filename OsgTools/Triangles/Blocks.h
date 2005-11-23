@@ -59,8 +59,14 @@ public:
   bool                      displayList() const;
   void                      displayList ( bool );
 
+  // Get the geode for this blocks.
+  const osg::Geode*         geode() const;
+  osg::Geode*               geode();
+
   // Purge any excess memory.
   void                      purge();
+
+  // Dirty the display lists.
   void                      setDirtyDisplayList();
 protected:
 

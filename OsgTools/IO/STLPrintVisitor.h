@@ -111,8 +111,8 @@ void STLPrintVisitor<Writer>::_writeDrawable( osg::Drawable& drawable)
   // See if the drawable is a geometry.
   if( osg::Geometry *geometry = drawable.asGeometry() )
   {
-    osg::ref_ptr< osg::Vec3Array > vertices ( dynamic_cast< osg::Vec3Array*> ( geometry->getVertexArray() ) );
-    osg::ref_ptr< osg::Vec3Array > normals  ( geometry->getNormalArray() );
+    osg::ref_ptr< osg::Vec3Array > vertices ( dynamic_cast< osg::Vec3Array* > ( geometry->getVertexArray() ) );
+    osg::ref_ptr< osg::Vec3Array > normals  ( dynamic_cast< osg::Vec3Array* > ( geometry->getNormalArray() ) );
 
     // Are we binding per vertex or per primitive
     bool bindPerVertex ( geometry->getNormalBinding() == osg::Geometry::BIND_PER_VERTEX );

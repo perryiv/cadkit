@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SortBackToFrontCallback.h"
+#include "SortBackToFront.h"
 
 #include "Usul/Errors/Assert.h"
 
@@ -16,7 +16,7 @@
 
 #include <algorithm>
 
-using namespace OsgTools;
+using namespace OsgTools::Callbacks;
 
 namespace Detail
 {
@@ -353,7 +353,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SortBackToFrontCallback::SortBackToFrontCallback() : BaseClass ()
+SortBackToFront::SortBackToFront() : BaseClass ()
 {
 }
 
@@ -364,7 +364,7 @@ SortBackToFrontCallback::SortBackToFrontCallback() : BaseClass ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SortBackToFrontCallback::~SortBackToFrontCallback()
+SortBackToFront::~SortBackToFront()
 {
 }
 
@@ -375,7 +375,7 @@ SortBackToFrontCallback::~SortBackToFrontCallback()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SortBackToFrontCallback::operator () ( osg::Node* node, osg::NodeVisitor *nv )
+void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
 {
   // Get the eye position.
   const osg::Vec3& eye ( nv->getEyePoint() );
@@ -412,7 +412,9 @@ void SortBackToFrontCallback::operator () ( osg::Node* node, osg::NodeVisitor *n
         // Putting this here so if that changes we know what needs fixes.
         USUL_ASSERT ( vertices != 0x0 );
 
-        osg::ref_ptr< osg::Vec3Array > normals  ( geometry->getNormalArray() );
+        osg::ref_ptr< osg::Vec3Array > normals  ( dynamic_cast < osg::Vec3Array * > ( geometry->getNormalArray() ) );
+
+        USUL_ASSERT ( normals != 0x0 );
 
         // Go through each primitive set
         for ( PrimitiveSetList::iterator i = prims.begin(); i != prims.end(); ++i )

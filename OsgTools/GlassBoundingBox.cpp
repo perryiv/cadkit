@@ -12,7 +12,7 @@
 #include <functional>
 
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/SortBackToFrontCallback.h"
+#include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Font.h"
 
 #include "osg/Group"

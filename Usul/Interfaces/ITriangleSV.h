@@ -31,12 +31,12 @@ struct ITriangleSV : public Usul::Interfaces::IUnknown
   enum { IID = 4260819650u };
 
   // Get the shared vertices of the i'th triangle.
-  virtual const SharedVertex*         sharedVertex0 ( const osg::Drawable*, unsigned int i ) const = 0;
-  virtual const SharedVertex*         sharedVertex1 ( const osg::Drawable*, unsigned int i ) const = 0;
-  virtual const SharedVertex*         sharedVertex2 ( const osg::Drawable*, unsigned int i ) const = 0;
-  virtual SharedVertex*               sharedVertex0 ( const osg::Drawable*, unsigned int i ) = 0;
-  virtual SharedVertex*               sharedVertex1 ( const osg::Drawable*, unsigned int i ) = 0;
-  virtual SharedVertex*               sharedVertex2 ( const osg::Drawable*, unsigned int i ) = 0;
+  virtual const SharedVertex*         sharedVertex0 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const SharedVertex*         sharedVertex1 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) const = 0;
+  virtual const SharedVertex*         sharedVertex2 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) const = 0;
+  virtual SharedVertex*               sharedVertex0 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) = 0;
+  virtual SharedVertex*               sharedVertex1 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) = 0;
+  virtual SharedVertex*               sharedVertex2 ( const osg::Geode *g, const osg::Drawable*, unsigned int i ) = 0;
 };
 
 

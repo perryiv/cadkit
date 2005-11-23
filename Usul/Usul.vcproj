@@ -1297,6 +1297,16 @@
 					RelativePath=".\Devices\State.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="App"
+				Filter="">
+				<File
+					RelativePath=".\App\Controller.cpp">
+				</File>
+				<File
+					RelativePath=".\App\Controller.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

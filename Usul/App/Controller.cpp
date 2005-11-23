@@ -1,0 +1,200 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Controller.h"
+
+#include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IBoundingBox.h"
+#include "Usul/Interfaces/IBoundingSphere.h"
+
+using namespace Usul::App;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Controller::Controller(void)
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Controller::~Controller(void)
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the active document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Documents::Document* Controller::activeDocument()
+{
+  return Usul::Documents::Manager::instance().active();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the active view, which may be null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IViewer *Controller::activeView()
+{
+  return ( this->activeDocument() ? this->activeDocument()->activeView() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the polygon mode active?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::hasPolygonMode ( IPolygonMode::Mode mode )
+{
+  Usul::Interfaces::IPolygonMode::QueryPtr polygon ( this->activeView() );
+
+  return ( polygon.valid() && mode == polygon->polygonMode ( ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a polygon mode is selected.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::setPolygonMode ( IPolygonMode::Mode mode )
+{
+  Usul::Interfaces::IPolygonMode::QueryPtr polygon ( this->activeView() );
+
+  if( polygon.valid() )
+  {
+    // If it already has the mode remove it.
+    if( mode == polygon->polygonMode( ) )
+      polygon->polygonMode ( IPolygonMode::NONE );
+
+    // Set the mode.
+    else
+      polygon->polygonMode ( mode );
+
+    // Redraw.
+    this->activeView()->render();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the polygon mode button be enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::polygonModeEnable ()
+{
+  Usul::Interfaces::IPolygonMode::QueryPtr polygon ( this->activeView() );
+
+  return polygon.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the shade model active?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::hasShadeModel ( IShadeModel::Mode mode )
+{
+  Usul::Interfaces::IShadeModel::QueryPtr shading ( this->activeView() );
+  return ( shading.valid() && mode == shading->shadeModel() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a shade model is selected.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::setShadeModel ( IShadeModel::Mode mode )
+{
+  Usul::Interfaces::IShadeModel::QueryPtr shading ( this->activeView() );
+
+  // If there is a valid interface.
+  if( shading.valid() )
+  {
+    shading->shadeModel( mode );
+    this->activeView()->render();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the shade model button be enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::shadeModelEnable ()
+{
+  Usul::Interfaces::IShadeModel::QueryPtr shading ( this->activeView() );
+  return shading.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::boundingBoxToggle()
+{
+  Usul::Interfaces::IBoundingBox::QueryPtr bb ( this->activeView() );
+
+  // Toggle the state.
+  if ( bb.valid() )
+  {
+    bb->boundingBox ( !bb->boundingBox() );
+    this->activeView()->render();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the bounding sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::boundingSphereToggle()
+{
+  Usul::Interfaces::IBoundingSphere::QueryPtr bs ( this->activeView() );
+
+  // Toggle the state.
+  if ( bs.valid() )
+  {
+    bs->boundingSphere ( !bs->boundingSphere() );
+    this->activeView()->render();
+  }
+}
+

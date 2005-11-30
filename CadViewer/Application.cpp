@@ -80,6 +80,9 @@
 
 #include "MenuKit/MemFunCallback.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -449,6 +452,9 @@ void Application::_init()
   // Set Auto-Placement flag
   _autoPlacement = _prefs->autoPlacement();
   
+  // Create & clear tmp subdirectory
+  _initTmpDir();
+  
   // Set the background color.
   const Preferences::Vec4f &bc = _prefs->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
@@ -501,7 +507,7 @@ void Application::_init()
   
   // Setup Sinterpoint if enabled
 # if defined (USE_SINTERPOINT)
-    this->_sinterPointInit();
+  this->_sinterPointInit();
 # endif
 }
 
@@ -3406,6 +3412,41 @@ void Application::_deleteScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Delete temporary files, create temporary directory
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initTmpDir()
+{
+  // If directory name is empty, generate it
+  if ( _tmpDirName.size() == 0 )
+  {
+    _tmpDirName = "/tmp/cv-";
+    _tmpDirName += getenv( "USER" );
+    _tmpDirName += "/";
+  }
+  
+  struct stat fbuf;
+  std::string cmd;
+  
+  // if directory exists, delete it
+  if ( !::stat ( _tmpDirName.c_str(), &fbuf ) )
+  {
+    // Delete directory and all its subdirectories
+    cmd = "rm -r ";
+    cmd += _tmpDirName;
+    system ( cmd.c_str() );
+  }
+  
+  // Make the directory
+  cmd = "mkdir ";
+  cmd += _tmpDirName;
+  system ( cmd.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Patch node with diff residing in stream nodeDiff
 //  On completion nodeDiff contains the new node ready for streamed input
 //  Note this makes use of tmp files and system calls for the "patch" command
@@ -3414,8 +3455,8 @@ void Application::_deleteScene()
 
 bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff )
 {
-  std::string tmpDiffFileName = "/tmp/cvDiffFile.txt";
-  std::string tmpNodeFileName = "/tmp/cvDiffedNodeFile.osg";
+  std::string tmpDiffFileName = _tmpDirName + "cvDiffFile.patch";
+  std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + ".osg";
   
   // Open a temporary diffFile and drop the nodeDiff stream data in
   std::ofstream diffFile;
@@ -3447,17 +3488,10 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
     return false;
   }
 
-  // Write matching node to file
-  if ( !osgDB::writeNodeFile ( *(match.node), tmpNodeFileName ) )
-  {
-    std::cout << "ERROR: file " << tmpNodeFileName << " failed to open for writing" << std::endl;
-    return false;
-  }
-
   // Now patch the node file with the diff
   std::cout << "Patching node file" << std::endl;
   std::string cmd;
-  cmd = std::string("patch ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
+  cmd = std::string("patch -l -u ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
   system(cmd.c_str());
 
   // Reopen the patched file and pass back into nodeDiff stream, now a new osg model stream
@@ -3633,9 +3667,7 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
       int size = _sinterAppData->_data.size();
             
       int processed_size = 0;
-      
-      //std::cout << "MsgSize = " << size << std::endl;
-      
+            
       while ( processed_size < size )
       {         
         // If we are in data receive mode, just keep grabbing data
@@ -3670,10 +3702,27 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
               _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
               _sinterDiffFlag = false;
             }
+            else
+            {
+              // Save model stream to file
+              std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + ".osg";
+              std::ofstream nodeFile;
+              nodeFile.open ( tmpNodeFileName.c_str() );
+              if ( !nodeFile.is_open() )
+              {
+                std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
+              }
+              else
+              {
+                nodeFile << _sinterStream.rdbuf();
+                nodeFile.close();
+                _sinterStream.seekg(0);
+              }
+            }
 
             // Load the model into the scene
-            this->_loadModelStream ( _sinterStream, _sinterNodeName );
-
+            this->_loadModelStream ( _sinterStream, _sinterNodeName );            
+                        
             _sinterState = COMMAND;
           }
 
@@ -3700,6 +3749,8 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
             if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
             {
               _sinterNodeName = _getCmdValue(cmd);
+              // convert to lowercase to prevent problems with matching later
+              std::transform ( _sinterNodeName.begin(), _sinterNodeName.end(), _sinterNodeName.begin(), ::tolower );
               std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
             }
 
@@ -3722,12 +3773,19 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
             // Enter receive data mode
             else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
             {
-              _sinterStream.clear();
-              _sinterStream.str("");
-              _sinterStreamSize = 0;
-              _sinterState = DATA;
-              std::cout << "Begin receive of osg node..." << std::endl;
-              _sinterTime1 = _getClockTime();
+              if ( _sinterDataSize > 0 )
+              {
+                _sinterStream.clear();
+                _sinterStream.str("");
+                _sinterStreamSize = 0;
+                _sinterState = DATA;
+                std::cout << "Begin receive of osg node..." << std::endl;
+                _sinterTime1 = _getClockTime();
+              }
+              else
+              {
+                std::cout << "Data Size Zero; Not entering Data Receive Mode." << std::endl;
+              }
             }
 
             // Delete the whole scene
@@ -3735,6 +3793,7 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
             {
               std::cout << "Deleting all models in scene" << std::endl;
               _deleteScene();
+              _initTmpDir();
             }
 
             else

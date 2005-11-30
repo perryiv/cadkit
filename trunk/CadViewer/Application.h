@@ -411,7 +411,10 @@ protected:
   bool                          _recursiveMatchNodeName ( const std::string &name , osg::Node *model, Matcher *match );
 
   // Clear out all models in scene
-  void                          _deleteScene(); 
+  void                          _deleteScene();
+  
+  // Create & clear out temporary directory
+  void                          _initTmpDir();
 
   // Patch node file with diff
   bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
@@ -570,6 +573,7 @@ protected:
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;
   bool              _animations;
+  std::string       _tmpDirName;
 
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables

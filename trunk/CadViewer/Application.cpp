@@ -272,7 +272,8 @@ Application::Application ( Args &args ) :
   _textures       ( true ),
   _scribeBranch   ( new osg::MatrixTransform ),
   _autoPlacement  ( false ),
-  _animations     ( true )
+  _animations     ( true ),
+  _nextFrameTime  ( 0.0 )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -445,7 +446,7 @@ void Application::_init()
 
   // Call the base class's function first.
   BaseClass::init();
-
+  
   // Set the global GL_NORMALIZE flag.
   this->normalize ( _prefs->normalizeVertexNormalsGlobal() );
   
@@ -811,6 +812,7 @@ void Application::_initMenu()
   CV_REGISTER ( _gotoViewLeft,     "goto_left_view" );
   CV_REGISTER ( _rotateWorld,      "rotate_world" );
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
+  CV_REGISTER (_toggleAnimations,  "toggle_animations" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
@@ -999,10 +1001,10 @@ void Application::_preFrame()
 {
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067222382, _cursor.valid() );
-
+  
   // Call the base class's function.
   BaseClass::preFrame();
-
+  
   // Update the frame-time.
   this->_updateFrameTime();
 
@@ -1684,25 +1686,6 @@ void Application::_loadModelFile ( const std::string &filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Stream in the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadModelStream ( std::stringstream &modelstream , const std::string &name )
-{
-  ErrorChecker ( 1067093697u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Need an identity matrix.
-  Matrix44f matrix;
-  matrix.identity();
-
-  // Append the request.
-  this->_streamModel ( modelstream, matrix, name );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the restart file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1870,41 +1853,17 @@ osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
   return NULL;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Stream in the model and position it using the matrix.
+//  Add or replace a node in the scenegraph
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f &matrix , const std::string &name )
+void Application::_replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name )
 {
   ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067093698u, _models.valid() );
   
-  // reset this boolean
-  _autoPlacement = _prefs->autoPlacement();
-  
-  // User feedback.
-  this->_update ( *_msgText, "Reading model stream" );
-
-  // Stream in the file
-  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension("osg");
-  if(!rw){
-	  std::ostringstream out;
-    out << "Error: OSG plugin not available, streamed file input will fail.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( modelstream );
-  if(!rr.validNode()){
-	  std::ostringstream out;
-    out << "Error: Streamed input of node file failed, resulting node not vaild.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  NodePtr node = rr.getNode();
-
   // See if this node name matches any other in the scene
   bool matched = false;
   osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
@@ -1976,6 +1935,8 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
 
     // Set its matrix.
     osg::Matrixf M;
+    Matrix44f matrix;
+    matrix.identity();
     OsgTools::Convert::matrix ( matrix, M );
     mt->setMatrix ( M );
 
@@ -1995,10 +1956,47 @@ void Application::_streamModel ( std::stringstream &modelstream, const Matrix44f
 
     // Hook things up.
     _models->addChild ( mt.get() );
-
-    // Do any post-processing.
-    this->_postProcessModelLoad ( std::string("streamed"), node.get() );
   }
+  
+  // Do any post-processing.
+  this->_postProcessModelLoad ( std::string("streamed"), node.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stream in the model and position it using the matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_streamModel ( std::stringstream &modelstream, const std::string &name )
+{
+  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
+  
+  // reset this boolean
+  //_autoPlacement = _prefs->autoPlacement();
+  
+  // User feedback.
+  this->_update ( *_msgText, "Reading model stream" );
+
+  // Stream in the file
+  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
+  if(!rw){
+	  std::ostringstream out;
+    out << "Error: " << _sinterFileType << " plugin not available, streamed file input will fail.";
+    this->_update ( *_msgText, out.str() );
+    return;
+  }
+  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( modelstream );
+  if(!rr.validNode()){
+	  std::ostringstream out;
+    out << "Error: Streamed input of node file failed, resulting node not vaild.";
+    this->_update ( *_msgText, out.str() );
+    return;
+  }
+  NodePtr node = rr.getNode();
+  
+  this->_replaceNode(node, name);
   
   // Signal user when done
   this->_update ( *_msgText, "Done reading model stream" );
@@ -2422,10 +2420,10 @@ void Application::_updateFrameTime()
   }
   // Get the current frame-time.
   double currentFrameTime ( this->_getElapsedTime() );
-
+    
   // Set the time interval.
   _frameTime = currentFrameTime - lastFrameTime;
-
+    
 #if 0
   // Make sure it is not zero.
   WarningChecker ( 1074200431u, _frameTime > 0, "Frame-time is zero" );
@@ -2811,7 +2809,7 @@ void Application::_loadSimConfigs ( std::string dir )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::_getElapsedTime() const
+double Application::_getElapsedTime()
 {
   ErrorChecker ( 1074354783, isAppThread(), CV::NOT_APP_THREAD );
 #if 0 // Lousy on linux.
@@ -2952,6 +2950,9 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
   
   if ( _autoPlacement )
     _doAutoPlacement(true);
+  
+  // reset this boolean
+  _autoPlacement = _prefs->autoPlacement();
 }
 
 
@@ -3456,7 +3457,7 @@ void Application::_initTmpDir()
 bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff )
 {
   std::string tmpDiffFileName = _tmpDirName + "cvDiffFile.patch";
-  std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + ".osg";
+  std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
   
   // Open a temporary diffFile and drop the nodeDiff stream data in
   std::ofstream diffFile;
@@ -3493,18 +3494,37 @@ bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::strings
   std::string cmd;
   cmd = std::string("patch -l -u ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
   system(cmd.c_str());
+  
+  // Load patched file =====
+  
+  // reset this boolean
+  //_autoPlacement = _prefs->autoPlacement();
+  
+  // User feedback.
+  this->_update ( *_msgText, "Reading model from patched file" );
 
-  // Reopen the patched file and pass back into nodeDiff stream, now a new osg model stream
-  std::ifstream nodeFile;
-  nodeFile.open ( tmpNodeFileName.c_str() );
-  if ( !nodeFile.is_open() )
-  {
-    std::cout << "ERROR: file " << tmpNodeFileName << " failed to open for reading" << std::endl;
+  // Load in the file
+  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
+  if(!rw){
+	  std::ostringstream out;
+    out << "Error: " << _sinterFileType << " plugin not available, patched file load will fail.";
+    this->_update ( *_msgText, out.str() );
     return false;
   }
-  nodeDiff << nodeFile.rdbuf();
-  diffFile.close();
-
+  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( tmpNodeFileName );
+  if(!rr.validNode()){
+	  std::ostringstream out;
+    out << "Error: read of patched file failed, resulting node not vaild.";
+    this->_update ( *_msgText, out.str() );
+    return false;
+  }
+  NodePtr node = rr.getNode();
+  
+  this->_replaceNode(node, nodeName);
+  
+  // Signal user when done
+  this->_update ( *_msgText, "Done reading patched model." );
+  
   return true;
 }
 
@@ -3530,15 +3550,7 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
     apc = dynamic_cast<osg::AnimationPathCallback*>(nc);
     if (apc)
     {
-      ap = apc->getAnimationPath();
-      if (ap)
-      {
-        // Set to loop or not loop as requested
-        if(onOff)
-          ap->setLoopMode(osg::AnimationPath::LOOP);
-        else
-          ap->setLoopMode(osg::AnimationPath::NO_LOOPING);
-      }
+      apc->setPause(!onOff);
     }
   }
   
@@ -3704,8 +3716,11 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
             }
             else
             {
+              // Load the model into the scene
+              this->_streamModel ( _sinterStream, _sinterNodeName );   
+              
               // Save model stream to file
-              std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + ".osg";
+              std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
               std::ofstream nodeFile;
               nodeFile.open ( tmpNodeFileName.c_str() );
               if ( !nodeFile.is_open() )
@@ -3714,14 +3729,11 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
               }
               else
               {
+                _sinterStream.seekg(0);
                 nodeFile << _sinterStream.rdbuf();
                 nodeFile.close();
-                _sinterStream.seekg(0);
               }
             }
-
-            // Load the model into the scene
-            this->_loadModelStream ( _sinterStream, _sinterNodeName );            
                         
             _sinterState = COMMAND;
           }
@@ -3753,7 +3765,14 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
               std::transform ( _sinterNodeName.begin(), _sinterNodeName.end(), _sinterNodeName.begin(), ::tolower );
               std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
             }
-
+            
+            // Get the data type
+            else if ( cmd.find ( "FILE_TYPE", 0 ) != std::string::npos )
+            {
+              _sinterFileType = _getCmdValue(cmd);
+              std::cout << "Received file type = " << _sinterFileType.c_str() << std::endl;
+            }
+            
             // Get the node size
             else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
             {
@@ -3827,16 +3846,17 @@ void Application::_doAutoPlacement( const bool replace_matrix )
 
   // center the models
   osg::Matrixf autoPlaceXform;
-
+    
   // scale model only, not grid
   const float scale = _prefs->autoPlaceRadius() / sphere.radius();
+  //std::cout << "RADIUS = " << sphere.radius() << std::endl;
   autoPlaceXform.makeScale( scale, scale, scale );
   _models->preMult( autoPlaceXform );
-
+  
   // translate grid & model
   const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
-  autoPlaceXform.makeTranslate( osg::Vec3 ( ac[0], ac[1], ac[2] ) - sphere.center() );
-
+  autoPlaceXform.makeTranslate( ( osg::Vec3 ( ac[0], ac[1], ac[2] ) - sphere.center() ) );
+  
   // either replace the nav matrix or multiply the current one
   if( replace_matrix )
     _navBranch->setMatrix( autoPlaceXform );

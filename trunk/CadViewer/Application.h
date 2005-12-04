@@ -284,7 +284,7 @@ protected:
   const osg::Vec4&              _getColor ( const std::string& s ) const;
 
   // Get the elapsed time since the program started (in seconds).
-  double                        _getElapsedTime() const;
+  double                        _getElapsedTime();
 
   // Get the duration of the last frame in seconds.
   double                        _getFrameTime() const;
@@ -316,7 +316,6 @@ protected:
 
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
-  void                          _loadModelStream ( std::stringstream &modelstream, const std::string &name );
   void                          _loadRestartFile ( const std::string &filename );
   void                          _loadConfigFiles ( const std::list<std::string> &configs );
   void                          _loadSimConfigs  ( std::string dir );
@@ -337,6 +336,7 @@ protected:
   // Called by the kernel before the frame.
   virtual void                  preFrame();
   void                          _preFrame();
+  
 
   // Process the button states.
   void                          _processButtons();
@@ -353,7 +353,8 @@ protected:
   
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
-  void                          _streamModel ( std::stringstream &modelstream, const Matrix44f &matrix , const std::string &name);
+  void                          _streamModel ( std::stringstream &modelstream, const std::string &name);
+  void                          _replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name );
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -574,6 +575,7 @@ protected:
   bool              _autoPlacement;
   bool              _animations;
   std::string       _tmpDirName;
+  double            _nextFrameTime;
 
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables
@@ -586,6 +588,7 @@ protected:
     std::string                         _sinterNodeName;
     bool                                _sinterDiffFlag;
     std::string                         _sinterTmpString;
+    std::string                         _sinterFileType;
 
     // Functions used for networked file loading with SinterPoint, if enabled
     void            _sinterPointInit();

@@ -227,7 +227,7 @@ namespace Detail
       osg::BoundingSphere bs2 ( b->getBound() );
 
       double da ( (_eye - bs1.center()).length2 ( ) );
-      double db ( (_eye - bbs2.center()).length2 ( ) );
+      double db ( (_eye - bs2.center()).length2 ( ) );
 
       return ( da > db );
     }

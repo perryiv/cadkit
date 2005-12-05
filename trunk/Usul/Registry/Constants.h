@@ -57,6 +57,8 @@ namespace Usul
       const std::string DISPLAY_LISTS             = "display_lists";
       const std::string LOW_LODS                  = "low_lods";
       const std::string HIGH_LODS                 = "high_lods";
+      const std::string FOV                       = "fov";
+      const std::string PERSPECTIVE               = "perspective";
     };
   };
 };

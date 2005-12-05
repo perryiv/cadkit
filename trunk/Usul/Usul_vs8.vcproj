@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: Usul"
 	ProjectGUID="{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -81,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="Ws2_32.lib"
+				AdditionalDependencies="Ws2_32.lib opengl32.lib"
 				OutputFile="$(USUL_LIB_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -180,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="Ws2_32.lib"
+				AdditionalDependencies="Ws2_32.lib opengl32.lib"
 				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

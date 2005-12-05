@@ -19,7 +19,7 @@
 #include "OsgTools/Export.h"
 
 #include <string>
-
+#include <vector>
 
 namespace OsgTools {
 namespace Render {
@@ -28,6 +28,10 @@ namespace Render {
 class OSG_TOOLS_EXPORT FrameDump
 {
 public:
+
+  // Typedefs.
+  typedef std::string Filename;
+  typedef std::vector< Filename > Filenames;
 
   FrameDump();
   FrameDump ( bool dump, const std::string &dir, const std::string &base, const std::string &ext, unsigned int start = 0, unsigned int digits = 10 );
@@ -52,6 +56,10 @@ public:
 
   std::string               filename() const;
 
+  const Filenames&          filenames() const;
+
+  void                      filenamesSave( bool );
+
   const std::string &       ext() const { return _ext; }
   void                      ext ( const std::string &e ) { _ext = e; }
 
@@ -69,6 +77,8 @@ private:
   unsigned int _start;
   unsigned int _digits;
   mutable unsigned int _current;
+  bool _saveFilenames;
+  mutable Filenames _filenames;
 };
 
 

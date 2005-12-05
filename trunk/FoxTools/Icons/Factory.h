@@ -32,14 +32,9 @@ class FOX_TOOLS_EXPORT Factory
 {
 public:
 
-  // Useful typedef(s).
-  typedef std::vector < unsigned char > Array;
-  typedef std::pair < const FX::FXMetaClass *, Array > Data;
-
   // Icons
   enum 
   {
-    ICON_ABOUT, 
     ICON_COPY, 
     ICON_CUT, 
     ICON_DELETE, 
@@ -57,7 +52,6 @@ public:
     ICON_PRINT, 
     ICON_QUESTION, 
     ICON_SAVE, 
-    ICON_TUX, 
     ICON_WARNING,
     ICON_ARROW,
     ICON_EYE,
@@ -68,7 +62,6 @@ public:
     ICON_POLYGONS_HIDDEN,
     ICON_POLYGONS_POINTS,
     ICON_SEEK,
-    ICON_SET_HOME,
     ICON_TOOL_SELECTION,
     ICON_NO_TRIANGLE,
     ICON_TRIANGLE,
@@ -94,7 +87,6 @@ public:
     ICON_LIGHTING_ON,
     ICON_LIGHTING_TWO_SIDED_OFF,
     ICON_LIGHTING_TWO_SIDED_ON,
-    ICON_NO_LIGHTNING_BOLT,
     ICON_LIGHTNING_BOLT,
     ICON_CURVE,
     ICON_FLAT,
@@ -106,12 +98,6 @@ public:
 
   // It's a singleton.
   static Factory *    instance();
-
-  // Get the icon data. Throws if value not found.
-  const Data &        data ( unsigned int id ) const;
-
-  // Set the icon data.
-  void                data ( unsigned int id, const Data &d );
 
   // Get the icon. Throws if value not found.
   FX::FXIcon *        icon ( unsigned int id ) const;
@@ -126,7 +112,7 @@ private:
   Factory ( const Factory & );
   Factory &operator = ( const Factory & );
 
-  typedef std::map < unsigned int, Data > Map;
+  typedef std::map < unsigned int, std::string > Map;
   Map _map;
   static Factory *_instance;
 };

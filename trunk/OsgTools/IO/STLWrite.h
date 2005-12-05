@@ -17,9 +17,9 @@
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Exceptions/Thrower.h"
 
 #include <iostream>
-#include <sstream>
 
 namespace OsgTools {
 namespace IO {
@@ -100,19 +100,18 @@ struct WriteSTLFile
   template < class VertexSequence, class NormalSequence >
   static void write ( std::ostream& out, const VertexSequence& vertices, const NormalSequence& normals )
   {
-    //Throw if the number of normals is wrong
+    // Throw if the number of normals is wrong.
     if( normals.size() != vertices.size() / 3 )
     {
-      std::ostringstream message;
-      message << "Normals size is " << normals.size() << ".  Expecting size " << vertices.size() / 3 << std::endl;
-      throw std::runtime_error ( message.str() );
+      Usul::Exceptions::Thrower< std::runtime_error >
+        ( "Normals size is ", normals.size(), ".  Expecting size ", vertices.size() / 3, "\n" );
     }
 
+    // Throw if the number of normals is wrong.
     if( vertices.size() % 3 != 0 )
     {
-      std::ostringstream message;
-      message << "Vertices size is " << vertices.size() << ".  Expecting size " << vertices.size() / 3 << std::endl;
-      throw std::runtime_error ( message.str() );
+      Usul::Exceptions::Thrower< std::runtime_error >
+        ( "Vertices size is ", vertices.size(), ".  Expecting size ", vertices.size() / 3, "\n" );
     }
 
     //Create the writer

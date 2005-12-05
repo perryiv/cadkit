@@ -23,10 +23,16 @@
 #include "FoxTools/Headers/BMPIcon.h"
 #include "FoxTools/Headers/GIFIcon.h"
 #include "FoxTools/Headers/PNGIcon.h"
+#include "FoxTools/Headers/FileStream.h"
+
+#include "Usul/File/Path.h"
+#include "Usul/CommandLine/Arguments.h"
 
 #include <stdexcept>
 
 #include "Usul/Headers/SStream.h"
+
+#include <iostream>
 
 using namespace FoxTools;
 using namespace FoxTools::Icons;
@@ -47,10 +53,8 @@ Factory *Factory::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define ITERATORS(array_name) array_name, array_name + sizeof ( array_name )
-#define MAP_INSERT(format_type,name_space,image_name) \
-  _map.insert ( Value ( ICON_##image_name, Data ( format_type, Array \
-    ( ITERATORS ( name_space::IMAGE_##image_name ) ) ) ) )
+#define MAP_INSERT(image_name,filename) \
+  _map.insert ( Map::value_type ( ICON_##image_name, filename ) )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,78 +65,65 @@ Factory *Factory::_instance ( 0x0 );
 
 Factory::Factory() : _map()
 {
-  // For readability.
-  const FX::FXMetaClass *png = &FX::FXPNGIcon::metaClass;
-  const FX::FXMetaClass *gif = &FX::FXGIFIcon::metaClass;
-  const FX::FXMetaClass *bmp = &FX::FXBMPIcon::metaClass;
-  namespace PNG = Images::PNG;
-  namespace GIF = Images::GIF;
-  namespace BMP = Images::BMP;
-  typedef Map::value_type Value;
-
   // Populate the map.
-  MAP_INSERT ( png, PNG, ABOUT    );
-  MAP_INSERT ( gif, GIF, OPEN     );
-  MAP_INSERT ( gif, GIF, COPY     );
-  MAP_INSERT ( gif, GIF, CUT      );
-  MAP_INSERT ( gif, GIF, DELETE   );
-  MAP_INSERT ( gif, GIF, ERROR    );
-  MAP_INSERT ( gif, GIF, FRONT    );
-  MAP_INSERT ( gif, GIF, BACK     );
-  MAP_INSERT ( gif, GIF, TOP      );
-  MAP_INSERT ( gif, GIF, BOTTOM   );
-  MAP_INSERT ( gif, GIF, LEFT     );
-  MAP_INSERT ( gif, GIF, RIGHT    );
-  MAP_INSERT ( gif, GIF, INFO     );
-  MAP_INSERT ( gif, GIF, NEW      );
-  MAP_INSERT ( gif, GIF, PASTE    );
-  MAP_INSERT ( gif, GIF, PRINT    );
-  MAP_INSERT ( gif, GIF, QUESTION );
-  MAP_INSERT ( gif, GIF, SAVE     );
-  MAP_INSERT ( gif, GIF, TUX      );
-  MAP_INSERT ( gif, GIF, WARNING  );
-  MAP_INSERT ( gif, GIF, CAMERA   );
-  MAP_INSERT ( gif, GIF, SEEK     );
-  MAP_INSERT ( gif, GIF, TOOL_SELECTION         );
-  MAP_INSERT ( gif, GIF, TRIANGLE               );
-  MAP_INSERT ( gif, GIF, NO_TRIANGLE            );
-  MAP_INSERT ( gif, GIF, DELETE_CONNECTED       );
-  MAP_INSERT ( gif, GIF, KEEP_CONNECTED         );
-  MAP_INSERT ( gif, GIF, ARROW                  );
-  MAP_INSERT ( gif, GIF, EYE                    );
-  MAP_INSERT ( gif, GIF, HAND                   );
-  MAP_INSERT ( gif, GIF, HOME                   );
-  MAP_INSERT ( gif, GIF, POLYGONS_FILLED        );
-  MAP_INSERT ( gif, GIF, POLYGONS_WIRE          );
-  MAP_INSERT ( gif, GIF, POLYGONS_HIDDEN        );
-  MAP_INSERT ( gif, GIF, POLYGONS_POINTS        );
-  MAP_INSERT ( gif, GIF, STOP                   );
-  MAP_INSERT ( gif, GIF, PAUSE                  );
-  MAP_INSERT ( gif, GIF, PLAY                   );
-  MAP_INSERT ( gif, GIF, PLAY_BACKWARDS         );
-  MAP_INSERT ( gif, GIF, FORWARD_ARROW          );
-  MAP_INSERT ( gif, GIF, FORWARD_ARROW_BAR      );
-  MAP_INSERT ( gif, GIF, BACKWARD_ARROW         );
-  MAP_INSERT ( gif, GIF, BACKWARD_ARROW_BAR     );
-  MAP_INSERT ( gif, GIF, RED_CIRCLE             );
-  MAP_INSERT ( gif, GIF, RED_X                  );
-  MAP_INSERT ( gif, GIF, WRITING                );
-  MAP_INSERT ( gif, GIF, XYZ                    );
-  MAP_INSERT ( gif, GIF, SMALL_DOT              );
-  MAP_INSERT ( gif, GIF, WRITE                  );
-  MAP_INSERT ( gif, GIF, LOGO                   );
-  MAP_INSERT ( gif, GIF, LIGHTING_OFF           );
-  MAP_INSERT ( gif, GIF, LIGHTING_ON            );
-  MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_OFF );
-  MAP_INSERT ( gif, GIF, LIGHTING_TWO_SIDED_ON  );
-  MAP_INSERT ( gif, GIF, NO_LIGHTNING_BOLT      );
-  MAP_INSERT ( gif, GIF, LIGHTNING_BOLT         );
-  MAP_INSERT ( gif, GIF, CURVE                  );
-  MAP_INSERT ( gif, GIF, FLAT                   );
-  MAP_INSERT ( gif, GIF, SMOOTH                 );
-  MAP_INSERT ( gif, GIF, GLASS_BOX              );
-  MAP_INSERT ( gif, GIF, BOUND_BOX              );  
-  MAP_INSERT ( bmp, BMP, SET_HOME               );
+  MAP_INSERT ( OPEN,                    "open.gif"                    );
+  MAP_INSERT ( COPY,                    "copy.gif"                    );
+  MAP_INSERT ( CUT,                     "cut.gif"                     );
+  MAP_INSERT ( DELETE,                  "delete.gif"                  );
+  MAP_INSERT ( ERROR,                   "error.gif"                   );
+  MAP_INSERT ( FRONT,                   "Front.gif"                   );
+  MAP_INSERT ( BACK,                    "Back.gif"                    );
+  MAP_INSERT ( TOP,                     "Top.gif"                     );
+  MAP_INSERT ( BOTTOM,                  "Bottom.gif"                  );
+  MAP_INSERT ( LEFT,                    "Left.gif"                    );
+  MAP_INSERT ( RIGHT,                   "Right.gif"                   );
+  MAP_INSERT ( INFO,                    "info.gif"                    );
+  MAP_INSERT ( NEW,                     "NewDocument.gif"             );
+  MAP_INSERT ( PASTE,                   "paste.gif"                   );
+  MAP_INSERT ( PRINT,                   "print.gif"                   );
+  MAP_INSERT ( QUESTION,                "question.gif"                );
+  MAP_INSERT ( SAVE,                    "Save.gif"                    );
+  MAP_INSERT ( WARNING,                 "warning.gif"                 );
+  MAP_INSERT ( CAMERA,                  "camera.gif"                  );
+  MAP_INSERT ( SEEK,                    "seek.gif"                    );
+  MAP_INSERT ( TOOL_SELECTION,          "selection.gif"               );
+  MAP_INSERT ( TRIANGLE,                "AddTriangle.gif"             );
+  MAP_INSERT ( NO_TRIANGLE,             "DeleteTriangle.gif"          );
+  MAP_INSERT ( DELETE_CONNECTED,        "deleteconnected.gif"         );
+  MAP_INSERT ( KEEP_CONNECTED,          "keepconnected.gif"           );
+  MAP_INSERT ( ARROW,                   "arrow.gif"                   );
+  MAP_INSERT ( EYE,                     "eye.gif"                     );
+  MAP_INSERT ( HAND,                    "hand.gif"                    );
+  MAP_INSERT ( HOME,                    "home.gif"                    );
+  MAP_INSERT ( POLYGONS_FILLED,         "filled.gif"                  );
+  MAP_INSERT ( POLYGONS_WIRE,           "WireFrame.gif"               );
+  MAP_INSERT ( POLYGONS_HIDDEN,         "Hidden.gif"                  );
+  MAP_INSERT ( POLYGONS_POINTS,         "points.gif"                  );
+  MAP_INSERT ( STOP,                    "stop.gif"                    );
+  MAP_INSERT ( PAUSE,                   "pause.gif"                   );
+  MAP_INSERT ( PLAY,                    "play.gif"                    );
+  MAP_INSERT ( PLAY_BACKWARDS,          "PlayReverse.gif"             );
+  MAP_INSERT ( FORWARD_ARROW,           "FastForward.gif"             );
+  MAP_INSERT ( FORWARD_ARROW_BAR,       "SkipForward.gif"             );
+  MAP_INSERT ( BACKWARD_ARROW,          "Rewind.gif"                  );
+  MAP_INSERT ( BACKWARD_ARROW_BAR,      "SkipReverse.gif"             );
+  MAP_INSERT ( RED_CIRCLE,              "FrameDump.gif"               );
+  MAP_INSERT ( RED_X,                   "redx.gif"                    );
+  MAP_INSERT ( WRITING,                 "writing.gif"                 );
+  MAP_INSERT ( XYZ,                     "xyz.gif"                     );
+  MAP_INSERT ( SMALL_DOT,               "small_dot.gif"               );
+  MAP_INSERT ( WRITE,                   "write.gif"                   );
+  MAP_INSERT ( LOGO,                    "logo.gif"                    );
+  MAP_INSERT ( LIGHTING_OFF,            "lighting_off.gif"            );
+  MAP_INSERT ( LIGHTING_ON ,            "lighting_on.gif"             );
+  MAP_INSERT ( LIGHTING_TWO_SIDED_OFF,  "lighting_two_sides_off.gif"  );
+  MAP_INSERT ( LIGHTING_TWO_SIDED_ON,   "lighting_two_sides_on.gif"   );
+  MAP_INSERT ( LIGHTNING_BOLT,          "lightning.gif"               );
+  MAP_INSERT ( CURVE,                   "curve.gif"                   );
+  MAP_INSERT ( FLAT,                    "FacetLight.gif"              );
+  MAP_INSERT ( SMOOTH,                  "VertexLight.gif"             );
+  MAP_INSERT ( GLASS_BOX,               "Glass_Box.gif"               );
+  MAP_INSERT ( BOUND_BOX,               "BoundBox.gif"                );  
 }
 
 
@@ -163,66 +154,45 @@ Factory *Factory::instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the icon data. Throws if value not found.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Factory::Data &Factory::data ( unsigned int id ) const
-{
-  // Look for the icon.
-  Map::const_iterator i = _map.find ( id );
-
-  // Make sure it worked.
-  if ( _map.end() == i )
-  {
-    std::ostringstream message;
-    message << "Error 3446334204, invalid icon id = " << id;
-    throw std::runtime_error ( message.str() );
-  }
-
-  // Return the array.
-  return i->second;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the icon data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Factory::data ( unsigned int id, const Data &d )
-{
-  _map[id] = d;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the icon. Throws if value not found.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 FX::FXIcon *Factory::icon ( unsigned int id ) const
 {
-  // Get the icon data.
-  const Factory::Data &data = this->data ( id );
-  const FX::FXMetaClass *type = data.first;
-  const Factory::Array &array = data.second;
+  Map::const_iterator iter = _map.find ( id );
+
+  std::string filename ( iter != _map.end() ? iter->second : "" );
+
+  filename = Usul::CommandLine::Arguments::instance().directory() + "\\icons\\" + filename;
 
   // Make the icon.
   FX::FXApp *app ( FoxTools::Functions::application() );
-  //FX::FXIcon *icon = 0x0;
-  if ( FXMETACLASS ( FX::FXGIFIcon ) == type )
-    return new FX::FXGIFIcon ( app, &array[0] );
-  else if ( FXMETACLASS ( FX::FXPNGIcon ) == type )
-    return new FX::FXPNGIcon ( app, &array[0] );
-  else if ( FXMETACLASS ( FX::FXBMPIcon ) == type )
-    return new FX::FXBMPIcon ( app, &array[0] );
-  else
+
+  FX::FXIcon *icon = 0x0;
+  
+  if ( Usul::File::extension ( filename ) == "gif" )
+    icon = new FX::FXGIFIcon ( app );
+  else if ( Usul::File::extension ( filename ) == "png" )
+    icon = new FX::FXPNGIcon ( app );
+  else if ( Usul::File::extension ( filename ) == "bmp" )
+    icon = new FX::FXBMPIcon ( app );
+
+  if ( 0x0 != icon )
   {
-    std::ostringstream message;
-    message << "Error 2351912630, invalid icon type = " << type->getClassName();
-    throw std::runtime_error ( message.str() );
+    FX::FXFileStream stream;
+  
+    if ( stream.open ( filename.c_str(), FX::FXStreamLoad ) )
+    {
+      icon->loadPixels( stream );
+
+      return icon;
+    }
   }
+
+  std::ostringstream message;
+  message << "Error 2351912630, invalid icon path = " << filename;
+  std::cout << message << std::endl;
+
+  return 0x0;
 }

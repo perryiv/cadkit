@@ -165,6 +165,78 @@ namespace Detail
   };
 
 
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Predicate to sort back to front.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  struct BackToFrontGeometry
+  {
+    BackToFrontGeometry ( const osg::Vec3& eye ) :
+    _eye ( eye )
+    {
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //  Return true if a is farther to the eye than b.
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+
+    template < class GeometryPtr > bool operator () ( const GeometryPtr &a, const GeometryPtr &b ) const
+    {
+      osg::BoundingBox bb1 ( a->getBound() );
+      osg::BoundingBox bb2 ( b->getBound() );
+
+      double da ( (_eye - bb1.center()).length2 ( ) );
+      double db ( (_eye - bb2.center()).length2 ( ) );
+
+      return ( da > db );
+    }
+
+  private:
+    const osg::Vec3& _eye;
+  };
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Predicate to sort back to front.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  struct BackToFrontNode
+  {
+    BackToFrontNode ( const osg::Vec3& eye ) :
+    _eye ( eye )
+    {
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //  Return true if a is farther to the eye than b.
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    template < class NodePtr > bool operator () ( const NodePtr &a, const NodePtr &b ) const
+    {
+      osg::BoundingSphere bs1 ( a->getBound() );
+      osg::BoundingSphere bs2 ( b->getBound() );
+
+      double da ( (_eye - bs1.center()).length2 ( ) );
+      double db ( (_eye - bbs2.center()).length2 ( ) );
+
+      return ( da > db );
+    }
+
+  private:
+    const osg::Vec3& _eye;
+  };
+
+
   ///////////////////////////////////////////////////////////////////////////////
   //
   //  Sort a draw arrays vector from back to front.
@@ -385,6 +457,10 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
   // Is the node a geode?
   if ( osg::Geode *geode = dynamic_cast < osg::Geode* > ( node ) )
   {
+    osg::Geode::DrawableList& drawables ( const_cast < osg::Geode::DrawableList& > ( geode->getDrawableList() ) );
+    // Sort the geometies.
+    std::sort ( drawables.begin(), drawables.end(), Detail::BackToFrontGeometry( eye ) );
+
     // For each drawable
     for ( unsigned int i = 0; i < geode->getNumDrawables(); ++i )
     {

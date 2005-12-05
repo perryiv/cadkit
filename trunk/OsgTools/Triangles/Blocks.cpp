@@ -38,7 +38,8 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   _bbox       ( box ),
   _volume     (),
   _sequence   (),
-  _geode      ( new osg::Geode )
+  _geode      ( new osg::Geode ),
+  _material   ( new osg::Material )
 {
   // Make sure we have a valid bounding box.
   if ( false == _bbox.valid() )
@@ -46,6 +47,13 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
 
   // Subdivide into blocks.
   this->_subdivide ( times, reserve );
+
+  osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
+
+  _material->setDiffuse ( osg::Material::BACK,  osg::Vec4  ( 0.8f, 0.8f, 0.8f, 1.0f ) );
+  _material->setDiffuse ( osg::Material::FRONT, osg::Vec4  ( 20.0f / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f ) );
+
+  ss->setAttribute ( _material.get(), osg::StateAttribute::ON );
 }
 
 
@@ -493,4 +501,16 @@ const osg::Geode* Blocks::geode() const
 osg::Geode* Blocks::geode()
 {
   return _geode.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the diffuse color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Blocks::colorDiffuse ( const osg::Vec4& color )
+{
+  _material->setDiffuse ( osg::Material::FRONT, color );
 }

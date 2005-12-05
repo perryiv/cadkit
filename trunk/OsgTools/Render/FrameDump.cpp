@@ -44,7 +44,9 @@ FrameDump::FrameDump() :
   _ext     ( Pref::instance().getString   ( "FrameDump Extension" ) ), 
   _start   ( Pref::instance().getUint     ( "FrameDump Start"     ) ), 
   _digits  ( Pref::instance().getUint     ( "FrameDump Digits"    ) ), 
-  _current ( _start )
+  _current ( _start ),
+  _saveFilenames ( false ),
+  _filenames ()
 {
 }
 
@@ -142,6 +144,38 @@ std::string FrameDump::filename() const
   // Increment the counter.
   ++_current;
 
+  if ( _saveFilenames )
+    _filenames.push_back( name );
+
   // Return the file name.
   return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filenames that were written out.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const FrameDump::Filenames& FrameDump::filenames() const
+{
+  return _filenames;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the filenames be saved.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FrameDump::filenamesSave( bool b )
+{
+  _saveFilenames = b;
+
+  // Not sure what if filenames should be reserved.
+  // Picking 1000 for now since we rarely create more than 1000 frames.
+  if ( b )
+    _filenames.reserve( 1000 );
 }

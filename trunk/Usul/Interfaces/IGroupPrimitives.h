@@ -31,7 +31,7 @@ struct IGroupPrimitives : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1313723241u };
 
-  // Delete all things connected to the "hit".
+  // Group the primitives.
   virtual void groupPrimitives ( Usul::Interfaces::IUnknown *caller ) = 0;
 
   // Get the number of groups.

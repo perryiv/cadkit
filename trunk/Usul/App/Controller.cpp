@@ -43,6 +43,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <iterator>
 
 using namespace Usul::App;
 

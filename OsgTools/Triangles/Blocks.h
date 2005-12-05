@@ -18,6 +18,7 @@
 
 #include "osg/BoundingBox"
 #include "osg/Geode"
+#include "osg/Material"
 #include "osg/ref_ptr"
 
 
@@ -54,6 +55,9 @@ public:
 
   // Build the scene.
   osg::Geode *              buildScene ( const Options &options, TriangleSet *ts );
+
+  // Set the diffuse color.
+  void                      colorDiffuse ( const osg::Vec4& );
 
   // Get/set display list state.
   bool                      displayList() const;
@@ -94,6 +98,7 @@ private:
   Volume _volume;
   Sequence _sequence;
   GeodePtr _geode;
+  osg::ref_ptr< osg::Material > _material;
 };
 
 

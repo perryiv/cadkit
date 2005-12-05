@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
+#include <vector>
 
 namespace Usul {
 namespace Interfaces {
@@ -26,6 +27,10 @@ namespace Interfaces {
 
 struct IFrameDump : public Usul::Interfaces::IUnknown
 {
+  // Typedefs.
+  typedef std::string Filename;
+  typedef std::vector< Filename > Filenames;
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IFrameDump );
 
@@ -50,6 +55,12 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
 
   /// Get the current file number
   virtual unsigned int currentFile() const = 0;
+
+  /// Should the filenames that have been writed be saved?
+  virtual void filenamesSave( bool ) = 0;
+
+  /// Get the filenames that were written out.
+  virtual const Filenames& filenames () const = 0;
 
   /// Small struct to turn on/off frame-dumping.
   struct ScopedDump

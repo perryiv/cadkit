@@ -32,11 +32,23 @@ namespace Components {
 class USUL_EXPORT Manager
 {
 public:
-  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IUnknown          IUnknown;
   typedef std::set < IUnknown::ValidRefPtr >  UnknownSet;
-  typedef std::list < std::string > Strings;
+  typedef std::list < std::string >           Strings;
+  typedef std::set < std::string >            PluginExtensions;
+  typedef std::set < std::string >            Directories;
 
   static Manager& instance();
+
+  // Add/remove/clear extensions for plugins.
+  void                          addPluginExtension ( const std::string &ext );
+  void                          removePluginExtension ( const std::string &ext );
+  void                          clearPluginExtensions();
+
+  // Add/remove/clear directories for plugins.
+  void                          addDirectory ( const std::string &ext );
+  void                          removeDirectory ( const std::string &ext );
+  void                          clearDirectory();
 
   void                          clear();
 
@@ -46,6 +58,7 @@ public:
   // Load the plugins.
   void                          load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException = true );
+  void                          load ( unsigned long iid, bool keepGoingIfException = true );
 
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;
@@ -69,9 +82,10 @@ private:
 
   Factory*  _factory ( const std::string &filename );
 
-  UnknownSet _unknowns;
-
-  static Manager *_instance;
+  UnknownSet            _unknowns;
+  PluginExtensions      _plugExts;
+  Directories           _directories;
+  static Manager *      _instance;
 };
 
 

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: FoxTools"
 	ProjectGUID="{C30C96F6-1E49-4C77-A570-A58D8874C393}"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -235,10 +236,6 @@
 				</File>
 				<File
 					RelativePath=".\Icons\Factory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Icons\Images.h"
 					>
 				</File>
 			</Filter>
@@ -591,6 +588,10 @@
 				</File>
 				<File
 					RelativePath=".\Headers\FileDialog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Headers\FileStream.h"
 					>
 				</File>
 				<File

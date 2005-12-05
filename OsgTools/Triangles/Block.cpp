@@ -58,7 +58,9 @@ Block::~Block()
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+#if 0
   USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
+#endif
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 }
 
@@ -97,7 +99,9 @@ void Block::addTriangle ( TriangleSet *ts, Triangle *t )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+#if 0
   USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
+#endif
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 
   // Check input.
@@ -119,8 +123,10 @@ void Block::addTriangle ( TriangleSet *ts, Triangle *t )
   // Append the per-triangle normal vector.
   _normalsT->push_back ( ts->triangleNormal ( t->index() ) );
 
+#if 0
   // Append the per-triangle color.
   _colorsT->push_back ( ts->color ( t ) );
+#endif
 
   // Append the triangle to our list.
   _triangles.push_back ( t );
@@ -141,7 +147,9 @@ void Block::removeTriangle ( unsigned int index )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+#if 0
   USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
+#endif
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
 
   // Make sure the index is in range.
@@ -160,8 +168,10 @@ void Block::removeTriangle ( unsigned int index )
   // Remove the per-triangle normal vector.
   _normalsT->erase ( _normalsT->begin() + index );
 
+#if 0
   // Remove the per-triangle color.
   _colorsT->erase ( _colorsT->begin() + index );
+#endif
 
   // Remove the triangle.
   _triangles.erase ( _triangles.begin() + index );
@@ -183,7 +193,10 @@ void Block::_reserveTriangles ( unsigned int numTriangles )
   _elements->reserve ( numTriangles * 3 );
   _triangles.reserve ( numTriangles );
   _normalsT->reserve ( numTriangles );
+
+#if 0
   _colorsT->reserve  ( numTriangles );
+#endif
 }
 
 
@@ -255,7 +268,9 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
 {
   // Should be true.
   USUL_ASSERT ( _normalsT->size() == _triangles.size() );
+#if 0
   USUL_ASSERT ( _colorsT->size()  == _triangles.size() );
+#endif
   USUL_ASSERT ( _elements->size() == _triangles.size() * 3 );
   USUL_ASSERT ( 1 == _geometry->getNumPrimitiveSets() );
   USUL_ASSERT ( _elements.get() == _geometry->getPrimitiveSet ( 0 ) );
@@ -294,6 +309,7 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
+#if 0
   // Set the correct colors.
   if ( OsgTools::Options::has ( options, "colors", "per-vertex" ) )
   {
@@ -307,6 +323,7 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setColorArray ( _colorsT.get() );
     _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
+#endif
 
   // Return the geometry.
   return _geometry.get();

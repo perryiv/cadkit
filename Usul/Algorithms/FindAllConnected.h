@@ -10,6 +10,7 @@
 #ifndef __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
 #define __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
 
+#include "Usul/Exceptions/Thrower.h"
 
 namespace Usul {
 namespace Algorithms {
@@ -30,12 +31,11 @@ inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsign
     typedef typename TodoStack::iterator TodoStackItr;
     
     
-    //Is the selected polygon outside of _polygons' range?
+    //Is the selected polygon outside of polygons' range?
     if ( selectedPolygon >= polygons.size() )
     {
-        std::ostringstream message;
-        message << "Error 3575595664, selected polygon is " << selectedPolygon << " but there are only " << polygons.size() << " polygons";
-        throw std::runtime_error ( message.str() );
+      Usul::Exceptions::Thrower< std::runtime_error > 
+        ( "Error 3575595664, selected polygon is ", selectedPolygon, " but there are only ", polygons.size(), " polygons" );
     }
     
     //Todo stack to simulate recursive function calls

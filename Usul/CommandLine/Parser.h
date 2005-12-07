@@ -22,8 +22,13 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Predicates/UnaryPair.h"
 
-#include <list>
+#include "Usul/CommandLine/Options.h"
+#include "Usul/CommandLine/Flags.h"
+
+#include <vector>
 #include <string>
+#include <functional>
+#include <algorithm>
 
 
 namespace Usul {
@@ -40,7 +45,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef std::list<std::string> Args;
+  typedef std::vector<std::string> Args;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -151,6 +156,77 @@ public:
                                 remove );
 
     // Return the files.
+    return f;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Extract arguments that are options.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void options ( Options &o )
+  {
+
+    for ( Args::const_iterator iter = _args.begin(); iter != _args.end(); ++iter )
+    {
+      // Option in the form of -option value
+      if ( iter->length() > 2 && iter->at ( 0 ) == '-' && iter->at( 1 ) != '-' )
+      {
+        std::string option ( iter->begin() + 1, iter->end() );
+        std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
+        std::string value ( *(++iter) );
+        o.insert( option, value );
+      }
+
+      // Option in the form of option=value
+      else 
+        {
+          std::string::size_type pos = iter->find_first_of ( '=' );
+          if ( pos != std::string::npos )
+            {
+              std::string option ( iter->begin(), iter->begin() + pos );
+              std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
+              std::string value ( iter->begin() + pos + 1, iter->end() );
+              o.insert( option, value );
+            }
+        }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Extract arguments that are options.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Options options ( )
+  {
+    Options o;
+    this->options ( o );
+    return o;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Extract arguments that are flags.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Flags flags ()
+  {
+    Flags f;
+
+    for ( Args::const_iterator iter = _args.begin(); iter != _args.end(); ++iter )
+    {
+      // Flag in the form of --flag
+      if ( iter->length() > 2 && iter->at ( 0 ) == '-' && iter->at( 1 ) == '-' )
+      {
+        std::string flag ( iter->begin() + 2, iter->end() );
+        f.insert( flag );
+      }
+    }
+    
     return f;
   }
 

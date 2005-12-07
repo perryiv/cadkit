@@ -164,7 +164,12 @@ FX::FXIcon *Factory::icon ( unsigned int id ) const
 
   std::string filename ( iter != _map.end() ? iter->second : "" );
 
-  filename = Usul::CommandLine::Arguments::instance().directory() + "/icons/" + filename;
+  std::string directory ( Usul::CommandLine::Arguments::instance().directory() );
+
+  if( directory.empty() )
+    directory = "./";
+
+  filename = directory + "/icons/" + filename;
 
   // Make the icon.
   FX::FXApp *app ( FoxTools::Functions::application() );

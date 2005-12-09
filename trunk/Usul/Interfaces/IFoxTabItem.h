@@ -13,7 +13,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace FX { class FXTabItem; }
+namespace FX { class FXTabItem; class FXWindow; }
 
 namespace Usul {
 namespace Interfaces {
@@ -31,7 +31,6 @@ struct IFoxTabItem : public Usul::Interfaces::IUnknown
   virtual void                  deleteTabs() = 0;
   virtual FX::FXTabItem *       tabItem   ( const std::string &name ) = 0;
   virtual const FX::FXTabItem * tabItem   ( const std::string &name ) const = 0;
-
 
 }; // class IFoxTabItem
 

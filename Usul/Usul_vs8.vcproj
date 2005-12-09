@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: Usul"
 	ProjectGUID="{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -523,10 +524,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFoxToolbarDock.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFoxTreeList.h"
 						>
 					</File>
 					<File

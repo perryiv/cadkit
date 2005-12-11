@@ -531,6 +531,45 @@ void StateSet::setTwoSidedLighting ( osg::Node *node, bool state )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to set the line width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setLineWidth ( osg::StateSet* ss, float width )
+  {
+    osg::ref_ptr<osg::LineWidth> lw;
+
+    // Get the shade-model attribute, if any.
+    osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LINEWIDTH );
+    if ( 0x0 == sa )
+      lw = new osg::LineWidth;
+    else
+      lw = dynamic_cast < osg::LineWidth * > ( sa );
+
+    lw->setWidth( width );
+
+    // Set the state. Make it override any other similar states.
+    typedef osg::StateAttribute Attribute;
+    ss->setAttributeAndModes ( lw.get(), Attribute::OVERRIDE | Attribute::ON );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set line width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setLineWidth ( osg::StateSet *ss, float width )
+{
+  Helper::setLineWidth ( ss, width );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set line width.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -539,21 +578,7 @@ void StateSet::setLineWidth ( osg::Node *node, float width )
 {
   // Get or create the state set.
   osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-
-  osg::ref_ptr<osg::LineWidth> lw;
-
-  // Get the shade-model attribute, if any.
-  osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LINEWIDTH );
-  if ( 0x0 == sa )
-    lw = new osg::LineWidth;
-  else
-    lw = dynamic_cast < osg::LineWidth * > ( sa );
-
-  lw->setWidth( width );
-
-  // Set the state. Make it override any other similar states.
-  typedef osg::StateAttribute Attribute;
-  ss->setAttributeAndModes ( lw.get(), Attribute::OVERRIDE | Attribute::ON );
+  Helper::setLineWidth ( ss.get(), width );
 }
 
 

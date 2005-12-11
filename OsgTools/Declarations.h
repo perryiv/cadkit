@@ -37,5 +37,11 @@ namespace osgText
   class Text;
 };
 
+namespace osgDB 
+{
+  class Input; 
+  class Output;
+}
+
 
 #endif // _OSG_TOOLS_FORWARD_DECLARATIONS_H_

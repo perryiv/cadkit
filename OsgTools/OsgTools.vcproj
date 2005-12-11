@@ -161,6 +161,12 @@
 				Name="Builders"
 				Filter="">
 				<File
+					RelativePath=".\Builders\Arrow.cpp">
+				</File>
+				<File
+					RelativePath=".\Builders\Arrow.h">
+				</File>
+				<File
 					RelativePath="Axes.cpp">
 				</File>
 				<File
@@ -570,6 +576,82 @@
 				</File>
 				<File
 					RelativePath=".\State\StateSet.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Draggers"
+				Filter="">
+				<File
+					RelativePath=".\Draggers\Callback.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Callback.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Dragger.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Dragger.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Plane.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Plane.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Rotate1.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Rotate1.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Trackball.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Draggers\Trackball.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate1.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate1.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate2.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate2.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate3.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate3.h">
+				</File>
+				<File
+					RelativePath=".\Draggers\TranslateScreen.cpp">
+				</File>
+				<File
+					RelativePath=".\Draggers\TranslateScreen.h">
 				</File>
 			</Filter>
 		</Filter>

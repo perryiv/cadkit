@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: FoxTools"
 	ProjectGUID="{C30C96F6-1E49-4C77-A570-A58D8874C393}"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,7 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -78,11 +77,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdlld-1.4.lib"
+				AdditionalDependencies="foxdlld-1.4.lib comdlg32.lib User32.lib shell32.lib"
 				OutputFile="$(USUL_LIB_DIR)/FoxToolsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
+				AdditionalLibraryDirectories="$(FOX_LIB_DIR);"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/FoxToolsd.pdb"
 				ImportLibrary="$(OSG_FOX_LIB_DIR)/FoxToolsd.lib"
@@ -118,7 +117,7 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"

@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: OsgTools"
 	ProjectGUID="{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,7 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -120,7 +119,7 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -223,6 +222,14 @@
 			<Filter
 				Name="Builders"
 				>
+				<File
+					RelativePath=".\Builders\Arrow.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\Arrow.h"
+					>
+				</File>
 				<File
 					RelativePath="Axes.cpp"
 					>
@@ -765,6 +772,108 @@
 				</File>
 				<File
 					RelativePath=".\State\StateSet.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Draggers"
+				>
+				<File
+					RelativePath=".\Draggers\Callback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Callback.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Dragger.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Dragger.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Plane.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Plane.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Rotate1.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Rotate1.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Trackball.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Draggers\Trackball.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate1.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate1.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate3.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\Translate3.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\TranslateScreen.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Draggers\TranslateScreen.h"
 					>
 				</File>
 			</Filter>

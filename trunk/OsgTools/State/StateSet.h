@@ -71,6 +71,7 @@ struct OSG_TOOLS_EXPORT StateSet
   static bool         getPolygonMode ( osg::Node *node, unsigned int face, unsigned int mode );
 
   // Set/Get line width
+  static void         setLineWidth ( osg::StateSet *ss, float width );
   static void         setLineWidth ( osg::Node *node, float width );
   static float        getLineWidth ( osg::Node *node );
 

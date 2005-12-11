@@ -721,15 +721,22 @@ osg::Node* GlassBoundingBox::_makeNumbers    ( )
   char name[75];
   sprintf(name, "%0.0f,%0.0f,%0.0f", _xMin, _yMin, _zMin);
  
+#if 0
   geode->addDrawable( this->_makeNumber ( name,  bb.corner( 0 ) * 1.05, layoutColor, layoutCharacterSize  ) );
-  
   geode->addDrawable( this->_makeNumber ( _xMax, bb.corner( 1 ) * 1.05, layoutColor, layoutCharacterSize  ) );
   geode->addDrawable( this->_makeNumber ( _yMax, bb.corner( 2 ) * 1.05, layoutColor, layoutCharacterSize  ) );
- // geode->addDrawable( this->_makeNumber ( "3", bb.corner( 3 ), layoutColor, layoutCharacterSize  ) );
   geode->addDrawable( this->_makeNumber ( _zMax, bb.corner( 4 ) * 1.05, layoutColor, layoutCharacterSize  ) );
- // geode->addDrawable( this->_makeNumber ( "5", bb.corner( 5 ), layoutColor, layoutCharacterSize  ) );
- // geode->addDrawable( this->_makeNumber ( "6", bb.corner( 6 ), layoutColor, layoutCharacterSize  ) );
   geode->addDrawable( this->_makeNumber ( "Max", bb.corner( 7 ) * 1.05, layoutColor, layoutCharacterSize  ) );
+#else
+  geode->addDrawable( this->_makeNumber ( "0", bb.corner( 0 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "1", bb.corner( 1 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "2", bb.corner( 2 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "3", bb.corner( 3 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "4", bb.corner( 4 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "5", bb.corner( 5 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "6", bb.corner( 6 ), layoutColor, layoutCharacterSize  ) );
+  geode->addDrawable( this->_makeNumber ( "7", bb.corner( 7 ), layoutColor, layoutCharacterSize  ) );
+#endif
 
   return geode.release();
 }

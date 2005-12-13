@@ -71,7 +71,7 @@ protected:
 
   // Construct/destruct.
   Registry();
-  ~Registry();
+  virtual ~Registry();
 
   static Registry *_registry;
 

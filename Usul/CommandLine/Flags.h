@@ -41,4 +41,4 @@ class Flags
 }
 
 
-#endif // USUL_COMMAND_LIN_FLAGS_H__
+#endif // USUL_COMMAND_LINE_FLAGS_H__

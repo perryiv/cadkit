@@ -42,4 +42,3 @@ private:
 
 #endif //__OSG_TOOLS_CALLBACKS_BOUNDING_SPHERE_H__
 
-  

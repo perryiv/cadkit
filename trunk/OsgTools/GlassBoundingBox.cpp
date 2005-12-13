@@ -721,7 +721,7 @@ osg::Node* GlassBoundingBox::_makeNumbers    ( )
   char name[75];
   sprintf(name, "%0.0f,%0.0f,%0.0f", _xMin, _yMin, _zMin);
  
-#if 0
+#if 1
   geode->addDrawable( this->_makeNumber ( name,  bb.corner( 0 ) * 1.05, layoutColor, layoutCharacterSize  ) );
   geode->addDrawable( this->_makeNumber ( _xMax, bb.corner( 1 ) * 1.05, layoutColor, layoutCharacterSize  ) );
   geode->addDrawable( this->_makeNumber ( _yMax, bb.corner( 2 ) * 1.05, layoutColor, layoutCharacterSize  ) );

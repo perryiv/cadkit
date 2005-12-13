@@ -554,10 +554,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMainWindow.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\IMaterialEditor.h"
 						>
 					</File>
@@ -643,10 +639,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGroup.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IMatrixManip.h"
 						>
 					</File>
 					<File
@@ -753,26 +745,6 @@
 						RelativePath=".\Interfaces\ISetTool.h"
 						>
 					</File>
-					<File
-						RelativePath="Interfaces\IUndo.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Molecule"
-					>
-					<File
-						RelativePath=".\Interfaces\IGetMolecules.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IParamFile.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IPsfFile.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Document"
@@ -846,10 +818,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBuildSceneVtk.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\ICamera.h"
 						>
 					</File>
@@ -891,10 +859,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IViewer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IVTKCanvas.h"
 						>
 					</File>
 				</Filter>

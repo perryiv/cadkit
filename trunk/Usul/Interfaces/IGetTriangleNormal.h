@@ -26,7 +26,7 @@ struct IGetTriangleNormal : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1804974857u };
 
-  // Get normal for the i'th triangle.
+  /// Get normal for the i'th triangle.
   virtual const osg::Vec3f& getTriangleNormal ( unsigned int index ) const = 0;
 };
 

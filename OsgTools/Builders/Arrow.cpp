@@ -21,7 +21,10 @@
 
 using namespace OsgTools::Builders;
 
-Arrow::Arrow() : BaseClass()
+Arrow::Arrow() : BaseClass(),
+_radius ( 1.0 ),
+_height ( 1.0 ),
+_tessellation ( 1.0 )
 {
 }
 
@@ -32,21 +35,22 @@ osg::Node* Arrow::operator() () const
   osg::Vec3 end ( this->end() );
   osg::Vec4 color ( this->color() );
 
-  osg::Vec3 vector ( start - end );
+  osg::Vec3 vector ( end - start );
 
   double length ( vector.length() );
 
-  double linePercent ( 0.75 );
-  double conePercent ( 0.25 );
-
   osg::Vec3 origin ( 0.0, 0.0, 0.0 );
-  osg::Vec3 x  ( length * linePercent, 0.0, 0.0 );
+  osg::Vec3 x  ( length - _height, 0.0, 0.0 );
+
+  vector.normalize();
+  osg::Quat rotate;
+  rotate.makeRotate ( x, vector );
 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr< osg::Geometry > geom ( new osg::Geometry );
   osg::ref_ptr < osg::Vec3Array > verts ( new osg::Vec3Array );
-  verts->push_back ( origin );
-  verts->push_back ( x );
+  verts->push_back ( origin + start );
+  verts->push_back ( ( rotate * x ) + start );
 
   osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
   colors->push_back ( color );
@@ -66,17 +70,14 @@ osg::Node* Arrow::operator() () const
   OsgTools::State::StateSet::setLighting( ss.get(), false );
   OsgTools::State::StateSet::setLineWidth ( ss.get(), this->thickness() );
 
-  // Radius and height for cone.
-  const double radius ( 3.0 );
-  const double height ( length * conePercent );
-
-  osg::ref_ptr < osg::Cone > cone ( new osg::Cone( osg::Vec3 ( length * linePercent, 0.0, 0.0 ), radius, height ) );
-  osg::Quat quat ( osg::inDegrees(90.0), osg::Vec3( 0.0, 1.0, 0.0 )  );
+  osg::ref_ptr < osg::Cone > cone ( new osg::Cone( ( rotate * x ) + start, _radius, _height ) );
+  osg::Quat quat;
+  quat.makeRotate ( osg::Vec3( 0.0, 0.0, 1.0 ), vector  );
 
   cone->setRotation( quat );
   osg::ref_ptr< osg::ShapeDrawable > sd ( new osg::ShapeDrawable( cone.get() ) );
   osg::ref_ptr < osg::TessellationHints > hints ( new osg::TessellationHints );
-  hints->setDetailRatio ( 0.25f );
+  hints->setDetailRatio ( _tessellation );
   sd->setTessellationHints( hints.get() );
 
   osg::ref_ptr< osg::Material > mat ( new osg::Material );
@@ -86,17 +87,17 @@ osg::Node* Arrow::operator() () const
 
   geode->addDrawable ( sd.get() );
 
-  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
 
-  vector.normalize();
+  //vector.normalize();
 
-  osg::Matrix matrix;
-  matrix.makeRotate ( osg::Vec3 ( 1.0, 0.0, 0.0 ), vector );
-  matrix.setTrans ( start );
-  mt->setMatrix ( matrix );
+  //osg::Matrix matrix;
+  //matrix.makeRotate ( osg::Vec3 ( 1.0, 0.0, 0.0 ), vector );
+  //matrix.setTrans ( start );
+  //mt->setMatrix ( matrix );
 
-  mt->addChild( geode.get() );
+  //mt->addChild( geode.get() );
 
-  return mt.release();
+  return geode.release();
 }
 

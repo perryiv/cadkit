@@ -33,7 +33,7 @@ struct OSG_TOOLS_EXPORT ActionAdapter : public osgGA::GUIActionAdapter
 
   // Constructor/destructor.
   ActionAdapter ( Usul::Interfaces::IUnknown *caller );
-  ~ActionAdapter();
+  virtual ~ActionAdapter();
 
   // Request actions.
   virtual void requestRedraw();

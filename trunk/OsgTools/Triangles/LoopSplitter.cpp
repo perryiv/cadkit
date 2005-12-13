@@ -96,8 +96,8 @@ namespace Detail
   struct Finder
   {
     Finder( const osg::Vec3& v, Usul::Interfaces::IUnknown* caller ) : 
-    _v ( v ),
-    _caller( caller )
+      _caller( caller ),
+      _v ( v )
     {  }
 
     bool operator () ( const SharedVertex* sv ) const
@@ -522,10 +522,6 @@ void LoopSplitter::_createLoops( const OsgTools::Triangles::Loop& loop, EdgeMap 
 
         if ( first != iter->end() && second != iter->end() ) 
         {
-          unsigned int indexOne ( first - iter->begin() );
-          unsigned int indexTwo ( second - iter->begin() );
-          //std::cout << "Index one: " << indexOne << " " << "Index two: " << indexTwo << std::endl;
-
           Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( _caller );
           osg::Vec3 v1 ( getVertex->getVertex( (*first)->index() ) );
           osg::Vec3 v2 ( getVertex->getVertex( (*second)->index() ) );

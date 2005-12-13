@@ -25,11 +25,12 @@ using namespace FoxTools::ToolBar;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Bar::Bar ( FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : BaseClass(), 
+Bar::Bar ( FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : 
+  BaseClass(), 
   _commands     (),
-  _bar          ( 0x0 ),
   _dockedSite   ( dockedSite ),
   _undockedSite ( undockedSite ),
+  _bar( 0x0 ),
   _layout       ( 0 )
 {
 }
@@ -43,9 +44,9 @@ Bar::Bar ( FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : BaseCl
 
 Bar::Bar ( const std::string& name, FX::FXComposite *dockedSite, FX::FXComposite *undockedSite ) : BaseClass( name ), 
   _commands     (),
-  _bar          ( 0x0 ),
   _dockedSite   ( dockedSite ),
   _undockedSite ( undockedSite ),
+  _bar          ( 0x0 ),
   _layout       ( 0 )
 {
 }

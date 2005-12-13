@@ -25,14 +25,14 @@ _af(0.2,0.2,0.2,1.0), _df(0.8,0.8,0.8,1.0),
 _ef(0.0,0.0,0.0,1.0), _spf(0.0,0.0,0.0,1.0),
 _ab(0.2,0.2,0.2,1.0), _db(0.8,0.8,0.8,1.0),
 _eb(0.0,0.0,0.0,1.0), _spb(0.0,0.0,0.0,1.0),
-_shf(0.5), _shb(0.5)
+_shb(0.5), _shf(0.5)
 {
 }
 
 MaterialSetter::MaterialSetter(const MaterialSetter& ms):
 _af(ms._af), _df(ms._df), _ef(ms._ef), _spf(ms._spf),
 _ab(ms._ab), _db(ms._db), _eb(ms._eb), _spb(ms._spb),
-_shf(ms._shf), _shb(ms._shb)
+_shb(ms._shf), _shf(ms._shb)
 {
 }
 

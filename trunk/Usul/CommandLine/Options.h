@@ -29,6 +29,7 @@ class Options
  public:
   typedef std::map < std::string, std::string > Map;
   typedef Map::iterator iterator;
+  typedef Map::const_iterator const_iterator;
 
   Options();
 
@@ -42,6 +43,9 @@ class Options
 
   iterator begin() { return _options.begin(); }
   iterator end() { return _options.end(); }
+
+  const_iterator begin() const { return _options.begin(); }
+  const_iterator end()   const { return _options.end();   }
 
  private:
   Map _options;

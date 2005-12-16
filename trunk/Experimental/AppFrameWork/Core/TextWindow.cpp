@@ -15,9 +15,10 @@
 
 #include "AppFrameWork/Core/TextWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
-#include "AppFrameWork/Core/Application.h"
 
 using namespace AFW::Core;
+
+AFW_IMPLEMENT_OBJECT ( TextWindow );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ using namespace AFW::Core;
 TextWindow::TextWindow() : BaseClass()
 {
   this->title ( "Text Output" );
-  this->icon ( new AFW::Core::Icon ( "text_output" ) );
+  this->icon ( Icon ( "text_output" ) );
 }
 
 
@@ -46,133 +47,13 @@ TextWindow::~TextWindow()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string TextWindow::textGet() const
-{
-  std::string s;
-  this->textGet ( s );
-  return s;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::textGet ( std::string &s ) const
-{
-  if ( 0x0 != this->guiObject() )
-  {
-    AFW::Core::Application::instance().windowTextGet ( this, s );
-  }
-  else
-  {
-    BaseClass::textGet ( s );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::textSet ( const std::string &s )
-{
-  this->textSet ( s.c_str(), s.size() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::textSet ( const char *s, unsigned int length )
-{
-  if ( 0x0 != this->guiObject() )
-  {
-    AFW::Core::Application::instance().windowTextSet ( this, s, length );
-    BaseClass::textSet ( "" ); // Make sure this is empty.
-  }
-  else
-  {
-    BaseClass::textSet ( s, length );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Append to the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::textAppend ( const std::string &s )
-{
-  this->textAppend ( s.c_str(), s.size() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Append to the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::textAppend ( const char *s, unsigned int length )
-{
-  if ( 0x0 != this->guiObject() )
-  {
-    AFW::Core::Application::instance().windowTextAppend ( this, s, length );
-    BaseClass::textSet ( "" ); // Make sure this is empty.
-  }
-  else
-  {
-    BaseClass::textAppend ( s, length );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Accept the visitor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void TextWindow::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Keeps the compiler happy.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::append ( AFW::Actions::CommandAction *a )
-{
-  BaseClass::append ( a );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Keeps the compiler happy.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction *u )
-{
-  BaseClass::append ( c, u );
 }

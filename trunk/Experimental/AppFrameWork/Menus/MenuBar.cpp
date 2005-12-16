@@ -18,12 +18,14 @@
 #include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Conditions/HasNewModelPlugin.h"
 #include "AppFrameWork/Conditions/HasOpenModelPlugin.h"
 #include "AppFrameWork/Conditions/HasActiveEditor.h"
 #include "AppFrameWork/Actions/Enable.h"
 #include "AppFrameWork/Actions/NewModelAction.h"
 #include "AppFrameWork/Actions/OpenModelAction.h"
+#include "AppFrameWork/Actions/QuitProgramAction.h"
 #include "AppFrameWork/Actions/CloseActiveEditor.h"
 
 #include "Usul/Bits/Bits.h"
@@ -31,6 +33,8 @@
 #include <iostream>
 
 using namespace AFW::Menus;
+
+AFW_IMPLEMENT_OBJECT ( MenuBar );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,57 +65,148 @@ MenuBar::~MenuBar()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MenuBar::buildDefault()
+void MenuBar::init()
 {
-  // Safely...
-  try
-  {
-    this->_buildDefault();
-  }
+  Guard guard ( this->mutex() );
 
-  // Catch exceptions.
-  AFW_CATCH_BLOCK ( "3280844121", "3720564149" );
-}
+  // Clear existing menu.
+  this->removeAll();
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a default GUI.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MenuBar::_buildDefault()
-{
   // Actions reused below.
   AFW::Actions::Enable::RefPtr enable  ( new AFW::Actions::Enable ( true  ) );
   AFW::Actions::Enable::RefPtr disable ( new AFW::Actions::Enable ( false ) );
 
+  // For convenience.
+  AFW::Core::Program &factory ( AFW::Core::Program::instance() );
+
   // File menu.
-  AFW::Menus::MenuGroup::ValidRefPtr fileMenu ( new AFW::Menus::MenuGroup ( "File", 0 ) );
   {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
     {
-      Button::ValidRefPtr button ( new Button ( "New...",  new AFW::Core::Icon ( "new" ) ) );
-      button->append ( new AFW::Conditions::HasNewModelPlugin ( true  ), enable  );
-      button->append ( new AFW::Conditions::HasNewModelPlugin ( false ), disable );
-      button->append ( new AFW::Actions::NewModelAction );
-      fileMenu->append ( button.get() );
+      menu->textSet ( "File" );
+      menu->underline ( 0 );
+      {
+        Button::RefPtr button ( Button::createButton ( "New...", "new" ) );
+        if ( button.valid() )
+        {
+          button->append ( new AFW::Conditions::HasNewModelPlugin ( true  ), enable  );
+          button->append ( new AFW::Conditions::HasNewModelPlugin ( false ), disable );
+          button->append ( new AFW::Actions::NewModelAction );
+          menu->append ( button.get() );
+        }
+      }
+      {
+        Button::RefPtr button ( Button::createButton ( "Open...", "open" ) );
+        if ( button.valid() )
+        {
+          button->append ( new AFW::Conditions::HasOpenModelPlugin ( true  ), enable  );
+          button->append ( new AFW::Conditions::HasOpenModelPlugin ( false ), disable );
+          button->append ( new AFW::Actions::OpenModelAction );
+          menu->append ( button.get() );
+        }
+      }
+      {
+        Button::RefPtr button ( Button::createButton ( "Close", "close" ) );
+        if ( button.valid() )
+        {
+          button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );
+          button->append ( new AFW::Conditions::HasActiveEditor ( false ), disable );
+          button->append ( new AFW::Actions::CloseActiveEditor );
+          menu->append ( button.get() );
+        }
+      }
+      {
+        Button::RefPtr button ( Button::createSeparator() );
+        if ( button.valid() )
+        {
+          menu->append ( button.get() );
+        }
+      }
+      {
+        Button::RefPtr button ( Button::createButton ( "Quit" ) );
+        if ( button.valid() )
+        {
+          button->append ( new AFW::Actions::QuitProgramAction );
+          menu->append ( button.get() );
+        }
+      }
     }
+    this->append ( menu.get() );
+  }
+
+  // Edit menu.
+  {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
     {
-      Button::ValidRefPtr button ( new Button ( "Open...", new AFW::Core::Icon ( "open" ) ) );
-      button->append ( new AFW::Conditions::HasOpenModelPlugin ( true  ), enable  );
-      button->append ( new AFW::Conditions::HasOpenModelPlugin ( false ), disable );
-      button->append ( new AFW::Actions::OpenModelAction );
-      fileMenu->append ( button.get() );
-    }
-    {
-      Button::ValidRefPtr button ( new Button ( "Close",   new AFW::Core::Icon ( "close" ) ) );
-      button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );
-      button->append ( new AFW::Conditions::HasActiveEditor ( false ), disable );
-      button->append ( new AFW::Actions::CloseActiveEditor );
-      fileMenu->append ( button.get() );
+      menu->textSet ( "Edit" );
+      menu->underline ( 0 );
+      {
+      }
+      this->append ( menu.get() );
     }
   }
-  this->append ( fileMenu.get() );
+
+  // View menu.
+  {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
+    {
+      menu->textSet ( "View" );
+      menu->underline ( 0 );
+      {
+      }
+      this->append ( menu.get() );
+    }
+  }
+
+  // Tools menu.
+  {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
+    {
+      menu->textSet ( "Tools" );
+      menu->underline ( 0 );
+      {
+      }
+      this->append ( menu.get() );
+    }
+  }
+
+  // Window menu.
+  {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
+    {
+      menu->textSet ( "Window" );
+      menu->underline ( 0 );
+      {
+        Button::RefPtr button ( Button::createButton ( "Close", "close" ) );
+        if ( button.valid() )
+        {
+          button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );
+          button->append ( new AFW::Conditions::HasActiveEditor ( false ), disable );
+          button->append ( new AFW::Actions::CloseActiveEditor );
+          menu->append ( button.get() );
+        }
+      }
+      this->append ( menu.get() );
+    }
+  }
+
+  // Help menu.
+  {
+    AFW::Menus::MenuGroup::RefPtr menu ( factory.newObject<MenuGroup>() );
+    if ( menu.valid() )
+    {
+      menu->textSet ( "Help" );
+      menu->underline ( 0 );
+      {
+      }
+      this->append ( menu.get() );
+    }
+  }
 }
 
 
@@ -123,6 +218,7 @@ void MenuBar::_buildDefault()
 
 void MenuBar::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
 }

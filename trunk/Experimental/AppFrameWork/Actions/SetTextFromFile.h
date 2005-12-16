@@ -35,6 +35,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SetTextFromFile );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( SetTextFromFile );
+
   // Constructor
   SetTextFromFile ( const std::string &file );
 

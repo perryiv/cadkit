@@ -33,6 +33,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Condition );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( Condition );
+
   // See if the condition is met.
   virtual bool                    evaluate ( AFW::Core::Object *object = 0x0 ) = 0;
 

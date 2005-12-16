@@ -18,6 +18,7 @@
 
 #include "AppFrameWork/Actions/CommandAction.h"
 
+#include <vector>
 #include <string>
 
 
@@ -31,12 +32,18 @@ public:
 
   // Typedefs.
   typedef CommandAction BaseClass;
+  typedef std::vector < std::string > Names;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( OpenModelAction );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( OpenModelAction );
+
   // Constructor
   OpenModelAction();
+  OpenModelAction ( const std::string &name );
+  OpenModelAction ( const Names &names );
 
   // Perform the action.
   virtual void                        execute ( AFW::Core::Object *object = 0x0 );
@@ -46,13 +53,19 @@ protected:
   // Use reference counting.
   virtual ~OpenModelAction();
 
+  void                                _askForNames();
+
   void                                _open ( const std::string & );
+
+  void                                _reportErrors ( const std::string & ) const;
 
 private:
 
   // No copying.
   OpenModelAction ( const OpenModelAction & );
   OpenModelAction &operator = ( const OpenModelAction & );
+
+  Names _names;
 };
 
 

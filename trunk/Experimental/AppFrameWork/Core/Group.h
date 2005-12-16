@@ -35,25 +35,18 @@ public:
   typedef Windows::iterator Itr;
   typedef Windows::const_iterator ConstItr;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Group );
-
-  // Constructor
-  Group ( const std::string &text = "", Icon *icon = 0x0 );
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
   // Append a window.
-  void                                append ( Window * );
-
-  // Append an action.
-  void                                append ( AFW::Actions::CommandAction * );
-  void                                append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
+  bool                                append ( Window * );
 
   // Iterators to the contained windows.
   Itr                                 begin();
   ConstItr                            begin() const;
+
+  // Remove all children.
+  void                                clear();
 
   // Iterators to the contained windows.
   Itr                                 end();
@@ -64,18 +57,23 @@ public:
   Itr                                 find ( Window *w );
 
   // Insert a window.
-  void                                insert ( Itr where, Window * );
+  virtual bool                        insert ( Itr where, Window * );
 
   // Return the number of children.
   unsigned int                        numChildren() const;
 
-  // Remove a window.
+  // Remove window(s).
   void                                remove ( Window * );
+  void                                remove ( unsigned int );
+  void                                removeAll();
 
   // Prepend a window.
   void                                prepend ( Window * );
 
 protected:
+
+  // Constructor
+  Group();
 
   // Use reference counting.
   virtual ~Group();
@@ -91,6 +89,8 @@ private:
   friend class BaseVisitor; // Calls _traverse()
 
   Windows _windows;
+
+  AFW_DECLARE_OBJECT ( Group );
 };
 
 

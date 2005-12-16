@@ -30,12 +30,6 @@ public:
   // Typedefs.
   typedef AFW::Core::Group BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MenuGroup );
-
-  // Constructor
-  MenuGroup ( const std::string &text = "", unsigned short underline = 0xFFFF );
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
@@ -44,6 +38,9 @@ public:
   void                                underline ( unsigned short );
 
 protected:
+
+  // Constructor
+  MenuGroup();
 
   // Use reference counting.
   virtual ~MenuGroup();
@@ -55,6 +52,8 @@ private:
   MenuGroup &operator = ( const MenuGroup & );
 
   unsigned short _underline;
+
+  AFW_DECLARE_OBJECT ( MenuGroup );
 };
 
 

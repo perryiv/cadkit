@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Group.h"
-#include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
@@ -26,6 +25,8 @@
 
 using namespace AFW::Core;
 
+AFW_IMPLEMENT_OBJECT ( Group );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +34,7 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Group ( const std::string &text, Icon *icon ) : BaseClass ( text, icon ),
+Group::Group() : BaseClass(),
   _windows()
 {
 }
@@ -50,7 +51,7 @@ Group::~Group()
   // Safely...
   try
   {
-    _windows.clear();
+    this->removeAll();
   }
 
   // Catch exceptions.
@@ -64,24 +65,47 @@ Group::~Group()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::append ( Window *w )
+bool Group::append ( Window *w )
 {
-  // If the window is valid and it does not already have a parent...
-  if ( 0x0 != w && 0x0 == w->parent() )
-  {
-    // Should be true.
-    USUL_ASSERT ( _windows.end() == this->find ( w ) );
+  Guard guard ( this->mutex() );
+  return this->insert ( _windows.end(), w );
+}
 
-    // Add it to our list.
-    _windows.push_back ( w );
 
-    // We are now the parent.
-    w->_setParent ( this );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert the window.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    // Set dirty flags.
-    w->dirty ( true );
-    this->dirty ( true );
-  }
+bool Group::insert ( Itr where, Window *w )
+{
+  Guard guard ( this->mutex() );
+
+  // If the window is us.
+  if ( this == w )
+    return false;
+
+  // Return if the window is not valid, or if it already has a parent.
+  if ( 0x0 == w || 0x0 != w->parent() )
+    return false;
+
+  // If the window is already a child.
+  if ( _windows.end() != this->find ( w ) )
+    return false;
+
+  // Insert it into our list.
+  _windows.insert ( where, w );
+
+  // We are now the parent.
+  w->_setParent ( this );
+
+  // Set dirty flags.
+  w->dirty ( true );
+  this->dirty ( true );
+
+  // It worked.
+  return true;
 }
 
 
@@ -93,27 +117,55 @@ void Group::append ( Window *w )
 
 void Group::remove ( Window *w )
 {
-  // Find the window.
-  Group::Itr i ( this->find ( w ) );
+  Guard guard ( this->mutex() );
 
-  // If the window is a child...
-  if ( _windows.end() != i )
+  // The window does not have a parent now.
+  w->_setParent ( 0x0 );
+
+  // Tell the window to detach from it's gui object.
+  w->detach();
+
+  // Remove the window.
+  _windows.erase ( this->find ( w ) );
+
+  // Set dirty flags.
+  w->dirty ( true );
+  this->dirty ( true );
+
+  // Should be true.
+  USUL_ASSERT ( _windows.end() == this->find ( w ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::remove ( unsigned int i )
+{
+  if ( i < _windows.size() )
   {
-    // Erase it.
-    _windows.erase ( i );
+    Window::RefPtr window ( _windows.at ( i ) );
+    this->remove ( window.get() );
+  }
+}
 
-    // The window does not have a parent now.
-    w->_setParent ( 0x0 );
 
-    // Set dirty flags.
-    w->dirty ( true );
-    this->dirty ( true );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all windows.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    // Should be true.
-    USUL_ASSERT ( _windows.end() == this->find ( w ) );
-
-    // Let the application know that the object is no longer in the scene.
-    Application::instance().removeNotify ( w );
+void Group::removeAll()
+{
+  while ( false == _windows.empty() )
+  {
+    const unsigned int i ( _windows.size() - 1 );
+    Window::RefPtr window ( _windows.at ( i ) );
+    this->remove ( window.get() );
   }
 }
 
@@ -126,6 +178,7 @@ void Group::remove ( Window *w )
 
 Group::ConstItr Group::find ( Window *w ) const
 {
+  Guard guard ( this->mutex() );
   return ( ( 0x0 == w ) ? _windows.end() : std::find ( _windows.begin(), _windows.end(), Windows::value_type ( w ) ) );
 }
 
@@ -138,6 +191,7 @@ Group::ConstItr Group::find ( Window *w ) const
 
 Group::Itr Group::find ( Window *w )
 {
+  Guard guard ( this->mutex() );
   return ( ( 0x0 == w ) ? _windows.end() : std::find ( _windows.begin(), _windows.end(), Windows::value_type ( w ) ) );
 }
 
@@ -150,6 +204,7 @@ Group::Itr Group::find ( Window *w )
 
 Group::Itr Group::begin()
 {
+  Guard guard ( this->mutex() );
   return _windows.begin();
 }
 
@@ -162,6 +217,7 @@ Group::Itr Group::begin()
 
 Group::ConstItr Group::begin() const
 {
+  Guard guard ( this->mutex() );
   return _windows.begin();
 }
 
@@ -174,6 +230,7 @@ Group::ConstItr Group::begin() const
 
 Group::Itr Group::end()
 {
+  Guard guard ( this->mutex() );
   return _windows.end();
 }
 
@@ -186,6 +243,7 @@ Group::Itr Group::end()
 
 Group::ConstItr Group::end() const
 {
+  Guard guard ( this->mutex() );
   return _windows.end();
 }
 
@@ -198,6 +256,7 @@ Group::ConstItr Group::end() const
 
 unsigned int Group::numChildren() const
 {
+  Guard guard ( this->mutex() );
   return _windows.size();
 }
 
@@ -210,6 +269,7 @@ unsigned int Group::numChildren() const
 
 void Group::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
 }
@@ -223,6 +283,8 @@ void Group::accept ( AFW::Core::BaseVisitor *v )
 
 void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
 {
+  Guard guard ( this->mutex() );
+
   if ( 0x0 == visitor )
     return;
 
@@ -234,28 +296,4 @@ void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
       window->accept ( visitor );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Keeps the compiler happy.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Group::append ( AFW::Actions::CommandAction *a )
-{
-  BaseClass::append ( a );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Keeps the compiler happy.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Group::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction *u )
-{
-  BaseClass::append ( c, u );
 }

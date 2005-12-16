@@ -30,28 +30,13 @@ public:
   // Typedefs.
   typedef Window BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( TextWindow );
-
-  // Constructor
-  TextWindow();
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
-  // Set/get/append the text.
-  virtual void                        textAppend ( const std::string & );
-  virtual void                        textAppend ( const char *s, unsigned int length );
-  virtual std::string                 textGet() const;
-  virtual void                        textGet ( std::string & ) const;
-  virtual void                        textSet ( const std::string & );
-  virtual void                        textSet ( const char *s, unsigned int length );
-
-  // Append an action.
-  virtual void                        append ( AFW::Actions::CommandAction * );
-  virtual void                        append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
-
 protected:
+
+  // Constructor
+  TextWindow();
 
   // Use reference counting.
   virtual ~TextWindow();
@@ -61,6 +46,8 @@ private:
   // No copying.
   TextWindow ( const TextWindow & );
   TextWindow &operator = ( const TextWindow & );
+
+  AFW_DECLARE_OBJECT ( TextWindow );
 };
 
 

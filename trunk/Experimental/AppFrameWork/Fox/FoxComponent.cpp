@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FoxComponent.h"
+#include "AppFrameWork/Fox/FoxComponent.h"
 
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Constants.h"
@@ -47,6 +47,7 @@
 #include "FoxTools/Headers/TabItem.h"
 #include "FoxTools/Headers/Shutter.h"
 #include "FoxTools/Headers/Button.h"
+#include "FoxTools/Headers/SplashWindow.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -64,6 +65,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FoxComponent , FoxComponent::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( FoxComponent );
@@ -106,6 +108,7 @@ namespace
 
 FXDEFMAP ( FoxComponent ) MessageMap[] = 
 {
+  FXMAPFUNC ( FX::SEL_CHORE,   0, FoxComponent::onChore   ),
   FXMAPFUNC ( FX::SEL_CLOSE,   0, FoxComponent::onClose   ),
   FXMAPFUNC ( FX::SEL_COMMAND, 0, FoxComponent::onCommand ),
   FXMAPFUNC ( FX::SEL_UPDATE,  0, FoxComponent::onUpdate  ),
@@ -126,10 +129,15 @@ FoxComponent::FoxComponent() : BaseClass(),
   _foxApp      ( 0x0 ),
   _windows     (),
   _dockCircles (),
-  _force       ( false )
+  _splitters   (),
+  _force       ( false ),
+  _mutex       ()
 {
-  // Set these resources.
+  // Set this resource.
   Usul::Resources::textWindow ( this->_unknown() );
+
+  // Load factory functions.
+  //AFW::Core::Application::instance().factory ( typeid ( AFW::Core::MainWindow ), new FoxComponent::NewMainWindow );
 }
 
 
@@ -184,6 +192,7 @@ Usul::Interfaces::IUnknown *FoxComponent::queryInterface ( unsigned long iid )
 
 void FoxComponent::_setColor ( FX::FXWindow *window ) const
 {
+  Guard guard ( _mutex );
 #ifdef _DEBUG
   static Usul::Adaptors::Random<double> random ( 0, 255 );
   if ( window )
@@ -274,6 +283,8 @@ namespace Detail
 
 void FoxComponent::_newWindow ( FX::FXWindow *fox, AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
+
   // Handle null input.
   if ( 0x0 == fox )
     return;
@@ -301,6 +312,8 @@ void FoxComponent::_newWindow ( FX::FXWindow *fox, AFW::Core::Window *window )
 
 bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
 {
+  Guard guard ( _mutex );
+
   // Write to the registry.
   this->_registryWrite();
 
@@ -320,11 +333,18 @@ bool FoxComponent::notifyClose ( Usul::Interfaces::IUnknown * )
 
 void FoxComponent::_cleanup()
 {
-  // Clear the map of windows.
+  Guard guard ( _mutex );
+
+  // Clear these containers.
   _windows.clear();
+  _dockCircles.clear();
+  _splitters.clear();
 
   // Tell every window to detach from its gui-object.
   this->_detachAllWindows();
+
+  // No more text window.
+  Usul::Resources::textWindow ( 0x0 );
 }
 
 
@@ -336,6 +356,7 @@ void FoxComponent::_cleanup()
 
 void FoxComponent::_detachAllWindows()
 {
+  Guard guard ( _mutex );
   typedef AFW::Core::Window Window;
   for ( Window::WindowListItr i = Window::allWindowsBegin(); i != Window::allWindowsEnd(); ++i )
   {
@@ -354,15 +375,14 @@ void FoxComponent::_detachAllWindows()
 
 void FoxComponent::buildApplication()
 {
+  Guard guard ( _mutex );
+
   // Return now if we are not dirty.
   if ( false == _app.dirty() )
     return;
 
-  // Initialize.
-  const bool firstTime ( 0x0 == _foxApp );
-
   // If this is the first time...
-  if ( firstTime )
+  if ( 0x0 == _foxApp )
   {
     // Make the application.
     _foxApp = new FoxTools::App::Application ( _app.name(), _app.vendor() );
@@ -373,17 +393,19 @@ void FoxComponent::buildApplication()
 
     // Make a tool tip.
     new FXToolTip ( _foxApp, 0 );
+
+    // Create the application.
+    _foxApp->create();
+
+    // Show splash screen.
+    this->_showSplashScreen();
+
+    // Add idle chore.
+    _foxApp->addChore ( this, 0 );
   }
 
   // Build the main window.
   this->_buildMainWindow ( _app.mainWindow() );
-
-  // If this is the first time...
-  if ( firstTime )
-  {
-    // Create the application.
-    _foxApp->create();
-  }
 
   // Application is no longer dirty.
   _app.dirty ( false );
@@ -398,6 +420,8 @@ void FoxComponent::buildApplication()
 
 void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == _foxApp || 0x0 == mainWin || false == mainWin->dirty() )
     return;
@@ -409,20 +433,23 @@ void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
   if ( 0x0 == foxMainWin )
   {
     // Application icon.
-    typedef FoxTools::Icons::Factory Icons;
-    FX::FXIcon *icon ( Icons::instance()->icon ( Icons::ICON_LOGO ) );
+    std::auto_ptr<FX::FXIcon> icon ( this->_makeIcon ( mainWin ) );
 
     // Get appropriate size.
-    FoxRect size ( this->_initialMainWindowSize() );
+    FoxRect size ( this->_initialMainWindowSize ( mainWin ) );
 
     // Make main window.
-    foxMainWin = new FX::FXMainWindow ( _foxApp, _foxApp->getAppName(), icon, icon, FX::DECOR_ALL, size[0], size[1], size[2], size[3] );
+    foxMainWin = new FX::FXMainWindow ( _foxApp, _foxApp->getAppName(), icon.get(), icon.get(), FX::DECOR_ALL, size[0], size[1], size[2], size[3] );
     this->_newWindow ( foxMainWin, mainWin );
+
+    // Main window owns the icon now.
+    icon.release();
   }
 
   // Make these other components.
   this->_buildMenuBar ( foxMainWin, mainWin->menuBar() );
   this->_buildToolBars();
+  this->_buildStatusBar ( foxMainWin, mainWin->statusBar() );
 
   // Build the children.
   this->_buildChildren ( foxMainWin, mainWin );
@@ -440,6 +467,8 @@ void FoxComponent::_buildMainWindow ( AFW::Core::MainWindow *mainWin )
 
 void FoxComponent::_buildMenuBar ( FX::FXMainWindow *foxMainWin, AFW::Menus::MenuBar *menuBar )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == foxMainWin || 0x0 == menuBar || false == menuBar->dirty() )
     return;
@@ -475,12 +504,46 @@ void FoxComponent::_buildMenuBar ( FX::FXMainWindow *foxMainWin, AFW::Menus::Men
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build the status-bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_buildStatusBar ( FX::FXMainWindow *foxMainWin, AFW::Core::StatusBar *statusBar )
+{
+  Guard guard ( _mutex );
+
+  // Make sure we are supposed to be here.
+  if ( 0x0 == foxMainWin || 0x0 == statusBar || false == statusBar->dirty() )
+    return;
+
+  // Get the existing fox main window.
+  FX::FXStatusBar *foxStatusBar ( Detail::FoxObject<FX::FXStatusBar>::get ( statusBar ) );
+
+  // If this is the first time...
+  if ( 0x0 == foxStatusBar )
+  {
+    // Menu bar.
+    foxStatusBar = new FX::FXStatusBar ( foxMainWin, FX::LAYOUT_SIDE_BOTTOM | FX::LAYOUT_FILL_X );
+    this->_newWindow ( foxStatusBar, statusBar );
+    foxStatusBar->getStatusLine()->setTarget ( this );
+    foxStatusBar->getStatusLine()->setSelector ( 0 );
+  }
+
+  // Not dirty now.
+  statusBar->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the top-level menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void FoxComponent::_buildTopMenu ( FX::FXMainWindow *foxMainWin, FX::FXMenuBar *foxMenuBar, AFW::Core::Group *group )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == foxMainWin || 0x0 == foxMenuBar || 0x0 == group || false == group->dirty() )
     return;
@@ -519,6 +582,8 @@ void FoxComponent::_buildTopMenu ( FX::FXMainWindow *foxMainWin, FX::FXMenuBar *
 
 void FoxComponent::_buildSubMenu ( FX::FXComposite *parent, AFW::Core::Group *group )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent || 0x0 == group || false == group->dirty() )
     return;
@@ -535,6 +600,8 @@ void FoxComponent::_buildSubMenu ( FX::FXComposite *parent, AFW::Core::Group *gr
 
 void FoxComponent::_buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Button *button )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent || 0x0 == button || false == button->dirty() )
     return;
@@ -557,6 +624,8 @@ void FoxComponent::_buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Butto
 
 void FoxComponent::_buildChildren ( FX::FXMainWindow *foxMainWin, AFW::Core::MainWindow *mainWin )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == foxMainWin || 0x0 == mainWin || false == mainWin->dirty() || 0 == mainWin->numChildren() )
     return;
@@ -564,18 +633,20 @@ void FoxComponent::_buildChildren ( FX::FXMainWindow *foxMainWin, AFW::Core::Mai
   // Make the dock-sites and middle region.
   {
     _dockCircles.clear();
+    _splitters.clear();
     SplitRegions regions;
     regions[AFW::Core::DockSite::NONE] = foxMainWin;
     const unsigned int numCircles ( 4 );
     for ( unsigned int i = 0; i < numCircles; ++i )
     {
-      this->_makeSplitRegions ( regions[AFW::Core::DockSite::NONE], regions );
+      this->_makeSplitRegions ( i, regions[AFW::Core::DockSite::NONE], regions );
       _dockCircles.push_back ( regions );
     }
   }
 
   // Make the mdi-client area.
   FX::FXMDIClient *clientArea ( new FX::FXMDIClient ( _dockCircles.back()[AFW::Core::DockSite::NONE], FX::LAYOUT_FILL ) );
+  FoxTools::Functions::create ( clientArea );
   clientArea->setTarget ( this );
   clientArea->setSelector ( 0 );
 
@@ -598,6 +669,8 @@ void FoxComponent::_buildChildren ( FX::FXMainWindow *foxMainWin, AFW::Core::Mai
 
 void FoxComponent::_buildDockedWindow ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == window || false == window->dirty() || AFW::Core::DockSite::NONE == window->dockState().first )
     return;
@@ -635,6 +708,8 @@ void FoxComponent::_buildDockedWindow ( AFW::Core::Window *window )
 
 void FoxComponent::_buildTextWindow ( FX::FXComposite *parent, AFW::Core::TextWindow *window )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent || 0x0 == window || false == window->dirty() )
     return;
@@ -654,6 +729,8 @@ void FoxComponent::_buildTextWindow ( FX::FXComposite *parent, AFW::Core::TextWi
 
 FX::FXComposite *FoxComponent::_dockSiteParent ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( true == _dockCircles.empty() || 0x0 == window || AFW::Core::DockSite::NONE == window->dockState().first )
     return 0x0;
@@ -677,6 +754,8 @@ FX::FXComposite *FoxComponent::_dockSiteParent ( AFW::Core::Window *window )
 
 FX::FXComposite *FoxComponent::_makeTabItem ( const AFW::Core::Window *window, FX::FXComposite *parent )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent || 0x0 == window )
     return 0x0;
@@ -690,14 +769,18 @@ FX::FXComposite *FoxComponent::_makeTabItem ( const AFW::Core::Window *window, F
   FX::FXWindow *child0 ( ( parent->numChildren() > 0 ) ? parent->childAtIndex ( 0 ) : 0x0 );
   FX::FXTabBook *book ( SAFE_CAST_FOX ( FX::FXTabBook, child0 ) );
   if ( 0x0 == book )
+  {
     book = new FX::FXTabBook ( parent, this, 0, bookLayout | FX::LAYOUT_FILL );
+    FoxTools::Functions::create ( book );
+  }
 
   // Should always have an even number of children.
   USUL_ASSERT ( 0 == book->numChildren() % 2 );
 
   // Build the tab.
   const std::string text ( this->_tabItemText ( window ) );
-  new FX::FXTabItem ( book, text.c_str(), this->_makeIcon ( window ), itemLayout | FX::LAYOUT_FILL );
+  FX::FXTabItem *item ( new FX::FXTabItem ( book, text.c_str(), this->_makeIcon ( window ), itemLayout | FX::LAYOUT_FILL ) );
+  FoxTools::Functions::create ( item );
 
   // Return the book.
   return book;
@@ -713,6 +796,8 @@ FX::FXComposite *FoxComponent::_makeTabItem ( const AFW::Core::Window *window, F
 
 FX::FXComposite *FoxComponent::_makeShutterItem ( const AFW::Core::Window *window, FX::FXComposite *parent )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent || 0x0 == window )
     return 0x0;
@@ -724,11 +809,15 @@ FX::FXComposite *FoxComponent::_makeShutterItem ( const AFW::Core::Window *windo
   FX::FXWindow *child0 ( ( parent->numChildren() > 0 ) ? parent->childAtIndex ( 0 ) : 0x0 );
   FX::FXShutter *shutter ( SAFE_CAST_FOX ( FX::FXShutter, child0 ) );
   if ( 0x0 == shutter )
+  {
     shutter = new FX::FXShutter ( parent, this, 0, FX::FRAME_SUNKEN | layout );
+    FoxTools::Functions::create ( shutter );
+  }
 
   // Build the tab.
   const std::string text ( this->_tabItemText ( window ) );
   FX::FXShutterItem *item ( new FX::FXShutterItem ( shutter, text.c_str(), this->_makeIcon ( window ), layout ) );
+  FoxTools::Functions::create ( item );
   item->getButton()->setIconPosition ( FX::ICON_BEFORE_TEXT );
   item->getContent()->setTarget ( this );
   item->getContent()->setSelector ( 0 );
@@ -745,16 +834,18 @@ FX::FXComposite *FoxComponent::_makeShutterItem ( const AFW::Core::Window *windo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_makeSplitRegions ( FX::FXComposite *parent, SplitRegions &regions )
+void FoxComponent::_makeSplitRegions ( unsigned int circle, FX::FXComposite *parent, SplitRegions &regions )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent )
     return;
 
   // Make the two regions.
   ThreeWaySplit v, h;
-  this->_makeThreeWaySplit ( parent, FX::SPLITTER_VERTICAL,   v );
-  this->_makeThreeWaySplit ( v[1],   FX::SPLITTER_HORIZONTAL, h );
+  this->_makeThreeWaySplit ( circle, parent, FX::SPLITTER_VERTICAL,   v );
+  this->_makeThreeWaySplit ( circle, v[1],   FX::SPLITTER_HORIZONTAL, h );
 
   // Fill the regions.
   regions[AFW::Core::DockSite::TOP]    = v[0];
@@ -771,8 +862,10 @@ void FoxComponent::_makeSplitRegions ( FX::FXComposite *parent, SplitRegions &re
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FoxComponent::_makeThreeWaySplit ( FX::FXComposite *foxParent, unsigned int direction, ThreeWaySplit &split )
+void FoxComponent::_makeThreeWaySplit ( unsigned int circle, FX::FXComposite *foxParent, unsigned int direction, ThreeWaySplit &split )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == foxParent )
     return;
@@ -784,6 +877,10 @@ void FoxComponent::_makeThreeWaySplit ( FX::FXComposite *foxParent, unsigned int
   FX::FXComposite *middle ( this->_makeFrame ( inner ) );
   FX::FXComposite *dock2  ( this->_makeFrame ( inner ) );
 
+  // Create if we should.
+  FoxTools::Functions::create ( outer );
+  FoxTools::Functions::create ( inner );
+
   // Hide the dock-sites.
   dock1->hide();
   dock2->hide();
@@ -794,6 +891,14 @@ void FoxComponent::_makeThreeWaySplit ( FX::FXComposite *foxParent, unsigned int
   this->_setColor ( inner );
   this->_setColor ( middle );
   this->_setColor ( dock2 );
+
+  // Save splitters in map.
+  _splitters[outer] = this->_makeSplitterRegistrySection ( circle, direction, "outer" );
+  _splitters[inner] = this->_makeSplitterRegistrySection ( circle, direction, "inner" );
+
+  // Try to set split distance.
+  outer->setSplit ( 0, FoxTools::Registry::read ( _splitters[outer], AFW::Registry::Keys::SPLIT_DISTANCE, outer->getSplit ( 0 ) ) );
+  inner->setSplit ( 1, FoxTools::Registry::read ( _splitters[inner], AFW::Registry::Keys::SPLIT_DISTANCE, inner->getSplit ( 1 ) ) );
 
   // Set the result.
   split.set ( dock1, middle, dock2 );
@@ -808,6 +913,8 @@ void FoxComponent::_makeThreeWaySplit ( FX::FXComposite *foxParent, unsigned int
 
 FX::FXComposite *FoxComponent::_makeFrame ( FX::FXSplitter *splitter )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == splitter )
     return 0x0;
@@ -816,6 +923,7 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXSplitter *splitter )
   if ( Usul::Bits::has ( splitter->getSplitterStyle(), FX::SPLITTER_HORIZONTAL ) )
   {
     FX::FXHorizontalFrame *frame ( new FX::FXHorizontalFrame ( splitter, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    FoxTools::Functions::create ( frame );
     frame->setTarget ( this );
     frame->setSelector ( 0 );
     return frame;
@@ -823,6 +931,7 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXSplitter *splitter )
   else
   {
     FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( splitter, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    FoxTools::Functions::create ( frame );
     frame->setTarget ( this );
     frame->setSelector ( 0 );
     return frame;
@@ -838,6 +947,8 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXSplitter *splitter )
 
 FX::FXComposite *FoxComponent::_makeFrame ( FX::FXComposite *parent, AFW::Core::DockSite::Type type )
 {
+  Guard guard ( _mutex );
+
   // Make sure we are supposed to be here.
   if ( 0x0 == parent )
     return 0x0;
@@ -846,6 +957,7 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXComposite *parent, AFW::Core::
   if ( AFW::Core::DockSite::TOP == type || AFW::Core::DockSite::BOTTOM == type )
   {
     FX::FXHorizontalFrame *frame ( new FX::FXHorizontalFrame ( parent, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    FoxTools::Functions::create ( frame );
     frame->setTarget ( this );
     frame->setSelector ( 0 );
     return frame;
@@ -853,6 +965,7 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXComposite *parent, AFW::Core::
   else
   {
     FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( parent, FX::LAYOUT_FILL, FRAME_BORDER_SPACING ) );
+    FoxTools::Functions::create ( frame );
     frame->setTarget ( this );
     frame->setSelector ( 0 );
     return frame;
@@ -868,6 +981,8 @@ FX::FXComposite *FoxComponent::_makeFrame ( FX::FXComposite *parent, AFW::Core::
 
 void FoxComponent::_cleanChildren ( AFW::Core::Group *group )
 {
+  Guard guard ( _mutex );
+
   // Handle null input.
   if ( 0x0 == group )
     return;
@@ -896,13 +1011,14 @@ void FoxComponent::_cleanChildren ( AFW::Core::Group *group )
 
 void FoxComponent::destroyApplication()
 {
+  Guard guard ( _mutex );
+
   if ( 0x0 == _foxApp )
     return;
 
   try
   {
     this->_cleanup();
-    Usul::Resources::textWindow ( 0x0 );
     delete _foxApp;
   }
 
@@ -924,6 +1040,8 @@ void FoxComponent::destroyApplication()
 
 void FoxComponent::runApplication()
 {
+  Guard guard ( _mutex );
+
   // Make sure the application is built.
   this->buildApplication();
 
@@ -939,15 +1057,58 @@ void FoxComponent::runApplication()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Run the application.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::runWhileEvents()
+{
+  Guard guard ( _mutex );
+  _foxApp->runWhileEvents();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Quit the application.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::quitApplication()
+{
+  Guard guard ( _mutex );
+
+  // Handle no application.
+  if ( 0x0 == _foxApp )
+    return;
+
+  // Try to stop using the main window.
+  FX::FXMainWindow *foxMainpWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
+  if ( foxMainpWin )
+  {
+    // Does the same as clicking on main window's close button.
+    foxMainpWin->onCmdClose ( 0x0, 0, 0x0 );
+    return;
+  }
+
+  // If we get to here then use the fox application.
+  _foxApp->exit();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the text window(s).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void FoxComponent::updateTextWindow ( bool force )
 {
+  Guard guard ( _mutex );
+
   // Set and reset this flag.
   const bool saved ( _force );
-  Usul::Scope::Reset<bool> reset ( _force, true, saved );
+  Usul::Scope::Reset<bool> reset ( _force, force, saved );
 
   // Make the visitor.
   AFW::Core::BaseVisitor::RefPtr visitor 
@@ -956,7 +1117,21 @@ void FoxComponent::updateTextWindow ( bool force )
         ( this, &FoxComponent::_callUpdateActions ) ) );
 
   // Visit the tree.
-  AFW::Core::Application::instance().accept ( visitor.get() );
+  _app.accept ( visitor.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scroll the window to the end.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::scrollWindowToEnd ( AFW::Core::Window *window )
+{
+  Guard guard ( _mutex );
+  try { this->_scrollWindowToEnd ( Detail::FoxObject<FXText>::get ( window ) ); }
+  AFW_CATCH_BLOCK ( 4194517299, 4200331451 );
 }
 
 
@@ -968,6 +1143,7 @@ void FoxComponent::updateTextWindow ( bool force )
 
 void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const std::string &text )
 {
+  Guard guard ( _mutex );
   try { this->_windowTextAppend ( Detail::FoxObject<FXText>::get ( window ), text.c_str(), text.size() ); }
   AFW_CATCH_BLOCK ( 4258938551, 3759973417 );
 }
@@ -981,6 +1157,7 @@ void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const std::stri
 
 void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const char *text, unsigned int length )
 {
+  Guard guard ( _mutex );
   try { this->_windowTextAppend ( Detail::FoxObject<FXText>::get ( window ), text, length ); }
   AFW_CATCH_BLOCK ( 3804786765, 1284080828 );
 }
@@ -994,6 +1171,7 @@ void FoxComponent::windowTextAppend ( AFW::Core::Window *window, const char *tex
 
 void FoxComponent::windowTextSet ( AFW::Core::Window *window, const std::string &text )
 {
+  Guard guard ( _mutex );
   try { this->_windowTextSet ( Detail::FoxObject<FXText>::get ( window ), text.c_str(), text.size() ); }
   AFW_CATCH_BLOCK ( 1370382751, 3745159501 );
 }
@@ -1007,6 +1185,7 @@ void FoxComponent::windowTextSet ( AFW::Core::Window *window, const std::string 
 
 void FoxComponent::windowTextSet ( AFW::Core::Window *window, const char *text, unsigned int length )
 {
+  Guard guard ( _mutex );
   try { this->_windowTextSet ( Detail::FoxObject<FXText>::get ( window ), text, length ); }
   AFW_CATCH_BLOCK ( 3969755668, 2414501198 );
 }
@@ -1020,6 +1199,7 @@ void FoxComponent::windowTextSet ( AFW::Core::Window *window, const char *text, 
 
 void FoxComponent::windowTextGet ( const AFW::Core::Window *window, std::string &text )
 {
+  Guard guard ( _mutex );
   try { this->_windowTextGet ( Detail::FoxObject<FXText>::get ( const_cast < AFW::Core::Window * > ( window ) ), text ); }
   AFW_CATCH_BLOCK ( 1114033505, 1989253250 );
 }
@@ -1033,6 +1213,7 @@ void FoxComponent::windowTextGet ( const AFW::Core::Window *window, std::string 
 
 void FoxComponent::_windowTextGet ( const FX::FXText *window, std::string &s ) const
 {
+  Guard guard ( _mutex );
   if ( window )
     s = window->getText().text();
 }
@@ -1046,15 +1227,14 @@ void FoxComponent::_windowTextGet ( const FX::FXText *window, std::string &s ) c
 
 void FoxComponent::_windowTextSet ( FX::FXText *window, const char *text, unsigned int length )
 {
+  Guard guard ( _mutex );
+
   // Check input.
   if ( 0x0 == window || 0x0 == text || 0 == length )
     return;
 
-  // Set the text.
+  // Set the text if it is different.
   window->setText ( text, length );
-
-  // Scroll the window.
-  this->_scrollWindowToEnd ( window );
 }
 
 
@@ -1066,15 +1246,14 @@ void FoxComponent::_windowTextSet ( FX::FXText *window, const char *text, unsign
 
 void FoxComponent::_windowTextAppend ( FX::FXText *window, const char *text, unsigned int length )
 {
+  Guard guard ( _mutex );
+
   // Check input.
   if ( 0x0 == window || 0x0 == text || 0 == length )
     return;
 
   // Set the text.
   window->appendText ( text, length );
-
-  // Scroll the window.
-  this->_scrollWindowToEnd ( window );
 }
 
 
@@ -1086,6 +1265,8 @@ void FoxComponent::_windowTextAppend ( FX::FXText *window, const char *text, uns
 
 void FoxComponent::_scrollWindowToEnd ( FX::FXText *window )
 {
+  Guard guard ( _mutex );
+
   // Handle bad input.
   if ( 0x0 == window )
     return;
@@ -1114,34 +1295,80 @@ void FoxComponent::_scrollWindowToEnd ( FX::FXText *window )
 
 void FoxComponent::_registryWrite()
 {
+  Guard guard ( _mutex );
+
   // Make sure there is an application.
   if ( 0x0 == _foxApp )
     return;
 
-  // If we have a main window...
-  FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( _app.mainWindow() ) );
-  if ( 0x0 != foxMainWin )
+  // Main window.
   {
-    // Is it maximized?
-    FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::MAXIMIZED, foxMainWin->isMaximized() );
-
-    // If the main window is not maximized...
-    if ( false == foxMainWin->isMaximized() )
+    // Get main window.
+    AFW::Core::MainWindow::RefPtr mainWin ( _app.mainWindow() );
+    if ( mainWin.valid() )
     {
-      // Write the size and position to the registry.
-      FX::FXint x ( Usul::Math::maximum ( ( foxMainWin->getX() ), 0 ) );
-      FX::FXint y ( Usul::Math::maximum ( ( foxMainWin->getY() ), 0 ) );
-      FX::FXint w ( foxMainWin->getWidth() );
-      FX::FXint h ( foxMainWin->getHeight() );
-      FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::X,      x );
-      FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::Y,      y );
-      FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::WIDTH,  w );
-      FoxTools::Registry::write ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::HEIGHT, h );
+      // Get persistent name.
+      const std::string &section ( mainWin->persistentName() );
+      if ( false == section.empty() )
+      {
+        // Get fox main window.
+        FX::FXMainWindow *foxMainWin ( Detail::FoxObject<FX::FXMainWindow>::get ( mainWin ) );
+        if ( 0x0 != foxMainWin )
+        {
+          // Is it maximized?
+          FoxTools::Registry::write ( mainWin->persistentName(), AFW::Registry::Keys::MAXIMIZED, foxMainWin->isMaximized() );
+
+          // If the main window is not maximized...
+          if ( false == foxMainWin->isMaximized() )
+          {
+            // Write the size and position to the registry.
+            const FX::FXint x ( Usul::Math::maximum ( ( foxMainWin->getX() ), 0 ) );
+            const FX::FXint y ( Usul::Math::maximum ( ( foxMainWin->getY() ), 0 ) );
+            const FX::FXint w ( foxMainWin->getWidth() );
+            const FX::FXint h ( foxMainWin->getHeight() );
+            FoxTools::Registry::write ( section, AFW::Registry::Keys::X,      x );
+            FoxTools::Registry::write ( section, AFW::Registry::Keys::Y,      y );
+            FoxTools::Registry::write ( section, AFW::Registry::Keys::WIDTH,  w );
+            FoxTools::Registry::write ( section, AFW::Registry::Keys::HEIGHT, h );
+          }
+        }
+      }
     }
   }
 
-  // Flush the cached values and actually write them to the registry.
-  _foxApp->reg().write();
+  // Splitters.
+  {
+    // Loop through the splitters.
+    for ( Splitters::const_iterator i = _splitters.begin(); i != _splitters.end(); ++i )
+    {
+      // Get the window and registry section.
+      const FX::FXSplitter *splitter ( i->first );
+      const std::string &section ( i->second );
+
+      // Write the split distance.
+      const unsigned int index ( ( Usul::Bits::has ( splitter->getSplitterStyle(), FX::SPLITTER_REVERSED ) ) ? 1 : 0 );
+      const FX::FXint split ( splitter->getSplit ( index ) );
+      FoxTools::Registry::write ( section, AFW::Registry::Keys::SPLIT_DISTANCE, split );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called during idle processing if there is a chore registered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FoxComponent::onChore ( FXObject *object, FXSelector selector, void *data )
+{
+  Guard guard ( _mutex );
+
+  // Flush event queue.
+  _app.eventsFlush();
+
+  // Message handled.
+  return 1;
 }
 
 
@@ -1153,6 +1380,8 @@ void FoxComponent::_registryWrite()
 
 long FoxComponent::onClose ( FXObject *object, FXSelector selector, void *data )
 {
+  Guard guard ( _mutex );
+
   // Close down.
   this->notifyClose ( 0x0 );
 
@@ -1169,6 +1398,8 @@ long FoxComponent::onClose ( FXObject *object, FXSelector selector, void *data )
 
 long FoxComponent::onCommand ( FXObject *object, FXSelector selector, void *data )
 {
+  Guard guard ( _mutex );
+
   // Look for a command-action.
   AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
   if ( window.valid() )
@@ -1187,6 +1418,8 @@ long FoxComponent::onCommand ( FXObject *object, FXSelector selector, void *data
 
 long FoxComponent::onUpdate ( FXObject *object, FXSelector selector, void *data )
 {
+  Guard guard ( _mutex );
+
   // Try to call the update actions.
   this->_callUpdateActions ( this->_findWindow ( object ) );
 
@@ -1203,6 +1436,8 @@ long FoxComponent::onUpdate ( FXObject *object, FXSelector selector, void *data 
 
 long FoxComponent::onDestroy ( FXObject *object, FXSelector selector, void *data )
 {
+  Guard guard ( _mutex );
+
   // Find the window.
   AFW::Core::Window::RefPtr window ( this->_findWindow ( object ) );
   if ( true == window.valid() )
@@ -1213,6 +1448,7 @@ long FoxComponent::onDestroy ( FXObject *object, FXSelector selector, void *data
 
   // Erase the entry if there is any.
   _windows.erase ( object );
+  _splitters.erase ( SAFE_CAST_FOX ( FX::FXSplitter, object ) );
 
   // Continue propagation of message.
   return 0;
@@ -1227,11 +1463,13 @@ long FoxComponent::onDestroy ( FXObject *object, FXSelector selector, void *data
 
 long FoxComponent::onMouseMotion ( FXObject *object, FXSelector selector, void *data )
 {
+  Guard guard ( _mutex );
+
   FX::FXEvent *event ( reinterpret_cast < FX::FXEvent * > ( data ) );
   if ( event )
   {
-    std::string name ( ( object ) ? object->getClassName() : "Unknown" );
-    std::cout << "FoxComponent::onMouseMotion(), object = " << name << ", x = " << event->win_x << ", y = " << event->win_y << Usul::Resources::TextWindow::endl;
+    //std::string name ( ( object ) ? object->getClassName() : "Unknown" );
+    //std::cout << "FoxComponent::onMouseMotion(), object = " << name << ", x = " << event->win_x << ", y = " << event->win_y << Usul::Resources::TextWindow::endl;
   }
 
   // Continue propagation of message.
@@ -1245,8 +1483,10 @@ long FoxComponent::onMouseMotion ( FXObject *object, FXSelector selector, void *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
+FoxComponent::FoxRect FoxComponent::_initialMainWindowSize ( AFW::Core::MainWindow *mainWin )
 {
+  Guard guard ( _mutex );
+
   // Get dimensions of screen.
   const FXint sw ( USUL_UNSAFE_CAST ( FXint, Usul::System::Screen::width()  ) );
   const FXint sh ( USUL_UNSAFE_CAST ( FXint, Usul::System::Screen::height() ) );
@@ -1257,11 +1497,14 @@ FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
   const FX::FXint dw ( USUL_UNSAFE_CAST ( FXint, ( 0.8 * sw ) ) );
   const FX::FXint dh ( USUL_UNSAFE_CAST ( FXint, ( 0.8 * sh ) ) );
 
+  // Get section name.
+  const std::string section ( ( mainWin ) ? mainWin->persistentName() : "main_window" );
+
   // Get dimensions of main window.
-  FX::FXint x ( FoxTools::Registry::read ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::X,      dx ) );
-  FX::FXint y ( FoxTools::Registry::read ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::Y,      dy ) );
-  FX::FXint w ( FoxTools::Registry::read ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::WIDTH,  dw ) );
-  FX::FXint h ( FoxTools::Registry::read ( AFW::Registry::Sections::MAIN_WINDOW, AFW::Registry::Keys::HEIGHT, dh ) );
+  FX::FXint x ( FoxTools::Registry::read ( section, AFW::Registry::Keys::X,      dx ) );
+  FX::FXint y ( FoxTools::Registry::read ( section, AFW::Registry::Keys::Y,      dy ) );
+  FX::FXint w ( FoxTools::Registry::read ( section, AFW::Registry::Keys::WIDTH,  dw ) );
+  FX::FXint h ( FoxTools::Registry::read ( section, AFW::Registry::Keys::HEIGHT, dh ) );
 
   // Make sure it fits.
   const bool xFits ( ( x > 0  ) && ( x < ( sw - w ) ) );
@@ -1286,18 +1529,28 @@ FoxComponent::FoxRect FoxComponent::_initialMainWindowSize()
 
 FX::FXIcon *FoxComponent::_makeIcon ( const AFW::Core::Window *w ) const
 {
-  // If we have an icon...
-  if ( w && w->icon() )
+  Guard guard ( _mutex );
+  return ( ( w && w->icon() ) ? this->_makeIcon ( w->icon()->file() ) : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make an icon. Returns null if it fails.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FX::FXIcon *FoxComponent::_makeIcon ( const std::string &file ) const
+{
+  Guard guard ( _mutex );
+
+  // If the file exists...
+  Usul::Predicates::FileExists exists;
+  if ( exists ( file ) )
   {
-    // If the file exists...
-    const std::string file ( w->icon()->file() );
-    Usul::Predicates::FileExists exists;
-    if ( exists ( file ) )
-    {
-      // Make the icon.
-      typedef FoxTools::Icons::Factory Icons;
-      return Icons::instance()->icon ( file );
-    }
+    // Make the icon.
+    typedef FoxTools::Icons::Factory Icons;
+    return Icons::instance()->icon ( file );
   }
 
   // It did not work.
@@ -1313,6 +1566,7 @@ FX::FXIcon *FoxComponent::_makeIcon ( const AFW::Core::Window *w ) const
 
 void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
   FX::FXWindow *foxWindow ( Detail::FoxObject<FX::FXWindow>::get ( window ) );
   if ( foxWindow )
     FoxTools::Functions::enable ( state, foxWindow );
@@ -1327,6 +1581,7 @@ void FoxComponent::enableWindow ( bool state, AFW::Core::Window *window )
 
 bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
   const FX::FXWindow *foxWindow ( Detail::FoxObject<FX::FXWindow>::get ( const_cast < AFW::Core::Window * > ( window ) ) );
   return ( ( foxWindow && foxWindow->isEnabled() ) ? true : false );
 }
@@ -1340,6 +1595,7 @@ bool FoxComponent::isWindowEnabled ( const AFW::Core::Window *window )
 
 FoxComponent::FileResult FoxComponent::getLoadFileName ( const std::string &title, const Filters &filters )
 {
+  Guard guard ( _mutex );
   FilesResult result ( this->getLoadFileNames ( title, filters ) );
   return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }
@@ -1353,6 +1609,8 @@ FoxComponent::FileResult FoxComponent::getLoadFileName ( const std::string &titl
 
 FoxComponent::FilesResult FoxComponent::getLoadFileNames ( const std::string &title, const Filters &filters )
 {
+  Guard guard ( _mutex );
+
   // Need this up here.
   FilesResult result;
 
@@ -1378,6 +1636,7 @@ FoxComponent::FilesResult FoxComponent::getLoadFileNames ( const std::string &ti
 
 void FoxComponent::_buildToolBars()
 {
+  Guard guard ( _mutex );
 }
 
 
@@ -1389,6 +1648,7 @@ void FoxComponent::_buildToolBars()
 
 void FoxComponent::destroyNotify ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
   this->_deleteGuiObject ( window );
 }
 
@@ -1401,6 +1661,7 @@ void FoxComponent::destroyNotify ( AFW::Core::Window *window )
 
 void FoxComponent::removeNotify ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
   this->_deleteGuiObject ( window );
 }
 
@@ -1413,6 +1674,8 @@ void FoxComponent::removeNotify ( AFW::Core::Window *window )
 
 void FoxComponent::_deleteGuiObject ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
+
   // Handle null input.
   if ( 0x0 == window )
     return;
@@ -1422,8 +1685,9 @@ void FoxComponent::_deleteGuiObject ( AFW::Core::Window *window )
   if ( 0x0 == fox )
     return;
 
-  // Remove the object from our map.
+  // Remove the object from our maps.
   _windows.erase ( fox );
+  _splitters.erase ( SAFE_CAST_FOX ( FX::FXSplitter, fox ) );
 
   // Delete the fox-object safely.
   this->_deleteFoxObject ( fox );
@@ -1441,6 +1705,7 @@ void FoxComponent::_deleteGuiObject ( AFW::Core::Window *window )
 
 void FoxComponent::_deleteFoxObject ( FX::FXObject *object )
 {
+  Guard guard ( _mutex );
   try
   {
     delete object;
@@ -1457,6 +1722,7 @@ void FoxComponent::_deleteFoxObject ( FX::FXObject *object )
 
 AFW::Core::Window *FoxComponent::_findWindow ( FX::FXObject *object )
 {
+  Guard guard ( _mutex );
   WindowsMap::iterator i ( _windows.find ( object ) );
   return ( ( _windows.end() == i ) ? 0x0 : i->second );
 }
@@ -1470,6 +1736,8 @@ AFW::Core::Window *FoxComponent::_findWindow ( FX::FXObject *object )
 
 void FoxComponent::_flush()
 {
+  Guard guard ( _mutex );
+
   // Passing TRUE on unix calls XSync instead of XFlush. No effect on Windows.
   if ( _foxApp )
     _foxApp->flush ( TRUE );
@@ -1496,6 +1764,7 @@ Usul::Interfaces::IUnknown *FoxComponent::_unknown()
 
 void FoxComponent::_callUpdateActions ( AFW::Core::Window *window )
 {
+  Guard guard ( _mutex );
   if ( window )
     window->callUpdateActions();
 }
@@ -1509,6 +1778,49 @@ void FoxComponent::_callUpdateActions ( AFW::Core::Window *window )
 
 std::string FoxComponent::_tabItemText ( const AFW::Core::Window *window ) const
 {
+  Guard guard ( _mutex );
   const char *typeName ( window->typeId().name() );
   return ( ( 0x0 != window && false == window->title().empty() ) ? window->title() : ( ( typeName ) ? typeName : "" ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show splash screen if we have an icon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FoxComponent::_showSplashScreen()
+{
+  Guard guard ( _mutex );
+
+  if ( 0x0 == _foxApp )
+    return;
+
+  std::auto_ptr<FX::FXIcon> icon ( this->_makeIcon ( _app.splashScreen()->file() ) );
+  if ( 0x0 == icon.get() )
+    return;
+
+  const unsigned int layout ( FX::SPLASH_SIMPLE );
+  std::auto_ptr<FX::FXSplashWindow> splash ( new FX::FXSplashWindow ( _foxApp, icon.get(), layout, 1000 ) );
+  FoxTools::Functions::create ( splash.get() );
+  splash->show ( FX::PLACEMENT_SCREEN );
+  _foxApp->flush ( TRUE );
+  _foxApp->runModalWhileShown ( splash.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make appropriate string for the registry section.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string FoxComponent::_makeSplitterRegistrySection ( unsigned int circle, unsigned int direction, const std::string &name ) const
+{
+  Guard guard ( _mutex );
+  std::ostringstream out;
+  const std::string dir ( ( FX::SPLITTER_VERTICAL == direction ) ? "vertical" : "horizontal" );
+  out << "circle_" << circle << '_' << name << '_' << dir;
+  return out.str();
 }

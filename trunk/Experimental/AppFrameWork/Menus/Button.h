@@ -30,20 +30,39 @@ public:
   // Typedefs.
   typedef AFW::Core::Window BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Button );
-
-  // Constructor
-  Button ( const std::string &text = "", AFW::Core::Icon *icon = 0x0, unsigned short underline = 0xFFFF );
+  // Menu button types.
+  enum Type
+  {
+    MENU_BUTTON,
+    MENU_RADIO,
+    MENU_CHECK,
+    MENU_SEPARATOR
+  };
 
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
+  // Factory functions.
+  static Button *                     createButton ( const std::string &text, const Type &type, const AFW::Core::Icon &icon );
+  static Button *                     createButton ( const std::string &text, const AFW::Core::Icon &icon );
+  static Button *                     createButton ( const std::string &text, const std::string &icon );
+  static Button *                     createButton ( const std::string &text );
+  static Button *                     createCheck  ( const std::string &text );
+  static Button *                     createRadio  ( const std::string &text );
+  static Button *                     createSeparator();
+                                               
   // Set/get the character to underline.
   unsigned short                      underline() const;
   void                                underline ( unsigned short );
 
+  // Set/get the type.
+  void                                type ( const Type & );
+  Type                                type() const;
+
 protected:
+
+  // Constructor
+  Button();
 
   // Use reference counting.
   virtual ~Button();
@@ -55,6 +74,9 @@ private:
   Button &operator = ( const Button & );
 
   unsigned short _underline;
+  Type _type;
+
+  AFW_DECLARE_OBJECT ( Button );
 };
 
 

@@ -19,6 +19,8 @@
 
 using namespace AFW::Conditions;
 
+USUL_IMPLEMENT_TYPE_ID ( Or );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -50,6 +52,7 @@ Or::~Or()
 
 bool Or::evaluate ( AFW::Core::Object *object )
 {
+  Guard guard ( this->mutex() );
   for ( Group::Iterator i = this->begin(); i != this->end(); ++i )
   {
     if ( true == (*i)->evaluate ( object ) )

@@ -17,6 +17,8 @@
 
 using namespace AFW::Conditions;
 
+USUL_IMPLEMENT_TYPE_ID ( HasActiveEditor );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -48,5 +50,6 @@ HasActiveEditor::~HasActiveEditor()
 
 bool HasActiveEditor::evaluate ( AFW::Core::Object * )
 {
+  Guard guard ( this->mutex() );
   return ( false == _want ); // TODO
 }

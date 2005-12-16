@@ -147,6 +147,9 @@
 			Name="Source"
 			Filter="">
 			<File
+				RelativePath=".\AppFrameWorkExampled.log">
+			</File>
+			<File
 				RelativePath="main.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -165,9 +168,6 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\Helios.log">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

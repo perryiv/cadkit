@@ -17,9 +17,14 @@
 #define _APP_FRAME_WORK_OBJECT_CLASS_H_
 
 #include "AppFrameWork/Core/Export.h"
+#include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Core/NewObjectFunctor.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Variable.h"
 
 #include <list>
 
@@ -37,14 +42,29 @@ public:
   typedef Usul::Base::Referenced UserData;
   typedef USUL_REF_POINTER ( UserData ) UserDataPtr;
   typedef std::list < Object * > ObjectList; // Not reference-counted by design!
+  typedef Usul::Threads::Variable < ObjectList > ObjectListVar;
   typedef ObjectList::iterator ObjectListItr;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard < Mutex > Guard;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Object );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( Object );
+
   // Iterators to the list of all objects.
   static ObjectListItr                allObjectsBegin();
   static ObjectListItr                allObjectsEnd();
+
+  // Detach from gui object.
+  virtual void                        detach();
+
+  // Access to the mutex.
+  Mutex &                             mutex() const;
+
+  // Unreference the instance.
+  void                                unref ( bool allowDeletion = true );
 
   // Set/get the user-data.
   void                                userData ( UserData * );
@@ -65,7 +85,8 @@ private:
   Object ( const Object & );
   Object &operator = ( const Object & );
 
-  static ObjectList _allObjects;
+  static ObjectListVar _allObjects;
+  mutable Mutex _mutex;
   ObjectListItr _whichObject;
   UserDataPtr _userData;
 };

@@ -16,9 +16,9 @@
 #ifndef _FOX_GUI_SERVER_COMPONENT_CLASS_H_
 #define _FOX_GUI_SERVER_COMPONENT_CLASS_H_
 
-#include "CompileGuard.h"
-
+#include "AppFrameWork/Fox/CompileGuard.h"
 #include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/Constants.h"
 
 #include "FoxTools/Headers/Object.h"
 #include "FoxTools/Headers/MenuPane.h"
@@ -27,6 +27,8 @@
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Properties/Attribute.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IGUIServer.h"
 #include "Usul/Interfaces/INotifyClose.h"
@@ -42,7 +44,8 @@ namespace FoxTools { namespace App { class Application; } }
 namespace FX { class FXObject; class FXWindow; class FXMainWindow; }
 namespace FX { class FXMenuBar; class FXToolBarShell; class FXIcon; }
 namespace FX { class FXComposite; class FXSplitter; class FXPacker; class FXText; }
-namespace AFW { namespace Menus { class Button; class MenuGroup; class Frame; class TextWindow; } }
+namespace AFW { namespace Core { class Frame; class Group; class TextWindow; } }
+namespace AFW { namespace Menus { class Button; class MenuGroup; } }
 
 
 class FoxComponent : public Usul::Base::Referenced,
@@ -66,6 +69,9 @@ public:
   typedef Usul::Math::Vector3 < FX::FXComposite * > ThreeWaySplit;
   typedef std::map < AFW::Core::DockSite::Type, FX::FXComposite * > SplitRegions;
   typedef std::vector < SplitRegions > DockCircles;
+  typedef std::map < FX::FXSplitter *, std::string > Splitters;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard < Mutex > Guard;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Fox );
@@ -88,9 +94,6 @@ public:
   // Notification that the object is being destroyed.
   virtual void                  destroyNotify ( AFW::Core::Window * );
 
-  // Notification that the object is being removed from the scene.
-  virtual void                  removeNotify ( AFW::Core::Window * );
-
   // Enable/disable the window.
   virtual void                  enableWindow ( bool state, AFW::Core::Window *window );
 
@@ -107,14 +110,25 @@ public:
   virtual bool                  notifyClose ( Usul::Interfaces::IUnknown *caller );
 
   // FOX message callback.
+  long                          onChore       ( FX::FXObject *, FX::FXSelector, void * );
   long                          onClose       ( FX::FXObject *, FX::FXSelector, void * );
   long                          onCommand     ( FX::FXObject *, FX::FXSelector, void * );
   long                          onUpdate      ( FX::FXObject *, FX::FXSelector, void * );
   long                          onDestroy     ( FX::FXObject *, FX::FXSelector, void * );
   long                          onMouseMotion ( FX::FXObject *, FX::FXSelector, void * );
 
+  // Notification that the object is being removed from the scene.
+  virtual void                  removeNotify ( AFW::Core::Window * );
+
   // Run the application.
   virtual void                  runApplication();
+  virtual void                  runWhileEvents();
+
+  // Quit the application.
+  virtual void                  quitApplication();
+
+  // Scroll the window.
+  virtual void                  scrollWindowToEnd ( AFW::Core::Window *window );
 
   // Update the text window(s).
   virtual void                  updateTextWindow ( bool force );
@@ -141,6 +155,7 @@ protected:
   void                          _buildMainWindow ( AFW::Core::MainWindow *mainWin );
   void                          _buildMenuBar ( FX::FXMainWindow *, AFW::Menus::MenuBar * );
   void                          _buildMenuButton ( FX::FXComposite *parent, AFW::Menus::Button *button );
+  void                          _buildStatusBar ( FX::FXMainWindow *, AFW::Core::StatusBar * );
   void                          _buildSubMenu ( FX::FXComposite *parent, AFW::Core::Group *group );
   void                          _buildToolBars();
   void                          _buildTopMenu ( FX::FXMainWindow *, FX::FXMenuBar *, AFW::Core::Group * );
@@ -158,15 +173,17 @@ protected:
   AFW::Core::Window *           _findWindow ( FX::FXObject * );
   void                          _flush();
 
-  FoxRect                       _initialMainWindowSize();
+  FoxRect                       _initialMainWindowSize ( AFW::Core::MainWindow *mainWin );
 
   FX::FXComposite *             _makeFrame ( FX::FXSplitter *parent );
   FX::FXComposite *             _makeFrame ( FX::FXComposite *parent, AFW::Core::DockSite::Type type );
   FX::FXIcon *                  _makeIcon ( const AFW::Core::Window * ) const;
+  FX::FXIcon *                  _makeIcon ( const std::string & ) const;
   FX::FXComposite *             _makeTabItem ( const AFW::Core::Window *window, FX::FXComposite *parent );
-  void                          _makeThreeWaySplit ( FX::FXComposite *parent, unsigned int direction, ThreeWaySplit & );
+  void                          _makeThreeWaySplit ( unsigned int circle, FX::FXComposite *parent, unsigned int direction, ThreeWaySplit & );
   FX::FXComposite *             _makeShutterItem ( const AFW::Core::Window *window, FX::FXComposite *parent );
-  void                          _makeSplitRegions ( FX::FXComposite *parent, SplitRegions & );
+  void                          _makeSplitRegions ( unsigned int circle, FX::FXComposite *parent, SplitRegions & );
+  std::string                   _makeSplitterRegistrySection ( unsigned int circle, unsigned int direction, const std::string &name ) const;
 
   void                          _newWindow ( FX::FXWindow *, AFW::Core::Window * );
 
@@ -174,6 +191,7 @@ protected:
 
   void                          _scrollWindowToEnd ( FX::FXText *window );
   void                          _setColor ( FX::FXWindow * ) const;
+  void                          _showSplashScreen();
 
   std::string                   _tabItemText ( const AFW::Core::Window * ) const;
 
@@ -191,7 +209,9 @@ private:
   FoxTools::App::Application *_foxApp;
   WindowsMap _windows;
   DockCircles _dockCircles;
+  Splitters _splitters;
   bool _force;
+  mutable Mutex _mutex;
 
   FXDECLARE ( FoxComponent );
 };

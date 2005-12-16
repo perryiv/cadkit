@@ -38,6 +38,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Group );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( Group );
+
   // Constructor
   Group ( bool want = true );
 

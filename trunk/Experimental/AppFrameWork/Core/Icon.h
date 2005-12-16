@@ -9,14 +9,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Icon class.
+//  Icon class. Not thread-safe!
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _APP_FRAME_WORK_ICON_CLASS_H_
 #define _APP_FRAME_WORK_ICON_CLASS_H_
 
-#include "AppFrameWork/Core/Object.h"
+#include "AppFrameWork/Core/Export.h"
 
 #include <string>
 
@@ -25,33 +25,27 @@ namespace AFW {
 namespace Core {
 
 
-class APP_FRAME_WORK_EXPORT Icon : public Object
+class APP_FRAME_WORK_EXPORT Icon
 {
 public:
 
-  // Typedefs.
-  typedef Object BaseClass;
-
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Icon );
-
-  // Constructor
+  // Constructors and destructor.
   Icon ( const std::string &file = "" );
+  Icon ( const Icon & );
+  ~Icon();
 
   // Set/get the filename.
   void                                file ( const std::string & );
-  const std::string &                 file() const;
+  std::string                         file() const;
 
-protected:
+  // Find the appropriate file.
+  static std::string                  find ( const std::string &name );
 
-  // Use reference counting.
-  virtual ~Icon();
+  // Assignment.
+  Icon &                              operator = ( const Icon & );
+  Icon &                              operator = ( const std::string & );
 
 private:
-
-  // No copying.
-  Icon ( const Icon & );
-  Icon &operator = ( const Icon & );
 
   std::string _file;
 };

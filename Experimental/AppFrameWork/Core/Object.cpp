@@ -24,6 +24,17 @@
 
 using namespace AFW::Core;
 
+USUL_IMPLEMENT_TYPE_ID ( Object );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Local typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Usul::Threads::Guard < Object::ObjectListVar::MutexType > ObjectListGuard;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -31,7 +42,7 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Object::ObjectList Object::_allObjects;
+Object::ObjectListVar Object::_allObjects;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,7 +52,8 @@ Object::ObjectList Object::_allObjects;
 ///////////////////////////////////////////////////////////////////////////////
 
 Object::Object() : BaseClass(),
-  _whichObject ( _allObjects.end() ),
+  _mutex       (),
+  _whichObject ( _allObjects.value().end() ),
   _userData    ()
 {
   typedef std::list < Object::ValidRefPtr > ListOfObjects;
@@ -52,7 +64,8 @@ Object::Object() : BaseClass(),
   USUL_ASSERT_SAME_TYPE ( Category1, Category2 );
 
   // Relies on the fact that list iterators are not invalidated.
-  _whichObject = _allObjects.insert ( _allObjects.end(), this );
+  ObjectListGuard guard ( _allObjects.mutex() );
+  _whichObject = _allObjects.value().insert ( _allObjects.value().end(), this );
 }
 
 
@@ -67,10 +80,11 @@ Object::~Object()
   // Safely...
   try
   {
-    USUL_ASSERT ( false == _allObjects.empty() );
+    ObjectListGuard guard ( _allObjects.mutex() );
+    USUL_ASSERT ( false == _allObjects.value().empty() );
 
     // Relies on the fact that list iterators are not invalidated.
-    _allObjects.erase ( _whichObject );
+    _allObjects.value().erase ( _whichObject );
   }
 
   // Catch exceptions.
@@ -86,6 +100,7 @@ Object::~Object()
 
 const Object::UserData *Object::userData() const
 {
+  Guard guard ( this->mutex() );
   return _userData.get();
 }
 
@@ -98,6 +113,7 @@ const Object::UserData *Object::userData() const
 
 Object::UserData *Object::userData()
 {
+  Guard guard ( this->mutex() );
   return _userData.get();
 }
 
@@ -110,6 +126,7 @@ Object::UserData *Object::userData()
 
 void Object::userData ( UserData *data )
 {
+  Guard guard ( this->mutex() );
   _userData = data;
 }
 
@@ -122,7 +139,8 @@ void Object::userData ( UserData *data )
 
 Object::ObjectListItr Object::allObjectsBegin()
 {
-  return _allObjects.begin();
+  ObjectListGuard guard ( _allObjects.mutex() );
+  return _allObjects.value().begin();
 }
 
 
@@ -134,5 +152,47 @@ Object::ObjectListItr Object::allObjectsBegin()
 
 Object::ObjectListItr Object::allObjectsEnd()
 {
-  return _allObjects.end();
+  ObjectListGuard guard ( _allObjects.mutex() );
+  return _allObjects.value().end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access to the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Object::Mutex &Object::mutex() const
+{
+  return _mutex;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default implementation does nothing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Object::detach()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference the instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Object::unref ( bool allowDeletion )
+{
+  // If we are about to die, then detach. It is too late to do this in the 
+  // destructor because the virtual table is already gone.
+  if ( 1 == this->refCount() )
+    this->detach();
+
+  // Call base class's function.
+  BaseClass::unref ( allowDeletion );
 }

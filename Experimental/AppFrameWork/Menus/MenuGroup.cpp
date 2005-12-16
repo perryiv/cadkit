@@ -16,7 +16,11 @@
 #include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 
+#include <limits>
+
 using namespace AFW::Menus;
+
+AFW_IMPLEMENT_OBJECT ( MenuGroup );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,8 +29,8 @@ using namespace AFW::Menus;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuGroup::MenuGroup ( const std::string &text, unsigned short underline ) : BaseClass ( text ),
-  _underline ( underline )
+MenuGroup::MenuGroup() : BaseClass(),
+  _underline ( std::numeric_limits<unsigned short>::max() )
 {
 }
 
@@ -50,7 +54,21 @@ MenuGroup::~MenuGroup()
 
 unsigned short MenuGroup::underline() const
 {
+  Guard guard ( this->mutex() );
   return _underline;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the underline index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MenuGroup::underline ( unsigned short u )
+{
+  Guard guard ( this->mutex() );
+  _underline = u;
 }
 
 
@@ -62,6 +80,7 @@ unsigned short MenuGroup::underline() const
 
 void MenuGroup::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
 }

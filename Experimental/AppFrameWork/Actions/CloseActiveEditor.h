@@ -33,6 +33,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CloseActiveEditor );
 
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( CloseActiveEditor );
+
   // Constructor
   CloseActiveEditor();
 

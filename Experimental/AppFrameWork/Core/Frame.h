@@ -30,18 +30,12 @@ public:
   // Typedefs.
   typedef Group BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Frame );
-
   // Possible layouts.
   enum ChildLayout
   {
     HORIZONTAL,
     VERTICAL
   };
-
-  // Constructor
-  Frame ( ChildLayout = Frame::VERTICAL );
 
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
@@ -51,6 +45,9 @@ public:
   ChildLayout                         layout();
 
 protected:
+
+  // Constructor
+  Frame();
 
   // Use reference counting.
   virtual ~Frame();
@@ -62,6 +59,8 @@ private:
   Frame &operator = ( const Frame & );
 
   ChildLayout _layout;
+
+  AFW_DECLARE_OBJECT ( Frame );
 };
 
 

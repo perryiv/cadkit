@@ -15,8 +15,13 @@
 
 #include "AppFrameWork/Menus/Button.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Core/Program.h"
+
+#include <limits>
 
 using namespace AFW::Menus;
+
+AFW_IMPLEMENT_OBJECT ( Button );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,8 +30,9 @@ using namespace AFW::Menus;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const std::string &text, AFW::Core::Icon *icon, unsigned short underline ) : BaseClass ( text, icon ),
-  _underline ( underline )
+Button::Button() : BaseClass(),
+  _underline ( std::numeric_limits<unsigned short>::max() ),
+  _type ( MENU_BUTTON )
 {
 }
 
@@ -50,7 +56,21 @@ Button::~Button()
 
 unsigned short Button::underline() const
 {
+  Guard guard ( this->mutex() );
   return _underline;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the underline index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Button::underline ( unsigned short u )
+{
+  Guard guard ( this->mutex() );
+  _underline = u;
 }
 
 
@@ -62,6 +82,124 @@ unsigned short Button::underline() const
 
 void Button::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button::Type Button::type() const
+{
+  Guard guard ( this->mutex() );
+  return _type;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the underline index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Button::type ( const Type &t )
+{
+  Guard guard ( this->mutex() );
+  _type = t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createSeparator()
+{
+  return Button::createButton ( std::string(), Button::MENU_SEPARATOR, AFW::Core::Icon() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createCheck ( const std::string &text )
+{
+  return Button::createButton ( text, Button::MENU_CHECK, AFW::Core::Icon() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createRadio ( const std::string &text )
+{
+  return Button::createButton ( text, Button::MENU_RADIO, AFW::Core::Icon() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createButton ( const std::string &text )
+{
+  return Button::createButton ( text, Button::MENU_BUTTON, AFW::Core::Icon() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createButton ( const std::string &text, const AFW::Core::Icon &i )
+{
+  return Button::createButton ( text, Button::MENU_BUTTON, i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createButton ( const std::string &text, const std::string &icon )
+{
+  return Button::createButton ( text, Button::MENU_BUTTON, AFW::Core::Icon ( icon ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Factory function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button *Button::createButton ( const std::string &text, const Type &t, const AFW::Core::Icon &i )
+{
+  Button::RefPtr button ( AFW::Core::Program::instance().newObject<Button>() );
+  if ( button.valid() )
+  {
+    button->textSet ( text );
+    button->icon ( i );
+    button->type ( t );
+  }
+  return button.release();
 }

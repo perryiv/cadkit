@@ -20,9 +20,14 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
-namespace AFW { namespace Core { class Application; class Window; class Group; class Frame; class MainWindow; class TextWindow; } }
+namespace AFW { namespace Core { class Application; class Window; class Group; } }
+namespace AFW { namespace Core { class Frame; class MainWindow; class TextWindow; } }
+namespace AFW { namespace Core { class StatusBar; } }
 namespace AFW { namespace Menus { class Button; class MenuBar; class MenuGroup; } }
+namespace AFW { namespace Dialogs { class Dialog; } }
 
 
 namespace AFW {
@@ -33,11 +38,19 @@ class APP_FRAME_WORK_EXPORT BaseVisitor : public Usul::Base::Referenced
 {
 public:
 
+  // Typedefs.
+  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard < Mutex > Guard;
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseVisitor );
 
-  // Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( BaseVisitor );
+
+  // Access to the mutex.
+  Mutex &                             mutex() const;
 
   // Visit the objects.
   virtual void                        visit ( AFW::Core::Application * );
@@ -46,9 +59,11 @@ public:
   virtual void                        visit ( AFW::Core::Frame * );
   virtual void                        visit ( AFW::Core::MainWindow * );
   virtual void                        visit ( AFW::Core::TextWindow * );
+  virtual void                        visit ( AFW::Core::StatusBar * );
   virtual void                        visit ( AFW::Menus::Button * );
   virtual void                        visit ( AFW::Menus::MenuBar * );
   virtual void                        visit ( AFW::Menus::MenuGroup * );
+  virtual void                        visit ( AFW::Dialogs::Dialog * );
 
 protected:
 
@@ -65,6 +80,8 @@ private:
   // No copying.
   BaseVisitor ( const BaseVisitor & );
   BaseVisitor &operator = ( const BaseVisitor & );
+
+  mutable Mutex _mutex;
 };
 
 

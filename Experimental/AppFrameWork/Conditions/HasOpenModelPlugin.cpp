@@ -17,6 +17,8 @@
 
 using namespace AFW::Conditions;
 
+USUL_IMPLEMENT_TYPE_ID ( HasOpenModelPlugin );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -48,5 +50,6 @@ HasOpenModelPlugin::~HasOpenModelPlugin()
 
 bool HasOpenModelPlugin::evaluate ( AFW::Core::Object * )
 {
+  Guard guard ( this->mutex() );
   return ( true == _want ); // TODO
 }

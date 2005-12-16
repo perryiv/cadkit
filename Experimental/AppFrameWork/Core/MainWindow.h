@@ -17,7 +17,7 @@
 #define _APP_FRAME_WORK_MAIN_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Core/Frame.h"
-#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Core/StatusBar.h"
 #include "AppFrameWork/Menus/MenuBar.h"
 
 
@@ -32,28 +32,30 @@ public:
   // Typedefs.
   typedef Frame BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MainWindow );
-
-  // Constructor
-  MainWindow();
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
-
-  // Build a default GUI.
-  void                                buildDefault();
 
   // Set/get the dirty flag.
   virtual void                        dirty ( bool );
   virtual bool                        dirty() const;
 
+  // Initialize, for two-step construction.
+  virtual void                        init();
+
   // Set/get the menu bar.
   const AFW::Menus::MenuBar *         menuBar() const;
   AFW::Menus::MenuBar *               menuBar();
-  void                                menuBar ( AFW::Menus::MenuBar * );
+  virtual void                        menuBar ( AFW::Menus::MenuBar * );
+
+  // Set/get the status bar.
+  const StatusBar *                   statusBar() const;
+  StatusBar *                         statusBar();
+  virtual void                        statusBar ( StatusBar * );
 
 protected:
+
+  // Constructor
+  MainWindow();
 
   // Use reference counting.
   virtual ~MainWindow();
@@ -67,7 +69,10 @@ private:
   MainWindow &operator = ( const MainWindow & );
 
   AFW::Menus::MenuBar::RefPtr _menuBar;
+  StatusBar::RefPtr _statusBar;
   Frame::RefPtr _editors;
+
+  AFW_DECLARE_OBJECT ( MainWindow );
 };
 
 

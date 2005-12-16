@@ -163,7 +163,10 @@
 				RelativePath=".\CompileGuard.h">
 			</File>
 			<File
-				RelativePath="Export.def">
+				RelativePath=".\FoxApplication.cpp">
+			</File>
+			<File
+				RelativePath=".\FoxApplication.h">
 			</File>
 			<File
 				RelativePath=".\FoxComponent.cpp">
@@ -172,10 +175,22 @@
 				RelativePath=".\FoxComponent.h">
 			</File>
 			<File
-				RelativePath=".\FoxFactory.cpp">
+				RelativePath=".\FoxComponentFactory.cpp">
 			</File>
 			<File
-				RelativePath=".\FoxFactory.h">
+				RelativePath=".\FoxComponentFactory.h">
+			</File>
+			<File
+				RelativePath=".\FoxMainWindow.cpp">
+			</File>
+			<File
+				RelativePath=".\FoxMainWindow.h">
+			</File>
+			<File
+				RelativePath=".\FoxObjectFactory.cpp">
+			</File>
+			<File
+				RelativePath=".\FoxObjectFactory.h">
 			</File>
 		</Filter>
 	</Files>

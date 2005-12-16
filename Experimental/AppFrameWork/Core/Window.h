@@ -22,9 +22,7 @@
 #include "AppFrameWork/Actions/UpdateAction.h"
 #include "AppFrameWork/Conditions/Condition.h"
 
-#include "Usul/Math/Vector2.h"
 #include "Usul/Devices/BaseDevice.h"
-#include "Usul/Interfaces/IGUIServer.h"
 
 #include <vector>
 #include <list>
@@ -54,18 +52,13 @@ public:
   typedef UpdatePairs::iterator UpdatePairsItr;
   typedef UpdatePairs::const_iterator UpdatePairsConstItr;
   typedef std::list < Window * > WindowList; // Not reference-counted by design!
+  typedef Usul::Threads::Variable < WindowList > WindowListVar;
   typedef WindowList::iterator WindowListItr;
-  typedef Usul::Interfaces::IGUIServer IGUIServer;
-  typedef Usul::Base::Referenced GuiObject;
-  typedef USUL_REF_POINTER ( GuiObject ) GuiObjectPtr;
   typedef std::pair < AFW::Core::DockSite::Type, unsigned int > DockState;
   typedef Usul::Devices::BaseDevice BaseDevice;
   typedef std::vector < BaseDevice::RefPtr > BaseDevices;
   typedef BaseDevices::iterator DevicesItr;
   typedef BaseDevices::const_iterator DevicesConstItr;
-
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Window );
 
   // Iterators to the list of all windows.
   static WindowListItr                allWindowsBegin();
@@ -79,9 +72,9 @@ public:
   virtual void                        append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
   virtual void                        append ( BaseDevice * );
 
-  // Call all the actions.
-  void                                callCommandActions();
-  void                                callUpdateActions();
+  // Call all the actions. Pass false to execute during idle processing.
+  void                                callCommandActions ( bool immediate = true );
+  void                                callUpdateActions  ( bool immediate = true );
 
   // Iterators to the command-actions.
   CommandActionsConstItr              commandsBegin() const;
@@ -103,15 +96,13 @@ public:
   virtual void                        dockState ( DockState );
   virtual DockState                   dockState() const;
 
-  // Set/get the handle to the graphical object. The gui-server uses these.
-  void                                guiObject ( GuiObject * );
-  const GuiObject *                   guiObject() const;
-  GuiObject *                         guiObject();
+  // Enable/disable the window, or get that state.
+  virtual void                        enable ( bool );
+  virtual bool                        enabled() const;
 
   // Set/get the icon.
-  void                                icon ( Icon * );
-  const Icon *                        icon() const;
-  Icon *                              icon();
+  void                                icon ( const Icon & );
+  Icon                                icon() const;
 
   // Return the number of actions.
   unsigned int                        numCommandActions() const;
@@ -121,11 +112,13 @@ public:
   const Group *                       parent() const;
   Group *                             parent();
 
-  // Set/get the percentage of the parent this window should take up.
-  // This is a hint, and thus, not always used.
-  void                                percent ( float x, float y );
-  void                                percent ( const Usul::Math::Vec2f & );
-  Usul::Math::Vec2f                   percent() const;
+  // Set/get the persistent name. This string is used for saving and 
+  // restoring state, for example, in the registry.
+  void                                persistentName ( const std::string & );
+  std::string                         persistentName() const;
+
+  // Scroll to the end.
+  virtual void                        scrollToEnd();
 
   // Set/get/append the text.
   virtual void                        textAppend ( const std::string &t );
@@ -138,7 +131,7 @@ public:
 
   // Set/get the title.
   virtual void                        title ( const std::string & );
-  virtual const std::string &         title() const;
+  virtual std::string                 title() const;
 
   // Iterators to the update-actions.
   UpdatePairsConstItr                 updatesBegin() const;
@@ -146,10 +139,14 @@ public:
   UpdatePairsConstItr                 updatesEnd() const;
   UpdatePairsItr                      updatesEnd();
 
+  // Set/get the visible state.
+  virtual void                        visible ( bool );
+  virtual bool                        visible() const;
+
 protected:
 
   // Constructor
-  Window ( const std::string &text = "", Icon *icon = 0x0 );
+  Window();
 
   // Use reference counting.
   virtual ~Window();
@@ -167,19 +164,20 @@ private:
   friend class Group;       // Calls _setParent()
   friend class BaseVisitor; // Calls _traverse()
 
-  static WindowList _allWindows;
+  static WindowListVar _allWindows;
   WindowListItr _whichWindow;
   AFW::Core::State::Type _flags;
   Group *_parent;
-  Icon::RefPtr _icon;
+  Icon _icon;
   std::string _text;
   std::string _title;
+  std::string _regName;
   CommandActions _commands;
   UpdatePairs _updates;
-  Usul::Math::Vec2f _percent;
-  GuiObjectPtr _guiObject;
   DockState _dockState;
   BaseDevices _devices;
+
+  AFW_DECLARE_OBJECT ( Window );
 };
 
 

@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -25,12 +25,6 @@ namespace AFW
 {
   namespace Registry
   {
-    namespace Sections
-    {
-      // Registry sections.
-      const std::string MAIN_WINDOW               ( "main_window" );
-    }
-
     namespace Keys
     {
       // Geometry.
@@ -39,6 +33,7 @@ namespace AFW
       const std::string WIDTH                     ( "width" );
       const std::string HEIGHT                    ( "height" );
       const std::string MAXIMIZED                 ( "maximized" );
+      const std::string SPLIT_DISTANCE            ( "split_distance" );
     }
   }
 
@@ -47,7 +42,10 @@ namespace AFW
     namespace State
     {
       typedef Usul::Types::Uint64 Type;
-      const Type  DIRTY     ( 1 << 0 );
+      const Type DIRTY    ( 1 << 0 );
+      const Type MODIFIED ( 1 << 1 );
+      const Type VISIBLE  ( 1 << 2 );
+      const Type ENABLED  ( 1 << 3 );
     }
 
     namespace DockSite

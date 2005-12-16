@@ -25,6 +25,8 @@
 
 using namespace AFW::Actions;
 
+USUL_IMPLEMENT_TYPE_ID ( SetTextFromFile );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -60,6 +62,8 @@ void SetTextFromFile::execute ( AFW::Core::Object *object )
 {
   typedef Usul::File::Stats<unsigned int> FileStats;
 
+  Guard guard ( this->mutex() );
+
   // Get the window.
   AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
   if ( false == window.valid() )
@@ -67,7 +71,7 @@ void SetTextFromFile::execute ( AFW::Core::Object *object )
 
   // See if the file is the same as last time...
   const unsigned int size ( FileStats::size ( _file ) );
-  if ( size <= _position )
+  if ( size <= _position || 0 == size )
     return;
 
   // Open the file.
@@ -107,6 +111,9 @@ void SetTextFromFile::execute ( AFW::Core::Object *object )
   // because of the way the vector was initialized with null characters, 
   // the size of the vector is not the size of the resulting c-string.
   window->textAppend ( &buffer[0], end - buffer.begin() );
+
+  // Scroll to the end.
+  window->scrollToEnd();
 
   // Save these state variables.
   _position = size;

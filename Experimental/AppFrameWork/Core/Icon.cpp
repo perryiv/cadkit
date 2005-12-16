@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Icon class.
+//  Icon class. Not thread-safe!
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +17,10 @@
 
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
+
+#include <sstream>
 
 using namespace AFW::Core;
 
@@ -28,27 +31,20 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Icon::Icon ( const std::string &file ) : BaseClass(),
-  _file ( file )
+Icon::Icon ( const std::string &name ) : _file()
 {
-  // Does the file exist?
-  Usul::Predicates::FileExists exists;
-  if ( false == exists ( _file ) )
-  {
-    // Try the application's directory.
-    std::ostringstream path;
-    path << Usul::CommandLine::Arguments::instance().directory() << '/' << _file << ".gif";
-    if ( false == exists ( path.str() ) )
-    {
-      std::ostringstream out;
-      out << "Warning 1499293566: icon file " << file << " not found. Tried: '" << _file << "' and '" << path.str() << "'";
-      Usul::Errors::Stack::instance().push ( out.str() );
-    }
-    else
-    {
-      _file = path.str();
-    }
-  }
+  this->file ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Icon::Icon ( const Icon &icon ) : _file ( icon.file() )
+{
 }
 
 
@@ -65,11 +61,117 @@ Icon::~Icon()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Icon &Icon::operator = ( const Icon &icon )
+{
+  _file = icon.file();
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Icon &Icon::operator = ( const std::string &name )
+{
+  this->file ( name );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Icon::file() const
+std::string Icon::file() const
 {
   return _file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Icon::file ( const std::string &name )
+{
+  _file.clear();
+  if ( false == name.empty() )
+  {
+    _file = Icon::find ( name );
+    if ( _file.empty() )
+    {
+      Usul::Errors::Stack::instance().push ( "Warning 3595853400: icon '" + name + "' not found" );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Possible extensions to try.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  typedef std::vector < std::string > Extensions;
+  Extensions extensions;
+  struct InitExtensions
+  {
+    InitExtensions()
+    {
+      extensions.reserve ( 10 );
+      extensions.push_back ( std::string() );
+      extensions.push_back ( ".gif" );
+      extensions.push_back ( ".png" );
+      extensions.push_back ( ".jpg" );
+      extensions.push_back ( ".bmp" );
+    }
+  } initExtensions;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Icon::find ( const std::string &name )
+{
+  // Get application's directory.
+  const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+
+  // Loop through extensions.
+  const unsigned int num ( Detail::extensions.size() );
+  for ( unsigned int i = 0; i < num; ++i )
+  {
+    // Append extension.
+    const std::string file ( name + Detail::extensions.at ( i ) );
+
+    // Is the name an existing file?
+    Usul::Predicates::FileExists exists;
+    if ( exists ( file ) )
+      return file;
+
+    // Try the application's directory...
+    std::ostringstream path;
+    path << dir << '/' << file;
+    if ( exists ( path.str() ) )
+      return path.str();
+  }
+
+  // If we get to here then it failed.
+  return std::string();
 }

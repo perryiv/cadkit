@@ -30,19 +30,16 @@ public:
   // Typedefs.
   typedef AFW::Core::Group BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MenuBar );
-
-  // Constructor
-  MenuBar();
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
   // Build a default GUI.
-  void                                buildDefault();
+  virtual void                        init();
 
 protected:
+
+  // Constructor
+  MenuBar();
 
   // Use reference counting.
   virtual ~MenuBar();
@@ -54,6 +51,8 @@ private:
   // No copying.
   MenuBar ( const MenuBar & );
   MenuBar &operator = ( const MenuBar & );
+
+  AFW_DECLARE_OBJECT ( MenuBar );
 };
 
 

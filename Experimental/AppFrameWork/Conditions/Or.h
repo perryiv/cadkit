@@ -29,10 +29,12 @@ public:
 
   // Typedefs.
   typedef Group BaseClass;
-  typedef std::vector < Condition::ValidRefPtr > Components;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Or );
+
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( Or );
 
   // Constructor
   Or();

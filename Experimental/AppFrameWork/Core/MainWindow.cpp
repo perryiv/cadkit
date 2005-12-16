@@ -14,16 +14,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/TextWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
 #include "AppFrameWork/Conditions/Always.h"
-#include "AppFrameWork/Actions/SetTextFromFile.h"
+#include "AppFrameWork/Actions/SetTextFromStdout.h"
+#include "AppFrameWork/Actions/SetTextFromPluginActivity.h"
 
 #include <iostream>
+#include <stdexcept>
 
 using namespace AFW::Core;
+
+AFW_IMPLEMENT_OBJECT ( MainWindow );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,9 +40,18 @@ using namespace AFW::Core;
 
 MainWindow::MainWindow() : BaseClass(),
   _menuBar    ( 0x0 ),
-  _editors    ( new Frame ( Frame::VERTICAL ) )
+  _statusBar  ( 0x0 ),
+  _editors    ( Program::instance().newObject<Frame>() )
 {
-  this->append ( _editors.get() );
+  if ( _editors.valid() )
+  {
+    _editors->layout ( Frame::HORIZONTAL );
+    this->append ( _editors.get() );
+  }
+
+  this->persistentName ( "main_window" );
+  this->icon ( Icon ( "sun" ) );
+  this->title ( Program::instance().app()->name() );
 }
 
 
@@ -48,25 +63,16 @@ MainWindow::MainWindow() : BaseClass(),
 
 MainWindow::~MainWindow()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a default GUI.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::buildDefault()
-{
   // Safely...
   try
   {
-    this->_buildDefault();
+    _menuBar = 0x0;
+    _statusBar = 0x0;
+    _editors = 0x0;
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2275617693", "2075124085" );
+  AFW_CATCH_BLOCK ( "7091126040", "6330931110" );
 }
 
 
@@ -76,36 +82,57 @@ void MainWindow::buildDefault()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_buildDefault()
+void MainWindow::init()
 {
-  // Add a menu bar.
-  this->menuBar ( new AFW::Menus::MenuBar );
-  this->menuBar()->buildDefault();
+  Guard guard ( this->mutex() );
 
-  // The file that stdio and stderr are being redirected to.
-  const std::string file ( AFW::Core::Application::instance().redirect() );
+  // Add a menu bar.
+  this->menuBar ( Program::instance().newObject<AFW::Menus::MenuBar>() );
+  if ( this->menuBar() )
+    this->menuBar()->init();
+
+  // Add a status bar.
+  this->statusBar ( Program::instance().newObject<StatusBar>() );
 
   // Update functors.
   AFW::Conditions::Always::RefPtr always ( new AFW::Conditions::Always );
 
-  for ( unsigned int i = 0; i < 5; ++i )
+  // Add a text output window.
   {
-    // Add a text window.
-    TextWindow::ValidRefPtr text ( new TextWindow );
-    text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-    text->append ( always.get(), new AFW::Actions::SetTextFromFile ( file ) );
-    this->append ( text.get() );
+    TextWindow::ValidRefPtr text ( Program::instance().newObject<TextWindow>() );
+    if ( text.valid() )
+    {
+      text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      text->persistentName ( "standard_output_window" );
+      text->append ( always.get(), new AFW::Actions::SetTextFromStdout );
+      this->append ( text.get() );
+    }
   }
 
-  for ( unsigned int i = 0; i < 5; ++i )
+  // Add a window that displays plugin information.
+  {  
+    TextWindow::ValidRefPtr text ( Program::instance().newObject<TextWindow>() );
+    if ( text.valid() )
+    {
+      text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      text->persistentName ( "plugin_activity_window" );
+      text->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
+      text->title ( "Plugins" );
+      text->icon ( Icon ( "plugins" ) );
+      this->append ( text.get() );
+    }
+  }
+
+  // Add a scene-view.
   {
-    // Add a scene-view.
-    Frame::ValidRefPtr sceneTree ( new Frame );
-    this->append ( sceneTree.get() );
-    sceneTree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
-    std::ostringstream out; out << "Scene Tree " << i;
-    sceneTree->title ( out.str() );
-    sceneTree->icon ( new Icon ( "open" ) );
+    Frame::ValidRefPtr sceneTree ( Program::instance().newObject<Frame>() );
+    if ( sceneTree.valid() )
+    {
+      sceneTree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
+      sceneTree->title ( "Scene Tree" );
+      sceneTree->icon ( Icon ( "open" ) );
+      this->append ( sceneTree.get() );
+    }
   }
 }
 
@@ -118,9 +145,10 @@ void MainWindow::_buildDefault()
 
 void MainWindow::dirty ( bool state )
 {
+  Guard guard ( this->mutex() );
   BaseClass::dirty ( state );
   if ( state )
-    AFW::Core::Application::instance().dirty ( true );
+    AFW::Core::Program::instance().app()->dirty ( true );
 }
 
 
@@ -132,6 +160,7 @@ void MainWindow::dirty ( bool state )
 
 bool MainWindow::dirty() const
 {
+  Guard guard ( this->mutex() );
   return BaseClass::dirty();
 }
 
@@ -144,7 +173,9 @@ bool MainWindow::dirty() const
 
 void MainWindow::menuBar ( AFW::Menus::MenuBar *m )
 {
+  Guard guard ( this->mutex() );
   _menuBar = m;
+  this->dirty ( true );
 }
 
 
@@ -156,6 +187,7 @@ void MainWindow::menuBar ( AFW::Menus::MenuBar *m )
 
 AFW::Menus::MenuBar *MainWindow::menuBar()
 {
+  Guard guard ( this->mutex() );
   return _menuBar.get();
 }
 
@@ -168,7 +200,48 @@ AFW::Menus::MenuBar *MainWindow::menuBar()
 
 const AFW::Menus::MenuBar *MainWindow::menuBar() const
 {
+  Guard guard ( this->mutex() );
   return _menuBar.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the status bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::statusBar ( StatusBar *m )
+{
+  Guard guard ( this->mutex() );
+  _statusBar = m;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the status bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+StatusBar *MainWindow::statusBar()
+{
+  Guard guard ( this->mutex() );
+  return _statusBar.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the status bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const StatusBar *MainWindow::statusBar() const
+{
+  Guard guard ( this->mutex() );
+  return _statusBar.get();
 }
 
 
@@ -180,6 +253,7 @@ const AFW::Menus::MenuBar *MainWindow::menuBar() const
 
 void MainWindow::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
 }

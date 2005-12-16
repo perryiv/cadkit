@@ -18,6 +18,8 @@
 
 using namespace AFW::Core;
 
+AFW_IMPLEMENT_OBJECT ( Frame );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -25,8 +27,8 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Frame::Frame ( ChildLayout l ) : BaseClass(),
-  _layout ( l )
+Frame::Frame() : BaseClass(),
+  _layout ( Frame::VERTICAL )
 {
 }
 
@@ -50,6 +52,7 @@ Frame::~Frame()
 
 void Frame::layout ( ChildLayout l )
 {
+  Guard guard ( this->mutex() );
   _layout = l;
 }
 
@@ -62,6 +65,7 @@ void Frame::layout ( ChildLayout l )
 
 Frame::ChildLayout Frame::layout()
 {
+  Guard guard ( this->mutex() );
   return _layout;
 }
 
@@ -74,6 +78,7 @@ Frame::ChildLayout Frame::layout()
 
 void Frame::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
 }

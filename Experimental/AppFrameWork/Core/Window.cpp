@@ -14,9 +14,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Core/Group.h"
-#include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Core/Program.h"
+#include "AppFrameWork/Core/Application.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
@@ -27,6 +28,17 @@
 
 using namespace AFW::Core;
 
+AFW_IMPLEMENT_OBJECT ( Window );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Local typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Usul::Threads::Guard < Window::WindowListVar::MutexType > WindowListGuard;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -34,7 +46,7 @@ using namespace AFW::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Window::WindowList Window::_allWindows;
+Window::WindowListVar Window::_allWindows;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,17 +55,16 @@ Window::WindowList Window::_allWindows;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Window::Window ( const std::string &text, Icon *icon ) : BaseClass(),
-  _whichWindow ( _allWindows.end() ),
+Window::Window() : BaseClass(),
+  _whichWindow ( _allWindows.value().end() ),
   _flags       ( State::DIRTY ),
   _parent      ( 0x0 ),
-  _icon        ( icon ),
-  _text        ( text ),
+  _icon        (),
+  _text        (),
   _title       (),
+  _regName     (),
   _commands    (),
   _updates     (),
-  _percent     ( 100.0f, 100.0f ),
-  _guiObject   (),
   _dockState   ( AFW::Core::DockSite::NONE, 0 ),
   _devices     ()
 {
@@ -65,7 +76,8 @@ Window::Window ( const std::string &text, Icon *icon ) : BaseClass(),
   USUL_ASSERT_SAME_TYPE ( Category1, Category2 );
 
   // Relies on the fact that list iterators are not invalidated.
-  _whichWindow = _allWindows.insert ( _allWindows.end(), this );
+  WindowListGuard guard ( _allWindows.mutex() );
+  _whichWindow = _allWindows.value().insert ( _allWindows.value().end(), this );
 }
 
 
@@ -80,17 +92,15 @@ Window::~Window()
   // Safely...
   try
   {
-    USUL_ASSERT ( false == _allWindows.empty() );
+    WindowListGuard guard ( _allWindows.mutex() );
+    USUL_ASSERT ( false == _allWindows.value().empty() );
 
     // Relies on the fact that list iterators are not invalidated.
-    _allWindows.erase ( _whichWindow );
+    _allWindows.value().erase ( _whichWindow );
 
     // The parent is now dirty.
     if ( _parent )
       _parent->dirty ( true );
-
-    // Tell the application that we are being destroyed.
-    Application::instance().destroyNotify ( this );
   }
 
   // Catch exceptions.
@@ -106,19 +116,13 @@ Window::~Window()
 
 void Window::dirty ( bool state )
 {
+  Guard guard ( this->mutex() );
   const unsigned int bit ( State::DIRTY );
-  if ( state )
-  {
-    _flags = Usul::Bits::add ( _flags, bit );
+  _flags = Usul::Bits::set ( _flags, bit, state );
 
-    // Set parent as dirty too.
-    if ( _parent )
-      _parent->dirty ( true );
-  }
-  else
-  {
-    _flags = Usul::Bits::remove ( _flags, bit );
-  }
+  // If dirty, set parent as dirty too.
+  if ( state && _parent )
+    _parent->dirty ( true );
 }
 
 
@@ -130,6 +134,7 @@ void Window::dirty ( bool state )
 
 bool Window::dirty() const
 {
+  Guard guard ( this->mutex() );
   const unsigned int bit ( State::DIRTY );
   return Usul::Bits::has ( _flags, bit );
 }
@@ -143,6 +148,7 @@ bool Window::dirty() const
 
 const Group *Window::parent() const
 {
+  Guard guard ( this->mutex() );
   return _parent;
 }
 
@@ -155,6 +161,7 @@ const Group *Window::parent() const
 
 Group *Window::parent()
 {
+  Guard guard ( this->mutex() );
   return _parent;
 }
 
@@ -167,6 +174,7 @@ Group *Window::parent()
 
 std::string Window::textGet() const
 {
+  Guard guard ( this->mutex() );
   return _text;
 }
 
@@ -179,6 +187,7 @@ std::string Window::textGet() const
 
 void Window::textGet ( std::string &s ) const
 {
+  Guard guard ( this->mutex() );
   s = _text;
 }
 
@@ -191,6 +200,7 @@ void Window::textGet ( std::string &s ) const
 
 void Window::textSet ( const std::string &t )
 {
+  Guard guard ( this->mutex() );
   _text = t;
   this->dirty ( true );
 }
@@ -204,6 +214,7 @@ void Window::textSet ( const std::string &t )
 
 void Window::textSet ( const char *t, unsigned int length )
 {
+  Guard guard ( this->mutex() );
   if ( t )
   {
     _text.assign ( t, t + length );
@@ -220,6 +231,7 @@ void Window::textSet ( const char *t, unsigned int length )
 
 void Window::textAppend ( const std::string &t )
 {
+  Guard guard ( this->mutex() );
   _text += t;
   this->dirty ( true );
 }
@@ -233,6 +245,7 @@ void Window::textAppend ( const std::string &t )
 
 void Window::textAppend ( const char *t, unsigned int length )
 {
+  Guard guard ( this->mutex() );
   if ( t )
   {
     _text.insert ( _text.end(), t, t + length );
@@ -247,8 +260,9 @@ void Window::textAppend ( const char *t, unsigned int length )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string &Window::title() const
+std::string Window::title() const
 {
+  Guard guard ( this->mutex() );
   return _title;
 }
 
@@ -261,6 +275,7 @@ const std::string &Window::title() const
 
 void Window::title ( const std::string &t )
 {
+  Guard guard ( this->mutex() );
   _title = t;
   this->dirty ( true );
 }
@@ -274,6 +289,7 @@ void Window::title ( const std::string &t )
 
 void Window::append ( AFW::Actions::CommandAction *c )
 {
+  Guard guard ( this->mutex() );
   if ( c )
     _commands.push_back ( c );
 }
@@ -287,6 +303,7 @@ void Window::append ( AFW::Actions::CommandAction *c )
 
 void Window::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction *u )
 {
+  Guard guard ( this->mutex() );
   if ( c && u )
     _updates.push_back ( UpdatePair ( c, u ) );
 }
@@ -300,6 +317,7 @@ void Window::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction 
 
 void Window::append ( BaseDevice *d )
 {
+  Guard guard ( this->mutex() );
   if ( d )
     _devices.push_back ( d );
 }
@@ -313,6 +331,7 @@ void Window::append ( BaseDevice *d )
 
 void Window::_setParent ( Group *parent )
 {
+  Guard guard ( this->mutex() );
   _parent = parent;
 }
 
@@ -323,21 +342,10 @@ void Window::_setParent ( Group *parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const AFW::Core::Icon *Window::icon() const
+AFW::Core::Icon Window::icon() const
 {
-  return _icon.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the icon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-AFW::Core::Icon *Window::icon()
-{
-  return _icon.get();
+  Guard guard ( this->mutex() );
+  return Icon ( _icon );
 }
 
 
@@ -347,9 +355,10 @@ AFW::Core::Icon *Window::icon()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::icon ( AFW::Core::Icon *i )
+void Window::icon ( const AFW::Core::Icon &icon )
 {
-  _icon = i;
+  Guard guard ( this->mutex() );
+  _icon = icon;
 }
 
 
@@ -361,6 +370,7 @@ void Window::icon ( AFW::Core::Icon *i )
 
 Window::CommandActionsItr Window::commandsBegin()
 {
+  Guard guard ( this->mutex() );
   return _commands.begin();
 }
 
@@ -373,6 +383,7 @@ Window::CommandActionsItr Window::commandsBegin()
 
 Window::CommandActionsConstItr Window::commandsBegin() const
 {
+  Guard guard ( this->mutex() );
   return _commands.begin();
 }
 
@@ -385,6 +396,7 @@ Window::CommandActionsConstItr Window::commandsBegin() const
 
 Window::CommandActionsItr Window::commandsEnd()
 {
+  Guard guard ( this->mutex() );
   return _commands.end();
 }
 
@@ -397,6 +409,7 @@ Window::CommandActionsItr Window::commandsEnd()
 
 Window::CommandActionsConstItr Window::commandsEnd() const
 {
+  Guard guard ( this->mutex() );
   return _commands.end();
 }
 
@@ -409,6 +422,7 @@ Window::CommandActionsConstItr Window::commandsEnd() const
 
 Window::UpdatePairsItr Window::updatesBegin()
 {
+  Guard guard ( this->mutex() );
   return _updates.begin();
 }
 
@@ -421,6 +435,7 @@ Window::UpdatePairsItr Window::updatesBegin()
 
 Window::UpdatePairsConstItr Window::updatesBegin() const
 {
+  Guard guard ( this->mutex() );
   return _updates.begin();
 }
 
@@ -433,6 +448,7 @@ Window::UpdatePairsConstItr Window::updatesBegin() const
 
 Window::UpdatePairsItr Window::updatesEnd()
 {
+  Guard guard ( this->mutex() );
   return _updates.end();
 }
 
@@ -445,6 +461,7 @@ Window::UpdatePairsItr Window::updatesEnd()
 
 Window::UpdatePairsConstItr Window::updatesEnd() const
 {
+  Guard guard ( this->mutex() );
   return _updates.end();
 }
 
@@ -457,6 +474,7 @@ Window::UpdatePairsConstItr Window::updatesEnd() const
 
 Window::DevicesItr Window::devicesBegin()
 {
+  Guard guard ( this->mutex() );
   return _devices.begin();
 }
 
@@ -469,6 +487,7 @@ Window::DevicesItr Window::devicesBegin()
 
 Window::DevicesConstItr Window::devicesBegin() const
 {
+  Guard guard ( this->mutex() );
   return _devices.begin();
 }
 
@@ -481,6 +500,7 @@ Window::DevicesConstItr Window::devicesBegin() const
 
 Window::DevicesItr Window::devicesEnd()
 {
+  Guard guard ( this->mutex() );
   return _devices.end();
 }
 
@@ -493,6 +513,7 @@ Window::DevicesItr Window::devicesEnd()
 
 Window::DevicesConstItr Window::devicesEnd() const
 {
+  Guard guard ( this->mutex() );
   return _devices.end();
 }
 
@@ -503,14 +524,26 @@ Window::DevicesConstItr Window::devicesEnd() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::callCommandActions()
+void Window::callCommandActions ( bool immediate )
 {
+  Guard guard ( this->mutex() );
   for ( CommandActionsItr i = _commands.begin(); i != _commands.end(); ++i )
   {
     CommandAction::RefPtr command ( *i );
     if ( command.valid() )
     {
-      command->execute ( this );
+      if ( immediate )
+      {
+        command->execute ( this );
+      }
+      else
+      {
+        if ( Program::valid() && Program::instance().app() )
+        {
+          AFW_GUARD_PROGRAM;
+          Program::instance().app()->eventAppend ( command.get(), this );
+        }
+      }
     }
   }
 }
@@ -522,8 +555,9 @@ void Window::callCommandActions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::callUpdateActions()
+void Window::callUpdateActions ( bool immediate )
 {
+  Guard guard ( this->mutex() );
   for ( UpdatePairsItr i = _updates.begin(); i != _updates.end(); ++i )
   {
     UpdatePair update ( *i );
@@ -532,7 +566,20 @@ void Window::callUpdateActions()
     if ( condition.valid() && action.valid() )
     {
       if ( condition->evaluate ( this ) )
-        action->execute ( this );
+      {
+        if ( immediate )
+        {
+          action->execute ( this );
+        }
+        else
+        {
+          if ( Program::valid() && Program::instance().app() )
+          {
+            AFW_GUARD_PROGRAM;
+            Program::instance().app()->eventAppend ( action.get(), this );
+          }
+        }
+      }
     }
   }
 }
@@ -546,6 +593,8 @@ void Window::callUpdateActions()
 
 void Window::dockState ( DockState state )
 {
+  Guard guard ( this->mutex() );
+
   // Handle unchanged case.
   if ( this->dockState() == state )
     return;
@@ -566,43 +615,8 @@ void Window::dockState ( DockState state )
 
 Window::DockState Window::dockState() const
 {
+  Guard guard ( this->mutex() );
   return _dockState;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the percent.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Window::percent ( const Usul::Math::Vec2f &p )
-{
-  _percent = p;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the percent.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Window::percent ( float x, float y )
-{
-  _percent.set ( x, y );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the percent.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Math::Vec2f Window::percent() const
-{
-  return _percent;
 }
 
 
@@ -614,7 +628,8 @@ Usul::Math::Vec2f Window::percent() const
 
 Window::WindowListItr Window::allWindowsBegin()
 {
-  return _allWindows.begin();
+  WindowListGuard guard ( _allWindows.mutex() );
+  return _allWindows.value().begin();
 }
 
 
@@ -626,7 +641,8 @@ Window::WindowListItr Window::allWindowsBegin()
 
 Window::WindowListItr Window::allWindowsEnd()
 {
-  return _allWindows.end();
+  WindowListGuard guard ( _allWindows.mutex() );
+  return _allWindows.value().end();
 }
 
 
@@ -638,44 +654,9 @@ Window::WindowListItr Window::allWindowsEnd()
 
 void Window::accept ( AFW::Core::BaseVisitor *v )
 {
+  Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the gui-object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Window::GuiObject *Window::guiObject() const
-{
-  return _guiObject.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the user-data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Window::GuiObject *Window::guiObject()
-{
-  return _guiObject.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the user-data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Window::guiObject ( Window::GuiObject *object )
-{
-  _guiObject = object;
 }
 
 
@@ -687,4 +668,99 @@ void Window::guiObject ( Window::GuiObject *object )
 
 void Window::_traverse ( AFW::Core::BaseVisitor * )
 {
+  Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default implementation does nothing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::scrollToEnd()
+{
+  Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the persistent name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::persistentName ( const std::string &n )
+{
+  Guard guard ( this->mutex() );
+  _regName = n;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the persistent name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Window::persistentName() const
+{
+  Guard guard ( this->mutex() );
+  return std::string ( _regName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enable the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::enable ( bool state )
+{
+  Guard guard ( this->mutex() );
+  const unsigned int bit ( State::ENABLED );
+  _flags = Usul::Bits::set ( _flags, bit, state );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Window::enabled() const
+{
+  Guard guard ( this->mutex() );
+  const unsigned int bit ( State::ENABLED );
+  return Usul::Bits::has ( _flags, bit );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visible state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::visible ( bool state )
+{
+  Guard guard ( this->mutex() );
+  const unsigned int bit ( State::VISIBLE );
+  _flags = Usul::Bits::set ( _flags, bit, state );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the visible flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Window::visible() const
+{
+  Guard guard ( this->mutex() );
+  const unsigned int bit ( State::VISIBLE );
+  return Usul::Bits::has ( _flags, bit );
 }

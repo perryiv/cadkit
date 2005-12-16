@@ -13,37 +13,89 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "AppFrameWork/Core/LifeCycle.h"
+#include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Core/InitFunctor.h"
+#include "AppFrameWork/Actions/OpenModelAction.h"
+#include "AppFrameWork/Actions/QuitProgramAction.h"
+#include "AppFrameWork/Actions/RunLocalEventLoop.h"
+#include "AppFrameWork/Actions/RemoveMenuBar.h"
+#include "AppFrameWork/Actions/CreateMenuBar.h"
 
-#include "Threads/OpenThreads/Mutex.h"
+#include "Usul/System/LastError.h"
 
-#include "Usul/Threads/Mutex.h"
-#include "Usul/CommandLine/Arguments.h"
-#include "Usul/IO/Redirect.h"
-#include "Usul/File/Remove.h"
-#include "Usul/File/Path.h"
-#include "Usul/System/DateTime.h"
-
-#include <iostream>
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set for multi-threaded. This is global because the sooner we set this, 
-//  the better. Setting in main() may be too late.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Threads::SetMutexFactory factory ( &Threads::OT::newMutex );
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Redirect stdout and stderr.
+//  Asserts if there is a system error.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::IO::Redirect redirect ( Usul::File::fullPath ( "Helios.log" ), true, false );
+// Usul::System::LastError::Assert errorAssert; // Curious...
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Init functor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct Init : public AFW::Core::InitFunctor
+{
+  Init(){}
+  virtual void operator () ( AFW::Core::Application *app );
+protected:
+  virtual ~Init(){}
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Init::operator () ( AFW::Core::Application *app )
+{
+  if ( 0x0 == app )
+    return;
+
+#if 1
+
+  AFW::Actions::Action::RefPtr pause ( new AFW::Actions::RunLocalEventLoop ( 1000 / 4 ) );
+  app->eventAppend ( new AFW::Actions::OpenModelAction ( "../../../../models/task4/modelB_new_ratios.stl" ) );
+  app->eventAppend ( new AFW::Actions::OpenModelAction ( "../../../../models/task4/modelB_new_ratios.tdf" ) );
+  for ( unsigned int i = 0; i < 4; ++i )
+  {
+    app->eventAppend ( pause.get() );
+    app->eventAppend ( new AFW::Actions::RemoveMenuBar );
+    app->eventAppend ( pause.get() );
+    app->eventAppend ( new AFW::Actions::CreateMenuBar );
+  }
+#if 0
+  for ( unsigned int i = 0; i < 4; ++i )
+  {
+    app->eventAppend ( pause.get() );
+    app->eventAppend ( new AFW::Actions::SetVisible ( new AFW::Algorithms::Find ( app, new AFW::Conditions::IsOfType<AFW::Core::StatusBar> ), true ) );
+    app->eventAppend ( pause.get() );
+    app->eventAppend ( new AFW::Actions::SetVisible ( new AFW::Algorithms::Find ( app, new AFW::Conditions::IsOfType<AFW::Core::StatusBar> ), false ) );
+  }
+  for ( unsigned int i = 0; i < 4; ++i )
+  {
+    app->eventAppend ( pause.get() );
+    app->eventAppend ( new AFW::Actions::ToggleVisible ( new AFW::Algorithms::FindFirst ( app, new AFW::Conditions::IsOfType<AFW::Core::StatusBar> ) ) );
+  }
+#endif
+  app->eventAppend ( pause.get() );
+  //app->eventAppend ( new AFW::Actions::QuitProgramAction );
+
+#endif
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,31 +106,21 @@ Usul::IO::Redirect redirect ( Usul::File::fullPath ( "Helios.log" ), true, false
 
 int main ( int argc, char **argv )
 {
-  // Set command-line arguments.
-  Usul::CommandLine::Arguments::instance().set ( argc, argv );
+#ifdef _MSC_VER
+#if 0
+  ::_CrtSetBreakAlloc ( 172 + 363 );
+#endif
+#endif
 
-  // Application name.
-  const std::string name ( "Helios" );
+  const unsigned int num ( 1 );
+  for ( unsigned int i = 0; i < num; ++i )
+  {
+    AFW::Core::ProgramLifeCycle program;
+    {
+      AFW::Core::InitFunctor::RefPtr init ( new Init );
+      AFW::Core::Program::instance().execute ( argc, argv, init.get() );
+    }
+  }
 
-  std::cout << name << " started: " << Usul::System::DateTime::now() << std::endl;
-
-  // Shortcut to the application.
-  AFW::Core::Application &app ( AFW::Core::Application::instance() );
-
-  // Set name.
-  app.name ( "Helios" );
-
-  // Set the name of the redirected output file.
-  app.redirect ( redirect.file() );
-
-  // Run the application.
-  const bool result ( app.run() );
-
-  // Tell the application to clean up.
-  app.cleanup();
-
-  std::cout << name << " stopped: " << Usul::System::DateTime::now() << std::endl;
-
-  // Return the result.
-  return ( ( result ) ? 1 : 0 );
+  return 1;
 }

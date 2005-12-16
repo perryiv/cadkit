@@ -59,7 +59,7 @@
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y Icons\*.* %USUL_LIB_DIR%"/>
+				CommandLine="xcopy Icons\*.* %USUL_LIB_DIR%\icons\ /f /i /k /y /c"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -127,7 +127,7 @@
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y Icons\*.* %USUL_LIB_DIR%"/>
+				CommandLine="xcopy Icons\*.* %USUL_LIB_DIR%\icons\ /f /i /k /y /c"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -212,16 +212,64 @@
 					RelativePath=".\Core\Icon.h">
 				</File>
 				<File
+					RelativePath=".\Core\InitFunctor.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\InitFunctor.h">
+				</File>
+				<File
+					RelativePath=".\Core\LifeCycle.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\LifeCycle.h">
+				</File>
+				<File
 					RelativePath=".\Core\MainWindow.cpp">
 				</File>
 				<File
 					RelativePath=".\Core\MainWindow.h">
 				</File>
 				<File
+					RelativePath=".\Core\Model.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Model.h">
+				</File>
+				<File
+					RelativePath=".\Core\NewObjectFunctor.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\NewObjectFunctor.h">
+				</File>
+				<File
 					RelativePath=".\Core\Object.cpp">
 				</File>
 				<File
 					RelativePath=".\Core\Object.h">
+				</File>
+				<File
+					RelativePath=".\Core\PluginListener.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\PluginListener.h">
+				</File>
+				<File
+					RelativePath=".\Core\Program.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Program.h">
+				</File>
+				<File
+					RelativePath=".\Core\StatusBar.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\StatusBar.h">
+				</File>
+				<File
+					RelativePath=".\Core\StreamSink.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\StreamSink.h">
 				</File>
 				<File
 					RelativePath=".\Core\TextWindow.cpp">
@@ -261,6 +309,12 @@
 						RelativePath=".\Actions\CommandAction.h">
 					</File>
 					<File
+						RelativePath=".\Actions\CreateMenuBar.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\CreateMenuBar.h">
+					</File>
+					<File
 						RelativePath=".\Actions\NewModelAction.cpp">
 					</File>
 					<File
@@ -271,6 +325,24 @@
 					</File>
 					<File
 						RelativePath=".\Actions\OpenModelAction.h">
+					</File>
+					<File
+						RelativePath=".\Actions\QuitProgramAction.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\QuitProgramAction.h">
+					</File>
+					<File
+						RelativePath=".\Actions\RemoveMenuBar.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\RemoveMenuBar.h">
+					</File>
+					<File
+						RelativePath=".\Actions\RunLocalEventLoop.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\RunLocalEventLoop.h">
 					</File>
 				</Filter>
 				<Filter
@@ -287,6 +359,30 @@
 					</File>
 					<File
 						RelativePath=".\Actions\SetTextFromFile.h">
+					</File>
+					<File
+						RelativePath=".\Actions\SetTextFromPluginActivity.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\SetTextFromPluginActivity.h">
+					</File>
+					<File
+						RelativePath=".\Actions\SetTextFromStdout.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\SetTextFromStdout.h">
+					</File>
+					<File
+						RelativePath=".\Actions\SetVisible.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\SetVisible.h">
+					</File>
+					<File
+						RelativePath=".\Actions\ToggleVisible.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\ToggleVisible.h">
 					</File>
 					<File
 						RelativePath=".\Actions\UpdateAction.cpp">
@@ -364,10 +460,25 @@
 					RelativePath=".\Conditions\HasOpenModelPlugin.h">
 				</File>
 				<File
+					RelativePath=".\Conditions\HasStatusBar.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasStatusBar.h">
+				</File>
+				<File
 					RelativePath=".\Conditions\IsEnabled.cpp">
 				</File>
 				<File
 					RelativePath=".\Conditions\IsEnabled.h">
+				</File>
+				<File
+					RelativePath=".\Conditions\IsOfType.h">
+				</File>
+				<File
+					RelativePath=".\Conditions\IsVisible.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\IsVisible.h">
 				</File>
 				<File
 					RelativePath=".\Conditions\Never.cpp">
@@ -380,6 +491,16 @@
 				</File>
 				<File
 					RelativePath=".\Conditions\Or.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Dialogs"
+				Filter="">
+				<File
+					RelativePath=".\Dialogs\Dialog.cpp">
+				</File>
+				<File
+					RelativePath=".\Dialogs\Dialog.h">
 				</File>
 			</Filter>
 		</Filter>

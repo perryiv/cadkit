@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -16,14 +16,24 @@
 #ifndef _USUL_FILE_STATISTICS_H_
 #define _USUL_FILE_STATISTICS_H_
 
+#include "Usul/Types/Types.h"
+#include "Usul/MPL/StaticAssert.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string>
 
 #ifdef _WIN32
-# define STAT _stat
+# define STAT_STRUCT_64   struct __stat64
+# define STAT_STRUCT      struct _stat
+# define STAT_FUNCTION_64 _stat64
+# define STAT_FUNCTION    _stat
 #else
-# define STAT stat
+# define STAT_STRUCT_64   struct stat64
+# define STAT_STRUCT      struct stat
+# define STAT_FUNCTION_64 stat64
+# define STAT_FUNCTION    stat
+TODO, is this correct?
 #endif
 
 
@@ -33,20 +43,110 @@ namespace File {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the file size.
+//  Traits class for selecting the proper function. Add more as necessary.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline unsigned int size ( const std::string &filename )
+namespace Detail
 {
-  struct STAT filebuf;
-  int result ( STAT ( filename.c_str(), &filebuf ) );
-  return ( ( 0 == result ) ? filebuf.st_size : 0 );
+  template < class T > struct Traits;
+  template <> struct Traits < Usul::Types::Uint32 >
+  {
+    typedef STAT_STRUCT StructType;
+    static bool stat ( const std::string &file, StructType &s )
+    {
+      return ( 0 == STAT_FUNCTION ( file.c_str(), &s ) );
+    }
+  };
+  template <> struct Traits < Usul::Types::Uint64 >
+  {
+    typedef STAT_STRUCT_64 StructType;
+    static bool stat ( const std::string &file, StructType &s )
+    {
+      return ( 0 == STAT_FUNCTION_64 ( file.c_str(), &s ) );
+    }
+  };
 }
 
 
-}; // namespace File
-}; // namespace Usul
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Struct for getting file statistics.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T = unsigned int > struct Stats
+{
+  typedef Usul::File::Detail::Traits<T> Traits;
+  typedef typename Traits::StructType StructType;
+
+protected:
+
+  template < class T2 > static T _convert ( bool result, T2 value )
+  {
+    USUL_STATIC_ASSERT ( sizeof ( T ) == sizeof ( T2 ) );
+    return ( ( result && value > 0 ) ? static_cast < T > ( value ) : 0 );
+  }
+
+public:
+
+  //
+  //  Get the file size.
+  //
+
+  static T size ( const std::string &name )
+  {
+    StructType filebuf;
+    const bool result ( Traits::stat ( name, filebuf ) );
+    return _convert ( result, filebuf.st_size );
+  }
+
+
+  //
+  //  Get the time of last access.
+  //
+
+  static T accessed ( const std::string &name )
+  {
+    StructType filebuf;
+    const bool result ( Traits::stat ( name, filebuf ) );
+    return _convert ( result, filebuf.st_atime );
+  }
+
+
+  //
+  //  Get the time of last modification.
+  //
+
+  static T modified ( const std::string &name )
+  {
+    StructType filebuf;
+    const bool result ( Traits::stat ( name, filebuf ) );
+    return _convert ( result, filebuf.st_mtime );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  For backward compatability.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline unsigned int size ( const std::string &name )
+{
+  return Usul::File::Stats<unsigned int>::size ( name );
+}
+
+
+} // namespace File
+} // namespace Usul
+
+
+#undef STAT_STRUCT
+#undef STAT_STRUCT_64
+#undef STAT_FUNCTION
+#undef STAT_FUNCTION_64
 
 
 #endif // _USUL_FILE_STATISTICS_H_

@@ -19,6 +19,7 @@
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Pointers/Intrusive.h"
 
 #include "Usul/Polygons/Predicates.h"
 
@@ -26,28 +27,6 @@
 #include <algorithm>
 
 using namespace OsgTools::Triangles;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For safely referencing and unreferencing a shared vertex. The header file 
-//  for this class has a forward-declaration of SharedVertex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class T > void reference ( T *v )
-  {
-    if ( v )
-      v->ref();
-  }
-  template < class T > void unreference ( T *v )
-  {
-    if ( v )
-      v->unref();
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,9 +57,9 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
       ( "Error 1437076236: Triangle vertices are not equal" );
 
   // Reference the vertices.
-  Detail::reference ( _v0 );
-  Detail::reference ( _v1 );
-  Detail::reference ( _v2 );
+  Usul::Pointers::reference ( _v0 );
+  Usul::Pointers::reference ( _v1 );
+  Usul::Pointers::reference ( _v2 );
 }
 
 
@@ -93,9 +72,9 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
 Triangle::~Triangle()
 {
   USUL_ASSERT ( 0 == _ref );
-  Detail::unreference ( _v0 );
-  Detail::unreference ( _v1 );
-  Detail::unreference ( _v2 );
+  Usul::Pointers::unreference ( _v0 );
+  Usul::Pointers::unreference ( _v1 );
+  Usul::Pointers::unreference ( _v2 );
 }
 
 
@@ -121,9 +100,9 @@ void Triangle::clear()
 
 void Triangle::vertex0 ( SharedVertex *v )
 {
-  Detail::unreference ( _v0 );
+  Usul::Pointers::unreference ( _v0 );
   _v0 = v;
-  Detail::reference ( _v0 );
+  Usul::Pointers::reference ( _v0 );
 }
 
 
@@ -135,9 +114,9 @@ void Triangle::vertex0 ( SharedVertex *v )
 
 void Triangle::vertex1 ( SharedVertex *v )
 {
-  Detail::unreference ( _v1 );
+  Usul::Pointers::unreference ( _v1 );
   _v1 = v;
-  Detail::reference ( _v1 );
+  Usul::Pointers::reference ( _v1 );
 }
 
 
@@ -149,9 +128,9 @@ void Triangle::vertex1 ( SharedVertex *v )
 
 void Triangle::vertex2 ( SharedVertex *v )
 {
-  Detail::unreference ( _v2 );
+  Usul::Pointers::unreference ( _v2 );
   _v2 = v;
-  Detail::reference ( _v2 );
+  Usul::Pointers::reference ( _v2 );
 }
 
 

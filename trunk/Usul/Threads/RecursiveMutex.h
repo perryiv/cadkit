@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -32,8 +32,8 @@ public:
   virtual ~RecursiveMutex();
 
   // Lock/unlock the mutex.
-  virtual void            lock() = 0;
-  virtual void            unlock() = 0;
+  virtual void            lock();
+  virtual void            unlock();
 
 private:
 

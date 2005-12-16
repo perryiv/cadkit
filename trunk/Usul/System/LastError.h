@@ -45,6 +45,14 @@ struct USUL_EXPORT LastError
 
   // Get the number of the last error.
   static Number           number();
+
+  // Internal class that asserts in it's constructor and destructor 
+  // if there is a system error.
+  struct USUL_EXPORT Assert
+  {
+    Assert();
+    ~Assert();
+  };
 };
 
 

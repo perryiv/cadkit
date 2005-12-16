@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -32,28 +32,43 @@ namespace Predicates {
 
 struct FileExists : public std::unary_function < const std::string &, bool >
 {
+protected:
+
   struct File
   {
     File ( const std::string &filename ) : _fp ( 0x0 )
     {
-      if ( !filename.empty() )
+      if ( false == filename.empty() )
         _fp = ::fopen ( filename.c_str(), "r" );
     }
+
     ~File()
     {
       if ( _fp )
         ::fclose ( _fp );
     }
-    bool exists() const { return 0x0 != _fp; }
+
+    bool exists() const
+    {
+      return ( 0x0 != _fp );
+    }
+
   protected:
+
     File();                 // No default construction.
     File ( const File &f ); // No copy construction.
+
   private:
+
     FILE *_fp;
   };
+
+public:
+
   FileExists()
   {
   }
+
   bool operator () ( const std::string &s ) const
   {
     File file ( s );

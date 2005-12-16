@@ -44,6 +44,7 @@ public:
   virtual void clear();
 
 protected:
+
   BaseDevice ( );
   virtual ~BaseDevice();
 

@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -17,12 +17,11 @@
 #define _USUL_FILE_PATH_H_
 
 #include "Usul/Predicates/UnaryPair.h"
-#include "Usul/Types/Types.h"
 
 #include <string>
 #include <algorithm>
-#include <iostream>
-using namespace Usul::Types;
+#include <stdlib.h>
+
 
 namespace Usul {
 namespace File {
@@ -43,7 +42,7 @@ inline std::string directory ( const std::string &path, bool wantSlash )
   typedef std::logical_or<bool> Or;
 
   // Look for the last slash.
-#ifdef _WIN32
+#ifdef _MSC_VER
   Itr i ( std::find_if ( path.rbegin(), path.rend(), Usul::Predicates::unaryPair ( std::bind2nd ( IsEqual(), '\\' ), Or(), std::bind2nd ( IsEqual(), '/' ) ) ) );
 #else
   Itr i ( std::find_if ( path.rbegin(), path.rend(), std::bind2nd ( IsEqual(), '/' ) ) );
@@ -68,21 +67,50 @@ inline std::string directory ( const std::string &path, bool wantSlash )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the full path name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline std::string fullPath ( const std::string &file )
+{
+  typedef std::string::value_type Char;
+
+  const size_t size ( 1024 );
+  Char buffer[size];
+  ::memset ( buffer, '\0', size - 1 );
+
+#ifdef _MSC_VER
+
+  ::_fullpath ( buffer, file.c_str(), size - 1 );
+
+#else
+
+  TODO
+
+#endif
+
+  return std::string ( buffer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the extension from the path.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 inline std::string extension ( const std::string &path )
 {
-  std::string::size_type dotPos = path.find_last_of('.') ;
-    //Check for not extension or just a trailing '.'
-    if (dotPos == std::string::npos || dotPos == path.size() - 1 ) 
-  {
-    const std::string ext ("");
-    return ext;
-  } 
-  return path.substr (dotPos +1); 
+  // Find the last dot.
+  const std::string::size_type dotPos ( path.find_last_of ( '.' ) );
+
+  // Check for not extension or just a trailing '.'
+  if ( dotPos == std::string::npos || dotPos == path.size() - 1 ) 
+    return std::string();
+  else
+    return path.substr ( dotPos + 1 ); 
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

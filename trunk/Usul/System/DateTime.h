@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class the returns time values in seconds or milliseconds.
+//  Class the returns time nicely formatted dates and times.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,15 +19,17 @@
 #include "Usul/Export/Export.h"
 #include "Usul/Types/Types.h"
 
+#include <string>
+
 
 namespace Usul {
 namespace System {
 
 
-struct USUL_EXPORT Clock
+struct USUL_EXPORT DateTime
 {
-  static Usul::Types::Uint64          milliseconds();
-  static Usul::Types::Uint64          seconds();
+  static std::string        now();
+  static std::string        format ( long ); // time_t
 };
 
 

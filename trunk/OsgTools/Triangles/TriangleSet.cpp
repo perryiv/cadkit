@@ -331,7 +331,7 @@ void TriangleSet::correctNormal ( const SharedVertex *sv0, const SharedVertex *s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update )
+OsgTools::Triangles::Triangle *TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update )
 {
   // Get or make the shared vertices.
   SharedVertex *sv0 ( this->addSharedVertex ( v0 ) );
@@ -339,7 +339,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
   SharedVertex *sv2 ( this->addSharedVertex ( v2 ) );
 
   // Add the triangle
-  this->addTriangle ( sv0, sv1, sv2, n, update );
+  return this->addTriangle ( sv0, sv1, sv2, n, update );
 }
 
 
@@ -349,7 +349,7 @@ void TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool update )
+OsgTools::Triangles::Triangle *TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool update )
 {
   // Make the new triangle.
   Triangle::ValidRefPtr t ( this->newTriangle ( sv0, sv1, sv2, _triangles.size() ) );
@@ -380,6 +380,9 @@ void TriangleSet::addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVert
     sv1->dirtyColor ( true );
     sv2->dirtyColor ( true );
   }
+
+  // Return new triangle.
+  return t.get();
 }
 
 

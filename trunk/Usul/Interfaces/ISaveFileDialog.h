@@ -16,7 +16,7 @@
 #ifndef _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
 #define _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
 
-#include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/ILoadFileDialog.h"
 
 #include <string>
 #include <vector>
@@ -29,12 +29,12 @@ namespace Interfaces {
 struct ISaveFileDialog : public Usul::Interfaces::IUnknown
 {
   // Typedefs.
-  typedef std::pair < std::string, std::string > Filter;
-  typedef std::vector<Filter> Filters;
-  typedef std::string Filename;
-  typedef std::pair<Filename,Filter> FileResult;
-  typedef std::vector<Filename> Filenames;
-  typedef std::pair<Filenames,Filter> FilesResult;
+  typedef Usul::Interfaces::ILoadFileDialog::Filter Filter;
+  typedef Usul::Interfaces::ILoadFileDialog::Filters Filters;
+  typedef Usul::Interfaces::ILoadFileDialog::Filename Filename;
+  typedef Usul::Interfaces::ILoadFileDialog::Filenames Filenames;
+  typedef Usul::Interfaces::ILoadFileDialog::FileResult FileResult;
+  typedef Usul::Interfaces::ILoadFileDialog::FilesResult FilesResult;
 
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ISaveFileDialog );
@@ -45,7 +45,6 @@ struct ISaveFileDialog : public Usul::Interfaces::IUnknown
   // Get the name of the file to save to
   virtual FileResult    getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() ) = 0;
   virtual FilesResult   getSaveFileNames ( const std::string &title = "Save", const Filters &filters = Filters() ) = 0;
-
 };
 
 

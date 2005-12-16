@@ -16,6 +16,8 @@
 #ifndef _USUL_IO_REDIRECT_OUTPUT_H_
 #define _USUL_IO_REDIRECT_OUTPUT_H_
 
+#include "Usul/File/Remove.h"
+
 #include <stdio.h>
 #include <string>
 
@@ -26,18 +28,26 @@ namespace IO {
 
 struct Redirect
 {
-  Redirect ( const std::string &file ) : 
+  Redirect ( const std::string &file, bool removeExisting, bool closeInDestructor ) : 
     _file ( file ), 
-    _stdout ( ::freopen ( file.c_str(), "a+", stdout ) ), 
-    _stderr ( ::freopen ( file.c_str(), "a+", stderr ) )
+    _stdout ( 0x0 ), 
+    _stderr ( 0x0 ),
+    _close  ( closeInDestructor )
   {
+    if ( removeExisting )
+      Usul::File::remove ( file );
+    _stdout = ::freopen ( file.c_str(), "a+", stdout );
+    _stderr = ::freopen ( file.c_str(), "a+", stderr );
     std::ios::sync_with_stdio();
   }
 
   ~Redirect()
   {
-    ::fclose ( _stdout );
-    ::fclose ( _stderr );
+    if ( _close )
+    {
+      ::fclose ( _stdout );
+      ::fclose ( _stderr );
+    }
   }
 
   const std::string &file() const
@@ -50,6 +60,7 @@ private:
   std::string _file;
   FILE *_stdout;
   FILE *_stderr;
+  bool _close;
 };
 
 

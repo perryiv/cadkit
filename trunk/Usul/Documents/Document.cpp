@@ -291,6 +291,7 @@ void Document::insert ( Unknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ILoadFileDialog FileDialog;
+  typedef FileDialog::FilesResult FilesResult;
   typedef FileDialog::Filenames Filenames;
 
   // Get the file dialog interface
@@ -301,12 +302,13 @@ void Document::insert ( Unknown *caller )
     return;
 
   // Ask for file names.
-  const Filenames files ( fileDialog->getLoadFileNames ( "Insert", this->filtersInsert() ) );
+  const FilesResult result ( fileDialog->getLoadFileNames ( "Insert", this->filtersInsert() ) );
+  const Filenames files ( result.first );
   if ( files.empty() )
     return;
 
   // Set this up here in case we throw below.
-  this->modified ( !files.empty() );
+  this->modified ( true );
 
   // Show/hide the progress bar and cancel button.
   Usul::Interfaces::IProgressBar::ShowHide shp  ( caller );

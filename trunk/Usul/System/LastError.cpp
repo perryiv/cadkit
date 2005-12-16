@@ -16,6 +16,7 @@
 #include "Usul/System/LastError.h"
 #include "Usul/MPL/SameType.h"
 #include "Usul/Strings/Trim.h"
+#include "Usul/Errors/Assert.h"
 
 #ifdef _WIN32
 # include <windows.h> // For GetLastError()
@@ -53,6 +54,8 @@ void LastError::init()
   ::dlerror();
 
 #endif
+
+  USUL_ASSERT ( false == LastError::has() );
 }
 
 
@@ -68,7 +71,13 @@ LastError::Number LastError::number()
 
   USUL_ASSERT_SAME_TYPE ( DWORD, unsigned long );
   USUL_ASSERT_SAME_TYPE ( DWORD, LastError::Number );
-  return ::GetLastError();
+
+  // Getting also initializes, so we have to immediately set again.
+  const DWORD error ( ::GetLastError() );
+  ::SetLastError ( error );
+
+  // Return error.
+  return error;
 
 #else
 
@@ -149,11 +158,40 @@ bool LastError::has()
 {
 #ifdef _WIN32
 
-  return ( ERROR_SUCCESS != ::GetLastError() );
+  const DWORD error ( LastError::number() );
+  return ( ERROR_SUCCESS != error );
 
 #else
 
   return ( 0 != errno ); // Is this right? TODO
 
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Internal class that asserts in it's constructor and destructor 
+//  if there is a system error.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  inline void checkLastError()
+  {
+    if ( true == Usul::System::LastError::has() )
+    {
+      USUL_ASSERT ( false );
+      const std::string error ( Usul::System::LastError::message() );
+    }
+  }
+}
+LastError::Assert::Assert()
+{
+  Detail::checkLastError();
+}
+LastError::Assert::~Assert()
+{
+  Detail::checkLastError();
 }

@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 namespace FX { class FXMetaClass; class FXIcon; };
 
@@ -99,7 +100,7 @@ public:
   // It's a singleton.
   static Factory *    instance();
 
-  // Get the icon. Throws if value not found.
+  // Get the icon.
   FX::FXIcon *        icon ( unsigned int id ) const;
 
 private:

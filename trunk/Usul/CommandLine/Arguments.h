@@ -45,6 +45,9 @@ public:
   char ** const               argv() const { return _argv; }
   char **                     argv()       { return _argv; }
 
+  // Get a copy of the arguments. Caller is responsible for deleting.
+  char **                     copy() const;
+
   // Return the directory that the program lives in.
   std::string                 directory() const;
 

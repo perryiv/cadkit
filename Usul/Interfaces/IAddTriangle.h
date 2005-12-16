@@ -12,7 +12,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgTools { namespace Triangles { class SharedVertex; } }
+namespace OsgTools { namespace Triangles { class SharedVertex; class Triangle; } }
 namespace osg { class Vec3f; }
 
 
@@ -35,7 +35,7 @@ struct IAddTriangle : public Usul::Interfaces::IUnknown
   enum { IID = iid };
 
   // Add a single triangle.
-  virtual void addTriangle ( VertexType v0, VertexType v1, VertexType v2, NormalType n, bool update ) = 0;
+  virtual OsgTools::Triangles::Triangle *   addTriangle ( VertexType v0, VertexType v1, VertexType v2, NormalType n, bool update ) = 0;
 };
 
 typedef IAddTriangle < OsgTools::Triangles::SharedVertex *, const osg::Vec3f &, 2793935616u > IAddTriangleWithSharedVertex;

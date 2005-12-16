@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2002, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -23,6 +23,7 @@
 #endif
 
 #include "FoxTools/Dialogs/FileSelection.h"
+#include "FoxTools/Dialogs/Message.h"
 #include "FoxTools/Functions/App.h"
 #include "FoxTools/Functions/MainWindow.h"
 #include "FoxTools/Headers/MainWindow.h"
@@ -34,8 +35,10 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/File/Path.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include "boost/algorithm/string/replace.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -75,59 +78,7 @@ namespace Detail
 {
   const char REGISTRY_SECTION[]  = "FileSelectionDialogResults";
   const char FILTER_INDEX[]      = "filter_index";
-  
-  
 };
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make sure there are extensions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-    bool _appendExtension ( const FileSelection::Filter &filter, FileSelection::Filenames &names, FX::FXWindow *owner )
-    {
-        // Get extension from filter. Filters are like this: "*.stl", so we drop the "*."
-        std::string fe ( filter.second );
-        if ( fe.size() < 3 )
-            return false;
-        fe.erase ( 0, 2 );
-        
-        // Loop through the names.
-        for ( FileSelection::Filenames::iterator i = names.begin(); i != names.end(); ++i )
-        {
-            // Get reference to name.
-            std::string &name ( *i );
-            
-            // Get extension.
-            std::string ext ( Usul::File::extension ( name ) );
-            
-            // If extension is empty then append filter's extension.
-            if ( ext.empty() )
-            {
-                std::string::size_type dotPos = name.find_last_of('.') ;
-                //Check for not extension or just a trailing '.'
-                if ( dotPos != name.size() - 1 ) 
-                {
-                    name += "."; //Only append a '.' if the name does not have one
-                }
-                name += fe;
-
-                FX::FXString path (name.c_str() );
-                if(FXFile::exists(path))
-                {
-                    if(MBOX_CLICKED_NO==FXMessageBox::question(owner, MBOX_YES_NO, "Overwrite Document","Overwrite existing document: %s?", path.text() ) ) 
-                    {
-                        return false;
-                    } 
-                }
-            }
-        }
-        return true;
-    }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -510,7 +461,6 @@ void FileSelection::filterIndex ( unsigned int index )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Ask the user for a list of file names.
@@ -519,46 +469,45 @@ void FileSelection::filterIndex ( unsigned int index )
 
 FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, const std::string &title, const Filters &filters, FX::FXWindow *owner, bool appendExtension )
 {
-    // Make main window owner if given null.
-    if ( 0x0 == owner )
-        owner = FoxTools::Functions::mainWindow();
-    
-    // Declare and configure a file dialog.
-    FileSelection dialog ( type, title, filters );
-    
-    // Make the registry section.
-    std::ostringstream section;
-    std::string name ( title );
-    std::transform ( name.begin(), name.end(), name.begin(), ::tolower );
-    std::replace ( name.begin(), name.end(), ' ', '_' );
-    section << "file_dialog_" << name;
-    
-    // Set the filter index.
-    dialog.filterIndex ( ( title.empty() ) ? 0 : FoxTools::Registry::read ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() ) );
-    
-    // Run the dialog in a modal loop.
-    if ( !dialog.runModal ( owner ) )
-        return FilesResult();
-    
-    // Push the filter index back into the registry.
-    FoxTools::Registry::write ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() );
-    
-    // Make filter.
-    Filter filter ( dialog.filter ( dialog.filterIndex() ) );
-    
-    // Are we supposed to make sure there is an extension? 
-    // Note: do not use filenames() member.
-    if ( appendExtension ) 
+  // Make main window owner if given null.
+  if ( 0x0 == owner )
+    owner = FoxTools::Functions::mainWindow();
+  
+  // Declare and configure a file dialog.
+  FileSelection dialog ( type, title, filters );
+  
+  // Make the registry section.
+  std::ostringstream section;
+  std::string name ( title );
+  std::transform ( name.begin(), name.end(), name.begin(), ::tolower );
+  std::replace ( name.begin(), name.end(), ' ', '_' );
+  section << "file_dialog_" << name;
+  
+  // Set the filter index.
+  dialog.filterIndex ( ( title.empty() ) ? 0 : FoxTools::Registry::read ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() ) );
+  
+  // Run the dialog in a modal loop.
+  if ( !dialog.runModal ( owner ) )
+    return FilesResult();
+  
+  // Push the filter index back into the registry.
+  FoxTools::Registry::write ( section.str(), Detail::FILTER_INDEX, dialog.filterIndex() );
+  
+  // Make filter.
+  Filter filter ( dialog.filter ( dialog.filterIndex() ) );
+  
+  // Are we supposed to make sure there is an extension? 
+  // Note: do not use filenames() member.
+  if ( appendExtension ) 
+  {
+    if ( false == _appendExtension ( filter, dialog._filenames, owner ) )
     {
-      if ( false == Detail::_appendExtension ( filter, dialog._filenames, owner ) )
-      {
-          return FilesResult(); //Return empty data if the user canceled the operation
-      }
+      return FilesResult(); // Return empty data if the user canceled the operation.
     }
-        
-    
-    // Return the file names.
-    return FilesResult ( dialog.filenames(), filter );
+  }
+  
+  // Return the file names.
+  return FilesResult ( dialog.filenames(), filter );
 }
 
 
@@ -570,8 +519,58 @@ FileSelection::FilesResult FileSelection::askForFileNames ( const Type &type, co
 
 FileSelection::FileResult FileSelection::askForFileName ( const Type &type, const std::string &title, const Filters &filters, FX::FXWindow *owner, bool appendExtension )
 {
-    FilesResult result ( FileSelection::askForFileNames ( type, title, filters, owner, appendExtension ) );
-    return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
+  FilesResult result ( FileSelection::askForFileNames ( type, title, filters, owner, appendExtension ) );
+  return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make sure there are extensions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FileSelection::_appendExtension ( const FileSelection::Filter &filter, FileSelection::Filenames &names, FX::FXWindow *owner )
+{
+  // Get extension from filter. Filters are like this: "*.stl", so we drop the "*."
+  std::string fe ( filter.second );
+  if ( fe.size() < 3 )
+    return false;
+  fe.erase ( 0, 2 );
+
+  // Loop through the names.
+  for ( FileSelection::Filenames::iterator i = names.begin(); i != names.end(); ++i )
+  {
+    // Get reference to name.
+    std::string &name ( *i );
+
+    // Get extension.
+    std::string ext ( Usul::File::extension ( name ) );
+
+    // If extension is empty then append filter's extension.
+    if ( ext.empty() )
+    {
+      std::string::size_type dotPos = name.find_last_of ( '.' );
+
+      // Check for not extension or just a trailing '.'
+      if ( dotPos != name.size() - 1 ) 
+      {
+        name += "."; // Only append a '.' if the name does not have one
+      }
+      name += fe;
+
+      // We changed the name, so make sure the new name is not a file.
+      Usul::Predicates::FileExists exists;
+      if ( exists ( name ) )
+      {
+        if ( FoxTools::Dialogs::Message::question ( "Yes|No", "Overwrite Document", "Overwrite existing document: " + name + " ?" ) == "No" )
+        {
+          return false;
+        } 
+      }
+    }
+  }
+
+  // It worked.
+  return true;
+}

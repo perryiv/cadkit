@@ -199,6 +199,12 @@
 				Name="Base"
 				Filter="">
 				<File
+					RelativePath=".\Base\InstanceManager.cpp">
+				</File>
+				<File
+					RelativePath=".\Base\InstanceManager.h">
+				</File>
+				<File
 					RelativePath="Base\Referenced.cpp">
 				</File>
 				<File
@@ -270,6 +276,12 @@
 				</File>
 				<File
 					RelativePath="DLL\Library.h">
+				</File>
+				<File
+					RelativePath=".\Dll\Listener.cpp">
+				</File>
+				<File
+					RelativePath=".\Dll\Listener.h">
 				</File>
 				<File
 					RelativePath="DLL\Loader.cpp">
@@ -856,6 +868,12 @@
 				Name="Predicates"
 				Filter="">
 				<File
+					RelativePath=".\Predicates\CanWrite.cpp">
+				</File>
+				<File
+					RelativePath=".\Predicates\CanWrite.h">
+				</File>
+				<File
 					RelativePath=".\Predicates\CloseFloat.h">
 				</File>
 				<File
@@ -904,6 +922,12 @@
 				</File>
 				<File
 					RelativePath=".\System\Clock.h">
+				</File>
+				<File
+					RelativePath=".\System\DateTime.cpp">
+				</File>
+				<File
+					RelativePath=".\System\DateTime.h">
 				</File>
 				<File
 					RelativePath=".\System\Host.cpp">
@@ -963,6 +987,12 @@
 				</File>
 				<File
 					RelativePath="Threads\Queue.h">
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.cpp">
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.h">
 				</File>
 				<File
 					RelativePath="Threads\Set.h">

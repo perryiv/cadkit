@@ -30,8 +30,11 @@ struct ILoadFileDialog : public Usul::Interfaces::IUnknown
 {
   // Typedefs.
   typedef std::pair < std::string, std::string > Filter;
-  typedef std::vector<Filter> Filters;
-  typedef std::vector<std::string> Filenames;
+  typedef std::vector < Filter > Filters;
+  typedef std::string Filename;
+  typedef std::vector < Filename > Filenames;
+  typedef std::pair < Filename, Filter > FileResult;
+  typedef std::pair < Filenames, Filter > FilesResult;
 
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ILoadFileDialog );
@@ -40,8 +43,8 @@ struct ILoadFileDialog : public Usul::Interfaces::IUnknown
   enum { IID = 1103131693u };
 
   // Get the name of the file to load from
-  virtual std::string   getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
-  virtual Filenames     getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
+  virtual FileResult    getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
+  virtual FilesResult   getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() ) = 0;
 };
 
 

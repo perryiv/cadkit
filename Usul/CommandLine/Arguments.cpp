@@ -135,3 +135,31 @@ void Arguments::set ( int argc, char **argv )
   _argc = argc;
   _argv = argv;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a copy of the arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+char **Arguments::copy() const
+{
+  // Handle empty arguments.
+  const unsigned int argc ( static_cast < unsigned int > ( _argc ) );
+  if ( 0 == argc )
+    return 0x0;
+
+  // Allocate one extra for the terminating null.
+  char **argv = new char *[argc + 1];
+
+  // Add a copy of the individual strings.
+  for ( unsigned int i = 0; i < argc; ++i )
+    argv[i] = ::strdup ( _argv[i] );
+
+  // Important!
+  argv[argc] = 0x0;
+
+  // Return new copy.
+  return argv;
+}

@@ -246,7 +246,7 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
   // Get needed interfaces
   Triangulate::ValidQueryPtr tri ( PluginManager::instance().getInterface( Triangulate::IID ) );
   Usul::Interfaces::IGetVertex::ValidQueryPtr                   getVertex       ( caller );
-  Usul::Interfaces::IAddTriangleWithSharedVertex::ValidQueryPtr addTriangle     ( caller );
+  Usul::Interfaces::IAddTriangleWithSharedVertex::ValidQueryPtr add            ( caller );
   
   // Data structures needed to triangulate.
   Vertices vertices;
@@ -339,9 +339,12 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
     osg::Plane plane ( v0, v1, v2 );
 
     // Add the triangle.
-    addTriangle->addTriangle ( sv0, sv1, sv2, plane.getNormal(), buildOnFly );
-  }
+    OsgTools::Triangles::Triangle::RefPtr t ( add->addTriangle ( sv0, sv1, sv2, plane.getNormal(), buildOnFly ) );
 
+    // This triangle is not original.
+    if ( t.valid() )
+      t->original ( false );
+  }
 
   // If we get here it succeeded.
   return true;

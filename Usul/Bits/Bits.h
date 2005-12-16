@@ -70,43 +70,35 @@ template < class N, class B > inline N toggle ( N number, B bits )
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////
 //
-
-//  Reverse all the bits in a 32 bit value.
-
-//  Snagged from: http://www.sjbaker.org/steve/software/cute_code.html
-
+//  Set the "bits" in "number".
 //
+//////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-
-
-
-template < class N > inline void reverse ( N &n )
-
+template < class N, class B > inline N set ( N number, B bits, bool state )
 {
-
-  USUL_STATIC_ASSERT ( 32 == sizeof ( N ) );
-
-
-
-  n = ((n >>  1) & 0x55555555) | ((n <<  1) & 0xaaaaaaaa);
-
-  n = ((n >>  2) & 0x33333333) | ((n <<  2) & 0xcccccccc);
-
-  n = ((n >>  4) & 0x0f0f0f0f) | ((n <<  4) & 0xf0f0f0f0);
-
-  n = ((n >>  8) & 0x00ff00ff) | ((n <<  8) & 0xff00ff00);
-
-  n = ((n >> 16) & 0x0000ffff) | ((n << 16) & 0xffff0000);
-
+  return ( ( state ) ? Usul::Bits::add ( number, bits ) : Usul::Bits::remove ( number, bits ) );
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reverse all the bits in a 32 bit value.
+//  Snagged from: http://www.sjbaker.org/steve/software/cute_code.html
+//
+///////////////////////////////////////////////////////////////////////////////
 
+template < class N > inline void reverse ( N &n )
+{
+  USUL_STATIC_ASSERT ( 32 == sizeof ( N ) );
+
+  n = ((n >>  1) & 0x55555555) | ((n <<  1) & 0xaaaaaaaa);
+  n = ((n >>  2) & 0x33333333) | ((n <<  2) & 0xcccccccc);
+  n = ((n >>  4) & 0x0f0f0f0f) | ((n <<  4) & 0xf0f0f0f0);
+  n = ((n >>  8) & 0x00ff00ff) | ((n <<  8) & 0xff00ff00);
+  n = ((n >> 16) & 0x0000ffff) | ((n << 16) & 0xffff0000);
+}
 
 
 }; // namespace Bits

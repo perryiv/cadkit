@@ -18,6 +18,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 
+
 namespace Usul {
 namespace Scope {
 

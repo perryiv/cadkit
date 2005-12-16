@@ -59,6 +59,7 @@ public:
   virtual const char* what() const throw() { return _message.c_str(); }
   
 private:
+
   std::string _message;
 };
 

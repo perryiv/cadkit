@@ -14,13 +14,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Base/InstanceManager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Set.h"
 
-#include <set>
+#ifdef _MSC_VER
+#include "windows.h"
+#endif
+
+#include <map>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -30,9 +35,10 @@ using namespace Usul::Base;
 
 USUL_IMPLEMENT_TYPE_ID ( Referenced );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  I do not want these in the header file.
+//  Local typedefs.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -42,46 +48,19 @@ namespace Usul
   {
     typedef Usul::Threads::Mutex Mutex;
     typedef Usul::Threads::Guard<Mutex> Guard;
+  }
+}
 
-    #ifdef _DEBUG
 
-    struct InstanceManager
-    {
-      typedef std::set<Referenced*> Set;
-  
-      InstanceManager() : _set()
-      {
-      }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Variables with file scope.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-      ~InstanceManager()
-      {
-        if ( false == _set.empty() )
-        {
-          USUL_ASSERT ( 0 ); // FYI
-          std::cout << _set.size() << " referenced items remain:" << std::endl;
-          for ( Set::const_iterator i = _set.begin(); i != _set.end(); ++i )
-          {
-            Referenced *r ( *i );
-            std::cout << "\taddress = " << r << ", name = " << ( ( r ) ? r->typeId().name() : "NULL" ) << std::endl;
-          }
-        }
-      }
-
-      Set &set()
-      {
-        return _set;
-      }
-
-    private:
-
-      Set _set;
-    };
-
-    InstanceManager im;
-
-    #endif
-  };
-};
+#ifdef _DEBUG
+namespace Detail { Usul::Base::InstanceManager im; }
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,10 +74,8 @@ Referenced::Referenced() : Typed(),
   _rcMutex ( Mutex::create() )
 {
 #if _DEBUG
-  // Make sure this address is not already in our set, and insert it.
-  std::pair<InstanceManager::Set::iterator,bool> result = im.set().insert ( this );
-  USUL_ASSERT ( true == result.second );
-  USUL_ASSERT ( this == *(result.first) );
+  Detail::im.add ( this );
+  USUL_ASSERT ( 0x08E52F48 != reinterpret_cast < unsigned int > ( this ) );
 #endif
 }
 
@@ -114,10 +91,7 @@ Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
   _rcMutex ( Mutex::create() )
 {
 #if _DEBUG
-  // Make sure this address is not already in our set, and insert it.
-  std::pair<InstanceManager::Set::iterator,bool> result = im.set().insert ( this );
-  USUL_ASSERT ( true == result.second );
-  USUL_ASSERT ( this == *(result.first) );
+  Detail::im.add ( this );
 #endif
 }
 
@@ -131,8 +105,7 @@ Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
 Referenced::~Referenced()
 {
 #if _DEBUG
-  // Remove this address from the set. Should be one occurance.
-  USUL_ASSERT ( 1 == im.set().erase ( this ) );
+  Detail::im.remove ( this );
 #endif
 
   // Should be true.
@@ -166,7 +139,17 @@ Referenced &Referenced::operator = ( const Referenced &r )
 
 void Referenced::ref()
 {
+  // One thread at a time.
   Guard guard ( *_rcMutex );
+
+#ifdef _DEBUG
+  // If this is the first time, update the entry in the instange-manager. 
+  // When the entry is first made in the constructor, the virtual table 
+  // is not fully constructed.
+  if ( 0 == _refCount )
+    Detail::im.update ( this );
+#endif
+
   ++_refCount;
 }
 

@@ -39,20 +39,23 @@ public:
   // Destructor. Should never throw.
   ~Temp();
 
+  // Return name of directory where temporary files can be created.
+  static std::string          directory ( bool wantSlash = false );
+
   // Return name of internal temporary file.
-  const std::string &   name() const;
+  const std::string &         name() const;
 
   // Rename the file. This closes the stream first.
-  void                  rename ( const std::string &name );
+  void                        rename ( const std::string &name );
 
   // Release ownership of the temporary file.
-  void                  release();
+  void                        release();
 
   // Remove the file. Provided as a convenience.
-  static void           remove ( const std::string &file );
+  static void                 remove ( const std::string &file );
 
   // Access the output stream.
-  std::ostream &        stream();
+  std::ostream &              stream();
 
 protected:
 
@@ -60,7 +63,7 @@ protected:
   Temp ( const Temp & );
   Temp &operator = ( const Temp & );
 
-  void                  _close();
+  void                        _close();
 
 private:
 

@@ -448,6 +448,9 @@
 					RelativePath=".\Headers\FileDialog.h">
 				</File>
 				<File
+					RelativePath=".\Headers\FileStream.h">
+				</File>
+				<File
 					RelativePath=".\Headers\GIFCursor.h">
 				</File>
 				<File
@@ -550,10 +553,16 @@
 					RelativePath=".\Headers\Separator.h">
 				</File>
 				<File
+					RelativePath=".\Headers\Shutter.h">
+				</File>
+				<File
 					RelativePath=".\Headers\Slider.h">
 				</File>
 				<File
 					RelativePath=".\Headers\Spinner.h">
+				</File>
+				<File
+					RelativePath=".\Headers\SplashWindow.h">
 				</File>
 				<File
 					RelativePath=".\Headers\Splitter.h">

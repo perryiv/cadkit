@@ -98,8 +98,8 @@ public:
   SharedVertex *          addSharedVertex ( const osg::Vec3f &v, bool look = true );
 
   // Add a triangle.
-  void                    addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update );
-  void                    addTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, const osg::Vec3f &n, bool update );
+  Triangle *              addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update );
+  Triangle *              addTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, const osg::Vec3f &n, bool update );
 
   // Get the averaged normal for the shared vertex.
   osg::Vec3f              averageNormal ( const SharedVertex *sv ) const;

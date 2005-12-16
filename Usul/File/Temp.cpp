@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/File/Temp.h"
+#include "Usul/File/Path.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Errors/Assert.h"
@@ -268,4 +269,18 @@ std::ostream &Temp::stream()
 {
   USUL_ASSERT ( 0x0 != _stream );
   return *_stream;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return name of directory where temporary files can be created.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Temp::directory ( bool wantSlash )
+{
+  Temp file;
+  const std::string dir ( Usul::File::directory ( file.name(), wantSlash ) );
+  return dir;
 }

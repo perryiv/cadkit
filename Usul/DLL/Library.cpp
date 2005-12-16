@@ -14,17 +14,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/DLL/Library.h"
+#include "Usul/DLL/Listener.h"
 #include "Usul/DLL/Exceptions.h"
-
-#include "Usul/Exceptions/Thrower.h"
-
+#include "Usul/Errors/Stack.h"
 #include "Usul/System/LastError.h"
+#include "Usul/Threads/Variable.h"
+#include "Usul/Threads/Guard.h"
 
 #ifdef _WIN32
 # include <windows.h>
 #else
 # include <dlfcn.h>
 #endif
+
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iostream>
 
 using namespace Usul;
 using namespace Usul::DLL;
@@ -39,6 +45,18 @@ using namespace Usul::DLL;
 namespace Usul {
 namespace DLL {
 namespace Detail {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::vector < Listener::RefPtr > ListenerVector;
+typedef Usul::Threads::Variable < ListenerVector > Listeners;
+typedef Usul::Threads::Guard < Listeners::MutexType > Guard;
+Listeners _listeners;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,7 +141,7 @@ Library::Function _function ( const std::string &name, Library::ModuleHandle mod
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Library::Library ( const std::string &filename ) :
+Library::Library ( const std::string &filename ) : BaseClass(),
   _module   ( 0x0 ),
   _filename ( filename )
 {
@@ -133,13 +151,17 @@ Library::Library ( const std::string &filename ) :
   // Load the library.
   _module = Usul::DLL::Detail::_load ( filename );
 
+  // Notify listeners.
+  this->callListeners ( ( ( _module ) ? ( "Loaded: " ) : ( "Failed to load: " ) ) +  _filename );
+
   // See if it worked.
   if ( 0x0 == _module )
   {
-    Usul::Exceptions::Thrower<Usul::DLL::Exceptions::FailedToLoad> 
-      ( "Error: 3942529130, failed to load library: ", filename,
-        "\n\tSystem error number: ",  System::LastError::number(),
-        "\n\tSystem error message: ", System::LastError::message() );
+    std::ostringstream out;
+    out << "Error: 3942529130, failed to load library: " << _filename 
+        << "\n\tSystem error number: "  << System::LastError::number()
+        << "\n\tSystem error message: " << System::LastError::message();
+    throw Usul::DLL::Exceptions::FailedToLoad ( out.str() );
   }
 }
 
@@ -152,19 +174,37 @@ Library::Library ( const std::string &filename ) :
 
 Library::~Library()
 {
-  // Initialize the last error.
-  System::LastError::init();
-
-  // Free the library.
-  bool success = Usul::DLL::Detail::_free ( _module );
-
-  // Make sure it worked.
-  if ( !success )
+  try
   {
-    Usul::Exceptions::Thrower<Usul::DLL::Exceptions::FailedToFree> 
-      ( "Error: 4286324342, failed to free library: ", _filename,
-        "\n\tSystem error number: ",  System::LastError::number(),
-        "\n\tSystem error message: ", System::LastError::message() );
+    // Initialize the last error.
+    System::LastError::init();
+
+    // Free the library.
+    bool success = Usul::DLL::Detail::_free ( _module );
+
+    // Make sure it worked.
+    if ( false == success )
+    {
+      std::ostringstream out;
+      out << "Error: 4286324342, failed to free library: " << _filename 
+          << "\n\tSystem error number: "  << System::LastError::number()
+          << "\n\tSystem error message: " << System::LastError::message();
+      Usul::Errors::Stack::instance().push ( out.str() );
+    }
+
+    // Notify listeners.
+    this->callListeners ( ( ( success ) ? ( "Released: " ) : ( "Failed to release: " ) ) +  _filename );
+  }
+
+  catch ( const std::exception &e )
+  {
+    std::cout << "Error 3130313481: Standard exception caught while releasing: " << _filename << std::endl;
+    if ( e.what() )
+      std::cout << ". " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 3947493394: Unknown exception caught while releasing: " << _filename << std::endl;
   }
 }
 
@@ -177,5 +217,65 @@ Library::~Library()
 
 Library::Function Library::function ( const std::string &name ) const
 {
-  return Usul::DLL::Detail::_function ( name, _module );
+  Function fun ( Usul::DLL::Detail::_function ( name, _module ) );
+  if ( 0x0 == fun )
+    this->callListeners ( "No function '" + name + "' in: " + _filename );
+  return fun;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append a listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Library::append ( Usul::DLL::Listener *l )
+{
+  if ( l )
+  {
+    Detail::Guard guard ( Detail::_listeners.mutex() );
+    Detail::_listeners.value().push_back ( l );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Library::remove ( Usul::DLL::Listener *l )
+{
+  Detail::Guard guard ( Detail::_listeners.mutex() );
+  Detail::ListenerVector::iterator begin ( Detail::_listeners.value().begin() );
+  Detail::ListenerVector::iterator end   ( Detail::_listeners.value().end()   );
+  Detail::ListenerVector::iterator i = std::find ( begin, end, Usul::DLL::Listener::RefPtr ( l ) );
+  if ( end == i )
+    return false;
+  Detail::_listeners.value().erase ( i );
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Library::callListeners ( const std::string &message )
+{
+  Detail::Guard guard ( Detail::_listeners.mutex() );
+  Detail::ListenerVector::iterator begin ( Detail::_listeners.value().begin() );
+  Detail::ListenerVector::iterator end   ( Detail::_listeners.value().end()   );
+  for ( Detail::ListenerVector::iterator i = begin; i != end; ++i )
+  {
+    Listener::RefPtr l ( *i );
+    if ( l.valid() )
+    {
+      (*l) ( message );
+    }
+  }
 }

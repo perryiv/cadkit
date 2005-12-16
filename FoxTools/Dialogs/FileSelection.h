@@ -18,6 +18,8 @@
 
 #include "FoxTools/Export/Export.h"
 
+#include "Usul/Interfaces/ILoadFileDialog.h"
+
 #include <string>
 #include <vector>
 
@@ -33,12 +35,13 @@ class FOX_TOOLS_EXPORT FileSelection
 public:
 
   // Useful typedefs.
-  typedef std::pair < std::string, std::string > Filter;
-  typedef std::vector<Filter> Filters;
-  typedef std::string Filename;
-  typedef std::vector<Filename> Filenames;
-  typedef std::pair<Filename,Filter> FileResult;
-  typedef std::pair<Filenames,Filter> FilesResult;
+  typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
+  typedef ILoadFileDialog::Filter Filter;
+  typedef ILoadFileDialog::Filters Filters;
+  typedef ILoadFileDialog::Filename Filename;
+  typedef ILoadFileDialog::Filenames Filenames;
+  typedef ILoadFileDialog::FileResult FileResult;
+  typedef ILoadFileDialog::FilesResult FilesResult;
 
   // The type of dialog.
   enum Type { OPEN, SAVE };
@@ -111,6 +114,8 @@ public:
   bool                          runModal ( FX::FXWindow *owner );
 
 protected:
+
+  static bool                   _appendExtension ( const Filter &filter, Filenames &names, FX::FXWindow *owner );
 
   void                          _makePatterns ( std::string & ) const;
 

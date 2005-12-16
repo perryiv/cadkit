@@ -31,6 +31,8 @@
 #include <stdexcept>
 
 #include "Usul/Headers/SStream.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/File/Path.h"
 
 #include <iostream>
 

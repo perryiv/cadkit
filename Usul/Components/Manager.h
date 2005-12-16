@@ -24,6 +24,7 @@
 #include <string>
 #include <set>
 #include <list>
+#include <iosfwd>
 
 namespace Usul {
 namespace Components {
@@ -40,6 +41,8 @@ public:
 
   static Manager& instance();
 
+  void                          clear ( std::ostream *out );
+
   // Add/remove/clear extensions for plugins.
   void                          addPluginExtension ( const std::string &ext );
   void                          removePluginExtension ( const std::string &ext );
@@ -49,8 +52,6 @@ public:
   void                          addDirectory ( const std::string &ext );
   void                          removeDirectory ( const std::string &ext );
   void                          clearDirectory();
-
-  void                          clear();
 
   // Do we have any unknowns?
   bool                          empty () const { return _unknowns.empty(); }

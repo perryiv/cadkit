@@ -284,10 +284,31 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::clear() 
-{ 
-  _unknowns.clear(); 
-  Detail::_pool.clear();
+void Manager::clear ( std::ostream *out ) 
+{
+  if ( 0x0 == out )
+  {
+    _unknowns.clear(); 
+    Detail::_pool.clear();
+    return;
+  }
+
+  while ( false == _unknowns.empty() )
+  {
+    UnknownSet::iterator i ( _unknowns.begin() );
+    Usul::Interfaces::IUnknown::RefPtr unknown ( *i );
+    Usul::Interfaces::IPlugin::QueryPtr plugin ( unknown.get() );
+    if ( plugin.valid() )
+      (*out) << "Releasing component: " << plugin->getPluginName() << std::endl;
+    _unknowns.erase ( i );
+  }
+
+  while ( false == Detail::_pool.empty() )
+  {
+    Detail::LibraryPool::iterator i ( Detail::_pool.begin() );
+    (*out) << "Releasing file: " << (*i)->filename() << std::endl;
+    Detail::_pool.erase ( i );
+  }
 }
 
 
@@ -299,7 +320,7 @@ void Manager::clear()
 
 Usul::Interfaces::IUnknown* Manager::getInterface( unsigned long iid )
 {
-  for( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
+  for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
     IUnknown *u ( (*i).get() );
     if( u->queryInterface( iid ) )
@@ -384,7 +405,8 @@ Manager::Factory* Manager::_factory ( const std::string &filename )
   // Load the library. It throws if it fails to load.
   Usul::DLL::Library::ValidRefPtr lib ( Usul::DLL::Loader::load ( filename ) );
 
-  Detail::_pool.insert( lib.get() );
+  // Cache in our pool.
+  Detail::_pool.insert ( lib.get() );
 
   // Get the debug function. Note: g++ does not allow a reinterpret_cast.
   typedef bool (*DebugFunction)();
@@ -400,9 +422,7 @@ Manager::Factory* Manager::_factory ( const std::string &filename )
 
   // Get the class factory.
   IClassFactory::ValidRefPtr factory ( ff() );
-
   return factory.release();
-  //return Usul::Components::Object::factory( filename );
 }
 
 

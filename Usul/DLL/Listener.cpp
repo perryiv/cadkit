@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L Miller IV
+//  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,43 +9,33 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create functions.
+//  Base class for listeners.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FOX_TOOLS_CREATE_FUNCTIONS_H_
-#define _FOX_TOOLS_CREATE_FUNCTIONS_H_
+#include "Usul/DLL/listener.h"
 
-#include "FoxTools/Headers/Window.h"
-
-
-namespace FoxTools {
-namespace Functions {
+using namespace Usul;
+using namespace Usul::DLL;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create if we should.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void create ( FX::FXWindow *window )
+Listener::Listener()
 {
-  if ( 0x0 != window && 0x0 == window->id() )
-  {
-    if ( window->getParent() )
-    {
-      if ( window->getParent()->id() )
-      {
-        window->create();
-      }
-    }
-  }
 }
 
 
-}; // namespace Functions
-}; // namespace FoxTools
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-
-#endif // _FOX_TOOLS_CHILD_FUNCTIONS_H_
+Listener::~Listener()
+{
+}

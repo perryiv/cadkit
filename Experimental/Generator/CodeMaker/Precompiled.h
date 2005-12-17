@@ -38,6 +38,9 @@
 # include "wx/bitmap.h"
 # include "wx/icon.h"
 # include "wx/menu.h"
+# include "wx/splitter.h"
+# include "wx/colordlg.h"
+# include "wx/xrc/xmlres.h"
 # include "wx/fl/controlbar.h"    // Core API
 # include "wx/fl/barhintspl.h"    // Bevel for bars with "X"s and grooves
 # include "wx/fl/rowdragpl.h"     // NC-look with draggable rows

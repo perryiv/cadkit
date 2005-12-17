@@ -50,9 +50,15 @@ Application::~Application()
 
 bool Application::OnInit()
 {
+  // Initialize all the XRC handlers. Always required.
+  wxXmlResource::Get()->InitAllHandlers();
+
+  // Declare main window, set it as the top-level window, and show it.
   _mainWindow = new MainWindow;
   this->SetTopWindow ( _mainWindow );
   _mainWindow->Show ( true );
+
+  // Call base class's function.
   return BaseClass::OnInit();
 }
 

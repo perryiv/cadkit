@@ -29,11 +29,11 @@
 # define STAT_FUNCTION_64 _stat64
 # define STAT_FUNCTION    _stat
 #else
-# define STAT_STRUCT_64   struct stat64
+//# define STAT_STRUCT_64   struct stat64
 # define STAT_STRUCT      struct stat
-# define STAT_FUNCTION_64 stat64
+//# define STAT_FUNCTION_64 stat64
 # define STAT_FUNCTION    stat
-TODO, is this correct?
+//TODO, is this correct?
 #endif
 
 
@@ -58,6 +58,9 @@ namespace Detail
       return ( 0 == STAT_FUNCTION ( file.c_str(), &s ) );
     }
   };
+#ifdef __APPLE__
+#warning Darwin does not define stat64
+#else 
   template <> struct Traits < Usul::Types::Uint64 >
   {
     typedef STAT_STRUCT_64 StructType;
@@ -66,6 +69,8 @@ namespace Detail
       return ( 0 == STAT_FUNCTION_64 ( file.c_str(), &s ) );
     }
   };
+  
+#endif
 }
 
 

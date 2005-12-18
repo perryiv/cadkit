@@ -165,9 +165,9 @@ std::string Icon::find ( const std::string &name )
     if ( exists ( file ) )
       return file;
 
-    // Try the application's directory...
+    // Try the icon subdirectory...
     std::ostringstream path;
-    path << dir << '/' << file;
+    path << dir << "/icons/" << file;
     if ( exists ( path.str() ) )
       return path.str();
   }

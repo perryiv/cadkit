@@ -65,7 +65,7 @@ void Init::operator () ( AFW::Core::Application *app )
   if ( 0x0 == app )
     return;
 
-#if 1
+#if 0
 
   AFW::Actions::Action::RefPtr pause ( new AFW::Actions::RunLocalEventLoop ( 1000 / 4 ) );
   app->eventAppend ( new AFW::Actions::OpenModelAction ( "../../../../models/task4/modelB_new_ratios.stl" ) );

@@ -25,9 +25,9 @@
 				PreprocessorDefinitions="_WINDOWS;WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="Precompiled.h"
-				PrecompiledHeaderFile=".\Release/AppFrameWorkExample.pch"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -54,7 +54,8 @@
 				TypeLibraryName=".\Release/AppFrameWorkExample.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy plugins.xml %USUL_LIB_DIR%\$(TargetName).plugs /a /d /v /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -88,9 +89,9 @@
 				PreprocessorDefinitions="_WINDOWS;WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="Precompiled.h"
-				PrecompiledHeaderFile=".\Debug/AppFrameWorkExampled.pch"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -119,7 +120,8 @@
 				TypeLibraryName=".\Debug/AppFrameWorkExampled.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy plugins.xml %USUL_LIB_DIR%\$(TargetName).plugs /a /d /v /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -150,6 +152,9 @@
 				RelativePath=".\AppFrameWorkExampled.log">
 			</File>
 			<File
+				RelativePath="..\..\..\bin\AppFrameWorkExampled.plugs">
+			</File>
+			<File
 				RelativePath="main.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -166,6 +171,9 @@
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\plugins.xml">
 			</File>
 		</Filter>
 	</Files>

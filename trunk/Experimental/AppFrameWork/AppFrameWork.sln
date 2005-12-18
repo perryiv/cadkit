@@ -26,6 +26,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: wxWindows GUI", "Wx\W
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlDom", "..\..\XmlDom\xml_dom.vcproj", "{2E5DA3BC-7700-43DE-ACD5-375EEC360066}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -52,6 +56,10 @@ Global
 		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Debug.Build.0 = Debug|Win32
 		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Release.ActiveCfg = Release|Win32
 		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Release.Build.0 = Release|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Debug.ActiveCfg = Debug|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Debug.Build.0 = Debug|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Release.ActiveCfg = Release|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

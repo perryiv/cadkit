@@ -92,7 +92,7 @@ void Init::operator () ( AFW::Core::Application *app )
   }
 #endif
   app->eventAppend ( pause.get() );
-  //app->eventAppend ( new AFW::Actions::QuitProgramAction );
+  app->eventAppend ( new AFW::Actions::QuitProgramAction );
 
 #endif
 }

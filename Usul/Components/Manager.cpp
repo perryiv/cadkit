@@ -296,7 +296,7 @@ void Manager::clear ( std::ostream *out )
   while ( false == _unknowns.empty() )
   {
     UnknownSet::iterator i ( _unknowns.begin() );
-    Usul::Interfaces::IUnknown::RefPtr unknown ( *i );
+    Usul::Interfaces::IUnknown::RefPtr unknown ( i->get() );
     Usul::Interfaces::IPlugin::QueryPtr plugin ( unknown.get() );
     if ( plugin.valid() )
       (*out) << "Releasing component: " << plugin->getPluginName() << std::endl;

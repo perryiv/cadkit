@@ -21,6 +21,7 @@
 #include <string>
 #include <algorithm>
 #include <stdlib.h>
+#include <iostream>
 
 
 namespace Usul {
@@ -85,8 +86,8 @@ inline std::string fullPath ( const std::string &file )
 
 #else
 
-  TODO
-
+  std::cout << "Usul/File/Path.h std::string fullPath ( const std::string &file ) "
+    << " Is not implemented yet." << std::endl;
 #endif
 
   return std::string ( buffer );

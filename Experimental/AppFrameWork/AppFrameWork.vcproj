@@ -254,6 +254,12 @@
 					RelativePath=".\Core\PluginListener.h">
 				</File>
 				<File
+					RelativePath=".\Core\PluginRegistry.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\PluginRegistry.h">
+				</File>
+				<File
 					RelativePath=".\Core\Program.cpp">
 				</File>
 				<File

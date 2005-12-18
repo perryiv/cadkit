@@ -140,6 +140,9 @@
 			<File
 				RelativePath=".\example01.cpp">
 			</File>
+			<File
+				RelativePath=".\example01.xml">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

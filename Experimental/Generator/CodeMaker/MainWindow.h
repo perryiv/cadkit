@@ -28,9 +28,12 @@ public:
 
 protected:
 
-  void            _onClose ( wxCloseEvent &event );
+  void            _onBrowseForDirectory ( wxCommandEvent &event );
+  void            _onCloseMainWindow    ( wxCloseEvent &event );
 
 private:
+
+  wxPanel *_leftPanel;
 
   DECLARE_CLASS ( MainWindow );
   DECLARE_EVENT_TABLE();

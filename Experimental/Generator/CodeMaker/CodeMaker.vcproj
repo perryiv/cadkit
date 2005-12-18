@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw26_fl.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
+				AdditionalDependencies="wxmsw26_xrc.lib wxmsw26_fl.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
 				OutputFile="$(USUL_LIB_DIR)/CodeMaker.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -157,6 +157,12 @@
 				RelativePath=".\Application.h">
 			</File>
 			<File
+				RelativePath=".\LeftPanel.cpp">
+			</File>
+			<File
+				RelativePath=".\LeftPanel.h">
+			</File>
+			<File
 				RelativePath="main.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -181,7 +187,19 @@
 				RelativePath=".\MainWindow.h">
 			</File>
 			<File
+				RelativePath=".\PluginPanel.cpp">
+			</File>
+			<File
+				RelativePath=".\PluginPanel.h">
+			</File>
+			<File
 				RelativePath=".\Precompiled.h">
+			</File>
+			<File
+				RelativePath=".\TextDisplay.cpp">
+			</File>
+			<File
+				RelativePath=".\TextDisplay.h">
 			</File>
 		</Filter>
 	</Files>

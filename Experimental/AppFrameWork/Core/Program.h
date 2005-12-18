@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <list>
 
 namespace AFW { namespace Core { class InitFunctor; class Application; } }
 
@@ -45,6 +46,7 @@ public:
   typedef std::map < std::string, NewObjectFunctor::RefPtr > Factories;
   typedef std::vector < std::string > StringVector;
   typedef std::set < std::string > PluginExtensions;
+  typedef std::list < std::string > PluginFiles;
 
   // Set/get the application. Getting is not thread-safe.
   void                                app ( Application * );
@@ -88,7 +90,8 @@ public:
   // Get the plugin listener. This function is not thread-safe.
   PluginListener *                    pluginListener();
 
-  // Load/release all plugins.
+  // Work with plugins.
+  PluginFiles                         pluginsFind() const;
   void                                pluginsLoad();
   void                                pluginsRelease();
 
@@ -120,6 +123,9 @@ protected:
 
   void                                _execute ( int argc, char **argv, InitFunctor *init, const std::string &name );
   void                                _execute ( InitFunctor *init, const std::string &name );
+
+  void                                _readPluginDir ( PluginFiles & ) const;
+  bool                                _readPluginRegistry ( PluginFiles & ) const;
 
 private:
 

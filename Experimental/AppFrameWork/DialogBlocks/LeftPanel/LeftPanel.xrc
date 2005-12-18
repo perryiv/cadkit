@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
-    <object class="wxPanel" name="ID_LEFT_PANEL">
+    <object class="wxPanel" name="ID_LEFT_PANEL" subclass="LeftPanel">
         <size>400,300</size>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>

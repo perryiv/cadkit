@@ -17,11 +17,12 @@
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Menus/Button.h"
-#include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Core/StreamSink.h"
 #include "AppFrameWork/Core/InitFunctor.h"
 #include "AppFrameWork/Core/LifeCycle.h"
+#include "AppFrameWork/Core/PluginRegistry.h"
+#include "AppFrameWork/Menus/Button.h"
+#include "AppFrameWork/Menus/MenuGroup.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 
@@ -409,11 +410,9 @@ void Program::pluginsLoad()
 
   // Get the directory where the application lives.
   const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-   
-  // Get a list of all the potential plugins.
-  PluginManager::Strings plugins;
-  for ( PluginExtensions::const_iterator j = _plugExts.begin(); j != _plugExts.end(); ++j )
-    Usul::File::find ( dir, *j, plugins );
+
+  // Find all potential plugins.
+  PluginManager::Strings plugins ( this->pluginsFind() );
 
   // Load all plugins.
   PluginManager::instance().load ( Usul::Interfaces::IPlugin::IID, plugins );
@@ -431,6 +430,71 @@ void Program::pluginsLoad()
   {
     std::cout << "No plugins found" << std::endl;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all potential plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PluginManager::Strings Program::pluginsFind() const
+{
+  // One thread at a time.
+  Guard guard ( _mutex );
+
+  // Initialize list.
+  PluginManager::Strings plugins;
+
+  // Get plugins from registry file. A missing file, or an error, will result 
+  // in false. Otherwise, we get true, even if the file was found but was 
+  // empty. This behavior facilitates no plugins being loaded.
+  if ( true == this->_readPluginRegistry ( plugins ) )
+    return plugins;
+
+  // Load all plugins in the directory.
+  this->_readPluginDir ( plugins );
+
+  // Return what we have.
+  return plugins;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all potential plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Program::_readPluginRegistry ( PluginManager::Strings &plugins ) const
+{
+  // One thread at a time.
+  Guard guard ( _mutex );
+
+  // Read plugins from registry file.
+  PluginRegistry registry;
+  return registry.read ( plugins );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all potential plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Program::_readPluginDir ( PluginManager::Strings &plugins ) const
+{
+  // One thread at a time.
+  Guard guard ( _mutex );
+
+  // Get the directory where the application lives.
+  const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+
+  // Get a list of all the potential plugins.
+  for ( PluginExtensions::const_iterator j = _plugExts.begin(); j != _plugExts.end(); ++j )
+    Usul::File::find ( dir, *j, plugins );
 }
 
 

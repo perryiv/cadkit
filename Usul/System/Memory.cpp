@@ -22,9 +22,7 @@
 #endif
 
 #ifdef __APPLE__
-#include <sys/sysctl.h>
-#include <sys/vmmeter.h>
-#include <Usul/Types/Types.h>
+
 #endif
 
 #ifdef __linux
@@ -33,6 +31,7 @@
 
 using namespace Usul;
 using namespace Usul::System;
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,16 +49,7 @@ Usul::Types::Uint64 Memory::totalPhysical()
   return status.dwTotalPhys;
   
 #elif __APPLE__
-
-  int mib[2];
-  size_t len;
-  int physmem;
-  mib[0] = CTL_HW;
-  mib[1] = HW_PHYSMEM;
-  len = sizeof(physmem);
-  sysctl(mib, 2, &physmem, &len, NULL, 0);
-  return static_cast< Usul::Types::Uint64 > ( physmem );
-  
+  return Memory::DARWIN_getPhysicalMemory();  
 #elif __linux
 
   struct sysinfo info;
@@ -88,7 +78,11 @@ Usul::Types::Uint64 Memory::totalVirtual()
   return status.dwTotalVirtual;
 
 #elif __APPLE__
+#if 0
+  //This fails on OS X 10.3.9
+  //This isn't really correct.. should not be used.
     struct xsw_usage swapusage;
+    
     int mib[2];
     size_t len;
     mib[0] = CTL_VM;
@@ -96,7 +90,8 @@ Usul::Types::Uint64 Memory::totalVirtual()
     len = sizeof(swapusage);
     sysctl(mib, 2, &swapusage, &len, NULL, 0);
     return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_total );
-
+#endif
+    return 0x0;
 #elif __linux
 
   struct sysinfo info;
@@ -124,9 +119,7 @@ Usul::Types::Uint64 Memory::availablePhysical()
   return status.dwAvailPhys;
 
 #elif __APPLE__
-
-  return (Memory::totalPhysical() - Memory::usedPhysical() );
-
+  return  Memory::DARWIN_getAvailableMemory();
 #elif __linux
 
   struct sysinfo info;
@@ -156,7 +149,8 @@ Usul::Types::Uint64 Memory::availableVirtual()
   return status.dwAvailVirtual;
 
 #elif __APPLE__
-
+#if 0
+  This is not correct and should not be used
     struct xsw_usage swapusage;
     int mib[2];
     size_t len;
@@ -165,7 +159,8 @@ Usul::Types::Uint64 Memory::availableVirtual()
     len = sizeof(swapusage);
     sysctl(mib, 2, &swapusage, &len, NULL, 0);
     return static_cast< Usul::Types::Uint64 > ( swapusage.xsu_avail );
-    
+#endif   
+    return 0x0;
  #elif __linux
 
   struct sysinfo info;
@@ -190,14 +185,7 @@ Usul::Types::Uint64 Memory::usedPhysical()
 {
 #ifdef __APPLE__
   
-  int mib[2];
-  size_t len;
-  int  usedmem;
-  len = sizeof(usedmem);
-  mib[0] = CTL_HW;
-  mib[1] = HW_USERMEM;
-  sysctl(mib, 2, &usedmem, &len, NULL, 0);
-  return static_cast< Usul::Types::Uint64 > (usedmem);
+  return Memory::DARWIN_getUsedMemory();
 
 #else
 
@@ -234,3 +222,55 @@ std::string Memory::formatPhysical()
       << ", Total: "     << Memory::totalPhysical()     / toKB;
   return out.str();
 }
+
+
+#ifdef __APPLE__
+void  Memory::DARWIN_getVMStat (vm_statistics_t vmstat)
+{
+	unsigned int count = HOST_VM_INFO_COUNT;
+	if ( host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t) vmstat, &count) != KERN_SUCCESS )
+		printf("Failed to get VM statistics.");
+}
+
+ int Memory::DARWIN_getPageSize ()
+{
+  int mib[2];
+  size_t len;
+  int pageSize;
+  mib[0] = CTL_HW;
+  mib[1] = HW_PAGESIZE;
+  len = sizeof(pageSize);
+  sysctl(mib, 2, &pageSize, &len, NULL, 0);
+  return pageSize;
+}
+
+ long long int Memory::DARWIN_getPhysicalMemory() 
+{
+  int mib[2];
+  size_t len;
+   int physmem;
+  mib[0] = CTL_HW;
+  mib[1] = HW_PHYSMEM;
+  len = sizeof(physmem);
+  sysctl(mib, 2, &physmem, &len, NULL, 0);
+  return physmem;
+}
+
+ long long int Memory::DARWIN_getUsedMemory()
+{
+  long long int total;
+  vm_statistics_data_t	vmstat;
+  Memory::DARWIN_getVMStat (&vmstat);
+  total = vmstat.wire_count + vmstat.active_count + vmstat.inactive_count ;
+  total = total * Memory::DARWIN_getPageSize();
+  return (long long int)total;
+}
+
+ long long int Memory::DARWIN_getAvailableMemory()
+{
+  vm_statistics_data_t	vmstat;
+  Memory::DARWIN_getVMStat (&vmstat);
+  return (long long int) (vmstat.free_count * Memory::DARWIN_getPageSize() );
+}
+
+#endif

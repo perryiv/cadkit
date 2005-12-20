@@ -21,6 +21,13 @@
 
 #include <string>
 
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+#include <stdio.h>
+#include "mach/mach_host.h"
+#include <mach/mach.h>
+#include <mach/mach_types.h>
+#endif
 
 namespace Usul {
 namespace System {
@@ -36,6 +43,13 @@ struct USUL_EXPORT Memory
   static Usul::Types::Uint64       usedPhysical();
   static Usul::Types::Uint64       usedVirtual();
 
+#ifdef __APPLE__
+  static void                     DARWIN_getVMStat (vm_statistics_t vmstat);
+  static int                      DARWIN_getPageSize();
+  static long long int            DARWIN_getPhysicalMemory(); 
+  static long long int            DARWIN_getUsedMemory();
+  static long long int            DARWIN_getAvailableMemory();
+#endif
   // Return a formatted string.
   static std::string               formatPhysical();
 };

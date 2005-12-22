@@ -34,7 +34,7 @@ IMPLEMENT_CLASS ( WxInternalMainWin, WxInternalMainWin::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 WxInternalMainWin::WxInternalMainWin ( WxMainWindow *mw, const wxPoint &origin, const wxSize &size ) : 
-  BaseClass ( WxApplication::get()->docManager(), 0x0, wxID_ANY, 
+  BaseClass ( 0x0, wxID_ANY, 
               ( ( mw ) ? mw->title().c_str() : "Default Title" ), origin, size,
               wxDEFAULT_FRAME_STYLE | wxFRAME_NO_WINDOW_MENU )
 {

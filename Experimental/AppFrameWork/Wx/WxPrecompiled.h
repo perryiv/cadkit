@@ -25,6 +25,7 @@
 
 # pragma warning ( disable : 4290 ) // Exception specification ignored.
 # pragma warning ( disable : 4786 ) // Truncated debug names.
+# pragma warning ( disable : 4251 ) // DLL-interface warning.
 
 # define WIN32_LEAN_AND_MEAN        // Exclude rarely-used stuff from Windows headers.
 # define NOMINMAX                   // Do not define min and max as macros.
@@ -38,15 +39,10 @@
 # include "wx/bitmap.h"
 # include "wx/icon.h"
 # include "wx/menu.h"
-# include "wx/fl/controlbar.h"    // Core API
-# include "wx/fl/barhintspl.h"    // Bevel for bars with "X"s and grooves
-# include "wx/fl/rowdragpl.h"     // NC-look with draggable rows
-# include "wx/fl/cbcustom.h"      // Customization plugin
-# include "wx/fl/hintanimpl.h"
-# include "wx/fl/gcupdatesmgr.h"  // Smooth d&d
-# include "wx/fl/antiflickpl.h"   // Double-buffered repaint of decorations
-# include "wx/fl/dyntbar.h"       // Auto-layout toolbar
-# include "wx/fl/dyntbarhnd.h"    // Control-bar dimension handler for it
+# include "wx/splitter.h"
+# include "wx/colordlg.h"
+# include "wx/generic/colrdlgg.h"
+# include "wx/ifm/ifm.h"
 
 # include "boost/shared_ptr.hpp"
 

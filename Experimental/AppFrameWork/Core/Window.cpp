@@ -764,3 +764,16 @@ bool Window::visible() const
   const unsigned int bit ( State::VISIBLE );
   return Usul::Bits::has ( _flags, bit );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default implementation does nothing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Window::create ( Window * )
+{
+  Guard guard ( this->mutex() );
+  return true;
+}

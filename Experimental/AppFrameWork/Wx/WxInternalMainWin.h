@@ -24,11 +24,11 @@ class wxCommandEvent;
 class WxMainWindow;
 
 
-class WxInternalMainWin : public wxDocMDIParentFrame
+class WxInternalMainWin : public wxMDIParentFrame
 {
 public:
 
-  typedef wxDocMDIParentFrame BaseClass;
+  typedef wxMDIParentFrame BaseClass;
 
   WxInternalMainWin ( WxMainWindow *, const wxPoint &, const wxSize & );
   virtual ~WxInternalMainWin();

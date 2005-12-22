@@ -29,9 +29,13 @@ public:
 
   // Typedefs.
   typedef AFW::Core::MainWindow BaseClass;
+  typedef BaseClass::Itr Itr;
 
   // Detach from gui object.
   virtual void                        detach();
+
+  // Insert a window.
+  virtual bool                        insert ( Itr where, AFW::Core::Window * );
 
   // Get/set the menu bar.
   const WxMenuBar *                   menuBar() const;
@@ -59,6 +63,8 @@ private:
   // Do not copy.
   WxMainWindow ( const WxMainWindow & );
   WxMainWindow &operator = ( const WxMainWindow & );
+
+  wxInterfaceManager *_ifm;
 
   AFW_DECLARE_OBJECT ( WxMainWindow );
 };

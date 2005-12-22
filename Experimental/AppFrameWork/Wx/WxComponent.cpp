@@ -18,6 +18,7 @@
 #include "WxApplication.h"
 #include "WxMainWindow.h"
 #include "WxStatusBar.h"
+#include "WxTextWindow.h"
 #include "WxMenuBar.h"
 #include "WxMenuGroup.h"
 #include "WxMenuButton.h"
@@ -44,6 +45,7 @@ WxComponent::WxComponent() : BaseClass(),
     this->_registerFactory ( typeid ( AFW::Core::Application ), new WxApplication::NewWxApplication );
     this->_registerFactory ( typeid ( AFW::Core::MainWindow  ), new WxMainWindow::NewWxMainWindow   );
     this->_registerFactory ( typeid ( AFW::Core::StatusBar   ), new WxStatusBar::NewWxStatusBar     );
+    this->_registerFactory ( typeid ( AFW::Core::TextWindow  ), new WxTextWindow::NewWxTextWindow   );
     this->_registerFactory ( typeid ( AFW::Menus::MenuBar    ), new WxMenuBar::NewWxMenuBar         );
     this->_registerFactory ( typeid ( AFW::Menus::MenuGroup  ), new WxMenuGroup::NewWxMenuGroup     );
     this->_registerFactory ( typeid ( AFW::Menus::Button     ), new WxMenuButton::NewWxMenuButton   );

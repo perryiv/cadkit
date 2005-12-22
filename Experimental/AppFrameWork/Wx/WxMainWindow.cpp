@@ -97,23 +97,29 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WxMainWindow::WxMainWindow() : BaseClass()
+WxMainWindow::WxMainWindow() : BaseClass(),
+  _ifm ( 0x0 )
 {
   // Should be true.
   USUL_ASSERT ( 0x0 != wxTheApp );
 
   // Make the frame.
   WxRect rect ( Detail::initialRect ( this->persistentName() ) );
-  std::auto_ptr<WxInternalMainWin> frame ( new WxInternalMainWin ( this, rect.first, rect.second ) );
+  std::auto_ptr<WxInternalMainWin> mw ( new WxInternalMainWin ( this, rect.first, rect.second ) );
 
   // Add us to the map.
-  WxObjectMap::set ( this, frame.get() );
+  WxObjectMap::set ( this, mw.get() );
 
-  // Show it.
-  frame->Show ( true );
+  // Show it and keep it.
+  mw->Show ( true );
 
-  // Keep it.
-  frame.release();
+  // Create and initialize the interface management object.
+  _ifm = new wxInterfaceManager ( mw.get() );
+  _ifm->Initialize ( true );
+  _ifm->SetContentWindow ( mw->GetClientWindow() );
+
+  // Release.
+  mw.release();
 }
 
 
@@ -127,6 +133,9 @@ WxMainWindow::~WxMainWindow()
 {
   try
   {
+    // Delete the interface management object first.
+    delete _ifm; _ifm = 0x0;
+
     // Get our frame and delete it.
     std::auto_ptr<wxFrame> frame ( WxObjectMap::find<wxFrame> ( this ) );
 
@@ -290,6 +299,10 @@ void WxMainWindow::statusBar ( AFW::Core::StatusBar *sb )
   if ( this->statusBar() == sb )
     return;
 
+  // Tell the interface management object.
+  if ( _ifm )
+    _ifm->SetStatusMessagePane ( 0x0, IFM_DISABLE_STATUS_MESSAGES );
+
   // Call base class first.
   BaseClass::statusBar ( sb );
 
@@ -307,8 +320,67 @@ void WxMainWindow::statusBar ( AFW::Core::StatusBar *sb )
   USUL_ASSERT ( 0x0 == frame->GetStatusBar() );
 
   // Create our status bar.
-  wxStatusBar *status ( bar->create ( this ) );
+  bar->create ( this );
+  wxStatusBar *status ( bar->get() );
 
   // Should be true.
   USUL_ASSERT ( status == frame->GetStatusBar() );
+
+  // Tell the interface management object about the new status bar.
+  if ( _ifm )
+    _ifm->SetStatusMessagePane ( frame->GetStatusBar(), 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
+{
+  Guard guard ( this->mutex() );
+
+  // Call base class first.
+  if ( false == BaseClass::insert ( where, w ) )
+    return false;
+
+  // Ignore a few special cases.
+  if ( dynamic_cast < AFW::Core::StatusBar * > ( w ) ||
+       dynamic_cast < AFW::Menus::MenuBar *  > ( w ) )
+    return true; // Yes, true.
+
+  // Get the window.
+  wxWindow *window ( WxObjectMap::find<wxWindow> ( w ) );
+  if ( 0x0 == window )
+    return true; // Yes, true.
+
+  // Add the window to the interface manager.
+  wxIFMDefaultChildData data;
+  data.m_name = wxString ( w->title().c_str() );
+  data.m_type = IFM_CHILD_GENERIC;
+  data.m_desiredSize.Set ( 200, 150 );  // Do these do anything?
+  data.m_minSize.Set ( 80, 60 );        // What should this be?
+  data.m_child = window;
+  data.m_hideable = true;
+
+  // Possible dock sites.
+  typedef std::map < AFW::Core::DockSite::Type, int > Sites;
+  Sites sites;
+  sites[AFW::Core::DockSite::TOP]    = IFM_ORIENTATION_TOP;
+  sites[AFW::Core::DockSite::BOTTOM] = IFM_ORIENTATION_BOTTOM;
+  sites[AFW::Core::DockSite::LEFT]   = IFM_ORIENTATION_LEFT;
+  sites[AFW::Core::DockSite::RIGHT]  = IFM_ORIENTATION_RIGHT;
+  sites[AFW::Core::DockSite::NONE]   = IFM_ORIENTATION_FLOAT;
+
+  // Set dock site.
+  const AFW::Core::DockSite::Type site ( w->dockState().first );
+  data.m_orientation = sites[site];
+
+  // Add it.
+  _ifm->AddChild ( &data );
+
+  // It worked.
+  return true;
 }

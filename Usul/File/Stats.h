@@ -18,6 +18,7 @@
 
 #include "Usul/Types/Types.h"
 #include "Usul/MPL/StaticAssert.h"
+#include "Usul/Errors/Assert.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -87,16 +88,17 @@ template < class T = unsigned int > struct Stats
 
 protected:
 
-    template < class T2 > static T _convert ( bool result, T2 value )
+  template < class T2 > static T _convert ( bool result, T2 value )
   {
-#ifdef MSC_VER
-      USUL_STATIC_ASSERT ( sizeof ( T ) == sizeof ( T2 ) );
-#else
-      // Runtime check of integer overflow. Could throw here instead of assert.
-      USUL_ASSERT ( value <= ( static_cast < T2 > ( std::numeric_limits<T>::max() ) ) );
-#endif
-      return ( ( result && value > 0 ) ? static_cast < T > ( value ) : 0 );
+    #ifdef MSC_VER
+    USUL_STATIC_ASSERT ( sizeof ( T ) == sizeof ( T2 ) );
+    #else
+    // Runtime check of integer overflow. Could throw here instead of assert.
+    USUL_ASSERT ( value <= ( static_cast < T2 > ( std::numeric_limits<T>::max() ) ) );
+    #endif
+    return ( ( result && value > 0 ) ? static_cast < T > ( value ) : 0 );
   }
+
 public:
 
   //

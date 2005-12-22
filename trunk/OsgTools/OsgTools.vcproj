@@ -282,6 +282,12 @@
 					RelativePath=".\Index.h">
 				</File>
 				<File
+					RelativePath=".\Utilities\Intersect.cpp">
+				</File>
+				<File
+					RelativePath=".\Utilities\Intersect.h">
+				</File>
+				<File
 					RelativePath=".\Jitter.cpp">
 				</File>
 				<File
@@ -652,6 +658,50 @@
 				</File>
 				<File
 					RelativePath=".\Draggers\TranslateScreen.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Intersect"
+				Filter="">
+				<File
+					RelativePath=".\Intersect\Frustum.h">
+				</File>
+				<File
+					RelativePath=".\Intersect\FrustumFunctor.h">
+				</File>
+				<File
+					RelativePath=".\Intersect\FrustumVisitor.cpp">
+				</File>
+				<File
+					RelativePath=".\Intersect\FrustumVisitor.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Widgets"
+				Filter="">
+				<File
+					RelativePath=".\Widgets\Axes.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Widgets\Axes.h">
+				</File>
+				<File
+					RelativePath=".\Widgets\ClipPlane.cpp">
+				</File>
+				<File
+					RelativePath=".\Widgets\ClipPlane.h">
 				</File>
 			</Filter>
 		</Filter>

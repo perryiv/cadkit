@@ -74,11 +74,12 @@ void WxEventHandler::_##event_type##Handler ( event_type &event )\
 ///////////////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE ( WxEventHandler, WxEventHandler::BaseClass )
-  EVT_MENU_RANGE     ( wxID_ANY, wxID_ANY, MEMBER_FUNCTION ( wxCommandEvent ) )
-  EVT_WINDOW_CREATE  (                     MEMBER_FUNCTION ( wxWindowCreateEvent ) )
-  EVT_WINDOW_DESTROY (                     MEMBER_FUNCTION ( wxWindowDestroyEvent ) )
-  EVT_CLOSE          (                     MEMBER_FUNCTION ( wxCloseEvent ) )
-  EVT_MENU_CLOSE     (                     MEMBER_FUNCTION ( wxMenuEvent ) )
+  EVT_MENU_RANGE      ( wxID_ANY, wxID_ANY, MEMBER_FUNCTION ( wxCommandEvent ) )
+  EVT_WINDOW_CREATE   (                     MEMBER_FUNCTION ( wxWindowCreateEvent ) )
+  EVT_WINDOW_DESTROY  (                     MEMBER_FUNCTION ( wxWindowDestroyEvent ) )
+  EVT_UPDATE_UI_RANGE ( wxID_ANY, wxID_ANY, MEMBER_FUNCTION ( wxUpdateUIEvent ) )
+  EVT_CLOSE           (                     MEMBER_FUNCTION ( wxCloseEvent ) )
+  EVT_MENU_CLOSE      (                     MEMBER_FUNCTION ( wxMenuEvent ) )
 END_EVENT_TABLE()
 
 
@@ -130,6 +131,27 @@ IMPLEMENT_MEMBER_FUNCTION ( wxNavigationKeyEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxIdleEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxWindowCreateEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxMenuEvent );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a window is being updated.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxEventHandler::_wxUpdateUIEventHandler ( wxUpdateUIEvent &event )
+{
+  // Call the common function.
+  // this->_common ( event ); This prints all update events to the text windows!
+
+  // Call update actions.
+  AFW::Core::Window::RefPtr window ( WxObjectMap::find<AFW::Core::Window> ( event.GetEventObject() ) );
+  if ( window.valid() )
+    window->callUpdateActions();
+
+  // Not handled.
+  event.Skip();
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

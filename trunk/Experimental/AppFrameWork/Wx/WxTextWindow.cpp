@@ -103,11 +103,108 @@ bool WxTextWindow::create ( AFW::Core::Window *w )
     return false;
 
   // Make a text control.
-  std::auto_ptr<wxTextCtrl> text ( new wxTextCtrl ( window, wxID_ANY ) );
+  std::auto_ptr<wxTextCtrl> text ( new wxTextCtrl 
+    ( window, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE ) );
 
   // Set our status bar in the map.
   WxObjectMap::set ( this, text.release() );
 
   // It worked.
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::textSet ( const std::string &t )
+{
+  Guard guard ( this->mutex() );
+  BaseClass::textSet ( t );
+  this->_textSet ( t.c_str(), t.length() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::textSet ( const char *t, unsigned int length )
+{
+  Guard guard ( this->mutex() );
+  BaseClass::textSet ( t, length );
+  this->_textSet ( t, length );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::textAppend ( const std::string &t )
+{
+  Guard guard ( this->mutex() );
+  BaseClass::textAppend ( t );
+  this->_textAppend ( t.c_str(), t.length() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::textAppend ( const char *t, unsigned int length )
+{
+  Guard guard ( this->mutex() );
+  BaseClass::textAppend ( t );
+  this->_textAppend ( t, length );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append to the existing text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::_textAppend ( const char *text, unsigned int length )
+{
+  Guard guard ( this->mutex() );
+  if ( 0x0 != text && length > 0 )
+  {
+    wxTextCtrl *window ( WxObjectMap::find<wxTextCtrl> ( this ) );
+    if ( window )
+    {
+      window->AppendText ( wxString ( text, length ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxTextWindow::_textSet ( const char *text, unsigned int length )
+{
+  Guard guard ( this->mutex() );
+  if ( 0x0 != text && length > 0 )
+  {
+    wxTextCtrl *window ( WxObjectMap::find<wxTextCtrl> ( this ) );
+    if ( window )
+    {
+      window->SetValue ( wxString ( text, length ) );
+    }
+  }
 }

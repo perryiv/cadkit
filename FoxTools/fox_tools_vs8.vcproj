@@ -177,7 +177,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdll-1.4.lib"
+				AdditionalDependencies="foxdll-1.4.lib comdlg32.lib User32.lib shell32.lib"
 				OutputFile="$(USUL_LIB_DIR)/FoxTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

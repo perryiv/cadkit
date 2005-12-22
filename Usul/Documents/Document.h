@@ -177,8 +177,12 @@ public:
   virtual void                open ( const std::string &filename, Unknown *caller = 0x0 );
 
   /// Get the options
-  Options&                    options()       { return _options; }
-  const Options&              options() const { return _options; }
+  Options&                    options();
+  const Options&              options() const;
+
+  /// Get the options
+  Options&                    options( View* );
+  const Options&              options( View* ) const;
 
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 ) = 0;
@@ -248,8 +252,9 @@ private:
   std::string _typeName;
   Delegate::RefPtr _delegate;
 
-  // TODO may need a std::map < Usul::Interfaces::IViewer*, Options >
-  Options     _options;
+  //typedef std::map < Usul::Interfaces::IViewer*, Options > OptionMap;
+  //mutable OptionMap     _options;
+  Options _options;
 };
 
 

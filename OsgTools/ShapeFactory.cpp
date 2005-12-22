@@ -278,3 +278,119 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
 
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a cone.  This will not cache the results.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry * ShapeFactory::cone ( const osg::Vec3& center, 
+                                     float radius, 
+                                     float height, 
+                                     const osg::Quat& rotation, 
+                                     float tessellation )
+{
+  const unsigned int minNumSegments ( 5 );
+  const unsigned int minNumRows ( 5 );
+
+  unsigned int numSegments ( 40 );
+  unsigned int numRows     ( 10 );
+
+  if ( tessellation > 0.0f && tessellation != 1.0f) 
+  {
+    numRows = static_cast < unsigned int > ( numRows * tessellation );
+    if ( numRows < minNumRows )
+      numRows = minNumRows;
+    numSegments = static_cast < unsigned int > ( numSegments * tessellation );
+    if ( numSegments < minNumSegments )
+      numSegments = minNumSegments;
+  }
+
+  float normalz ( radius / ( sqrtf( radius * radius + height * height ) ) );
+  float normalRatio ( 1.0f / ( sqrtf( 1.0f + normalz * normalz ) ) );
+  normalz *= normalRatio;
+
+  float angleDelta = 2.0f*osg::PI/(float)numSegments;
+  float texCoordHorzDelta = 1.0/(float)numSegments;
+  float texCoordRowDelta = 1.0/(float)numRows;
+  float hDelta = height / (float)numRows;
+  float rDelta = radius / (float)numRows;
+
+  float topz= height + ( -0.25f * height );
+  float topr=0.0f;
+  float topv=1.0f;
+  float basez=topz-hDelta;
+  float baser=rDelta;
+  float basev=topv-texCoordRowDelta;
+  float angle;
+  float texCoord;
+
+  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr < osg::Vec3Array > normals  ( new osg::Vec3Array );
+
+  for(unsigned int rowi=0; rowi<numRows;
+    ++rowi,topz=basez, basez-=hDelta, topr=baser, baser+=rDelta, topv=basev, basev-=texCoordRowDelta) 
+  {
+    // we can't use a fan for the cone top
+    // since we need different normals at the top
+    // for each face..
+    //glBegin(GL_QUAD_STRIP);
+
+    angle = 0.0f;
+    texCoord = 0.0f;
+    for(unsigned int topi=0; topi<numSegments;
+        ++topi,angle+=angleDelta,texCoord+=texCoordHorzDelta) 
+    {
+      float c = cosf(angle);
+      float s = sinf(angle);
+
+      osg::Vec3 normal ( c*normalRatio, s*normalRatio, normalz );
+      normal = rotation * normal;
+      normal += center;
+      normals->push_back ( normal );
+      normals->push_back ( normal );
+
+      osg::Vec3 v1 ( c*topr, s*topr, topz );
+      v1 = rotation * v1;
+      v1 += center;
+
+      vertices->push_back ( v1 );
+
+      osg::Vec3 v2 ( c*baser, s*baser, basez );
+      v2 = rotation * v2;
+      v2 += center;
+
+      vertices->push_back ( v2 );
+    }
+
+    // do last point by hand to ensure no round off errors.
+    osg::Vec3 normal ( normalRatio, 0.0f, normalz );
+    normal = rotation * normal;
+    normal += center;
+    normals->push_back ( normal );
+    normals->push_back ( normal );
+
+    osg::Vec3 v1 ( topr, 0.0f, topz );
+    v1 = rotation * v1;
+    v1 += center;
+    vertices->push_back ( v1 );
+
+    osg::Vec3 v2 ( baser, 0.0f, basez );
+    v2 = rotation * v2;
+    v2 += center;
+    vertices->push_back ( v2 );
+
+    //glEnd();
+  }
+
+  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+  const unsigned int quadEnd ( vertices->size() );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::QUAD_STRIP, 0, quadEnd ) );
+
+  return geometry.release();
+}

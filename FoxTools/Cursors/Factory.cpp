@@ -52,7 +52,6 @@ FX::FXCursor *Factory::make ( Type type )
   {
     case Factory::CURSOR_ARROW:
       return new FX::FXCursor ( FoxTools::Functions::application(), FX::CURSOR_ARROW );
-
     case Factory::CURSOR_ROTATE:
       return new FX::FXCURCursor ( FoxTools::Functions::application(), FoxTools::Cursors::CUR::Rotate::source );
 
@@ -73,7 +72,6 @@ FX::FXCursor *Factory::make ( Type type )
 
     case Factory::CURSOR_GUN_SIGHT:
       return new FX::FXCURCursor ( FoxTools::Functions::application(), FoxTools::Cursors::CUR::_gunSightCursorArrayCUR );
-
     default:
       throw std::runtime_error ( "Error 2242661329: invalid cursor type" );
       break;

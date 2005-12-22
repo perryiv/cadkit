@@ -18,6 +18,7 @@
 #include "osg/Material"
 
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/ShapeFactory.h"
 
 using namespace OsgTools::Builders;
 
@@ -70,6 +71,7 @@ osg::Node* Arrow::operator() () const
   OsgTools::State::StateSet::setLighting( ss.get(), false );
   OsgTools::State::StateSet::setLineWidth ( ss.get(), this->thickness() );
 
+#if 1
   osg::ref_ptr < osg::Cone > cone ( new osg::Cone( ( rotate * x ) + start, _radius, _height ) );
   osg::Quat quat;
   quat.makeRotate ( osg::Vec3( 0.0, 0.0, 1.0 ), vector  );
@@ -86,7 +88,25 @@ osg::Node* Arrow::operator() () const
   OsgTools::State::StateSet::setLighting( sd->getOrCreateStateSet(), true );
 
   geode->addDrawable ( sd.get() );
+#else
+  {
+    // Testing out new cone function in ShapeFactory.
+    // Normals don't seem to be working yet.
+    osg::Quat quat;
+    quat.makeRotate ( osg::Vec3( 0.0, 0.0, 1.0 ), vector  );
 
+    osg::ref_ptr< OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+
+    osg::ref_ptr< osg::Geometry > geom ( sf->cone ( ( rotate * x ) + start, _radius, _height, quat, _tessellation ) );
+
+    osg::ref_ptr< osg::Material > mat ( new osg::Material );
+    mat->setDiffuse ( osg::Material::FRONT, color );
+    geom->getOrCreateStateSet()->setAttribute ( mat.get(), osg::StateAttribute::ON );
+    OsgTools::State::StateSet::setLighting( geom->getOrCreateStateSet(), true );
+
+    geode->addDrawable ( geom.get() );
+  }
+#endif
   //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
 
   //vector.normalize();

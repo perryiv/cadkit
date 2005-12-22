@@ -39,6 +39,12 @@ public:
   const wxTextCtrl *                  get() const;
   wxTextCtrl *                        get();
 
+  // Set/get/append the text.
+  virtual void                        textAppend ( const std::string &t );
+  virtual void                        textAppend ( const char *t, unsigned int length );
+  virtual void                        textSet ( const std::string &t );
+  virtual void                        textSet ( const char *t, unsigned int length );
+
 protected:
 
   // Default construction.
@@ -46,6 +52,9 @@ protected:
 
   // Use reference counting.
   virtual ~WxTextWindow();
+
+  void                                _textAppend ( const char *text, unsigned int length );
+  void                                _textSet    ( const char *text, unsigned int length );
 
 private:
 

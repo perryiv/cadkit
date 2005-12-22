@@ -38,6 +38,30 @@ typedef std::pair < wxPoint, wxSize > WxRect;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Possible dock sites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  typedef std::map < AFW::Core::DockSite::Type, int > Sites;
+  Sites sites;
+  struct InitDockSites
+  {
+    InitDockSites()
+    {
+      sites[AFW::Core::DockSite::TOP]    = IFM_ORIENTATION_TOP;
+      sites[AFW::Core::DockSite::BOTTOM] = IFM_ORIENTATION_BOTTOM;
+      sites[AFW::Core::DockSite::LEFT]   = IFM_ORIENTATION_LEFT;
+      sites[AFW::Core::DockSite::RIGHT]  = IFM_ORIENTATION_RIGHT;
+      sites[AFW::Core::DockSite::NONE]   = IFM_ORIENTATION_FLOAT;
+    }
+  } _initDockSites;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Initial rectangle.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +208,8 @@ void WxMainWindow::writeConfig()
   config->Write ( AFW::Registry::Keys::Y.c_str(),      origin.y );
   config->Write ( AFW::Registry::Keys::WIDTH.c_str(),  size.x   );
   config->Write ( AFW::Registry::Keys::HEIGHT.c_str(), size.y   );
+
+  //_ifm->GetCapturedWindow
 }
 
 
@@ -365,18 +391,9 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
   data.m_child = window;
   data.m_hideable = true;
 
-  // Possible dock sites.
-  typedef std::map < AFW::Core::DockSite::Type, int > Sites;
-  Sites sites;
-  sites[AFW::Core::DockSite::TOP]    = IFM_ORIENTATION_TOP;
-  sites[AFW::Core::DockSite::BOTTOM] = IFM_ORIENTATION_BOTTOM;
-  sites[AFW::Core::DockSite::LEFT]   = IFM_ORIENTATION_LEFT;
-  sites[AFW::Core::DockSite::RIGHT]  = IFM_ORIENTATION_RIGHT;
-  sites[AFW::Core::DockSite::NONE]   = IFM_ORIENTATION_FLOAT;
-
   // Set dock site.
   const AFW::Core::DockSite::Type site ( w->dockState().first );
-  data.m_orientation = sites[site];
+  data.m_orientation = Detail::sites[site];
 
   // Add it.
   _ifm->AddChild ( &data );

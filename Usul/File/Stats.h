@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string>
+#include <limits>
 
 #ifdef _WIN32
 # define STAT_STRUCT_64   struct __stat64

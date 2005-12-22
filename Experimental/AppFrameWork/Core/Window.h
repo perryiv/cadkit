@@ -190,15 +190,6 @@ template < class T > inline void Window::textAppend ( T value )
   std::ostringstream s;
   s << value;
   this->textAppend ( s.str() );
-  return *this;
-}
-
-
-// Output operator to add text.
-template < class T > inline Window &operator << ( Window &window, T value )
-{
-  window.textAppend ( value );
-  return window;
 }
 
 

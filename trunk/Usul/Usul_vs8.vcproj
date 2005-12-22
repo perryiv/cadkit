@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib"
+				AdditionalDependencies="opengl32.lib User32.lib"
 				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -270,6 +270,14 @@
 			<Filter
 				Name="Base"
 				>
+				<File
+					RelativePath=".\Base\InstanceManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Base\InstanceManager.h"
+					>
+				</File>
 				<File
 					RelativePath="Base\Referenced.cpp"
 					>

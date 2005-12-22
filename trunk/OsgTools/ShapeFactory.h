@@ -33,25 +33,32 @@ public:
   // Constructor.
   ShapeFactory();
 
-  // Create a sphere meshed in the latitude-longitude way. If one was 
-  // already created with these inputs, then that same sphere is returned.
+  /// Create a sphere meshed in the latitude-longitude way. If one was 
+  /// already created with these inputs, then that same sphere is returned.
   osg::Geometry *         sphere ( float radius = 1.0f, 
                                    const MeshSize &size = MeshSize ( 20, 20 ),
                                    const LatitudeRange &latRange   = LatitudeRange  ( 89.9f, -89.9f ),
                                    const LongitudeRange &longRange = LongitudeRange (  0.0f, 360.0f ) );
 
-  // Create a cube. If one was already created with these inputs, then that 
-  // same sphere is returned.
+  /// Create a cone.  This will not cache the results.
+  osg::Geometry *         cone ( const osg::Vec3& center, 
+                                 float radius, 
+                                 float height, 
+                                 const osg::Quat& rotation = osg::Quat ( 0.0f, 0.0f, 0.0f, 1.0f ), 
+                                 float tessellation = 1.0f );
+
+  /// Create a cube. If one was already created with these inputs, then that 
+  /// same sphere is returned.
   osg::Geometry *         cube ( const osg::Vec3 &size = osg::Vec3 ( 1.0f, 1.0f, 1.0f ) );
 
-  // Create a cylinder. If one was already created with these inputs, then that 
-  // same cylinder is returned.
+  /// Create a cylinder. If one was already created with these inputs, then that 
+  /// same cylinder is returned.
   osg::Geometry *         cylinder ( float radius, 
                                      unsigned int sides, 
                                      const osg::Vec3& pointOne = osg::Vec3( 0.0, 0.0, 0.0 ),
                                      const osg::Vec3& pointTwo = osg::Vec3( 0.0, 1.0, 0.0 ) );
 
-  // Clear the internal maps.
+  /// Clear the internal maps.
   void                    clear();
 
 protected:

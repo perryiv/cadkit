@@ -28,6 +28,7 @@
 #include <limits>
 #include <vector>
 #include <stdexcept>
+#include <functional>
 
 
 namespace Usul {

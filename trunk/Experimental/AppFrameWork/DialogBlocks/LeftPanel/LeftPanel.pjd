@@ -91,7 +91,7 @@
         <long name="is-transient">0</long>
         <long name="owns-file">1</long>
         <long name="title-mode">0</long>
-        <long name="parent">15428184</long>
+        <long name="parent">15193320</long>
         <long name="locked">0</long>
         <string name="template-name">""</string>
         <bool name="dirty">1</bool>
@@ -158,7 +158,7 @@
         <long name="is-transient">1</long>
         <long name="owns-file">1</long>
         <long name="title-mode">0</long>
-        <long name="parent">15191504</long>
+        <long name="parent">15492528</long>
         <long name="locked">1</long>
         <document>
           <string name="title">"LeftPanel"</string>
@@ -168,7 +168,7 @@
           <long name="is-transient">0</long>
           <long name="owns-file">1</long>
           <long name="title-mode">0</long>
-          <long name="parent">15429504</long>
+          <long name="parent">15497200</long>
           <long name="locked">0</long>
           <string name="created">"16/11/2005"</string>
           <string name="proxy-type">"wbDialogProxy"</string>
@@ -235,7 +235,7 @@
             <long name="is-transient">0</long>
             <long name="owns-file">1</long>
             <long name="title-mode">0</long>
-            <long name="parent">15202960</long>
+            <long name="parent">15483632</long>
             <long name="locked">0</long>
             <string name="proxy-type">"wbBoxSizerProxy"</string>
             <string name="proxy-Orientation">"Vertical"</string>
@@ -252,7 +252,7 @@
               <long name="is-transient">0</long>
               <long name="owns-file">1</long>
               <long name="title-mode">0</long>
-              <long name="parent">30051032</long>
+              <long name="parent">15467896</long>
               <long name="locked">0</long>
               <string name="created">"17/11/2005"</string>
               <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -278,7 +278,7 @@
                 <long name="is-transient">0</long>
                 <long name="owns-file">1</long>
                 <long name="title-mode">0</long>
-                <long name="parent">30058592</long>
+                <long name="parent">15453048</long>
                 <long name="locked">0</long>
                 <string name="created">"17/11/2005"</string>
                 <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -335,7 +335,7 @@
                 <long name="is-transient">0</long>
                 <long name="owns-file">1</long>
                 <long name="title-mode">0</long>
-                <long name="parent">30058592</long>
+                <long name="parent">15453048</long>
                 <long name="locked">0</long>
                 <string name="created">"17/11/2005"</string>
                 <string name="proxy-type">"wbTextCtrlProxy"</string>
@@ -404,7 +404,7 @@
                 <long name="is-transient">0</long>
                 <long name="owns-file">1</long>
                 <long name="title-mode">0</long>
-                <long name="parent">30058592</long>
+                <long name="parent">15453048</long>
                 <long name="locked">0</long>
                 <string name="created">"17/11/2005"</string>
                 <string name="proxy-type">"wbButtonProxy"</string>
@@ -457,7 +457,7 @@
               <long name="is-transient">0</long>
               <long name="owns-file">1</long>
               <long name="title-mode">0</long>
-              <long name="parent">30051032</long>
+              <long name="parent">15467896</long>
               <long name="locked">0</long>
               <string name="created">"17/11/2005"</string>
               <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -483,7 +483,7 @@
                 <long name="is-transient">0</long>
                 <long name="owns-file">1</long>
                 <long name="title-mode">0</long>
-                <long name="parent">30058208</long>
+                <long name="parent">15657632</long>
                 <long name="locked">0</long>
                 <string name="created">"17/11/2005"</string>
                 <string name="proxy-type">"wbNotebookProxy"</string>
@@ -545,7 +545,7 @@
                   <long name="is-transient">0</long>
                   <long name="owns-file">1</long>
                   <long name="title-mode">0</long>
-                  <long name="parent">30299960</long>
+                  <long name="parent">15722608</long>
                   <long name="locked">0</long>
                   <string name="created">"17/11/2005"</string>
                   <string name="proxy-type">"wbPanelProxy"</string>
@@ -606,7 +606,7 @@
                     <long name="is-transient">0</long>
                     <long name="owns-file">1</long>
                     <long name="title-mode">0</long>
-                    <long name="parent">30322256</long>
+                    <long name="parent">30039480</long>
                     <long name="locked">0</long>
                     <string name="created">"17/11/2005"</string>
                     <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -632,7 +632,7 @@
                       <long name="is-transient">0</long>
                       <long name="owns-file">1</long>
                       <long name="title-mode">0</long>
-                      <long name="parent">30341776</long>
+                      <long name="parent">30058536</long>
                       <long name="locked">0</long>
                       <string name="created">"17/11/2005"</string>
                       <string name="proxy-type">"wbStaticBoxSizerProxy"</string>
@@ -666,7 +666,7 @@
                         <long name="is-transient">0</long>
                         <long name="owns-file">1</long>
                         <long name="title-mode">0</long>
-                        <long name="parent">30350520</long>
+                        <long name="parent">30067280</long>
                         <long name="locked">0</long>
                         <string name="created">"17/11/2005"</string>
                         <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -692,7 +692,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30361272</long>
+                          <long name="parent">30078024</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -749,7 +749,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30361272</long>
+                          <long name="parent">30078024</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -806,7 +806,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30361272</long>
+                          <long name="parent">30078024</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -864,7 +864,7 @@
                         <long name="is-transient">0</long>
                         <long name="owns-file">1</long>
                         <long name="title-mode">0</long>
-                        <long name="parent">30350520</long>
+                        <long name="parent">30067280</long>
                         <long name="locked">0</long>
                         <string name="created">"17/11/2005"</string>
                         <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -890,7 +890,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30360712</long>
+                          <long name="parent">30077464</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbTextCtrlProxy"</string>
@@ -959,7 +959,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30360712</long>
+                          <long name="parent">30077464</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbTextCtrlProxy"</string>
@@ -1028,7 +1028,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30360712</long>
+                          <long name="parent">30077464</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbComboBoxProxy"</string>
@@ -1082,7 +1082,7 @@
                       <long name="is-transient">0</long>
                       <long name="owns-file">1</long>
                       <long name="title-mode">0</long>
-                      <long name="parent">30341776</long>
+                      <long name="parent">30058536</long>
                       <long name="locked">0</long>
                       <string name="created">"17/11/2005"</string>
                       <string name="proxy-type">"wbStaticBoxSizerProxy"</string>
@@ -1116,7 +1116,7 @@
                         <long name="is-transient">0</long>
                         <long name="owns-file">1</long>
                         <long name="title-mode">0</long>
-                        <long name="parent">15544480</long>
+                        <long name="parent">30066896</long>
                         <long name="locked">0</long>
                         <string name="created">"17/11/2005"</string>
                         <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -1142,7 +1142,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30850200</long>
+                          <long name="parent">30258624</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -1199,7 +1199,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30850200</long>
+                          <long name="parent">30258624</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbStaticTextProxy"</string>
@@ -1257,7 +1257,7 @@
                         <long name="is-transient">0</long>
                         <long name="owns-file">1</long>
                         <long name="title-mode">0</long>
-                        <long name="parent">15544480</long>
+                        <long name="parent">30066896</long>
                         <long name="locked">0</long>
                         <string name="created">"17/11/2005"</string>
                         <string name="proxy-type">"wbBoxSizerProxy"</string>
@@ -1283,7 +1283,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30820176</long>
+                          <long name="parent">30301992</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbTextCtrlProxy"</string>
@@ -1352,7 +1352,7 @@
                           <long name="is-transient">0</long>
                           <long name="owns-file">1</long>
                           <long name="title-mode">0</long>
-                          <long name="parent">30820176</long>
+                          <long name="parent">30301992</long>
                           <long name="locked">0</long>
                           <string name="created">"17/11/2005"</string>
                           <string name="proxy-type">"wbTextCtrlProxy"</string>
@@ -1430,7 +1430,7 @@
         <long name="is-transient">1</long>
         <long name="owns-file">1</long>
         <long name="title-mode">0</long>
-        <long name="parent">15191504</long>
+        <long name="parent">15492528</long>
         <long name="locked">1</long>
         <document>
           <string name="title">"LeftPanel.rc"</string>
@@ -1440,7 +1440,7 @@
           <long name="is-transient">0</long>
           <long name="owns-file">0</long>
           <long name="title-mode">1</long>
-          <long name="parent">30073040</long>
+          <long name="parent">30087568</long>
           <long name="locked">0</long>
           <string name="created">"16/11/2005"</string>
           <string name="language">""</string>
@@ -1454,7 +1454,7 @@
         <long name="is-transient">1</long>
         <long name="owns-file">1</long>
         <long name="title-mode">0</long>
-        <long name="parent">15191504</long>
+        <long name="parent">15492528</long>
         <long name="locked">1</long>
       </document>
     </document>

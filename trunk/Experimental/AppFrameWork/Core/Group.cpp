@@ -94,6 +94,10 @@ bool Group::insert ( Itr where, Window *w )
   if ( _windows.end() != this->find ( w ) )
     return false;
 
+  // Try to create the window.
+  if ( false == w->create ( this ) )
+    return false;
+
   // Insert it into our list.
   _windows.insert ( where, w );
 

@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../../;$(USUL_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/mswd;$(WX_INC_DIR)/../contrib/include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="./;../../;$(USUL_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/mswd;$(BOOST_ROOT_DIR);$(WX_IFM_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;WXUSINGDLL;_WINDOWS;_USRDLL;_COMPILING_WX_GUI"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -95,7 +95,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="./;../../;$(USUL_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/mswd;$(WX_INC_DIR)/../contrib/include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="./;../../;$(USUL_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/msw;$(BOOST_ROOT_DIR);$(WX_IFM_INC_DIR)"
 				PreprocessorDefinitions="WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_USRDLL;NDEBUG;_COMPILING_WX_GUI"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -117,7 +117,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wxmsw26_fl.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
+				AdditionalDependencies="wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
 				OutputFile="$(USUL_LIB_DIR)/WxGui.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -237,6 +237,12 @@
 				</File>
 				<File
 					RelativePath=".\WxStatusBar.h">
+				</File>
+				<File
+					RelativePath=".\WxTextWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\WxTextWindow.h">
 				</File>
 			</Filter>
 			<Filter

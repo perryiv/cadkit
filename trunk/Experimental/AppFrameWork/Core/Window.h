@@ -76,6 +76,9 @@ public:
   void                                callCommandActions ( bool immediate = true );
   void                                callUpdateActions  ( bool immediate = true );
 
+  // Called automatically when this window is added to another.
+  virtual bool                        create ( Window * );
+
   // Iterators to the command-actions.
   CommandActionsConstItr              commandsBegin() const;
   CommandActionsItr                   commandsBegin();

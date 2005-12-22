@@ -9,53 +9,52 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The wxWindows status bar class.
+//  The wxWindows text window class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WX_GUI_STATUS_BAR_CLASS_H_
-#define _WX_GUI_STATUS_BAR_CLASS_H_
+#ifndef _WX_GUI_TEXT_WINDOW_CLASS_H_
+#define _WX_GUI_TEXT_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/StatusBar.h"
+#include "AppFrameWork/Core/TextWindow.h"
 
-class WxMainWindow;
-class wxStatusBar;
+class wxTextCtrl;
 
 
-class WxStatusBar : public AFW::Core::StatusBar
+class WxTextWindow : public AFW::Core::TextWindow
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::StatusBar BaseClass;
+  typedef AFW::Core::TextWindow BaseClass;
 
-  // Create the internal status bar.
+  // Create the internal text window.
   virtual bool                        create ( AFW::Core::Window * );
 
   // Detach from gui object.
   virtual void                        detach();
 
   // Get the status bar.
-  const wxStatusBar *                 get() const;
-  wxStatusBar *                       get();
+  const wxTextCtrl *                  get() const;
+  wxTextCtrl *                        get();
 
 protected:
 
   // Default construction.
-  WxStatusBar();
+  WxTextWindow();
 
   // Use reference counting.
-  virtual ~WxStatusBar();
+  virtual ~WxTextWindow();
 
 private:
 
   // Do not copy.
-  WxStatusBar ( const WxStatusBar & );
-  WxStatusBar &operator = ( const WxStatusBar & );
+  WxTextWindow ( const WxTextWindow & );
+  WxTextWindow &operator = ( const WxTextWindow & );
 
-  AFW_DECLARE_OBJECT ( WxStatusBar );
+  AFW_DECLARE_OBJECT ( WxTextWindow );
 };
 
 
-#endif // _WX_GUI_STATUS_BAR_CLASS_H_
+#endif // _WX_GUI_TEXT_WINDOW_CLASS_H_

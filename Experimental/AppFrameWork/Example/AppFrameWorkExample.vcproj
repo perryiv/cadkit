@@ -155,25 +155,16 @@
 				RelativePath="..\..\..\bin\AppFrameWorkExampled.plugs">
 			</File>
 			<File
-				RelativePath="main.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
+				RelativePath=".\main.cpp">
 			</File>
 			<File
 				RelativePath=".\plugins.xml">
+			</File>
+			<File
+				RelativePath="..\Icons\resource.h">
+			</File>
+			<File
+				RelativePath=".\resource.rc">
 			</File>
 		</Filter>
 	</Files>

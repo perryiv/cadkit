@@ -101,7 +101,7 @@ void WxInternalMainWin::_onClose ( wxCloseEvent &event )
   if ( mw.valid() )
   {
     // Write the configuration.
-    mw->writeConfig();
+    mw->configWrite();
 
     // Delete the menu bar.
     mw->menuBar ( 0x0 );

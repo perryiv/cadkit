@@ -41,6 +41,7 @@
 # include "wx/menu.h"
 # include "wx/splitter.h"
 # include "wx/colordlg.h"
+# include "wx/splash.h"
 # include "wx/generic/colrdlgg.h"
 # include "wx/ifm/ifm.h"
 

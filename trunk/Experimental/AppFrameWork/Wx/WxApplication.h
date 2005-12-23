@@ -50,6 +50,8 @@ protected:
   // Use reference counting.
   virtual ~WxApplication();
 
+  void                                _splashScreen();
+
 private:
 
   // Do not copy.

@@ -31,6 +31,9 @@ public:
   typedef AFW::Core::MainWindow BaseClass;
   typedef BaseClass::Itr Itr;
 
+  // Write configuration to disk.
+  virtual void                        configWrite();
+
   // Detach from gui object.
   virtual void                        detach();
 
@@ -46,9 +49,6 @@ public:
   const WxStatusBar *                 statusBar() const;
   WxStatusBar *                       statusBar();
   virtual void                        statusBar ( AFW::Core::StatusBar * );
-
-  // Write configuration to disk.
-  void                                writeConfig();
 
 protected:
 

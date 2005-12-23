@@ -18,6 +18,8 @@
 #include "WxInternalApp.h"
 #include "WxInit.h"
 #include "WxObjectMap.h"
+#include "WxBitmap.h"
+
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Define.h"
 
@@ -44,6 +46,9 @@ WxApplication::WxApplication() : BaseClass(),
 
   // Initialize wxWindows.
   WxInit::init();
+
+  // Show splash screen.
+  this->_splashScreen();
 }
 
 
@@ -169,4 +174,31 @@ void WxApplication::quit()
 {
   if ( wxTheApp && wxTheApp->GetTopWindow() )
     wxTheApp->GetTopWindow()->Close ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the splash screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxApplication::_splashScreen()
+{
+  // Get file.
+  const AFW::Core::Icon splash ( this->splashScreen() );
+  const std::string file ( splash.file() );
+  if ( file.empty() )
+    return;
+
+  // Make bitmap.
+  wxBitmap bitmap ( WxBitmap::load ( file, false ) );
+  if ( false == bitmap.Ok() )
+    return;
+
+  // Make window and show it.
+  const long splashStyle ( wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT );
+  const int milliseconds ( 3000 );
+  new wxSplashScreen ( bitmap, splashStyle, milliseconds, 0x0, wxID_ANY );
+  wxYield();
 }

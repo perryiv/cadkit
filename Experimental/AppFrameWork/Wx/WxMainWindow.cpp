@@ -30,15 +30,6 @@ AFW_IMPLEMENT_OBJECT ( WxMainWindow );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Local typedefs.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-typedef std::pair < wxPoint, wxSize > WxRect;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Possible dock sites.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,61 +54,6 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initial rectangle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  WxRect initialRect ( const std::string &name )
-  {
-    // Get dimensions of screen.
-    const long sw ( static_cast < long > ( Usul::System::Screen::width() ) );
-    const long sh ( static_cast < long > ( Usul::System::Screen::height() ) );
-
-    // Default sizes. (They are correct!)
-    long x ( 0.1 * sw );
-    long y ( 0.1 * sh );
-    long w ( 0.8 * sw );
-    long h ( 0.8 * sh );
-
-    // Save default.
-    WxRect defaultRect ( wxPoint ( x, y ), wxSize ( w, h ) );
-
-    // If the section name is empty then return default.
-    if ( name.empty() )
-      return defaultRect;
-
-    // Make configuration.
-    std::auto_ptr<wxConfig> config ( new wxConfig ( name.c_str() ) );
-
-    // Get dimensions of main window.
-    if ( config.get() )
-    {
-      config->Read ( AFW::Registry::Keys::X.c_str(),      &x );
-      config->Read ( AFW::Registry::Keys::Y.c_str(),      &y );
-      config->Read ( AFW::Registry::Keys::WIDTH.c_str(),  &w );
-      config->Read ( AFW::Registry::Keys::HEIGHT.c_str(), &h );
-    }
-
-    // Make sure it fits.
-    const bool xFits ( ( x > 0  ) && ( x < ( sw - w ) ) );
-    const bool yFits ( ( y > 10 ) && ( y < ( sh - h ) ) );
-    const bool wFits ( w < sw );
-    const bool hFits ( h < sh );
-    const bool fits ( xFits && yFits && wFits && hFits );
-
-    // Return proper rectangle.
-    if ( fits )
-      return WxRect ( wxPoint ( x, y ), wxSize ( w, h ) );
-    else
-      return defaultRect;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,15 +64,26 @@ WxMainWindow::WxMainWindow() : BaseClass(),
   // Should be true.
   USUL_ASSERT ( 0x0 != wxTheApp );
 
+  // Get initial configuration.
+  wxPoint origin ( 10, 10 );
+  wxSize size ( 400, 300 );
+  bool maximized ( false );
+  this->_configRead ( origin, size, maximized );
+
   // Make the frame.
-  WxRect rect ( Detail::initialRect ( this->persistentName() ) );
-  std::auto_ptr<WxInternalMainWin> mw ( new WxInternalMainWin ( this, rect.first, rect.second ) );
+  std::auto_ptr<WxInternalMainWin> mw ( new WxInternalMainWin ( this, origin, size ) );
 
   // Add us to the map.
   WxObjectMap::set ( this, mw.get() );
 
   // Show it and keep it.
   mw->Show ( true );
+
+  // Call this after we show. See wxTopLevelWindowMSW::Maximize()'s 
+  // implementation to read about why. Also, this order does not mess up the 
+  // "restore" rectangle passed to WxInternalMainWin's constructor.
+  if ( maximized )
+    mw->Maximize ( true );
 
   // Create and initialize the interface management object.
   _ifm = new wxInterfaceManager ( mw.get() );
@@ -184,7 +131,7 @@ WxMainWindow::~WxMainWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxMainWindow::configWrite()
+void WxMainWindow::configWrite() const
 {
   Guard guard ( this->mutex() );
 
@@ -200,18 +147,90 @@ void WxMainWindow::configWrite()
   if ( 0x0 == config.get() )
     return;
 
-  // Get the origin and size.
-  wxPoint origin ( frame->GetPosition() );
-  wxSize size    ( frame->GetSize() );
+  // Is it maximized?
+  config->Write ( AFW::Registry::Keys::MAXIMIZED.c_str(), frame->IsMaximized() );
 
-  // Write the window rectangle.
-  config->Write ( AFW::Registry::Keys::X.c_str(),      origin.x );
-  config->Write ( AFW::Registry::Keys::Y.c_str(),      origin.y );
-  config->Write ( AFW::Registry::Keys::WIDTH.c_str(),  size.x   );
-  config->Write ( AFW::Registry::Keys::HEIGHT.c_str(), size.y   );
+  // If we are not maximized, then write the dimensions.
+  if ( false == frame->IsMaximized() )
+  {
+    // Get the origin and size.
+    wxPoint origin ( frame->GetPosition() );
+    wxSize size    ( frame->GetSize() );
+
+    // Write the window rectangle.
+    config->Write ( AFW::Registry::Keys::X.c_str(),      origin.x );
+    config->Write ( AFW::Registry::Keys::Y.c_str(),      origin.y );
+    config->Write ( AFW::Registry::Keys::WIDTH.c_str(),  size.x   );
+    config->Write ( AFW::Registry::Keys::HEIGHT.c_str(), size.y   );
+  }
 
   // Call base class's function.
   BaseClass::configWrite();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initial rectangle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMainWindow::_configRead ( wxPoint &origin, wxSize &size, bool &maximized )
+{
+  // Set this now.
+  maximized = false;
+
+  // Get dimensions of screen.
+  const long sw ( static_cast < long > ( Usul::System::Screen::width() ) );
+  const long sh ( static_cast < long > ( Usul::System::Screen::height() ) );
+
+  // Default sizes. (They are correct!)
+  long x ( 0.1 * sw );
+  long y ( 0.1 * sh );
+  long w ( 0.8 * sw );
+  long h ( 0.8 * sh );
+
+  // Save default.
+  origin = wxPoint ( x, y );
+  size   = wxSize  ( w, h );
+
+  // If the section name is empty then return default.
+  if ( this->persistentName().empty() )
+    return;
+
+  // Make configuration.
+  std::auto_ptr<wxConfig> config ( new wxConfig ( this->persistentName().c_str() ) );
+
+  // Get dimensions of main window.
+  if ( config.get() )
+  {
+    config->Read ( AFW::Registry::Keys::X.c_str(),      &x );
+    config->Read ( AFW::Registry::Keys::Y.c_str(),      &y );
+    config->Read ( AFW::Registry::Keys::WIDTH.c_str(),  &w );
+    config->Read ( AFW::Registry::Keys::HEIGHT.c_str(), &h );
+  }
+
+  // Make sure it fits.
+  const bool xFits ( ( x > 0  ) && ( x < ( sw - w ) ) );
+  const bool yFits ( ( y > 10 ) && ( y < ( sh - h ) ) );
+  const bool wFits ( w < sw );
+  const bool hFits ( h < sh );
+  const bool fits ( xFits && yFits && wFits && hFits );
+
+  // Set origin and size if it fits.
+  if ( fits )
+  {
+    origin = wxPoint ( x, y );
+    size   = wxSize  ( w, h );
+  }
+
+  // If it maximized?
+  if ( config.get() )
+  {
+    bool value ( false );
+    if ( config->Read ( AFW::Registry::Keys::MAXIMIZED.c_str(), &value ) )
+      maximized = value;
+  }
 }
 
 

@@ -48,7 +48,7 @@ WxApplication::WxApplication() : BaseClass(),
   WxInit::init();
 
   // Show splash screen.
-  this->_splashScreen();
+  //this->_splashScreen();
 }
 
 

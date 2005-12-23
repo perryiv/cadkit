@@ -105,6 +105,8 @@ void MainWindow::init()
       text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
       text->persistentName ( "standard_output_window" );
       text->append ( always.get(), new AFW::Actions::SetTextFromStdout );
+      text->title ( "Messages" );
+      text->icon ( Icon ( "afw_text_output" ) );
       this->append ( text.get() );
     }
   }

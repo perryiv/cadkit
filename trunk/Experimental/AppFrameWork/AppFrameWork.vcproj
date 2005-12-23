@@ -224,6 +224,12 @@
 					RelativePath=".\Core\LifeCycle.h">
 				</File>
 				<File
+					RelativePath=".\Core\LogWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\LogWindow.h">
+				</File>
+				<File
 					RelativePath=".\Core\MainWindow.cpp">
 				</File>
 				<File

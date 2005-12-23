@@ -147,7 +147,7 @@ bool WxStatusBar::create ( AFW::Core::Window *mw )
   // Ask frame to create the status bar.
   frame->CreateStatusBar();
 
-  // Set our status bar in the map.
+  // Set our window in the map.
   WxObjectMap::set ( this, frame->GetStatusBar() );
 
   // It worked.

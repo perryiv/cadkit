@@ -9,35 +9,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The wxWindows text window class.
+//  The wxWindows log window class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WX_GUI_TEXT_WINDOW_CLASS_H_
-#define _WX_GUI_TEXT_WINDOW_CLASS_H_
+#ifndef _WX_GUI_LOG_WINDOW_CLASS_H_
+#define _WX_GUI_LOG_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Core/LogWindow.h"
 
 class wxTextCtrl;
 
 
-class WxTextWindow : public AFW::Core::TextWindow
+class WxLogWindow : public AFW::Core::LogWindow
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::TextWindow BaseClass;
+  typedef AFW::Core::LogWindow BaseClass;
 
-  // Create the internal text window.
+  // Create the internal window.
   virtual bool                        create ( AFW::Core::Window * );
 
   // Detach from gui object.
   virtual void                        detach();
 
-  // Get the text control.
-  const wxTextCtrl *                  get() const;
-  wxTextCtrl *                        get();
+  // Get the log window.
+  const wxPanel *                     get() const;
+  wxPanel *                           get();
 
   // Set/get/append the text.
   virtual void                        textAppend ( const std::string &t );
@@ -48,10 +48,10 @@ public:
 protected:
 
   // Default construction.
-  WxTextWindow();
+  WxLogWindow();
 
   // Use reference counting.
-  virtual ~WxTextWindow();
+  virtual ~WxLogWindow();
 
   void                                _textAppend ( const char *text, unsigned int length );
   void                                _textSet    ( const char *text, unsigned int length );
@@ -59,11 +59,11 @@ protected:
 private:
 
   // Do not copy.
-  WxTextWindow ( const WxTextWindow & );
-  WxTextWindow &operator = ( const WxTextWindow & );
+  WxLogWindow ( const WxLogWindow & );
+  WxLogWindow &operator = ( const WxLogWindow & );
 
-  AFW_DECLARE_OBJECT ( WxTextWindow );
+  AFW_DECLARE_OBJECT ( WxLogWindow );
 };
 
 
-#endif // _WX_GUI_TEXT_WINDOW_CLASS_H_
+#endif // _WX_GUI_LOG_WINDOW_CLASS_H_

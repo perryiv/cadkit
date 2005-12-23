@@ -28,25 +28,25 @@ template < class Check1_, class Check2_ > struct CompositePolicy
     Check1_ ( filename, line, state );
     Check2_ ( filename, line, state );
   }
-  CompositePolicy ( unsigned int id, bool state )
+  CompositePolicy ( unsigned int num, bool state )
   {
-    Check1_ ( id, state );
-    Check2_ ( id, state );
+    Check1_ ( num, state );
+    Check2_ ( num, state );
   }
-  template < class Arg_ > CompositePolicy ( unsigned int id, bool state, const Arg_ &arg )
+  template < class Arg_ > CompositePolicy ( unsigned int num, bool state, const Arg_ &arg )
   {
-    Check1_ ( id, state, arg );
-    Check2_ ( id, state, arg );
+    Check1_ ( num, state, arg );
+    Check2_ ( num, state, arg );
   }
   template < class Arg_ > CompositePolicy ( const char *filename, unsigned int line, bool state, const Arg_ &arg )
   {
     Check1_ ( filename, line, state, arg );
     Check2_ ( filename, line, state, arg );
   }
-  template < class Int_ > static void bounds ( unsigned int id, Int_ size, Int_ index )
+  template < class Int_ > static vonum bounds ( unsigned int num, Int_ size, Int_ index )
   {
-    Check1_::bounds ( id, size, index );
-    Check2_::bounds ( id, size, index );
+    Check1_::bounds ( num, size, index );
+    Check2_::bounds ( num, size, index );
   }
 };
 

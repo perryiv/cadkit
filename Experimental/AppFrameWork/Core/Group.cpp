@@ -301,3 +301,16 @@ void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write configuration to disk.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::configWrite()
+{
+  Guard guard ( this->mutex() );
+  std::for_each ( this->begin(), this->end(), std::mem_fun ( &AFW::Core::Window::configWrite ) );
+}

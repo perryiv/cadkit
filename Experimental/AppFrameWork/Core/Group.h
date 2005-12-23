@@ -48,6 +48,9 @@ public:
   // Remove all children.
   void                                clear();
 
+  // Write configuration to disk.
+  virtual void                        configWrite();
+
   // Iterators to the contained windows.
   Itr                                 end();
   ConstItr                            end() const;

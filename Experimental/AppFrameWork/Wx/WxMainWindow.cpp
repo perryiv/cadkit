@@ -183,7 +183,7 @@ WxMainWindow::~WxMainWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxMainWindow::writeConfig()
+void WxMainWindow::configWrite()
 {
   Guard guard ( this->mutex() );
 
@@ -209,7 +209,8 @@ void WxMainWindow::writeConfig()
   config->Write ( AFW::Registry::Keys::WIDTH.c_str(),  size.x   );
   config->Write ( AFW::Registry::Keys::HEIGHT.c_str(), size.y   );
 
-  //_ifm->GetCapturedWindow
+  // Call base class's function.
+  BaseClass::configWrite();
 }
 
 

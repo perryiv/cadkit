@@ -31,9 +31,9 @@
 # define STAT_FUNCTION_64 _stat64
 # define STAT_FUNCTION    _stat
 #else
-//# define STAT_STRUCT_64   struct stat64
+# define STAT_STRUCT_64   struct stat
 # define STAT_STRUCT      struct stat
-//# define STAT_FUNCTION_64 stat64
+# define STAT_FUNCTION_64 ::stat
 # define STAT_FUNCTION    ::stat
 
 #endif

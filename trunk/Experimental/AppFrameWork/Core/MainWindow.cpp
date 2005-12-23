@@ -50,7 +50,7 @@ MainWindow::MainWindow() : BaseClass(),
   }
 
   this->persistentName ( "main_window" );
-  this->icon ( Icon ( "sun" ) );
+  this->icon ( Icon ( "afw_sun" ) );
   this->title ( Program::instance().app()->name() );
 }
 
@@ -118,20 +118,21 @@ void MainWindow::init()
       text->persistentName ( "plugin_activity_window" );
       text->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
       text->title ( "Plugins" );
-      text->icon ( Icon ( "plugins" ) );
+      text->icon ( Icon ( "afw_plugins" ) );
       this->append ( text.get() );
     }
   }
 
   // Add a scene-view.
   {
-    Frame::ValidRefPtr sceneTree ( Program::instance().newObject<Frame>() );
-    if ( sceneTree.valid() )
+    Frame::ValidRefPtr tree ( Program::instance().newObject<Frame>() );
+    if ( tree.valid() )
     {
-      sceneTree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
-      sceneTree->title ( "Scene Tree" );
-      sceneTree->icon ( Icon ( "open" ) );
-      this->append ( sceneTree.get() );
+      tree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
+      tree->persistentName ( "scene_tree_window" );
+      tree->title ( "Scene Tree" );
+      tree->icon ( Icon ( "afw_open" ) );
+      this->append ( tree.get() );
     }
   }
 }

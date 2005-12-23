@@ -32,7 +32,7 @@ public:
   typedef BaseClass::Itr Itr;
 
   // Write configuration to disk.
-  virtual void                        configWrite();
+  virtual void                        configWrite() const;
 
   // Detach from gui object.
   virtual void                        detach();
@@ -57,6 +57,8 @@ protected:
 
   // Use reference counting.
   virtual ~WxMainWindow();
+
+  void                                _configRead ( wxPoint &origin, wxSize &size, bool &maximized );
 
 private:
 

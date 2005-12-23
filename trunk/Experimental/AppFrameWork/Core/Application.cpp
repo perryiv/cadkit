@@ -38,7 +38,7 @@ Application::Application() : BaseClass(),
   _name        ( "Default Name" ),
   _mainWindow  ( 0x0 ),
   _flags       ( State::DIRTY ),
-  _splash      ( "splash" ),
+  _splash      ( "afw_splash" ),
   _events      (),
   _models      (),
   _recentFiles ()

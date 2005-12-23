@@ -87,7 +87,7 @@ void MenuBar::init()
       menu->textSet ( "File" );
       menu->underline ( 0 );
       {
-        Button::RefPtr button ( Button::createButton ( "New...", "new" ) );
+        Button::RefPtr button ( Button::createButton ( "New...", "afw_new" ) );
         if ( button.valid() )
         {
           button->append ( new AFW::Conditions::HasNewModelPlugin ( true  ), enable  );
@@ -97,7 +97,7 @@ void MenuBar::init()
         }
       }
       {
-        Button::RefPtr button ( Button::createButton ( "Open...", "open" ) );
+        Button::RefPtr button ( Button::createButton ( "Open...", "afw_open" ) );
         if ( button.valid() )
         {
           button->append ( new AFW::Conditions::HasOpenModelPlugin ( true  ), enable  );
@@ -107,7 +107,7 @@ void MenuBar::init()
         }
       }
       {
-        Button::RefPtr button ( Button::createButton ( "Close", "close" ) );
+        Button::RefPtr button ( Button::createButton ( "Close", "afw_close" ) );
         if ( button.valid() )
         {
           button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );
@@ -182,7 +182,7 @@ void MenuBar::init()
       menu->textSet ( "Window" );
       menu->underline ( 0 );
       {
-        Button::RefPtr button ( Button::createButton ( "Close", "close" ) );
+        Button::RefPtr button ( Button::createButton ( "Close", "afw_close" ) );
         if ( button.valid() )
         {
           button->append ( new AFW::Conditions::HasActiveEditor ( true  ), enable  );

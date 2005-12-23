@@ -49,7 +49,7 @@ public:
   void                                clear();
 
   // Write configuration to disk.
-  virtual void                        configWrite();
+  virtual void                        configWrite() const;
 
   // Iterators to the contained windows.
   Itr                                 end();

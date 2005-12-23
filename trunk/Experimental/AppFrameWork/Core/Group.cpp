@@ -309,7 +309,7 @@ void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::configWrite()
+void Group::configWrite() const
 {
   Guard guard ( this->mutex() );
   std::for_each ( this->begin(), this->end(), std::mem_fun ( &AFW::Core::Window::configWrite ) );

@@ -77,7 +77,7 @@ public:
   void                                callUpdateActions  ( bool immediate = true );
 
   // Write configuration to disk.
-  virtual void                        configWrite();
+  virtual void                        configWrite() const;
 
   // Called automatically when this window is added to another.
   virtual bool                        create ( Window * );

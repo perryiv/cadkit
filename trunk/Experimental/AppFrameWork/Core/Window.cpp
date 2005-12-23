@@ -785,7 +785,7 @@ bool Window::create ( Window * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Window::configWrite()
+void Window::configWrite() const
 {
   Guard guard ( this->mutex() );
 }

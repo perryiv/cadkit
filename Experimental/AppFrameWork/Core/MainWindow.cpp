@@ -17,6 +17,7 @@
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Core/LogWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
@@ -99,42 +100,56 @@ void MainWindow::init()
 
   // Add a text output window.
   {
-    TextWindow::ValidRefPtr text ( Program::instance().newObject<TextWindow>() );
-    if ( text.valid() )
+    TextWindow::ValidRefPtr window ( Program::instance().newObject<TextWindow>() );
+    if ( window.valid() )
     {
-      text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-      text->persistentName ( "standard_output_window" );
-      text->append ( always.get(), new AFW::Actions::SetTextFromStdout );
-      text->title ( "Messages" );
-      text->icon ( Icon ( "afw_text_output" ) );
-      this->append ( text.get() );
+      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->persistentName ( "standard_output_window" );
+      window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
+      window->title ( "Messages" );
+      window->icon ( Icon ( "afw_text_output" ) );
+      this->append ( window.get() );
+    }
+  }
+
+  // Add a log window.
+  {
+    LogWindow::ValidRefPtr window ( Program::instance().newObject<LogWindow>() );
+    if ( window.valid() )
+    {
+      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->persistentName ( "standard_log_window" );
+      window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
+      window->title ( "Log" );
+      window->icon ( Icon ( "afw_text_output" ) );
+      this->append ( window.get() );
     }
   }
 
   // Add a window that displays plugin information.
   {  
-    TextWindow::ValidRefPtr text ( Program::instance().newObject<TextWindow>() );
-    if ( text.valid() )
+    TextWindow::ValidRefPtr window ( Program::instance().newObject<TextWindow>() );
+    if ( window.valid() )
     {
-      text->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-      text->persistentName ( "plugin_activity_window" );
-      text->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
-      text->title ( "Plugins" );
-      text->icon ( Icon ( "afw_plugins" ) );
-      this->append ( text.get() );
+      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->persistentName ( "plugin_activity_window" );
+      window->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
+      window->title ( "Plugins" );
+      window->icon ( Icon ( "afw_plugins" ) );
+      this->append ( window.get() );
     }
   }
 
   // Add a scene-view.
   {
-    Frame::ValidRefPtr tree ( Program::instance().newObject<Frame>() );
-    if ( tree.valid() )
+    Frame::ValidRefPtr window ( Program::instance().newObject<Frame>() );
+    if ( window.valid() )
     {
-      tree->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
-      tree->persistentName ( "scene_tree_window" );
-      tree->title ( "Scene Tree" );
-      tree->icon ( Icon ( "afw_open" ) );
-      this->append ( tree.get() );
+      window->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
+      window->persistentName ( "scene_tree_window" );
+      window->title ( "Scene Tree" );
+      window->icon ( Icon ( "afw_open" ) );
+      this->append ( window.get() );
     }
   }
 }

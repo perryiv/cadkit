@@ -9,18 +9,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The wxWindows text window class.
+//  The wxWindows log window class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "WxPrecompiled.h"
-#include "WxTextWindow.h"
+#include "WxLogWindow.h"
 #include "WxObjectMap.h"
 #include "WxMainWindow.h"
 
 #include "Usul/Errors/Assert.h"
 
-AFW_IMPLEMENT_OBJECT ( WxTextWindow );
+AFW_IMPLEMENT_OBJECT ( WxLogWindow );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ AFW_IMPLEMENT_OBJECT ( WxTextWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WxTextWindow::WxTextWindow() : BaseClass()
+WxLogWindow::WxLogWindow() : BaseClass()
 {
 }
 
@@ -40,7 +40,7 @@ WxTextWindow::WxTextWindow() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WxTextWindow::~WxTextWindow()
+WxLogWindow::~WxLogWindow()
 {
 }
 
@@ -51,10 +51,10 @@ WxTextWindow::~WxTextWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-wxTextCtrl *WxTextWindow::get()
+wxPanel *WxLogWindow::get()
 {
   Guard guard ( this->mutex() );
-  return ( WxObjectMap::find<wxTextCtrl> ( this ) );
+  return ( WxObjectMap::find<wxPanel> ( this ) );
 }
 
 
@@ -64,10 +64,10 @@ wxTextCtrl *WxTextWindow::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const wxTextCtrl *WxTextWindow::get() const
+const wxPanel *WxLogWindow::get() const
 {
   Guard guard ( this->mutex() );
-  return ( WxObjectMap::find<wxTextCtrl> ( this ) );
+  return ( WxObjectMap::find<wxPanel> ( this ) );
 }
 
 
@@ -77,7 +77,7 @@ const wxTextCtrl *WxTextWindow::get() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::detach()
+void WxLogWindow::detach()
 {
   WxObjectMap::remove ( this );
 }
@@ -89,7 +89,7 @@ void WxTextWindow::detach()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WxTextWindow::create ( AFW::Core::Window *w )
+bool WxLogWindow::create ( AFW::Core::Window *w )
 {
   Guard guard ( this->mutex() );
 
@@ -102,12 +102,11 @@ bool WxTextWindow::create ( AFW::Core::Window *w )
   if ( 0x0 != this->get() )
     return false;
 
-  // Make a text control.
-  std::auto_ptr<wxTextCtrl> text ( new wxTextCtrl 
-    ( window, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE ) );
+  // Make a panel.
+  std::auto_ptr<wxPanel> panel ( new wxPanel ( window, wxID_ANY ) );
 
   // Set our window in the map.
-  WxObjectMap::set ( this, text.release() );
+  WxObjectMap::set ( this, panel.release() );
 
   // It worked.
   return true;
@@ -120,7 +119,7 @@ bool WxTextWindow::create ( AFW::Core::Window *w )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::textSet ( const std::string &t )
+void WxLogWindow::textSet ( const std::string &t )
 {
   Guard guard ( this->mutex() );
   BaseClass::textSet ( t );
@@ -134,7 +133,7 @@ void WxTextWindow::textSet ( const std::string &t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::textSet ( const char *t, unsigned int length )
+void WxLogWindow::textSet ( const char *t, unsigned int length )
 {
   Guard guard ( this->mutex() );
   BaseClass::textSet ( t, length );
@@ -148,7 +147,7 @@ void WxTextWindow::textSet ( const char *t, unsigned int length )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::textAppend ( const std::string &t )
+void WxLogWindow::textAppend ( const std::string &t )
 {
   Guard guard ( this->mutex() );
   BaseClass::textAppend ( t );
@@ -162,7 +161,7 @@ void WxTextWindow::textAppend ( const std::string &t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::textAppend ( const char *t, unsigned int length )
+void WxLogWindow::textAppend ( const char *t, unsigned int length )
 {
   Guard guard ( this->mutex() );
   BaseClass::textAppend ( t );
@@ -176,15 +175,47 @@ void WxTextWindow::textAppend ( const char *t, unsigned int length )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::_textAppend ( const char *text, unsigned int length )
+void WxLogWindow::_textAppend ( const char *text, unsigned int length )
 {
   Guard guard ( this->mutex() );
   if ( 0x0 != text && length > 0 )
   {
-    wxTextCtrl *window ( WxObjectMap::find<wxTextCtrl> ( this ) );
-    if ( window )
+    // Get the panel.
+    wxPanel *panel ( WxObjectMap::find<wxPanel> ( this ) );
+    if ( panel )
     {
-      window->AppendText ( wxString ( text, length ) );
+      // If there is no sizer then make one.
+      if ( 0x0 == panel->GetSizer() )
+        panel->SetSizer ( new wxBoxSizer ( wxVERTICAL ) );
+
+      // Get the sizer.
+      wxSizer *sizer ( panel->GetSizer() );
+
+      // For each line...
+      const char *start ( text );
+      const char *end ( start + length );
+      while ( start < end )
+      {
+        // Find the end of the line.
+        const char *newline ( std::find ( start, end, '\n' ) );
+
+        // Make a sizer.
+        std::auto_ptr<wxBoxSizer> row ( new wxBoxSizer ( wxHORIZONTAL ) );
+
+        // Add an icon.
+        wxBitmap bitmap ( wxArtProvider::GetBitmap ( wxART_INFORMATION, wxART_MESSAGE_BOX ) );
+        std::auto_ptr<wxStaticBitmap> sb ( new wxStaticBitmap ( panel, wxID_ANY, bitmap ) );
+        sb->SetSizer ( row.get() );
+
+        // The panel will delete.
+        sb.release();
+
+        // Add it to the parent sizer.
+        sizer->Add ( row.release() );
+
+        // Update the starting position.
+        start = newline + 1;
+      }
     }
   }
 }
@@ -196,15 +227,10 @@ void WxTextWindow::_textAppend ( const char *text, unsigned int length )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxTextWindow::_textSet ( const char *text, unsigned int length )
+void WxLogWindow::_textSet ( const char *text, unsigned int length )
 {
   Guard guard ( this->mutex() );
   if ( 0x0 != text && length > 0 )
   {
-    wxTextCtrl *window ( WxObjectMap::find<wxTextCtrl> ( this ) );
-    if ( window )
-    {
-      window->SetValue ( wxString ( text, length ) );
-    }
   }
 }

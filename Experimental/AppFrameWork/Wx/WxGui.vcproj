@@ -209,6 +209,12 @@
 					RelativePath=".\WxApplication.h">
 				</File>
 				<File
+					RelativePath=".\WxLogWindow.cpp">
+				</File>
+				<File
+					RelativePath=".\WxLogWindow.h">
+				</File>
+				<File
 					RelativePath=".\WxMainWindow.cpp">
 				</File>
 				<File

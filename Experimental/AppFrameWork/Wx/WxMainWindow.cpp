@@ -20,6 +20,7 @@
 #include "WxInternalMainWin.h"
 #include "WxMenuBar.h"
 #include "WxStatusBar.h"
+#include "WxBitmap.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/System/Screen.h"
@@ -391,6 +392,10 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
   data.m_minSize.Set ( 80, 60 );        // What should this be?
   data.m_child = window;
   data.m_hideable = true;
+
+  // Set bitmap.
+  wxBitmap bitmap ( WxBitmap::load ( w->icon().file() ) );
+  data.m_bitmap = ( ( bitmap.Ok() ) ? bitmap : wxNullBitmap );
 
   // Set dock site.
   const AFW::Core::DockSite::Type site ( w->dockState().first );

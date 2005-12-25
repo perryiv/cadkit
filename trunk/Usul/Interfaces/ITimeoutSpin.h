@@ -7,26 +7,24 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_TIMEOUT_ANIMATE_H__
-#define __USUL_INTERFACES_TIMEOUT_ANIMATE_H__
+#ifndef __USUL_INTERFACES_TIMEOUT_SPIN_H__
+#define __USUL_INTERFACES_TIMEOUT_SPIN_H__
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; };
 
 namespace Usul {
 namespace Interfaces {
 
-struct ITimeoutAnimate : public Usul::Interfaces::IUnknown
+struct ITimeoutSpin : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ITimeoutAnimate );
+  USUL_DECLARE_QUERY_POINTERS ( ITimeoutSpin );
 
   /// Id for this interface.
-  enum { IID = 133794153u };
+  enum { IID = 2373359158u };
 
-  //Animate from one position and orientation to another.
-  virtual void startAnimation ( double timeout ) = 0;
+  virtual void stopSpin ( ) = 0;
+  virtual void startSpin ( double timeout ) = 0;
 
 }; 
 
@@ -35,5 +33,5 @@ struct ITimeoutAnimate : public Usul::Interfaces::IUnknown
 }
 
 
-#endif // __USUL_INTERFACES_TIMEOUT_ANIMATE_H__
+#endif // __USUL_INTERFACES_TIMEOUT_SPIN_H__
 

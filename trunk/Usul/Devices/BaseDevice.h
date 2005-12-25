@@ -15,6 +15,7 @@
 #include "IDevice.h"
 #include "IButtonListener.h"
 #include "IMotionListener.h"
+#include "IMouseWheelListener.h"
 
 #include "Usul/Base/Referenced.h"
 
@@ -40,6 +41,7 @@ public:
 
   virtual void addButtonListener( unsigned int button, IButtonListener* );
   virtual void addMotionListener( IMotionListener* );
+  virtual void addMouseWheelListener ( IMouseWheelListener* );
 
   virtual void clear();
 
@@ -52,15 +54,19 @@ protected:
   void _notifyButtonReleased ( unsigned int button, const State& state );
 
   void _notifyMotionListeners ( const State& state );
+
+  void _notifyMouseWheelListeners ( double delta );
   
 private:
   typedef std::vector < IButtonListener::ValidRefPtr > ButtonListeners;
   typedef std::map< unsigned int, ButtonListeners >    ButtonListenersMap;
   typedef std::vector < IMotionListener::ValidRefPtr > MotionListeners;
+  typedef std::vector < IMouseWheelListener::ValidRefPtr > MouseWheelListeners;
 
   bool _navigating;
   ButtonListenersMap _buttonListeners;
   MotionListeners    _motionListeners;
+  MouseWheelListeners _mouseWheelListeners;
 };
 
 }

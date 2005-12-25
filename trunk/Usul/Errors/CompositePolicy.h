@@ -43,7 +43,7 @@ template < class Check1_, class Check2_ > struct CompositePolicy
     Check1_ ( filename, line, state, arg );
     Check2_ ( filename, line, state, arg );
   }
-  template < class Int_ > static vonum bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
   {
     Check1_::bounds ( num, size, index );
     Check2_::bounds ( num, size, index );

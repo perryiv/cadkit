@@ -10,7 +10,7 @@
 #ifndef __DEVICES_IKEY_LISTENER_H__
 #define __DEVICES_IKEY_LISTENER_H__
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include "Keys.h"
@@ -19,7 +19,7 @@ namespace Usul {
 namespace Devices {
 
 
-struct IKeyListener : public Usul::Base::Referenced
+  struct IKeyListener : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IKeyListener );

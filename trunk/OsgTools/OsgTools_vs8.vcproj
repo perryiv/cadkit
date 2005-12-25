@@ -707,7 +707,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Render\ClipPlaneCallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\ClipPlaneCallback.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Render\Constants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Defaults.h"
 					>
 				</File>
 				<File
@@ -727,6 +739,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Render\LightCallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\LightCallback.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Render\LodCallbacks.h"
 					>
 				</File>
@@ -740,6 +760,14 @@
 				</File>
 				<File
 					RelativePath=".\Render\Trackball.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Viewer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Viewer.h"
 					>
 				</File>
 			</Filter>

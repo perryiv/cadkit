@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __DEVICES_IBUTTON_LISTENERS_H__
-#define __DEVICES_IBUTTON_LISTENERS_H__
+#ifndef __DEVICES_IMOUSE_WHEEL_LISTENER_H__
+#define __DEVICES_IMOUSE_WHEEL_LISTENER_H__
 
 
 #include "Usul/Interfaces/IUnknown.h"
@@ -19,18 +19,16 @@ namespace Devices {
 
 class State;
 
-struct IButtonListener : public Usul::Interfaces::IUnknown
+struct IMouseWheelListener : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IButtonListener );
+  USUL_DECLARE_REF_POINTERS ( IMouseWheelListener );
 
-  virtual void buttonPressed  ( unsigned int button, const State& state ) = 0;
-  virtual void buttonReleased ( unsigned int button, const State& state ) = 0;
+  virtual void onMouseWheel ( double delta ) = 0;
 };
 
-} // namespace Devices
 } // namespace Usul
+} // namespace Devices
 
-
-#endif // __DEVICES_IBUTTON_LISTENERS_H__
+#endif // __DEVICES_IMOTION_LISTENER_H__
 

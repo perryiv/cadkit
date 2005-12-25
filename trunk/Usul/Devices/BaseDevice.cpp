@@ -22,7 +22,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BaseDevice , Usul::Base::Referenced );
 BaseDevice::BaseDevice() :
 _navigating( true ),
 _buttonListeners(),
-_motionListeners()
+_motionListeners(),
+_mouseWheelListeners()
 {
 }
 
@@ -37,6 +38,7 @@ BaseDevice::~BaseDevice()
 {
   _buttonListeners.clear();
   _motionListeners.clear();
+  _mouseWheelListeners.clear();
 }
 
 
@@ -77,7 +79,7 @@ void BaseDevice::_notifyButtonPressed ( unsigned int button, const State& state 
 
   for( ButtonListeners::iterator iter = listeners.begin(); iter != listeners.end(); ++iter )
   {
-    (*iter)->buttonPressed ( state );
+    (*iter)->buttonPressed ( button, state );
   }
 }
 
@@ -94,7 +96,7 @@ void BaseDevice::_notifyButtonReleased ( unsigned int button, const State& state
 
   for( ButtonListeners::iterator iter = listeners.begin(); iter != listeners.end(); ++iter )
   {
-    (*iter)->buttonReleased( state );
+    (*iter)->buttonReleased( button, state );
   }
 }
 
@@ -125,6 +127,7 @@ void BaseDevice::_notifyMotionListeners ( const State& state )
   }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Clear
@@ -135,4 +138,31 @@ void BaseDevice::clear()
 {
   _buttonListeners.clear();
   _motionListeners.clear();
+  _mouseWheelListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add mouse wheel listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseDevice::addMouseWheelListener ( IMouseWheelListener *listener )
+{
+  _mouseWheelListeners.push_back ( listener );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add mouse wheel listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseDevice::_notifyMouseWheelListeners ( double delta )
+{
+  for( MouseWheelListeners::iterator iter = _mouseWheelListeners.begin(); iter != _mouseWheelListeners.end(); ++iter )
+  {
+    (*iter)->onMouseWheel ( delta );
+  }
 }

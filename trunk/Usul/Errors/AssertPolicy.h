@@ -41,7 +41,7 @@ struct AssertPolicy
   {
     USUL_ASSERT ( state );
   }
-  template < class Int_ > static vonum bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
   {
     // Put the num in the assert statement.
     USUL_ASSERT ( 0 != num && index >= 0 && index < size );

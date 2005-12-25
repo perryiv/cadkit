@@ -32,7 +32,7 @@ struct IViewer : public Usul::Interfaces::IUnknown
 
   virtual void render() = 0;
 
-  virtual void clear() = 0;
+  virtual void clearScene() = 0;
 
   // These may be moved to own interface
   virtual int x() = 0;

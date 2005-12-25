@@ -520,7 +520,7 @@ long MdiChildWindow::onBuildScene ( FX::FXObject *, FX::FXSelector, void * )
 
 long MdiChildWindow::onClearScene ( FX::FXObject *, FX::FXSelector, void * )
 {
-  _view->clear();
+  _view->clearScene();
   return 1;
 }
 

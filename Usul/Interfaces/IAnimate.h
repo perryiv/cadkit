@@ -13,8 +13,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include <string>
-
 namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; };
 
 namespace Usul {

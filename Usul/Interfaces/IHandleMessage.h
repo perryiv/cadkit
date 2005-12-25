@@ -9,36 +9,34 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  Interface for handling a message
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_OSG_FOX_VIEW_H_
-#define _USUL_INTERFACE_OSG_FOX_VIEW_H_
+#ifndef _USUL_INTERFACE_HANDLE_MESSAGE_H_
+#define _USUL_INTERFACE_HANDLE_MESSAGE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-
-namespace OsgTools { namespace Render { class Viewer; }  }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IOsgFoxView : public Usul::Interfaces::IUnknown
+struct IHandleMessage : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IOsgFoxView );
+  USUL_DECLARE_QUERY_POINTERS ( IHandleMessage );
 
   /// Id for this interface.
-  enum { IID = 2445428656u };
+  enum { IID = 1410321462u };
 
-  virtual OsgTools::Render::Viewer*       osgFoxView() = 0;
-  virtual const OsgTools::Render::Viewer* osgFoxView() const = 0;
-}; // struct IOsgFoxView
+  virtual void handleMessage ( unsigned short message ) = 0;
 
-
-}; // namespace Interfaces
-}; // namespace Usul
+}; // struct IHandleMessage
 
 
-#endif // _USUL_INTERFACE_OSG_FOX_VIEW_H_
+} // namespace Interfaces
+} // namespace Usul
+
+
+#endif // _USUL_INTERFACE_HANDLE_MESSAGE_H_

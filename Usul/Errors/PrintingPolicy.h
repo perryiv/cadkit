@@ -45,7 +45,7 @@ struct PrintingPolicy
     if ( !state )
       std::cerr << "Error!\n\tLine: " << line << "\n\tFile: " << filename << "\n\t" << arg << std::endl;
   }
-  template < class Int_ > static vonum bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
   {
     if ( index < 0 || index >= size )
       std::cerr << "Index bounds error = " << num << std::endl;

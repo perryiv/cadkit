@@ -602,6 +602,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISetCursorType.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IStatusBar.h"
 						>
 					</File>
@@ -671,6 +675,22 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITextMatrix.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimeoutAnimate.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimeoutSpin.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimerNotify.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITimerServer.h"
 						>
 					</File>
 					<File
@@ -834,6 +854,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IHandleMessage.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IImageView.h"
 						>
 					</File>
@@ -843,6 +867,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IMode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOpenGLContext.h"
 						>
 					</File>
 					<File
@@ -1624,6 +1652,10 @@
 				</File>
 				<File
 					RelativePath=".\Devices\IMotionListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Devices\IMouseWheelListener.h"
 					>
 				</File>
 				<File

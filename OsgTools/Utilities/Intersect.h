@@ -24,7 +24,7 @@ namespace OsgTools
     OSG_TOOLS_EXPORT void boundingBoxIntersect ( const osg::Plane& plane, const osg::BoundingBox& bb, osg::Vec3Array &vertices );
 
     ///  Get the vertex where line segment intersects the plane.
-    bool lineSegmentIntersect ( const osg::Plane& plane, const osg::Vec3& v0, const osg::Vec3& v1, osg::Vec3& point )
+    inline bool lineSegmentIntersect ( const osg::Plane& plane, const osg::Vec3& v0, const osg::Vec3& v1, osg::Vec3& point )
     {
       osg::Vec4 p ( plane.asVec4() );
 

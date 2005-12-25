@@ -9,32 +9,28 @@
 #ifndef __IOpenGLContext_H
 #define __IOpenGLContext_H 
 
-
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace Usul {
-  namespace Interfaces {
+namespace Interfaces {
     
     
 struct IOpenGLContext : public Usul::Interfaces::IUnknown
-  {
-    /// Smart-pointer definitions.
-    USUL_DECLARE_QUERY_POINTERS ( IOpenGLContext );
+{
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IOpenGLContext );
+  
+  /// Id for this interface.
+  enum { IID = 2489692458u };
+  
+  virtual void    makeCurrent()  = 0;
+  virtual void    swapBuffers()  = 0;
     
-    /// Id for this interface.
-    enum { IID = 2489692458u };
-    
-    
-    virtual void    makeCurrent()  = 0;
-    virtual void    swapBuffers()  = 0;
+}; // class IOpenGLContext
     
 
-    
-  }; // class IOpenGLContext
-    
-    
-  }; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif

@@ -18,6 +18,7 @@ namespace Devices {
 
 struct IButtonListener;
 struct IMotionListener;
+struct IMouseWheelListener;
 
 struct IDevice : public Usul::Interfaces::IUnknown
 {
@@ -32,6 +33,7 @@ struct IDevice : public Usul::Interfaces::IUnknown
 
   virtual void addButtonListener( unsigned int button, IButtonListener* ) = 0;
   virtual void addMotionListener( IMotionListener* ) = 0;
+  virtual void addMouseWheelListener ( IMouseWheelListener* ) = 0;
 
   virtual void clear() = 0;
 

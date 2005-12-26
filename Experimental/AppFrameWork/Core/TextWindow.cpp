@@ -30,7 +30,7 @@ AFW_IMPLEMENT_OBJECT ( TextWindow );
 TextWindow::TextWindow() : BaseClass()
 {
   this->title ( "Text Output" );
-  this->icon ( Icon ( "afw_text_output" ) );
+  this->icon ( Icon ( "afw_text_output_16x16" ) );
 }
 
 

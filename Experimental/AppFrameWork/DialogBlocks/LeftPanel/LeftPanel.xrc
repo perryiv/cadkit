@@ -30,6 +30,14 @@
                             <label>Browse...</label>
                         </object>
                     </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="unknown" name="ID_FOREIGN">
+                            <size>100,100</size>
+                            <style>wxSIMPLE_BORDER</style>
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">

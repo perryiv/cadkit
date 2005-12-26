@@ -38,7 +38,7 @@ Application::Application() : BaseClass(),
   _name        ( "Default Name" ),
   _mainWindow  ( 0x0 ),
   _flags       ( State::DIRTY ),
-  _splash      ( "afw_splash" ),
+  _splash      ( AFW::Core::Icon ( "afw_splash" ), 1000 ),
   _events      (),
   _models      (),
   _recentFiles ()
@@ -137,10 +137,10 @@ void Application::init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Icon Application::splashScreen() const
+Application::SplashData Application::splashScreen() const
 {
   Guard guard ( this->mutex() );
-  return Icon ( _splash );
+  return SplashData ( _splash );
 }
 
 
@@ -150,10 +150,11 @@ Icon Application::splashScreen() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::splashScreen ( const Icon &icon )
+void Application::splashScreen ( const Icon &icon, unsigned int milliseconds )
 {
   Guard guard ( this->mutex() );
-  _splash = icon;
+  _splash.first  = icon;
+  _splash.second = milliseconds;
 }
 
 

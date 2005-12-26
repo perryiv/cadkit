@@ -51,7 +51,7 @@ MainWindow::MainWindow() : BaseClass(),
   }
 
   this->persistentName ( "main_window" );
-  this->icon ( Icon ( "afw_sun" ) );
+  this->icon ( Icon ( "afw_sun_16x16" ) );
   this->title ( Program::instance().app()->name() );
 }
 
@@ -107,7 +107,7 @@ void MainWindow::init()
       window->persistentName ( "standard_output_window" );
       window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
       window->title ( "Messages" );
-      window->icon ( Icon ( "afw_text_output" ) );
+      window->icon ( Icon ( "afw_text_output_16x16" ) );
       this->append ( window.get() );
     }
   }
@@ -121,7 +121,7 @@ void MainWindow::init()
       window->persistentName ( "standard_log_window" );
       window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
       window->title ( "Log" );
-      window->icon ( Icon ( "afw_text_output" ) );
+      window->icon ( Icon ( "afw_text_output_16x16" ) );
       this->append ( window.get() );
     }
   }
@@ -135,7 +135,7 @@ void MainWindow::init()
       window->persistentName ( "plugin_activity_window" );
       window->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
       window->title ( "Plugins" );
-      window->icon ( Icon ( "afw_plugins" ) );
+      window->icon ( Icon ( "afw_plugins_16x16" ) );
       this->append ( window.get() );
     }
   }
@@ -148,7 +148,6 @@ void MainWindow::init()
       window->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );
       window->persistentName ( "scene_tree_window" );
       window->title ( "Scene Tree" );
-      window->icon ( Icon ( "afw_open" ) );
       this->append ( window.get() );
     }
   }

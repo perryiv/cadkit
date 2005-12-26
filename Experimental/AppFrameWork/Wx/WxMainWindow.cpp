@@ -411,6 +411,7 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
   data.m_minSize.Set ( 80, 60 );        // What should this be?
   data.m_child = window;
   data.m_hideable = true;
+  data.m_tabify = true;
 
   // Set bitmap.
   wxBitmap bitmap ( WxBitmap::load ( w->icon().file() ) );

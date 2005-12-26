@@ -19,6 +19,8 @@
 #include "AppFrameWork/Wx/CompileGuard.h"
 #include "AppFrameWork/Core/LogWindow.h"
 
+#include <list>
+
 class wxTextCtrl;
 
 
@@ -28,6 +30,7 @@ public:
 
   // Typedefs.
   typedef AFW::Core::LogWindow BaseClass;
+  typedef std::list < std::string > Strings;
 
   // Create the internal window.
   virtual bool                        create ( AFW::Core::Window * );
@@ -53,14 +56,19 @@ protected:
   // Use reference counting.
   virtual ~WxLogWindow();
 
-  void                                _textAppend ( const char *text, unsigned int length );
-  void                                _textSet    ( const char *text, unsigned int length );
+  std::string                         _getImage ( const std::string & ) const;
+
+  void                                _update();
 
 private:
 
   // Do not copy.
   WxLogWindow ( const WxLogWindow & );
   WxLogWindow &operator = ( const WxLogWindow & );
+
+  AFW::Core::Icon _error;
+  AFW::Core::Icon _info;
+  AFW::Core::Icon _warning;
 
   AFW_DECLARE_OBJECT ( WxLogWindow );
 };

@@ -44,6 +44,7 @@
 # include "wx/splash.h"
 # include "wx/artprov.h"
 # include "wx/generic/colrdlgg.h"
+# include "wx/html/htmlwin.h"
 # include "wx/ifm/ifm.h"
 
 # include "boost/shared_ptr.hpp"

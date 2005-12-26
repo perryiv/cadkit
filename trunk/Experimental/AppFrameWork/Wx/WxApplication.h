@@ -29,10 +29,6 @@ public:
   // Typedefs.
   typedef AFW::Core::Application BaseClass;
 
-  // Get document manager.
-  const wxDocManager *                docManager() const;
-  wxDocManager *                      docManager();
-
   // There should only be one instance. Return it.
   static WxApplication *              get();
 
@@ -57,8 +53,6 @@ private:
   // Do not copy.
   WxApplication ( const WxApplication & );
   WxApplication &operator = ( const WxApplication & );
-
-  wxDocManager *_docManager;
 
   AFW_DECLARE_OBJECT ( WxApplication );
 };

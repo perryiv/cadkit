@@ -19,6 +19,7 @@
 #include "WxMainWindow.h"
 
 #include "Usul/Errors/Assert.h"
+#include "Usul/Strings/Case.h"
 
 AFW_IMPLEMENT_OBJECT ( WxLogWindow );
 
@@ -29,7 +30,10 @@ AFW_IMPLEMENT_OBJECT ( WxLogWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WxLogWindow::WxLogWindow() : BaseClass()
+WxLogWindow::WxLogWindow() : BaseClass(),
+  _error   ( "afw_error_16x16"   ),
+  _info    ( "afw_info_16x16"    ),
+  _warning ( "afw_warning_16x16" )
 {
 }
 
@@ -102,11 +106,11 @@ bool WxLogWindow::create ( AFW::Core::Window *w )
   if ( 0x0 != this->get() )
     return false;
 
-  // Make a panel.
-  std::auto_ptr<wxPanel> panel ( new wxPanel ( window, wxID_ANY ) );
+  // Make an html window.
+  std::auto_ptr<wxHtmlWindow> html ( new wxHtmlWindow ( window, wxID_ANY ) );
 
   // Set our window in the map.
-  WxObjectMap::set ( this, panel.release() );
+  WxObjectMap::set ( this, html.release() );
 
   // It worked.
   return true;
@@ -123,7 +127,7 @@ void WxLogWindow::textSet ( const std::string &t )
 {
   Guard guard ( this->mutex() );
   BaseClass::textSet ( t );
-  this->_textSet ( t.c_str(), t.length() );
+  this->_update();
 }
 
 
@@ -137,7 +141,7 @@ void WxLogWindow::textSet ( const char *t, unsigned int length )
 {
   Guard guard ( this->mutex() );
   BaseClass::textSet ( t, length );
-  this->_textSet ( t, length );
+  this->_update();
 }
 
 
@@ -151,7 +155,7 @@ void WxLogWindow::textAppend ( const std::string &t )
 {
   Guard guard ( this->mutex() );
   BaseClass::textAppend ( t );
-  this->_textAppend ( t.c_str(), t.length() );
+  this->_update();
 }
 
 
@@ -165,72 +169,149 @@ void WxLogWindow::textAppend ( const char *t, unsigned int length )
 {
   Guard guard ( this->mutex() );
   BaseClass::textAppend ( t );
-  this->_textAppend ( t, length );
+  this->_update();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Append to the existing text.
+//  Update the text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxLogWindow::_textAppend ( const char *text, unsigned int length )
+void WxLogWindow::_update()
 {
   Guard guard ( this->mutex() );
-  if ( 0x0 != text && length > 0 )
+
+  // Get our window.
+  wxHtmlWindow *window ( WxObjectMap::find<wxHtmlWindow> ( this ) );
+  if ( 0x0 == window )
+    return;
+
+  // Get internal string.
+  std::string internal;
+  this->textGet ( internal );
+
+  // The prefix and suffix for the page.
+  const std::string prefix ( "<html><head></head><body><table width=\"100%\"border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+  const std::string suffix ( "</table></body></html>" );
+
+  // The two colors.
+  typedef std::pair < std::string, std::string > Colors;
+  const Colors colors ( "E0E0E0", "FFFFFF" );
+
+  // Build the html string.
+  std::string html;
+  html.reserve ( prefix.size() + 2 * internal.size() + suffix.size() );
+
+  // Start the page.
+  html += prefix;
+
+  // Initialize the counter.
+  unsigned int count ( 0 );
+
+  // For each line...
+  std::string::const_iterator start ( internal.begin() );
+  std::string::const_iterator end   ( internal.end()   );
+  while ( start < end )
   {
-    // Get the panel.
-    wxPanel *panel ( WxObjectMap::find<wxPanel> ( this ) );
-    if ( panel )
+    // Find the end of the line.
+    std::string::const_iterator newline ( std::find ( start, end, '\n' ) );
+
+    // The line to add.
+    const std::string line ( start, newline );
+
+    // Determine the color.
+    const std::string color ( ( 0 == count % 2 ) ? colors.first : colors.second );
+    ++count;
+
+    // String to begin a column.
+    const std::string beginCol ( "<td valign=\"top\" bgcolor=\"#" + color + "\">" );
+
     {
-      // If there is no sizer then make one.
-      if ( 0x0 == panel->GetSizer() )
-        panel->SetSizer ( new wxBoxSizer ( wxVERTICAL ) );
+      // Start of the row.
+      html += "<tr>";
 
-      // Get the sizer.
-      wxSizer *sizer ( panel->GetSizer() );
-
-      // For each line...
-      const char *start ( text );
-      const char *end ( start + length );
-      while ( start < end )
       {
-        // Find the end of the line.
-        const char *newline ( std::find ( start, end, '\n' ) );
+        // Add the first column.
+        html += beginCol;
 
-        // Make a sizer.
-        std::auto_ptr<wxBoxSizer> row ( new wxBoxSizer ( wxHORIZONTAL ) );
+        {
+          // Add the image.
+          const std::string image ( this->_getImage ( line ) );
+          html += "<img src=\"" + image + "\"/>";
+        }
 
-        // Add an icon.
-        wxBitmap bitmap ( wxArtProvider::GetBitmap ( wxART_INFORMATION, wxART_MESSAGE_BOX ) );
-        std::auto_ptr<wxStaticBitmap> sb ( new wxStaticBitmap ( panel, wxID_ANY, bitmap ) );
-        sb->SetSizer ( row.get() );
-
-        // The panel will delete.
-        sb.release();
-
-        // Add it to the parent sizer.
-        sizer->Add ( row.release() );
-
-        // Update the starting position.
-        start = newline + 1;
+        // End the column.
+        html += "</td>";
       }
+
+      {
+        // Add the second column.
+        html += beginCol;
+
+        {
+          // Add the text.
+          html += line;
+        }
+
+        // End the column.
+        html += "</td>";
+      }
+
+      // End of the row.
+      html += "</tr>";
     }
+
+    // Update the starting position.
+    start = newline + 1;
   }
+
+  // Finish the page.
+  html += suffix;
+
+  // Set the page.
+  window->SetPage ( wxString ( html.c_str() ) );
 }
 
 
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the text.
+//  Get the appropriate image.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxLogWindow::_textSet ( const char *text, unsigned int length )
+std::string WxLogWindow::_getImage ( const std::string &line ) const
 {
-  Guard guard ( this->mutex() );
-  if ( 0x0 != text && length > 0 )
-  {
-  }
+  // Make it all lower-case.
+  std::string copy ( Usul::Strings::lowerCase ( line ) );
+
+  // What we are looking for.
+  const std::string warning     ( "warning" );
+  const std::string error       ( "error" );
+  const std::string systemError ( "system error" );
+
+  // If the string is not long enough.
+  if ( line.empty() )
+    return _info.file();
+
+  // Is it a system error?
+  const bool isSystemError ( 0 == copy.compare ( 0, systemError.size(), systemError ) );
+  if ( isSystemError )
+    return _error.file();
+
+  // Is it an error?
+  const bool isError ( 0 == copy.compare ( 0, error.size(), error ) );
+  if ( isError )
+    return _error.file();
+
+  // Is it a warning?
+  const bool isWarning ( 0 == copy.compare ( 0, warning.size(), warning ) );
+  if ( isWarning )
+    return _warning.file();
+
+  // Default to information.
+  return _info.file();
 }

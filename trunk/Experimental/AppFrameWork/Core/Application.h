@@ -43,6 +43,7 @@ public:
   typedef std::list < Event > EventQueue;
   typedef std::vector < Model::RefPtr > Models;
   typedef std::list < std::string > RecentFiles;
+  typedef std::pair < Icon, unsigned int > SplashData; // Image, milliseconds.
 
   // Possible ways to "run".
   enum RunCommand
@@ -85,8 +86,8 @@ public:
   virtual void                        run ( RunCommand );
 
   // Set/get the splash-screen image.
-  void                                splashScreen ( const Icon & );
-  Icon                                splashScreen() const;
+  void                                splashScreen ( const Icon &, unsigned int );
+  SplashData                          splashScreen() const;
 
 protected:
 
@@ -105,7 +106,7 @@ private:
   std::string _name;
   MainWindow *_mainWindow;
   AFW::Core::State::Type _flags;
-  Icon _splash;
+  SplashData _splash;
   EventQueue _events;
   Models _models;
   RecentFiles _recentFiles;

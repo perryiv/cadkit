@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wxmsw26d_adv.lib wxmsw26d_core.lib wxbase26d.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexd.lib wxexpatd.lib"
+				AdditionalDependencies="wxmsw26d_html.lib wxmsw26d_adv.lib wxmsw26d_core.lib wxbase26d.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexd.lib wxexpatd.lib"
 				OutputFile="$(USUL_LIB_DIR)/WxGui.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -117,7 +117,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wxmsw26_adv.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
+				AdditionalDependencies="wxmsw26_html.lib wxmsw26_adv.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib"
 				OutputFile="$(USUL_LIB_DIR)/WxGui.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

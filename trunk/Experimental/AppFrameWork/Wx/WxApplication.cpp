@@ -25,6 +25,7 @@
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Math/Absolute.h"
 
 AFW_IMPLEMENT_OBJECT ( WxApplication );
 
@@ -35,8 +36,7 @@ AFW_IMPLEMENT_OBJECT ( WxApplication );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WxApplication::WxApplication() : BaseClass(),
-  _docManager   ( new wxDocManager )
+WxApplication::WxApplication() : BaseClass()
 {
   // Set the global instance.
   wxApp::SetInstance ( new WxInternalApp );
@@ -47,8 +47,10 @@ WxApplication::WxApplication() : BaseClass(),
   // Initialize wxWindows.
   WxInit::init();
 
+#ifndef _DEBUG
   // Show splash screen.
-  //this->_splashScreen();
+  this->_splashScreen();
+#endif
 }
 
 
@@ -125,32 +127,6 @@ void WxApplication::run ( RunCommand command )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get document manager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-wxDocManager *WxApplication::docManager()
-{
-  Guard ( this->mutex() );
-  return _docManager;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get document manager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const wxDocManager *WxApplication::docManager() const
-{
-  Guard ( this->mutex() );
-  return _docManager;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Return the application pointer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,8 +162,9 @@ void WxApplication::quit()
 void WxApplication::_splashScreen()
 {
   // Get file.
-  const AFW::Core::Icon splash ( this->splashScreen() );
-  const std::string file ( splash.file() );
+  const AFW::Core::Application::SplashData splash ( this->splashScreen() );
+  const AFW::Core::Icon icon ( splash.first );
+  const std::string file ( icon.file() );
   if ( file.empty() )
     return;
 
@@ -198,7 +175,7 @@ void WxApplication::_splashScreen()
 
   // Make window and show it.
   const long splashStyle ( wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT );
-  const int milliseconds ( 3000 );
+  const int milliseconds ( Usul::Math::absolute ( static_cast < int > ( splash.second ) ) );
   new wxSplashScreen ( bitmap, splashStyle, milliseconds, 0x0, wxID_ANY );
   wxYield();
 }

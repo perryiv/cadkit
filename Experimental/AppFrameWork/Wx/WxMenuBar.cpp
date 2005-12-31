@@ -36,14 +36,11 @@ WxMenuBar::WxMenuBar() : BaseClass()
   // Make menu bar.
   std::auto_ptr<wxMenuBar> bar ( new wxMenuBar );
 
-  // Add us to the map.
-  WxObjectMap::set ( this, bar.get() );
-
   // Add another event handler.
-  bar.get()->PushEventHandler ( new WxEventHandler );
+  bar->PushEventHandler ( new WxEventHandler );
 
-  // Keep it.
-  bar.release();
+  // Add us to the map.
+  WxObjectMap::set ( this, bar.release() );
 }
 
 

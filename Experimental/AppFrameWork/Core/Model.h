@@ -19,8 +19,6 @@
 #include "AppFrameWork/Core/Object.h"
 #include "AppFrameWork/Core/Icon.h"
 
-#include "Usul/Threads/RecursiveMutex.h"
-
 
 namespace AFW {
 namespace Core {
@@ -32,12 +30,6 @@ public:
 
   // Typedefs.
   typedef Object BaseClass;
-
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Model );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( Model );
 
   // Set/get the modified flag.
   virtual void                        modified ( bool );
@@ -63,6 +55,8 @@ private:
 
   unsigned int _flags;
   Icon _icon;
+
+  AFW_DECLARE_OBJECT ( Model );
 };
 
 

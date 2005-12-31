@@ -18,6 +18,7 @@
 
 #include "AppFrameWork/Core/Icon.h"
 #include "AppFrameWork/Core/Constants.h"
+#include "AppFrameWork/Core/Types.h"
 #include "AppFrameWork/Actions/CommandAction.h"
 #include "AppFrameWork/Actions/UpdateAction.h"
 #include "AppFrameWork/Conditions/Condition.h"
@@ -59,6 +60,8 @@ public:
   typedef std::vector < BaseDevice::RefPtr > BaseDevices;
   typedef BaseDevices::iterator DevicesItr;
   typedef BaseDevices::const_iterator DevicesConstItr;
+  typedef AFW::Core::Types::Position Position;
+  typedef AFW::Core::Types::Size Size;
 
   // Iterators to the list of all windows.
   static WindowListItr                allWindowsBegin();
@@ -123,8 +126,14 @@ public:
   void                                persistentName ( const std::string & );
   std::string                         persistentName() const;
 
+  // Return the position.
+  virtual Position                    position() const;
+
   // Scroll to the end.
   virtual void                        scrollToEnd();
+
+  // Return window size.
+  virtual Size                        size() const;
 
   // Set/get/append the text.
   virtual void                        textAppend ( const std::string &t );

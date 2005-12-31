@@ -272,6 +272,12 @@
 					RelativePath=".\Core\Program.h">
 				</File>
 				<File
+					RelativePath=".\Core\Registry.cpp">
+				</File>
+				<File
+					RelativePath=".\Core\Registry.h">
+				</File>
+				<File
 					RelativePath=".\Core\StatusBar.cpp">
 				</File>
 				<File
@@ -288,6 +294,9 @@
 				</File>
 				<File
 					RelativePath=".\Core\TextWindow.h">
+				</File>
+				<File
+					RelativePath=".\Core\Types.h">
 				</File>
 				<File
 					RelativePath=".\Core\Window.cpp">

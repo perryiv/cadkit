@@ -44,6 +44,9 @@ public:
   void                                layout ( ChildLayout );
   ChildLayout                         layout();
 
+  // Is the frame maximized?
+  virtual bool                        maximized() const;
+
 protected:
 
   // Constructor

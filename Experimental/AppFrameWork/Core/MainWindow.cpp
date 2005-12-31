@@ -20,6 +20,7 @@
 #include "AppFrameWork/Core/LogWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
+#include "AppFrameWork/Core/Registry.h"
 
 #include "AppFrameWork/Conditions/Always.h"
 #include "AppFrameWork/Actions/SetTextFromStdout.h"
@@ -273,4 +274,25 @@ void MainWindow::accept ( AFW::Core::BaseVisitor *v )
   Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write configuration to disk.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::configWrite() const
+{
+  Guard guard ( this->mutex() );
+  AFW_GUARD_PROGRAM;
+
+  // Write to the registry.
+  AFW::Core::Registry::RefPtr reg ( AFW::Core::Program::instance().app()->registry() );
+  if ( reg.valid() )
+    reg->writeGeometry ( this );
+
+  // Call base class's function.
+  BaseClass::configWrite();
 }

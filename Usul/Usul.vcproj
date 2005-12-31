@@ -930,6 +930,12 @@
 					RelativePath=".\System\DateTime.h">
 				</File>
 				<File
+					RelativePath=".\System\Home.cpp">
+				</File>
+				<File
+					RelativePath=".\System\Home.h">
+				</File>
+				<File
 					RelativePath=".\System\Host.cpp">
 				</File>
 				<File
@@ -1038,6 +1044,12 @@
 				</File>
 				<File
 					RelativePath=".\File\Find.h">
+				</File>
+				<File
+					RelativePath=".\File\MakeDir.cpp">
+				</File>
+				<File
+					RelativePath=".\File\MakeDir.h">
 				</File>
 				<File
 					RelativePath=".\File\Path.h">

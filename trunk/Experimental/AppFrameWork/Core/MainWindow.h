@@ -35,6 +35,9 @@ public:
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
+  // Write configuration to disk.
+  virtual void                        configWrite() const;
+
   // Set/get the dirty flag.
   virtual void                        dirty ( bool );
   virtual bool                        dirty() const;

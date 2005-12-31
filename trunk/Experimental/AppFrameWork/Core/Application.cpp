@@ -17,6 +17,7 @@
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/Program.h"
+#include "AppFrameWork/Core/Registry.h"
 
 #include "Usul/Bits/Bits.h"
 
@@ -41,8 +42,10 @@ Application::Application() : BaseClass(),
   _splash      ( AFW::Core::Icon ( "afw_splash" ), 1000 ),
   _events      (),
   _models      (),
-  _recentFiles ()
+  _recentFiles (),
+  _registry    ( Program::instance().newObject<Registry>() )
 {
+  Usul::Pointers::reference ( _registry );
 }
 
 
@@ -64,6 +67,8 @@ Application::~Application()
     _recentFiles.clear();
     Usul::Pointers::unreference ( _mainWindow );
     _mainWindow = 0x0;
+    Usul::Pointers::unreference ( _registry );
+    _registry = 0x0;
   }
 
   // Catch exceptions.
@@ -321,4 +326,28 @@ void Application::run ( RunCommand command )
 
 void Application::quit()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Registry *Application::registry()
+{
+  return _registry;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const AFW::Core::Registry *Application::registry() const
+{
+  return _registry;
 }

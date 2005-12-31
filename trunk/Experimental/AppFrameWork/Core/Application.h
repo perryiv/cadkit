@@ -26,7 +26,7 @@
 #include <vector>
 #include <list>
 
-namespace AFW { namespace Core { class BaseVisitor; class MainWindow; } }
+namespace AFW { namespace Core { class BaseVisitor; class MainWindow; class Registry; } }
 
 
 namespace AFW {
@@ -79,6 +79,10 @@ public:
   void                                recentFileAppend ( const std::string & );
   void                                recentFileRemove ( const std::string & );
 
+  // Access registry.
+  const Registry *                    registry() const;
+  Registry *                          registry();
+
   // Quit the application.
   virtual void                        quit();
 
@@ -110,6 +114,7 @@ private:
   EventQueue _events;
   Models _models;
   RecentFiles _recentFiles;
+  AFW::Core::Registry *_registry;
 
   AFW_DECLARE_OBJECT ( Application );
 };

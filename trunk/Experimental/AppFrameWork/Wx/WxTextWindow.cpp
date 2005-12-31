@@ -17,6 +17,7 @@
 #include "WxTextWindow.h"
 #include "WxObjectMap.h"
 #include "WxMainWindow.h"
+#include "WxEventHandler.h"
 
 #include "Usul/Errors/Assert.h"
 
@@ -105,6 +106,9 @@ bool WxTextWindow::create ( AFW::Core::Window *w )
   // Make a text control.
   std::auto_ptr<wxTextCtrl> text ( new wxTextCtrl 
     ( window, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE ) );
+
+  // Add another event handler.
+  text->PushEventHandler ( new WxEventHandler );
 
   // Set our window in the map.
   WxObjectMap::set ( this, text.release() );

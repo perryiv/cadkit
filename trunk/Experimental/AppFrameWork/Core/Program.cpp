@@ -26,6 +26,8 @@
 
 #include "Threads/OpenThreads/Mutex.h"
 
+#include "XmlTree/Root.h"
+
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/DLL/Library.h"

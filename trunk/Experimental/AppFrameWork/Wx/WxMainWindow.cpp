@@ -21,6 +21,7 @@
 #include "WxMenuBar.h"
 #include "WxStatusBar.h"
 #include "WxBitmap.h"
+#include "WxEventHandler.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/System/Screen.h"

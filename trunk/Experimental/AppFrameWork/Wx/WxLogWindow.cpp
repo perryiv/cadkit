@@ -17,6 +17,7 @@
 #include "WxLogWindow.h"
 #include "WxObjectMap.h"
 #include "WxMainWindow.h"
+#include "WxEventHandler.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Case.h"
@@ -108,6 +109,9 @@ bool WxLogWindow::create ( AFW::Core::Window *w )
 
   // Make an html window.
   std::auto_ptr<wxHtmlWindow> html ( new wxHtmlWindow ( window, wxID_ANY ) );
+
+  // Add another event handler.
+  html->PushEventHandler ( new WxEventHandler );
 
   // Set our window in the map.
   WxObjectMap::set ( this, html.release() );

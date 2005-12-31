@@ -20,7 +20,7 @@
 
 using namespace AFW::Core;
 
-USUL_IMPLEMENT_TYPE_ID ( Model );
+AFW_IMPLEMENT_OBJECT ( Model );
 
 
 ///////////////////////////////////////////////////////////////////////////////

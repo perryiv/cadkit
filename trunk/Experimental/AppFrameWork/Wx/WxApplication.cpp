@@ -19,6 +19,7 @@
 #include "WxInit.h"
 #include "WxObjectMap.h"
 #include "WxBitmap.h"
+#include "WxEventHandler.h"
 
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Define.h"
@@ -176,6 +177,7 @@ void WxApplication::_splashScreen()
   // Make window and show it.
   const long splashStyle ( wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT );
   const int milliseconds ( Usul::Math::absolute ( static_cast < int > ( splash.second ) ) );
-  new wxSplashScreen ( bitmap, splashStyle, milliseconds, 0x0, wxID_ANY );
+  wxSplashScreen *window ( new wxSplashScreen ( bitmap, splashStyle, milliseconds, 0x0, wxID_ANY ) );
+  window->PushEventHandler ( new WxEventHandler );
   wxYield();
 }

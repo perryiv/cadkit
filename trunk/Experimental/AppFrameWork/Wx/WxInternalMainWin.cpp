@@ -53,6 +53,7 @@ WxInternalMainWin::WxInternalMainWin ( WxMainWindow *mw, const wxPoint &origin, 
 
   // Add another event handler.
   this->PushEventHandler ( new WxEventHandler );
+  this->GetClientWindow()->PushEventHandler ( new WxEventHandler );
 }
 
 

@@ -16,6 +16,8 @@
 #include "XmlTree/Root.h"
 #include "XmlTree/Detail/RootImpl.h"
 
+#include "xercesc/util/PlatformUtils.hpp"
+
 using namespace XmlTree;
 
 
@@ -26,8 +28,10 @@ using namespace XmlTree;
 ///////////////////////////////////////////////////////////////////////////////
 
 Root::Root() : BaseClass(),
+  _mutex(),
   _root ( new XmlTree::Detail::RootImpl )
 {
+  xercesc::XMLPlatformUtils::Initialize();
 }
 
 
@@ -38,8 +42,10 @@ Root::Root() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 Root::Root ( const std::string &file ) : BaseClass(),
+  _mutex(),
   _root ( new XmlTree::Detail::RootImpl )
 {
+  xercesc::XMLPlatformUtils::Initialize();
   this->load ( file );
 }
 
@@ -52,6 +58,8 @@ Root::Root ( const std::string &file ) : BaseClass(),
 
 Root::~Root()
 {
+  delete _root;
+  xercesc::XMLPlatformUtils::Terminate();
 }
 
 
@@ -63,7 +71,21 @@ Root::~Root()
 
 void Root::load ( const std::string &file )
 {
+  Guard guard ( _mutex );
   _root->load ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Root::write ( const std::string &file )
+{
+  Guard guard ( _mutex );
+  _root->write ( file );
 }
 
 
@@ -75,5 +97,58 @@ void Root::load ( const std::string &file )
 
 void Root::clear()
 {
+  Guard guard ( _mutex );
   _root->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Root::node ( const std::string &path, char delim, unsigned int value )
+{
+  Guard guard ( _mutex );
+  _root->node ( path, delim, value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Root::node ( const std::string &path, char delim, int value )
+{
+  Guard guard ( _mutex );
+  _root->node ( path, delim, value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Root::node ( const std::string &path, char delim, bool value )
+{
+  Guard guard ( _mutex );
+  _root->node ( path, delim, value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Root::node ( const std::string &path, char delim, const std::string &value )
+{
+  Guard guard ( _mutex );
+  _root->node ( path, delim, value );
 }

@@ -930,12 +930,6 @@
 					RelativePath=".\System\DateTime.h">
 				</File>
 				<File
-					RelativePath=".\System\Home.cpp">
-				</File>
-				<File
-					RelativePath=".\System\Home.h">
-				</File>
-				<File
 					RelativePath=".\System\Host.cpp">
 				</File>
 				<File
@@ -1046,10 +1040,10 @@
 					RelativePath=".\File\Find.h">
 				</File>
 				<File
-					RelativePath=".\File\MakeDir.cpp">
+					RelativePath=".\File\Make.cpp">
 				</File>
 				<File
-					RelativePath=".\File\MakeDir.h">
+					RelativePath=".\File\Make.h">
 				</File>
 				<File
 					RelativePath=".\File\Path.h">
@@ -1127,6 +1121,9 @@
 				Filter="">
 				<File
 					RelativePath=".\Strings\Case.h">
+				</File>
+				<File
+					RelativePath=".\Strings\Split.h">
 				</File>
 				<File
 					RelativePath=".\Strings\Trim.h">
@@ -1347,6 +1344,16 @@
 				</File>
 				<File
 					RelativePath=".\App\Controller.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="User"
+				Filter="">
+				<File
+					RelativePath=".\User\Directory.cpp">
+				</File>
+				<File
+					RelativePath=".\User\Directory.h">
 				</File>
 			</Filter>
 		</Filter>

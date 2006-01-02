@@ -20,6 +20,8 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include <string>
 
@@ -35,6 +37,8 @@ public:
 
   // Typedefs.
   typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard < Mutex > Guard;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Root );
@@ -49,6 +53,15 @@ public:
   // Load contents of file.
   void                                load ( const std::string & );
 
+  // Set the value of the node. Create it if needed.
+  void                                node ( const std::string &path, char delim, unsigned int value );
+  void                                node ( const std::string &path, char delim, int value );
+  void                                node ( const std::string &path, char delim, bool value );
+  void                                node ( const std::string &path, char delim, const std::string &value );
+
+  // Write tree to file.
+  void                                write ( const std::string & );
+
 protected:
 
   // Use reference counting.
@@ -60,6 +73,7 @@ private:
   Root ( const Root & );
   Root &operator = ( const Root & );
 
+  mutable Mutex _mutex;
   XmlTree::Detail::RootImpl *_root;
 };
 

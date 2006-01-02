@@ -74,7 +74,7 @@ MainWindow::~MainWindow()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "7091126040", "6330931110" );
+  AFW_CATCH_BLOCK ( 7091126040ul );
 }
 
 

@@ -55,7 +55,7 @@ Group::~Group()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "1996818293", "3353672048" );
+  AFW_CATCH_BLOCK ( 1996818293ul );
 }
 
 

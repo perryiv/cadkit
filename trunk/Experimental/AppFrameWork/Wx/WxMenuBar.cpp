@@ -97,7 +97,7 @@ WxMenuBar::~WxMenuBar()
   }
 
   // Catch all exceptions.
-  AFW_CATCH_BLOCK ( 2089862060ul, 1968534397ul );
+  AFW_CATCH_BLOCK ( 2089862060ul );
 }
 
 

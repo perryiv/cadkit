@@ -16,8 +16,6 @@
 #ifndef _XML_TREE_ROOT_IMPLEMENTATION_H_
 #define _XML_TREE_ROOT_IMPLEMENTATION_H_
 
-#include "boost/shared_ptr.hpp"
-
 #include "xercesc/dom/DOM.hpp"
 
 #include <string>
@@ -31,9 +29,6 @@ class RootImpl
 {
 public:
 
-  // Typedefs.
-  typedef boost::shared_ptr<xercesc::DOMNode> NodePtr;
-
   // Construction, destruction.
   RootImpl();
   ~RootImpl();
@@ -44,7 +39,18 @@ public:
   // Load contents of file.
   void                                load ( const std::string & );
 
+  // Set the value of the node. Create it if needed.
+  void                                node ( const std::string &path, char delim, unsigned int value );
+  void                                node ( const std::string &path, char delim, int value );
+  void                                node ( const std::string &path, char delim, bool value );
+  void                                node ( const std::string &path, char delim, const std::string &value );
+
+  // Write tree to file.
+  void                                write ( const std::string & );
+
 protected:
+
+  void                                _ensureDocument();
 
   std::string                         _format ( const xercesc::DOMException &, const std::string & );
 
@@ -54,7 +60,7 @@ private:
   RootImpl ( const RootImpl & );
   RootImpl &operator = ( const RootImpl & );
 
-  NodePtr _document;
+  xercesc::DOMDocument *_document;
 };
 
 

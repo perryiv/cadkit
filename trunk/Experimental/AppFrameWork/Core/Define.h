@@ -24,16 +24,36 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define AFW_CATCH_BLOCK(id0,id1)\
+#define AFW_CATCH_BLOCK(error_id)\
 catch ( const std::exception &e )\
 {\
-  std::cout << "Error " << id0 << ": Standard exception caught." << std::endl;\
+  std::cout << "Error " << error_id << ": Standard exception caught." << std::endl;\
   if ( e.what() )\
     std::cout << ". " << e.what() << std::endl;\
 }\
+catch ( const std::string &e )\
+{\
+  std::cout << "Error " << error_id << ": Standard string exception caught." << std::endl;\
+  if ( false == e.empty() )\
+    std::cout << ". " << e << std::endl;\
+}\
+catch ( const char *e )\
+{\
+  std::cout << "Error " << error_id << ": String exception caught." << std::endl;\
+  if ( e && ( ::strlen ( e ) > 0 ) )\
+    std::cout << ". " << e << std::endl;\
+}\
+catch ( unsigned int e )\
+{\
+  std::cout << "Error " << error_id << ": Unsigned integer exception caught: " << e << std::endl;\
+}\
+catch ( int e )\
+{\
+  std::cout << "Error " << error_id << ": Integer exception caught: " << e << std::endl;\
+}\
 catch ( ... )\
 {\
-  std::cout << "Error " << id1 << ": Unknown exception caught." << std::endl;\
+  std::cout << "Error " << error_id << ": Unknown exception caught." << std::endl;\
 }
 
 

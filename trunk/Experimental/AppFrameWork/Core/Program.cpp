@@ -17,6 +17,8 @@
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Core/LogWindow.h"
+#include "AppFrameWork/Core/Registry.h"
 #include "AppFrameWork/Core/StreamSink.h"
 #include "AppFrameWork/Core/InitFunctor.h"
 #include "AppFrameWork/Core/LifeCycle.h"
@@ -134,6 +136,8 @@ Program::Program() :
   FACTORY_TYPE ( AFW::Core,  MainWindow );
   FACTORY_TYPE ( AFW::Core,  StatusBar );
   FACTORY_TYPE ( AFW::Core,  TextWindow );
+  FACTORY_TYPE ( AFW::Core,  LogWindow );
+  FACTORY_TYPE ( AFW::Core,  Registry );
   FACTORY_TYPE ( AFW::Menus, Button );
   FACTORY_TYPE ( AFW::Menus, MenuBar );
   FACTORY_TYPE ( AFW::Menus, MenuGroup );
@@ -167,7 +171,7 @@ Program::~Program()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "3382795029", "3300480030" );
+  AFW_CATCH_BLOCK ( 3382795029ul );
 }
 
 
@@ -222,7 +226,7 @@ bool Program::valid()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Program::errors() const
+std::string Program::errors ( bool system ) const
 {
   // One thread at a time.
   Program::Guard guard ( _mutex );
@@ -235,7 +239,7 @@ std::string Program::errors() const
     out << Usul::Errors::Stack::instance().format();
 
   // Print system errors if any.
-  if ( Usul::System::LastError::has() )
+  if ( system && Usul::System::LastError::has() )
     out << "System Error: " << Usul::System::LastError::message() << std::endl;
 
   // Initialize errors.
@@ -256,7 +260,7 @@ std::string Program::errors() const
 void Program::execute ( int argc, char **argv, InitFunctor *init, const std::string &name )
 {
   try { this->_execute ( argc, argv, init, name ); }
-  AFW_CATCH_BLOCK ( "4187008777", "3972738960" );
+  AFW_CATCH_BLOCK ( 4187008777ul );
   std::cout << this->errors() << std::flush;
 }
 
@@ -308,7 +312,7 @@ void Program::_execute ( int argc, char **argv, InitFunctor *init, const std::st
   try { this->_execute ( init, program ); }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( 3701296428ul, 2473113762ul );
+  AFW_CATCH_BLOCK ( 3701296428ul );
 
   // Print any errors.
   std::cout << this->errors() << std::flush;

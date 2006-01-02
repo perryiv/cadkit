@@ -54,7 +54,7 @@ WxMenuButton::~WxMenuButton()
   }
 
   // Catch all exceptions.
-  AFW_CATCH_BLOCK ( 2161300628ul, 2834136446ul );
+  AFW_CATCH_BLOCK ( 2161300628ul );
 }
 
 

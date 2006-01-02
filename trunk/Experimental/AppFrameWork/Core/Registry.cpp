@@ -16,16 +16,17 @@
 #include "AppFrameWork/Core/Registry.h"
 #include "AppFrameWork/Core/Constants.h"
 #include "AppFrameWork/Core/Frame.h"
-#include "AppFrameWork/Core/Program.h"
-#include "AppFrameWork/Core/Application.h"
 
 #include "XmlTree/Root.h"
 
-#include "Usul/File/MakeDir.h"
-#include "Usul/System/Home.h"
+#include "Usul/File/Make.h"
+#include "Usul/File/Stats.h"
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/User/Directory.h"
 
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
 
 using namespace AFW::Core;
 
@@ -39,10 +40,10 @@ AFW_IMPLEMENT_OBJECT ( Registry );
 ///////////////////////////////////////////////////////////////////////////////
 
 Registry::Registry() : BaseClass(),
-  _xml ( 0x0 )
+  _xml   ( 0x0 ),
+  _file  (),
+  _dirty ( false )
 {
-  try { this->_init(); }
-  AFW_CATCH_BLOCK ( 1177195354ul, 4240596741ul );
 }
 
 
@@ -54,7 +55,15 @@ Registry::Registry() : BaseClass(),
 
 Registry::~Registry()
 {
-  Usul::Pointers::unreference ( _xml );
+  // Safely...
+  try
+  {
+    this->flush();
+    Usul::Pointers::unreference ( _xml );
+  }
+
+  // Catch all exceptions.
+  AFW_CATCH_BLOCK ( 3565839347ul );
 }
 
 
@@ -64,29 +73,60 @@ Registry::~Registry()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Registry::_init()
+void Registry::init ( const std::string &vendorName, const std::string &appName )
 {
-  // Get home directory.
-  const std::string home ( Usul::System::Home::dir ( false ) );
-  if ( home.empty() )
-    throw std::runtime_error ( "Error 2535209286: Failed to find home directory." );
+  // Handle bad input.
+  if ( vendorName.empty() || appName.empty() )
+    throw std::runtime_error ( "Error 2538613677: Empty vendor or application name given." );
 
-  // Make appropriate vendor directory.
-  #ifdef _MSC_VER
-  const std::string vendor ( Program::instance().vendor() );
-  #else
-  const std::string vendor ( '.' + Program::instance().app()->vendor() );
-  #endif
+  // Get vendor directory.
+  const std::string vendorDir ( Usul::User::Directory::vendor ( vendorName, true ) );
 
-  // Append vendor and program name to path.
-  std::string path ( home + '/' + vendor + '/' + Program::instance().app()->name() );
+  // Make sure appropriate configuration file exists.
+  _file = ( vendorDir + appName + '/' + appName + ".xml" );
+  Usul::File::make ( _file );
 
-  // Make the directory if we need to.
-  if ( false == Usul::File::MakeDir::make ( path ) )
-    throw std::runtime_error ( "Error 3484322278: Failed to make application directory: " + path );
+  // If the file is empty then write a default one.
+  if ( 0 == Usul::File::size ( _file ) )
+    this->_initFile ( _file );
+
+  // Parse the file.
+  XmlTree::Root::RefPtr xml ( new XmlTree::Root ( _file ) );
+
+  // Feedback.
+  std::cout << "Registry file: " << _file << std::endl;
 
   // Reference the xml tree.
+  _xml = xml.get();
   Usul::Pointers::reference ( _xml );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the tree back to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Registry::flush()
+{
+  Guard guard ( this->mutex() );
+  if ( _xml )
+    _xml->write ( _file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the XML file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Registry::_initFile ( const std::string &file )
+{
+  USUL_ASSERT ( true == Usul::Predicates::FileExists::test ( file ) );
+  std::ofstream out ( file.c_str() );
+  out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<registry>\n</registry>\n";
 }
 
 
@@ -175,6 +215,11 @@ void Registry::writeValue ( const std::string &section, const AFW::Core::Types::
 void Registry::writeValue ( const std::string &section, const std::string &key, unsigned int value )
 {
   Guard guard ( this->mutex() );
+  if ( _xml )
+  {
+    _xml->node ( section + '/' + key, '/', value );
+    _dirty = true;
+  }
 }
 
 
@@ -187,6 +232,11 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, int value )
 {
   Guard guard ( this->mutex() );
+  if ( _xml )
+  {
+    _xml->node ( section + '/' + key, '/', value );
+    _dirty = true;
+  }
 }
 
 
@@ -199,6 +249,11 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, bool value )
 {
   Guard guard ( this->mutex() );
+  if ( _xml )
+  {
+    _xml->node ( section + '/' + key, '/', value );
+    _dirty = true;
+  }
 }
 
 
@@ -211,4 +266,9 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, const std::string &value )
 {
   Guard guard ( this->mutex() );
+  if ( _xml )
+  {
+    _xml->node ( section + '/' + key, '/', value );
+    _dirty = true;
+  }
 }

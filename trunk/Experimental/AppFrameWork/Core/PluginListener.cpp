@@ -52,7 +52,7 @@ PluginListener::~PluginListener()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2164986368", "3970224707" );
+  AFW_CATCH_BLOCK ( 2164986368ul );
 }
 
 

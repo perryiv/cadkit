@@ -83,7 +83,7 @@ WxInternalMainWin::~WxInternalMainWin()
       wxTheApp->SetTopWindow ( 0x0 );
   }
 
-  AFW_CATCH_BLOCK ( "1007659073", "2846306739" );
+  AFW_CATCH_BLOCK ( 1007659073ul );
 }
 
 

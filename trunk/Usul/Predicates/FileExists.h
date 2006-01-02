@@ -69,10 +69,15 @@ public:
   {
   }
 
-  bool operator () ( const std::string &s ) const
+  static bool test ( const std::string &s )
   {
     File file ( s );
     return file.exists();
+  }
+
+  bool operator () ( const std::string &s ) const
+  {
+    return this->test ( s );
   }
 };
 

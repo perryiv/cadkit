@@ -74,7 +74,7 @@ WxComponent::~WxComponent()
     }
   }
 
-  AFW_CATCH_BLOCK ( "3966798560", "3409690968" );
+  AFW_CATCH_BLOCK ( 3966798560ul );
 }
 
 

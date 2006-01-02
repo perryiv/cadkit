@@ -79,7 +79,7 @@ bool PluginRegistry::read ( PluginRegistry::PluginFiles &plugins )
   }
 
   // Catch all exceptions.
-  AFW_CATCH_BLOCK ( 2480101775ul, 7444656330ul );
+  AFW_CATCH_BLOCK ( 2480101775ul );
 
   // If we get to here then it did not work.
   return false;
@@ -102,7 +102,7 @@ bool PluginRegistry::read ( const std::string &name, PluginRegistry::PluginFiles
   }
 
   // Catch all exceptions.
-  AFW_CATCH_BLOCK ( 6148032540ul, 8920641120ul );
+  AFW_CATCH_BLOCK ( 6148032540ul );
 
   // If we get to here then it did not work.
   return false;

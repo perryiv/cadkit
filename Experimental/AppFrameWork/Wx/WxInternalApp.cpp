@@ -61,7 +61,7 @@ bool WxInternalApp::OnInit()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "1284571148", "2535076591" );
+  AFW_CATCH_BLOCK ( 1284571148ul );
 
   // Initialization failed.
   return false;
@@ -82,7 +82,7 @@ int WxInternalApp::OnExit()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "1140043374", "2031399571" );
+  AFW_CATCH_BLOCK ( 1140043374ul );
 
   // Cleanup failed.
   return 1;
@@ -105,7 +105,7 @@ bool WxInternalApp::ProcessIdle()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2912104756", "2053660603" );
+  AFW_CATCH_BLOCK ( 2912104756ul );
 
   // Pass along to base class.
   return BaseClass::ProcessIdle();

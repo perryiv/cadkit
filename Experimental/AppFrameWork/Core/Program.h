@@ -64,7 +64,7 @@ public:
   static void                         destroy();
 
   // Return any accumulated errors. Flushes the errors.
-  std::string                         errors() const;
+  std::string                         errors ( bool includeSystemErrors = false ) const;
 
   // Convenience function to run and cleanup the application.
   void                                execute ( int argc, char **argv, InitFunctor *init = 0x0, const std::string &name = std::string() );

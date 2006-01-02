@@ -122,7 +122,7 @@ WxMainWindow::~WxMainWindow()
     this->removeAll();
   }
 
-  AFW_CATCH_BLOCK ( "3284071988", "1224275350" );
+  AFW_CATCH_BLOCK ( 3284071988ul );
 }
 
 

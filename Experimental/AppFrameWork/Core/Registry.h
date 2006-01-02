@@ -19,6 +19,8 @@
 #include "AppFrameWork/Core/Object.h"
 #include "AppFrameWork/Core/Types.h"
 
+#include <string>
+
 namespace AFW { namespace Core { class Frame; class Window; } }
 namespace XmlTree { class Root; }
 
@@ -33,6 +35,12 @@ public:
 
   // Typedefs.
   typedef Object BaseClass;
+
+  // Flush changes back to disk.
+  void                                flush();
+
+  // Initialize the registry.
+  virtual void                        init ( const std::string &vendor, const std::string &name );
 
   // Write the value.
   void                                writeValue ( const std::string &section, const std::string &key, bool );
@@ -54,7 +62,7 @@ protected:
   // Use reference counting.
   virtual ~Registry();
 
-  void                                _init();
+  void                                _initFile ( const std::string &file );
 
 private:
 
@@ -63,6 +71,8 @@ private:
   Registry &operator = ( const Registry & );
 
   XmlTree::Root *_xml;
+  std::string _file;
+  bool _dirty;
 
   AFW_DECLARE_OBJECT ( Registry );
 };

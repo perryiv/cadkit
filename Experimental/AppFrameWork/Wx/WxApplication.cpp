@@ -80,7 +80,7 @@ WxApplication::~WxApplication()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2787109888", "3059977611" );
+  AFW_CATCH_BLOCK ( 2787109888ul );
 }
 
 

@@ -104,7 +104,7 @@ Window::~Window()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "3539223479", "3180678094" );
+  AFW_CATCH_BLOCK ( 3539223479ul );
 }
 
 

@@ -83,7 +83,7 @@ WxStatusBar::~WxStatusBar()
   }
 
   // Catch all exceptions.
-  AFW_CATCH_BLOCK ( 2299288050ul, 2405874354ul );
+  AFW_CATCH_BLOCK ( 2299288050ul );
 }
 
 

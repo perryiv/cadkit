@@ -35,7 +35,7 @@ using namespace AFW::Core;
 ProgramLifeCycle::ProgramLifeCycle()
 {
   try { Program::instance(); }
-  AFW_CATCH_BLOCK ( 8550804340ul, 4094773282ul );
+  AFW_CATCH_BLOCK ( 8550804340ul );
 }
 
 
@@ -48,7 +48,7 @@ ProgramLifeCycle::ProgramLifeCycle()
 ProgramLifeCycle::~ProgramLifeCycle()
 {
   try { Program::destroy(); }
-  AFW_CATCH_BLOCK ( 1784739761ul, 3964502539ul );
+  AFW_CATCH_BLOCK ( 1784739761ul );
 }
 
 
@@ -65,7 +65,7 @@ PluginsLifeCycle::PluginsLifeCycle()
 
   // Load all plugins.
   try { Program::instance().pluginsLoad(); }
-  AFW_CATCH_BLOCK ( 1575296186ul, 3169570821ul );
+  AFW_CATCH_BLOCK ( 1575296186ul );
 
   // Print errors again.
   std::cout << Program::instance().errors() << std::flush;
@@ -85,7 +85,7 @@ PluginsLifeCycle::~PluginsLifeCycle()
 
   // Release all plugins.
   try { Program::instance().pluginsRelease(); }
-  AFW_CATCH_BLOCK ( 1856474491ul, 2319844947ul );
+  AFW_CATCH_BLOCK ( 1856474491ul );
 
   // Print errors again.
   std::cout << Program::instance().errors() << std::flush;
@@ -105,7 +105,7 @@ AppLifeCycle::AppLifeCycle()
 
   // Make application.
   try { Program::instance().app ( Program::instance().newObject<Application>() ); }
-  AFW_CATCH_BLOCK ( 1345089604ul, 1677290815ul );
+  AFW_CATCH_BLOCK ( 1345089604ul );
 
   // Print errors again.
   std::cout << Program::instance().errors() << std::flush;
@@ -132,7 +132,7 @@ AppLifeCycle::~AppLifeCycle()
       Program::instance().app ( 0x0 );
     }
   }
-  AFW_CATCH_BLOCK ( 1440365800ul, 3932001521ul );
+  AFW_CATCH_BLOCK ( 1440365800ul );
 
   // Print errors again.
   std::cout << Program::instance().errors() << std::flush;

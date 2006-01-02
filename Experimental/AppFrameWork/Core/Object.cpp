@@ -88,7 +88,7 @@ Object::~Object()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "1072220024", "2486162374" );
+  AFW_CATCH_BLOCK ( 1072220024ul );
 }
 
 

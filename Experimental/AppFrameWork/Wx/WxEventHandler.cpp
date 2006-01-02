@@ -230,6 +230,8 @@ void WxEventHandler::_wxCommandEventHandler ( wxCommandEvent &event )
 
 void WxEventHandler::_common ( wxEvent &event )
 {
+#ifdef _DEBUG
+
   std::cout << "Event type: " << event.GetEventType() << ", ID: " << event.GetId();
   std::cout << ", Time: " << Usul::System::DateTime::format ( event.GetTimestamp() );
   std::cout << ", Name: " << event.GetClassInfo()->GetClassName();
@@ -247,4 +249,6 @@ void WxEventHandler::_common ( wxEvent &event )
   }
 
   std::cout << std::endl;
+
+#endif
 }

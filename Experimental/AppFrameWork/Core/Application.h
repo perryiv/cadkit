@@ -101,6 +101,8 @@ protected:
 
   void                                _buildDefault();
 
+  void                                _initRegistry();
+
 private:
 
   // No copying.

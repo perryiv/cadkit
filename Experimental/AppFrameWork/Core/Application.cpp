@@ -43,9 +43,8 @@ Application::Application() : BaseClass(),
   _events      (),
   _models      (),
   _recentFiles (),
-  _registry    ( Program::instance().newObject<Registry>() )
+  _registry    ( 0x0 )
 {
-  Usul::Pointers::reference ( _registry );
 }
 
 
@@ -72,7 +71,7 @@ Application::~Application()
   }
 
   // Catch exceptions.
-  AFW_CATCH_BLOCK ( "2237933076", "3434554806" );
+  AFW_CATCH_BLOCK ( 2237933076ul );
 }
 
 
@@ -128,6 +127,9 @@ void Application::init()
 {
   // One thread at a time.
   Guard guard ( this->mutex() );
+
+  // Initialize registry.
+  this->_initRegistry();
 
   // Make main window.
   this->mainWindow ( Program::instance().newObject<MainWindow>() );
@@ -326,6 +328,7 @@ void Application::run ( RunCommand command )
 
 void Application::quit()
 {
+  Guard guard ( this->mutex() );
 }
 
 
@@ -337,6 +340,7 @@ void Application::quit()
 
 AFW::Core::Registry *Application::registry()
 {
+  Guard guard ( this->mutex() );
   return _registry;
 }
 
@@ -349,5 +353,37 @@ AFW::Core::Registry *Application::registry()
 
 const AFW::Core::Registry *Application::registry() const
 {
+  Guard guard ( this->mutex() );
   return _registry;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initRegistry()
+{
+  // One thread at a time.
+  Guard guard ( this->mutex() );
+
+  // Safely...
+  try
+  {
+    // Make it possible to call this function multiple times.
+    Usul::Pointers::unreference ( _registry );
+    _registry = 0x0;
+
+    // Make new registry.
+    _registry = Program::instance().newObject<Registry>();
+    Usul::Pointers::reference ( _registry );
+
+    // Initialize it.
+    _registry->init ( Program::instance().vendor(), _name );
+  }
+
+  // Catch all exceptions.
+  AFW_CATCH_BLOCK ( 3388568473ul );
 }

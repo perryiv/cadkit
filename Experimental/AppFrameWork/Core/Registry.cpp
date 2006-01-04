@@ -17,11 +17,12 @@
 #include "AppFrameWork/Core/Constants.h"
 #include "AppFrameWork/Core/Frame.h"
 
-#include "XmlTree/Root.h"
+#include "XmlTree/Document.h"
 
 #include "Usul/File/Make.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Predicates/FileExists.h"
+#include "usul/Strings/Split.h"
 #include "Usul/User/Directory.h"
 
 #include <iostream>
@@ -91,7 +92,7 @@ void Registry::init ( const std::string &vendorName, const std::string &appName 
     this->_initFile ( _file );
 
   // Parse the file.
-  XmlTree::Root::RefPtr xml ( new XmlTree::Root ( _file ) );
+  XmlTree::Document::RefPtr xml ( new XmlTree::Document ( _file ) );
 
   // Feedback.
   std::cout << "Registry file: " << _file << std::endl;
@@ -126,7 +127,7 @@ void Registry::_initFile ( const std::string &file )
 {
   USUL_ASSERT ( true == Usul::Predicates::FileExists::test ( file ) );
   std::ofstream out ( file.c_str() );
-  out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<registry>\n</registry>\n";
+  out << XmlTree::Constants::HEADER << "\n<registry>\n</registry>\n";
 }
 
 
@@ -215,11 +216,9 @@ void Registry::writeValue ( const std::string &section, const AFW::Core::Types::
 void Registry::writeValue ( const std::string &section, const std::string &key, unsigned int value )
 {
   Guard guard ( this->mutex() );
-  if ( _xml )
-  {
-    _xml->node ( section + '/' + key, '/', value );
-    _dirty = true;
-  }
+  std::ostringstream out;
+  out << value;
+  this->writeValue ( section, key, out.str() );
 }
 
 
@@ -232,11 +231,9 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, int value )
 {
   Guard guard ( this->mutex() );
-  if ( _xml )
-  {
-    _xml->node ( section + '/' + key, '/', value );
-    _dirty = true;
-  }
+  std::ostringstream out;
+  out << value;
+  this->writeValue ( section, key, out.str() );
 }
 
 
@@ -249,11 +246,9 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, bool value )
 {
   Guard guard ( this->mutex() );
-  if ( _xml )
-  {
-    _xml->node ( section + '/' + key, '/', value );
-    _dirty = true;
-  }
+  std::ostringstream out;
+  out << ( ( value ) ? "true" : "false" );
+  this->writeValue ( section, key, out.str() );
 }
 
 
@@ -266,9 +261,26 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
 void Registry::writeValue ( const std::string &section, const std::string &key, const std::string &value )
 {
   Guard guard ( this->mutex() );
-  if ( _xml )
+  if ( 0x0 == _xml )
+    return;
+
+  // Split the path.
+  typedef std::vector < std::string > Parts;
+  Parts parts;
+  Usul::Strings::split ( section + '/' + key, '/', false, parts );
+
+  // Loop through the parts and get the node. Create it if needed.
+  XmlTree::Node::RefPtr node ( _xml );
+  for ( Parts::const_iterator i = parts.begin(); i != parts.end(); ++i )
+    node = ( ( node ) ? node->child ( 0, *i ) : 0x0 );
+
+  // If we found a node...
+  if ( node.valid() )
   {
-    _xml->node ( section + '/' + key, '/', value );
+    // Set value of node.
+    node->value ( value );
+
+    // We're dirty.
     _dirty = true;
   }
 }

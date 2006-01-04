@@ -158,24 +158,44 @@
 			Name="Source"
 			Filter="">
 			<File
+				RelativePath=".\Document.cpp">
+			</File>
+			<File
+				RelativePath=".\Document.h">
+			</File>
+			<File
 				RelativePath=".\Export.h">
 			</File>
 			<File
-				RelativePath=".\Root.cpp">
+				RelativePath=".\Functions.cpp">
 			</File>
 			<File
-				RelativePath=".\Root.h">
+				RelativePath=".\Functions.h">
 			</File>
-			<Filter
-				Name="Detail"
-				Filter="">
-				<File
-					RelativePath=".\Detail\RootImpl.cpp">
-				</File>
-				<File
-					RelativePath=".\Detail\RootImpl.h">
-				</File>
-			</Filter>
+			<File
+				RelativePath=".\Loader.cpp">
+			</File>
+			<File
+				RelativePath=".\Loader.h">
+			</File>
+			<File
+				RelativePath=".\Node.cpp">
+			</File>
+			<File
+				RelativePath=".\Node.h">
+			</File>
+			<File
+				RelativePath=".\Writer.cpp">
+			</File>
+			<File
+				RelativePath=".\Writer.h">
+			</File>
+			<File
+				RelativePath=".\XercesLife.cpp">
+			</File>
+			<File
+				RelativePath=".\XercesLife.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

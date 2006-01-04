@@ -22,7 +22,7 @@
 #include <string>
 
 namespace AFW { namespace Core { class Frame; class Window; } }
-namespace XmlTree { class Root; }
+namespace XmlTree { class Document; }
 
 
 namespace AFW {
@@ -70,7 +70,7 @@ private:
   Registry ( const Registry & );
   Registry &operator = ( const Registry & );
 
-  XmlTree::Root *_xml;
+  XmlTree::Document *_xml;
   std::string _file;
   bool _dirty;
 

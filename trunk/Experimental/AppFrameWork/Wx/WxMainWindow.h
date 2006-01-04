@@ -30,6 +30,8 @@ public:
   // Typedefs.
   typedef AFW::Core::MainWindow BaseClass;
   typedef BaseClass::Itr Itr;
+  typedef AFW::Core::Window::Position Position;
+  typedef AFW::Core::Window::Size Size;
 
   // Write configuration to disk.
   virtual void                        configWrite() const;
@@ -44,6 +46,12 @@ public:
   const WxMenuBar *                   menuBar() const;
   WxMenuBar *                         menuBar();
   virtual void                        menuBar ( AFW::Menus::MenuBar * );
+
+  // Return the position.
+  virtual Position                    position() const;
+
+  // Return window size.
+  virtual Size                        size() const;
 
   // Set/get the status bar.
   const WxStatusBar *                 statusBar() const;

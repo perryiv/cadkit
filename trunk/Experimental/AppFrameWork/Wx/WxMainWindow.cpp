@@ -428,3 +428,41 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
   // It worked.
   return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get window size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Window::Size WxMainWindow::size() const
+{
+  Guard guard ( this->mutex() );
+  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
+  if ( frame )
+  {
+    wxSize s ( frame->GetSize() );
+    return ( Window::Size ( s.x, s.y ) );
+  }
+  return BaseClass::size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get window position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Window::Position WxMainWindow::position() const
+{
+  Guard guard ( this->mutex() );
+  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
+  if ( frame )
+  {
+    wxPoint p ( frame->GetPosition() );
+    return Window::Position ( p.x, p.y );
+  }
+  return BaseClass::Position();
+}

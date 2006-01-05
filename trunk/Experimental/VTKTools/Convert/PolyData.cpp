@@ -178,7 +178,7 @@ void PolyData::triangleSetToPolyData ( OsgTools::Triangles::TriangleSet *triangl
   TriangleVector &triangles ( triangleSet->triangles() );
   osg::ref_ptr < osg::Vec3Array > vertices ( triangleSet->vertices() );
 
-  USUL_ASSERT ( sizeof ( osg::Vec3Array::value_type::value_type ) == sizeof ( points->GetData()->GetDataTypeSize() ) );
+  //USUL_ASSERT ( sizeof ( osg::Vec3Array::value_type::value_type ) == sizeof ( points->GetData()->GetDataTypeSize() ) );
   
   //::memcpy ( points->GetData(), &vertices->front(), vertices->size() );
   for ( osg::Vec3Array::const_iterator iter = vertices->begin(); iter != vertices->end(); ++iter )

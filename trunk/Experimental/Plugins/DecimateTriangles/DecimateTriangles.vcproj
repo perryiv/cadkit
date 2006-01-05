@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: Decimate Triangles"
-	ProjectGUID="{e612b896-1bab-476c-9583-d389f30d41d8}"
+	ProjectGUID="{E612B896-1BAB-476C-9583-D389F30D41D8}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(USUL_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DECIMATE_TRIANGLES"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -47,11 +47,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib"
+				AdditionalDependencies="osgd.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="../../../bin/DecimateTriangles.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug\DecimateTrianglesd.pdb"
@@ -95,7 +95,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(USUL_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DECIMATE_TRIANGLES"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -117,11 +117,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib"
+				AdditionalDependencies="osg.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="../../../bin/DecimateTriangles.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\DecimateTriangles.pdb"
 				ImportLibrary=".\Release\DecimateTriangles.lib"/>
@@ -190,4 +190,3 @@
 	<Globals>
 	</Globals>
 </VisualStudioProject>
-

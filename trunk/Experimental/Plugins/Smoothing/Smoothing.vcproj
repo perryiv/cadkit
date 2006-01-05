@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: Smoothing"
-	ProjectGUID="{9a768579-6d06-4cf2-8e96-a9c3575f6d47}"
+	ProjectGUID="{9A768579-6D06-4CF2-8E96-A9C3575F6D47}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

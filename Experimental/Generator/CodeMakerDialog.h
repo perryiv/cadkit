@@ -129,6 +129,8 @@ private:
   void _initializeAvailableInterfaces();
   void _initializeAvailableLibraries();
 
+  template < class Strings > void _selectedInterfaces ( Strings& strings );
+
 ////@begin CodeMakerDialog member variables
     wxTextCtrl* _creator;
     wxTextCtrl* _directory;

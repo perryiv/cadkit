@@ -9,44 +9,36 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  Interface for smoothing triangles.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEWER_H_
-#define _USUL_INTERFACE_VIEWER_H_
+#ifndef _USUL_INTERFACE_SMOOTH_TRIANGLES_H_
+#define _USUL_INTERFACE_SMOOTH_TRIANGLES_H_
 
 #include "Usul/Interfaces/IUnknown.h"
+
+namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IViewer : public Usul::Interfaces::IUnknown
+struct ISmoothTriangles : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewer );
+  USUL_DECLARE_QUERY_POINTERS ( ISmoothTriangles );
 
   /// Id for this interface.
-  enum { IID = 3739984930u };
+  enum { IID = 1100046596u };
 
-  virtual void render() = 0;
+  virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet* ) = 0;
 
-  virtual void clearScene() = 0;
-
-  // TODO Move these to a IViewport interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
-
-  virtual void handleMessage ( unsigned short message ) = 0;
-
-}; // struct IViewer
+}; // class ISmoothTriangles
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEWER_H_
+#endif // _USUL_INTERFACE_SMOOTH_TRIANGLES_H_

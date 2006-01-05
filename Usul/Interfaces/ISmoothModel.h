@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  Interface for smoothing the model the implementor contains.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEWER_H_
-#define _USUL_INTERFACE_VIEWER_H_
+#ifndef _USUL_INTERFACE_SMOOTH_MODEL_H_
+#define _USUL_INTERFACE_SMOOTH_MODEL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,31 +22,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IViewer : public Usul::Interfaces::IUnknown
+struct ISmoothModel : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewer );
+  USUL_DECLARE_QUERY_POINTERS ( ISmoothModel );
 
   /// Id for this interface.
-  enum { IID = 3739984930u };
+  enum { IID = 1204646586u };
 
-  virtual void render() = 0;
+  virtual void smoothModel ( ) = 0;
 
-  virtual void clearScene() = 0;
-
-  // TODO Move these to a IViewport interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
-
-  virtual void handleMessage ( unsigned short message ) = 0;
-
-}; // struct IViewer
+}; // class ISmoothModel
 
 
 } // namespace Interfaces
 } // namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEWER_H_
+#endif // _USUL_INTERFACE_SMOOTH_MODEL_H_

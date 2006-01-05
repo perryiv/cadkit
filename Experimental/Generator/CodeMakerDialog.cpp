@@ -33,6 +33,10 @@
 ////@begin XPM images
 ////@end XPM images
 
+#include "Usul/File/Find.h"
+#include <vector>
+#include <string>
+
 /*!
  * CodeMakerDialog type definition
  */
@@ -83,6 +87,7 @@ bool CodeMakerDialog::Create( wxWindow* parent, wxWindowID id, const wxString& c
     _creator = NULL;
     _directory = NULL;
     _pluginName = NULL;
+    _interfaces = NULL;
     _interfaceName = NULL;
 ////@end CodeMakerDialog member initialisation
 
@@ -154,9 +159,9 @@ void CodeMakerDialog::CreateControls()
     wxStaticText* itemStaticText18 = new wxStaticText( itemPanel12, wxID_STATIC, _("Interfaces"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer13->Add(itemStaticText18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxString* itemListBox19Strings = NULL;
-    wxListBox* itemListBox19 = new wxListBox( itemPanel12, ID_LISTBOX2, wxDefaultPosition, wxDefaultSize, 0, itemListBox19Strings, wxLB_EXTENDED );
-    itemBoxSizer13->Add(itemListBox19, 0, wxGROW|wxALL, 5);
+    wxString* _interfacesStrings = NULL;
+    _interfaces = new wxListBox( itemPanel12, ID_LISTBOX2, wxDefaultPosition, wxDefaultSize, 0, _interfacesStrings, wxLB_EXTENDED );
+    itemBoxSizer13->Add(_interfaces, 0, wxGROW|wxALL, 5);
 
     wxStaticText* itemStaticText20 = new wxStaticText( itemPanel12, wxID_STATIC, _("Libraries"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer13->Add(itemStaticText20, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
@@ -227,6 +232,8 @@ void CodeMakerDialog::CreateControls()
     itemBoxSizer2->Add(itemButton39, 0, wxALIGN_RIGHT|wxALL, 5);
 
 ////@end CodeMakerDialog content construction
+
+    this->_initializeAvailableInterfaces();
 }
 
 /*!
@@ -299,8 +306,17 @@ void CodeMakerDialog::OnCreatePluginClick( wxCommandEvent& )
   {
     std::string creator ( _creator->GetValue() );
 
+    CodeMaker::StringArray array;
+    wxArrayInt selections;
+    _interfaces->GetSelections ( selections );
+
+    for ( wxArrayInt::iterator i = selections.begin(); i != selections.end(); ++i )
+    {
+      array.push_back ( _interfaces->GetString ( *i ).c_str() );
+    }
+
     std::string errors;
-    CodeMaker::instance().createPlugin ( creator, pluginName, directory, errors );
+    CodeMaker::instance().createPlugin ( creator, pluginName, directory, array, errors );
 
     if ( !errors.empty() )
     {
@@ -346,4 +362,31 @@ void CodeMakerDialog::OnDirectoryClick( wxCommandEvent& )
   _directory->SetValue ( dialog.GetPath() );
 }
 
+
+void CodeMakerDialog::_initializeAvailableInterfaces()
+{
+  typedef std::vector < std::string > Strings;
+  Strings interfaces;
+
+  char buf [256];
+  ::GetEnvironmentVariable ( "USUL_INC_DIR", buf, 256 );
+
+  std::string usuldir ( buf );
+  usuldir += "/Usul/Interfaces";
+
+  Usul::File::find ( usuldir, "h", interfaces );
+
+  wxArrayString array;
+  for ( Strings::const_iterator iter = interfaces.begin(); iter != interfaces.end(); ++iter )
+  {
+    array.Add ( iter->c_str() );
+  }
+
+  _interfaces->InsertItems ( array, 0 );
+}
+
+
+void CodeMakerDialog::_initializeAvailableLibraries()
+{
+}
 

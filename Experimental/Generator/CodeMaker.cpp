@@ -10,6 +10,7 @@
 #include "CodeMaker.h"
 #include "XMLFile.h"
 
+#include "Usul/File/Slash.h"
 
 #include "xercesc/util/PlatformUtils.hpp"
 #include "xercesc/SAX/SAXException.hpp"
@@ -20,6 +21,7 @@
 #include "xalanc/XSLT/XSLTInputSource.hpp"
 
 #include "boost/algorithm/string/replace.hpp"
+#include "boost/algorithm/string/find.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -76,10 +78,14 @@ CodeMaker::~CodeMaker()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CodeMaker::createPlugin ( const std::string &creator, const std::string& pluginName, const std::string& directory, std::string& errors )
+void CodeMaker::createPlugin ( const std::string& creator,
+                               const std::string& pluginName, 
+                               const std::string& directory, 
+                               const StringArray& interfaces,
+                               std::string& errors )
 {
   this->_handleCompileGuard ( creator, pluginName, directory, errors );
-  this->_handleComponent    ( creator, pluginName, directory, errors );
+  this->_handleComponent    ( creator, pluginName, directory, interfaces, errors );
   this->_handleFactory      ( creator, pluginName, directory, errors );
   this->_handleExport       ( creator, pluginName, directory, errors );
   this->_handleProjectFiles ( creator, pluginName, directory, errors );
@@ -139,7 +145,7 @@ void CodeMaker::_handleCompileGuard ( const std::string& name, const std::string
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CodeMaker::_handleComponent ( const std::string& name, const std::string& plugin, const std::string& directory, std::string& errors )
+void CodeMaker::_handleComponent ( const std::string& name, const std::string& plugin, const std::string& directory, const StringArray& interfaces, std::string& errors )
 {
   std::ostringstream xml;
   XMLFile file ( xml );
@@ -199,14 +205,23 @@ void CodeMaker::_handleComponent ( const std::string& name, const std::string& p
   }
 
   {
-    // Leaving this here for an example.
-#if 0
-    Strings keys, values;
-    keys.push_back ( "name" );
-    values.push_back ( "IUsulInterface" );
+    for ( StringArray::const_iterator iter = interfaces.begin(); iter != interfaces.end(); ++iter )
+    {
+      std::string value ( *iter );
 
-		file.tagWithAttributes( "UsulInterface", keys, values, "" );
-#endif
+      typedef boost::algorithm::iterator_range < std::string::iterator > Iterator;
+      Iterator slash ( boost::algorithm::find_last ( value, Usul::File::slash() ) );
+      Iterator dot   ( boost::algorithm::find_last ( value, "." ) );
+
+      Strings keys, values;
+
+      keys.push_back ( "name" );
+
+      std::string interfaceName ( slash.begin() + 1, dot.begin() );
+      values.push_back ( interfaceName );
+
+		  file.tagWithAttributes( "UsulInterface", keys, values, "" );
+    }
   }
 
 	file.closeTag("ComponentHeader" );

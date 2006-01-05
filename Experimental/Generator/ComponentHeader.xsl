@@ -31,9 +31,14 @@
 </xsl:for-each>
 <xsl:text>
 &#xa;
+</xsl:text>
+<xsl:for-each select="PluginTemplate/ComponentHeader/UsulInterface">
+<xsl:text>#include "Usul/Interfaces/</xsl:text><xsl:value-of select="@name" /><xsl:text>.h"&#xa;</xsl:text>
+</xsl:for-each><xsl:text>
+&#xa;
 class </xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text> : public Usul::Base::Referenced,&#x0A;</xsl:text>
 <xsl:for-each select="PluginTemplate/ComponentHeader/UsulInterface">
-                    <xsl:text>public Usul::Interfaces::</xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/UsulInterface/@name" /><xsl:text>,&#x0A;</xsl:text>
+                    <xsl:text>public Usul::Interfaces::</xsl:text> <xsl:value-of select="@name" /><xsl:text>,&#x0A;</xsl:text>
 </xsl:for-each>
                     <xsl:text>public Usul::Interfaces::IPlugin
 {

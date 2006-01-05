@@ -126,10 +126,14 @@ public:
     static bool ShowToolTips();
 
 private:
+  void _initializeAvailableInterfaces();
+  void _initializeAvailableLibraries();
+
 ////@begin CodeMakerDialog member variables
     wxTextCtrl* _creator;
     wxTextCtrl* _directory;
     wxTextCtrl* _pluginName;
+    wxListBox* _interfaces;
     wxTextCtrl* _interfaceName;
 ////@end CodeMakerDialog member variables
 };

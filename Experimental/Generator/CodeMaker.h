@@ -11,21 +11,30 @@
 #define __CODE_MAKER_H__
 
 #include <string>
+#include <vector>
 
 class CodeMaker
 {
 public:
+  typedef std::vector < std::string > StringArray;
 
   /// It is a singleton.
   static CodeMaker&     instance();
 
-  void           createPlugin        ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );
+  void           createPlugin        ( const std::string& creator,
+                                       const std::string& plugin, 
+                                       const std::string& directory, 
+                                       const StringArray& interfaces,
+                                       std::string& errors );
+
   void           createInterface     ( const std::string& creator, const std::string& name, std::string& errors );
+
+  void           availableLibraryDirectories  ( StringArray& libraries );
 
 private:
   
   void           _handleCompileGuard ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );
-  void           _handleComponent    ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );
+  void           _handleComponent    ( const std::string& creator, const std::string& plugin, const std::string& directory, const StringArray& interfaces, std::string& errors );
   void           _handleFactory      ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );
   void           _handleExport       ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );
   void           _handleProjectFiles ( const std::string& creator, const std::string& plugin, const std::string& directory, std::string& errors );

@@ -17,6 +17,8 @@
 
 #include <sstream>
 #include <memory>
+#include <algorithm>
+#include <ctype.h>
 
 using namespace XmlTree;
 
@@ -94,16 +96,17 @@ std::string Functions::name ( const xercesc::DOMNode *node )
 
 std::string Functions::value ( const xercesc::DOMNode *node )
 {
+  std::string v;
   if ( 0x0 != node )
   {
     switch ( node->getNodeType() )
     {
       case xercesc::DOMNode::TEXT_NODE:
       case xercesc::DOMNode::ATTRIBUTE_NODE:
-        return ( XmlTree::Functions::translate ( node->getNodeValue() ) );
+        v = XmlTree::Functions::translate ( node->getNodeValue() );
     }
   }
-  return std::string();
+  return ( ( XmlTree::Functions::hasContent ( v ) ) ? v : std::string() );
 }
 
 
@@ -132,4 +135,66 @@ std::string Functions::translate ( const XMLCh *text )
 
   // Return what we have.
   return s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return string for node type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::type ( const xercesc::DOMNode *node )
+{
+  if ( node )
+  {
+    switch ( node->getNodeType() )
+    {
+      case xercesc::DOMNode::ELEMENT_NODE:
+        return "element";
+      case xercesc::DOMNode::ATTRIBUTE_NODE:
+        return "attribute";
+      case xercesc::DOMNode::TEXT_NODE:
+        return "text";
+      case xercesc::DOMNode::CDATA_SECTION_NODE:
+        return "cdata_section";
+      case xercesc::DOMNode::ENTITY_REFERENCE_NODE:
+        return "entity_reference";
+      case xercesc::DOMNode::ENTITY_NODE:
+        return "entity";
+      case xercesc::DOMNode::PROCESSING_INSTRUCTION_NODE:
+        return "processing_instruction";
+      case xercesc::DOMNode::COMMENT_NODE:
+        return "comment";
+      case xercesc::DOMNode::DOCUMENT_NODE:
+        return "document";
+      case xercesc::DOMNode::DOCUMENT_TYPE_NODE:
+        return "document_type";
+      case xercesc::DOMNode::DOCUMENT_FRAGMENT_NODE:
+        return "document_fragment";
+      case xercesc::DOMNode::NOTATION_NODE:
+        return "notation";
+    }
+  }
+  return std::string();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns true if there are characters other than white spaces.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Functions::hasContent ( const std::string &s )
+{
+  for ( std::string::const_iterator i = s.begin(); i != s.end(); ++i )
+  {
+    const char c ( *i );
+    if ( 0 == ::isspace ( c ) )
+    {
+      return true;
+    }
+  }
+  return false;
 }

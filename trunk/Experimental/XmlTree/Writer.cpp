@@ -130,7 +130,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Writer::write ( const std::string &file, const Document *document )
+void Writer::write ( const Document *document, const std::string &file )
 {
   // Handle bad input.
   if ( 0x0 == document )
@@ -140,6 +140,23 @@ void Writer::write ( const std::string &file, const Document *document )
   std::ofstream out ( file.c_str() );
   if ( false == out.is_open() )
     throw std::runtime_error ( "Error 2178129023: failed to open file for writing: " + file );
+
+  // Call other one.
+  this->write ( document, out );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load contents of file and build the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Writer::write ( const Document *document, std::ostream &out )
+{
+  // Handle bad document.
+  if ( 0x0 == document )
+    return;
 
   // Write header.
   out << document->header();

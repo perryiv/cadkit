@@ -43,16 +43,16 @@ public:
   virtual void                        init ( const std::string &vendor, const std::string &name );
 
   // Write the value.
-  void                                writeValue ( const std::string &section, const std::string &key, bool );
-  void                                writeValue ( const std::string &section, const std::string &key, int );
-  void                                writeValue ( const std::string &section, const std::string &key, unsigned int );
-  void                                writeValue ( const std::string &section, const std::string &key, const std::string & );
-  void                                writeValue ( const std::string &section, const AFW::Core::Types::Position & );
-  void                                writeValue ( const std::string &section, const AFW::Core::Types::Size & );
+  virtual void                        writeValue ( const std::string &section, const std::string &key, bool );
+  virtual void                        writeValue ( const std::string &section, const std::string &key, int );
+  virtual void                        writeValue ( const std::string &section, const std::string &key, unsigned int );
+  virtual void                        writeValue ( const std::string &section, const std::string &key, const std::string & );
+  virtual void                        writeValue ( const std::string &section, const AFW::Core::Types::Position & );
+  virtual void                        writeValue ( const std::string &section, const AFW::Core::Types::Size & );
 
   // Write window geometry.
-  void                                writeGeometry ( const AFW::Core::Frame * );
-  void                                writeGeometry ( const AFW::Core::Window * );
+  virtual void                        writeGeometry ( const AFW::Core::Frame * );
+  virtual void                        writeGeometry ( const AFW::Core::Window * );
 
 protected:
 

@@ -92,6 +92,10 @@ namespace Helper
       // Parse the file.
       parser->parse ( file.c_str() );
 
+      // Normalize the document. I think this eliminates empty nodes that 
+      // Xerces may create.
+      parser->getDocument()->normalizeDocument();
+
       // Take over ownership of document and return it.
       return parser->adoptDocument();
     }
@@ -156,74 +160,6 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Prototype needed below.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper { void traverse ( const xercesc::DOMNode *, XmlTree::Node * ); }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to traverse the children.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void traverse ( const xercesc::DOMNodeList *kids, XmlTree::Node *parent )
-  {
-    // Get number of children.
-    const XMLSize_t num ( ( kids ) ? kids->getLength() : 0 );
-
-    // Loop through the children.
-    for ( XMLSize_t i = 0; i < num; ++i )
-    {
-      // Get the child node.
-      xercesc::DOMNode *kid ( kids->item ( i ) );
-      if ( kid )
-      {
-        // Make a new child.
-        XmlTree::Node::ValidRefPtr child ( new XmlTree::Node ( XmlTree::Functions::name ( kid ) ) );
-
-        // Call this function for the new child node.
-        Helper::traverse ( kid, child.get() );
-
-        // Append the child.
-        parent->children().push_back ( child );
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to identify our definition of a text node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  bool isTextNode ( const xercesc::DOMNode *dom )
-  {
-    if ( dom )
-    {
-      const xercesc::DOMNodeList *kids ( dom->getChildNodes() );
-      const XMLSize_t num ( ( kids ) ? kids->getLength() : 0 );
-      if ( 1 == num )
-      {
-        const xercesc::DOMNode *kid ( kids->item ( 0 ) );
-        return ( xercesc::DOMNode::TEXT_NODE == kid->getNodeType() );
-      }
-    }
-    return false;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Helper function to traverse the DOM node and add children to our node.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -236,30 +172,50 @@ namespace Helper
     if ( 0x0 == dom || 0x0 == node )
       Usul::Exceptions::Thrower<std::runtime_error> ( "Error 3066136826: null node found while traversing" );
 
-    // Get the type.
-    const short type ( dom->getNodeType() );
+    // Element nodes are the groups. This should always be true because of 
+    // the way we decide to recursively call this function, and the way we 
+    // initially call it with the document's root element.
+    USUL_ASSERT ( xercesc::DOMNode::ELEMENT_NODE == dom->getNodeType() );
 
-    // Is it a text node?
-    if ( Helper::isTextNode ( dom ) )
-    {
-      // Set the value and return.
-      node->value ( XmlTree::Functions::value ( dom ) );
-      return;
-    }
-
-    // Otherwise, if it is not an element...
-    if ( xercesc::DOMNode::ELEMENT_NODE != type )
-    {
-      // Warn the user and return.
-      std::cout << "Warning 1746255179: skipping unknown node type '" << type << "' found while traversing DOM tree" << std::endl;
-      return;
-    }
+    // Should also be true.
+    USUL_ASSERT ( false == node->name().empty() );
 
     // Set the attributes.
     Helper::setAttributes ( dom->getAttributes(), node );
 
-    // Traverse children.
-    Helper::traverse ( dom->getChildNodes(), node );
+    // Loop through the children.
+    const xercesc::DOMNodeList *kids ( dom->getChildNodes() );
+    const XMLSize_t num ( ( kids ) ? kids->getLength() : 0 );
+    for ( XMLSize_t i = 0; i < num; ++i )
+    {
+      // Get the child.
+      xercesc::DOMNode *kid ( kids->item ( i ) );
+
+      // Is the child a text node?
+      if ( kid && xercesc::DOMNode::TEXT_NODE == kid->getNodeType() )
+      {
+        // Xerces builds a "text node" for the value of the text, but the 
+        // tag-name is always "#text". The parent "element node" will contain 
+        // the tag's name. Ignore text elements that are empty.
+        const std::string v ( XmlTree::Functions::value ( kid ) );
+        if ( false == v.empty() )
+          node->value ( v );
+      }
+
+      // Is the child an element?
+      else if ( kid && xercesc::DOMNode::ELEMENT_NODE == kid->getNodeType() )
+      {
+        // Does it have a name?
+        const std::string n ( XmlTree::Functions::name ( kid ) );
+        if ( false == n.empty() )
+        {
+          // Call this function recursively with a new node.
+          XmlTree::Node::ValidRefPtr child ( new XmlTree::Node ( n ) );
+          Helper::traverse ( kid, child.get() );
+          node->children().push_back ( child );
+        }
+      }
+    }
   }
 }
 
@@ -279,12 +235,10 @@ void Loader::load ( const std::string &file, Document *doc )
   if ( 0x0 == dom.get() )
       Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML file: ", file );
 
-  // Get document element.
-  xercesc::DOMElement *root ( dom.get()->getDocumentElement() );
-
-  // Name the document.
-  doc->name ( XmlTree::Functions::name ( root ) );
+  // Set the name.
+  doc->name ( XmlTree::Functions::name ( dom.get()->getDocumentElement() ) );
+  USUL_ASSERT ( false == doc->name().empty() );
 
   // Traverse the tree and make our nodes.
-  Helper::traverse ( root, doc );
+  Helper::traverse ( dom.get()->getDocumentElement(), doc );
 }

@@ -62,11 +62,11 @@ public:
 
   // Access the name.
   const std::string &     name() const { return _name; }
-  void                    name ( const std::string &n ) { _name = n; }
+  void                    name ( const std::string &n );
 
   // Access the value.
   const std::string &     value() const { return _value; }
-  void                    value ( const std::string &v ) { _value = v; }
+  void                    value ( const std::string &v );
 
 protected:
 

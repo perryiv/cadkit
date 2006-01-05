@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="lib: VTKTools"
-	ProjectGUID="{55fa4df3-4f81-4942-acf2-a9150c79cce0}"
+	ProjectGUID="{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,8 +23,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR}"
-				PreprocessorDefinitions="_WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VTK_TOOLS"
+				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VTK_TOOLS"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -47,11 +47,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkImaging.lib vtkGraphics.lib vtkFiltering.lib vtkRendering.lib"
+				AdditionalDependencies="osgd.lib vtkCommon.lib vtkGraphics.lib vtkFiltering.lib"
 				OutputFile="$(USUL_LIB_DIR)/VTKToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/VTKToolsd.pdb"
 				ImportLibrary="$(USUL_LIB_DIR)/VTKToolsd.lib"/>
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR}"
+				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VTK_TOOLS"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -116,11 +116,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkImaging.lib vtkGraphics.lib vtkFiltering.lib vtkRendering.lib"
+				AdditionalDependencies="osg.lib vtkCommon.lib vtkGraphics.lib vtkFiltering.lib"
 				OutputFile="$(USUL_LIB_DIR)/VTKTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VTKTools.pdb"
 				ImportLibrary="$(USUL_LIB_DIR)/VTKTools.lib"/>
 			<Tool
@@ -157,6 +157,23 @@
 		<Filter
 			Name="Source"
 			Filter="">
+			<Filter
+				Name="Convert"
+				Filter="">
+				<File
+					RelativePath=".\Convert\PolyData.cpp">
+				</File>
+				<File
+					RelativePath=".\Convert\PolyData.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Export"
+				Filter="">
+				<File
+					RelativePath=".\Export\Export.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: Subdivide Triangles"
-	ProjectGUID="{b3da0aa0-7d76-11da-9fa9-000f1f20363b}"
+	ProjectGUID="{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;../../;../"
+				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(USUL_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SUBDIVIDE_TRIANGLES"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -46,11 +46,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=""
+				AdditionalDependencies="osgd.lib  vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="../../../bin/SubdivideTriangles.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug\SubdivideTrianglesd.pdb"
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../../;../../;../;"
+				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(USUL_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SUBDIVIDE_TRIANGLES"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -116,11 +116,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=""
+				AdditionalDependencies="osg.lib  vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="../../../bin/SubdivideTriangles.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\SubdivideTriangles.pdb"
 				ImportLibrary=".\Release\SubdivideTriangles.lib"/>
@@ -162,6 +162,9 @@
 				Name="Implementation"
 				Filter="">
 				<File
+					RelativePath=".\CompileGuard.h">
+				</File>
+				<File
 					RelativePath=".\SubdivideTrianglesComponent.cpp">
 				</File>
 				<File
@@ -172,9 +175,6 @@
 				</File>
 				<File
 					RelativePath=".\SubdivideTrianglesFactory.h">
-				</File>
-				<File
-					RelativePath=".\CompileGuard.h">
 				</File>
 			</Filter>
 			<Filter
@@ -189,4 +189,3 @@
 	<Globals>
 	</Globals>
 </VisualStudioProject>
-

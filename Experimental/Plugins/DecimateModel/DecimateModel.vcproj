@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: Decimate Model"
-	ProjectGUID="{2a95428c-6cc9-4034-97d1-3cc600a94b67}"
+	ProjectGUID="{2A95428C-6CC9-4034-97D1-3CC600A94B67}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -190,4 +190,3 @@
 	<Globals>
 	</Globals>
 </VisualStudioProject>
-

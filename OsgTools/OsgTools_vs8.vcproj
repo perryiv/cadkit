@@ -707,14 +707,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Render\ClipPlaneCallback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Render\ClipPlaneCallback.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Render\Constants.h"
 					>
 				</File>

@@ -19,6 +19,8 @@
 #include "osg/NodeVisitor"
 #include "osg/Material"
 #include "osg/Node"
+#include "osg/BlendFunc"
+#include "osg/Depth"
 
 namespace OsgTools {
 namespace Utilities {
@@ -66,12 +68,24 @@ private:
         ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
         ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
         ss->setRenderingHint( osg::StateSet::DEFAULT_BIN );
+
+        osg::ref_ptr < osg::Depth > depth ( new osg::Depth );
+        depth->setWriteMask ( true );
+        //ss->setAttribute ( depth.get(), osg::StateAttribute::ON );
       }
       else
       {
         ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  );
         ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
         ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+        osg::ref_ptr < osg::BlendFunc > func ( new osg::BlendFunc );
+        func->setSource ( GL_SRC_COLOR );
+        func->setDestination ( GL_ONE_MINUS_CONSTANT_ALPHA );
+        //ss->setAttribute ( func.get(), osg::StateAttribute::ON );
+
+        osg::ref_ptr < osg::Depth > depth ( new osg::Depth );
+        depth->setWriteMask ( false );
+        //ss->setAttribute ( depth.get(), osg::StateAttribute::ON );
       }
     }
   }

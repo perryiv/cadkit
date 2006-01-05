@@ -243,7 +243,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   void                  handleDragging   ( float x, float y, Dragger::Command command );
   void                  handleMenu       ( float x, float y );
   void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
-  void                  handlePicking    ( float x, float y, bool left, unsigned int numClicks );
+  virtual void          handlePicking    ( float x, float y, bool left, unsigned int numClicks );
   void                  handleTool       ( bool left, bool middle, bool right, bool motion, float x, float y, float z );
 
   // Is there an accumulation buffer?

@@ -204,24 +204,23 @@ void CodeMaker::_handleComponent ( const std::string& name, const std::string& p
 #endif
   }
 
+  
+  for ( StringArray::const_iterator iter = interfaces.begin(); iter != interfaces.end(); ++iter )
   {
-    for ( StringArray::const_iterator iter = interfaces.begin(); iter != interfaces.end(); ++iter )
-    {
-      std::string value ( *iter );
+    std::string value ( *iter );
 
-      typedef boost::algorithm::iterator_range < std::string::iterator > Iterator;
-      Iterator slash ( boost::algorithm::find_last ( value, Usul::File::slash() ) );
-      Iterator dot   ( boost::algorithm::find_last ( value, "." ) );
+    typedef boost::algorithm::iterator_range < std::string::iterator > Iterator;
+    Iterator slash ( boost::algorithm::find_last ( value, Usul::File::slash() ) );
+    Iterator dot   ( boost::algorithm::find_last ( value, "." ) );
 
-      Strings keys, values;
+    Strings keys, values;
 
-      keys.push_back ( "name" );
+    keys.push_back ( "name" );
 
-      std::string interfaceName ( slash.begin() + 1, dot.begin() );
-      values.push_back ( interfaceName );
+    std::string interfaceName ( slash.begin() + 1, dot.begin() );
+    values.push_back ( interfaceName );
 
-		  file.tagWithAttributes( "UsulInterface", keys, values, "" );
-    }
+		file.tagWithAttributes( "UsulInterface", keys, values, "" );
   }
 
 	file.closeTag("ComponentHeader" );

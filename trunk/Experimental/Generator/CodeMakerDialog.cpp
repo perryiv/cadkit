@@ -288,6 +288,9 @@ void CodeMakerDialog::OnCreateInterfaceClick( wxCommandEvent& )
       dialog.ShowModal();
     }
 
+    // Re-populate the interface list.
+    this->_initializeAvailableInterfaces();
+
     _interfaceName->SetValue( "" );
   }
 }
@@ -307,13 +310,7 @@ void CodeMakerDialog::OnCreatePluginClick( wxCommandEvent& )
     std::string creator ( _creator->GetValue() );
 
     CodeMaker::StringArray array;
-    wxArrayInt selections;
-    _interfaces->GetSelections ( selections );
-
-    for ( wxArrayInt::iterator i = selections.begin(); i != selections.end(); ++i )
-    {
-      array.push_back ( _interfaces->GetString ( *i ).c_str() );
-    }
+    this->_selectedInterfaces ( array );
 
     std::string errors;
     CodeMaker::instance().createPlugin ( creator, pluginName, directory, array, errors );
@@ -365,6 +362,11 @@ void CodeMakerDialog::OnDirectoryClick( wxCommandEvent& )
 
 void CodeMakerDialog::_initializeAvailableInterfaces()
 {
+  wxArrayString selections;
+  this->_selectedInterfaces ( selections );
+
+  _interfaces->Clear();
+
   typedef std::vector < std::string > Strings;
   Strings interfaces;
 
@@ -383,6 +385,11 @@ void CodeMakerDialog::_initializeAvailableInterfaces()
   }
 
   _interfaces->InsertItems ( array, 0 );
+
+  for ( wxArrayString::iterator iter = selections.begin(); iter != selections.end(); ++iter )
+  {
+    _interfaces->SetStringSelection( *iter );
+  }
 }
 
 
@@ -390,3 +397,13 @@ void CodeMakerDialog::_initializeAvailableLibraries()
 {
 }
 
+template < class Strings > void CodeMakerDialog::_selectedInterfaces ( Strings& strings )
+{
+  wxArrayInt selections;
+  _interfaces->GetSelections ( selections );
+
+  for ( wxArrayInt::iterator i = selections.begin(); i != selections.end(); ++i )
+  {
+    strings.push_back ( _interfaces->GetString ( *i ).c_str() );
+  }
+}

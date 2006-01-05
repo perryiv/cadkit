@@ -79,5 +79,18 @@ void Document::load ( const std::string &file )
 void Document::write ( const std::string &file )
 {
   Writer writer;
-  writer.write ( file, this );
+  writer.write ( this, file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::write ( std::ostream &out )
+{
+  Writer writer;
+  writer.write ( this, out );
 }

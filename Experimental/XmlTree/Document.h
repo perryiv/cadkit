@@ -18,6 +18,9 @@
 
 #include "XmlTree/Node.h"
 
+#include <string>
+#include <iosfwd>
+
 
 namespace XmlTree {
 
@@ -43,8 +46,9 @@ public:
   // Load contents of file.
   void                    load ( const std::string & );
 
-  // Write document to file.
+  // Write document to file or stream.
   void                    write ( const std::string & );
+  void                    write ( std::ostream & );
 
 protected:
 

@@ -19,6 +19,7 @@
 #include "XmlTree/Export.h"
 
 #include <string>
+#include <iosfwd>
 
 
 namespace XmlTree {
@@ -33,8 +34,9 @@ public:
   Writer();
   ~Writer();
 
-  // Write the document to file.
-  void                    write ( const std::string &file, const Document *doc );
+  // Write the document to file or stream.
+  void                    write ( const Document *doc, const std::string &file );
+  void                    write ( const Document *doc, std::ostream &out );
 
 private:
 

@@ -100,6 +100,12 @@ void Registry::init ( const std::string &vendorName, const std::string &appName 
   // Reference the xml tree.
   _xml = xml.get();
   Usul::Pointers::reference ( _xml );
+
+#ifdef _DEBUG
+  std::cout << "----------- Start of registry file -----------" << std::endl;
+  _xml->write ( std::cout );
+  std::cout << "----------- End of registry file -----------" << std::endl;
+#endif
 }
 
 

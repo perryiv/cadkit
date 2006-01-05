@@ -63,8 +63,8 @@ Usul::Interfaces::IUnknown *</xsl:text><xsl:value-of select="PluginTemplate/Comp
   {
   case Usul::Interfaces::IUnknown::IID:&#x0A;</xsl:text>
   <xsl:for-each select="PluginTemplate/ComponentHeader/UsulInterface">
-  <xsl:text>case Usul::Interfaces::</xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/UsulInterface/@name" /><xsl:text>::IID:
-    return static_cast &lt; Usul::Interfaces::</xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/UsulInterface/@name" /><xsl:text>*&gt;(this);&#x0A;</xsl:text>
+  <xsl:text>case Usul::Interfaces::</xsl:text> <xsl:value-of select="@name" /><xsl:text>::IID:
+    return static_cast &lt; Usul::Interfaces::</xsl:text> <xsl:value-of select="@name" /><xsl:text>*&gt;(this);&#x0A;</xsl:text>
   </xsl:for-each>
   <xsl:text>case Usul::Interfaces::IPlugin::IID:
     return static_cast &lt; Usul::Interfaces::IPlugin* &gt; ( this );

@@ -646,6 +646,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IDecimateTriangles.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h"
 						>
 					</File>
@@ -674,6 +678,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISmoothTriangles.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISubdivideTriangles.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ITextMatrix.h"
 						>
 					</File>
@@ -683,14 +695,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITimeoutSpin.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ITimerNotify.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ITimerServer.h"
 						>
 					</File>
 					<File
@@ -946,6 +950,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IDecimateModel.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IDeleteAllConnected.h"
 						>
 					</File>
@@ -987,6 +995,14 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISmoothModel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISubdivideModel.h"
 						>
 					</File>
 					<File

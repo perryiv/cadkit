@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEWER_H_
-#define _USUL_INTERFACE_VIEWER_H_
+#ifndef __USUL_INTERFACES_ISUBDIVIDEMODEL_H__
+#define __USUL_INTERFACES_ISUBDIVIDEMODEL_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,31 +22,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IViewer : public Usul::Interfaces::IUnknown
+struct ISubdivideModel : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewer );
+  USUL_DECLARE_QUERY_POINTERS ( ISubdivideModel );
 
   /// Id for this interface.
-  enum { IID = 3739984930u };
+  enum { IID = 1136402875u };
 
-  virtual void render() = 0;
+  virtual void subdivideModel () = 0;
 
-  virtual void clearScene() = 0;
-
-  // TODO Move these to a IViewport interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
-
-  virtual void handleMessage ( unsigned short message ) = 0;
-
-}; // struct IViewer
+}; // struct ISubdivideModel
 
 
-} // namespace Interfaces
-} // namespace Usul
+} // end namespace Interfaces
+} // end namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEWER_H_
+#endif /* __USUL_INTERFACES_ISUBDIVIDEMODEL_H__ */

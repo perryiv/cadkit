@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for getting the view
+//  Decimate the number of primitives in the model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACE_VIEWER_H_
-#define _USUL_INTERFACE_VIEWER_H_
+#ifndef __USUL_INTERFACES_IDECIMATEMODEL_H__
+#define __USUL_INTERFACES_IDECIMATEMODEL_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -22,31 +22,21 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IViewer : public Usul::Interfaces::IUnknown
+struct IDecimateModel : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IViewer );
+  USUL_DECLARE_QUERY_POINTERS ( IDecimateModel );
 
   /// Id for this interface.
-  enum { IID = 3739984930u };
+  enum { IID = 2172000000u };
 
-  virtual void render() = 0;
+  virtual void decimateModel () = 0;
 
-  virtual void clearScene() = 0;
-
-  // TODO Move these to a IViewport interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
-
-  virtual void handleMessage ( unsigned short message ) = 0;
-
-}; // struct IViewer
+}; // struct IDecimateModel
 
 
-} // namespace Interfaces
-} // namespace Usul
+} // end namespace Interfaces
+} // end namespace Usul
 
 
-#endif // _USUL_INTERFACE_VIEWER_H_
+#endif /* __USUL_INTERFACES_IDECIMATEMODEL_H__ */

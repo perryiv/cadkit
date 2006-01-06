@@ -20,6 +20,7 @@
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/File/Stats.h"
 #include "Usul/Predicates/FileExists.h"
 
 #include "xercesc/dom/DOM.hpp"
@@ -222,23 +223,44 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load contents of file and build the document. Node: in Xerces, a "node" 
-//  is everything between the tags, an "element" is a node with children, 
-//  and "text" is a simple leaf node.
+//  Load contents of file and build the document. Note: in Xerces there is 
+//  a "node" for all sections of the document, including the new-line and 
+//  white-space between a closing tag at the end of one line, and an opening 
+//  tag and the beginning of the next line.
+//
+//  We skip these empty nodes and grab the elements (groups) and text-nodes 
+//  that have strings.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Loader::load ( const std::string &file, Document *doc )
 {
+  // A file that does not exist is an error.
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 3915685727: Given file does not exist: ", file );
+
+  // Empty files are ok.
+  if ( 0 == Usul::File::size ( file ) )
+    return;
+
   // Load document.
   std::auto_ptr<xercesc::DOMDocument> dom ( Helper::load ( file ) );
   if ( 0x0 == dom.get() )
-      Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML file: ", file );
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML file: ", file );
+
+  // Handle no document element.
+  xercesc::DOMElement *element ( dom.get()->getDocumentElement() );
+  if ( 0x0 == element )
+    return;
+
+  // Handle document's element not having a name. Only a header in the file?
+  const std::string name ( XmlTree::Functions::name ( element ) );
+  if ( name.empty() )
+    return;
 
   // Set the name.
-  doc->name ( XmlTree::Functions::name ( dom.get()->getDocumentElement() ) );
-  USUL_ASSERT ( false == doc->name().empty() );
+  doc->name ( name );
 
   // Traverse the tree and make our nodes.
-  Helper::traverse ( dom.get()->getDocumentElement(), doc );
+  Helper::traverse ( element, doc );
 }

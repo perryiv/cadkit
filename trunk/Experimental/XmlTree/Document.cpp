@@ -22,12 +22,21 @@ using namespace XmlTree;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Header for the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail { const std::string HEADER ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ); }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Document::Document() : BaseClass ( "document" ),
-  _header ( XmlTree::Constants::HEADER )
+  _header ( Detail::HEADER )
 {
 }
 
@@ -38,10 +47,9 @@ Document::Document() : BaseClass ( "document" ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::Document ( const std::string &file ) : BaseClass ( "document" ),
-  _header ( XmlTree::Constants::HEADER )
+Document::Document ( const std::string &name ) : BaseClass ( name ),
+  _header ( Detail::HEADER )
 {
-  this->load ( file );
 }
 
 

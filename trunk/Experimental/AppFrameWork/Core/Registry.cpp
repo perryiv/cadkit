@@ -22,7 +22,6 @@
 #include "Usul/File/Make.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Predicates/FileExists.h"
-#include "usul/Strings/Split.h"
 #include "Usul/User/Directory.h"
 
 #include <iostream>
@@ -80,19 +79,17 @@ void Registry::init ( const std::string &vendorName, const std::string &appName 
   if ( vendorName.empty() || appName.empty() )
     throw std::runtime_error ( "Error 2538613677: Empty vendor or application name given." );
 
-  // Get vendor directory.
+  // Make sure appropriate configuration file exists. This will not write over 
+  // an existing file, but if the file does not exist, we need to punt here if 
+  // we cannot write one. That way the member "_xml" remains NULL (an exception 
+  // is thrown), and the program will proceed because we check for NULL elsewhere.
   const std::string vendorDir ( Usul::User::Directory::vendor ( vendorName, true ) );
-
-  // Make sure appropriate configuration file exists.
   _file = ( vendorDir + appName + '/' + appName + ".xml" );
   Usul::File::make ( _file );
 
-  // If the file is empty then write a default one.
-  if ( 0 == Usul::File::size ( _file ) )
-    this->_initFile ( _file );
-
-  // Parse the file.
-  XmlTree::Document::RefPtr xml ( new XmlTree::Document ( _file ) );
+  // Make document and load file.
+  XmlTree::Document::RefPtr xml ( new XmlTree::Document ( "registry" ) );
+  xml->load ( _file );
 
   // Feedback.
   std::cout << "Registry file: " << _file << std::endl;
@@ -100,12 +97,6 @@ void Registry::init ( const std::string &vendorName, const std::string &appName 
   // Reference the xml tree.
   _xml = xml.get();
   Usul::Pointers::reference ( _xml );
-
-#ifdef _DEBUG
-  std::cout << "----------- Start of registry file -----------" << std::endl;
-  _xml->write ( std::cout );
-  std::cout << "----------- End of registry file -----------" << std::endl;
-#endif
 }
 
 
@@ -120,20 +111,6 @@ void Registry::flush()
   Guard guard ( this->mutex() );
   if ( _xml )
     _xml->write ( _file );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the XML file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Registry::_initFile ( const std::string &file )
-{
-  USUL_ASSERT ( true == Usul::Predicates::FileExists::test ( file ) );
-  std::ofstream out ( file.c_str() );
-  out << XmlTree::Constants::HEADER << "\n<registry>\n</registry>\n";
 }
 
 
@@ -270,15 +247,8 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
   if ( 0x0 == _xml )
     return;
 
-  // Split the path.
-  typedef std::vector < std::string > Parts;
-  Parts parts;
-  Usul::Strings::split ( section + '/' + key, '/', false, parts );
-
-  // Loop through the parts and get the node. Create it if needed.
-  XmlTree::Node::RefPtr node ( _xml );
-  for ( Parts::const_iterator i = parts.begin(); i != parts.end(); ++i )
-    node = ( ( node ) ? node->child ( 0, *i ) : 0x0 );
+  // Get or make needed child.
+  XmlTree::Node::RefPtr node ( _xml->child ( 0, section + '/' + key, '/' ) );
 
   // If we found a node...
   if ( node.valid() )

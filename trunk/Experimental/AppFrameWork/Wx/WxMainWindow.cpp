@@ -23,6 +23,9 @@
 #include "WxBitmap.h"
 #include "WxEventHandler.h"
 
+#include "AppFrameWork/Core/Program.h"
+#include "AppFrameWork/Core/Registry.h"
+
 #include "Usul/Errors/Assert.h"
 #include "Usul/System/Screen.h"
 
@@ -135,37 +138,6 @@ WxMainWindow::~WxMainWindow()
 void WxMainWindow::configWrite() const
 {
   Guard guard ( this->mutex() );
-#if 0
-  // Get our frame.
-  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
-
-  // Handle no frame.
-  if ( 0x0 == frame )
-    return;
-
-  // Make configuration.
-  std::auto_ptr<wxConfig> config ( new wxConfig ( this->persistentName().c_str() ) );
-  if ( 0x0 == config.get() )
-    return;
-
-  // Is it maximized?
-  config->Write ( AFW::Registry::Keys::MAXIMIZED.c_str(), this->maximized() );
-
-  // If we are not maximized, then write the dimensions.
-  if ( false == this->maximized() )
-  {
-    // Get the origin and size.
-    wxPoint origin ( frame->GetPosition() );
-    wxSize size    ( frame->GetSize() );
-
-    // Write the window rectangle.
-    config->Write ( AFW::Registry::Keys::X.c_str(),      origin.x );
-    config->Write ( AFW::Registry::Keys::Y.c_str(),      origin.y );
-    config->Write ( AFW::Registry::Keys::WIDTH.c_str(),  size.x   );
-    config->Write ( AFW::Registry::Keys::HEIGHT.c_str(), size.y   );
-  }
-#endif
-  // Call base class's function.
   BaseClass::configWrite();
 }
 
@@ -196,19 +168,19 @@ void WxMainWindow::_configRead ( wxPoint &origin, wxSize &size, bool &maximized 
   size   = wxSize  ( w, h );
 
   // If the section name is empty then return default.
-  if ( this->persistentName().empty() )
+  const std::string section ( this->persistentName() );
+  if ( section.empty() )
     return;
 
-  // Make configuration.
-  std::auto_ptr<wxConfig> config ( new wxConfig ( this->persistentName().c_str() ) );
-
   // Get dimensions of main window.
-  if ( config.get() )
+  AFW::Core::Application::RefPtr app ( AFW::Core::Program::instance().app() );
+  AFW::Core::Registry::RefPtr reg ( ( app.valid() ) ? app->registry() : 0x0 );
+  if ( reg.valid() )
   {
-    config->Read ( AFW::Registry::Keys::X.c_str(),      &x );
-    config->Read ( AFW::Registry::Keys::Y.c_str(),      &y );
-    config->Read ( AFW::Registry::Keys::WIDTH.c_str(),  &w );
-    config->Read ( AFW::Registry::Keys::HEIGHT.c_str(), &h );
+    x = reg->readValue ( section, AFW::Registry::Keys::X,      x );
+    y = reg->readValue ( section, AFW::Registry::Keys::Y,      y );
+    w = reg->readValue ( section, AFW::Registry::Keys::WIDTH,  w );
+    h = reg->readValue ( section, AFW::Registry::Keys::HEIGHT, h );
   }
 
   // Make sure it fits.
@@ -226,12 +198,8 @@ void WxMainWindow::_configRead ( wxPoint &origin, wxSize &size, bool &maximized 
   }
 
   // Is it maximized?
-  if ( config.get() )
-  {
-    bool value ( false );
-    if ( config->Read ( AFW::Registry::Keys::MAXIMIZED.c_str(), &value ) )
-      maximized = value;
-  }
+  if ( reg.valid() )
+    maximized = reg->readValue ( section, AFW::Registry::Keys::MAXIMIZED, maximized );
 }
 
 
@@ -470,12 +438,66 @@ AFW::Core::Window::Position WxMainWindow::position() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set window size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMainWindow::size ( const AFW::Core::Window::Size &s )
+{
+  Guard guard ( this->mutex() );
+  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
+  if ( frame )
+  {
+    frame->SetSize ( wxSize ( s[0], s[1] ) );
+    return;
+  }
+  BaseClass::size ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set window position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMainWindow::position ( const AFW::Core::Window::Position &p )
+{
+  Guard guard ( this->mutex() );
+  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
+  if ( frame )
+  {
+    frame->SetPosition ( wxPoint ( p[0], p[1] ) );
+    return;
+  }
+  BaseClass::position ( p );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Is the frame maximized?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool WxMainWindow::maximized() const
 {
+  Guard guard ( this->mutex() );
   wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
   return ( ( frame ) ? frame->IsMaximized() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the frame's maximized state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMainWindow::maximized ( bool state )
+{
+  Guard guard ( this->mutex() );
+  wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
+  if ( frame )
+    frame->Maximize ( state );
 }

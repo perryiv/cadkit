@@ -35,6 +35,8 @@ public:
 
   // Typedefs.
   typedef Object BaseClass;
+  typedef AFW::Core::Types::Position Position;
+  typedef AFW::Core::Types::Size Size;
 
   // Flush changes back to disk.
   void                                flush();
@@ -42,13 +44,21 @@ public:
   // Initialize the registry.
   virtual void                        init ( const std::string &vendor, const std::string &name );
 
+  // Read the value.
+  virtual bool                        readValue ( const std::string &section, const std::string &key, bool defaultValue );
+  virtual int                         readValue ( const std::string &section, const std::string &key, int defaultValue );
+  virtual unsigned int                readValue ( const std::string &section, const std::string &key, unsigned int defaultValue );
+  virtual std::string                 readValue ( const std::string &section, const std::string &key, const std::string &defaultValue );
+  virtual Position                    readValue ( const std::string &section, const Position &defaultValue );
+  virtual Size                        readValue ( const std::string &section, const Size &defaultValue );
+
   // Write the value.
   virtual void                        writeValue ( const std::string &section, const std::string &key, bool );
   virtual void                        writeValue ( const std::string &section, const std::string &key, int );
   virtual void                        writeValue ( const std::string &section, const std::string &key, unsigned int );
   virtual void                        writeValue ( const std::string &section, const std::string &key, const std::string & );
-  virtual void                        writeValue ( const std::string &section, const AFW::Core::Types::Position & );
-  virtual void                        writeValue ( const std::string &section, const AFW::Core::Types::Size & );
+  virtual void                        writeValue ( const std::string &section, const Position & );
+  virtual void                        writeValue ( const std::string &section, const Size & );
 
   // Write window geometry.
   virtual void                        writeGeometry ( const AFW::Core::Frame * );

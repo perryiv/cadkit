@@ -92,5 +92,18 @@ void Frame::accept ( AFW::Core::BaseVisitor *v )
 
 bool Frame::maximized() const
 {
+  Guard guard ( this->mutex() );
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the frame's maximized state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Frame::maximized ( bool )
+{
+  Guard guard ( this->mutex() );
 }

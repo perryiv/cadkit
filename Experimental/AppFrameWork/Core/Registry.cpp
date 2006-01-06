@@ -21,7 +21,9 @@
 
 #include "Usul/File/Make.h"
 #include "Usul/File/Stats.h"
+#include "Usul/Math/Absolute.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/User/Directory.h"
 
 #include <iostream>
@@ -259,4 +261,100 @@ void Registry::writeValue ( const std::string &section, const std::string &key, 
     // We're dirty.
     _dirty = true;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Registry::readValue ( const std::string &section, const std::string &key, unsigned int defaultValue )
+{
+  Guard guard ( this->mutex() );
+  std::ostringstream out;
+  out << defaultValue;
+  const std::string answer ( this->readValue ( section, key, out.str() ) );
+  return ( ( answer == out.str() ) ? defaultValue : static_cast < unsigned int > ( Usul::Math::absolute ( ::atoi ( answer.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Registry::readValue ( const std::string &section, const std::string &key, int defaultValue )
+{
+  Guard guard ( this->mutex() );
+  std::ostringstream out;
+  out << defaultValue;
+  const std::string answer ( this->readValue ( section, key, out.str() ) );
+  return ( ( answer == out.str() ) ? defaultValue : ::atoi ( answer.c_str() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Registry::readValue ( const std::string &section, const std::string &key, bool defaultValue )
+{
+  Guard guard ( this->mutex() );
+  const std::string answer ( Usul::Strings::lowerCase ( this->readValue ( section, key, std::string() ) ) );
+  if ( answer == "true" || answer == "1" )
+    return true;
+  else if ( answer == "false" || answer == "0" )
+    return false;
+  else
+    return defaultValue;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Registry::readValue ( const std::string &section, const std::string &key, const std::string &defaultValue )
+{
+  Guard guard ( this->mutex() );
+  if ( 0x0 == _xml )
+    return defaultValue;
+
+  XmlTree::Node::RefPtr node ( _xml->child ( 0, section + '/' + key, '/', false ) );
+  return ( ( node.valid() ) ? node->value() : defaultValue );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Types::Position Registry::readValue ( const std::string &section, const AFW::Core::Types::Position &defaultValue )
+{
+  Guard guard ( this->mutex() );
+  return Position ( this->readValue ( section, AFW::Registry::Keys::WIDTH,  defaultValue[0] ),
+                    this->readValue ( section, AFW::Registry::Keys::HEIGHT, defaultValue[1] ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::Types::Size Registry::readValue ( const std::string &section, const AFW::Core::Types::Size &defaultValue )
+{
+  Guard guard ( this->mutex() );
+  return Size ( this->readValue ( section, AFW::Registry::Keys::WIDTH,  defaultValue[0] ),
+                this->readValue ( section, AFW::Registry::Keys::HEIGHT, defaultValue[1] ) );
 }

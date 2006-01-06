@@ -126,13 +126,15 @@ public:
   void                                persistentName ( const std::string & );
   std::string                         persistentName() const;
 
-  // Return the position.
+  // Set/get the position.
+  virtual void                        position ( const Position & );
   virtual Position                    position() const;
 
   // Scroll to the end.
   virtual void                        scrollToEnd();
 
-  // Return window size.
+  // Set/get window size.
+  virtual void                        size ( const Size & );
   virtual Size                        size() const;
 
   // Set/get/append the text.

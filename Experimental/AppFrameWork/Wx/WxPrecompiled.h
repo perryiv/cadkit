@@ -34,7 +34,6 @@
 # include "wx/wx.h"
 # include "wx/docview.h"
 # include "wx/docmdi.h"
-# include "wx/config.h"
 # include "wx/image.h"
 # include "wx/bitmap.h"
 # include "wx/icon.h"

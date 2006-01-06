@@ -51,11 +51,12 @@ public:
   Attributes &            attributes()       { return _attributes; }
 
   // Get the i'th child (or grandchild, or any level of decendent)) at the 
-  // given "path". Creates all necessary child nodes if needed. The path is 
-  // much like a file path, but choose whatever deliminter you like. If there 
-  // are no delimiters in the path, then the entire path is interpreted as 
-  // the node-name.
-  Node *                  child ( unsigned int i, const std::string &path, const char delim = '/' );
+  // given "path". If "createIfNeeded" is true, creates all necessary child 
+  // nodes as needed. If false, returns NULL if child is not found. The path 
+  // is much like a file path, but choose whatever deliminter you like. If 
+  // there are no delimiters in the path, then the entire path is interpreted 
+  // as the node-name. Throws an exception if it was asked to create but failed.
+  Node *                  child ( unsigned int i, const std::string &path, const char delim = '/', bool createIfNeeded = true );
 
   // Access the children.
   const Children &        children() const { return _children; }
@@ -77,7 +78,7 @@ protected:
   // Use reference counting.
   virtual ~Node();
 
-  Node *                  _child ( unsigned int i, const std::string &name );
+  Node *                  _child ( unsigned int i, const std::string &name, bool createIfNeeded );
 
 private:
 

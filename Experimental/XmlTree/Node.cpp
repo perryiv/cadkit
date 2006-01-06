@@ -92,11 +92,11 @@ void Node::value ( const std::string &v )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return child at path. Creates them as needed.
+//  Return child at path. If requested, creates them as needed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node *Node::child ( unsigned int which, const std::string &path, const char delim )
+Node *Node::child ( unsigned int which, const std::string &path, const char delim, bool createIfNeeded )
 {
   // Empty path is an error.
   if ( path.empty() )
@@ -114,16 +114,20 @@ Node *Node::child ( unsigned int which, const std::string &path, const char deli
   const std::string last ( parts.back() );
   parts.pop_back();
 
-  // Loop through the parts and get the node. Create it if needed. Note: at 
-  // this point we always ask for the first child with the given name.
+  // Loop through the parts and get the node. At this point we always ask for 
+  // the first child with the given name.
   XmlTree::Node::RefPtr node ( this );
   for ( Parts::const_iterator i = parts.begin(); i != parts.end(); ++i )
-    node = node->_child ( 0, *i );
+  {
+    node = node->_child ( 0, *i, createIfNeeded );
+    if ( false == node.valid() )
+      return 0x0;
+  }
 
   // The last one we make the i'th child.
-  node = node->_child ( which, last );
+  node = node->_child ( which, last, createIfNeeded );
 
-  // Return what we have.
+  // Return what we have, which may be null.
   return node.get();
 }
 
@@ -203,7 +207,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node *Node::_child ( unsigned int which, const std::string &name )
+XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool createIfNeeded )
 {
   USUL_ASSERT ( false == name.empty() );
 
@@ -213,6 +217,10 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name )
     if ( _children.end() != c )
       return c->get();
   }
+
+  // If we are not supposed to create then punt.
+  if ( false == createIfNeeded )
+    return 0x0;
 
   // If we get to here then we have to add children.
   {

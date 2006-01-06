@@ -75,11 +75,18 @@ Registry::~Registry()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Registry::init ( const std::string &vendorName, const std::string &appName )
+void Registry::init ( const std::string &vendorName, const std::string &an )
 {
   // Handle bad input.
-  if ( vendorName.empty() || appName.empty() )
+  if ( vendorName.empty() || an.empty() )
     throw std::runtime_error ( "Error 2538613677: Empty vendor or application name given." );
+
+  // Make proper application name. In debug we strip the last 'd' character.
+  std::string appName ( an );
+  #ifdef _DEBUG
+  if ( 'd' == appName.at ( appName.size() - 1 ) )
+    appName.resize ( appName.size() - 1 );
+  #endif
 
   // Make sure appropriate configuration file exists. This will not write over 
   // an existing file, but if the file does not exist, we need to punt here if 

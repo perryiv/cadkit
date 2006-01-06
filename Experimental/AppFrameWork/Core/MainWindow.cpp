@@ -16,8 +16,6 @@
 #include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/LogWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Registry.h"
@@ -99,6 +97,8 @@ void MainWindow::init()
   // Update functors.
   AFW::Conditions::Always::RefPtr always ( new AFW::Conditions::Always );
 
+#if 0
+
   // Add a text output window.
   {
     TextWindow::ValidRefPtr window ( Program::instance().newObject<TextWindow>() );
@@ -152,6 +152,8 @@ void MainWindow::init()
       this->append ( window.get() );
     }
   }
+
+#endif
 }
 
 

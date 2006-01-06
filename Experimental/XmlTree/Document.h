@@ -37,18 +37,18 @@ public:
 
   // Construction
   Document();
-  Document ( const std::string & );
+  Document ( const std::string &name );
 
   // Get/set the header.
   const std::string &     header() const { return _header; }
   void                    header ( const std::string &h ) { _header = h; }
 
   // Load contents of file.
-  void                    load ( const std::string & );
+  void                    load ( const std::string &file );
 
   // Write document to file or stream.
-  void                    write ( const std::string & );
-  void                    write ( std::ostream & );
+  void                    write ( const std::string &file );
+  void                    write ( std::ostream &out );
 
 protected:
 
@@ -63,10 +63,6 @@ private:
 
   std::string _header;
 };
-
-
-// Header for the document.
-namespace Constants { const std::string HEADER ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ); }
 
 
 } // namespace XmlTree

@@ -50,8 +50,12 @@ public:
   const Attributes &      attributes() const { return _attributes; }
   Attributes &            attributes()       { return _attributes; }
 
-  // Get the i'th child with the given name. Create it if needed.
-  Node *                  child ( unsigned int i, const std::string &name );
+  // Get the i'th child (or grandchild, or any level of decendent)) at the 
+  // given "path". Creates all necessary child nodes if needed. The path is 
+  // much like a file path, but choose whatever deliminter you like. If there 
+  // are no delimiters in the path, then the entire path is interpreted as 
+  // the node-name.
+  Node *                  child ( unsigned int i, const std::string &path, const char delim = '/' );
 
   // Access the children.
   const Children &        children() const { return _children; }
@@ -72,6 +76,8 @@ protected:
 
   // Use reference counting.
   virtual ~Node();
+
+  Node *                  _child ( unsigned int i, const std::string &name );
 
 private:
 

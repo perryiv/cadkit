@@ -62,8 +62,6 @@ protected:
   // Use reference counting.
   virtual ~Registry();
 
-  void                                _initFile ( const std::string &file );
-
 private:
 
   // No copying.

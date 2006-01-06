@@ -22,6 +22,7 @@
 
 #include "boost/algorithm/string/replace.hpp"
 #include "boost/algorithm/string/find.hpp"
+#include "boost/range/iterator_range.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -209,7 +210,7 @@ void CodeMaker::_handleComponent ( const std::string& name, const std::string& p
   {
     std::string value ( *iter );
 
-    typedef boost::algorithm::iterator_range < std::string::iterator > Iterator;
+    typedef boost::iterator_range < std::string::iterator > Iterator;
     Iterator slash ( boost::algorithm::find_last ( value, Usul::File::slash() ) );
     Iterator dot   ( boost::algorithm::find_last ( value, "." ) );
 

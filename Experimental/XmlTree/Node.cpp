@@ -17,9 +17,11 @@
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Strings/Split.h"
 
 #include <algorithm>
 #include <functional>
+#include <list>
 
 using namespace XmlTree;
 
@@ -85,6 +87,44 @@ void Node::name ( const std::string &n )
 void Node::value ( const std::string &v )
 {
   _value = v;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return child at path. Creates them as needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node *Node::child ( unsigned int which, const std::string &path, const char delim )
+{
+  // Empty path is an error.
+  if ( path.empty() )
+    throw std::runtime_error ( "Error 2832818132: Empty node-path given" );
+
+  // Split the path.
+  typedef std::list < std::string > Parts;
+  Parts parts;
+  Usul::Strings::split ( path, delim, false, parts );
+
+  // Should be true.
+  USUL_ASSERT ( false == parts.empty() );
+
+  // We special-case the last one.
+  const std::string last ( parts.back() );
+  parts.pop_back();
+
+  // Loop through the parts and get the node. Create it if needed. Note: at 
+  // this point we always ask for the first child with the given name.
+  XmlTree::Node::RefPtr node ( this );
+  for ( Parts::const_iterator i = parts.begin(); i != parts.end(); ++i )
+    node = node->_child ( 0, *i );
+
+  // The last one we make the i'th child.
+  node = node->_child ( which, last );
+
+  // Return what we have.
+  return node.get();
 }
 
 
@@ -163,7 +203,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node *Node::child ( unsigned int which, const std::string &name )
+XmlTree::Node *Node::_child ( unsigned int which, const std::string &name )
 {
   USUL_ASSERT ( false == name.empty() );
 

@@ -42,6 +42,9 @@ public:
   // Insert a window.
   virtual bool                        insert ( Itr where, AFW::Core::Window * );
 
+  // Is the frame maximized?
+  virtual bool                        maximized() const;
+
   // Get/set the menu bar.
   const WxMenuBar *                   menuBar() const;
   WxMenuBar *                         menuBar();

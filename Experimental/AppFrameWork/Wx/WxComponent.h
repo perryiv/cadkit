@@ -23,10 +23,12 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IChangeMenuBar.h"
 
 
 class WxComponent : public Usul::Base::Referenced,
-                    public Usul::Interfaces::IPlugin
+                    public Usul::Interfaces::IPlugin,
+                    public Usul::Interfaces::IChangeMenuBar
 {
 public:
 
@@ -47,6 +49,9 @@ public:
 
   // Default construction.
   WxComponent();
+
+  // Change to menu bar.
+  virtual void                  changeManuBar ( IUnknown *caller );
 
   // Return name of plugin.
   virtual std::string           getPluginName() const;

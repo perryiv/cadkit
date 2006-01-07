@@ -17,6 +17,7 @@
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
+#include "Usul/Algorithms/CopyIf.h"
 #include "Usul/Errors/Assert.h"
 
 #include <stdexcept>

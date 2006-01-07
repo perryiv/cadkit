@@ -22,13 +22,20 @@
 #include "AppFrameWork/Conditions/HasNewModelPlugin.h"
 #include "AppFrameWork/Conditions/HasOpenModelPlugin.h"
 #include "AppFrameWork/Conditions/HasActiveEditor.h"
+#include "AppFrameWork/Conditions/HasEqualText.h"
+#include "AppFrameWork/Conditions/IsOfType.h"
 #include "AppFrameWork/Actions/Enable.h"
 #include "AppFrameWork/Actions/NewModelAction.h"
 #include "AppFrameWork/Actions/OpenModelAction.h"
 #include "AppFrameWork/Actions/QuitProgramAction.h"
 #include "AppFrameWork/Actions/CloseActiveEditor.h"
+#include "AppFrameWork/Predicates/ConditionWrapper.h"
 
+#include "Usul/Algorithms/CopyIf.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/manager.h"
+
+#include "Usul/Interfaces/IChangeMenuBar.h"
 
 #include <iostream>
 
@@ -207,6 +214,21 @@ void MenuBar::init()
       this->append ( menu.get() );
     }
   }
+
+  // Ask for all interfaces that change the menu bar.
+  {
+    typedef Usul::Components::Manager PM;
+    PM::UnknownSet plugs ( PM::instance().getInterfaces ( Usul::Interfaces::IChangeMenuBar::IID ) );
+    for ( PM::UnknownSet::iterator i = plugs.begin(); i != plugs.end(); ++i )
+    {
+      Usul::Interfaces::IChangeMenuBar::QueryPtr plug ( *i );
+      if ( plug.valid() )
+      {
+        try { plug->changeManuBar ( 0x0 ); }
+        AFW_CATCH_BLOCK ( 5221551930ul );
+      }
+    }
+  }
 }
 
 
@@ -221,4 +243,46 @@ void MenuBar::accept ( AFW::Core::BaseVisitor *v )
   Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get or (if asked to) make the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Menus::MenuGroup *MenuBar::menu ( const std::string &text, bool create )
+{
+  Guard guard ( this->mutex() );
+  typedef Usul::Algorithms::GetCopy<Windows> GetCopy;
+
+  // Find all windows with this text.
+  AFW::Predicates::ConditionWrapper hasText ( new AFW::Conditions::HasEqualText ( text ) );
+  AFW::Core::Group::Windows found ( GetCopy::copyIf ( this->begin(), this->end(), hasText ) );
+
+  // Of those, find the ones that are menu groups.
+  AFW::Predicates::ConditionWrapper isMenuGroup ( new AFW::Conditions::IsOfType < AFW::Menus::MenuGroup >() );
+  found = GetCopy::copyIf ( found.begin(), found.end(), isMenuGroup );
+
+  // Return now if we found one.
+  if ( false == found.empty() )
+    return ( dynamic_cast < MenuGroup * > ( found.front().get() ) );
+
+  // If we are not supposed to create...
+  if ( false == create )
+    return 0x0;
+
+  // Add new menu group.
+  AFW::Core::Program &factory ( AFW::Core::Program::instance() );
+  MenuGroup::RefPtr mg ( factory.newObject<MenuGroup>() );
+  if ( mg.valid() )
+  {
+    mg->textSet ( text );
+    this->append ( mg.get() );
+    return mg.get();
+  }
+
+  // If we get to here then we failed.
+  throw std::runtime_error ( "Error 1932223920: Failed to make new menu group" );
 }

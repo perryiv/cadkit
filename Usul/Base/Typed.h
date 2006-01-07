@@ -56,5 +56,15 @@ struct USUL_EXPORT Typed
     return class_name::classTypeId(); \
   }
 
+#define USUL_IMPLEMENT_INLINE_TYPE_ID(class_name) \
+  static const std::type_info &classTypeId() \
+  { \
+    return typeid ( class_name ); \
+  } \
+  virtual const std::type_info &typeId() const \
+  { \
+    return class_name::classTypeId(); \
+  }
+
 
 #endif // _USUL_TYPED_BASE_CLASS_H_

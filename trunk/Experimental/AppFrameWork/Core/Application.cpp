@@ -380,8 +380,15 @@ void Application::_initRegistry()
     _registry = Program::instance().newObject<Registry>();
     Usul::Pointers::reference ( _registry );
 
-    // Initialize it.
-    _registry->init ( Program::instance().vendor(), _name );
+    // Make proper name for registry. In debug we strip the last 'd' character.
+    std::string name ( _name );
+    #ifdef _DEBUG
+    if ( 'd' == name.at ( name.size() - 1 ) )
+      name.resize ( name.size() - 1 );
+    #endif
+
+    // Initialize registry.
+    _registry->init ( Program::instance().vendor(), name );
   }
 
   // Catch all exceptions.

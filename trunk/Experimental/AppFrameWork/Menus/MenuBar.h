@@ -18,6 +18,8 @@
 
 #include "AppFrameWork/Core/Group.h"
 
+namespace AFW { namespace Menus { class MenuGroup; } }
+
 
 namespace AFW {
 namespace Menus {
@@ -32,6 +34,9 @@ public:
 
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
+
+  // Get or (if asked to) make the menu.
+  MenuGroup *                         menu ( const std::string &text, bool createIfNeeded = true );
 
   // Build a default GUI.
   virtual void                        init();

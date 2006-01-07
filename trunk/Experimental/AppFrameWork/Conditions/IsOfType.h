@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( IsOfType );
 
   // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( IsOfType );
+  USUL_IMPLEMENT_INLINE_TYPE_ID ( IsOfType );
 
   // Constructor
   IsOfType()

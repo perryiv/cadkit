@@ -469,6 +469,12 @@
 					RelativePath=".\Conditions\HasActiveEditor.h">
 				</File>
 				<File
+					RelativePath=".\Conditions\HasEqualText.cpp">
+				</File>
+				<File
+					RelativePath=".\Conditions\HasEqualText.h">
+				</File>
+				<File
 					RelativePath=".\Conditions\HasNewModelPlugin.cpp">
 				</File>
 				<File
@@ -522,6 +528,16 @@
 				</File>
 				<File
 					RelativePath=".\Dialogs\Dialog.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Predicates"
+				Filter="">
+				<File
+					RelativePath=".\Predicates\ConditionWrapper.cpp">
+				</File>
+				<File
+					RelativePath=".\Predicates\ConditionWrapper.h">
 				</File>
 			</Filter>
 		</Filter>

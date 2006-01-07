@@ -91,6 +91,8 @@ Usul::Interfaces::IUnknown *WxComponent::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin * > ( this );
+  case Usul::Interfaces::IChangeMenuBar::IID:
+    return static_cast < Usul::Interfaces::IChangeMenuBar * > ( this );
   default:
     return 0x0;
   }
@@ -129,6 +131,8 @@ std::string WxComponent::getPluginName() const
 
 void WxComponent::_registerFactory ( const std::type_info &info, AFW::Core::NewObjectFunctor *functor )
 {
+  Guard guard ( _mutex );
+
   // Get original factory.
   const std::string name ( info.name() );
   AFW::Core::NewObjectFunctor::RefPtr original ( AFW::Core::Program::instance().factory ( name ) );
@@ -136,4 +140,32 @@ void WxComponent::_registerFactory ( const std::type_info &info, AFW::Core::NewO
 
   // Add new factory.
   AFW::Core::Program::instance().factory ( name, functor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return name of plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxComponent::changeManuBar ( IUnknown *caller )
+{
+  Guard guard ( _mutex );
+
+  // Don't instantiate.
+  if ( false == AFW::Core::Program::valid() )
+    return;
+
+  // Get menu bar.
+  AFW::Core::Application::RefPtr app ( AFW::Core::Program::instance().app() );
+  AFW::Core::MainWindow::RefPtr mw ( ( app.valid() ) ? app->mainWindow() : 0x0 );
+  AFW::Menus::MenuBar::RefPtr mb ( ( mw.valid() ) ? mw->menuBar() : 0x0 );
+  if ( false == mb.valid() )
+    return;
+
+  // Get or make window menu.
+  AFW::Menus::MenuGroup::RefPtr wm ( mb->menu ( "Window", true ) );
+
+  // Add entry to show/hide text window.
 }

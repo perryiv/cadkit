@@ -183,6 +183,9 @@
 					RelativePath=".\Algorithms\ConvexHullSort.h">
 				</File>
 				<File
+					RelativePath=".\Algorithms\CopyIf.h">
+				</File>
+				<File
 					RelativePath="Algorithms\Extract.h">
 				</File>
 				<File
@@ -424,6 +427,9 @@
 					Filter="">
 					<File
 						RelativePath=".\Interfaces\ICancelButton.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IChangeMenuBar.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IFlushEvents.h">

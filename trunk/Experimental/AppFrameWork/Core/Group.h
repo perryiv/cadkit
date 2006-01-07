@@ -55,7 +55,7 @@ public:
   Itr                                 end();
   ConstItr                            end() const;
 
-  // Find the child window.
+  // Find the child window(s).
   ConstItr                            find ( Window *w ) const;
   Itr                                 find ( Window *w );
 

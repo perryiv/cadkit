@@ -44,6 +44,9 @@ public:
   // Constructor
   Group ( bool want = true );
 
+  // Append a condition.
+  void                  append ( AFW::Conditions::Condition * );
+
   // Iterators to the children.
   Iterator              begin()       { return _kids.begin(); }
   ConstIterator         begin() const { return _kids.begin(); }

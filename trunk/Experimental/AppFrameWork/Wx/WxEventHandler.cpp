@@ -142,12 +142,23 @@ IMPLEMENT_MEMBER_FUNCTION ( wxMenuEvent );
 void WxEventHandler::_wxUpdateUIEventHandler ( wxUpdateUIEvent &event )
 {
   // Call the common function.
-  // this->_common ( event ); This prints all update events to the text windows!
+  this->_common ( event ); // This prints all update events to the text windows!
 
   // Call update actions.
-  AFW::Core::Window::RefPtr window ( WxObjectMap::find<AFW::Core::Window> ( event.GetEventObject() ) );
-  if ( window.valid() )
-    window->callUpdateActions();
+  {
+    wxObject *object ( event.GetEventObject() );
+    AFW::Core::Window::RefPtr window ( WxObjectMap::find<AFW::Core::Window> ( object ) );
+    if ( window.valid() )
+      window->callUpdateActions();
+  }
+
+  // See if this is a menu item.
+  {
+    wxMenuItem *item ( WxObjectMap::findMenuItem ( event.GetId() ) );
+    AFW::Menus::Button::RefPtr button ( WxObjectMap::find<AFW::Menus::Button> ( item ) );
+    if ( button.valid() )
+      button->callUpdateActions();
+  }
 
   // Not handled.
   event.Skip();
@@ -232,23 +243,56 @@ void WxEventHandler::_common ( wxEvent &event )
 {
 #ifdef _DEBUG
 
-  std::cout << "Event type: " << event.GetEventType() << ", ID: " << event.GetId();
-  std::cout << ", Time: " << Usul::System::DateTime::format ( event.GetTimestamp() );
-  std::cout << ", Name: " << event.GetClassInfo()->GetClassName();
+  std::ostringstream out;
+  out << "Event type: " << event.GetEventType() << ", ID: " << event.GetId();
+  out << ", Time: " << Usul::System::DateTime::format ( event.GetTimestamp() );
+  out << ", Name: " << event.GetClassInfo()->GetClassName();
 
   wxObject *object ( event.GetEventObject() );
   if ( object )
   {
-    std::cout << ", Address: " << object;
-    std::cout << ", Class Name: " << object->GetClassInfo()->GetClassName();
-    wxWindow *window ( wxDynamicCast ( object, wxWindow ) );
-    if ( window )
+    out << ", Address: " << object;
+    out << ", Class Name: " << object->GetClassInfo()->GetClassName();
     {
-      std::cout << ", Object Label: " << window->GetLabel();
+      wxFrame *frame ( wxDynamicCast ( object, wxFrame ) );
+      if ( frame )
+      {
+        out << ", Frame Label: " << frame->GetLabel();
+        wxMenuBar *bar ( frame->GetMenuBar() );
+        if ( bar )
+        {
+          wxMenuItem *item ( bar->FindItem ( event.GetId() ) );
+          if ( item )
+          {
+            out << ", Menu Item Text: " << item->GetText();
+          }
+        }
+      }
+      else
+      {
+        wxWindow *window ( wxDynamicCast ( object, wxWindow ) );
+        if ( window )
+        {
+          out << ", Object Label: " << window->GetLabel();
+        }
+        else
+        {
+          wxEvtHandler *handler ( wxDynamicCast ( object, wxEvtHandler ) );
+          if ( handler )
+          {
+            out << ", wxEvtHandler";
+          }
+        }
+      }
     }
   }
 
-  std::cout << std::endl;
+  out << std::endl;
+  std::cout << out.str() << std::flush;
+
+#ifdef _MSC_VER
+  ::OutputDebugString ( out.str().c_str() );
+#endif
 
 #endif
 }

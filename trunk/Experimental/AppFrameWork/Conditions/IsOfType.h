@@ -23,7 +23,7 @@ namespace AFW {
 namespace Conditions {
 
 
-template < class T > class APP_FRAME_WORK_EXPORT IsOfType : public Group
+template < class T > class IsOfType : public Group
 {
 public:
 

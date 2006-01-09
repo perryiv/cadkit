@@ -365,6 +365,18 @@
 					<File
 						RelativePath=".\Actions\RunLocalEventLoop.h">
 					</File>
+					<File
+						RelativePath=".\Actions\SetVisible.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\SetVisible.h">
+					</File>
+					<File
+						RelativePath=".\Actions\ToggleVisible.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\ToggleVisible.h">
+					</File>
 				</Filter>
 				<Filter
 					Name="Update"
@@ -392,18 +404,6 @@
 					</File>
 					<File
 						RelativePath=".\Actions\SetTextFromStdout.h">
-					</File>
-					<File
-						RelativePath=".\Actions\SetVisible.cpp">
-					</File>
-					<File
-						RelativePath=".\Actions\SetVisible.h">
-					</File>
-					<File
-						RelativePath=".\Actions\ToggleVisible.cpp">
-					</File>
-					<File
-						RelativePath=".\Actions\ToggleVisible.h">
 					</File>
 					<File
 						RelativePath=".\Actions\UpdateAction.cpp">

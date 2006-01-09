@@ -134,3 +134,27 @@ void WxMenuButton::detach()
 {
   WxObjectMap::remove ( this );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enable the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMenuButton::enable ( bool state )
+{
+  Guard guard ( this->mutex() );
+
+  // Get our button.
+  wxMenuItem *button ( WxObjectMap::find<wxMenuItem> ( this ) );
+  if ( button )
+  {
+    button->Enable ( state );
+    BaseClass::enable ( button->IsEnabled() );
+  }
+  else
+  {
+    BaseClass::enable ( state );
+  }
+}

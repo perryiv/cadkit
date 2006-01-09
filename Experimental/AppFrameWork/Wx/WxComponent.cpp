@@ -24,6 +24,17 @@
 #include "WxMenuGroup.h"
 #include "WxMenuButton.h"
 
+#include "AppFrameWork/Actions/Enable.h"
+#include "AppFrameWork/Actions/ToggleVisible.h"
+#include "AppFrameWork/Conditions/And.h"
+#include "AppFrameWork/Conditions/HasEqualText.h"
+#include "AppFrameWork/Conditions/IsOfType.h"
+#include "AppFrameWork/Conditions/IsVisible.h"
+
+#include "AppFrameWork/Predicates/ConditionWrapper.h"
+
+#include <algorithm>
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WxComponent , WxComponent::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( WxComponent );
 
@@ -166,6 +177,35 @@ void WxComponent::changeManuBar ( IUnknown *caller )
 
   // Get or make window menu.
   AFW::Menus::MenuGroup::RefPtr wm ( mb->menu ( "Window", true ) );
+  if ( false == wm.valid() )
+    return;
+
+  // Look for existing button.
+  const std::string text ( "Text Messages" );
+  AFW::Menus::Button::RefPtr button;
+  {
+    AFW::Conditions::And::RefPtr condition ( new AFW::Conditions::And );
+    condition->append ( new AFW::Conditions::HasEqualText ( text ) );
+    condition->append ( new AFW::Conditions::IsOfType < AFW::Menus::Button >() );
+    AFW::Core::Group::Itr i ( std::find_if ( wm->begin(), wm->end(), AFW::Predicates::ConditionWrapper ( condition.get() ) ) );
+    button = ( ( wm->end() == i ) ? 0x0 : dynamic_cast < AFW::Menus::Button * > ( i->get() ) );
+  }
+
+  // Make new button if needed.
+  if ( false == button.valid() )
+  {
+    AFW::Core::Program &factory ( AFW::Core::Program::instance() );
+    button = factory.newObject<AFW::Menus::Button>();
+    if ( false == button.valid() )
+      return;
+  }
 
   // Add entry to show/hide text window.
+  button->textSet ( text );
+  button->underline ( 0 );
+  button->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
+  button->append ( new AFW::Conditions::IsVisible ( true  ), new AFW::Actions::Enable ( true  ) );
+  button->append ( new AFW::Conditions::IsVisible ( false ), new AFW::Actions::Enable ( false ) );
+  button->append ( new AFW::Actions::ToggleVisible );
+  wm->append ( button );
 }

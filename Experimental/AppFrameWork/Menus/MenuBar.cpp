@@ -283,6 +283,7 @@ AFW::Menus::MenuGroup *MenuBar::menu ( const std::string &text, bool create )
     return mg.get();
   }
 
-  // If we get to here then we failed.
-  throw std::runtime_error ( "Error 1932223920: Failed to make new menu group" );
+  // If we get to here then the factory failed, which might be the 
+  // desired behavior (so we do not throw).
+  return 0x0;
 }

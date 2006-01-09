@@ -33,6 +33,9 @@ public:
   // Create the button.
   wxMenuItem *                        create ( WxMenuGroup *menu );
 
+  // Enable/disable the window.
+  virtual void                        enable ( bool );
+
   // Detach from gui object.
   virtual void                        detach();
 

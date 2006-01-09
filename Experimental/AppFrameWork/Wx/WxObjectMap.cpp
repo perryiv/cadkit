@@ -146,8 +146,10 @@ private:
 
 typedef Map < AFW::Core::Object, wxObject > ObjectToWx;
 typedef Map < wxObject, AFW::Core::Object > WxToObject;
+typedef std::map < wxWindowID, wxMenuItem * > IdToMenuItem;
 ObjectToWx objectToWx;
 WxToObject wxToObject;
+IdToMenuItem idToMenuItem;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -165,9 +167,10 @@ WxToObject wxToObject;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AFW::Core::Object *WxObjectMap::findObject ( const wxObject *object )
+AFW::Core::Object *WxObjectMap::findObject ( const wxObject *key )
 {
-  return Detail::wxToObject.find ( object );
+  AFW::Core::Object *object ( Detail::wxToObject.find ( key ) );
+  return object;
 }
 
 
@@ -177,9 +180,24 @@ AFW::Core::Object *WxObjectMap::findObject ( const wxObject *object )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-wxObject *WxObjectMap::findObject ( const AFW::Core::Object *object )
+wxObject *WxObjectMap::findObject ( const AFW::Core::Object *key )
 {
-  return Detail::objectToWx.find ( object );
+  wxObject *object ( Detail::objectToWx.find ( key ) );
+  return object;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wxMenuItem *WxObjectMap::findMenuItem ( wxWindowID key )
+{
+  Detail::IdToMenuItem::iterator i ( Detail::idToMenuItem.find ( key ) );
+  wxMenuItem *item ( ( Detail::idToMenuItem.end() != i ) ? i->second : 0x0 );
+  return item;
 }
 
 
@@ -205,6 +223,24 @@ void WxObjectMap::set ( AFW::Core::Object *object, wxObject *wx )
 {
   Detail::objectToWx.set ( object, wx );
   Detail::wxToObject.set ( wx, object );
+  wxMenuItem *item ( ( wx ) ? wxDynamicCast ( wx, wxMenuItem ) : 0x0 );
+  if ( item )
+    WxObjectMap::set ( item->GetId(), item );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxObjectMap::set ( wxWindowID id, wxMenuItem *item )
+{
+  const bool ok ( wxID_ANY != id );
+  USUL_ASSERT ( ok );
+  if ( ok && item )
+    Detail::idToMenuItem[id] = item;
 }
 
 
@@ -222,6 +258,11 @@ void WxObjectMap::remove ( const wxObject *wx )
   // Remove from both maps.
   Detail::wxToObject.remove ( wx );
   Detail::objectToWx.remove ( object );
+
+  // If it is a menu item, remove it as well.
+  wxMenuItem *item ( ( wx ) ? wxDynamicCast ( wx, wxMenuItem ) : 0x0 );
+  if ( item )
+    WxObjectMap::remove ( item->GetId() );
 
   // Should be true.
   USUL_ASSERT ( 0x0 == WxObjectMap::findObject ( wx ) );
@@ -244,7 +285,25 @@ void WxObjectMap::remove ( const AFW::Core::Object *object )
   Detail::objectToWx.remove ( object );
   Detail::wxToObject.remove ( wx );
 
+  // If it is a menu item, remove it as well.
+  wxMenuItem *item ( ( wx ) ? wxDynamicCast ( wx, wxMenuItem ) : 0x0 );
+  if ( item )
+    WxObjectMap::remove ( item->GetId() );
+
   // Should be true.
   USUL_ASSERT ( 0x0 == WxObjectMap::findObject ( object ) );
   USUL_ASSERT ( 0x0 == WxObjectMap::findObject ( wx ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxObjectMap::remove ( wxWindowID id )
+{
+  Detail::idToMenuItem.erase ( id );
+  USUL_ASSERT ( 0x0 == WxObjectMap::findMenuItem ( id ) );
 }

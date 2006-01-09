@@ -16,19 +16,19 @@
 #ifndef _APP_FRAME_WORK_TOGGLE_VISIBLE_ACTION_CLASS_H_
 #define _APP_FRAME_WORK_TOGGLE_VISIBLE_ACTION_CLASS_H_
 
-#include "AppFrameWork/Actions/UpdateAction.h"
+#include "AppFrameWork/Actions/CommandAction.h"
 
 
 namespace AFW {
 namespace Actions {
 
 
-class APP_FRAME_WORK_EXPORT ToggleVisible : public UpdateAction
+class APP_FRAME_WORK_EXPORT ToggleVisible : public CommandAction
 {
 public:
 
   // Typedefs.
-  typedef UpdateAction BaseClass;
+  typedef CommandAction BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ToggleVisible );

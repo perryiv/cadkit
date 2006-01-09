@@ -41,3 +41,17 @@ Group::Group ( bool want ) : BaseClass ( want ),
 Group::~Group()
 {
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append a condition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::append ( AFW::Conditions::Condition *c )
+{
+  Guard guard ( this->mutex() );
+  if ( c )
+    _kids.insert ( _kids.end(), c );
+}

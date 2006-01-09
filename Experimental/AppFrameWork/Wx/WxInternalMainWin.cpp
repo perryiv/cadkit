@@ -22,6 +22,7 @@
 #include "WxEventHandler.h"
 #include "AppFrameWork/Core/Define.h"
 
+#include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
 
 IMPLEMENT_CLASS ( WxInternalMainWin, WxInternalMainWin::BaseClass );
@@ -110,4 +111,17 @@ void WxInternalMainWin::_onClose ( wxCloseEvent &event )
 
   // Pass the event along.
   event.Skip();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when things need to be updated.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxInternalMainWin::UpdateWindowUI ( long flags )
+{
+  flags = Usul::Bits::add ( flags, wxUPDATE_UI_RECURSE );
+  BaseClass::UpdateWindowUI ( flags );
 }

@@ -33,6 +33,8 @@ public:
   WxInternalMainWin ( WxMainWindow *, const wxPoint &, const wxSize & );
   virtual ~WxInternalMainWin();
 
+  virtual void    UpdateWindowUI ( long flags = wxUPDATE_UI_NONE );
+
 protected:
 
   void            _onClose ( wxCloseEvent &event );

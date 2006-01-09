@@ -8,9 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Interface for executing a command.
-//
+///
+///  Interface for executing a command.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _USUL_INTERFACE_COMMAND_H_
@@ -31,7 +31,7 @@ struct ICommand : public Usul::Interfaces::IUnknown
   // Id for this interface.
   enum { IID = 3572469257u };
 
-  // Execute the command.
+  /// Execute the command.
   virtual void execute ( Usul::Interfaces::IUnknown *caller ) = 0;
 };
 

@@ -774,6 +774,9 @@
 						RelativePath=".\Interfaces\IKeepAllConnected.h">
 					</File>
 					<File
+						RelativePath=".\Interfaces\IShowNewPrimitives.h">
+					</File>
+					<File
 						RelativePath=".\Interfaces\ITriangle.h">
 					</File>
 					<File

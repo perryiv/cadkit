@@ -82,6 +82,8 @@
 #include "osg/ClipPlane"
 #include "osg/ShapeDrawable"
 #include "osg/LightSource"
+#include "osg/FrameBufferObject"
+#include "osg/Notify"
 
 #include "osg/GL"
 
@@ -135,7 +137,8 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _currentTool     (),
   _lastTool        (),
   _currentMode     ( NAVIGATION ),
-  _lightEditors    ()
+  _lightEditors    (),
+  _contextId       ( 0 )
 {
   // Add this view to the document
   if( this->document() )
@@ -172,6 +175,14 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
 
   // Set the default fov
   Usul::Shared::Preferences::instance().setDouble( Usul::Registry::Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
+
+  // Unique context id to uniquely identify this viewer in OSG.
+  static unsigned int count ( 0 );
+  _contextId = ++count;
+
+#ifdef _DEBUG
+  osg::setNotifyLevel ( osg::INFO );
+#endif
 }
 
 
@@ -227,8 +238,7 @@ void Viewer::create()
 
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
-  static unsigned int count ( 0 );
-  _sceneView->getState()->setContextID ( ++count );
+  _sceneView->getState()->setContextID ( _contextId );
 
   // Set the background color.
   //this->backgroundColor ( OsgFox::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgFox::Defaults::CLEAR_COLOR ) );
@@ -2455,19 +2465,23 @@ bool Viewer::_writeImageFile ( const std::string &filename, double percent ) con
 
 bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const
 {
-  // Height and width.
-#if 0
-  float hp2 ( logf ( (float) h ) / logf( 2.0f ) );
-  float roundedHp2 ( ::ceil( hp2 ) );
-  
-  const unsigned int height ( ( powf ( 2.0f, roundedHp2 ) ) );
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
 
-  float wp2 ( logf ( ( float ) ( w ) ) / logf ( 2.0f ) );
-  float roundedWp2 ( ::ceil( wp2 ) );
+  // Make this context current.
+  me->_context->makeCurrent();
 
-  const unsigned int width ( ( powf ( 2.0f, roundedWp2 ) ) );
-
-#endif
+  if ( osg::FBOExtensions::instance( _contextId )->isSupported() )
+  {
+    me->_sceneView->getCamera();
+  }
+  // What I think should happen here:
+  // 1. Check for frame buffer object support.
+  // 2. If it doesn't exist, fall back on current method.
+  // 3. If it does exist, attach a texture for the color buffer to the camera in osgUtil::Viewer.  
+  //    Depending on the size requested, should be able to make the texture the requested size and then render once.  No tiling needed.
+  // 4. Set the viewport and projection as it is now.
+  // 5. Read from the texture and add it to final image.
 
   // Tile height and width
   const unsigned int tileWidth ( 256 );
@@ -2479,9 +2493,6 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
 
   // Set the current tile
   unsigned int currentTile ( 0 );
-
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
 
   // Get the old viewport
   osg::ref_ptr<osg::Viewport> ovp ( me->viewport() );
@@ -2497,12 +2508,12 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // Make enough space
   image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE ); 
 
-  const double top     ( zNear * tan(fovy * 3.14159265 / 360.0) );
+  const double top     ( zNear * tan(fovy * osg::PI / 360.0) );
   const double bottom  ( -top );
   const double left    ( bottom * aspect );
   const double right   ( top * aspect );
 
-  do 
+  do
   {
     // Begin tile 
     const unsigned int currentRow ( currentTile / numCols );

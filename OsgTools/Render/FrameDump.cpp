@@ -69,7 +69,9 @@ FrameDump::FrameDump ( bool dump,
   _ext     ( ext ), 
   _start   ( start ), 
   _digits  ( digits ), 
-  _current ( start )
+  _current ( start ),
+  _saveFilenames ( false ),
+  _filenames ()
 {
 }
 
@@ -87,7 +89,9 @@ FrameDump::FrameDump ( const FrameDump &f ) :
   _ext     ( f._ext ), 
   _start   ( f._start ), 
   _digits  ( f._digits ), 
-  _current ( f._current )
+  _current ( f._current ),
+  _saveFilenames ( f._saveFilenames ),
+  _filenames ( f._filenames )
 {
 }
 
@@ -123,6 +127,8 @@ FrameDump &FrameDump::operator = ( const FrameDump &f )
   _start   = f._start;
   _digits  = f._digits;
   _current = f._current;
+  _saveFilenames = f._saveFilenames;
+  _filenames = f._filenames;
   return *this;
 }
 

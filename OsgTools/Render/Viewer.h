@@ -715,7 +715,7 @@ private:
   IFoxEvent::QueryPtr _lastTool;
   ViewMode _currentMode;
   LightEditors _lightEditors;
-
+  unsigned int _contextId;
 };
 
 }

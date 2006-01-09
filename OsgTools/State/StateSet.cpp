@@ -501,7 +501,7 @@ void StateSet::setTwoSidedLighting ( osg::StateSet *ss, bool state )
 
   // Set the state. Make it override any other similar states.
   typedef osg::StateAttribute Attribute;
-  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
+  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON | Attribute::PROTECTED );
 }
 
 

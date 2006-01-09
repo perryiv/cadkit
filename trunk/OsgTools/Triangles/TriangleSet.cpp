@@ -17,6 +17,8 @@
 #include "OsgTools/Triangles/Constants.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/HasOption.h"
+#include "OsgTools/State/StateSet.h"
+#include "OsgTools/State/PolygonMode.h"
 
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
@@ -34,6 +36,7 @@
 #include "Usul/Interfaces/IFlushEvents.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Shared/Preferences.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -43,6 +46,8 @@
 #include "osg/Vec4"
 #include "osg/StateSet"
 #include "osg/Material"
+#include "osg/LineWidth"
+#include "osg/PolygonOffset"
 
 #include <algorithm>
 #include <numeric>
@@ -1904,3 +1909,68 @@ void TriangleSet::blocksShow ( unsigned int num )
   _root->addChild( _blocks.at( num )->geode() );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the new triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* TriangleSet::showNewTriangles()
+{
+  // Make the geode.
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+#if 1
+  // Make the geometry.
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  geode->addDrawable ( geometry.get() );
+
+  // Set display-list flag (just in case it has been reset somehow).
+  const bool useList ( Usul::Shared::Preferences::instance().getBool ( "display_lists" ) );
+  geometry->setUseDisplayList ( useList );
+
+  // Set the vertices.
+  osg::ref_ptr<osg::Vec3Array> vertices ( this->vertices() );
+  geometry->setVertexArray ( vertices.get() );
+
+  // Outline non-original triangles in the extra scene.
+  osg::ref_ptr < osg::DrawElementsUInt > elements ( new osg::DrawElementsUInt ( osg::PrimitiveSet::TRIANGLES ) );
+  geometry->addPrimitiveSet ( elements.get() );
+  
+  const unsigned int numTriangles ( _triangles.size() );
+  for ( unsigned int i = 0; i < numTriangles; ++i )
+  {
+    Triangle::RefPtr t ( _triangles[i].get() );
+    if ( t.valid() && false == t->original() )
+    {
+      // Get the indices.
+      const unsigned int i0 ( t->vertex0()->index() );
+      const unsigned int i1 ( t->vertex1()->index() );
+      const unsigned int i2 ( t->vertex2()->index() );
+
+      // Add the triangles.
+      elements->push_back ( i0 );
+      elements->push_back ( i1 );
+      elements->push_back ( i2 );
+    }
+  }
+
+  // Make the triangles outlined with thick lines.
+  osg::ref_ptr<osg::StateSet> ss ( geometry->getOrCreateStateSet() );
+  OsgTools::State::PolygonMode::set ( osg::PolygonMode::FRONT, osg::PolygonMode::LINE, ss.get() );
+  OsgTools::State::PolygonMode::set ( osg::PolygonMode::BACK, osg::PolygonMode::LINE, ss.get() );
+  ss->setAttributeAndModes ( new osg::LineWidth     ( 3.0f ),         osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  ss->setAttributeAndModes ( new osg::PolygonOffset ( -1.0f, -1.0f ), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  OsgTools::State::StateSet::setLighting ( ss.get(), false );
+  OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), false );
+
+  // Make the lines black.
+  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+  colors->push_back ( osg::Vec4f ( 0, 0, 0, 1 ) );
+  geometry->setColorArray ( colors.get() );
+  geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
+#endif
+
+  return geode.release();
+}

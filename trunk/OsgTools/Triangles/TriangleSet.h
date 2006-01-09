@@ -234,6 +234,9 @@ public:
   SharedVertex *          sharedVertex1 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i );
   SharedVertex *          sharedVertex2 ( const osg::Geode* g, const osg::Drawable* d, unsigned int i );
 
+  /// Get a node that shows the new triangles.
+  osg::Node*              showNewTriangles();
+
   // Get the triangles. Use with caution.
   const TriangleVector &  triangles() const { return _triangles; }
   TriangleVector &        triangles()       { return _triangles; }

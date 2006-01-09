@@ -8,9 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-//
-//  Interface a component that has a menu button.
-//
+///
+///  Interface a component that has a menu button.
+///
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _USUL_INTERFACE_MENU_ENTRY_H_
@@ -33,16 +33,16 @@ struct IMenuEntry : public Usul::Interfaces::IUnknown
   // Id for this interface.
   enum { IID = 2280889375u };
 
-  // Get the menu text.
+  /// Get the menu text.
   virtual std::string   menuText() const = 0;
 
-  // Get the hot-key text.
+  /// Get the hot-key text.
   virtual std::string   hotKeyText() const = 0;
 
-  // Get the status-bar text.
+  /// Get the status-bar text.
   virtual std::string   statusBarText() const = 0;
 
-  // Get the group for this menu entry
+  /// Get the group for this menu entry
   virtual std::string   menuGroup() const = 0;
 };
 

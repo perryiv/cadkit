@@ -244,6 +244,9 @@
 				Name="Components"
 				Filter="">
 				<File
+					RelativePath=".\Components\Call.h">
+				</File>
+				<File
 					RelativePath="Components\Create.h">
 				</File>
 				<File
@@ -329,6 +332,9 @@
 				Filter="">
 				<File
 					RelativePath=".\Exceptions\Canceled.h">
+				</File>
+				<File
+					RelativePath=".\Exceptions\Catch.h">
 				</File>
 				<File
 					RelativePath="Exceptions\Thrower.h">
@@ -436,6 +442,9 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGUIDelegate.h">
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGuiInit.h">
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGUIServer.h">

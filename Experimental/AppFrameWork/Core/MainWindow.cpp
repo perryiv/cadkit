@@ -20,10 +20,6 @@
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Registry.h"
 
-#include "AppFrameWork/Conditions/Always.h"
-#include "AppFrameWork/Actions/SetTextFromStdout.h"
-#include "AppFrameWork/Actions/SetTextFromPluginActivity.h"
-
 #include <iostream>
 #include <stdexcept>
 
@@ -44,10 +40,7 @@ MainWindow::MainWindow() : BaseClass(),
   _editors    ( Program::instance().newObject<Frame>() )
 {
   if ( _editors.valid() )
-  {
-    _editors->layout ( Frame::HORIZONTAL );
     this->append ( _editors.get() );
-  }
 
   this->persistentName ( "main_window" );
   this->icon ( Icon ( "afw_sun_16x16" ) );
@@ -94,52 +87,7 @@ void MainWindow::init()
   // Add a status bar.
   this->statusBar ( Program::instance().newObject<StatusBar>() );
 
-  // Update functors.
-  AFW::Conditions::Always::RefPtr always ( new AFW::Conditions::Always );
-
 #if 0
-
-  // Add a text output window.
-  {
-    TextWindow::ValidRefPtr window ( Program::instance().newObject<TextWindow>() );
-    if ( window.valid() )
-    {
-      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-      window->persistentName ( "standard_output_window" );
-      window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
-      window->title ( "Messages" );
-      window->icon ( Icon ( "afw_text_output_16x16" ) );
-      this->append ( window.get() );
-    }
-  }
-
-  // Add a log window.
-  {
-    LogWindow::ValidRefPtr window ( Program::instance().newObject<LogWindow>() );
-    if ( window.valid() )
-    {
-      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-      window->persistentName ( "standard_log_window" );
-      window->append ( always.get(), new AFW::Actions::SetTextFromStdout );
-      window->title ( "Log" );
-      window->icon ( Icon ( "afw_text_output_16x16" ) );
-      this->append ( window.get() );
-    }
-  }
-
-  // Add a window that displays plugin information.
-  {  
-    TextWindow::ValidRefPtr window ( Program::instance().newObject<TextWindow>() );
-    if ( window.valid() )
-    {
-      window->dockState ( DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
-      window->persistentName ( "plugin_activity_window" );
-      window->append ( always.get(), new AFW::Actions::SetTextFromPluginActivity );
-      window->title ( "Plugins" );
-      window->icon ( Icon ( "afw_plugins_16x16" ) );
-      this->append ( window.get() );
-    }
-  }
 
   // Add a scene-view.
   {

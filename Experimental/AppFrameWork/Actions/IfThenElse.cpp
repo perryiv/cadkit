@@ -9,16 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Displays text.
+//  Conditional update.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Actions/IfThenElse.h"
 
-using namespace AFW::Core;
+#include "AppFrameWork/Menus/Button.h"
 
-AFW_IMPLEMENT_OBJECT ( TextWindow );
+using namespace AFW::Actions;
+
+USUL_IMPLEMENT_TYPE_ID ( IfThenElse );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,11 +28,13 @@ AFW_IMPLEMENT_OBJECT ( TextWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::TextWindow() : BaseClass(),
-  _menu()
+IfThenElse::IfThenElse ( AFW::Conditions::Condition *check, 
+                         AFW::Actions::UpdateAction *update, 
+                         AFW::Actions::UpdateAction *else_ ) : BaseClass(),
+  _check  ( check  ),
+  _update ( update ),
+  _else   ( else_  )
 {
-  this->title ( "Text Window" );
-  this->icon ( Icon ( "afw_text_output_16x16" ) );
 }
 
 
@@ -41,47 +44,35 @@ TextWindow::TextWindow() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::~TextWindow()
+IfThenElse::~IfThenElse()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Accept the visitor.
+//  Perform the action.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::accept ( AFW::Core::BaseVisitor *v )
+void IfThenElse::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  if ( v )
-    v->visit ( this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the menu name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::menu ( const std::string &name )
-{
-  Guard guard ( this->mutex() );
-  _menu = name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the menu name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string TextWindow::menu() const
-{
-  Guard guard ( this->mutex() );
-  std::string name ( _menu );
-  return name;
+  if ( _check.valid() )
+  {
+    if ( _check->evaluate ( object ) )
+    {
+      if ( _update.valid() )
+      {
+        _update->execute ( object );
+      }
+    }
+    else
+    {
+      if ( _else.valid() )
+      {
+        _else->execute ( object );
+      }
+    }
+  }
 }

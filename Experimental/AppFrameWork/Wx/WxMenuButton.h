@@ -30,6 +30,9 @@ public:
   // Typedefs.
   typedef AFW::Menus::Button BaseClass;
 
+  // Set the checked state.
+  virtual void                        check ( bool );
+
   // Create the button.
   wxMenuItem *                        create ( WxMenuGroup *menu );
 

@@ -27,7 +27,8 @@ AFW_IMPLEMENT_OBJECT ( LogWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LogWindow::LogWindow() : BaseClass()
+LogWindow::LogWindow() : BaseClass(),
+  _menu()
 {
   this->title ( "Text Output" );
   this->icon ( Icon ( "afw_text_output_16x16" ) );
@@ -56,4 +57,31 @@ void LogWindow::accept ( AFW::Core::BaseVisitor *v )
   Guard guard ( this->mutex() );
   if ( v )
     v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the menu name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LogWindow::menu ( const std::string &name )
+{
+  Guard guard ( this->mutex() );
+  _menu = name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the menu name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string LogWindow::menu() const
+{
+  Guard guard ( this->mutex() );
+  std::string name ( _menu );
+  return name;
 }

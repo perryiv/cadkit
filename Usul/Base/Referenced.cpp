@@ -19,16 +19,6 @@
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Threads/Set.h"
-
-#ifdef _MSC_VER
-#include "windows.h"
-#endif
-
-#include <map>
-#include <string>
-#include <stdexcept>
-#include <iostream>
 
 using namespace Usul;
 using namespace Usul::Base;
@@ -69,7 +59,7 @@ namespace Detail { Usul::Base::InstanceManager im; }
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Referenced::Referenced() : Typed(),
+Referenced::Referenced() : BaseClass(),
   _refCount ( 0 ),
   _rcMutex ( Mutex::create() )
 {
@@ -86,7 +76,7 @@ Referenced::Referenced() : Typed(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
+Referenced::Referenced ( const Referenced &r ) : BaseClass ( r ),
   _refCount ( 0 ),
   _rcMutex ( Mutex::create() )
 {

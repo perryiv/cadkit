@@ -53,7 +53,7 @@ private:
 
 
 // Creation function.
-OPEN_THREADS_EXTENSIONS_EXPORT Usul::Threads::Mutex *newMutex();
+OPEN_THREADS_EXTENSIONS_EXPORT Usul::Threads::Mutex *newOpenThreadsMutex();
 
 
 }; // namespace OT

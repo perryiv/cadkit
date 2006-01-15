@@ -110,3 +110,22 @@ bool WxInternalApp::ProcessIdle()
   // Pass along to base class.
   return BaseClass::ProcessIdle();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle events safely.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxInternalApp::HandleEvent ( wxEvtHandler *handler, wxEventFunction func, wxEvent &event ) const
+{
+  // Safely...
+  try
+  {
+    BaseClass::HandleEvent ( handler, func, event );
+  }
+
+  // Catch all exceptions.
+  AFW_CATCH_BLOCK ( 1132381514ul );
+}

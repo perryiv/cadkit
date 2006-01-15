@@ -33,7 +33,8 @@
 
 #include "Usul/Algorithms/CopyIf.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Components/manager.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Components/Call.h"
 
 #include "Usul/Interfaces/IChangeMenuBar.h"
 
@@ -215,20 +216,9 @@ void MenuBar::init()
     }
   }
 
-  // Ask for all interfaces that change the menu bar.
-  {
-    typedef Usul::Components::Manager PM;
-    PM::UnknownSet plugs ( PM::instance().getInterfaces ( Usul::Interfaces::IChangeMenuBar::IID ) );
-    for ( PM::UnknownSet::iterator i = plugs.begin(); i != plugs.end(); ++i )
-    {
-      Usul::Interfaces::IChangeMenuBar::QueryPtr plug ( *i );
-      if ( plug.valid() )
-      {
-        try { plug->changeManuBar ( 0x0 ); }
-        AFW_CATCH_BLOCK ( 5221551930ul );
-      }
-    }
-  }
+  // Call all interfaces that change the menu bar.
+  Usul::Components::call < Usul::Interfaces::IChangeMenuBar > 
+    ( 5221551930ul, std::cout, &Usul::Interfaces::IChangeMenuBar::changeMenuBar );
 }
 
 

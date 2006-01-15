@@ -61,7 +61,7 @@ namespace AFW
   {
     namespace Detail
     {
-      Usul::Threads::SetMutexFactory mutexFactory ( &Threads::OT::newMutex );
+      Usul::Threads::SetMutexFactory mutexFactory ( &Threads::OT::newOpenThreadsMutex );
     }
   }
 }

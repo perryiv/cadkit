@@ -30,6 +30,8 @@ public:
 
 protected:
 
+  virtual void                        HandleEvent ( wxEvtHandler *, wxEventFunction, wxEvent & ) const;
+
   virtual bool                        OnInit();
   virtual int                         OnExit();
 

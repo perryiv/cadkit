@@ -136,7 +136,7 @@ namespace Usul
 {
   namespace Threads
   {
-    Mutex *newMutex()
+    Mutex *newSingleThreadedMutexStub()
     {
       return new SingleThreadedMutex();
     }

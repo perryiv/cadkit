@@ -16,6 +16,9 @@
 #ifndef _APP_FRAME_WORK_DEFINITIONS_H_
 #define _APP_FRAME_WORK_DEFINITIONS_H_
 
+#include "Usul/Exceptions/Catch.h"
+
+#include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,40 +27,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define AFW_CATCH_BLOCK(error_id)\
-catch ( const std::exception &e )\
-{\
-  std::cout << "Error " << error_id << ": Standard exception caught." << std::flush;\
-  if ( e.what() )\
-    std::cout << ". " << e.what() << std::endl;\
-  std::cout << std::endl;\
-}\
-catch ( const std::string &e )\
-{\
-  std::cout << "Error " << error_id << ": Standard string exception caught." << std::flush;\
-  if ( false == e.empty() )\
-    std::cout << ". " << e << std::endl;\
-  std::cout << std::endl;\
-}\
-catch ( const char *e )\
-{\
-  std::cout << "Error " << error_id << ": String exception caught." << std::flush;\
-  if ( e && ( ::strlen ( e ) > 0 ) )\
-    std::cout << ". " << e << std::endl;\
-  std::cout << std::endl;\
-}\
-catch ( unsigned int e )\
-{\
-  std::cout << "Error " << error_id << ": Unsigned integer exception caught: " << e << std::endl;\
-}\
-catch ( int e )\
-{\
-  std::cout << "Error " << error_id << ": Integer exception caught: " << e << std::endl;\
-}\
-catch ( ... )\
-{\
-  std::cout << "Error " << error_id << ": Unknown exception caught." << std::endl;\
-}
+#define AFW_CATCH_BLOCK(error_id) USUL_CATCH_ALL_EXCEPTIONS ( error_id, std::cout )
 
 
 ///////////////////////////////////////////////////////////////////////////////

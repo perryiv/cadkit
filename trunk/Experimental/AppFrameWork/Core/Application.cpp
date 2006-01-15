@@ -20,6 +20,9 @@
 #include "AppFrameWork/Core/Registry.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Components/Call.h"
+#include "Usul/Interfaces/IGuiInit.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -135,6 +138,10 @@ void Application::init()
   this->mainWindow ( Program::instance().newObject<MainWindow>() );
   if ( this->mainWindow() )
     this->mainWindow()->init();
+
+  // Ask all plugins to initialize their gui.
+  Usul::Components::call < Usul::Interfaces::IGuiInit > 
+    ( 1742547681ul, std::cout, &Usul::Interfaces::IGuiInit::guiInit );
 }
 
 

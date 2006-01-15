@@ -158,3 +158,27 @@ void WxMenuButton::enable ( bool state )
     BaseClass::enable ( state );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enable the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMenuButton::check ( bool state )
+{
+  Guard guard ( this->mutex() );
+
+  // Get our button.
+  wxMenuItem *button ( WxObjectMap::find<wxMenuItem> ( this ) );
+  if ( button && button->IsCheckable() )
+  {
+    button->Check ( state );
+    BaseClass::check ( button->IsChecked() );
+  }
+  else
+  {
+    BaseClass::check ( state );
+  }
+}

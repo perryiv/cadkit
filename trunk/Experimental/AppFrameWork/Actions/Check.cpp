@@ -9,16 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Displays text.
+//  Check the control.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Actions/Check.h"
 
-using namespace AFW::Core;
+#include "AppFrameWork/Menus/Button.h"
 
-AFW_IMPLEMENT_OBJECT ( TextWindow );
+using namespace AFW::Actions;
+
+USUL_IMPLEMENT_TYPE_ID ( Check );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,11 +28,9 @@ AFW_IMPLEMENT_OBJECT ( TextWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::TextWindow() : BaseClass(),
-  _menu()
+Check::Check ( bool state ) : BaseClass(),
+  _state ( state )
 {
-  this->title ( "Text Window" );
-  this->icon ( Icon ( "afw_text_output_16x16" ) );
 }
 
 
@@ -41,47 +40,21 @@ TextWindow::TextWindow() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::~TextWindow()
+Check::~Check()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Accept the visitor.
+//  Perform the action.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::accept ( AFW::Core::BaseVisitor *v )
+void Check::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  if ( v )
-    v->visit ( this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the menu name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TextWindow::menu ( const std::string &name )
-{
-  Guard guard ( this->mutex() );
-  _menu = name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the menu name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string TextWindow::menu() const
-{
-  Guard guard ( this->mutex() );
-  std::string name ( _menu );
-  return name;
+  AFW::Menus::Button::RefPtr button ( dynamic_cast < AFW::Menus::Button * > ( object ) );
+  if ( button.valid() )
+    button->check ( _state );
 }

@@ -31,6 +31,7 @@ class USUL_EXPORT Referenced : public Typed
 {
 public:
 
+  typedef Typed BaseClass;
   USUL_DECLARE_TYPE_ID ( Referenced );
 
   /// Reference the instance.

@@ -73,6 +73,7 @@ public:
   // Append actions and devices.
   virtual void                        append ( AFW::Actions::CommandAction * );
   virtual void                        append ( AFW::Conditions::Condition *, AFW::Actions::UpdateAction * );
+  virtual void                        append ( AFW::Actions::UpdateAction * );
   virtual void                        append ( BaseDevice * );
 
   // Call all the actions. Pass false to execute during idle processing.
@@ -108,6 +109,10 @@ public:
   // Enable/disable the window, or get that state.
   virtual void                        enable ( bool );
   virtual bool                        enabled() const;
+
+  // Set/get the flags.
+  void                                flags ( AFW::Core::State::Type );
+  AFW::Core::State::Type              flags() const;
 
   // Set/get the icon.
   void                                icon ( const Icon & );

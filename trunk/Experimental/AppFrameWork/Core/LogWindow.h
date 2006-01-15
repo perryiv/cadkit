@@ -18,6 +18,8 @@
 
 #include "AppFrameWork/Core/Window.h"
 
+#include <string>
+
 
 namespace AFW {
 namespace Core {
@@ -33,6 +35,11 @@ public:
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
+  // If this string is not empty then it is interpreted as the menu in which 
+  // a check-button should be added to hide/show this window.
+  void                                menu ( const std::string &text );
+  std::string                         menu() const;
+
 protected:
 
   // Constructor
@@ -46,6 +53,8 @@ private:
   // No copying.
   LogWindow ( const LogWindow & );
   LogWindow &operator = ( const LogWindow & );
+
+  std::string _menu;
 
   AFW_DECLARE_OBJECT ( LogWindow );
 };

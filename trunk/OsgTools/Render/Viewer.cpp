@@ -82,7 +82,7 @@
 #include "osg/ClipPlane"
 #include "osg/ShapeDrawable"
 #include "osg/LightSource"
-#include "osg/FrameBufferObject"
+//#include "osg/FrameBufferObject"
 #include "osg/Notify"
 
 #include "osg/GL"
@@ -2471,10 +2471,12 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // Make this context current.
   me->_context->makeCurrent();
 
+#if 0
   if ( osg::FBOExtensions::instance( _contextId )->isSupported() )
   {
     me->_sceneView->getCamera();
   }
+#endif
   // What I think should happen here:
   // 1. Check for frame buffer object support.
   // 2. If it doesn't exist, fall back on current method.

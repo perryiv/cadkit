@@ -119,7 +119,7 @@ namespace Threads
 {
   namespace OT
   {
-    Usul::Threads::Mutex *newMutex()
+    Usul::Threads::Mutex *newOpenThreadsMutex()
     {
       return new Mutex();
     }

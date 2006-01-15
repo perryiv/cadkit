@@ -42,6 +42,10 @@ public:
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
 
+  // Set/get the checked state.
+  virtual void                        check ( bool );
+  virtual bool                        checked() const;
+
   // Factory functions.
   static Button *                     createButton ( const std::string &text, const Type &type, const AFW::Core::Icon &icon );
   static Button *                     createButton ( const std::string &text, const AFW::Core::Icon &icon );
@@ -50,7 +54,10 @@ public:
   static Button *                     createCheck  ( const std::string &text );
   static Button *                     createRadio  ( const std::string &text );
   static Button *                     createSeparator();
-                                               
+
+  // Find and/or create the button in the menu-bar. This is a convenience function that wraps a repeated task.
+  static Button *                     button ( const std::string &menu, const std::string &text, Type t = MENU_BUTTON, unsigned short underline = 0, bool createIfNeeded = true );
+
   // Set/get the character to underline.
   unsigned short                      underline() const;
   void                                underline ( unsigned short );

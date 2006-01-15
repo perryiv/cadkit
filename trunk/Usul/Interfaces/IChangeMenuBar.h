@@ -32,7 +32,7 @@ struct IChangeMenuBar : public Usul::Interfaces::IUnknown
   enum { IID = 1136586688u };
 
   /// Change to menu bar.
-  virtual void              changeManuBar ( IUnknown *caller ) = 0;
+  virtual void              changeMenuBar ( IUnknown *caller ) = 0;
 };
 
 

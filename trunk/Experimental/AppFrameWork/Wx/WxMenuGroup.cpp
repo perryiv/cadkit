@@ -114,7 +114,7 @@ bool WxMenuGroup::insert ( Itr where, Window *w )
   // Is it a menu button?
   WxMenuButton::RefPtr button ( dynamic_cast < WxMenuButton * > ( w ) );
   if ( false == button.valid() )
-    return false;
+    return true;
 
   // Get the menu.
   wxMenu *menu ( this->get() );

@@ -382,10 +382,22 @@
 					Name="Update"
 					Filter="">
 					<File
+						RelativePath=".\Actions\Check.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\Check.h">
+					</File>
+					<File
 						RelativePath=".\Actions\Enable.cpp">
 					</File>
 					<File
 						RelativePath=".\Actions\Enable.h">
+					</File>
+					<File
+						RelativePath=".\Actions\IfThenElse.cpp">
+					</File>
+					<File
+						RelativePath=".\Actions\IfThenElse.h">
 					</File>
 					<File
 						RelativePath=".\Actions\SetTextFromFile.cpp">

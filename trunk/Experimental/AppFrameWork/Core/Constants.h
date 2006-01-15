@@ -46,6 +46,7 @@ namespace AFW
       const Type MODIFIED ( 1 << 1 );
       const Type VISIBLE  ( 1 << 2 );
       const Type ENABLED  ( 1 << 3 );
+      const Type CHECKED  ( 1 << 4 );
     }
 
     namespace DockSite

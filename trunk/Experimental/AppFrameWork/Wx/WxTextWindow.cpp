@@ -19,6 +19,8 @@
 #include "WxMainWindow.h"
 #include "WxEventHandler.h"
 
+#include "AppFrameWork/Menus/Button.h"
+
 #include "Usul/Errors/Assert.h"
 
 AFW_IMPLEMENT_OBJECT ( WxTextWindow );
@@ -112,6 +114,14 @@ bool WxTextWindow::create ( AFW::Core::Window *w )
 
   // Set our window in the map.
   WxObjectMap::set ( this, text.release() );
+
+  // Are we supposed to add a menu-button?
+  if ( false == this->menu().empty() )
+  {
+    // Find or create the button in the menu.
+    AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
+      ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
+  }
 
   // It worked.
   return true;

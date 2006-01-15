@@ -30,19 +30,8 @@ public:
   // Typedefs.
   typedef Group BaseClass;
 
-  // Possible layouts.
-  enum ChildLayout
-  {
-    HORIZONTAL,
-    VERTICAL
-  };
-
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );
-
-  // Set/get the child layout.
-  void                                layout ( ChildLayout );
-  ChildLayout                         layout();
 
   // Set/get the frame's maximized state.
   void                                maximized ( bool );
@@ -61,8 +50,6 @@ private:
   // No copying.
   Frame ( const Frame & );
   Frame &operator = ( const Frame & );
-
-  ChildLayout _layout;
 
   AFW_DECLARE_OBJECT ( Frame );
 };

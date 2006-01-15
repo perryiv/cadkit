@@ -18,6 +18,7 @@
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
+#include "AppFrameWork/Conditions/Always.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
@@ -306,6 +307,20 @@ void Window::append ( AFW::Conditions::Condition *c, AFW::Actions::UpdateAction 
   Guard guard ( this->mutex() );
   if ( c && u )
     _updates.push_back ( UpdatePair ( c, u ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append an action.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::append ( AFW::Actions::UpdateAction *u )
+{
+  Guard guard ( this->mutex() );
+  AFW::Conditions::Always::RefPtr always ( new AFW::Conditions::Always );
+  this->append ( always.get(), u );
 }
 
 
@@ -838,4 +853,31 @@ void Window::size ( const Window::Size & )
 void Window::position ( const Window::Position & )
 {
   Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Window::flags ( AFW::Core::State::Type f )
+{
+  Guard guard ( this->mutex() );
+  _flags = f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AFW::Core::State::Type Window::flags() const
+{
+  Guard guard ( this->mutex() );
+  AFW::Core::State::Type f ( _flags );
+  return f;
 }

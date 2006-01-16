@@ -19,8 +19,6 @@
 #include "WxMainWindow.h"
 #include "WxEventHandler.h"
 
-#include "AppFrameWork/Menus/Button.h"
-
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Case.h"
 
@@ -96,7 +94,7 @@ void WxLogWindow::detach()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WxLogWindow::create ( AFW::Core::Window *w )
+bool WxLogWindow::create ( AFW::Windows::Window *w )
 {
   Guard guard ( this->mutex() );
 
@@ -118,13 +116,8 @@ bool WxLogWindow::create ( AFW::Core::Window *w )
   // Set our window in the map.
   WxObjectMap::set ( this, html.release() );
 
-  // Are we supposed to add a menu-button?
-  if ( false == this->menu().empty() )
-  {
-    // Find or create the button in the menu.
-    AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
-      ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
-  }
+  // Make menu button if applicable.
+  this->_makeRequestedControls();
 
   // It worked.
   return true;
@@ -246,35 +239,17 @@ void WxLogWindow::_update()
       // Start of the row.
       html += "<tr>";
 
-      {
-        // Add the first column.
-        html += beginCol;
+      // Add the first column.
+      html += ( beginCol + "<img src=\"" + this->_getImage ( line ) + "\"/>" + "</td>" );
 
-        {
-          // Add the image.
-          const std::string image ( this->_getImage ( line ) );
-          html += "<img src=\"" + image + "\"/>";
-        }
-
-        // End the column.
-        html += "</td>";
-      }
-
-      {
-        // Add the second column.
-        html += beginCol;
-
-        {
-          // Add the text.
-          html += line;
-        }
-
-        // End the column.
-        html += "</td>";
-      }
+      // Add the second column.
+      html += ( beginCol + line + "</td>" );
 
       // End of the row.
       html += "</tr>";
+
+      // Add a horizontal line.
+      //html += "<tr><td><hr/></td><td><hr/></td></tr>";
     }
 
     // Update the starting position.

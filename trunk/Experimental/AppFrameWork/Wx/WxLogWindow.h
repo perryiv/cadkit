@@ -17,23 +17,23 @@
 #define _WX_GUI_LOG_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/LogWindow.h"
+#include "AppFrameWork/Windows/LogWindow.h"
 
 #include <list>
 
 class wxTextCtrl;
 
 
-class WxLogWindow : public AFW::Core::LogWindow
+class WxLogWindow : public AFW::Windows::LogWindow
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::LogWindow BaseClass;
+  typedef AFW::Windows::LogWindow BaseClass;
   typedef std::list < std::string > Strings;
 
   // Create the internal window.
-  virtual bool                        create ( AFW::Core::Window * );
+  virtual bool                        create ( AFW::Windows::Window * );
 
   // Detach from gui object.
   virtual void                        detach();

@@ -29,19 +29,20 @@
 #include <list>
 #include <sstream>
 
-namespace AFW { namespace Core { class Group; class BaseVisitor; } }
+namespace AFW { namespace Core { class BaseVisitor; } }
+namespace AFW { namespace Windows { class Group; } }
 
 
 namespace AFW {
-namespace Core {
+namespace Windows {
 
 
-class APP_FRAME_WORK_EXPORT Window : public Object
+  class APP_FRAME_WORK_EXPORT Window : public AFW::Core::Object
 {
 public:
 
   // Typedefs.
-  typedef Object BaseClass;
+  typedef AFW::Core::Object BaseClass;
   typedef AFW::Actions::CommandAction CommandAction;
   typedef std::vector < CommandAction::RefPtr > CommandActions;
   typedef CommandActions::iterator CommandActionsItr;
@@ -115,8 +116,8 @@ public:
   AFW::Core::State::Type              flags() const;
 
   // Set/get the icon.
-  void                                icon ( const Icon & );
-  Icon                                icon() const;
+  void                                icon ( const AFW::Core::Icon & );
+  AFW::Core::Icon                     icon() const;
 
   // Return the number of actions.
   unsigned int                        numCommandActions() const;
@@ -183,14 +184,14 @@ private:
   Window ( const Window & );
   Window &operator = ( const Window & );
 
-  friend class Group;       // Calls _setParent()
-  friend class BaseVisitor; // Calls _traverse()
+  friend class AFW::Windows::Group;    // Calls _setParent()
+  friend class AFW::Core::BaseVisitor; // Calls _traverse()
 
   static WindowListVar _allWindows;
   WindowListItr _whichWindow;
   AFW::Core::State::Type _flags;
   Group *_parent;
-  Icon _icon;
+  AFW::Core::Icon _icon;
   std::string _text;
   std::string _title;
   std::string _regName;
@@ -212,7 +213,7 @@ template < class T > inline void Window::textAppend ( T value )
 }
 
 
-} // namespace Core
+} // namespace Windows
 } // namespace AFW
 
 

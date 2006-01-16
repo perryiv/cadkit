@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\DebugMSW"
-			IntermediateDirectory=".\DebugMSW"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -26,10 +26,10 @@
 				PreprocessorDefinitions="NOPCH;WIN32;__WXMSW__;_WINDOWS;__WXDEBUG__;_DEBUG;WXUSINGDLL"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
-				PrecompiledHeaderFile=".\DebugMSW/PluginGenerator.pch"
-				AssemblerListingLocation=".\DebugMSW/"
-				ObjectFile=".\DebugMSW/"
-				ProgramDataBaseFileName="DebugMSW\PluginGenerator.pdb"
+				PrecompiledHeaderFile=".\Debug/PluginGenerator.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName="Debug\PluginGenerator.pdb"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -39,12 +39,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2D.lib Xalan-C_1D.lib wxmsw26d_core.lib wxbase26d.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexd.lib wxmsw26d_adv.lib wxmsw26d_html.lib wxmsw26d_xrc.lib wxbase26d_net.lib wxbase26d_xml.lib wxexpatd.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib"
-				OutputFile="DebugMSW\PluginGenerator.exe"
+				OutputFile="Debug\PluginGenerator.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(WX_LIB_DIR);$(XALAN_LIB_DIR);$(XERCES_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\DebugMSW/PluginGenerator.pdb"
+				ProgramDatabaseFile=".\Debug/PluginGenerator.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -53,7 +53,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\DebugMSW/PluginGenerator.tlb"
+				TypeLibraryName=".\Debug/PluginGenerator.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>

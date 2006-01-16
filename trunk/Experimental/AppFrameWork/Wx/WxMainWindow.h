@@ -17,21 +17,21 @@
 #define _WX_GUI_MAIN_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 
 class WxMenuBar;
 class WxStatusBar;
 
 
-class WxMainWindow : public AFW::Core::MainWindow
+class WxMainWindow : public AFW::Windows::MainWindow
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::MainWindow BaseClass;
+  typedef AFW::Windows::MainWindow BaseClass;
   typedef BaseClass::Itr Itr;
-  typedef AFW::Core::Window::Position Position;
-  typedef AFW::Core::Window::Size Size;
+  typedef AFW::Windows::Window::Position Position;
+  typedef AFW::Windows::Window::Size Size;
 
   // Write configuration to disk.
   virtual void                        configWrite() const;
@@ -40,7 +40,7 @@ public:
   virtual void                        detach();
 
   // Insert a window.
-  virtual bool                        insert ( Itr where, AFW::Core::Window * );
+  virtual bool                        insert ( Itr where, AFW::Windows::Window * );
 
   // Set/get the frame's maximized state
   virtual void                        maximized ( bool );
@@ -62,7 +62,7 @@ public:
   // Set/get the status bar.
   const WxStatusBar *                 statusBar() const;
   WxStatusBar *                       statusBar();
-  virtual void                        statusBar ( AFW::Core::StatusBar * );
+  virtual void                        statusBar ( AFW::Windows::StatusBar * );
 
 protected:
 

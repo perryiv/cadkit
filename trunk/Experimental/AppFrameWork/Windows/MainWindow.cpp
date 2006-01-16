@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
@@ -23,7 +23,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
 AFW_IMPLEMENT_OBJECT ( MainWindow );
 
@@ -37,14 +37,14 @@ AFW_IMPLEMENT_OBJECT ( MainWindow );
 MainWindow::MainWindow() : BaseClass(),
   _menuBar    ( 0x0 ),
   _statusBar  ( 0x0 ),
-  _editors    ( Program::instance().newObject<Frame>() )
+  _editors    ( AFW::Core::Program::instance().newObject<Frame>() )
 {
   if ( _editors.valid() )
     this->append ( _editors.get() );
 
   this->persistentName ( "main_window" );
-  this->icon ( Icon ( "afw_sun_16x16" ) );
-  this->title ( Program::instance().app()->name() );
+  this->icon ( AFW::Core::Icon ( "afw_sun_16x16" ) );
+  this->title ( AFW::Core::Program::instance().app()->name() );
 }
 
 
@@ -80,18 +80,18 @@ void MainWindow::init()
   Guard guard ( this->mutex() );
 
   // Add a menu bar.
-  this->menuBar ( Program::instance().newObject<AFW::Menus::MenuBar>() );
+  this->menuBar ( AFW::Core::Program::instance().newObject<AFW::Menus::MenuBar>() );
   if ( this->menuBar() )
     this->menuBar()->init();
 
   // Add a status bar.
-  this->statusBar ( Program::instance().newObject<StatusBar>() );
+  this->statusBar ( AFW::Core::Program::instance().newObject<StatusBar>() );
 
 #if 0
 
   // Add a scene-view.
   {
-    Frame::ValidRefPtr window ( Program::instance().newObject<Frame>() );
+    Frame::ValidRefPtr window ( AFW::Core::Program::instance().newObject<Frame>() );
     if ( window.valid() )
     {
       window->dockState ( DockState ( AFW::Core::DockSite::LEFT, 0 ) );

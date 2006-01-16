@@ -15,7 +15,7 @@
 
 #include "AppFrameWork/Actions/Enable.h"
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Actions;
 
@@ -54,7 +54,7 @@ Enable::~Enable()
 void Enable::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   if ( window.valid() )
     window->enable ( _state );
 }

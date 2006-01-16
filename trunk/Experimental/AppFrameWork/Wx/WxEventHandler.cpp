@@ -17,7 +17,7 @@
 #include "WxEventHandler.h"
 #include "WxObjectMap.h"
 #include "WxMenuBar.h"
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 #include "AppFrameWork/Menus/Button.h"
 
 #include "Usul/System/DateTime.h"
@@ -147,7 +147,7 @@ void WxEventHandler::_wxUpdateUIEventHandler ( wxUpdateUIEvent &event )
   // Call update actions.
   {
     wxObject *object ( event.GetEventObject() );
-    AFW::Core::Window::RefPtr window ( WxObjectMap::find<AFW::Core::Window> ( object ) );
+    AFW::Windows::Window::RefPtr window ( WxObjectMap::find<AFW::Windows::Window> ( object ) );
     if ( window.valid() )
       window->callUpdateActions();
   }
@@ -212,7 +212,7 @@ void WxEventHandler::_wxCommandEventHandler ( wxCommandEvent &event )
   this->_common ( event );
 
   // Should be the main window.
-  AFW::Core::MainWindow::RefPtr mw ( WxObjectMap::find<AFW::Core::MainWindow> ( event.GetEventObject() ) );
+  AFW::Windows::MainWindow::RefPtr mw ( WxObjectMap::find<AFW::Windows::MainWindow> ( event.GetEventObject() ) );
   if ( mw.valid() )
   {
     // Get the menu bar.

@@ -16,7 +16,7 @@
 #include "AppFrameWork/Actions/CreateMenuBar.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 
 #include <iostream>
 
@@ -69,7 +69,7 @@ void CreateMenuBar::execute ( AFW::Core::Object * )
     return;
 
   // Get the main window.
-  AFW::Core::MainWindow::RefPtr mw ( AFW::Core::Program::instance().app()->mainWindow() );
+  AFW::Windows::MainWindow::RefPtr mw ( AFW::Core::Program::instance().app()->mainWindow() );
   if ( false == mw.valid() )
     return;
 

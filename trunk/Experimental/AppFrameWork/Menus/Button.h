@@ -16,19 +16,19 @@
 #ifndef _APP_FRAME_WORK_MENU_BUTTON_CLASS_H_
 #define _APP_FRAME_WORK_MENU_BUTTON_CLASS_H_
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 
 namespace AFW {
 namespace Menus {
 
 
-class APP_FRAME_WORK_EXPORT Button : public AFW::Core::Window
+class APP_FRAME_WORK_EXPORT Button : public AFW::Windows::Window
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::Window BaseClass;
+  typedef AFW::Windows::Window BaseClass;
 
   // Menu button types.
   enum Type

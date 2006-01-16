@@ -23,9 +23,9 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
-namespace AFW { namespace Core { class Application; class Window; class Group; } }
-namespace AFW { namespace Core { class Frame; class MainWindow; class TextWindow; } }
-namespace AFW { namespace Core { class StatusBar; } }
+namespace AFW { namespace Core { class Application; } }
+namespace AFW { namespace Windows { class Window; class Group; class StatusBar; } }
+namespace AFW { namespace Windows { class Frame; class MainWindow; class TextWindow; } }
 namespace AFW { namespace Menus { class Button; class MenuBar; class MenuGroup; } }
 namespace AFW { namespace Dialogs { class Dialog; } }
 
@@ -54,12 +54,12 @@ public:
 
   // Visit the objects.
   virtual void                        visit ( AFW::Core::Application * );
-  virtual void                        visit ( AFW::Core::Window * );
-  virtual void                        visit ( AFW::Core::Group * );
-  virtual void                        visit ( AFW::Core::Frame * );
-  virtual void                        visit ( AFW::Core::MainWindow * );
-  virtual void                        visit ( AFW::Core::TextWindow * );
-  virtual void                        visit ( AFW::Core::StatusBar * );
+  virtual void                        visit ( AFW::Windows::Window * );
+  virtual void                        visit ( AFW::Windows::Group * );
+  virtual void                        visit ( AFW::Windows::Frame * );
+  virtual void                        visit ( AFW::Windows::MainWindow * );
+  virtual void                        visit ( AFW::Windows::TextWindow * );
+  virtual void                        visit ( AFW::Windows::StatusBar * );
   virtual void                        visit ( AFW::Menus::Button * );
   virtual void                        visit ( AFW::Menus::MenuBar * );
   virtual void                        visit ( AFW::Menus::MenuGroup * );
@@ -73,7 +73,7 @@ protected:
   // Use reference counting.
   virtual ~BaseVisitor();
 
-  void                                _traverse ( AFW::Core::Window * );
+  void                                _traverse ( AFW::Windows::Window * );
 
 private:
 

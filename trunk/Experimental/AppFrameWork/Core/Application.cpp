@@ -15,9 +15,9 @@
 
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
-#include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Registry.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
@@ -135,7 +135,7 @@ void Application::init()
   this->_initRegistry();
 
   // Make main window.
-  this->mainWindow ( Program::instance().newObject<MainWindow>() );
+  this->mainWindow ( Program::instance().newObject<AFW::Windows::MainWindow>() );
   if ( this->mainWindow() )
     this->mainWindow()->init();
 
@@ -249,7 +249,7 @@ void Application::recentFileRemove ( const std::string &file )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::mainWindow ( MainWindow *mw )
+void Application::mainWindow ( AFW::Windows::MainWindow *mw )
 {
   Guard guard ( this->mutex() );
   Usul::Pointers::unreference ( _mainWindow );
@@ -264,7 +264,7 @@ void Application::mainWindow ( MainWindow *mw )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MainWindow *Application::mainWindow()
+AFW::Windows::MainWindow *Application::mainWindow()
 {
   Guard guard ( this->mutex() );
   return _mainWindow;
@@ -277,7 +277,7 @@ MainWindow *Application::mainWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const MainWindow *Application::mainWindow() const
+const AFW::Windows::MainWindow *Application::mainWindow() const
 {
   Guard guard ( this->mutex() );
   return _mainWindow;

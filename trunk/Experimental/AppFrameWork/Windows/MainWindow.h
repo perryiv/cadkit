@@ -16,13 +16,13 @@
 #ifndef _APP_FRAME_WORK_MAIN_WINDOW_CLASS_H_
 #define _APP_FRAME_WORK_MAIN_WINDOW_CLASS_H_
 
-#include "AppFrameWork/Core/Frame.h"
-#include "AppFrameWork/Core/StatusBar.h"
+#include "AppFrameWork/Windows/Frame.h"
+#include "AppFrameWork/Windows/StatusBar.h"
 #include "AppFrameWork/Menus/MenuBar.h"
 
 
 namespace AFW {
-namespace Core {
+namespace Windows {
 
 
 class APP_FRAME_WORK_EXPORT MainWindow : public Frame
@@ -79,7 +79,7 @@ private:
 };
 
 
-} // namespace Core
+} // namespace Windows
 } // namespace AFW
 
 

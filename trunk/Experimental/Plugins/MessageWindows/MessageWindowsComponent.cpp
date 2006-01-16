@@ -18,10 +18,10 @@
 #include "AppFrameWork/Actions/SetTextFromStdout.h"
 #include "AppFrameWork/Actions/SetTextFromPluginActivity.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
 #include "AppFrameWork/Core/Program.h"
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/LogWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
+#include "AppFrameWork/Windows/TextWindow.h"
+#include "AppFrameWork/Windows/LogWindow.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -124,16 +124,16 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
 
   // Get menu bar.
   AFW::Core::Application::RefPtr app ( AFW::Core::Program::instance().app() );
-  AFW::Core::MainWindow::RefPtr mw ( ( app.valid() ) ? app->mainWindow() : 0x0 );
+  AFW::Windows::MainWindow::RefPtr mw ( ( app.valid() ) ? app->mainWindow() : 0x0 );
   if ( false == mw.valid() )
     return;
 
   // Make text window.
   {
-    AFW::Core::TextWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Core::TextWindow>() );
+    AFW::Windows::TextWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Windows::TextWindow>() );
     if ( window.valid() )
     {
-      window->dockState ( AFW::Core::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->dockState ( AFW::Windows::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
       window->persistentName ( "standard_output_window" );
       window->append ( new AFW::Actions::SetTextFromStdout );
       window->title ( "Text Messages" );
@@ -145,10 +145,10 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
 
   // Add a log window.
   {
-    AFW::Core::LogWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Core::LogWindow>() );
+    AFW::Windows::LogWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Windows::LogWindow>() );
     if ( window.valid() )
     {
-      window->dockState ( AFW::Core::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->dockState ( AFW::Windows::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
       window->persistentName ( "standard_log_window" );
       window->append ( new AFW::Actions::SetTextFromStdout );
       window->title ( "Log Window" );
@@ -160,10 +160,10 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
 
   // Add a window that displays plugin information.
   {  
-    AFW::Core::TextWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Core::TextWindow>() );
+    AFW::Windows::TextWindow::ValidRefPtr window ( AFW::Core::Program::instance().newObject<AFW::Windows::TextWindow>() );
     if ( window.valid() )
     {
-      window->dockState ( AFW::Core::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
+      window->dockState ( AFW::Windows::Window::DockState ( AFW::Core::DockSite::BOTTOM, 1 ) );
       window->persistentName ( "plugin_activity_window" );
       window->append ( new AFW::Actions::SetTextFromPluginActivity );
       window->title ( "Plugin Activity" );

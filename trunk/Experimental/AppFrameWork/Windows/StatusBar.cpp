@@ -13,10 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/StatusBar.h"
+#include "AppFrameWork/Windows/StatusBar.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
 AFW_IMPLEMENT_OBJECT ( StatusBar );
 

@@ -9,16 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Displays text.
+//  Displays text and icons.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Windows/LogWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Menus/Button.h"
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
-AFW_IMPLEMENT_OBJECT ( TextWindow );
+AFW_IMPLEMENT_OBJECT ( LogWindow );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,11 +28,11 @@ AFW_IMPLEMENT_OBJECT ( TextWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::TextWindow() : BaseClass(),
+LogWindow::LogWindow() : BaseClass(),
   _menu()
 {
-  this->title ( "Text Window" );
-  this->icon ( Icon ( "afw_text_output_16x16" ) );
+  this->title ( "Text Output" );
+  this->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
 }
 
 
@@ -41,7 +42,7 @@ TextWindow::TextWindow() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TextWindow::~TextWindow()
+LogWindow::~LogWindow()
 {
 }
 
@@ -52,7 +53,7 @@ TextWindow::~TextWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::accept ( AFW::Core::BaseVisitor *v )
+void LogWindow::accept ( AFW::Core::BaseVisitor *v )
 {
   Guard guard ( this->mutex() );
   if ( v )
@@ -66,7 +67,7 @@ void TextWindow::accept ( AFW::Core::BaseVisitor *v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextWindow::menu ( const std::string &name )
+void LogWindow::menu ( const std::string &name )
 {
   Guard guard ( this->mutex() );
   _menu = name;
@@ -79,9 +80,26 @@ void TextWindow::menu ( const std::string &name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string TextWindow::menu() const
+std::string LogWindow::menu() const
 {
   Guard guard ( this->mutex() );
   std::string name ( _menu );
   return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make menu button if applicable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LogWindow::_makeRequestedControls()
+{
+  if ( false == this->menu().empty() )
+  {
+    // Find or create the button in the menu.
+    AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
+      ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
+  }
 }

@@ -15,9 +15,9 @@
 
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/LogWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
+#include "AppFrameWork/Windows/TextWindow.h"
+#include "AppFrameWork/Windows/LogWindow.h"
 #include "AppFrameWork/Core/Registry.h"
 #include "AppFrameWork/Core/StreamSink.h"
 #include "AppFrameWork/Core/InitFunctor.h"
@@ -128,17 +128,17 @@ Program::Program() :
   Usul::DLL::Library::append ( _pluginCB.get() );
 
   // Load up the factories.
-  FACTORY_TYPE ( AFW::Core,  Application );
-  FACTORY_TYPE ( AFW::Core,  Frame );
-  FACTORY_TYPE ( AFW::Core,  Group );
-  FACTORY_TYPE ( AFW::Core,  MainWindow );
-  FACTORY_TYPE ( AFW::Core,  StatusBar );
-  FACTORY_TYPE ( AFW::Core,  TextWindow );
-  FACTORY_TYPE ( AFW::Core,  LogWindow );
-  FACTORY_TYPE ( AFW::Core,  Registry );
-  FACTORY_TYPE ( AFW::Menus, Button );
-  FACTORY_TYPE ( AFW::Menus, MenuBar );
-  FACTORY_TYPE ( AFW::Menus, MenuGroup );
+  FACTORY_TYPE ( AFW::Core,     Application );
+  FACTORY_TYPE ( AFW::Windows,  Frame );
+  FACTORY_TYPE ( AFW::Windows,  Group );
+  FACTORY_TYPE ( AFW::Windows,  MainWindow );
+  FACTORY_TYPE ( AFW::Windows,  StatusBar );
+  FACTORY_TYPE ( AFW::Windows,  TextWindow );
+  FACTORY_TYPE ( AFW::Windows,  LogWindow );
+  FACTORY_TYPE ( AFW::Core,     Registry );
+  FACTORY_TYPE ( AFW::Menus,    Button );
+  FACTORY_TYPE ( AFW::Menus,    MenuBar );
+  FACTORY_TYPE ( AFW::Menus,    MenuGroup );
 }
 
 

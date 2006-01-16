@@ -9,16 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Frame class to arrange child windows.
+//  Displays text.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/Frame.h"
+#include "AppFrameWork/Windows/TextWindow.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Menus/Button.h"
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
-AFW_IMPLEMENT_OBJECT ( Frame );
+AFW_IMPLEMENT_OBJECT ( TextWindow );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,8 +28,11 @@ AFW_IMPLEMENT_OBJECT ( Frame );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Frame::Frame() : BaseClass()
+TextWindow::TextWindow() : BaseClass(),
+  _menu()
 {
+  this->title ( "Text Window" );
+  this->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
 }
 
 
@@ -38,7 +42,7 @@ Frame::Frame() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Frame::~Frame()
+TextWindow::~TextWindow()
 {
 }
 
@@ -49,7 +53,7 @@ Frame::~Frame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Frame::accept ( AFW::Core::BaseVisitor *v )
+void TextWindow::accept ( AFW::Core::BaseVisitor *v )
 {
   Guard guard ( this->mutex() );
   if ( v )
@@ -59,24 +63,43 @@ void Frame::accept ( AFW::Core::BaseVisitor *v )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is the frame maximized?
+//  Set the menu name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Frame::maximized() const
+void TextWindow::menu ( const std::string &name )
 {
   Guard guard ( this->mutex() );
-  return false;
+  _menu = name;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the frame's maximized state
+//  Get the menu name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Frame::maximized ( bool )
+std::string TextWindow::menu() const
 {
   Guard guard ( this->mutex() );
+  std::string name ( _menu );
+  return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make menu button if applicable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TextWindow::_makeRequestedControls()
+{
+  if ( false == this->menu().empty() )
+  {
+    // Find or create the button in the menu.
+    AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
+      ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
+  }
 }

@@ -38,7 +38,7 @@ public:
   wxMenu *                            get();
 
   // Insert a window.
-  virtual bool                        insert ( Itr where, AFW::Core::Window * );
+  virtual bool                        insert ( Itr where, AFW::Windows::Window * );
 
 protected:
 

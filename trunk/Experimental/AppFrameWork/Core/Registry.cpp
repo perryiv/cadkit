@@ -15,7 +15,7 @@
 
 #include "AppFrameWork/Core/Registry.h"
 #include "AppFrameWork/Core/Constants.h"
-#include "AppFrameWork/Core/Frame.h"
+#include "AppFrameWork/Windows/Frame.h"
 
 #include "XmlTree/Document.h"
 
@@ -122,7 +122,7 @@ void Registry::flush()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Registry::writeGeometry ( const AFW::Core::Frame *frame )
+void Registry::writeGeometry ( const AFW::Windows::Frame *frame )
 {
   Guard guard ( this->mutex() );
 
@@ -136,7 +136,7 @@ void Registry::writeGeometry ( const AFW::Core::Frame *frame )
 
   // If we are not maximized, then write the dimensions.
   if ( false == isMaximized )
-    this->writeGeometry ( static_cast < const AFW::Core::Window * > ( frame ) );
+    this->writeGeometry ( static_cast < const AFW::Windows::Window * > ( frame ) );
 }
 
 
@@ -146,7 +146,7 @@ void Registry::writeGeometry ( const AFW::Core::Frame *frame )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Registry::writeGeometry ( const AFW::Core::Window *window )
+void Registry::writeGeometry ( const AFW::Windows::Window *window )
 {
   Guard guard ( this->mutex() );
 

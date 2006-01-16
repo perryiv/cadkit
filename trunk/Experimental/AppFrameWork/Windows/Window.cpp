@@ -13,7 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Windows/Window.h"
+#include "AppFrameWork/Windows/Group.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 #include "AppFrameWork/Core/Program.h"
@@ -27,7 +28,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
 AFW_IMPLEMENT_OBJECT ( Window );
 
@@ -58,7 +59,7 @@ Window::WindowListVar Window::_allWindows;
 
 Window::Window() : BaseClass(),
   _whichWindow ( _allWindows.value().end() ),
-  _flags       ( State::DIRTY ),
+  _flags       ( AFW::Core::State::DIRTY ),
   _parent      ( 0x0 ),
   _icon        (),
   _text        (),
@@ -118,7 +119,7 @@ Window::~Window()
 void Window::dirty ( bool state )
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::DIRTY );
+  const unsigned int bit ( AFW::Core::State::DIRTY );
   _flags = Usul::Bits::set ( _flags, bit, state );
 
   // If dirty, set parent as dirty too.
@@ -136,7 +137,7 @@ void Window::dirty ( bool state )
 bool Window::dirty() const
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::DIRTY );
+  const unsigned int bit ( AFW::Core::State::DIRTY );
   return Usul::Bits::has ( _flags, bit );
 }
 
@@ -360,7 +361,7 @@ void Window::_setParent ( Group *parent )
 AFW::Core::Icon Window::icon() const
 {
   Guard guard ( this->mutex() );
-  return Icon ( _icon );
+  return AFW::Core::Icon ( _icon );
 }
 
 
@@ -553,10 +554,10 @@ void Window::callCommandActions ( bool immediate )
       }
       else
       {
-        if ( Program::valid() && Program::instance().app() )
+        if ( AFW::Core::Program::valid() && AFW::Core::Program::instance().app() )
         {
           AFW_GUARD_PROGRAM;
-          Program::instance().app()->eventAppend ( command.get(), this );
+          AFW::Core::Program::instance().app()->eventAppend ( command.get(), this );
         }
       }
     }
@@ -588,10 +589,10 @@ void Window::callUpdateActions ( bool immediate )
         }
         else
         {
-          if ( Program::valid() && Program::instance().app() )
+          if ( AFW::Core::Program::valid() && AFW::Core::Program::instance().app() )
           {
             AFW_GUARD_PROGRAM;
-            Program::instance().app()->eventAppend ( action.get(), this );
+            AFW::Core::Program::instance().app()->eventAppend ( action.get(), this );
           }
         }
       }
@@ -734,7 +735,7 @@ std::string Window::persistentName() const
 void Window::enable ( bool state )
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::ENABLED );
+  const unsigned int bit ( AFW::Core::State::ENABLED );
   _flags = Usul::Bits::set ( _flags, bit, state );
 }
 
@@ -748,7 +749,7 @@ void Window::enable ( bool state )
 bool Window::enabled() const
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::ENABLED );
+  const unsigned int bit ( AFW::Core::State::ENABLED );
   return Usul::Bits::has ( _flags, bit );
 }
 
@@ -762,7 +763,7 @@ bool Window::enabled() const
 void Window::visible ( bool state )
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::VISIBLE );
+  const unsigned int bit ( AFW::Core::State::VISIBLE );
   _flags = Usul::Bits::set ( _flags, bit, state );
 }
 
@@ -776,7 +777,7 @@ void Window::visible ( bool state )
 bool Window::visible() const
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( State::VISIBLE );
+  const unsigned int bit ( AFW::Core::State::VISIBLE );
   return Usul::Bits::has ( _flags, bit );
 }
 

@@ -17,20 +17,20 @@
 #define _WX_GUI_TEXT_WINDOW_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Windows/TextWindow.h"
 
 class wxTextCtrl;
 
 
-class WxTextWindow : public AFW::Core::TextWindow
+class WxTextWindow : public AFW::Windows::TextWindow
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::TextWindow BaseClass;
+  typedef AFW::Windows::TextWindow BaseClass;
 
   // Create the internal text window.
-  virtual bool                        create ( AFW::Core::Window * );
+  virtual bool                        create ( AFW::Windows::Window * );
 
   // Detach from gui object.
   virtual void                        detach();

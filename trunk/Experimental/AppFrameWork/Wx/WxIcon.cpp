@@ -17,7 +17,7 @@
 #include "WxIcon.h"
 #include "WxBitmap.h"
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 #include "AppFrameWork/Core/Icon.h"
 
 #include "Usul/Errors/Stack.h"
@@ -29,7 +29,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-wxIcon WxIcon::load ( const AFW::Core::Window *window, bool report )
+wxIcon WxIcon::load ( const AFW::Windows::Window *window, bool report )
 {
   return ( ( window ) ? WxIcon::load ( window->icon(), report ) : wxIcon() );
 }

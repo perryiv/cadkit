@@ -18,7 +18,7 @@
 
 #include "MessageWindows/CompileGuard.h"
 
-#include "AppFrameWork/Core/TextWindow.h"
+#include "AppFrameWork/Windows/TextWindow.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -67,7 +67,7 @@ protected:
 private:
 
   mutable Mutex _mutex;
-  AFW::Core::TextWindow::RefPtr _textWindow;
+  AFW::Windows::TextWindow::RefPtr _textWindow;
 };
 
 #endif // __MESSAGE_WINDOWSCOMPONENT_H__

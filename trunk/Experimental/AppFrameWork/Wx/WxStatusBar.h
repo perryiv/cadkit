@@ -17,21 +17,21 @@
 #define _WX_GUI_STATUS_BAR_CLASS_H_
 
 #include "AppFrameWork/Wx/CompileGuard.h"
-#include "AppFrameWork/Core/StatusBar.h"
+#include "AppFrameWork/Windows/StatusBar.h"
 
 class WxMainWindow;
 class wxStatusBar;
 
 
-class WxStatusBar : public AFW::Core::StatusBar
+class WxStatusBar : public AFW::Windows::StatusBar
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::StatusBar BaseClass;
+  typedef AFW::Windows::StatusBar BaseClass;
 
   // Create the internal status bar.
-  virtual bool                        create ( AFW::Core::Window * );
+  virtual bool                        create ( AFW::Windows::Window * );
 
   // Detach from gui object.
   virtual void                        detach();

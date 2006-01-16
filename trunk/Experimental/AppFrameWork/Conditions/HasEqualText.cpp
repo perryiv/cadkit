@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Conditions/HasEqualText.h"
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Conditions;
 
@@ -54,7 +54,7 @@ bool HasEqualText::evaluate ( AFW::Core::Object *obj )
   Guard guard ( this->mutex() );
   if ( 0x0 == obj )
     return false;
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( obj ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( obj ) );
   if ( false == window.valid() )
     return false;
   return ( ( _text == window->textGet() ) == _want );

@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Conditions/IsEnabled.h"
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Conditions;
 
@@ -52,6 +52,6 @@ IsEnabled::~IsEnabled()
 bool IsEnabled::evaluate ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   return ( ( window.valid() ) ? ( window->enabled() == _want ) : false );
 }

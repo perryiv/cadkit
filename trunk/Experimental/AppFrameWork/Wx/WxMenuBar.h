@@ -46,7 +46,7 @@ public:
   virtual void                        init();
 
   // Insert a window.
-  virtual bool                        insert ( Itr where, AFW::Core::Window * );
+  virtual bool                        insert ( Itr where, AFW::Windows::Window * );
 
 protected:
 

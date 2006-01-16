@@ -15,10 +15,10 @@
 
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
-#include "AppFrameWork/Core/Group.h"
-#include "AppFrameWork/Core/TextWindow.h"
-#include "AppFrameWork/Core/StatusBar.h"
+#include "AppFrameWork/Windows/MainWindow.h"
+#include "AppFrameWork/Windows/Group.h"
+#include "AppFrameWork/Windows/TextWindow.h"
+#include "AppFrameWork/Windows/StatusBar.h"
 #include "AppFrameWork/Menus/Button.h"
 #include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Menus/MenuBar.h"
@@ -77,7 +77,7 @@ void BaseVisitor::visit ( AFW::Core::Application *app )
   if ( 0x0 == app )
     return;
 
-  AFW::Core::MainWindow::RefPtr mw ( app->mainWindow() );
+  AFW::Windows::MainWindow::RefPtr mw ( app->mainWindow() );
   if ( true == mw.valid() )
   {
     mw->accept ( this );
@@ -91,7 +91,7 @@ void BaseVisitor::visit ( AFW::Core::Application *app )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BaseVisitor::visit ( AFW::Core::Window *window )
+void BaseVisitor::visit ( AFW::Windows::Window *window )
 {
   Guard guard ( _mutex );
   if ( 0x0 != window )
@@ -120,11 +120,11 @@ void BaseVisitor::visit ( object_type *object )\
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IMPLEMENT_VISIT_FUNCTION ( AFW::Core::Group );
-IMPLEMENT_VISIT_FUNCTION ( AFW::Core::Frame );
-IMPLEMENT_VISIT_FUNCTION ( AFW::Core::MainWindow );
-IMPLEMENT_VISIT_FUNCTION ( AFW::Core::TextWindow );
-IMPLEMENT_VISIT_FUNCTION ( AFW::Core::StatusBar );
+IMPLEMENT_VISIT_FUNCTION ( AFW::Windows::Group );
+IMPLEMENT_VISIT_FUNCTION ( AFW::Windows::Frame );
+IMPLEMENT_VISIT_FUNCTION ( AFW::Windows::MainWindow );
+IMPLEMENT_VISIT_FUNCTION ( AFW::Windows::TextWindow );
+IMPLEMENT_VISIT_FUNCTION ( AFW::Windows::StatusBar );
 IMPLEMENT_VISIT_FUNCTION ( AFW::Menus::Button );
 IMPLEMENT_VISIT_FUNCTION ( AFW::Menus::MenuBar );
 IMPLEMENT_VISIT_FUNCTION ( AFW::Menus::MenuGroup );

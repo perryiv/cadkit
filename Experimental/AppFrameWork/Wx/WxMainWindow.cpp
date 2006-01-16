@@ -307,7 +307,7 @@ const WxStatusBar *WxMainWindow::statusBar() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxMainWindow::statusBar ( AFW::Core::StatusBar *sb )
+void WxMainWindow::statusBar ( AFW::Windows::StatusBar *sb )
 {
   Guard guard ( this->mutex() );
 
@@ -354,7 +354,7 @@ void WxMainWindow::statusBar ( AFW::Core::StatusBar *sb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
+bool WxMainWindow::insert ( AFW::Windows::Group::Itr where, AFW::Windows::Window *w )
 {
   Guard guard ( this->mutex() );
 
@@ -363,7 +363,7 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
     return false;
 
   // Ignore a few special cases.
-  if ( dynamic_cast < AFW::Core::StatusBar * > ( w ) ||
+  if ( dynamic_cast < AFW::Windows::StatusBar * > ( w ) ||
        dynamic_cast < AFW::Menus::MenuBar *  > ( w ) )
     return true; // Yes, true.
 
@@ -404,14 +404,14 @@ bool WxMainWindow::insert ( AFW::Core::Group::Itr where, AFW::Core::Window *w )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AFW::Core::Window::Size WxMainWindow::size() const
+AFW::Windows::Window::Size WxMainWindow::size() const
 {
   Guard guard ( this->mutex() );
   wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
   if ( frame )
   {
     wxSize s ( frame->GetSize() );
-    return ( Window::Size ( s.x, s.y ) );
+    return ( AFW::Windows::Window::Size ( s.x, s.y ) );
   }
   return BaseClass::size();
 }
@@ -423,14 +423,14 @@ AFW::Core::Window::Size WxMainWindow::size() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AFW::Core::Window::Position WxMainWindow::position() const
+AFW::Windows::Window::Position WxMainWindow::position() const
 {
   Guard guard ( this->mutex() );
   wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
   if ( frame )
   {
     wxPoint p ( frame->GetPosition() );
-    return Window::Position ( p.x, p.y );
+    return AFW::Windows::Window::Position ( p.x, p.y );
   }
   return BaseClass::Position();
 }
@@ -442,7 +442,7 @@ AFW::Core::Window::Position WxMainWindow::position() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxMainWindow::size ( const AFW::Core::Window::Size &s )
+void WxMainWindow::size ( const AFW::Windows::Window::Size &s )
 {
   Guard guard ( this->mutex() );
   wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );
@@ -461,7 +461,7 @@ void WxMainWindow::size ( const AFW::Core::Window::Size &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WxMainWindow::position ( const AFW::Core::Window::Position &p )
+void WxMainWindow::position ( const AFW::Windows::Window::Position &p )
 {
   Guard guard ( this->mutex() );
   wxFrame *frame ( WxObjectMap::find<wxFrame> ( this ) );

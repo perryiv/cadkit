@@ -18,7 +18,7 @@
 #include "AppFrameWork/Core/Constants.h"
 #include "AppFrameWork/Core/Program.h"
 #include "AppFrameWork/Core/Application.h"
-#include "AppFrameWork/Core/MainWindow.h"
+#include "AppFrameWork/Windows/MainWindow.h"
 #include "AppFrameWork/Menus/MenuGroup.h"
 #include "AppFrameWork/Conditions/And.h"
 #include "AppFrameWork/Conditions/HasEqualText.h"
@@ -259,7 +259,7 @@ Button *Button::button ( const std::string &menu, const std::string &text, Type 
 
   // Get menu bar.
   AFW::Core::Application::RefPtr app ( AFW::Core::Program::instance().app() );
-  AFW::Core::MainWindow::RefPtr mw ( ( app.valid() ) ? app->mainWindow() : 0x0 );
+  AFW::Windows::MainWindow::RefPtr mw ( ( app.valid() ) ? app->mainWindow() : 0x0 );
   AFW::Menus::MenuBar::RefPtr mb ( ( mw.valid() ) ? mw->menuBar() : 0x0 );
   if ( false == mb.valid() )
     return 0x0;
@@ -275,7 +275,7 @@ Button *Button::button ( const std::string &menu, const std::string &text, Type 
     AFW::Conditions::And::RefPtr condition ( new AFW::Conditions::And );
     condition->append ( new AFW::Conditions::HasEqualText ( text ) );
     condition->append ( new AFW::Conditions::IsOfType < AFW::Menus::Button >() );
-    AFW::Core::Group::Itr i ( std::find_if ( wm->begin(), wm->end(), AFW::Predicates::ConditionWrapper ( condition.get() ) ) );
+    AFW::Windows::Group::Itr i ( std::find_if ( wm->begin(), wm->end(), AFW::Predicates::ConditionWrapper ( condition.get() ) ) );
     b = ( ( wm->end() == i ) ? 0x0 : dynamic_cast < AFW::Menus::Button * > ( i->get() ) );
   }
 

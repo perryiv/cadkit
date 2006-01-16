@@ -26,7 +26,8 @@
 #include <vector>
 #include <list>
 
-namespace AFW { namespace Core { class BaseVisitor; class MainWindow; class Registry; } }
+namespace AFW { namespace Core { class BaseVisitor; class Registry; } }
+namespace AFW { namespace Windows { class MainWindow; } }
 
 
 namespace AFW {
@@ -67,9 +68,9 @@ public:
   virtual void                        init();
 
   // Set/get the main window. Getting is not thread-safe.
-  const MainWindow *                  mainWindow() const;
-  MainWindow *                        mainWindow();
-  void                                mainWindow ( MainWindow *mw );
+  const AFW::Windows::MainWindow *    mainWindow() const;
+  AFW::Windows::MainWindow *          mainWindow();
+  void                                mainWindow ( AFW::Windows::MainWindow * );
 
   // Set/get the name of the application.
   std::string                         name() const;
@@ -110,7 +111,7 @@ private:
   Application &operator = ( const Application & );
 
   std::string _name;
-  MainWindow *_mainWindow;
+  AFW::Windows::MainWindow *_mainWindow;
   AFW::Core::State::Type _flags;
   SplashData _splash;
   EventQueue _events;

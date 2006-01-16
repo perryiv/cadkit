@@ -249,7 +249,7 @@ AFW::Menus::MenuGroup *MenuBar::menu ( const std::string &text, bool create )
 
   // Find all windows with this text.
   AFW::Predicates::ConditionWrapper hasText ( new AFW::Conditions::HasEqualText ( text ) );
-  AFW::Core::Group::Windows found ( GetCopy::copyIf ( this->begin(), this->end(), hasText ) );
+  AFW::Windows::Group::Windows found ( GetCopy::copyIf ( this->begin(), this->end(), hasText ) );
 
   // Of those, find the ones that are menu groups.
   AFW::Predicates::ConditionWrapper isMenuGroup ( new AFW::Conditions::IsOfType < AFW::Menus::MenuGroup >() );

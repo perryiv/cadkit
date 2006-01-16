@@ -21,7 +21,7 @@
 
 #include <string>
 
-namespace AFW { namespace Core { class Frame; class Window; } }
+namespace AFW { namespace Windows { class Frame; class Window; } }
 namespace XmlTree { class Document; }
 
 
@@ -61,8 +61,8 @@ public:
   virtual void                        writeValue ( const std::string &section, const Size & );
 
   // Write window geometry.
-  virtual void                        writeGeometry ( const AFW::Core::Frame * );
-  virtual void                        writeGeometry ( const AFW::Core::Window * );
+  virtual void                        writeGeometry ( const AFW::Windows::Frame * );
+  virtual void                        writeGeometry ( const AFW::Windows::Window * );
 
 protected:
 

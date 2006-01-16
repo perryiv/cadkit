@@ -16,11 +16,11 @@
 #ifndef _APP_FRAME_WORK_FRAME_CLASS_H_
 #define _APP_FRAME_WORK_FRAME_CLASS_H_
 
-#include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Windows/Group.h"
 
 
 namespace AFW {
-namespace Core {
+namespace Windows {
 
 
 class APP_FRAME_WORK_EXPORT Frame : public Group
@@ -55,7 +55,7 @@ private:
 };
 
 
-} // namespace Core
+} // namespace Windows
 } // namespace AFW
 
 

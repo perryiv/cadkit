@@ -15,7 +15,7 @@
 
 #include "AppFrameWork/Actions/SetTextFromPluginActivity.h"
 #include "AppFrameWork/Core/Program.h"
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Actions;
 
@@ -56,7 +56,7 @@ void SetTextFromPluginActivity::execute ( AFW::Core::Object *object )
   Guard guard ( this->mutex() );
 
   // Get the window.
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   if ( false == window.valid() )
     return;
 

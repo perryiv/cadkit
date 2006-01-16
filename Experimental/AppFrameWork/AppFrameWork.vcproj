@@ -179,31 +179,7 @@
 					RelativePath=".\Core\Export.h">
 				</File>
 				<File
-					RelativePath=".\Core\Frame.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Frame.h">
-				</File>
-				<File
 					RelativePath=".\Core\GenericVisitor.h">
-				</File>
-				<File
-					RelativePath=".\Core\Group.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Core\Group.h">
 				</File>
 				<File
 					RelativePath=".\Core\Icon.cpp">
@@ -222,18 +198,6 @@
 				</File>
 				<File
 					RelativePath=".\Core\LifeCycle.h">
-				</File>
-				<File
-					RelativePath=".\Core\LogWindow.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\LogWindow.h">
-				</File>
-				<File
-					RelativePath=".\Core\MainWindow.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\MainWindow.h">
 				</File>
 				<File
 					RelativePath=".\Core\Model.cpp">
@@ -278,31 +242,13 @@
 					RelativePath=".\Core\Registry.h">
 				</File>
 				<File
-					RelativePath=".\Core\StatusBar.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\StatusBar.h">
-				</File>
-				<File
 					RelativePath=".\Core\StreamSink.cpp">
 				</File>
 				<File
 					RelativePath=".\Core\StreamSink.h">
 				</File>
 				<File
-					RelativePath=".\Core\TextWindow.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\TextWindow.h">
-				</File>
-				<File
 					RelativePath=".\Core\Types.h">
-				</File>
-				<File
-					RelativePath=".\Core\Window.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Window.h">
 				</File>
 			</Filter>
 			<Filter
@@ -550,6 +496,136 @@
 				</File>
 				<File
 					RelativePath=".\Predicates\ConditionWrapper.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Windows"
+				Filter="">
+				<File
+					RelativePath=".\Windows\Frame.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\Frame.h">
+				</File>
+				<File
+					RelativePath=".\Windows\Group.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\Group.h">
+				</File>
+				<File
+					RelativePath=".\Windows\LogWindow.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\LogWindow.h">
+				</File>
+				<File
+					RelativePath=".\Windows\MainWindow.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\MainWindow.h">
+				</File>
+				<File
+					RelativePath=".\Windows\StatusBar.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\StatusBar.h">
+				</File>
+				<File
+					RelativePath=".\Windows\TextWindow.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\TextWindow.h">
+				</File>
+				<File
+					RelativePath=".\Windows\Window.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Windows\Window.h">
 				</File>
 			</Filter>
 		</Filter>

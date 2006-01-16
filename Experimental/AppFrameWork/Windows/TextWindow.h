@@ -16,13 +16,13 @@
 #ifndef _APP_FRAME_WORK_TEXT_WINDOW_CLASS_H_
 #define _APP_FRAME_WORK_TEXT_WINDOW_CLASS_H_
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 #include <string>
 
 
 namespace AFW {
-namespace Core {
+namespace Windows {
 
 
 class APP_FRAME_WORK_EXPORT TextWindow : public Window
@@ -48,6 +48,8 @@ protected:
   // Use reference counting.
   virtual ~TextWindow();
 
+  void                                _makeRequestedControls();
+
 private:
 
   // No copying.
@@ -60,7 +62,7 @@ private:
 };
 
 
-} // namespace Core
+} // namespace Windows
 } // namespace AFW
 
 

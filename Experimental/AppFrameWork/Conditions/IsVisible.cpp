@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Conditions/IsVisible.h"
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Conditions;
 
@@ -52,6 +52,6 @@ IsVisible::~IsVisible()
 bool IsVisible::evaluate ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   return ( ( window.valid() ) ? ( window->visible() == _want ) : false );
 }

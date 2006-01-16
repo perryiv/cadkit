@@ -16,7 +16,7 @@
 #include "WxPrecompiled.h"
 #include "WxObjectMap.h"
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Errors/Stack.h"
@@ -77,7 +77,7 @@ void printInfo ( const AFW::Core::Object *object, std::ostream &out )
 
   out << ", Object Class Name: " << object->typeId().name();
 
-  const AFW::Core::Window *window ( dynamic_cast < const AFW::Core::Window * > ( object ) );
+  const AFW::Windows::Window *window ( dynamic_cast < const AFW::Windows::Window * > ( object ) );
   if ( window )
   {
     out << ", Window Title: " << window->title();

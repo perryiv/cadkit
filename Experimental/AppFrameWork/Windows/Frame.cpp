@@ -9,16 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Displays text and icons.
+//  Frame class to arrange child windows.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/LogWindow.h"
+#include "AppFrameWork/Windows/Frame.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
-AFW_IMPLEMENT_OBJECT ( LogWindow );
+AFW_IMPLEMENT_OBJECT ( Frame );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,11 +27,8 @@ AFW_IMPLEMENT_OBJECT ( LogWindow );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LogWindow::LogWindow() : BaseClass(),
-  _menu()
+Frame::Frame() : BaseClass()
 {
-  this->title ( "Text Output" );
-  this->icon ( Icon ( "afw_text_output_16x16" ) );
 }
 
 
@@ -41,7 +38,7 @@ LogWindow::LogWindow() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LogWindow::~LogWindow()
+Frame::~Frame()
 {
 }
 
@@ -52,7 +49,7 @@ LogWindow::~LogWindow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LogWindow::accept ( AFW::Core::BaseVisitor *v )
+void Frame::accept ( AFW::Core::BaseVisitor *v )
 {
   Guard guard ( this->mutex() );
   if ( v )
@@ -62,26 +59,24 @@ void LogWindow::accept ( AFW::Core::BaseVisitor *v )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the menu name.
+//  Is the frame maximized?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LogWindow::menu ( const std::string &name )
+bool Frame::maximized() const
 {
   Guard guard ( this->mutex() );
-  _menu = name;
+  return false;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the menu name.
+//  Set the frame's maximized state
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string LogWindow::menu() const
+void Frame::maximized ( bool )
 {
   Guard guard ( this->mutex() );
-  std::string name ( _menu );
-  return name;
 }

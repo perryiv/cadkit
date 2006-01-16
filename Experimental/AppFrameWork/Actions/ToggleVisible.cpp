@@ -15,7 +15,7 @@
 
 #include "AppFrameWork/Actions/ToggleVisible.h"
 
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Actions;
 
@@ -53,7 +53,7 @@ ToggleVisible::~ToggleVisible()
 void ToggleVisible::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   if ( window.valid() )
     window->visible ( !window->visible() );
 }

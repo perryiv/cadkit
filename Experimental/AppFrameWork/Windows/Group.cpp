@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Windows/Group.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
 #include "AppFrameWork/Core/Define.h"
 
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace AFW::Core;
+using namespace AFW::Windows;
 
 AFW_IMPLEMENT_OBJECT ( Group );
 
@@ -295,7 +295,7 @@ void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
 
   for ( Group::Itr i = this->begin(); i != this->end(); ++i )
   {
-    AFW::Core::Window::RefPtr window ( i->get() );
+    AFW::Windows::Window::RefPtr window ( i->get() );
     if ( true == window.valid() )
     {
       window->accept ( visitor );
@@ -313,5 +313,5 @@ void Group::_traverse ( AFW::Core::BaseVisitor *visitor )
 void Group::configWrite() const
 {
   Guard guard ( this->mutex() );
-  std::for_each ( this->begin(), this->end(), std::mem_fun ( &AFW::Core::Window::configWrite ) );
+  std::for_each ( this->begin(), this->end(), std::mem_fun ( &AFW::Windows::Window::configWrite ) );
 }

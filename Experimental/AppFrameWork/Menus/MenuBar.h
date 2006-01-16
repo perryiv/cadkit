@@ -16,7 +16,7 @@
 #ifndef _APP_FRAME_WORK_MENU_BAR_CLASS_H_
 #define _APP_FRAME_WORK_MENU_BAR_CLASS_H_
 
-#include "AppFrameWork/Core/Group.h"
+#include "AppFrameWork/Windows/Group.h"
 
 namespace AFW { namespace Menus { class MenuGroup; } }
 
@@ -25,12 +25,12 @@ namespace AFW {
 namespace Menus {
 
 
-class APP_FRAME_WORK_EXPORT MenuBar : public AFW::Core::Group
+  class APP_FRAME_WORK_EXPORT MenuBar : public AFW::Windows::Group
 {
 public:
 
   // Typedefs.
-  typedef AFW::Core::Group BaseClass;
+  typedef AFW::Windows::Group BaseClass;
 
   // Accept the visitor.
   virtual void                        accept ( AFW::Core::BaseVisitor * );

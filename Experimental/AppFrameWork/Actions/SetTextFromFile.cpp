@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Actions/SetTextFromFile.h"
-#include "AppFrameWork/Core/Window.h"
+#include "AppFrameWork/Windows/Window.h"
 
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/File/Stats.h"
@@ -65,7 +65,7 @@ void SetTextFromFile::execute ( AFW::Core::Object *object )
   Guard guard ( this->mutex() );
 
   // Get the window.
-  AFW::Core::Window::RefPtr window ( dynamic_cast < AFW::Core::Window * > ( object ) );
+  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
   if ( false == window.valid() )
     return;
 

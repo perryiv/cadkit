@@ -131,7 +131,7 @@ void WxStatusBar::detach()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WxStatusBar::create ( AFW::Core::Window *mw )
+bool WxStatusBar::create ( AFW::Windows::Window *mw )
 {
   Guard guard ( this->mutex() );
 

@@ -501,3 +501,19 @@ void WxMainWindow::maximized ( bool state )
   if ( frame )
     frame->Maximize ( state );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visible state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WxMainWindow::visible ( Window *w, bool state )
+{
+  Guard guard ( this->mutex() );
+  wxWindow *window ( WxObjectMap::find<wxWindow> ( w ) );
+  if ( ( 0x0 != window ) && ( this->end() != this->find ( w ) ) )
+    _ifm->ShowChild ( window, state );
+  BaseClass::visible ( w, state );
+}

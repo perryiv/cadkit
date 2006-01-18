@@ -27,7 +27,8 @@ USUL_IMPLEMENT_TYPE_ID ( IsVisible );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IsVisible::IsVisible ( bool want ) : BaseClass ( want )
+IsVisible::IsVisible ( AFW::Core::Object *obj, bool want ) : BaseClass ( want ),
+  _object ( obj )
 {
 }
 
@@ -52,6 +53,23 @@ IsVisible::~IsVisible()
 bool IsVisible::evaluate ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
-  return ( ( window.valid() ) ? ( window->visible() == _want ) : false );
+
+  // First try the member object.
+  if ( _object.valid() )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( _object.get() ) );
+    if ( window.valid() )
+      return ( window->visible() == _want );
+  }
+
+  // Return state for given object.
+  if ( object )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
+    if ( window.valid() )
+      return ( window->visible() == _want );
+  }
+
+  // If we get to here then nothing is visible.
+  return false;
 }

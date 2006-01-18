@@ -66,6 +66,9 @@ protected:
   DEFINE_MEMBER_FUNCTION ( wxWindowCreateEvent );
   DEFINE_MEMBER_FUNCTION ( wxWindowDestroyEvent );
   DEFINE_MEMBER_FUNCTION ( wxUpdateUIEvent );
+  DEFINE_MEMBER_FUNCTION ( wxIFMDockEvent );
+  DEFINE_MEMBER_FUNCTION ( wxIFMUndockEvent );
+  DEFINE_MEMBER_FUNCTION ( wxIFMFloatEvent );
 
   void        _common ( wxEvent &event );
 

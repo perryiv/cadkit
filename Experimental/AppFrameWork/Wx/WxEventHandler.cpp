@@ -80,6 +80,9 @@ BEGIN_EVENT_TABLE ( WxEventHandler, WxEventHandler::BaseClass )
   EVT_UPDATE_UI_RANGE ( wxID_ANY, wxID_ANY, MEMBER_FUNCTION ( wxUpdateUIEvent ) )
   EVT_CLOSE           (                     MEMBER_FUNCTION ( wxCloseEvent ) )
   EVT_MENU_CLOSE      (                     MEMBER_FUNCTION ( wxMenuEvent ) )
+  EVT_IFM_DOCK        (                     MEMBER_FUNCTION ( wxIFMDockEvent ) )
+  EVT_IFM_UNDOCK      (                     MEMBER_FUNCTION ( wxIFMUndockEvent ) )
+  EVT_IFM_FLOAT       (                     MEMBER_FUNCTION ( wxIFMFloatEvent ) )
 END_EVENT_TABLE()
 
 
@@ -131,6 +134,9 @@ IMPLEMENT_MEMBER_FUNCTION ( wxNavigationKeyEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxIdleEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxWindowCreateEvent );
 IMPLEMENT_MEMBER_FUNCTION ( wxMenuEvent );
+IMPLEMENT_MEMBER_FUNCTION ( wxIFMDockEvent );
+IMPLEMENT_MEMBER_FUNCTION ( wxIFMUndockEvent );
+IMPLEMENT_MEMBER_FUNCTION ( wxIFMFloatEvent );
 
 
 ///////////////////////////////////////////////////////////////////////////////

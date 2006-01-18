@@ -37,7 +37,7 @@ public:
   USUL_DECLARE_TYPE_ID ( ToggleVisible );
 
   // Constructors
-  ToggleVisible();
+  ToggleVisible ( AFW::Core::Object * );
 
   // Perform the action.
   virtual void                        execute ( AFW::Core::Object *object = 0x0 );
@@ -53,7 +53,7 @@ private:
   ToggleVisible ( const ToggleVisible & );
   ToggleVisible &operator = ( const ToggleVisible & );
 
-  bool _state;
+  AFW::Core::Object::RefPtr _object;
 };
 
 

@@ -28,8 +28,9 @@ USUL_IMPLEMENT_TYPE_ID ( Check );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Check::Check ( bool state ) : BaseClass(),
-  _state ( state )
+Check::Check ( AFW::Core::Object *obj, bool state ) : BaseClass(),
+  _state ( state ),
+  _object ( obj )
 {
 }
 
@@ -54,7 +55,23 @@ Check::~Check()
 void Check::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Menus::Button::RefPtr button ( dynamic_cast < AFW::Menus::Button * > ( object ) );
-  if ( button.valid() )
-    button->check ( _state );
+
+  // First try member object.
+  if ( _object.valid() )
+  {
+    AFW::Menus::Button::RefPtr button ( dynamic_cast < AFW::Menus::Button * > ( _object.get() ) );
+    if ( button.valid() )
+    {
+      button->check ( _state );
+      return;
+    }
+  }
+
+  // Set check for given object.
+  if ( object )
+  {
+    AFW::Menus::Button::RefPtr button ( dynamic_cast < AFW::Menus::Button * > ( object ) );
+    if ( button.valid() )
+      button->check ( _state );
+  }
 }

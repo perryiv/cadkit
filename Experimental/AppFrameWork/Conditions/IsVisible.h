@@ -37,7 +37,7 @@ public:
   USUL_DECLARE_TYPE_ID ( IsVisible );
 
   // Constructor
-  IsVisible ( bool want = true );
+  IsVisible ( AFW::Core::Object *, bool want = true );
 
   // Returns true of the window is visible.
   virtual bool                    evaluate ( AFW::Core::Object *object = 0x0 );
@@ -52,6 +52,8 @@ private:
   // No copying.
   IsVisible ( const IsVisible & );
   IsVisible &operator = ( const IsVisible & );
+
+  AFW::Core::Object::RefPtr _object;
 };
 
 

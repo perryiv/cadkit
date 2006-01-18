@@ -37,7 +37,7 @@ public:
   USUL_DECLARE_TYPE_ID ( Check );
 
   // Constructor
-  Check ( bool state = true );
+  Check ( AFW::Core::Object *, bool state = true );
 
   // Perform the action.
   virtual void                        execute ( AFW::Core::Object *object = 0x0 );
@@ -54,6 +54,7 @@ private:
   Check &operator = ( const Check & );
 
   bool _state;
+  AFW::Core::Object::RefPtr _object;
 };
 
 

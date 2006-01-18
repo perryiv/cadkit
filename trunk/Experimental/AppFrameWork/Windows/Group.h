@@ -73,6 +73,9 @@ public:
   // Prepend a window.
   void                                prepend ( Window * );
 
+  // Hide/show the child.
+  virtual void                        visible ( Window *, bool );
+
 protected:
 
   // Constructor

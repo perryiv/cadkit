@@ -64,6 +64,9 @@ public:
   WxStatusBar *                       statusBar();
   virtual void                        statusBar ( AFW::Windows::StatusBar * );
 
+  // Hide/show the child.
+  virtual void                        visible ( AFW::Windows::Window *, bool );
+
 protected:
 
   // Default construction.

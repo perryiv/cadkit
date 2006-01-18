@@ -18,6 +18,7 @@
 #include "AppFrameWork/Core/Define.h"
 
 #include "Usul/Algorithms/CopyIf.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
 
 #include <stdexcept>
@@ -314,4 +315,24 @@ void Group::configWrite() const
 {
   Guard guard ( this->mutex() );
   std::for_each ( this->begin(), this->end(), std::mem_fun ( &AFW::Windows::Window::configWrite ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visible state of the given window. Typically, the window will be 
+//  a child of this group. However, this functions is here so that inheriting 
+//  classes can customize, so it isn't important if the given window is a 
+//  child or not.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::visible ( AFW::Windows::Window *w, bool state )
+{
+  Guard guard ( this->mutex() );
+  if ( w )
+  {
+    const unsigned int bit ( AFW::Core::State::VISIBLE );
+    w->flags ( Usul::Bits::set ( w->flags(), bit, state ) );
+  }
 }

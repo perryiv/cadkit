@@ -14,7 +14,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Windows/LogWindow.h"
+#include "AppFrameWork/Actions/ToggleVisible.h"
+#include "AppFrameWork/Actions/IfThenElse.h"
+#include "AppFrameWork/Actions/Check.h"
 #include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Conditions/IsVisible.h"
 #include "AppFrameWork/Menus/Button.h"
 
 using namespace AFW::Windows;
@@ -29,7 +33,7 @@ AFW_IMPLEMENT_OBJECT ( LogWindow );
 ///////////////////////////////////////////////////////////////////////////////
 
 LogWindow::LogWindow() : BaseClass(),
-  _menu()
+  _menu ( "Window" )
 {
   this->title ( "Text Output" );
   this->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
@@ -101,5 +105,11 @@ void LogWindow::_makeRequestedControls()
     // Find or create the button in the menu.
     AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
       ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
+
+    // Add actions to hide/show this window.
+    button->append ( new AFW::Actions::ToggleVisible ( this ) );
+
+    // Add update action to set the check.
+    button->append ( new AFW::Actions::IfThenElse ( new AFW::Conditions::IsVisible ( this ), new AFW::Actions::Check ( 0x0, true ),  new AFW::Actions::Check ( 0x0, false ) ) );
   }
 }

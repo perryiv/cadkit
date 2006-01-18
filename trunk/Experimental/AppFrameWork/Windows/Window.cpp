@@ -59,7 +59,7 @@ Window::WindowListVar Window::_allWindows;
 
 Window::Window() : BaseClass(),
   _whichWindow ( _allWindows.value().end() ),
-  _flags       ( AFW::Core::State::DIRTY ),
+  _flags       ( AFW::Core::State::DIRTY | AFW::Core::State::VISIBLE ),
   _parent      ( 0x0 ),
   _icon        (),
   _text        (),
@@ -763,8 +763,8 @@ bool Window::enabled() const
 void Window::visible ( bool state )
 {
   Guard guard ( this->mutex() );
-  const unsigned int bit ( AFW::Core::State::VISIBLE );
-  _flags = Usul::Bits::set ( _flags, bit, state );
+  if ( _parent )
+    _parent->visible ( this, state );
 }
 
 

@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AppFrameWork/Actions/ToggleVisible.h"
-
 #include "AppFrameWork/Windows/Window.h"
 
 using namespace AFW::Actions;
@@ -28,7 +27,8 @@ USUL_IMPLEMENT_TYPE_ID ( ToggleVisible );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ToggleVisible::ToggleVisible() : BaseClass()
+ToggleVisible::ToggleVisible ( AFW::Core::Object *obj ) : BaseClass(),
+  _object ( obj )
 {
 }
 
@@ -53,7 +53,23 @@ ToggleVisible::~ToggleVisible()
 void ToggleVisible::execute ( AFW::Core::Object *object )
 {
   Guard guard ( this->mutex() );
-  AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
-  if ( window.valid() )
-    window->visible ( !window->visible() );
+
+  // First try member object.
+  if ( _object.valid() )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( _object.get() ) );
+    if ( window.valid() )
+    {
+      window->visible ( !window->visible() );
+      return;
+    }
+  }
+
+  // Set check for given object.
+  if ( object )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
+    if ( window.valid() )
+      window->visible ( !window->visible() );
+  }
 }

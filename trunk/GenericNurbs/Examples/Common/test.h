@@ -512,13 +512,28 @@ template < class SplineType > void inline testFindingKnotSpan ( const SplineType
   typedef typename SplineType::SizeType SizeType;
   typedef typename SplineType::IndependentType IndependentType;
 
+  const std::size_t bufSize ( 1023 );
+  char buffer[bufSize+1];
+
+#ifdef _MSC_VER
+
+  // Determine format string for maximum precision.
+  std::string format;
+  {
+    const int precision ( std::numeric_limits<IndependentType>::digits10 );
+    std::ostringstream out;
+    out << "%0." << precision << "f";
+    format = out.str();
+  }
+
+#endif
+
   OUTPUT << "<testFindingKnotSpan>\n";
 
   SizeType indep ( s.numIndepVars() );
   SizeType numParams ( 100 );
   std::string indent1 ( "  " );
   std::string indent2 ( indent1 + indent1 );
-  char buffer[1024];
 
   OUTPUT << indent1 << "<spline>\n";
   OUTPUT << indent2 << "<string>" << s.getStringData() << "</string>\n";
@@ -533,8 +548,15 @@ template < class SplineType > void inline testFindingKnotSpan ( const SplineType
     {
       IndependentType u ( IndependentType ( j ) / IndependentType ( numParams - 1 ) );
       SizeType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
-      ::sprintf ( buffer, "%20.15f", u );
-      OUTPUT << indent2 << "<test j=\"" << j << "\">u = " << buffer << " span = " << span << "</test>\n";
+      OUTPUT << indent2 << "<test j=\"" << j << "\">u = ";
+      #ifdef _MSC_VER
+      ::memset ( buffer, '\0', bufSize );
+      ::sprintf ( buffer, format.c_str(), u );
+      OUTPUT << buffer;
+      #else
+      OUTPUT << u;
+      #endif
+      OUTPUT << " span = " << span << "</test>\n";
     }
 
     OUTPUT << indent1 << "</independent>\n";

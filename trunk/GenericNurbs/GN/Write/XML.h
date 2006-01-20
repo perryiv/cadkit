@@ -18,6 +18,9 @@
 
 #include "GN/Config/BaseClass.h"
 
+#include <limits>
+#include <sstream>
+
 
 namespace GN {
 namespace Write {
@@ -99,6 +102,26 @@ template < class SplineType > struct XML
   template < class OutType, class StringType >
   static void write ( const SplineClass &s, const StringType &indent, OutType &out )
   {
+    const std::size_t bufSize ( 1023 );
+    char buffer[bufSize+1];
+
+    // Determine format string for maximum precision.
+    std::pair<std::string,std::string> format;
+    {
+      {
+        const int precision ( std::numeric_limits<IndependentType>::digits10 );
+        std::ostringstream out;
+        out << " %25." << precision << "f ";
+        format.first = out.str();
+      }
+      {
+        const int precision ( std::numeric_limits<DependentType>::digits10 );
+        std::ostringstream out;
+        out << " %25." << precision << "f ";
+        format.second = out.str();
+      }
+    }
+
     // Start the spline.
     out << indent << "<spline>\n";
 
@@ -148,7 +171,10 @@ template < class SplineType > struct XML
         // Write all the knots.
         for ( SizeType j = 0; j < numKnots; ++j )
         {
-          out << indent4 << "<knot i=\"" << j << "\">" << s.knot(i,j) << "</knot>\n";
+          out << indent4 << "<knot i=\"" << j << "\">";
+          ::sprintf ( buffer, format.first.c_str(), s.knot(i,j) );
+          out << buffer;
+          out << "</knot>\n";
         }
 
         out << indent3 << "</knots>\n";
@@ -159,7 +185,6 @@ template < class SplineType > struct XML
     // Write the control points...
     {
       out << indent2 << "<control_points>\n";
-      char buffer[1024];
 
       // For each control point...
       for ( SizeType j = 0; j < totalCtrPts; ++j )
@@ -170,7 +195,7 @@ template < class SplineType > struct XML
         for ( SizeType i = 0; i < numDepVars; ++i )
         {
           // Note: Linux and Cygwin cannot print long double.
-          ::sprintf ( buffer, "%20.15f  ", double ( s.controlPoint(i,j) ) );
+          ::sprintf ( buffer, format.second.c_str(), s.controlPoint(i,j) );
           out << buffer;
         }
 

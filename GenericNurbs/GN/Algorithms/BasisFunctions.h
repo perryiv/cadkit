@@ -318,8 +318,8 @@ void basisFunctions ( const SplineType &spline,
   // Get the data we need.
   const IndependentSequence &knots = spline.knotVector ( whichIndepVar );
   SizeType order ( spline.order ( whichIndepVar ) );
-  WorkSpace &left = spline.work().left;
-  WorkSpace &right = spline.work().right;
+  WorkSpace &left = spline.work ( whichIndepVar ).left;
+  WorkSpace &right = spline.work ( whichIndepVar ).right;
 
   // Call helper function.
   BasisFunctions::calculate ( knots, order, span, u, N, left, right );

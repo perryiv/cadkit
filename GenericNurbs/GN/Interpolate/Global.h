@@ -178,9 +178,9 @@ void global ( const typename CurveType::SizeType &order,
   if ( doLU )
   {
     // Shortcuts.
-    WorkSpace &N = spline.work().basis;
-    WorkSpace &left = spline.work().left;
-    WorkSpace &right = spline.work().right;
+    WorkSpace &N = spline.work ( 0 ).basis;
+    WorkSpace &left = spline.work ( 0 ).left;
+    WorkSpace &right = spline.work ( 0 ).right;
 
     // Fill the matrix.
     BlendingMatrix::fill ( order, params, knots, N, left, right, matrix );

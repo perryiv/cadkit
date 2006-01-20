@@ -90,9 +90,8 @@ WxMainWindow::WxMainWindow() : BaseClass(),
     mw->Maximize ( true );
 
   // Create and initialize the interface management object.
-  _ifm = new wxInterfaceManager ( mw.get() );
+  _ifm = new wxInterfaceManager ( mw.get(), mw->GetClientWindow() );
   _ifm->Initialize ( true );
-  _ifm->SetContentWindow ( mw->GetClientWindow() );
 
   // Release.
   mw.release();
@@ -392,6 +391,9 @@ bool WxMainWindow::insert ( AFW::Windows::Group::Itr where, AFW::Windows::Window
 
   // Add it.
   _ifm->AddChild ( &data );
+
+  // Add event handler to the internal window just created.
+  //_ifm->GetContentWindow()->PushEventHandler ( new WxEventHandler );
 
   // It worked.
   return true;

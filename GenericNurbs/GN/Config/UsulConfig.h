@@ -40,11 +40,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _GN_USE_VIRTUAL_DESTRUCTORS
-# define GN_DESTRUCTOR_TYPE virtual
-#else
-# define GN_DESTRUCTOR_TYPE
-#endif
+//#define GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,7 +220,7 @@ class UsulConfig
 {
 public:
 
-  typedef UsulDetail::ErrorCheckerType   ErrorCheckerType;
+  typedef UsulDetail::ErrorCheckerType    ErrorCheckerType;
   typedef GN::Config::Base::StringData    BaseClassType;
 
   typedef IndependentType_  IndependentType;

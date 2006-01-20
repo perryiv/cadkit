@@ -138,7 +138,6 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
       window->append ( new AFW::Actions::SetTextFromStdout );
       window->title ( "Text Messages" );
       window->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
-      //window->menu ( "Window" );
       mw->append ( window.get() );
     }
   }
@@ -153,7 +152,6 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
       window->append ( new AFW::Actions::SetTextFromStdout );
       window->title ( "Log Window" );
       window->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
-      //window->menu ( "Window" );
       mw->append ( window.get() );
     }
   }
@@ -168,7 +166,6 @@ void MessageWindowsComponent::guiInit ( Usul::Interfaces::IUnknown * )
       window->append ( new AFW::Actions::SetTextFromPluginActivity );
       window->title ( "Plugin Activity" );
       window->icon ( AFW::Core::Icon ( "afw_plugins_16x16" ) );
-      //window->menu ( "Window" );
       mw->append ( window.get() );
     }
   }

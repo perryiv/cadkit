@@ -99,6 +99,7 @@ public:
   Container &operator = ( const ThisType &c )
   {
     this->set ( c );
+    return *this;
   }
 
 

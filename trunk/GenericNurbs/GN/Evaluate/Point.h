@@ -51,7 +51,154 @@ template < class SplineType > struct Calculate
   typedef typename SplineType::DependentType DependentType;
   typedef typename SplineType::Vector Vector;
   typedef typename SplineType::WorkSpace WorkSpace;
+  typedef typename WorkSpace::value_type WorkSpaceValueType;
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Evaluate the point on the spline given the parameter. 
+  //
+  //  surface: The surface being evaluated.
+  //  u:       The independent parameter in the u-direction.
+  //  v:       The independent parameter in the v-direction.
+  //  pt:      The point (the answer).
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  static void surfacePoint ( const SplineType &surface, IndependentArgument u, IndependentArgument v, Vector &pt )
+  {
+    GN_ERROR_CHECK ( u >= surface.firstKnot ( 0 ) );
+    GN_ERROR_CHECK ( u <= surface.lastKnot  ( 0 ) );
+    GN_ERROR_CHECK ( v >= surface.firstKnot ( 1 ) );
+    GN_ERROR_CHECK ( v <= surface.lastKnot  ( 1 ) );
+    GN_ERROR_CHECK ( 2 == surface.numIndepVars() );
+
+    // Find the knot span.
+    const SizeType spanU ( GN::Algorithms::findKnotSpan ( surface, 0, u ) );
+    const SizeType spanV ( GN::Algorithms::findKnotSpan ( surface, 1, v ) );
+
+    // Get the order and degree.
+    const SizeType orderU ( surface.order ( 0 ) );
+    const SizeType orderV ( surface.order ( 1 ) );
+    const SizeType degreeU ( surface.degree ( 0 ) );
+    const SizeType degreeV ( surface.degree ( 1 ) );
+
+    // Number of control points.
+    const SizeType numCtrPtsU ( surface.numControlPoints ( 0 ) );
+    const SizeType numCtrPtsV ( surface.numControlPoints ( 1 ) );
+
+    // Calculate the blending coefficients.
+    WorkSpace &Nu = surface.work ( 0 ).basis;
+    WorkSpace &Nv = surface.work ( 1 ).basis;
+    Nu.accommodate ( orderU );
+    Nv.accommodate ( orderV );
+    GN::Algorithms::basisFunctions ( surface, 0, spanU, u, Nu );
+    GN::Algorithms::basisFunctions ( surface, 1, spanV, v, Nv );
+
+    // Initialize the point.
+    std::fill ( pt.begin(), pt.end(), static_cast<DependentType> ( 0 ) );
+
+    // Number of dependent variables.
+    const SizeType numDepVars ( surface.numDepVars() );
+
+    // The dimension.
+    const SizeType dimension ( surface.dimension() );
+
+    // We calculate the minimum of the point size and the real dimenion.
+    const SizeType dimensionsToCalculate ( std::min<SizeType> ( pt.size(), dimension ) );
+
+    // Needed in the loop.
+    SizeType index ( 0 ), indexU ( 0 ), indexV ( 0 ), i ( 0 ), ii ( 0 ), k ( 0 );
+
+		// If it is rational. See "The NURBS Book", page 134.
+		if ( surface.rational() )
+    {
+      // We need a temporary holder.
+      WorkSpace &temp = surface.work ( 0 ).temp;
+      temp.accommodate ( orderV );
+
+      // Space for the homogeneous coordinate.
+      WorkSpace &pw = surface.work ( 0 ).pw;
+      pw.accommodate ( numDepVars );
+
+      // Do it once for each dependent variable.
+      for ( i = 0; i < numDepVars; ++i )
+      {
+        for ( ii = 0; ii < orderV; ++ii )
+        {
+          // Initialize the temp space.
+          temp[ii] = static_cast<WorkSpaceValueType> ( 0 );
+
+          // Do this here.
+          indexV = spanV - degreeV + ii;
+
+          // Adjust index for 1D control point array.
+          index = indexV * numCtrPtsU + indexU;
+
+          // Blend in the u-direction.
+          for ( SizeType k = 0; k < orderU; ++k )
+          {
+            GN_ERROR_CHECK ( ( index + k ) < surface.totalNumControlPoints() );
+            temp[ii] += ( Nu[k] * surface.controlPoint ( i, index + k ) );
+          }
+        }
+
+        // Initialize the homogeneous point.
+        pw[i] = static_cast<WorkSpaceValueType> ( 0 );
+
+        // Blend in the v-direction.
+        for ( ii = 0; ii < orderV; ++ii )
+        {
+          pw[i] += ( Nv[ii] * temp[ii] );
+        }
+      }
+
+      // Invert the weight. Note: use the real dimension.
+      DependentType weight ( static_cast<DependentType> ( 1 ) / pw[dimension] );
+
+      // Divide out the weight for each dimension the caller wants.
+      for ( i = 0; i < dimensionsToCalculate; ++i )
+      {
+        pt[i] = pw[i] * weight;
+      }
+    }
+
+    // If it is non-rational. See "The NURBS Book", page 103.
+    else
+    {
+      // We need a temporary holder.
+      DependentType temp ( static_cast<DependentType> ( 0 ) );
+
+      // Do it once for each dimension.
+      for ( i = 0; i < dimension; ++i )
+      {
+        // Initialize the point.
+        pt[i] = static_cast<DependentType> ( 0 );
+
+        for ( ii = 0; ii < orderV; ++ii )
+        {
+          // Initialize the temp space.
+          temp = static_cast<DependentType> ( 0 );
+
+          // Do this here.
+          indexV = spanV - degreeV + ii;
+
+          // Adjust index for 1D control point array.
+          index = indexV * numCtrPtsU + indexU;
+
+          // Blend in the u-direction.
+          for ( k = 0; k < orderU; ++k )
+          {
+            GN_ERROR_CHECK ( ( index + k ) < surface.totalNumControlPoints() );
+            temp += ( Nu[k] * surface.controlPoint ( i, index + k ) );
+          }
+
+          // Blend in the v-direction.
+          pt[i] += ( Nv[ii] * temp );
+        }
+      }
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -78,7 +225,7 @@ template < class SplineType > struct Calculate
     const SizeType span ( GN::Algorithms::findKnotSpan ( curve, 0, u ) );
 
     // Calculate the blending coefficients.
-    WorkSpace &N = curve.work().basis;
+    WorkSpace &N = curve.work ( 0 ).basis;
     N.accommodate ( order );
     GN::Algorithms::basisFunctions ( curve, 0, span, u, N );
 
@@ -86,7 +233,7 @@ template < class SplineType > struct Calculate
     std::fill ( pt.begin(), pt.end(), static_cast<DependentType> ( 0 ) );
 
     // We calculate the minimum of the point size and the dimenion.
-    const SizeType dimension ( std::min ( (SizeType) pt.size(), curve.dimension() ) );
+    const SizeType dimension ( std::min<SizeType> ( pt.size(), curve.dimension() ) );
 
 		// If it is rational...
 		if ( curve.rational() )
@@ -503,6 +650,29 @@ void point ( const SplineType &c,
   GN_CAN_BE_CURVE ( SplineType );
   typedef typename SplineType::SplineClass SplineClass;
   Detail::Calculate<SplineClass>::curvePoint ( c, u, pt );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Evaluate the point on the surface given the parameters.
+//
+//  s:  Must be a surface.
+//  u:  The u-direction parameter we are evaluating the point at.
+//  v:  The v-direction parameter we are evaluating the point at.
+//  pt: The point being evaluated (the answer).
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < class SplineType >
+void point ( const SplineType &c,
+             typename SplineType::IndependentArgument u,
+             typename SplineType::IndependentArgument v,
+             typename SplineType::Vector &pt )
+{
+  GN_CAN_BE_SURFACE ( SplineType );
+  typedef typename SplineType::SplineClass SplineClass;
+  Detail::Calculate<SplineClass>::surfacePoint ( c, u, v, pt );
 }
 
 

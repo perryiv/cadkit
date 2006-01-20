@@ -29,6 +29,7 @@
 #include <iostream>
 #include <iomanip>
 #include <list>
+#include <limits>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,10 +185,10 @@ template < class SplineType > void inline testBasisFunctions ( const SplineType 
 
   SizeType numIndepVars ( s.numIndepVars() );
   SizeType numParams ( 100 );
-  BasisFunctions &N = s.work().basis;
 
   for ( SizeType i = 0; i < numIndepVars; ++i )
   {
+    BasisFunctions &N = s.work ( i ).basis;
     SizeType order ( s.order ( i ) );
     N.accommodate ( order );
     OUTPUT << "order = " << order << ", num knots = " << s.numKnots ( i ) << '\n';
@@ -221,13 +222,15 @@ template < class SplineType > void inline testCurvePoint ( const SplineType &s )
   typedef typename SplineType::SizeType SizeType;
   typedef typename SplineType::IndependentType IndependentType;
   typedef typename SplineType::Vector Point;
+  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testCurvePoint>\n";
 
-  SizeType numIndepVars ( s.numIndepVars() );
-  SizeType numPoints ( 100 );
-  SizeType dimension ( s.dimension() );
+  const SizeType numIndepVars ( s.numIndepVars() );
+  GN_ERROR_CHECK ( 1 == numIndepVars );
+  const SizeType numPoints ( 100 );
+  const SizeType dimension ( s.dimension() );
   Point pt;
   pt.resize ( dimension );
 
@@ -291,6 +294,66 @@ template < class SplineType > void inline testTessellation ( const SplineType &s
 
 template < class SplineType > void inline testSurfacePoint ( const SplineType &s )
 {
+  typedef typename SplineType::SizeType SizeType;
+  typedef typename SplineType::IndependentType IndependentType;
+  typedef typename SplineType::Vector Point;
+  GN_CAN_BE_SURFACE ( SplineType );
+
+  const std::size_t bufSize ( 1023 );
+  char buffer[bufSize+1];
+
+  // Determine format string for maximum precision.
+  std::pair<std::string,std::string> format;
+  {
+    {
+      const int precision ( std::numeric_limits<IndependentType>::digits10 );
+      std::ostringstream out;
+      out << "u = %0." << precision << "f, v = %0." << precision << "f";
+      format.first = out.str();
+    }
+    {
+      typedef typename SplineType::DependentType DependentType;
+      const int precision ( std::numeric_limits<DependentType>::digits10 );
+      std::ostringstream out;
+      out << ", pt[%d] = %0." << precision << "f";
+      format.second = out.str();
+    }
+  }
+
+  OUTPUT << "<testSurfacePoint>\n";
+
+  SizeType numIndepVars ( s.numIndepVars() );
+  if ( 2 == numIndepVars )
+  {
+    SizeType numPointsU ( 20 );
+    SizeType numPointsV ( 20 );
+    SizeType dimension ( s.dimension() );
+    Point pt;
+    pt.resize ( dimension );
+
+    for ( SizeType i = 0; i < numPointsU; ++i )
+    {
+      IndependentType u ( IndependentType ( i ) / IndependentType ( numPointsU - 1 ) );
+      for ( SizeType j = 0; j < numPointsV; ++j )
+      {
+        IndependentType v ( IndependentType ( j ) / IndependentType ( numPointsV - 1 ) );
+        GN::Evaluate::point ( s, u, v, pt );
+
+        if ( global_output_flag )
+        {
+          ::sprintf ( buffer, format.first.c_str(), u, v );
+          OUTPUT << buffer;
+          for ( SizeType d = 0; d < dimension; ++d )
+          {
+            ::sprintf ( buffer, format.second.c_str(), d, pt[d] );
+            OUTPUT << buffer;
+          }
+          OUTPUT << std::endl;
+        }
+      }
+    }
+  }
+  OUTPUT << "</testSurfacePoint>\n";
 }
 
 
@@ -615,12 +678,14 @@ template < class SplineType > void inline testSpline ( SplineType &s )
 
 template < class CurveType > void inline testCurve ( CurveType &c )
 {
+#if 1
   ::testLine ( c );
   ::testCircle ( c );
   ::testCurvePoint ( c );
   ::testTessellation ( c );
   ::testInterpolation ( c );
   ::testSpline ( c );
+#endif
 }
 
 
@@ -634,8 +699,10 @@ template < class SplineType > void inline testSurface ( SplineType &s )
 {
   ::testSphere ( s );
   ::testSurfacePoint ( s );
+#if 1
   ::testDtNurbsCarray ( s );
   ::testSpline ( s );
+#endif
 }
 
 

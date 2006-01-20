@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <vector>
 
 
 namespace GN {
@@ -544,11 +545,13 @@ public:
 
   struct Work
   {
-    Work() : basis(), left(), right(){}
-    Work ( const Work &w ) : basis ( w.basis ), left ( w.left ), right ( w.right ){}
+    Work() : basis(), left(), right(), pw(), temp(){}
+    Work ( const Work &w ) : basis ( w.basis ), left ( w.left ), right ( w.right ), pw ( w.pw ), temp ( w.temp ){}
     WorkSpace basis;
     WorkSpace left;
     WorkSpace right;
+    WorkSpace pw;
+    WorkSpace temp;
   };
 
 
@@ -558,9 +561,10 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  Work &work() const
+  Work &work ( SizeType whichIndepVar ) const
   {
-    return _work;
+    GN_ERROR_CHECK ( whichIndepVar < _work.size() );
+    return _work[whichIndepVar];
   }
 
 
@@ -617,6 +621,9 @@ public:
       // Resize the control points.
       _ctrPts[j].resize ( totalCtrPts );
     }
+
+    // Resize the work.
+    _work.resize ( numIndepVars );
   }
 
 
@@ -996,6 +1003,15 @@ private:
 
   /////////////////////////////////////////////////////////////////////////////
   ///
+  /// Typedefs.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  typedef std::vector < Work > WorkSequence;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
   /// Data members.
   ///
   /////////////////////////////////////////////////////////////////////////////
@@ -1005,7 +1021,7 @@ private:
   bool                  _rational;
   IndependentContainer  _knots;
   DependentContainer    _ctrPts;
-  mutable Work          _work;
+  mutable WorkSequence  _work;
 };
 
 

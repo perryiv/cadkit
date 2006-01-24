@@ -154,13 +154,15 @@ template < class Matrix44, class Vec4, class Vec3 > struct Multiply
 
 struct ThrowingPolicy
 {
-  ThrowingPolicy ( const char *filename, unsigned int line, bool state )
+  ThrowingPolicy ( const char *filename, unsigned int line, bool state, const char *message = 0x0 )
   {
     if ( !state )
     {
-      std::ostringstream message;
-      message << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
-      throw std::runtime_error ( message.str() );
+      std::ostringstream out;
+      out << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
+      if ( message )
+        out << "\n\tMessage: " << message;
+      throw std::runtime_error ( out.str() );
     }
   }
 };

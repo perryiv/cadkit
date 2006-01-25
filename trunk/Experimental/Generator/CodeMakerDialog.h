@@ -43,19 +43,23 @@
 #define SYMBOL_CODEMAKERDIALOG_SIZE wxSize(400, 300)
 #define SYMBOL_CODEMAKERDIALOG_POSITION wxDefaultPosition
 #define ID_TEXTCTRL3 10012
-#define ID_TEXTCTRL9 10031
-#define ID_DIRECTORY 10032
 #define ID_NOTEBOOK 10010
 #define ID_PANEL 10011
 #define ID_TEXTCTRL4 10013
+#define ID_TEXTCTRL 10000
+#define ID_PLUGIN_BROWSE 10001
 #define ID_LISTBOX2 10016
 #define ID_LISTBOX3 10017
 #define ID_CREATE_PLUGIN 10018
 #define ID_PANEL1 10020
 #define ID_TEXTCTRL6 10021
+#define ID_TEXTCTRL2 10004
+#define ID_INTERFACE_BROWSE 10005
 #define ID_CREATE_INTERFACE 10022
 #define ID_PANEL2 10023
 #define ID_TEXTCTRL7 10024
+#define ID_TEXTCTRL1 10002
+#define ID_BUTTON 10003
 #define ID_CHECKBOX 10027
 #define ID_CHECKBOX1 10028
 #define ID_CHECKBOX2 10029
@@ -99,11 +103,14 @@ public:
     /// wxEVT_CLOSE_WINDOW event handler for ID_DIALOG
     void OnCloseWindow( wxCloseEvent& event );
 
-    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_DIRECTORY
-    void OnDirectoryClick( wxCommandEvent& event );
+    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_PLUGIN_BROWSE
+    void OnPluginBrowseClick( wxCommandEvent& event );
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_CREATE_PLUGIN
     void OnCreatePluginClick( wxCommandEvent& event );
+
+    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_INTERFACE_BROWSE
+    void OnInterfaceBrowseClick( wxCommandEvent& event );
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_CREATE_INTERFACE
     void OnCreateInterfaceClick( wxCommandEvent& event );
@@ -133,10 +140,11 @@ private:
 
 ////@begin CodeMakerDialog member variables
     wxTextCtrl* _creator;
-    wxTextCtrl* _directory;
     wxTextCtrl* _pluginName;
+    wxTextCtrl* _pluginDirectory;
     wxListBox* _interfaces;
     wxTextCtrl* _interfaceName;
+    wxTextCtrl* _interfaceDirectory;
 ////@end CodeMakerDialog member variables
 };
 

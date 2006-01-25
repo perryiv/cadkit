@@ -58,10 +58,10 @@ public:
   </xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text>();
 
 protected:    
-  ///Destructor
+  /// Destructor
   ~</xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text>();
 
-  ///Usul/Interfaces/IPlugin.h implementation
+  /// Usul::Interfaces::IPlugin implementation
   virtual std::string getPluginName() const;
     
   /** Insert your Plugin specific code here **/

@@ -52,9 +52,11 @@ BEGIN_EVENT_TABLE( CodeMakerDialog, wxDialog )
 ////@begin CodeMakerDialog event table entries
     EVT_CLOSE( CodeMakerDialog::OnCloseWindow )
 
-    EVT_BUTTON( ID_DIRECTORY, CodeMakerDialog::OnDirectoryClick )
+    EVT_BUTTON( ID_PLUGIN_BROWSE, CodeMakerDialog::OnPluginBrowseClick )
 
     EVT_BUTTON( ID_CREATE_PLUGIN, CodeMakerDialog::OnCreatePluginClick )
+
+    EVT_BUTTON( ID_INTERFACE_BROWSE, CodeMakerDialog::OnInterfaceBrowseClick )
 
     EVT_BUTTON( ID_CREATE_INTERFACE, CodeMakerDialog::OnCreateInterfaceClick )
 
@@ -85,10 +87,11 @@ bool CodeMakerDialog::Create( wxWindow* parent, wxWindowID id, const wxString& c
 {
 ////@begin CodeMakerDialog member initialisation
     _creator = NULL;
-    _directory = NULL;
     _pluginName = NULL;
+    _pluginDirectory = NULL;
     _interfaces = NULL;
     _interfaceName = NULL;
+    _interfaceDirectory = NULL;
 ////@end CodeMakerDialog member initialisation
 
 ////@begin CodeMakerDialog creation
@@ -127,55 +130,54 @@ void CodeMakerDialog::CreateControls()
     _creator = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer4->Add(_creator, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxBoxSizer* itemBoxSizer7 = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer2->Add(itemBoxSizer7, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxNotebook* itemNotebook7 = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
 
-    wxStaticText* itemStaticText8 = new wxStaticText( itemDialog1, wxID_STATIC, _("Directory"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer7->Add(itemStaticText8, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxPanel* itemPanel8 = new wxPanel( itemNotebook7, ID_PANEL, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxBoxSizer* itemBoxSizer9 = new wxBoxSizer(wxVERTICAL);
+    itemPanel8->SetSizer(itemBoxSizer9);
 
-    _directory = new wxTextCtrl( itemDialog1, ID_TEXTCTRL9, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer7->Add(_directory, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* itemStaticText10 = new wxStaticText( itemPanel8, wxID_STATIC, _("Plugin Generator"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer9->Add(itemStaticText10, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxButton* itemButton10 = new wxButton( itemDialog1, ID_DIRECTORY, _("..."), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer7->Add(itemButton10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxGridSizer* itemGridSizer11 = new wxGridSizer(2, 2, 0, 0);
+    itemBoxSizer9->Add(itemGridSizer11, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxStaticText* itemStaticText12 = new wxStaticText( itemPanel8, wxID_STATIC, _("Plugin Name"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemGridSizer11->Add(itemStaticText12, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxNotebook* itemNotebook11 = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
+    _pluginName = new wxTextCtrl( itemPanel8, ID_TEXTCTRL4, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    itemGridSizer11->Add(_pluginName, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxPanel* itemPanel12 = new wxPanel( itemNotebook11, ID_PANEL, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer13 = new wxBoxSizer(wxVERTICAL);
-    itemPanel12->SetSizer(itemBoxSizer13);
+    wxStaticText* itemStaticText14 = new wxStaticText( itemPanel8, wxID_STATIC, _("Directory"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemGridSizer11->Add(itemStaticText14, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxStaticText* itemStaticText14 = new wxStaticText( itemPanel12, wxID_STATIC, _("Plugin Generator"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer13->Add(itemStaticText14, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxBoxSizer* itemBoxSizer15 = new wxBoxSizer(wxHORIZONTAL);
+    itemGridSizer11->Add(itemBoxSizer15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    _pluginDirectory = new wxTextCtrl( itemPanel8, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(300, -1), 0 );
+    itemBoxSizer15->Add(_pluginDirectory, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxGridSizer* itemGridSizer15 = new wxGridSizer(2, 2, 0, 0);
-    itemBoxSizer13->Add(itemGridSizer15, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
-    wxStaticText* itemStaticText16 = new wxStaticText( itemPanel12, wxID_STATIC, _("Plugin Name"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGridSizer15->Add(itemStaticText16, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxButton* itemButton17 = new wxButton( itemPanel8, ID_PLUGIN_BROWSE, _("..."), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer15->Add(itemButton17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    _pluginName = new wxTextCtrl( itemPanel12, ID_TEXTCTRL4, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-    itemGridSizer15->Add(_pluginName, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
-
-    wxStaticText* itemStaticText18 = new wxStaticText( itemPanel12, wxID_STATIC, _("Interfaces"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer13->Add(itemStaticText18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxStaticText* itemStaticText18 = new wxStaticText( itemPanel8, wxID_STATIC, _("Interfaces"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer9->Add(itemStaticText18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
 
     wxString* _interfacesStrings = NULL;
-    _interfaces = new wxListBox( itemPanel12, ID_LISTBOX2, wxDefaultPosition, wxDefaultSize, 0, _interfacesStrings, wxLB_EXTENDED );
-    itemBoxSizer13->Add(_interfaces, 0, wxGROW|wxALL, 5);
+    _interfaces = new wxListBox( itemPanel8, ID_LISTBOX2, wxDefaultPosition, wxDefaultSize, 0, _interfacesStrings, wxLB_EXTENDED );
+    itemBoxSizer9->Add(_interfaces, 0, wxGROW|wxALL, 5);
 
-    wxStaticText* itemStaticText20 = new wxStaticText( itemPanel12, wxID_STATIC, _("Libraries"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer13->Add(itemStaticText20, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxStaticText* itemStaticText20 = new wxStaticText( itemPanel8, wxID_STATIC, _("Libraries"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer9->Add(itemStaticText20, 0, wxALIGN_CENTER_HORIZONTAL|wxALL|wxADJUST_MINSIZE, 5);
 
     wxString* itemListBox21Strings = NULL;
-    wxListBox* itemListBox21 = new wxListBox( itemPanel12, ID_LISTBOX3, wxDefaultPosition, wxDefaultSize, 0, itemListBox21Strings, wxLB_EXTENDED );
-    itemBoxSizer13->Add(itemListBox21, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxListBox* itemListBox21 = new wxListBox( itemPanel8, ID_LISTBOX3, wxDefaultPosition, wxDefaultSize, 0, itemListBox21Strings, wxLB_EXTENDED );
+    itemBoxSizer9->Add(itemListBox21, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-    wxButton* itemButton22 = new wxButton( itemPanel12, ID_CREATE_PLUGIN, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer13->Add(itemButton22, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxButton* itemButton22 = new wxButton( itemPanel8, ID_CREATE_PLUGIN, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer9->Add(itemButton22, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-    itemNotebook11->AddPage(itemPanel12, _("Plugin"));
+    itemNotebook7->AddPage(itemPanel8, _("Plugin"));
 
-    wxPanel* itemPanel23 = new wxPanel( itemNotebook11, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxPanel* itemPanel23 = new wxPanel( itemNotebook7, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
     wxStaticBox* itemStaticBoxSizer24Static = new wxStaticBox(itemPanel23, wxID_ANY, _("Interface Generator"));
     wxStaticBoxSizer* itemStaticBoxSizer24 = new wxStaticBoxSizer(itemStaticBoxSizer24Static, wxVERTICAL);
     itemPanel23->SetSizer(itemStaticBoxSizer24);
@@ -188,52 +190,90 @@ void CodeMakerDialog::CreateControls()
     _interfaceName = new wxTextCtrl( itemPanel23, ID_TEXTCTRL6, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer25->Add(_interfaceName, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxButton* itemButton28 = new wxButton( itemPanel23, ID_CREATE_INTERFACE, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStaticBoxSizer24->Add(itemButton28, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxBoxSizer* itemBoxSizer28 = new wxBoxSizer(wxHORIZONTAL);
+    itemStaticBoxSizer24->Add(itemBoxSizer28, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxStaticText* itemStaticText29 = new wxStaticText( itemPanel23, wxID_STATIC, _("Directory"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer28->Add(itemStaticText29, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    itemNotebook11->AddPage(itemPanel23, _("Interface"));
+    _interfaceDirectory = new wxTextCtrl( itemPanel23, ID_TEXTCTRL2, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer28->Add(_interfaceDirectory, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxPanel* itemPanel29 = new wxPanel( itemNotebook11, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxStaticBox* itemStaticBoxSizer30Static = new wxStaticBox(itemPanel29, wxID_ANY, _("Class Generator"));
-    wxStaticBoxSizer* itemStaticBoxSizer30 = new wxStaticBoxSizer(itemStaticBoxSizer30Static, wxVERTICAL);
-    itemPanel29->SetSizer(itemStaticBoxSizer30);
+    wxButton* itemButton31 = new wxButton( itemPanel23, ID_INTERFACE_BROWSE, _("..."), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer28->Add(itemButton31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxBoxSizer* itemBoxSizer31 = new wxBoxSizer(wxHORIZONTAL);
-    itemStaticBoxSizer30->Add(itemBoxSizer31, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
-    wxStaticText* itemStaticText32 = new wxStaticText( itemPanel29, wxID_STATIC, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer31->Add(itemStaticText32, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    wxButton* itemButton32 = new wxButton( itemPanel23, ID_CREATE_INTERFACE, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticBoxSizer24->Add(itemButton32, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-    wxTextCtrl* itemTextCtrl33 = new wxTextCtrl( itemPanel29, ID_TEXTCTRL7, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer31->Add(itemTextCtrl33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemNotebook7->AddPage(itemPanel23, _("Interface"));
 
-    wxBoxSizer* itemBoxSizer34 = new wxBoxSizer(wxHORIZONTAL);
-    itemStaticBoxSizer30->Add(itemBoxSizer34, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
-    wxCheckBox* itemCheckBox35 = new wxCheckBox( itemPanel29, ID_CHECKBOX, _("Singleton"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
-    itemCheckBox35->SetValue(FALSE);
-    itemBoxSizer34->Add(itemCheckBox35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxPanel* itemPanel33 = new wxPanel( itemNotebook7, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    itemPanel33->Show(FALSE);
+    wxStaticBox* itemStaticBoxSizer34Static = new wxStaticBox(itemPanel33, wxID_ANY, _("Class Generator"));
+    wxStaticBoxSizer* itemStaticBoxSizer34 = new wxStaticBoxSizer(itemStaticBoxSizer34Static, wxVERTICAL);
+    itemPanel33->SetSizer(itemStaticBoxSizer34);
 
-    wxCheckBox* itemCheckBox36 = new wxCheckBox( itemPanel29, ID_CHECKBOX1, _("Copy Ctor"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
-    itemCheckBox36->SetValue(FALSE);
-    itemBoxSizer34->Add(itemCheckBox36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxBoxSizer* itemBoxSizer35 = new wxBoxSizer(wxHORIZONTAL);
+    itemStaticBoxSizer34->Add(itemBoxSizer35, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxStaticText* itemStaticText36 = new wxStaticText( itemPanel33, wxID_STATIC, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer35->Add(itemStaticText36, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    wxCheckBox* itemCheckBox37 = new wxCheckBox( itemPanel29, ID_CHECKBOX2, _("Default Ctor"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
-    itemCheckBox37->SetValue(FALSE);
-    itemBoxSizer34->Add(itemCheckBox37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxTextCtrl* itemTextCtrl37 = new wxTextCtrl( itemPanel33, ID_TEXTCTRL7, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer35->Add(itemTextCtrl37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxCheckBox* itemCheckBox38 = new wxCheckBox( itemPanel29, ID_CHECKBOX3, _("Ref Counted"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
-    itemCheckBox38->SetValue(FALSE);
-    itemBoxSizer34->Add(itemCheckBox38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxBoxSizer* itemBoxSizer38 = new wxBoxSizer(wxHORIZONTAL);
+    itemStaticBoxSizer34->Add(itemBoxSizer38, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxStaticText* itemStaticText39 = new wxStaticText( itemPanel33, wxID_STATIC, _("Directory"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer38->Add(itemStaticText39, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    itemNotebook11->AddPage(itemPanel29, _("Class"));
+    wxTextCtrl* itemTextCtrl40 = new wxTextCtrl( itemPanel33, ID_TEXTCTRL1, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer38->Add(itemTextCtrl40, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    itemBoxSizer2->Add(itemNotebook11, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxButton* itemButton41 = new wxButton( itemPanel33, ID_BUTTON, _("..."), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer38->Add(itemButton41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    wxButton* itemButton39 = new wxButton( itemDialog1, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer2->Add(itemButton39, 0, wxALIGN_RIGHT|wxALL, 5);
+    wxBoxSizer* itemBoxSizer42 = new wxBoxSizer(wxHORIZONTAL);
+    itemStaticBoxSizer34->Add(itemBoxSizer42, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxCheckBox* itemCheckBox43 = new wxCheckBox( itemPanel33, ID_CHECKBOX, _("Singleton"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
+    itemCheckBox43->SetValue(FALSE);
+    itemBoxSizer42->Add(itemCheckBox43, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    wxCheckBox* itemCheckBox44 = new wxCheckBox( itemPanel33, ID_CHECKBOX1, _("Copy Ctor"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
+    itemCheckBox44->SetValue(FALSE);
+    itemBoxSizer42->Add(itemCheckBox44, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    wxCheckBox* itemCheckBox45 = new wxCheckBox( itemPanel33, ID_CHECKBOX2, _("Default Ctor"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
+    itemCheckBox45->SetValue(FALSE);
+    itemBoxSizer42->Add(itemCheckBox45, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    wxCheckBox* itemCheckBox46 = new wxCheckBox( itemPanel33, ID_CHECKBOX3, _("Ref Counted"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE );
+    itemCheckBox46->SetValue(FALSE);
+    itemBoxSizer42->Add(itemCheckBox46, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    itemNotebook7->AddPage(itemPanel33, _("Class"));
+
+    itemBoxSizer2->Add(itemNotebook7, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+
+    wxButton* itemButton47 = new wxButton( itemDialog1, ID_CLOSE, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer2->Add(itemButton47, 0, wxALIGN_RIGHT|wxALL, 5);
 
 ////@end CodeMakerDialog content construction
 
     this->_initializeAvailableInterfaces();
+
+    char *buf ( ::getenv ( "USUL_INC_DIR" ) );
+
+    if( ::strlen ( buf ) != 0 )
+    {
+      std::string plugdir ( buf );
+      plugdir += "/OsgFox/Plugins";
+
+      _pluginDirectory->SetValue ( plugdir.c_str() );
+
+      std::string idir ( buf );
+      idir += "/Usul/Interfaces";
+
+      _interfaceDirectory->SetValue ( idir.c_str() );
+    }
 }
 
 /*!
@@ -304,7 +344,7 @@ void CodeMakerDialog::OnCreatePluginClick( wxCommandEvent& )
 {
   std::string pluginName ( _pluginName->GetValue() );
 
-  std::string directory ( _directory->GetValue() );
+  std::string directory ( _pluginDirectory->GetValue() );
   if ( !pluginName.empty() && !directory.empty() )
   {
     std::string creator ( _creator->GetValue() );
@@ -346,20 +386,6 @@ void CodeMakerDialog::OnCloseClick( wxCommandEvent&  )
 }
 
 
-/*!
- * wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_DIRECTORY
- */
-
-void CodeMakerDialog::OnDirectoryClick( wxCommandEvent& )
-{
-  wxDirDialog dialog ( this );
-
-  dialog.ShowModal();
-
-  _directory->SetValue ( dialog.GetPath() );
-}
-
-
 void CodeMakerDialog::_initializeAvailableInterfaces()
 {
   wxArrayString selections;
@@ -370,8 +396,10 @@ void CodeMakerDialog::_initializeAvailableInterfaces()
   typedef std::vector < std::string > Strings;
   Strings interfaces;
 
-  char buf [256];
-  ::GetEnvironmentVariable ( "USUL_INC_DIR", buf, 256 );
+  char *buf ( ::getenv ( "USUL_INC_DIR" ) );
+
+  if( ::strlen ( buf ) == 0 )
+    return;
 
   std::string usuldir ( buf );
   usuldir += "/Usul/Interfaces";
@@ -407,3 +435,36 @@ template < class Strings > void CodeMakerDialog::_selectedInterfaces ( Strings& 
     strings.push_back ( _interfaces->GetString ( *i ).c_str() );
   }
 }
+/*!
+ * wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON
+ */
+
+void CodeMakerDialog::OnPluginBrowseClick( wxCommandEvent& )
+{
+  wxDirDialog dialog ( this );
+
+  dialog.SetPath ( _pluginDirectory->GetValue() );
+
+  dialog.ShowModal();
+
+  _pluginDirectory->SetValue ( dialog.GetPath() );
+}
+
+
+/*!
+ * wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_INTERFACE_BROWSE
+ */
+
+void CodeMakerDialog::OnInterfaceBrowseClick( wxCommandEvent& )
+{
+  wxDirDialog dialog ( this );
+
+  dialog.SetPath ( _interfaceDirectory->GetValue() );
+
+  dialog.ShowModal();
+
+  _interfaceDirectory->SetValue ( dialog.GetPath() );
+}
+
+
+

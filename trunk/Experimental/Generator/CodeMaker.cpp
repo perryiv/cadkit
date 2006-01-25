@@ -29,8 +29,11 @@
 #include <fstream>
 #include <algorithm>
 #include <ctime>
+#include <cstdlib>
 
+#ifdef _WIN32
 #include "windows.h"
+#endif
 
 /// Initiliaze static members
 CodeMaker* CodeMaker::_instance ( 0x0 );
@@ -586,8 +589,7 @@ void CodeMaker::createInterface     ( const std::string& creator, const std::str
   std::string guard ( interfaceName + "_H__" );
   std::transform ( guard.begin(), guard.end(), guard.begin(), ::toupper );
 
-  char buf [256];
-  ::GetEnvironmentVariable ( "USUL_INC_DIR", buf, 256 );
+  char *buf ( ::getenv ( "USUL_INC_DIR" ) );
 
   std::string usuldir ( buf );
   usuldir += "/Usul/Interfaces/";

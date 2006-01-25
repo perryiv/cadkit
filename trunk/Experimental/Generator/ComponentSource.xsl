@@ -20,12 +20,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 &#xa;
 #include "</xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text>.h"&#xa;</xsl:text>
-<xsl:for-each select="PluginTemplate/ComponentHeader/LibInclude">
-    <xsl:text>#include "</xsl:text><xsl:value-of select="@file" /><xsl:text>"&#xa;</xsl:text>
-</xsl:for-each><xsl:text>&#xa;</xsl:text>
-<xsl:for-each select="PluginTemplate/ComponentHeader/SystemInclude">
-    <xsl:text>#include &lt;</xsl:text><xsl:value-of select="@file" /><xsl:text>&gt;&#xa;</xsl:text>
-</xsl:for-each>
 <xsl:text>
 &#xa;
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( </xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text> , </xsl:text> <xsl:value-of select="PluginTemplate/ComponentHeader/@className" /><xsl:text>::BaseClass );

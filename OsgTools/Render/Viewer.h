@@ -440,6 +440,11 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   virtual void doneTool ();
   virtual void loadLastTool ();
 
+  // Add/Remove group from projection node
+  osg::Group*           getGroupProjection    ( const std::string& );
+  void                  removeGroupProjection ( const std::string& );
+  bool                  hasGroupProjection    ( const std::string& );
+
 protected:
 
   // Do not use.
@@ -494,11 +499,6 @@ protected:
   osg::Group*           _getGroup    ( const std::string& );
   void                  _removeGroup ( const std::string& );
   bool                  _hasGroup    ( const std::string& );
-
-  // Add/Remove group from projection node
-  osg::Group*           _getGroupProjection    ( const std::string& );
-  void                  _removeGroupProjection ( const std::string& );
-  bool                  _hasGroupProjection    ( const std::string& );
 
   // Write the current frame to an image file.
   bool                  _writeImageFile ( const std::string &filename ) const;

@@ -1593,7 +1593,7 @@ void Viewer::_drawSelectionBox ( const osg::Vec3& v1, const osg::Vec3& v2 )
   osg::Vec3 v4 ( v1[0], v2[1], 0.0 );
 
   // Get the group for selection box, if it exists.
-  osg::ref_ptr<osg::Group> group ( this->_getGroupProjection(OsgTools::Render::Constants::SELECTION_BOX) );
+  osg::ref_ptr<osg::Group> group ( this->getGroupProjection( OsgTools::Render::Constants::SELECTION_BOX ) );
   
   // Has the selection box been created?
   if ( !group.valid() )
@@ -2771,7 +2771,7 @@ void Viewer::_addAxes ()
 {
   // Get the group.  It will be under a projection node that is set which each resize, so the geometry under it
   // won't get distorted by screen resizes.
-  osg::ref_ptr< osg::Group > group ( this->_getGroupProjection( OsgTools::Render::Constants::AXES ) );
+  osg::ref_ptr< osg::Group > group ( this->getGroupProjection( OsgTools::Render::Constants::AXES ) );
 
   // Axes Dragger
   osg::ref_ptr< OsgTools::Widgets::Axes > dragger ( new OsgTools::Widgets::Axes );
@@ -2794,7 +2794,7 @@ void Viewer::_addAxes ()
 
 void Viewer::_removeAxes ()
 {
-  this->_removeGroupProjection( OsgTools::Render::Constants::AXES );
+  this->removeGroupProjection( OsgTools::Render::Constants::AXES );
 
   // The scene has changed.
   this->changedScene();
@@ -2813,7 +2813,7 @@ void Viewer::_setAxes ()
   if( !this->axes() )
     return;
 
-  osg::ref_ptr< osg::Group > group ( this->_getGroupProjection( OsgTools::Render::Constants::AXES ) );
+  osg::ref_ptr< osg::Group > group ( this->getGroupProjection( OsgTools::Render::Constants::AXES ) );
   osg::ref_ptr< osg::MatrixTransform > mt ( dynamic_cast < osg::MatrixTransform* > (  group->getChild( 0 ) ) );
 
   // Return if we don't have a valid matrix transform.
@@ -4282,9 +4282,6 @@ void Viewer::timeoutSpin ()
 }
 
 
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  set the background color.  Returns old value
@@ -4305,7 +4302,7 @@ void Viewer::setBackground ( const osg::Vec4 &color)
 
 void Viewer::_showLights()
 {
-  osg::ref_ptr<osg::Group> group ( this->_getGroupProjection( OsgTools::Render::Constants::LIGHT ) );
+  osg::ref_ptr<osg::Group> group ( this->getGroupProjection( OsgTools::Render::Constants::LIGHT ) );
 
   // Get the light from the scene view.
   osg::ref_ptr< osg::Light > light ( this->viewer()->getLight() );
@@ -4407,7 +4404,7 @@ void Viewer::_showLights()
 
 void Viewer::_removeLights()
 {
-  this->_removeGroupProjection( OsgTools::Render::Constants::LIGHT );
+  this->removeGroupProjection( OsgTools::Render::Constants::LIGHT );
 
   // The scene has changed.
   this->changedScene();
@@ -4466,7 +4463,7 @@ void Viewer::_editLight ( osgUtil::Hit &hit )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group* Viewer::_getGroupProjection ( const std::string &key )
+osg::Group* Viewer::getGroupProjection ( const std::string &key )
 {
   osg::ref_ptr<osg::Group> &group = _projectionMap[ key ];
 
@@ -4494,7 +4491,7 @@ osg::Group* Viewer::_getGroupProjection ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_removeGroupProjection ( const std::string &key )
+void Viewer::removeGroupProjection ( const std::string &key )
 {
   osg::ref_ptr<osg::Group> &group = _projectionMap[key];
   _projectionNode->removeChild ( group.get() );
@@ -4512,7 +4509,7 @@ void Viewer::_removeGroupProjection ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::_hasGroupProjection    ( const std::string& key )
+bool Viewer::hasGroupProjection    ( const std::string& key )
 {
   GroupMap::const_iterator i = _projectionMap.find ( key );
   return i != _projectionMap.end();

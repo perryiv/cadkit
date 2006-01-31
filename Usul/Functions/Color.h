@@ -70,7 +70,7 @@ void hsvToRgb ( Real& r, Real& g, Real& b, Real h, Real s, Real v )
     if( h == 360.0 ) 
       h = 0.0;
     h /= 60.0f;
-    unsigned int i ( h );
+    unsigned int i ( static_cast < unsigned int > ( h ) );
     Real f ( h - i );
     Real w ( v * ( 1.0f - s ) );
     Real q ( v * ( 1.0f - ( s * f ) ) );

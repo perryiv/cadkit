@@ -31,47 +31,52 @@ class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced
 {
 public:
 
-  // Useful typedefs.
+  /// Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Block::Options Options;
+  typedef std::vector < unsigned int > TriangleIndices;
 
-  // Smart-pointer definitions.
+  /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Blocks );
 
-  // Construction
+  /// Construction
   Blocks ( const osg::BoundingBox &box, unsigned int numSubdivisions, unsigned int numTrianglesToReserve );
 
-  // Add a triangle.
+  /// Add a triangle.
   void                      addTriangle ( TriangleSet *ts, Triangle * );
 
-  // Get the block that contains the triangle or vertex.
+  /// Get the block that contains the triangle or vertex.
   const Block *             block ( const osg::Vec3f & ) const;
   Block *                   block ( const osg::Vec3f & );
   const Block *             block ( const TriangleSet *ts, const Triangle * ) const;
   Block *                   block ( const TriangleSet *ts, const Triangle * );
 
-  // Return the bounding box.
+  /// Return the bounding box.
   const osg::BoundingBox &  boundingBox() const { return _bbox; }
 
-  // Build the scene.
+  /// Build the scene.
   osg::Geode *              buildScene ( const Options &options, TriangleSet *ts );
 
-  // Set the diffuse color.
+  /// Set the diffuse color.
   void                      colorDiffuse ( const osg::Vec4& );
 
-  // Get/set display list state.
+  /// Get/set display list state.
   bool                      displayList() const;
   void                      displayList ( bool );
 
-  // Get the geode for this blocks.
+  /// Get the geode for this blocks.
   const osg::Geode*         geode() const;
   osg::Geode*               geode();
 
-  // Purge any excess memory.
+  /// Purge any excess memory.
   void                      purge();
 
-  // Dirty the display lists.
+  /// Dirty the display lists.
   void                      setDirtyDisplayList();
+
+  /// Get the indices of the triangles in the Blocks.
+  void                      triangleIndices ( TriangleIndices& ) const;
+
 protected:
 
   // Do not copy.

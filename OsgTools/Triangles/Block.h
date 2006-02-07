@@ -38,6 +38,7 @@ public:
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef std::map < std::string, std::string > Options;
+  typedef std::vector < unsigned int > TriangleIndices;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Block );
@@ -72,8 +73,11 @@ public:
   const osg::Vec3f &        triangleNormal ( unsigned int ) const;
   
   /// Get the Number of Triangles in this block
-  Uint32                    getNumberOfTriangles();
-  
+  unsigned int              getNumberOfTriangles();
+
+  /// Get the indices of the triangles in the Block.
+  void                      triangleIndices ( TriangleIndices& ) const;
+
 protected:
 
   // Do not copy.

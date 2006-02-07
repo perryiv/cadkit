@@ -77,6 +77,8 @@ public:
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
   typedef Blocks::ValidAccessRefPtr BlocksPtr;
   typedef std::vector < BlocksPtr > BlocksVector;
+  typedef BlocksVector::iterator    BlocksIterator;
+  typedef BlocksVector::const_iterator    BlocksConstIterator;
   typedef std::vector < unsigned int > Indices;
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef std::pair < SharedVertices::iterator, bool > InsertResult;
@@ -104,9 +106,20 @@ public:
   // Get the averaged normal for the shared vertex.
   osg::Vec3f              averageNormal ( const SharedVertex *sv ) const;
 
+  /// Get the number of blocks.
   unsigned int            blocks() const;
+
+  /// Hide/Show blocks by number
   void                    blocksHide ( unsigned int );
   void                    blocksShow ( unsigned int );
+
+  /// Iterator to the begining of the blocks.
+  BlocksIterator          blocksBegin()        { return _blocks.begin(); }
+  BlocksConstIterator     blocksBegin() const  { return _blocks.begin(); }
+
+  /// Iterator to the end of the blocks.
+  BlocksIterator          blocksEnd()        { return _blocks.end(); }
+  BlocksConstIterator     blocksEnd() const  { return _blocks.end(); }
 
   // Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );

@@ -514,3 +514,18 @@ void Blocks::colorDiffuse ( const osg::Vec4& color )
 {
   _material->setDiffuse ( osg::Material::FRONT, color );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the indices of the triangles in the Blocks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Blocks::triangleIndices ( TriangleIndices& indices ) const
+{
+  for ( Sequence::const_iterator iter = _sequence.begin(); iter != _sequence.end(); ++iter )
+  {
+    (*iter)->triangleIndices ( indices );
+  }
+}

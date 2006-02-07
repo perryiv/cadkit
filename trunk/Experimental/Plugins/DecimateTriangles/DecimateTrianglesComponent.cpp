@@ -98,24 +98,39 @@ std::string DecimateTrianglesComponent::getPluginName() const
 
 void DecimateTrianglesComponent::decimateTriangles ( OsgTools::Triangles::TriangleSet *triangleSet )
 {
-  vtkPolyData *data ( vtkPolyData::New() );
+  // Typedef.
+  typedef VTKTools::Convert::PolyData::PolyDataVector PolyDataVector;
+
+  //vtkPolyData *data ( vtkPolyData::New() );
 
   double start ( Usul::System::Clock::milliseconds() );
-  VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, data );
+
+  VTKTools::Convert::PolyData::PolyDataVector polydata;
+  VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, polydata );
   ::printf ( "%8.4f seconds .... Time to convert to polydata.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
   start = Usul::System::Clock::milliseconds();
-  vtkDecimatePro *decimate	= vtkDecimatePro::New();
-  decimate->SetInput ( data );
-  decimate->SetTargetReduction( 0.50 );
-  decimate->Update();
-  vtkPolyData *nData ( decimate->GetOutput() );
+  VTKTools::Convert::PolyData::PolyDataVector nPolydata;
+
+  for ( PolyDataVector::iterator iter = polydata.begin(); iter != polydata.end(); ++iter )
+  {
+    vtkDecimatePro *decimate	= vtkDecimatePro::New();
+    decimate->SetInput ( *iter );
+    decimate->SetTargetReduction( 0.50 );
+    decimate->Update();
+    //vtkPolyData *nData ( decimate->GetOutput() );
+    nPolydata.push_back ( decimate->GetOutput() );
+    decimate->Delete();
+
+    // No longer need the poly data.  Delete to clear up space.
+    //(*iter)->Delete();
+  }
   ::printf ( "%8.4f seconds .... Time to decimate.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
   start = Usul::System::Clock::milliseconds();
-  VTKTools::Convert::PolyData::polyDataToTriangleSet ( nData, triangleSet );
+  VTKTools::Convert::PolyData::polyDataToTriangleSet ( nPolydata, triangleSet );
   ::printf ( "%8.4f seconds .... Time to convert to triangle set.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
-  decimate->Delete();
-  data->Delete();
+  
+  //data->Delete();
 }

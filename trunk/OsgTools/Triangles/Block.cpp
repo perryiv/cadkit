@@ -71,7 +71,7 @@ Block::~Block()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Uint32 Block::getNumberOfTriangles() 
+unsigned int Block::getNumberOfTriangles() 
 {
     return _triangles.size();
 }
@@ -327,4 +327,20 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
 
   // Return the geometry.
   return _geometry.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the indices of the triangles in this Block.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Block::triangleIndices ( TriangleIndices& indices ) const
+{
+  indices.reserve ( _elements->size() );
+  for ( Elements::const_iterator iter = _elements->begin(); iter != _elements->end(); ++iter )
+  {
+    indices.push_back ( *iter );
+  }
 }

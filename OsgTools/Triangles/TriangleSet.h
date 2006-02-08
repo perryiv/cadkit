@@ -112,6 +112,7 @@ public:
   /// Hide/Show blocks by number
   void                    blocksHide ( unsigned int );
   void                    blocksShow ( unsigned int );
+  bool                    blocksShow ( unsigned int ) const;
 
   /// Iterator to the begining of the blocks.
   BlocksIterator          blocksBegin()        { return _blocks.begin(); }
@@ -168,6 +169,9 @@ public:
   // Access to the factory. Use with caution.
   const Factory *         factory() const { return _factory; }
   Factory *               factory()       { return _factory; }
+
+  /// Find all triangles connected to seed and place them in connected
+  void                    findAllConnected ( Usul::Interfaces::IUnknown* caller, Connected& connected, unsigned int seed, bool showProgress, bool clearFlags );
 
   // Flip the normal vectors.
   void                    flipNormals();

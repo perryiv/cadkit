@@ -1103,6 +1103,12 @@
 				<File
 					RelativePath=".\Scope\Reset.h">
 				</File>
+				<File
+					RelativePath=".\Scope\Timer.cpp">
+				</File>
+				<File
+					RelativePath=".\Scope\Timer.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Endian"

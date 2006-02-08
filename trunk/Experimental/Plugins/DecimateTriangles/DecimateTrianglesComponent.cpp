@@ -20,7 +20,7 @@
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
-#include "Usul/System/Clock.h"
+#include "Usul/Scope/Timer.h"
 
 // Disable deprecated warning in Visual Studio 8
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
@@ -103,34 +103,39 @@ void DecimateTrianglesComponent::decimateTriangles ( OsgTools::Triangles::Triang
 
   //vtkPolyData *data ( vtkPolyData::New() );
 
-  double start ( Usul::System::Clock::milliseconds() );
-
   VTKTools::Convert::PolyData::PolyDataVector polydata;
-  VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, polydata );
-  ::printf ( "%8.4f seconds .... Time to convert to polydata.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
-  start = Usul::System::Clock::milliseconds();
-  VTKTools::Convert::PolyData::PolyDataVector nPolydata;
-
-  for ( PolyDataVector::iterator iter = polydata.begin(); iter != polydata.end(); ++iter )
   {
-    vtkDecimatePro *decimate	= vtkDecimatePro::New();
-    decimate->SetInput ( *iter );
-    decimate->SetTargetReduction( 0.50 );
-    decimate->Update();
-    //vtkPolyData *nData ( decimate->GetOutput() );
-    nPolydata.push_back ( decimate->GetOutput() );
-    decimate->Delete();
-
-    // No longer need the poly data.  Delete to clear up space.
-    //(*iter)->Delete();
+    Usul::Scope::Timer timer ( "Time to convert to polydata" );
+    
+    VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, polydata );
   }
-  ::printf ( "%8.4f seconds .... Time to decimate.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
-  start = Usul::System::Clock::milliseconds();
-  VTKTools::Convert::PolyData::polyDataToTriangleSet ( nPolydata, triangleSet );
-  ::printf ( "%8.4f seconds .... Time to convert to triangle set.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+  VTKTools::Convert::PolyData::PolyDataVector nPolydata;
+  {
+    Usul::Scope::Timer timer ( "Time to decimate" );
+    
+    for ( PolyDataVector::iterator iter = polydata.begin(); iter != polydata.end(); ++iter )
+    {
+      vtkDecimatePro *decimate	= vtkDecimatePro::New();
+      decimate->SetInput ( *iter );
+      decimate->SetTargetReduction( 0.50 );
+      decimate->Update();
+      //vtkPolyData *nData ( decimate->GetOutput() );
+      nPolydata.push_back ( decimate->GetOutput() );
+      decimate->Delete();
 
+      // No longer need the poly data.  Delete to clear up space.
+      //(*iter)->Delete();
+    }
+
+  }
+
+  {
+    Usul::Scope::Timer timer ( "Time to convert to triangle set" );
+
+    VTKTools::Convert::PolyData::polyDataToTriangleSet ( nPolydata, triangleSet );
+  }
   
   //data->Delete();
 }

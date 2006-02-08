@@ -27,16 +27,24 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Functors/Increment.h"
 #include "Usul/Errors/Checker.h"
+#include "Usul/Types/Types.h"
+#include "Usul/Adaptors/Random.h"
+#include "Usul/Shared/Preferences.h"
+#include "Usul/Algorithms/FindAllConnected.h"
+#include "Usul/Polygons/Triangle.h"
+
+#include "Usul/Scope/Timer.h"
+
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/TextWindow.h"
+
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IFlushEvents.h"
-#include "Usul/Types/Types.h"
-#include "Usul/Adaptors/Random.h"
-#include "Usul/Shared/Preferences.h"
+#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/IRedraw.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -783,8 +791,8 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 void TriangleSet::checkStatus() const
 {
   USUL_ERROR_CHECKER ( _shared.size() == _vertices->size() );
-  USUL_ERROR_CHECKER ( _shared.size() == _colorsV->size() );
-  //USUL_ERROR_CHECKER ( _shared.size() == _normalsV->size() );
+  //USUL_ERROR_CHECKER ( _shared.size() == _colorsV->size() );
+  USUL_ERROR_CHECKER ( _shared.size() == _normalsV->size() );
 
   // Check every triangle's vertices.
   {
@@ -1894,7 +1902,7 @@ unsigned int TriangleSet::blocks() const
 
 void TriangleSet::blocksHide ( unsigned int num )
 {
-  _root->removeChild( _blocks.at( num )->geode() );
+  _blocks.at( num )->geode()->setNodeMask ( 0 );
 }
 
 
@@ -1906,9 +1914,20 @@ void TriangleSet::blocksHide ( unsigned int num )
 
 void TriangleSet::blocksShow ( unsigned int num )
 {
-  _root->addChild( _blocks.at( num )->geode() );
+  _blocks.at( num )->geode()->setNodeMask ( 0xffffffff );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the blocks at given number shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleSet::blocksShow ( unsigned int  num ) const
+{
+  return _blocks.at( num )->geode()->getNodeMask (  ) != 0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1973,4 +1992,103 @@ osg::Node* TriangleSet::showNewTriangles()
 #endif
 
   return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update functor for find-all-connected algorithm.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct Update
+  {
+    Update ( TriangleSet* triangles ) :
+    _triangles    ( triangles ),
+    _updatePolicy ( 500 ),
+    _progressBar  ( 0.0, 1.0, Usul::Resources::progressBar() ),
+    _statusBar    ( Usul::Resources::statusBar() )
+    {
+    }
+
+    ~Update()
+    {
+    }
+
+    // Update the status bar, progress bar, and the scene
+    template < class IndexSequence >
+    void operator() ( const IndexSequence& keepers, bool force = false )
+    {
+      // If it's time to update progress...
+      if( force || _updatePolicy() )
+      {
+        //Set the progress bar
+        _progressBar ( keepers.size(), _triangles->numTriangles() );
+
+        //Set the status bar
+        std::ostringstream os;
+        os << "Number of polygons found: " << keepers.size();
+        _statusBar ( os.str() );
+      }
+
+    }
+
+  private:
+    TriangleSet::ValidRefPtr _triangles;
+
+    Usul::Policies::TimeBased _updatePolicy;
+
+    Usul::Interfaces::IProgressBar::UpdateProgressBar   _progressBar;
+    Usul::Interfaces::IStatusBar::UpdateStatusBar       _statusBar;
+  };
+
+  struct NoUpdate
+  {
+    template < class IndexSequence >
+    void operator() ( const IndexSequence& keepers, bool force = false )
+    {
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all triangles connected to the seed value
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connected& connected, unsigned int seed, bool showProgress, bool clearVisitedFlag )
+{
+  typedef Usul::Polygons::TriangleFunctor< Connected, Triangle > Functor;
+
+  // If we should...
+  if ( clearVisitedFlag )
+  {
+      // Make sure everything is not visited
+      this->setAllUnvisited();
+  }
+
+  // Turn off stats updating on the status bar.
+  Usul::Interfaces::IRedraw::ResetStatsDisplay resetStatsDisplay ( caller, false, true );
+  
+  // Reserve enough room
+  connected.reserve ( this->numTriangles() );
+
+//  Usul::Scope::Timer timer ( "Time to find all connected" );
+  if ( showProgress )
+  {
+      // Declare functor.
+      Detail::Update update ( this );
+      
+      // Run algorithm.
+      Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::Update > ( _triangles, connected, seed, update, showProgress );
+  }
+  else
+  {
+      Detail::NoUpdate update;
+      Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
+  }
 }

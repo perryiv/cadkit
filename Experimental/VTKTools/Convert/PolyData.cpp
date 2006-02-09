@@ -11,6 +11,9 @@
 
 #include "Usul/Math/Vector3.h"
 
+#include "Usul/Resources/StatusBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
+
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/Triangles/Blocks.h"
 
@@ -160,6 +163,9 @@ void PolyData::polyDataToTriangleSet ( vtkPolyData *data, OsgTools::Triangles::T
     n.normalize();
     //normalsV[i] = triangleSet->averageNormal ( shared[i] ).normalize();
   }
+
+  // Rebuild the groups.  This is a work around.
+  triangleSet->groupTriangles ( Usul::Resources::statusBar()->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 

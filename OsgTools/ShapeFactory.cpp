@@ -10,6 +10,7 @@
 #include "ShapeFactory.h"
 
 #include "Usul/Algorithms/Sphere.h"
+#include "Usul/Errors/Assert.h"
 
 #include <vector>
 
@@ -208,6 +209,33 @@ osg::Geometry *ShapeFactory::sphere ( float radius,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Create a sphere meshed in the latitude-longitude way.  The vertices 
+//  and normals are transform with the given matrix.  This function will 
+//  not cache the results.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry* ShapeFactory::sphere ( const osg::Vec3 &trans,
+                                      float radius, 
+                                      const MeshSize &size,
+                                      const LatitudeRange &latRange,
+                                      const LongitudeRange &longRange )
+{
+  osg::Geometry *geometry ( static_cast < osg::Geometry* > ( this->sphere ( radius, size, latRange, longRange )->clone  ( osg::CopyOp::DEEP_COPY_ALL )  ));
+
+  osg::Vec3Array *vertices ( static_cast < osg::Vec3Array* > ( geometry->getVertexArray() ) );
+
+  USUL_ASSERT ( 0x0 != vertices );
+
+  for ( osg::Vec3Array::iterator iter = vertices->begin(); iter != vertices->end(); ++iter )
+    *iter = *iter + trans;
+
+  return geometry;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a cylinder. If one was already created with these inputs, then that 
 //  same cylinder is returned.
 //
@@ -228,16 +256,20 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
   osg::ref_ptr< osg::Vec3Array > normals  ( new osg::Vec3Array );
 
   //build a unit cylinder
-  //osg::Vec3 unPoint1 (0,0,0);
-  //osg::Vec3 unPoint2 (0,1,0);
+  osg::Vec3 unPoint1 (0,0,0);
+  osg::Vec3 unPoint2 (0,1,0);
 
-  //_point1 = unPoint1;
-  //_point2 = unPoint2;
+  //get distance
+  osg::Vec3 dist = pointTwo - pointOne;
+  float d = dist.length();
+  dist.normalize();
 
-  osg::Vec3 center;
-  center[0] = (pointOne[0] + pointTwo[0])/2.0;
-  center[1] = (pointOne[1] + pointTwo[1])/2.0;
-  center[2] = (pointOne[2] + pointTwo[2])/2.0;
+  osg::Matrix scale, rotate, translate, temp;
+  scale = temp.scale( osg::Vec3(1, d, 1) );
+  rotate.makeRotate(unPoint2, dist);
+  translate.setTrans(pointOne);
+
+  osg::Matrix matrix ( scale * rotate * translate );
 
   float c = 3.14159 / 180.0;
   float x,y,z;
@@ -246,15 +278,21 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
   {
     float u = (float) i / (float) (sides - 1);
     float theta = u * 360.0;
-    x = radius * sin( c * theta ) + pointOne[0];
-    y = pointOne[1];
-    z = radius * cos( c * theta ) + pointOne[2];
-    vertices->push_back( osg::Vec3(x, y, z) );
+    x = radius * sin( c * theta ) + unPoint1[0];
+    y = unPoint1[1];
+    z = radius * cos( c * theta ) + unPoint1[2];
 
-    x = radius * sin( c * theta ) + pointTwo[0];
-    y = pointTwo[1];
-    z = radius * cos( c * theta ) + pointTwo[2];
-    vertices->push_back( osg::Vec3(x, y, z) );
+    osg::Vec3 v0 (x, y, z);
+
+    vertices->push_back( v0 );
+
+    x = radius * sin( c * theta ) + unPoint2[0];
+    y = unPoint2[1];
+    z = radius * cos( c * theta ) + unPoint2[2];
+
+    osg::Vec3 v1 ( x, y, z );
+
+    vertices->push_back( v1 );
   }
 
   geometry->setVertexArray ( vertices.get() );
@@ -267,11 +305,14 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
   {
     osg::Vec3 normal ( *i );
     normal.normalize();
+    normal = normal * rotate;
     normals->push_back(normal);
+
+    *i = *i * matrix;
   }
 
   geometry->setNormalArray(normals.get());
-  geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+  geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);  
 
   _cylinders[key] = geometry;
   return geometry.get();

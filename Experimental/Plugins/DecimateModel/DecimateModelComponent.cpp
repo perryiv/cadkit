@@ -13,7 +13,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #include "DecimateModelComponent.h"
 
 #include "Usul/Interfaces/IDecimateModel.h"
@@ -22,6 +21,7 @@
 #include "Usul/Documents/Document.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DecimateModelComponent , DecimateModelComponent::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -32,6 +32,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DecimateModelComponent , DecimateModelComponen
 DecimateModelComponent::DecimateModelComponent() 
 {
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

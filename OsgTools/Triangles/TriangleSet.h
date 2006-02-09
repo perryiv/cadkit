@@ -185,6 +185,9 @@ public:
   // Get the vertex at the index.
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
 
+  /// Group the triangles.
+  void                    groupTriangles ( Usul::Interfaces::IUnknown *caller );
+
   // Convert hit to triangle index.
   unsigned int            index ( const osgUtil::Hit &hit ) const;
 

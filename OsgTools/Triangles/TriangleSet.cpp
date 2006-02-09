@@ -45,6 +45,7 @@
 #include "Usul/Interfaces/IFlushEvents.h"
 #include "Usul/Interfaces/ICancelButton.h"
 #include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Interfaces/IActiveView.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -2092,3 +2093,101 @@ void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connect
       Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Group the Primitive Drawables by their connectivity
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
+{
+  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( caller );
+  
+  // Get needed interfaces.
+  Usul::Interfaces::IRedraw::QueryPtr redraw ( activeView->getActiveView() );
+  
+  // Turn off stats updating on the status bar.
+  Usul::Interfaces::IRedraw::ResetStatsDisplay resetStats ( redraw.get(), false, true  );
+  
+  // Show the cancel button
+  Usul::Interfaces::ICancelButton::ShowHide cancel ( caller );
+  
+  Usul::Interfaces::IProgressBar::ShowHide show ( caller );
+  Usul::Interfaces::IProgressBar::ValidQueryPtr progress ( caller );
+  
+  // Interface to flush event queue
+  Usul::Interfaces::IFlushEvents::ValidQueryPtr flush ( caller );
+  
+  // Functor for updating the status bar
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
+  
+  status( "Grouping Islands of Primitives ....." );
+  
+  // Start actual Code....
+  Subsets islands;
+  
+  // Clear the Visited Flag for the triangles
+  this->setAllUnvisited();
+
+  // Initialize needed variables.
+  unsigned int i ( 0 );
+  Uint32 seed ( 0 );
+  Uint32 prevSeed ( seed ); // Keep the value of the last seed
+  unsigned int totalVisited ( 0 );
+
+  // Get the number of triangles
+  const unsigned int numTriangles ( this->numTriangles() );
+
+  // Find all connected groups.
+  while ( seed != 0xFFFFFFFF )
+  {
+    // Make the app responsive.
+    flush->flushEventQueue();
+
+    // The connected triangles.
+    Connected connected;
+
+    // Find all connected to the seed.  Supress updating.
+    this->findAllConnected( caller, connected, seed, false, false);
+
+    totalVisited += connected.size();
+  
+    //Find the next Seed Value...
+    prevSeed = seed;
+    seed = 0xFFFFFFFF;
+
+    for (i = prevSeed + 1; i < numTriangles; ++i)
+    {
+      if ( false == _triangles[i]->visited() )
+      {
+        seed = i;
+        break; //Make the loop exit
+      }
+    }
+    
+    // Add connected list to the vector.
+    islands.push_back( connected );
+    
+    // Feedback.
+    std::ostringstream message;
+    message << "Grouping Triangles. Found " << islands.size();
+    
+    status( message.str(), true );
+    progress->updateProgressBar( ( (double) totalVisited / numTriangles ) * 100 );
+  }
+
+  // Have the triangle set create subsets from our list of connected items.
+  this->createSubsets ( islands, caller );
+  
+  // Dirty the display lists.
+  this->setDirtyDisplayList();
+
+  // Feedback.
+  std::cout << "Number of Islands Found: " << islands.size() << std::endl;
+  
+  status ( "Grouping of Triangles Complete", true);
+
+}
+

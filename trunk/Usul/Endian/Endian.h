@@ -111,9 +111,16 @@ inline void _reverseBytes ( Usul::Types::Uint16 &n )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reverse the bytes of the float.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 inline void _reverseBytes ( Usul::Types::Float32 &n )
 {
-  n = ( ((((Usul::Types::Uint32)n)<<24) & 0xFF000000) |
+  n = static_cast < Usul::Types::Float32 > 
+      ( ((((Usul::Types::Uint32)n)<<24) & 0xFF000000) |
         ((((Usul::Types::Uint32)n)<< 8) & 0x00FF0000) |
         ((((Usul::Types::Uint32)n)>> 8) & 0x0000FF00) |
         ((((Usul::Types::Uint32)n)>>24) & 0x000000FF) );

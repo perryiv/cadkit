@@ -19,6 +19,7 @@
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Components/Exceptions.h"
 
 using namespace Usul;
 using namespace Usul::Base;

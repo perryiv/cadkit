@@ -360,6 +360,10 @@ void Viewer::render()
   // Set the lights
   this->_setLights();
 
+  // Set high lod callbacks if we should
+  if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::HIGH_LODS ) )
+    this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
+
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 

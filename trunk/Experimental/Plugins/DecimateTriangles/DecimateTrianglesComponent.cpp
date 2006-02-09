@@ -101,40 +101,31 @@ void DecimateTrianglesComponent::decimateTriangles ( OsgTools::Triangles::Triang
   // Typedef.
   typedef VTKTools::Convert::PolyData::PolyDataVector PolyDataVector;
 
-  //vtkPolyData *data ( vtkPolyData::New() );
-
-  VTKTools::Convert::PolyData::PolyDataVector polydata;
+  vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
 
   {
     Usul::Scope::Timer timer ( "Time to convert to polydata" );
     
-    VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, polydata );
+    VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, data );
   }
 
-  VTKTools::Convert::PolyData::PolyDataVector nPolydata;
+  vtkSmartPointer < vtkPolyData > nData ( 0x0 );
   {
     Usul::Scope::Timer timer ( "Time to decimate" );
     
-    for ( PolyDataVector::iterator iter = polydata.begin(); iter != polydata.end(); ++iter )
-    {
-      vtkDecimatePro *decimate	= vtkDecimatePro::New();
-      decimate->SetInput ( *iter );
-      decimate->SetTargetReduction( 0.50 );
-      decimate->Update();
-      //vtkPolyData *nData ( decimate->GetOutput() );
-      nPolydata.push_back ( decimate->GetOutput() );
-      decimate->Delete();
-
-      // No longer need the poly data.  Delete to clear up space.
-      //(*iter)->Delete();
-    }
+    vtkDecimatePro *decimate	= vtkDecimatePro::New();
+    decimate->SetInput ( data );
+    decimate->SetTargetReduction( 0.50 );
+    decimate->Update();
+    nData = decimate->GetOutput();
+    decimate->Delete();
 
   }
 
   {
     Usul::Scope::Timer timer ( "Time to convert to triangle set" );
 
-    VTKTools::Convert::PolyData::polyDataToTriangleSet ( nPolydata, triangleSet );
+    VTKTools::Convert::PolyData::polyDataToTriangleSet ( nData, triangleSet );
   }
   
   //data->Delete();

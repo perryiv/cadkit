@@ -432,7 +432,7 @@ struct Intersector
     inline void operator () (const osg::Vec3& v1,const osg::Vec3& v2,const osg::Vec3& v3, bool treatVertexDataAsTemporary)
     {
       ++_index;
-
+#if 0
       if( frustum->contains ( v1 ) || frustum->contains( v2 ) || frustum->contains ( v3 ) )
       {
         osg::Vec3 ip ( ( v1 + v2 + v3 ) / 3 );
@@ -445,6 +445,7 @@ struct Intersector
 
         _hit = true;
       }
+#endif
     }
 
     inline void operator () (const osg::Vec3& v1,const osg::Vec3& v2, bool treatVertexDataAsTemporary)

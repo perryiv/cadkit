@@ -714,6 +714,9 @@
 					<File
 						RelativePath=".\Interfaces\IVTKCanvas.h">
 					</File>
+					<File
+						RelativePath=".\Interfaces\IWriteMovieFile.h">
+					</File>
 				</Filter>
 				<Filter
 					Name="Image"

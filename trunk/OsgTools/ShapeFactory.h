@@ -40,6 +40,14 @@ public:
                                    const LatitudeRange &latRange   = LatitudeRange  ( 89.9f, -89.9f ),
                                    const LongitudeRange &longRange = LongitudeRange (  0.0f, 360.0f ) );
 
+  /// Create a sphere meshed in the latitude-longitude way.  The vertices and normals are transform with the
+  /// given matrix.  This function will not cache the results.
+  osg::Geometry*          sphere ( const osg::Vec3 &trans,
+                                   float radius = 1.0f, 
+                                   const MeshSize &size = MeshSize ( 20, 20 ),
+                                   const LatitudeRange &latRange   = LatitudeRange  ( 89.9f, -89.9f ),
+                                   const LongitudeRange &longRange = LongitudeRange (  0.0f, 360.0f ) );
+
   /// Create a cone.  This will not cache the results.
   osg::Geometry *         cone ( const osg::Vec3& center, 
                                  float radius, 

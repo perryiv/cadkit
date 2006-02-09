@@ -1383,6 +1383,13 @@
 					RelativePath=".\User\Directory.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Registry"
+				Filter="">
+				<File
+					RelativePath=".\Registry\Constants.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

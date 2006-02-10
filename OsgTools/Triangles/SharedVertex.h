@@ -48,8 +48,8 @@ public:
     SELECTED     = 0x04,
     MEMORY_POOL  = 0x08,
     DIRTY_NORMAL = 0x10,
-    DIRTY_COLOR  = 0x11,
-    PROBLEM      = 0x12,
+    DIRTY_COLOR  = 0x20,
+    PROBLEM      = 0x40,
   };
 
   // Construction

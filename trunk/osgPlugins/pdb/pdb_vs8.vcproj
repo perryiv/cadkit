@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="plug: osgPlugin PDB"
 	ProjectGUID="{2835E2F2-C91A-4B61-AD3F-9F5E183CC2D0}"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,6 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -116,7 +114,6 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"

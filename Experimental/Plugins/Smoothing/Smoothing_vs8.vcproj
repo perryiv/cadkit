@@ -18,7 +18,6 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -120,7 +119,6 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\..\..\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -225,6 +223,10 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SmoothingComponent.cpp"
 					>
 				</File>
@@ -238,10 +240,6 @@
 				</File>
 				<File
 					RelativePath=".\SmoothingFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 			</Filter>

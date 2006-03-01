@@ -534,6 +534,11 @@ bool FileSelection::_appendExtension ( const FileSelection::Filter &filter, File
 {
   // Get extension from filter. Filters are like this: "*.stl", so we drop the "*."
   std::string fe ( filter.second );
+
+  // Do not append if the filter is *.*
+  if ( fe == "*.*" )
+    return true;
+
   if ( fe.size() < 3 )
     return false;
   fe.erase ( 0, 2 );

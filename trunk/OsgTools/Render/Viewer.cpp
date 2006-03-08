@@ -1780,6 +1780,7 @@ void Viewer::boundingBox ( bool state )
     // Make a new blue box.
     OsgTools::ColorBox box ( bb );
     box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
+    //box.color_policy().color ( osg::Vec4 ( 255.0 / 255.0, 164.5 / 255.0, 85.0 / 255.0, 1 ) );
 
     // Position it.
     osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -1792,7 +1793,7 @@ void Viewer::boundingBox ( bool state )
 
     // Add it to the group-map and scene.
     group = mt.get();
-    _scene->addChild ( group.get() );
+    _scene->addChild ( group.get() ); 
   }
 }
 

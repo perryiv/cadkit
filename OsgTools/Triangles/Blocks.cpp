@@ -52,6 +52,8 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
 
   _material->setDiffuse ( osg::Material::BACK,  osg::Vec4  ( 0.8f, 0.8f, 0.8f, 1.0f ) );
   _material->setDiffuse ( osg::Material::FRONT, osg::Vec4  ( 20.0f / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f ) );
+  _material->setSpecular ( osg::Material::FRONT, osg::Vec4  ( 200.0f / 255.0f, 200.0f / 255.0f, 200.0f / 255.0f, 1.0f ) );
+  _material->setShininess ( osg::Material::FRONT, 128 );
 
   ss->setAttribute ( _material.get(), osg::StateAttribute::ON );
 }
@@ -513,6 +515,18 @@ osg::Geode* Blocks::geode()
 void Blocks::colorDiffuse ( const osg::Vec4& color )
 {
   _material->setDiffuse ( osg::Material::FRONT, color );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the specular color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Blocks::colorSpecular ( const osg::Vec4& color )
+{
+  _material->setSpecular ( osg::Material::FRONT, color );
 }
 
 

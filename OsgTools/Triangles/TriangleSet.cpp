@@ -1866,6 +1866,7 @@ void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
     
     // Set the diffuse color of the material.
     blocks->colorDiffuse ( osg::Vec4( red, green, blue, 1.0 ) );
+    //blocks->colorSpecular ( osg::Vec4( red, green, blue, 1.0 ) );
 
     // Add the triangles to the blocks.
     for( Connected::const_iterator connectedIter = subsetsIter->begin(); connectedIter != subsetsIter->end(); ++connectedIter )

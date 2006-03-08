@@ -59,6 +59,7 @@ public:
 
   /// Set the diffuse color.
   void                      colorDiffuse ( const osg::Vec4& );
+  void                      colorSpecular ( const osg::Vec4& );
 
   /// Get/set display list state.
   bool                      displayList() const;

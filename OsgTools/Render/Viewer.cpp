@@ -82,7 +82,7 @@
 #include "osg/ClipPlane"
 #include "osg/ShapeDrawable"
 #include "osg/LightSource"
-//#include "osg/FrameBufferObject"
+#include "osg/FrameBufferObject"
 #include "osg/Notify"
 
 #include "osg/GL"
@@ -2512,12 +2512,74 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // Make this context current.
   me->_context->makeCurrent();
 
-#if 0
+// Hack to make large pictures.
+#if 1
+  height = 4048;
+  width = 4048;
+#endif
+
+  // Make the image
+  osg::ref_ptr<osg::Image> image ( new osg::Image );
+
+  // Make enough space
+  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE ); 
+
   if ( osg::FBOExtensions::instance( _contextId )->isSupported() )
   {
-    me->_sceneView->getCamera();
+    // Set up the texture.
+    osg::ref_ptr<osg::Texture2D> tex ( new osg::Texture2D );
+    tex->setTextureSize(width, height);
+    tex->setInternalFormat(GL_RGBA);
+    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
+    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
+    tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+    tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+    
+    // Make the fbo
+    osg::ref_ptr<osg::FrameBufferObject> fbo = new osg::FrameBufferObject();
+    fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
+    fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
+ 
+    osg::ref_ptr<osg::CameraNode> camera = new osg::CameraNode;
+    camera->setClearColor( _sceneView->getClearColor() );
+    camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera->setViewport(0, 0, width, height);
+
+    // Set the camera to render before the main camera.
+    camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
+
+    // Set the projection matrix.
+    double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
+    double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
+    double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
+    double w ( width ), h ( height );
+    double aspect ( w / h );
+
+    camera->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
+
+    // Set view
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix ( _sceneView->getViewMatrix() );
+
+    // Tell the camera to use OpenGL frame buffer object where supported.
+    camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
+
+    // Attach the texture and use it as the color buffer.
+    //camera->attach(osg::CameraNode::COLOR_BUFFER,tex.get());
+    camera->attach(osg::CameraNode::COLOR_BUFFER, image.get());
+
+    // Save the old root;
+    GroupPtr group = _scene;
+
+    camera->addChild ( me->_scene.get() );
+
+    me->_sceneView->setSceneData ( camera.get() );
+
+    me->render();
+
+    me->_sceneView->setSceneData ( group.get() );
   }
-#endif
+
   // What I think should happen here:
   // 1. Check for frame buffer object support.
   // 2. If it doesn't exist, fall back on current method.
@@ -2540,16 +2602,10 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // Get the old viewport
   osg::ref_ptr<osg::Viewport> ovp ( me->viewport() );
 
-  // Make the image
-  osg::ref_ptr<osg::Image> image ( new osg::Image );
-
   double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
   double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
   double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
   double aspect ( width / height );
-
-  // Make enough space
-  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE ); 
 
   const double top     ( zNear * tan(fovy * osg::PI / 360.0) );
   const double bottom  ( -top );
@@ -2637,6 +2693,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
 
   // Write the image to file.
   return osgDB::writeImageFile ( *image, filename );
+
 }
 
 

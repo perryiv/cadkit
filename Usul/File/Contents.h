@@ -47,7 +47,7 @@ template < class Stream, class Container > inline void contents ( Stream &in, Co
 template < class Container > inline void contents ( const std::string &filename, bool binary, Container &container )
 {
   // Get the size of the file.
-  const unsigned int size ( Usul::File::size ( filename ) );
+  const Usul::Types::Uint64 size ( Usul::File::size ( filename ) );
   container.reserve ( size );
 
   // Set proper flags.
@@ -72,7 +72,7 @@ template < class Container > inline void contents ( const std::string &filename,
 inline void contents ( const std::string &filename, char comment, std::string &file )
 {
   // Get the size of the file.
-  unsigned int size ( Usul::File::size ( filename ) );
+  Usul::Types::Uint64 size ( Usul::File::size ( filename ) );
   file.reserve ( size );
 
   // Open the file.

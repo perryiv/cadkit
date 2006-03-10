@@ -116,6 +116,16 @@ bool Trackball::handle ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
     this->flushMouseEventStack();
     this->addMouseEvent ( ea );
   }
+  else if ( osgGA::GUIEventAdapter::FRAME == ea.getEventType() )
+  {
+    if ( _thrown )
+    {
+      if ( this->calcMovement() ) 
+        aa.requestRedraw();
+      return true;
+    }
+    return false;
+  }
 
   // Call the base class's function.
   return BaseClass::handle ( ea, aa );

@@ -704,6 +704,11 @@ void Viewer::camera ( CameraOption option )
     _animation.init ( T1, R1, T2, R2, _ANIMATION_DURATION_MILLISECONDS );
     animate->startAnimation ( _ANIMATION_TIMER_MILLISECONDS );
   }
+  else
+  {
+    viewer->setViewMatrix ( M2 );
+    this->render();
+  }
 }
 
 
@@ -2070,6 +2075,37 @@ void Viewer::setDisplayLists()
     _sceneView->releaseAllGLObjects();
     _sceneView->flushAllDeletedGLObjects();
   }
+}
+
+void Viewer::setDisplayLists(bool on) 
+{
+  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, on );
+  // Handle no viewer or scene.
+  if ( !_sceneView.valid() || !_scene.valid() )
+    return;
+  
+  // Declare the visitor.
+  osg::ref_ptr<osg::NodeVisitor> visitor ( 
+             OsgTools::MakeVisitor<osg::Geode>::make ( 
+             Usul::Adaptors::memberFunction ( this, &Viewer::_setDisplayListsGeode ) ) );
+  
+  // Visit the scene.
+  this->model()->accept ( *visitor );
+  
+  // If we are not using display lists, and we have been created...
+  const bool use ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
+  if ( !use )
+  {
+    // Delete all display-lists associated with our context id.
+    _sceneView->releaseAllGLObjects();
+    _sceneView->flushAllDeletedGLObjects();
+  }
+}
+
+//Return if DisplayLists are being used
+bool Viewer::displayLists() const
+{
+  return ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
 }
 
 
@@ -4228,7 +4264,6 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
 //  Start/stop the spin.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 void Viewer::spin ( bool state )
 {
   if( !_timeoutSpin.valid() )
@@ -4791,6 +4826,10 @@ bool Viewer::timeoutAnimate ()
 
 void Viewer::zoom ( double delta )
 {
+  if ( delta == 0.0 ) {
+    return;
+  }
+  
   float distance ( this->getDistance() );
 
   osg::BoundingBox bb ( this->getBoundingBox() );

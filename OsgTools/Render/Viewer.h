@@ -317,7 +317,10 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   void                  removePlanes ();
 
   // Set all the display-lists to on/off according to the global setting.
+  bool                  displayLists() const;
   void                  setDisplayLists();
+  // Over ride the Global setting for display Lists
+  void                  setDisplayLists(bool use);
 
   // Get the number of clipping planes in the scene
   unsigned int          planes ();
@@ -357,6 +360,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
 
   // Start/stop the spin.
   void                  spin ( bool );
+
 
   // Set text on canvas
   void                  text             ( float x, float y, unsigned int row, unsigned int col, const std::string& text );

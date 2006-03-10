@@ -237,6 +237,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Commands"
+				>
+				<File
+					RelativePath=".\Commands\Progress.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\Progress.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -26,14 +26,14 @@
 #include <limits>
 
 #ifdef _WIN32
-# define STAT_STRUCT_64   struct __stat64
-# define STAT_STRUCT      struct _stat
-# define STAT_FUNCTION_64 _stat64
-# define STAT_FUNCTION    _stat
+//# define STAT_STRUCT_64   struct __stat64
+# define STAT_STRUCT      struct __stat64
+//# define STAT_FUNCTION_64 _stat64
+# define STAT_FUNCTION    _stat64
 #else
-# define STAT_STRUCT_64   struct stat
+//# define STAT_STRUCT_64   struct stat
 # define STAT_STRUCT      struct stat
-# define STAT_FUNCTION_64 ::stat
+//# define STAT_FUNCTION_64 ::stat
 # define STAT_FUNCTION    ::stat
 
 #endif
@@ -52,27 +52,16 @@ namespace File {
 namespace Detail
 {
   template < class T > struct Traits;
-  template <> struct Traits < Usul::Types::Uint32 >
+
+  template <> struct Traits < Usul::Types::Uint64 >
   {
     typedef STAT_STRUCT StructType;
     static bool stat ( const std::string &file, StructType &s )
     {
-      return ( 0 == STAT_FUNCTION ( file.c_str(), &s ) );
-    }
-  };
-#ifdef __APPLE__
-#warning Darwin does not define stat64
-#else 
-  template <> struct Traits < Usul::Types::Uint64 >
-  {
-    typedef STAT_STRUCT_64 StructType;
-    static bool stat ( const std::string &file, StructType &s )
-    {
-      return ( 0 == STAT_FUNCTION_64 ( file.c_str(), &s ) );
+      return ( 0 == STAT_FUNCTION( file.c_str(), &s ) );
     }
   };
   
-#endif
 }
 
 
@@ -82,7 +71,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T = unsigned int > struct Stats
+template < class T = Usul::Types::Uint64 > struct Stats
 {
   typedef Usul::File::Detail::Traits<T> Traits;
   typedef typename Traits::StructType StructType;
@@ -91,12 +80,6 @@ protected:
 
   template < class T2 > static T _convert ( bool result, T2 value )
   {
-#ifdef _MSC_VER
-      USUL_STATIC_ASSERT ( sizeof ( T ) == sizeof ( T2 ) );
-#else
-      // Runtime check of integer overflow. Could throw here instead of assert.
-      USUL_ASSERT ( value <= ( static_cast < T2 > ( std::numeric_limits<T>::max() ) ) );
-#endif
       return ( ( result && value > 0 ) ? static_cast < T > ( value ) : 0 );
   }
 
@@ -136,6 +119,19 @@ public:
     const bool result ( Traits::stat ( name, filebuf ) );
     return _convert ( result, filebuf.st_mtime );
   }
+  
+  //
+  //  Get the time of creation....
+  //
+  
+  static T created ( const std::string &name )
+  {
+    StructType filebuf;
+    const bool result ( Traits::stat ( name, filebuf ) );
+    return _convert ( result, filebuf.st_ctime );
+  }
+  
+  
 };
 
 
@@ -145,9 +141,9 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline unsigned int size ( const std::string &name )
+inline Usul::Types::Uint64 size ( const std::string &name )
 {
-  return Usul::File::Stats<unsigned int>::size ( name );
+  return Usul::File::Stats<Usul::Types::Uint64>::size ( name );
 }
 
 
@@ -156,9 +152,7 @@ inline unsigned int size ( const std::string &name )
 
 
 #undef STAT_STRUCT
-#undef STAT_STRUCT_64
 #undef STAT_FUNCTION
-#undef STAT_FUNCTION_64
 
 
 #endif // _USUL_FILE_STATISTICS_H_

@@ -45,6 +45,9 @@
 #include <map>
 #include <string>
 
+#define TRY_NEW_HASH 1
+
+
 using namespace Usul::Types;
 
 namespace osgUtil { class Hit; }

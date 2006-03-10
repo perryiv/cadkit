@@ -59,7 +59,7 @@ void ActionAdapter::requestRedraw()
 
 void ActionAdapter::requestContinuousUpdate ( bool needed )
 {
-  if( _spin.valid() )
+  if( _spin.valid() && needed )
     _spin->spin ( needed );
 }
 

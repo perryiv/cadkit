@@ -1516,7 +1516,7 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 
   // Add any extra decorations.
   this->_buildDecorations ( options, _root.get() );
-   
+  
   // Return the root.
   return _root.get();
 }

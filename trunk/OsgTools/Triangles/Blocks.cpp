@@ -51,7 +51,7 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
 
   _material->setDiffuse ( osg::Material::BACK,  osg::Vec4  ( 0.8f, 0.8f, 0.8f, 1.0f ) );
-  _material->setDiffuse ( osg::Material::FRONT, osg::Vec4  ( 20.0f / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f ) );
+  _material->setDiffuse ( osg::Material::FRONT, osg::Vec4  ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f ) );
   _material->setSpecular ( osg::Material::FRONT, osg::Vec4  ( 200.0f / 255.0f, 200.0f / 255.0f, 200.0f / 255.0f, 1.0f ) );
   _material->setShininess ( osg::Material::FRONT, 128 );
 

@@ -48,7 +48,14 @@ template < class Container > inline void contents ( const std::string &filename,
 {
   // Get the size of the file.
   const Usul::Types::Uint64 size ( Usul::File::size ( filename ) );
-  container.reserve ( size );
+
+  // Check to make sure the vector can hold the file.
+  if ( std::numeric_limits< unsigned int >::max() > size )
+  {
+    throw std::runtime_error ( "Error 1423922323, file: " + filename + " is too large to store in a vector"  );
+  }
+
+  container.reserve ( static_cast < unsigned int > ( size ) );
 
   // Set proper flags.
   const std::ifstream::openmode mode ( ( binary ) ? std::ifstream::in | std::ifstream::binary : std::ifstream::in );
@@ -73,7 +80,14 @@ inline void contents ( const std::string &filename, char comment, std::string &f
 {
   // Get the size of the file.
   Usul::Types::Uint64 size ( Usul::File::size ( filename ) );
-  file.reserve ( size );
+
+  // Check to make sure the vector can hold the file.
+  if ( std::numeric_limits< unsigned int >::max() > size )
+  {
+    throw std::runtime_error ( "Error 1423922323, file: " + filename + " is too large to store in a vector"  );
+  }
+
+  file.reserve ( static_cast < unsigned int > ( size ) );
 
   // Open the file.
   std::ifstream in ( filename.c_str() );

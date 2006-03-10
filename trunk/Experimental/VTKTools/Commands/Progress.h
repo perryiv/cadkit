@@ -23,7 +23,17 @@ class VTK_TOOLS_EXPORT Progress : public vtkCommand
 {
 public:
 
+  Progress();
+
+  void progressBar ( Usul::Interfaces::IProgressBar * );
+  
+  /// vtkCommand::Execute
   virtual void 	Execute (vtkObject *caller, unsigned long eventId, void *callData);
+
+protected:
+
+  virtual ~Progress();
+
 private:
   Usul::Interfaces::IProgressBar::RefPtr _progress;
 };

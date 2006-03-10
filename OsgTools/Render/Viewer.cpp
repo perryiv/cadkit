@@ -2535,7 +2535,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   if ( osg::FBOExtensions::instance( _contextId )->isSupported() )
   {
     // Set up the texture.
-    osg::ref_ptr<osg::Texture2D> tex ( new osg::Texture2D );
+    osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
     tex->setTextureSize(width, height);
     tex->setInternalFormat(GL_RGBA);
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
@@ -2543,12 +2543,13 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
     tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
     tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
     
-    // Make the fbo
-    osg::ref_ptr<osg::FrameBufferObject> fbo = new osg::FrameBufferObject();
+    // Make the fbo.
+    osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
     fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
     fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
  
-    osg::ref_ptr<osg::CameraNode> camera = new osg::CameraNode;
+    // Make the camera buffer.
+    osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
     camera->setClearColor( _sceneView->getClearColor() );
     camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     camera->setViewport(0, 0, width, height);
@@ -2565,7 +2566,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
 
     camera->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
 
-    // Set view
+    // Set view.
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     camera->setViewMatrix ( _sceneView->getViewMatrix() );
 
@@ -2573,18 +2574,21 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
     camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
 
     // Attach the texture and use it as the color buffer.
-    //camera->attach(osg::CameraNode::COLOR_BUFFER,tex.get());
-    camera->attach(osg::CameraNode::COLOR_BUFFER, image.get());
+    camera->attach( osg::CameraNode::COLOR_BUFFER, image.get() );
 
-    // Save the old root;
+    // Save the old root.
     GroupPtr group = _scene;
 
+    // Add the scene to the camera.
     camera->addChild ( me->_scene.get() );
 
+    // Make the camera file the scene data.
     me->_sceneView->setSceneData ( camera.get() );
 
+    // Render to the image.
     me->render();
 
+    // Set the old root back to the scene data.
     me->_sceneView->setSceneData ( group.get() );
   }
   else

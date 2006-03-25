@@ -414,7 +414,7 @@ void PolyData::triangleSetToPolyData ( OsgTools::Triangles::TriangleSet* triangl
   }
 
   // Reserve enough room.
-  polydata.reserve ( triangleSet->blocks() );
+  polydata.reserve ( triangleSet->blocksNumber() );
 
   // Typedefs
   typedef OsgTools::Triangles::TriangleSet::BlocksConstIterator BlocksConstIterator;

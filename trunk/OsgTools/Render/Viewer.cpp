@@ -40,6 +40,7 @@
 #include "OsgTools/Builders/Arrow.h"
 #include "OsgTools/Widgets/Axes.h"
 #include "OsgTools/Widgets/ClipPlane.h"
+#include "OsgTools/IO/WriteEPS.h"
 
 #include "OsgTools/Draggers/Trackball.h"
 
@@ -69,6 +70,9 @@
 #include "Usul/Functors/Delete.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/File/Path.h"
+#include "Usul/CommandLine/Arguments.h"
 
 #include "osg/MatrixTransform"
 #include "osg/NodeVisitor"
@@ -84,6 +88,7 @@
 #include "osg/LightSource"
 #include "osg/FrameBufferObject"
 #include "osg/Notify"
+#include "osg/Stencil"
 
 #include "osg/GL"
 
@@ -91,6 +96,7 @@
 #include "osgUtil/IntersectVisitor"
 
 #include "osgDB/WriteFile"
+#include "osgDB/ReadFile"
 
 #include <limits>
 
@@ -2129,38 +2135,6 @@ void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Filters that correspond to image formats that can be written.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::Filters Viewer::filtersWriteScene() const
-{
-  Filters filters;
-  filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
-  filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
-  return filters;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Filters that correspond to scene formats that can be written.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::Filters Viewer::filtersWriteImage() const
-{
-  Filters filters;
-  filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
-  filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
-  filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
-  filters.push_back ( Filter ( "RGBA Image (*.rgba)", "*.rgba" ) );
-  return filters;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the number of rendering passes. Unavailable numbers have no effect.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2770,6 +2744,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IOsgFoxView* > ( this );
   case Usul::Interfaces::ILights::IID:
     return static_cast < Usul::Interfaces::ILights* > ( this );
+  case Usul::Interfaces::ISceneStage::IID:
+    return static_cast < Usul::Interfaces::ISceneStage * > ( this );
   default:
     return 0x0;
   }
@@ -4902,4 +4878,364 @@ void Viewer::zoom ( double delta )
   this->setDistance( distance );
 
   this->render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the scene stage on?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::sceneStage() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_STAGE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show scene stage flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::sceneStage( bool b )
+{
+  if ( b )
+  {
+    _flags = Usul::Bits::add ( _flags, _SHOW_STAGE );
+    this->_addSceneStage();
+  }
+  else
+  {
+    _flags = Usul::Bits::remove ( _flags, _SHOW_STAGE );
+    this->_removeSceneStage();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add scene stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_addSceneStage()
+{
+  if ( 0x0 == this->model() )
+    return;
+
+  GroupPtr group ( this->_getGroup ( OsgTools::Render::Constants::STAGE ) );
+
+  osg::BoundingSphere bs ( this->scene()->getBound() );
+  
+  bs._radius = bs._radius *  1.25;
+
+  osg::BoundingBox bb;
+  bb.expandBy ( bs );
+
+  float width_factor = 1.5;
+  float height_factor = 0.3;
+  
+  float xMin = bs.center().x()-bs.radius()*width_factor;
+  float xMax = bs.center().x()+bs.radius()*width_factor;
+  float yMin = bs.center().y()-bs.radius()*width_factor;
+  float yMax = bs.center().y()+bs.radius()*width_factor;
+  
+  float z = bs.center().z()-bs.radius(); /**height_factor;*/
+
+  if ( bb.valid() )
+  {
+    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+
+    osg::Vec3Array* coords = new osg::Vec3Array(4);
+    (*coords)[0].set(xMin,yMax,z);
+    (*coords)[1].set(xMin,yMin,z);
+    (*coords)[2].set(xMax,yMin,z);
+    (*coords)[3].set(xMax,yMax,z);
+    geometry->setVertexArray(coords);
+
+    osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array ( 1 ) );
+    normals->at ( 0 ).set ( 0.0, 0.0, 1.0 );
+
+    geometry->setNormalArray ( normals.get() );
+    geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+    osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array ( 1 ) );
+    colors->at( 0 ).set ( 1.0, 1.0, 1.0, 1.0 );
+
+    geometry->setColorArray ( colors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+    osg::ref_ptr < osg::Vec2Array > tcoords ( new osg::Vec2Array(4) );
+    tcoords->at(0).set( 0.0f, 1.0f );
+    tcoords->at(1).set( 0.0f, 0.0f );
+    tcoords->at(2).set( 1.0f, 0.0f );
+    tcoords->at(3).set( 1.0f, 1.0f );
+    geometry->setTexCoordArray( 0,tcoords.get() );
+
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, coords->size() ) );
+
+    osg::MatrixTransform* rootNode = new osg::MatrixTransform;
+    //rootNode->setMatrix(osg::Matrix::rotate(osg::inDegrees(45.0f),1.0f,0.0f,0.0f));
+    group->addChild ( rootNode );
+
+    // make sure that the global color mask exists.
+    osg::ColorMask* rootColorMask = new osg::ColorMask;
+    rootColorMask->setMask(true,true,true,true);        
+    
+    // set up depth to be inherited by the rest of the scene unless
+    // overrideen. this is overridden in bin 3.
+    osg::Depth* rootDepth = new osg::Depth;
+    rootDepth->setFunction(osg::Depth::LESS);
+    rootDepth->setRange(0.0,1.0);
+
+    osg::StateSet* rootStateSet = _scene->getOrCreateStateSet();
+    rootStateSet->setAttribute(rootColorMask);
+    rootStateSet->setAttribute(rootDepth);
+
+
+    // bin1  - set up the stencil values and depth for mirror.
+    {
+    
+      // set up the stencil ops so that the stencil buffer get set at
+      // the mirror plane 
+      osg::Stencil* stencil = new osg::Stencil;
+      stencil->setFunction(osg::Stencil::ALWAYS,1,~0u);
+      stencil->setOperation(osg::Stencil::KEEP, osg::Stencil::KEEP, osg::Stencil::REPLACE);
+      
+      // switch off the writing to the color bit planes.
+      osg::ColorMask* colorMask = new osg::ColorMask;
+      colorMask->setMask(false,false,false,false);
+      
+      osg::StateSet* statesetBin1 = new osg::StateSet();        
+      statesetBin1->setRenderBinDetails(1,"RenderBin");
+      statesetBin1->setMode(GL_CULL_FACE,osg::StateAttribute::OFF);
+      statesetBin1->setAttributeAndModes(stencil,osg::StateAttribute::ON);
+      statesetBin1->setAttribute(colorMask);
+      
+      // set up the mirror geode.
+      osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+      geode->addDrawable ( geometry.get() );
+      geode->setStateSet(statesetBin1);
+      
+      rootNode->addChild( geode.get() );
+        
+    }
+
+    // bin one - draw scene without mirror or reflection, unset 
+    // stencil values where scene is infront of mirror and hence
+    // occludes the mirror. 
+    {        
+        osg::Stencil* stencil = new osg::Stencil;
+        stencil->setFunction(osg::Stencil::ALWAYS,0,~0u);
+        stencil->setOperation(osg::Stencil::KEEP, osg::Stencil::KEEP, osg::Stencil::REPLACE);
+
+        osg::StateSet* statesetBin2 = this->model()->getOrCreateStateSet();
+        statesetBin2->setRenderBinDetails(2,"RenderBin");
+        statesetBin2->setAttributeAndModes(stencil,osg::StateAttribute::ON);
+        
+    }
+        
+    // bin3  - set up the depth to the furthest depth value
+    {
+    
+      // set up the stencil ops so that only operator on this mirrors stencil value.
+      osg::Stencil* stencil = new osg::Stencil;
+      stencil->setFunction(osg::Stencil::EQUAL,1,~0u);
+      stencil->setOperation(osg::Stencil::KEEP, osg::Stencil::KEEP, osg::Stencil::KEEP);
+      
+      // switch off the writing to the color bit planes.
+      osg::ColorMask* colorMask = new osg::ColorMask;
+      colorMask->setMask(false,false,false,false);
+
+      // set up depth so all writing to depth goes to maximum depth.
+      osg::Depth* depth = new osg::Depth;
+      depth->setFunction(osg::Depth::ALWAYS);
+      depth->setRange(1.0,1.0);
+
+      osg::StateSet* statesetBin3 = new osg::StateSet();
+      statesetBin3->setRenderBinDetails(3,"RenderBin");
+      statesetBin3->setMode(GL_CULL_FACE,osg::StateAttribute::OFF);
+      statesetBin3->setAttributeAndModes(stencil,osg::StateAttribute::ON);
+      statesetBin3->setAttribute(colorMask);
+      statesetBin3->setAttribute(depth);
+      
+      // set up the mirror geode.
+      osg::Geode* geode = new osg::Geode;
+      geode->addDrawable( geometry.get() );
+      geode->setStateSet(statesetBin3);
+      
+      rootNode->addChild(geode);
+        
+    }
+
+    // bin4  - draw the reflection.
+    {
+    
+      // now create the 'reflection' of the loaded model by applying
+      // create a Transform which flips the loaded model about the z axis
+      // relative to the mirror node, the loadedModel is added to the
+      // Transform so now appears twice in the scene, but is shared so there
+      // is negligable memory overhead.  Also use an osg::StateSet 
+      // attached to the Transform to override the face culling on the subgraph
+      // to prevert an 'inside' out view of the reflected model.
+      // set up the stencil ops so that only operator on this mirrors stencil value.
+
+
+
+      // this clip plane removes any of the scene which when mirror would
+      // poke through the mirror.  However, this clip plane should really
+      // flip sides once the eye point goes to the back of the mirror...
+      //osg::ClipPlane* clipplane = new osg::ClipPlane;
+      //clipplane->setClipPlane(0.0,0.0,-1.0,z);
+      //clipplane->setClipPlaneNum(0);
+
+      osg::ClipNode* clipNode = new osg::ClipNode;
+      osg::BoundingBox bbox;
+      bbox.expandBy ( this->model()->getBound() );
+      //clipNode->createClipBox ( bbox );
+      //clipNode->addClipPlane(clipplane);
+
+
+      osg::StateSet* dstate = clipNode->getOrCreateStateSet();
+      dstate->setRenderBinDetails(4,"RenderBin");
+      dstate->setMode(GL_CULL_FACE,osg::StateAttribute::OVERRIDE|osg::StateAttribute::OFF);
+
+      osg::Stencil* stencil = new osg::Stencil;
+      stencil->setFunction(osg::Stencil::EQUAL,1,~0u);
+      stencil->setOperation(osg::Stencil::KEEP, osg::Stencil::KEEP, osg::Stencil::KEEP);
+      dstate->setAttributeAndModes(stencil,osg::StateAttribute::ON);
+
+      osg::MatrixTransform* reverseMatrix = new osg::MatrixTransform;
+      reverseMatrix->setStateSet(dstate);
+      reverseMatrix->preMult(osg::Matrix::translate(0.0f,0.0f,-z)*
+                   osg::Matrix::scale(1.0f,1.0f,-1.0f)*
+                   osg::Matrix::translate(0.0f,0.0f,z));
+
+      reverseMatrix->addChild( this->model() );
+
+      clipNode->addChild(reverseMatrix);
+
+      rootNode->addChild(clipNode);
+    
+    }
+
+
+    // bin5  - draw the textured mirror and blend it with the reflection.
+    {
+    
+      // set up depth so all writing to depth goes to maximum depth.
+      osg::Depth* depth = new osg::Depth;
+      depth->setFunction(osg::Depth::ALWAYS);
+
+      osg::Stencil* stencil = new osg::Stencil;
+      stencil->setFunction(osg::Stencil::EQUAL,1,~0u);
+      stencil->setOperation(osg::Stencil::KEEP, osg::Stencil::KEEP, osg::Stencil::ZERO);
+
+      // set up additive blending.
+      osg::BlendFunc* trans = new osg::BlendFunc;
+      trans->setFunction(osg::BlendFunc::ONE,osg::BlendFunc::ONE);
+
+      osg::StateSet* statesetBin5 = new osg::StateSet;
+      statesetBin5->setMode(GL_CULL_FACE,osg::StateAttribute::OFF|osg::StateAttribute::PROTECTED);
+
+      osg::ref_ptr < osg::Image > image ( osgDB::readImageFile( Usul::CommandLine::Arguments::instance().directory() +  "\\icons\\marble-3.jpg" ) );
+      if ( 0x0 != image.get() )
+      {
+        osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
+        texture->setImage( image.get() );
+        statesetBin5->setTextureAttributeAndModes( 0, texture.get(), osg::StateAttribute::ON|osg::StateAttribute::PROTECTED );
+      }
+      statesetBin5->setRenderBinDetails(5,"RenderBin");
+      statesetBin5->setMode(GL_CULL_FACE,osg::StateAttribute::OFF);
+      statesetBin5->setAttributeAndModes(stencil,osg::StateAttribute::ON);
+      statesetBin5->setAttributeAndModes(trans,osg::StateAttribute::ON);
+      statesetBin5->setAttribute(depth);
+      
+      // set up the mirror geode.
+      osg::Geode* geode = new osg::Geode;
+      geode->addDrawable( geometry.get() );
+      geode->setStateSet(statesetBin5);
+      
+      rootNode->addChild(geode);
+
+    }
+
+
+    //group->addChild ( geode.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove scene stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_removeSceneStage()
+{
+  this->_removeGroup ( OsgTools::Render::Constants::STAGE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Can we export this?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::canExport ( const std::string &filename )
+{
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+  return ( "ive" == ext || "osg" == ext || "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext || "eps" == ext );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the filters that we can export.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::Filters Viewer::filtersExport() const
+{
+  Filters filters;
+  filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
+  filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
+  filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
+  filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
+  filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
+  filters.push_back ( Filter ( "RGBA Image (*.rgba)", "*.rgba" ) );
+  filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
+  return filters;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::exportFile ( const std::string& filename )
+{
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+  if ( "ive" == ext || "osg" == ext )
+  {
+    return this->writeSceneFile ( filename );
+  }
+  else if ( "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext )
+  {
+    return this->writeImageFile ( filename );
+  }
+  else if ( "eps" == ext )
+  {
+    OsgTools::IO::WriteEPS writer ( filename );
+    return writer.write ( *this );
+  }
+
+  return false;
 }

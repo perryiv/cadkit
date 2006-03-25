@@ -26,6 +26,7 @@ namespace OsgTools
       const std::string CLIPPING_PLANES             = "cliping_planes";
       const std::string AXES                        = "axes";
       const std::string LIGHT                       = "light";
+      const std::string STAGE                       = "stage";
     };
   }
 }

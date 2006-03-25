@@ -39,6 +39,7 @@
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/ISceneStage.h"
 
 #include <iostream>
 #include <sstream>
@@ -626,10 +627,8 @@ void Controller::filtersExport ( Filters &filters )
   // Get the filters for the view, if we have a valid interface
   if( exportData.valid() )
   {
-    const Filters vs ( exportData->filtersWriteScene() );
-    const Filters vi ( exportData->filtersWriteImage() );
+    const Filters vi ( exportData->filtersExport() );
     all.insert ( all.end(), vi.begin(), vi.end() );
-    all.insert ( all.end(), vs.begin(), vs.end() );
   }
   
   // Sort the filters and make sure we only have unique ones
@@ -642,7 +641,7 @@ void Controller::filtersExport ( Filters &filters )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Export document into filename
+//  Export document into filename.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -669,14 +668,10 @@ void Controller::documentExport ( const std::string& filename, std::string filte
     return;
   }
 
-  if( exportData.valid() )
+  if( exportData.valid() && exportData->canExport ( filename ) )
   {
-    // See if the view can write this as a scene-file.
-    if ( exportData->writeSceneFile ( filename ) )
-      return;
-
-    // Otherwise, ask the active view to write the image.
-    if ( exportData->writeImageFile ( filename ) )
+    // See if the view can export this.
+    if ( exportData->exportFile ( filename ) )
       return;
   }
 
@@ -1315,3 +1310,41 @@ void Controller::loadPlugins()
   std::copy ( names.begin(), names.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
   std::cout << std::endl;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the scene stage button be checked?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::sceneStage()
+{
+  Usul::Interfaces::ISceneStage::QueryPtr stage ( this->activeView() );
+  return stage.valid() && stage->sceneStage();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scene stage state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::sceneStage ( bool b )
+{
+  Usul::Interfaces::ISceneStage::QueryPtr stage ( this->activeView() );
+
+  if ( stage.valid() )
+  {
+    stage->sceneStage( b );
+    this->activeView()->render();
+  }
+}
+
+
+  
+
+
+
+

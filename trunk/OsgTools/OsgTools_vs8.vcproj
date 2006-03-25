@@ -765,11 +765,27 @@
 				Name="IO"
 				>
 				<File
+					RelativePath=".\IO\GLFeedback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\GLFeedback.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Io\STLPrintVisitor.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Io\STLWrite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\WriteEPS.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\WriteEPS.h"
 					>
 				</File>
 			</Filter>

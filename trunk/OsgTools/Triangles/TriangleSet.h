@@ -78,7 +78,7 @@ public:
   typedef osg::ref_ptr < osg::Vec3Array > VerticesPtr;
   typedef osg::ref_ptr < osg::Vec3Array > NormalsPtr;
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
-  typedef Blocks::ValidAccessRefPtr BlocksPtr;
+  typedef Blocks::ValidAccessQueryPtr BlocksPtr;
   typedef std::vector < BlocksPtr > BlocksVector;
   typedef BlocksVector::iterator    BlocksIterator;
   typedef BlocksVector::const_iterator    BlocksConstIterator;
@@ -110,12 +110,10 @@ public:
   osg::Vec3f              averageNormal ( const SharedVertex *sv ) const;
 
   /// Get the number of blocks.
-  unsigned int            blocks() const;
+  unsigned int            blocksNumber() const;
 
-  /// Hide/Show blocks by number
-  void                    blocksHide ( unsigned int );
-  void                    blocksShow ( unsigned int );
-  bool                    blocksShow ( unsigned int ) const;
+  /// Get the blocks as an IUknown
+  Unknown*                blocks ( unsigned int i );
 
   /// Iterator to the begining of the blocks.
   BlocksIterator          blocksBegin()        { return _blocks.begin(); }

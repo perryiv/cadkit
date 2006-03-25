@@ -1,6 +1,0 @@
-CM_PLUGIN_TITLE : Plugin title
-CM_PLUGIN_NAME : Name for the plugin binary ( without .plug and no spaces )
-CM_GUID : Guid for the plugin
-CM_COMPILE_GUARD : Compile gaurd for the plugin ( without _COMPILE_ )
-CM_COMPONENT_NAME : Name of the component ( without .h or .cpp )
-CM_FACTORY_NAME : Name of the factory ( without .h or .cpp )

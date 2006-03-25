@@ -18,47 +18,58 @@
 
 #include "OsgTools/Export.h"
 
+#include "OsgTools/IO/GLFeedback.h"
+
+#include <string>
+#include <cstdio>
+
+namespace OsgTools { namespace Render { class Viewer; } }
+
 namespace OsgTools {
 namespace IO {
 
 
-class OSG_TOOLS_EXPORT WriteEPS
+class OSG_TOOLS_EXPORT WriteEPS : public GLFeedback
 {
 public:
 
-	WriteEPS();
+	WriteEPS( const std::string& filename, const std::string& creator = "" );
 	virtual ~WriteEPS();
 
 	// Write the feedback buffer to file.
-	SlBool							write();
+  bool  							write( OsgTools::Render::Viewer& viewer );
 
 	// Set/get the threshold for the Gouraud shading algorithm that gets written 
 	// to the EPS file. The acceptable range is [0.001,1]. The default is 0.1. 
 	// Passing a value out of range will have no effect.
-	void							setGouraudShadingThreshold ( const SlFloat64 &value );
-	const SlFloat64 &				getGouraudShadingThreshold() const { return _gouraudThreshold; }
-
-	// Set the callback for rendering.
-	void							setRenderCallback ( WriteEPSCB *callback, const void *data );
+	void							  setGouraudShadingThreshold ( const double &value );
+	const double &			getGouraudShadingThreshold() const { return _gouraudThreshold; }
 
 	// Set/get the line smoothing factor. The acceptable range is [0.001,1].
 	// The default is 0.06. Passing a value out of range will have no effect.
-	void							setLineSmoothingFactor ( const SlFloat64 &value );
-	const SlFloat64 &				getLineSmoothingFactor() const { return _lineSmoothingFactor; }
+	void							  setLineSmoothingFactor ( const double &value );
+	const double &	  	getLineSmoothingFactor() const { return _lineSmoothingFactor; }
 
 protected:
 
-	SlFloat64 _gouraudThreshold;
-	SlFloat64 _lineSmoothingFactor;
-	WriteEPSCB *_callback;
-	const void *_data;
-	SlUint64 _currentMaxBufSize;
+  std::string _filename;
+  std::string _creator;
+  bool        _showpage;
+	double _gouraudThreshold;
+	double _lineSmoothingFactor;
+	
+  unsigned int _currentMaxBufSize;
 
-	virtual SlBool					_calculateBufferSize ( SlInt32 &size ) const;
+	virtual bool			  _calculateBufferSize ( int &size ) const;
 
-	SlBool							_writeBuffer ( const SlFloat32 &pointSize, FILE *out ) const;
-	SlBool							_writeFile() const;
-	SlBool							_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &whichPrim, FILE *out ) const;
+	bool							  _writeBuffer ( const float &pointSize, FILE *out ) const;
+	bool							  _writeFile() const;
+	bool							  _writePrimitive ( const float &pointSize, const int &whichPrim, FILE *out ) const;
+
+private:
+  /// Do not use
+  WriteEPS();
+
 };
 
 

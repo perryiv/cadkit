@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: Usul"
 	ProjectGUID="{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+	RootNamespace="lib: Usul"
 	>
 	<Platforms>
 		<Platform
@@ -672,6 +673,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISceneStage.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IShadeModel.h"
 						>
 					</File>
@@ -993,6 +998,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPrimitiveGroup.h"
 						>
 					</File>
 					<File

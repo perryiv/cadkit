@@ -16,6 +16,8 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Vector3.h"
 
+#include "Usul/Interfaces/IPrimitiveGroup.h"
+
 #include "osg/BoundingBox"
 #include "osg/Geode"
 #include "osg/Material"
@@ -27,7 +29,8 @@ namespace Triangles {
 
 class TriangleSet;
 
-class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced,
+                                public Usul::Interfaces::IPrimitiveGroup
 {
 public:
 
@@ -37,7 +40,10 @@ public:
   typedef std::vector < unsigned int > TriangleIndices;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Blocks );
+  USUL_DECLARE_QUERY_POINTERS ( Blocks );
+
+  /// Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Construction
   Blocks ( const osg::BoundingBox &box, unsigned int numSubdivisions, unsigned int numTrianglesToReserve );
@@ -57,10 +63,6 @@ public:
   /// Build the scene.
   osg::Geode *              buildScene ( const Options &options, TriangleSet *ts );
 
-  /// Set the diffuse color.
-  void                      colorDiffuse ( const osg::Vec4& );
-  void                      colorSpecular ( const osg::Vec4& );
-
   /// Get/set display list state.
   bool                      displayList() const;
   void                      displayList ( bool );
@@ -77,6 +79,50 @@ public:
 
   /// Get the indices of the triangles in the Blocks.
   void                      triangleIndices ( TriangleIndices& ) const;
+
+  /// Usul::Interfaces::IPrimitiveGroup. Public for now.
+
+  /// Set the visiblity flag.
+  virtual void                 setVisibility ( bool b );
+
+  /// Get the visiblity flag.
+  virtual bool                 getVisibility ( ) const;
+
+  /// Set the translation.
+  virtual void                 setTranslation ( const osg::Vec3f& translate );
+
+  /// Get the translation.
+  virtual osg::Vec3f           getTranslation ( ) const;
+
+  /// Set the rotation.
+  virtual void                 setRotation ( const osg::Quat& rotation );
+
+  /// Get the rotation.
+  virtual osg::Quat            getRotation ( ) const;
+
+  /// Set the diffuse color
+  virtual void                 setDiffuseColor ( const osg::Vec4f& );
+
+  /// Get the diffuse color
+  virtual const osg::Vec4f&    getDiffuseColor ( ) const;
+
+  /// Set the specular color
+  virtual void                 setSpecularColor ( const osg::Vec4f& );
+
+  /// Get the specular color
+  virtual const osg::Vec4f&    getSpecularColor () const;
+
+  /// Set the shininess value
+  virtual void                 setShininess( float s );
+
+  /// Get the shininess value
+  virtual float                getShininess() const;
+
+  /// Set the transparency value
+  virtual void                 setTransparency ( float t );
+
+  /// Get the transparency value
+  virtual float                getTransparency () const;
 
 protected:
 

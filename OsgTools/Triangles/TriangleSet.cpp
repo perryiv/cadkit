@@ -1865,7 +1865,7 @@ void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
     float red ( rd() ), green ( rd() ), blue ( rd() );
     
     // Set the diffuse color of the material.
-    blocks->colorDiffuse ( osg::Vec4( red, green, blue, 1.0 ) );
+    blocks->setDiffuseColor ( osg::Vec4( red, green, blue, 1.0 ) );
 
     // Add the triangles to the blocks.
     for( Connected::const_iterator connectedIter = subsetsIter->begin(); connectedIter != subsetsIter->end(); ++connectedIter )
@@ -1889,7 +1889,7 @@ void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int TriangleSet::blocks() const
+unsigned int TriangleSet::blocksNumber() const
 {
   return _blocks.size();
 }
@@ -1897,38 +1897,15 @@ unsigned int TriangleSet::blocks() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Hide the blocks that correspond to the given number.
+//  Get the blocks that correspond to the given number.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::blocksHide ( unsigned int num )
+Usul::Interfaces::IUnknown* TriangleSet::blocks ( unsigned int i )
 {
-  _blocks.at( num )->geode()->setNodeMask ( 0 );
+  return _blocks.at( i )->queryInterface ( Usul::Interfaces::IUnknown::IID );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show the blocks that correspond to the given number.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleSet::blocksShow ( unsigned int num )
-{
-  _blocks.at( num )->geode()->setNodeMask ( 0xffffffff );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the blocks at given number shown?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool TriangleSet::blocksShow ( unsigned int  num ) const
-{
-  return _blocks.at( num )->geode()->getNodeMask (  ) != 0;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

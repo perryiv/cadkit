@@ -52,6 +52,7 @@
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
+#include "Usul/Interfaces/ISceneStage.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -112,7 +113,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::ISpin,
                                 public Usul::Interfaces::IBackground,
                                 public Usul::Interfaces::IOsgFoxView,
-                                public Usul::Interfaces::ILights
+                                public Usul::Interfaces::ILights,
+                                public Usul::Interfaces::ISceneStage
 {
   public:
 
@@ -225,10 +227,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   // Get the document.
   Document *            document();
   const Document *      document() const;
-
-  // Get the filters.
-  virtual Filters       filtersWriteScene() const;
-  virtual Filters       filtersWriteImage() const;
 
   // Get/Set the field of view
   void                  fovSet ( double fov );
@@ -509,6 +507,10 @@ protected:
   bool                  _writeImageFile ( const std::string &filename, double percent ) const;
   bool                  _writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
 
+  // Add/Remove scene stage.
+  void                  _addSceneStage();
+  void                  _removeSceneStage();
+
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixf& );
   virtual void                      setViewMatrix ( const osg::Matrixd& );
@@ -651,6 +653,15 @@ protected:
   virtual void               setLights ( bool );
   virtual bool               hasLights ( ) const;
 
+  /// Usul::Interfaces::ISceneStage
+  virtual bool sceneStage() const;
+  virtual void sceneStage( bool b );
+
+  /// Usul::Interfaces::IExport
+  virtual bool                  canExport ( const std::string &filename );
+  virtual Filters               filtersExport() const;
+  virtual bool                  exportFile ( const std::string& filename );
+
 private:
 
   // Do not copy.
@@ -666,6 +677,7 @@ private:
     _SORT_BACK_TO_FRONT = 0x00000008,
     _SHOW_AXES          = 0x00000010,
     _SHOW_LIGHTS        = 0x00000020,
+    _SHOW_STAGE         = 0x00000040,
   };
 
   // Local integer constants.

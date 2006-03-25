@@ -119,6 +119,9 @@ public:
   bool                        hasShadeModel ( IShadeModel::Mode mode );
   void                        setShadeModel ( IShadeModel::Mode mode );
 
+  bool                        sceneStage();
+  void                        sceneStage ( bool b );
+
   bool                        shadeModelEnable ();
 
   void                        spinToggle ();

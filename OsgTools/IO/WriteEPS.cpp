@@ -1,32 +1,28 @@
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
-//	(c) 1998-2001, Modelspace Corporation
-//	ALL RIGHTS RESERVED
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
-//	UNPUBLISHED -- Rights reserved under the copyright laws of the United
-//	States. Use of a copyright notice is precautionary only and does not
-//	imply publication or disclosure.
-//
-//	THE CONTENT OF THIS WORK CONTAINS CONFIDENTIAL AND PROPRIETARY
-//	INFORMATION OF Modelspace Corporation. ANY DUPLICATION, MODIFICATION,
-//	DISTRIBUTION, OR DISCLOSURE IN ANY FORM, IN WHOLE, OR IN PART, IS 
-//	STRICTLY PROHIBITED WITHOUT THE PRIOR EXPRESS WRITTEN PERMISSION OF 
-//	Modelspace Corporation.
-//
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  SgEpsWrite: The EPS writer class.
+//  WriteEPS: The EPS writer class.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if 0
+#include "OsgTools/IO/WriteEPS.h"
+#include "OsgTools/Render/Viewer.h"
 
-#include "StdAfx.h"
-#include "SgEpsWrite.h"
-#include "SgDefine.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/Math/Absolute.h"
+#include "Usul/Math/MinMax.h"
+
+#include <limits>
+
+using namespace OsgTools::IO;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -35,17 +31,14 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgEpsWrite::SgEpsWrite() : SgGLFeedback(), 
-	filename ( "" ),
-	creator ( "" ),
-	showpage ( SL_FALSE ),
+WriteEPS::WriteEPS( const std::string& filename, const std::string& creator ) : GLFeedback(), 
+	_filename ( filename ),
+	_creator ( creator ),
+	_showpage ( false ),
 	_gouraudThreshold ( 0.1 ), // Default value from original example.
 	_lineSmoothingFactor ( 0.06 ), // Default value from original example.
-	_callback ( 0x0 ),
-	_data ( 0x0 ),
 	_currentMaxBufSize ( 0 )
 {
-	SL_PRINT ( "SgEpsWrite::SgEpsWrite(), this = %X\n", this );
 }
 
 
@@ -55,9 +48,8 @@ SgEpsWrite::SgEpsWrite() : SgGLFeedback(),
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SgEpsWrite::~SgEpsWrite()
+WriteEPS::~WriteEPS()
 {
-	SL_PRINT ( "SgEpsWrite::~SgEpsWrite(), this = %X\n", this );
 }
 
 
@@ -67,25 +59,22 @@ SgEpsWrite::~SgEpsWrite()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlBool SgEpsWrite::write()
+bool WriteEPS::write( OsgTools::Render::Viewer& viewer )
 {
-	SL_PRINT ( "SgEpsWrite::write()" );
-	SL_ASSERT ( this );
-	SL_ASSERT ( _callback );
 
 	// Initialize.
 	_currentMaxBufSize = 1024;
 
 	// We loop until we successfully write the file. Each time it will 
 	// increase the feedback buffer size.
-	while ( SL_TRUE )
+	while ( true )
 	{
 		// Call preRender() to initialize the feedback buffer. If it fails 
 		// then we quit (because it probably means that we are out of memory).
-		if ( this->preRender() != NO_RENDER_ERROR ) return SL_FALSE;
+		if ( this->preRender() != NO_RENDER_ERROR ) return false;
 
 		// Call the render callback to fill the feedback buffer.
-		if ( !_callback ( *this, _data ) ) return SL_FALSE;
+		viewer.render();
 
 		// Call postRender() to process the feedback buffer.
 		Result result = this->postRender();
@@ -108,16 +97,16 @@ SlBool SgEpsWrite::write()
 			// buffer in SgGLFeedback is an SlInt32 (because that 
 			// is what openGL wants). So we can safely see if we 
 			// are going to overflow.
-			if ( _currentMaxBufSize >= SL_MAX_SIGNED_32_BIT_INT ) return SL_FALSE;
+      if ( _currentMaxBufSize >= std::numeric_limits< unsigned int >::max() ) return false;
 		}
 
 		// Otherwise we have to stop.
-		else return SL_FALSE;
+		else return false;
 	}
 
 	// Should never get here.
-	SL_ASSERT ( 0 );
-	return SL_FALSE;
+	USUL_ASSERT ( 0 );
+	return false;
 }
 
 
@@ -128,17 +117,15 @@ SlBool SgEpsWrite::write()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlBool SgEpsWrite::_calculateBufferSize ( SlInt32 &size ) const
+bool WriteEPS::_calculateBufferSize ( int &size ) const
 {
-	SL_PRINT ( "SgEpsWrite::_calculateBufferSize()" );
-	SL_ASSERT ( this );
-	SL_ASSERT ( _currentMaxBufSize < SL_MAX_SIGNED_32_BIT_INT );
+  USUL_ASSERT ( _currentMaxBufSize < std::numeric_limits < unsigned int >::max() );
 
 	// Set the size.
-	size = (SlInt32) _currentMaxBufSize;
+	size = (int) _currentMaxBufSize;
 
 	// It worked.
-	return SL_TRUE;
+	return true;
 }
 
 
@@ -150,24 +137,22 @@ SlBool SgEpsWrite::_calculateBufferSize ( SlInt32 &size ) const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlBool SgEpsWrite::_writeFile() const
+bool WriteEPS::_writeFile() const
 {
-	SL_PRINT ( "SgEpsWrite::_writeFile()" );
-	SL_ASSERT ( this );
-	SL_ASSERT ( _maxBufferSize > 0 );
-	SL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
-	SL_ASSERT ( _buffer );
-	SL_ASSERT ( _gouraudThreshold > 0.0 );
-	SL_ASSERT ( _lineSmoothingFactor > 0.0 );
+	USUL_ASSERT ( _maxBufferSize > 0 );
+	USUL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
+	USUL_ASSERT ( _buffer );
+	USUL_ASSERT ( _gouraudThreshold > 0.0 );
+	USUL_ASSERT ( _lineSmoothingFactor > 0.0 );
 
 	// Open the file or direct to stdout if the filename is NULL.
-	FILE *out = ( filename == "" ) ? stdout : ::fopen ( filename, "w" );
+  FILE *out = ( _filename == "" ) ? stdout : ::fopen ( _filename.c_str(), "w" );
 
 	// Check the file pointer.
 	if ( !out )
 	{
-		SL_ASSERT ( 0 );
-		return SL_FALSE;
+		USUL_ASSERT ( 0 );
+		return false;
 	}
 
 	// Need these below.
@@ -185,7 +170,7 @@ SlBool SgEpsWrite::_writeFile() const
 	::fprintf ( out, "%%!PS-Adobe-2.0 EPSF-2.0\n" );
 
 	// If there is a creator then write it.
-	if ( creator != "" ) ::fprintf ( out, "%%%%Creator: %s\n", creator );
+	if ( _creator != "" ) ::fprintf ( out, "%%%%Creator: %s\n", _creator );
 
 	// Finish the header.
 	::fprintf ( out, "%%%%BoundingBox: %g %g %g %g\n", viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -199,7 +184,7 @@ SlBool SgEpsWrite::_writeFile() const
 
 	// This is the Gouraud triangle PostScript fragement written by Frederic 
 	// Delhoume (delhoume@ilog.fr).
-	SlChar *gouraudTriangle[] =
+	char *gouraudTriangle[] =
 	{
 	  "/bd{bind def}bind def /triangle { aload pop   setrgbcolor  aload pop 5 3",
 	  "roll 4 2 roll 3 2 roll exch moveto lineto lineto closepath fill } bd",
@@ -232,7 +217,7 @@ SlBool SgEpsWrite::_writeFile() const
 	// This will loop through the gouraudTriangle array until it gets to the last 
 	// element in the array, which is zero. Each time the i'th element, gouraudTriangle[i], 
 	// is a pointer (some number other than zero), so it keeps looping.
-	for ( SlInt32 i = 0; gouraudTriangle[i]; ++i ) ::fprintf ( out, "%s\n", gouraudTriangle[i] );
+	for ( int i = 0; gouraudTriangle[i]; ++i ) ::fprintf ( out, "%s\n", gouraudTriangle[i] );
 
 	// Print the line width.
 	::fprintf ( out, "\n%g setlinewidth\n", lineWidth );
@@ -242,24 +227,24 @@ SlBool SgEpsWrite::_writeFile() const
 	::fprintf ( out, "%g %g %g %g rectfill\n\n", viewport[0], viewport[1], viewport[2], viewport[3] );
 
 	// Now write the actual buffer to file.
-	if ( !this->_writeBuffer ( pointSize, out ) ) return SL_FALSE;
+	if ( !this->_writeBuffer ( pointSize, out ) ) return false;
 
 	// Write the trailer.
 	::fprintf ( out, "grestore\n\n" );
 
 	// Write the "showpage" if we are supposed to. 
 	// This makes it possible to send the EPS file to a printer.
-	if ( showpage )	::fprintf ( out, "showpage\n\n" );
+	if ( _showpage )	::fprintf ( out, "showpage\n\n" );
 
 	// Close the file if it is not stdout.
 	if ( ( out != stdout ) && ( ::fclose ( out ) != 0 ) )
 	{
-		SL_ASSERT ( 0 );
-		return SL_FALSE;
+		USUL_ASSERT ( 0 );
+		return false;
 	}
 
 	// It worked!
-	return SL_TRUE;
+	return true;
 }
 
 
@@ -269,27 +254,25 @@ SlBool SgEpsWrite::_writeFile() const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlBool SgEpsWrite::_writeBuffer ( const SlFloat32 &pointSize, FILE *out ) const
+bool WriteEPS::_writeBuffer ( const float &pointSize, FILE *out ) const
 {
-	SL_PRINT ( "SgEpsWrite::_writeBuffer()" );
-	SL_ASSERT ( this );
-	SL_ASSERT ( _maxBufferSize > 0 );
-	SL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
-	SL_ASSERT ( _buffer );
-	SL_ASSERT ( _gouraudThreshold > 0.0 );
-	SL_ASSERT ( _lineSmoothingFactor > 0.0 );
-	SL_ASSERT ( out );
-	SL_ASSERT ( ( _primitive != 0x0 && _numPrimitives > 0 ) || ( _primitive == 0x0 && _numPrimitives == 0 ) );
+	USUL_ASSERT ( _maxBufferSize > 0 );
+	USUL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
+	USUL_ASSERT ( _buffer );
+	USUL_ASSERT ( _gouraudThreshold > 0.0 );
+	USUL_ASSERT ( _lineSmoothingFactor > 0.0 );
+	USUL_ASSERT ( out );
+	USUL_ASSERT ( ( _primitive != 0x0 && _numPrimitives > 0 ) || ( _primitive == 0x0 && _numPrimitives == 0 ) );
 
 	// Loop through all the primitives (it's ok if there aren't any).
-	for ( SlInt32 i = 0; i < _numPrimitives; ++i )
+	for ( int i = 0; i < _numPrimitives; ++i )
 	{
 		// Write the primitive.
-		if ( !this->_writePrimitive ( pointSize, i, out ) ) return SL_FALSE;
+		if ( !this->_writePrimitive ( pointSize, i, out ) ) return false;
 	}
 
 	// It worked!
-	return SL_TRUE;
+	return true;
 }
 
 
@@ -299,25 +282,23 @@ SlBool SgEpsWrite::_writeBuffer ( const SlFloat32 &pointSize, FILE *out ) const
 //
 /////////////////////////////////////////////////////////////////////////////
 
-SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &whichPrim, FILE *out ) const
+bool WriteEPS::_writePrimitive ( const float &pointSize, const int &whichPrim, FILE *out ) const
 {
-	SL_PRINT ( "SgEpsWrite::_writePrimitive()" );
-	SL_ASSERT ( this );
-	SL_ASSERT ( _maxBufferSize > 0 );
-	SL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
-	SL_ASSERT ( _buffer );
-	SL_ASSERT ( _gouraudThreshold > 0.0 );
-	SL_ASSERT ( _lineSmoothingFactor > 0.0 );
-	SL_ASSERT ( whichPrim >= 0 );
-	SL_ASSERT ( whichPrim < _numPrimitives );
-	SL_ASSERT ( out );
+	USUL_ASSERT ( _maxBufferSize > 0 );
+	USUL_ASSERT ( _actualBufferSize >= 0 && _actualBufferSize <= _maxBufferSize );
+	USUL_ASSERT ( _buffer );
+	USUL_ASSERT ( _gouraudThreshold > 0.0 );
+	USUL_ASSERT ( _lineSmoothingFactor > 0.0 );
+	USUL_ASSERT ( whichPrim >= 0 );
+	USUL_ASSERT ( whichPrim < _numPrimitives );
+	USUL_ASSERT ( out );
 
 	// We declare variables up here because we can't do it in the case statements.
-	SlInt32 token;			// The token to process in the switch statement.
-	SlInt32 numVertices;	// The number of vertices. Only used when it's a polygon token.
-	SlInt32 i;				// Counter for loop.
-	SlBool smooth;			// Flag that says the polygon vertices are different colors.
-	SlInt32 steps;			// Number of steps to take to draw one line segment (for varying color).
+	int token;			// The token to process in the switch statement.
+	int numVertices;	// The number of vertices. Only used when it's a polygon token.
+	int i;				// Counter for loop.
+	bool smooth;			// Flag that says the polygon vertices are different colors.
+	int steps;			// Number of steps to take to draw one line segment (for varying color).
 	GLfloat r;		// Red.
 	GLfloat g;		// Green.
 	GLfloat b;		// Blue.
@@ -380,15 +361,15 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 			distance = sqrt(dx * dx + dy * dy);
 
 			// Get the absolute value of the change in color.
-			absR = SL_ABS ( dr );
-			absG = SL_ABS ( dg );
-			absB = SL_ABS ( db );
+      absR = Usul::Math::absolute ( dr );
+			absG = Usul::Math::absolute ( dg );
+			absB = Usul::Math::absolute ( db );
 
 			// Calculate the maximum color.
-			maxColor = SL_MAX ( absR, SL_MAX ( absG, absB ) );
+      maxColor = Usul::Math::maximum ( absR, Usul::Math::maximum ( absG, absB ) );
 
 			// Calculate the number of steps to take for drawing the line.
-			steps = SL_MAX ( 1.0, maxColor * distance * _lineSmoothingFactor );
+			steps = Usul::Math::maximum ( 1.0, maxColor * distance * _lineSmoothingFactor );
 
 			// Calculate the distance in the x and y-direction for each step.
 			xstep = dx / steps;
@@ -456,7 +437,7 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 			b = vertex[0].b;
 
 			// Initialize this flag.
-			smooth = SL_FALSE;
+			smooth = false;
 
 			// Loop through all the rest of the vertices.
 			for ( i = 1; i < numVertices; ++i )
@@ -465,7 +446,7 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 				if ( r != vertex[i].r || g != vertex[i].g || b != vertex[i].b )
 				{
 					// Set the flag that says we have to do smooth shading and stop looping.
-					smooth = SL_TRUE;
+					smooth = true;
 					break;
 				}
 			}
@@ -474,7 +455,7 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 			if (smooth)
 			{
 				// Break polygon into "numVertices-2" triangle fans.
-				SlInt32 stop = numVertices - 2;
+				int stop = numVertices - 2;
 
 				// Loop through each triangle.
 				for ( i = 0; i < stop; ++i )
@@ -521,13 +502,13 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 
 	default:
 
-		SL_ASSERT ( 0 ); // What token is this?
-		return SL_FALSE;
+		USUL_ASSERT ( 0 ); // What token is this?
+		return false;
 	}
 
 
 	// It worked!
-	return SL_TRUE;
+	return true;
 }
 
 
@@ -538,13 +519,13 @@ SlBool SgEpsWrite::_writePrimitive ( const SlFloat32 &pointSize, const SlInt32 &
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgEpsWrite::setGouraudShadingThreshold ( const SlFloat64 &value )
+void WriteEPS::setGouraudShadingThreshold ( const double &value )
 {
-	if ( value < SG_EPS_WRITE_MIN_GOURAUD_SHADING_THRESHOLD || value > SG_EPS_WRITE_MAX_GOURAUD_SHADING_THRESHOLD )
+	/*if ( value < SG_EPS_WRITE_MIN_GOURAUD_SHADING_THRESHOLD || value > SG_EPS_WRITE_MAX_GOURAUD_SHADING_THRESHOLD )
 	{
-		SL_ASSERT ( 0 );
+		USUL_ASSERT ( 0 );
 		return;
-	}
+	}*/
 
 	_gouraudThreshold = value;
 }
@@ -556,32 +537,14 @@ void SgEpsWrite::setGouraudShadingThreshold ( const SlFloat64 &value )
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void SgEpsWrite::setLineSmoothingFactor ( const SlFloat64 &value )
+void WriteEPS::setLineSmoothingFactor ( const double &value )
 {
-	if ( value < SG_EPS_WRITE_MIN_LINE_SMOOTHING_FACTOR || value > SG_EPS_WRITE_MAX_LINE_SMOOTHING_FACTOR )
+	/*if ( value < SG_EPS_WRITE_MIN_LINE_SMOOTHING_FACTOR || value > SG_EPS_WRITE_MAX_LINE_SMOOTHING_FACTOR )
 	{
-		SL_ASSERT ( 0 );
+		USUL_ASSERT ( 0 );
 		return;
-	}
+	}*/
 
 	_lineSmoothingFactor = value;
 }
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Set the callback for rendering.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void SgEpsWrite::setRenderCallback ( SgEpsWriteCB *callback, const void *data )
-{
-	SL_ASSERT ( this );
-	SL_ASSERT ( callback );
-
-	_callback = callback;
-	_data = data;
-}
-
-#endif
 

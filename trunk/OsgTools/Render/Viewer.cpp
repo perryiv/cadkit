@@ -73,6 +73,7 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Math/Absolute.h"
 
 #include "osg/MatrixTransform"
 #include "osg/NodeVisitor"
@@ -4873,7 +4874,7 @@ void Viewer::zoom ( double delta )
 
   osg::BoundingBox bb ( this->getBoundingBox() );
 
-  distance += ( delta * ( .1 * bb.radius() ) ) / ::abs( delta );
+  distance += ( delta * ( .1 * bb.radius() ) ) / Usul::Math::absolute ( delta );
 
   this->setDistance( distance );
 
@@ -4889,7 +4890,7 @@ void Viewer::zoom ( double delta )
 
 bool Viewer::sceneStage() const
 {
-  return Usul::Bits::has ( _flags, _SHOW_STAGE );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_STAGE );
 }
 
 
@@ -4903,12 +4904,12 @@ void Viewer::sceneStage( bool b )
 {
   if ( b )
   {
-    _flags = Usul::Bits::add ( _flags, _SHOW_STAGE );
+    _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _SHOW_STAGE );
     this->_addSceneStage();
   }
   else
   {
-    _flags = Usul::Bits::remove ( _flags, _SHOW_STAGE );
+    _flags = Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _SHOW_STAGE );
     this->_removeSceneStage();
   }
 }
@@ -4935,7 +4936,7 @@ void Viewer::_addSceneStage()
   bb.expandBy ( bs );
 
   float width_factor = 1.5;
-  float height_factor = 0.3;
+  //float height_factor = 0.3;
   
   float xMin = bs.center().x()-bs.radius()*width_factor;
   float xMax = bs.center().x()+bs.radius()*width_factor;

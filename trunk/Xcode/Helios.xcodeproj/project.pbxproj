@@ -1257,6 +1257,10 @@
 		43FED996092452F800EBB610 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED859092452F700EBB610 /* Types.cpp */; };
 		43FEDAF5092454D500EBB610 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FEDAEE092454D500EBB610 /* Mutex.cpp */; };
 		43FEDAF6092454D500EBB610 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43FEDAEF092454D500EBB610 /* Mutex.h */; };
+		6687115609D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
+		6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
+		6687115809D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
+		6687115909D5E0020003384F /* GLFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -1853,6 +1857,7 @@
 				43A005640960D21300F3BC07 /* osgText.framework in Copy OSG Frameworks */,
 				43A005650960D21300F3BC07 /* osgUtil.framework in Copy OSG Frameworks */,
 				433212C20974512400C16FE3 /* ViewerBridge.h in Copy OSG Frameworks */,
+				6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */,
 			);
 			name = "Copy OSG Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3220,6 +3225,8 @@
 		43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		43FEDAEE092454D500EBB610 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Mutex.cpp; path = ../Threads/OpenThreads/Mutex.cpp; sourceTree = SOURCE_ROOT; };
 		43FEDAEF092454D500EBB610 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Mutex.h; path = ../Threads/OpenThreads/Mutex.h; sourceTree = SOURCE_ROOT; };
+		6687115409D5E0020003384F /* GLFeedback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GLFeedback.cpp; sourceTree = "<group>"; };
+		6687115509D5E0020003384F /* GLFeedback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLFeedback.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* Helios */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Helios; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -3994,6 +4001,8 @@
 		431BADBE09245AB700ED2131 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				6687115409D5E0020003384F /* GLFeedback.cpp */,
+				6687115509D5E0020003384F /* GLFeedback.h */,
 				431BADBF09245AB700ED2131 /* STLPrintVisitor.h */,
 				431BADC009245AB700ED2131 /* STLWrite.h */,
 				431BADC109245AB700ED2131 /* WriteEPS.cpp */,
@@ -6306,6 +6315,7 @@
 				43442F8F0960A303000A1AB5 /* ClipPlane.h in Headers */,
 				43442F910960A341000A1AB5 /* Enum.h in Headers */,
 				43442F950960A375000A1AB5 /* Intersect.h in Headers */,
+				6687115909D5E0020003384F /* GLFeedback.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8094,6 +8104,7 @@
 				43442F8C0960A303000A1AB5 /* Axes.cpp in Sources */,
 				43442F8E0960A303000A1AB5 /* ClipPlane.cpp in Sources */,
 				43442F940960A375000A1AB5 /* Intersect.cpp in Sources */,
+				6687115809D5E0020003384F /* GLFeedback.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8463,6 +8474,7 @@
 				4337B58609677B3F008DF27C /* UKFirstResponder.m in Sources */,
 				4337B58809677B3F008DF27C /* UKToolbarFactory.m in Sources */,
 				433212C30974512400C16FE3 /* ViewerBridge.mm in Sources */,
+				6687115609D5E0020003384F /* GLFeedback.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

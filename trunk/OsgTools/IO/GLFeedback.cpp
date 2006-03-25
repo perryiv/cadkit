@@ -21,7 +21,8 @@
 
 #include "osg/Vec3d"
 
-#include <malloc.h>
+#include <cstdlib>
+#include <memory.h>
 
 using namespace OsgTools::IO;
 
@@ -226,7 +227,7 @@ void GLFeedback::_calculatePrimitiveDebths()
 			switch ( sortOption )
 			{
 			case AVERAGE:	_primitive[index].depth = ( vertex[0].z + vertex[1].z ) * 0.5f; break;
-      case MIN_Z:		_primitive[index].depth = Usul::Math::minimum ( vertex[0].z, vertex[1].z ); break;
+			case MIN_Z:		_primitive[index].depth = Usul::Math::minimum ( vertex[0].z, vertex[1].z ); break;
 			case MAX_Z:		_primitive[index].depth = Usul::Math::maximum ( vertex[0].z, vertex[1].z ); break;
 			default : USUL_ASSERT ( 0 );
 			}
@@ -262,7 +263,7 @@ void GLFeedback::_calculatePrimitiveDebths()
 				
 				// Calculate the normal for the triangle from the vectors.
 				//v12.cross ( v01, normal );
-        normal = v01 ^ v12;
+				normal = v01 ^ v12;
 
 				// We use this triangle iff the normal is facing the view (i.e., if the z-value is positive).
 				if ( normal[2] > 0.0 ) ++index;
@@ -319,9 +320,14 @@ bool GLFeedback::_reallocateBufferIfNeeded ( int &size )
 		// Delete the existing buffer.
 		this->_deleteBuffer();
 
-		// Allocate the buffer. We use calloc() because it initializes the values to zero.
+		// Allocate the buffer. 
+		// We can't use calloc() because it is not cross platform.
 		// If the new size is zero then we just set to NULL.
-		GLfloat *buffer = ( size > 0 ) ? (GLfloat *) ::calloc ( size, sizeof (GLfloat) ) : 0x0;
+		GLfloat *buffer = (GLfloat *) ::malloc ( size * sizeof (GLfloat) );
+		
+		// If we have a buffer, set all values to zero.
+		if( buffer )
+			::memset ( buffer, 0, size );
 
 		// Check allocation.
 		if ( size > 0 && buffer == 0x0 )

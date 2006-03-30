@@ -41,6 +41,7 @@
 #include "OsgTools/Widgets/Axes.h"
 #include "OsgTools/Widgets/ClipPlane.h"
 #include "OsgTools/IO/WriteEPS.h"
+#include "OsgTools/Callbacks/HiddenLines.h"
 
 #include "OsgTools/Draggers/Trackball.h"
 
@@ -458,10 +459,18 @@ void Viewer::_singlePassRender()
       this->scene ( root.get() );
 
       // Set the state-sets for the branches.
-      this->_setHiddenLinesStateSets ( normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
+      OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
 
-      // Cull and draw again.
+      /*osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
+
+      model->accept( *v );*/
+
+      // Cull and draw.
       this->_cullAndDraw();
+
+      /*osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
+
+      model->accept( *unset );*/
     }
 
     // Catch all exceptions.
@@ -2256,18 +2265,6 @@ void Viewer::setHiddenLines()
 
   // Set the flag.
   _flags = Usul::Bits::add < unsigned int, unsigned int >( _flags, _HIDDEN_LINES );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make the state for hidden lines.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_setHiddenLinesStateSets ( osg::StateSet *normal, osg::StateSet *hidden ) const
-{
-  OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal, hidden );
 }
 
 

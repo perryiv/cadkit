@@ -661,6 +661,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Callbacks\HiddenLines.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Callbacks\SortBackToFront.cpp"
 					>
 				</File>

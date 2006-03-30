@@ -38,8 +38,9 @@ namespace CadKit
         this.SetStyle( System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true );
         this.SetStyle( System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true );
 
-        // Add mouse event handler.
-        this.MouseMove += this._mouseMoved;
+        // Add mouse event handlers.
+        this.MouseMove += this._mouseEvent;
+        this.MouseDown += this._mouseEvent;
 
         // Add resize handler.
         this.SizeChanged += _sizeChanged;
@@ -54,9 +55,9 @@ namespace CadKit
       }
 
       /// <summary>
-      /// Called when the mouse moves.
+      /// Called when there is a mouse event.
       /// </summary>
-      void _mouseMoved( object sender, System.Windows.Forms.MouseEventArgs e )
+      void _mouseEvent( object sender, System.Windows.Forms.MouseEventArgs e )
       {
         if ( System.Windows.Forms.MouseButtons.Left == e.Button )
         {

@@ -474,7 +474,6 @@ protected:
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
 
-  void                  _setHiddenLinesStateSets ( osg::StateSet *, osg::StateSet * ) const;
   void                  _multiPassRender();
 
   void                  _render();

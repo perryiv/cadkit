@@ -46,9 +46,9 @@ FastLoadTriangleSet::~FastLoadTriangleSet()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FastLoadTriangleSet::addGroup ( osg::Vec3Array *vertices, osg::Vec3Array *normals, osg::DrawElementsUInt *indices )
+void FastLoadTriangleSet::addGroup ( osg::Vec3Array *vertices, osg::Vec3Array *normalsT, osg::Vec3Array *normalsV, osg::DrawElementsUInt *indices )
 {
-  _groups.push_back ( new Group ( vertices, normals, indices ) );
+  _groups.push_back ( new Group ( vertices, normalsT, normalsV, indices ) );
 }
 
 
@@ -128,4 +128,19 @@ bool FastLoadTriangleSet::empty() const
 void FastLoadTriangleSet::updateBounds ( const osg::Vec3& vertex )
 {
   _bb.expandBy ( vertex );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decimate the triangle set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FastLoadTriangleSet::decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction )
+{
+  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
+  {
+    (*iter)->decimate( decimate, reduction );
+  }
 }

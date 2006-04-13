@@ -2,6 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2005, Perry L. Miller IV and Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -2504,7 +2505,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // 4. Set the viewport and projection as it is now.
   // 5. Read from the texture and add it to final image.
 
-  if ( osg::FBOExtensions::instance( _contextId )->isSupported() )
+  if ( osg::FBOExtensions::instance( _contextId, true )->isSupported() )
   {
     // Set up the texture.
     osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
@@ -5187,7 +5188,7 @@ void Viewer::_removeSceneStage()
 bool Viewer::canExport ( const std::string &filename )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-  return ( "ive" == ext || "osg" == ext || "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext || "eps" == ext );
+  return ( "ive" == ext || "osg" == ext || "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext || "eps" == ext || "flt" == ext );
 }
 
 
@@ -5202,6 +5203,7 @@ Viewer::Filters Viewer::filtersExport() const
   Filters filters;
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
+  filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
   filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
   filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
   filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
@@ -5221,7 +5223,7 @@ bool Viewer::exportFile ( const std::string& filename )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
-  if ( "ive" == ext || "osg" == ext )
+  if ( "ive" == ext || "osg" == ext || "flt" == ext )
   {
     return this->writeSceneFile ( filename );
   }

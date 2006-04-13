@@ -81,13 +81,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="opengl32.lib User32.lib"
-				OutputFile="$(USUL_LIB_DIR)/Usuld.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Usuld.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Usuld.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -179,12 +179,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="opengl32.lib User32.lib"
-				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Usul.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Usul.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Usul.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -645,10 +645,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDecimateTriangles.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\IFrameDump.h"
 						>
 					</File>
@@ -678,14 +674,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IShadeModel.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ISmoothTriangles.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ISubdivideTriangles.h"
 						>
 					</File>
 					<File
@@ -953,7 +941,15 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICalculatePerVertexNormals.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IDecimateModel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IDecimateTriangles.h"
 						>
 					</File>
 					<File
@@ -1009,7 +1005,15 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISmoothTriangles.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISubdivideModel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISubdivideTriangles.h"
 						>
 					</File>
 					<File

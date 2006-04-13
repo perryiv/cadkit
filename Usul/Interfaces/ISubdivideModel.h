@@ -30,7 +30,7 @@ struct ISubdivideModel : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1136402875u };
 
-  virtual void subdivideModel () = 0;
+  virtual void subdivideModel ( unsigned int numSubdivisions ) = 0;
 
 }; // struct ISubdivideModel
 

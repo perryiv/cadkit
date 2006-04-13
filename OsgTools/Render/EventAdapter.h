@@ -39,6 +39,7 @@ public:
   // Constructor.
   EventAdapter();
 
+#if 0
   // Get the properties.
   virtual EventType       getEventType()  const { return _type; }
   virtual int             getKey()        const { return _key; }
@@ -54,6 +55,7 @@ public:
 
   // Get the time of the event in seconds.
   virtual double          time() const { return _seconds; }
+#endif
 
   // Set the properties.
   void                    setEventType  ( const EventType &type );
@@ -67,6 +69,7 @@ protected:
   // Use reference counting.
   virtual ~EventAdapter();
 
+#if 0
   EventType _type;
   int _key;
   int _button;
@@ -74,6 +77,7 @@ protected:
   Usul::Math::Vec2f _mouse;
   unsigned int _buttons;
   double _seconds;
+#endif
 };
 
 

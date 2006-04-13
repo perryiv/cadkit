@@ -20,6 +20,8 @@
 
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
+namespace osg { class Array; class DrawElementsUInt; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -31,6 +33,10 @@ struct IDecimateTriangles : public Usul::Interfaces::IUnknown
 
   /// Id for this interface.
   enum { IID = 1536000000u };
+
+  /// Using osg::Referenced to get around problem
+  virtual void decimateTriangles ( osg::Array *inVerts, osg::DrawElementsUInt *inIndices,
+    osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction ) = 0;
 
   virtual void decimateTriangles ( OsgTools::Triangles::TriangleSet* ) = 0;
 

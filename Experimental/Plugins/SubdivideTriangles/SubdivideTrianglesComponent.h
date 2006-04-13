@@ -47,7 +47,7 @@ protected:
   virtual std::string getPluginName() const;
     
   /// Usul::Interfaces::ISubdivideTriangles
-  virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet );
+  virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions );
 };
 
 #endif /* __SUBDIVIDETRIANGLESCOMPONENT_H__  */		

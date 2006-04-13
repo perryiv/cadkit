@@ -12,6 +12,8 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/IO/Reader.h"
+#include "Usul/Interfaces/ICalculatePerVertexNormals.h"
+#include "Usul/Components/Manager.h"
 
 #include <fstream>
 #include <algorithm>
@@ -562,12 +564,13 @@ void ParadisReader::_buildVerticesNormalsTriangles()
   // Feedback.
   _document->setStatusBar ( "Creating vectors of vertices, normals, and triangles..." );
 
-  
+  Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ICalculatePerVertexNormals::IID ) );
 
   // Go through the precipitates.
   for( unsigned int i = 0; i < _precipitates.size(); ++i )
   {
-    NormalsPtr normals ( new Normals );
+    NormalsPtr normalsT ( new Normals );
+    NormalsPtr normalsV ( new Normals );
     VerticesPtr vertices ( new Vertices );
     ElementsPtr elements ( new Elements ( osg::PrimitiveSet::TRIANGLES ) );
 
@@ -575,7 +578,7 @@ void ParadisReader::_buildVerticesNormalsTriangles()
 
 
     vertices->reserve( record.numVerts );
-    normals->reserve ( record.numTris / 3 );
+    normalsT->reserve ( record.numTris / 3 );
     elements->reserve ( record.numTris );
 
     // Add the vertices.
@@ -591,7 +594,7 @@ void ParadisReader::_buildVerticesNormalsTriangles()
     {
       osg::Vec3 normal ( *iter, *(iter + 1), *(iter + 2 ) );
 
-      normals->push_back( normal );
+      normalsT->push_back( normal );
       //normals->push_back( normal );
       //normals->push_back( normal );
     }
@@ -610,7 +613,15 @@ void ParadisReader::_buildVerticesNormalsTriangles()
 
     }
 
-    _triangles->addGroup ( vertices.get(), normals.get(), elements.get() );
+    
+    Usul::Interfaces::ICalculatePerVertexNormals::QueryPtr plugin ( unknown );
+
+    if ( plugin.valid() )
+    {
+      plugin->calculatePerVertexNormals( vertices.get(), elements.get(), normalsT.get(), normalsV.get() );
+    }
+
+    _triangles->addGroup ( vertices.get(), normalsT.get(), normalsV.get(), elements.get() );
   }
 
   // Todo, build per vertex normals/

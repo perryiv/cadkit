@@ -25,6 +25,8 @@
 
 #include <map>
 
+namespace Usul { namespace Interfaces { struct IDecimateTriangles; } }
+
 class Group : public Usul::Base::Referenced,
               public Usul::Interfaces::IPrimitiveGroup
 {
@@ -54,9 +56,11 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  Group ( Vertices *vertices, Normals *normalsT, Elements *indices );
+  Group ( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices );
 
   osg::Node* buildScene ( const Options &options = Options(), Unknown *caller = 0x0 );
+
+  void                         decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction );
 
   /// Usul::Interfaces::IPrimitiveGroup
 
@@ -115,6 +119,7 @@ private:
 
   VerticesPtr   _vertices;
   NormalsPtr    _normalsT;
+  NormalsPtr    _normalsV;
   ElementsPtr   _indices;
   GroupPtr      _group;
   TransformPtr  _mt;

@@ -31,8 +31,8 @@ namespace Math {
 
 template < class Matrix1_, class Matrix2_ > inline void transpose ( const Matrix1_ &m, Matrix2_ &t )
 {
-  const unsigned int rows    ( m.size() );
-  const unsigned int columns ( ( rows ) ? m.at(0).size() : 0 );
+  const typename Matrix1_::size_type rows    ( m.size() );
+  const typename Matrix2_::size_type columns ( ( rows ) ? m.at(0).size() : 0 );
 
   t.resize ( columns );
   for ( unsigned int c = 0; c < columns; ++c )

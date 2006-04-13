@@ -94,7 +94,7 @@ void SubdivideModelComponent::execute ( Usul::Interfaces::IUnknown *caller )
 
   if( subdivide.valid() )
   {
-    subdivide->subdivideModel();
+    subdivide->subdivideModel( 2 );
 
     if ( message.valid() )
     {

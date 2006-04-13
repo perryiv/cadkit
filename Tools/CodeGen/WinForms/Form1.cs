@@ -54,7 +54,7 @@ namespace CodeGenWF
 
         private void _populateInterfacesListBox()
         {
-            String usulDir = System.Environment.GetEnvironmentVariable( "USUL_INC_DIR" ) + "\\Usul\\Interfaces\\";
+            String usulDir = System.Environment.GetEnvironmentVariable( "CADKIT_ROOT_DIR" ) + "\\Usul\\Interfaces\\";
 
             _interfaces.ResetText();
 
@@ -520,7 +520,7 @@ namespace CodeGenWF
 
         private static String _resourceFileDirectory()
         {
-            String dir = System.Environment.GetEnvironmentVariable( "USUL_INC_DIR" ) + "\\Tools\\CodeGen\\XLST\\";
+            String dir = System.Environment.GetEnvironmentVariable( "CADKIT_ROOT_DIR" ) + "\\Tools\\CodeGen\\XLST\\";
             return dir;
         }
 
@@ -533,7 +533,7 @@ namespace CodeGenWF
 
         private void _createUsulInterface()
         {
-            String dir = System.Environment.GetEnvironmentVariable( "USUL_INC_DIR" ) + "\\Usul\\Interfaces\\";
+            String dir = System.Environment.GetEnvironmentVariable("CADKIT_ROOT_DIR") + "\\Usul\\Interfaces\\";
 
             System.Xml.XmlDocument xml = new System.Xml.XmlDocument();
 

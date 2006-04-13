@@ -17,9 +17,12 @@
 #include "SubdivideTrianglesComponent.h"
 
 #include "Usul/System/Clock.h"
+#include "Usul/Resources/ProgressBar.h"
+
 #include "OsgTools/Triangles/TriangleSet.h"
 
 #include "VTKTools/Convert/PolyData.h"
+#include "VTKTools/Commands/Progress.h"
 
 // Disable deprecated warning in Visual Studio 8
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
@@ -93,19 +96,29 @@ std::string SubdivideTrianglesComponent::getPluginName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SubdivideTrianglesComponent::subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet )
+void SubdivideTrianglesComponent::subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions )
 {
-  vtkPolyData *data ( vtkPolyData::New() );
+  vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
 
   double start ( Usul::System::Clock::milliseconds() );
   VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, data );
   ::printf ( "%8.4f seconds .... Time to convert to polydata.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
   start = Usul::System::Clock::milliseconds();
-  vtkLoopSubdivisionFilter *subdivide	= vtkLoopSubdivisionFilter::New();
+  
+  vtkSmartPointer < vtkLoopSubdivisionFilter > subdivide	( vtkLoopSubdivisionFilter::New() );
   subdivide->SetInput ( data );
-  subdivide->SetNumberOfSubdivisions( 2 );
+  subdivide->SetNumberOfSubdivisions( numSubdivisions );
+
+  vtkSmartPointer < VTKTools::Commands::Progress > progress ( new VTKTools::Commands::Progress );
+  progress->progressBar ( Usul::Resources::progressBar() );
+
+  subdivide->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
+  subdivide->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );
+  subdivide->AddObserver( vtkCommand::EndEvent, progress.GetPointer() );
+
   subdivide->Update();
+  
   vtkPolyData *nData ( subdivide->GetOutput() );
   ::printf ( "%8.4f seconds .... Time to subdivide.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
@@ -113,6 +126,10 @@ void SubdivideTrianglesComponent::subdivideTriangles ( OsgTools::Triangles::Tria
   VTKTools::Convert::PolyData::polyDataToTriangleSet ( nData, triangleSet );
   ::printf ( "%8.4f seconds .... Time to convert to triangle set.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
 
-  subdivide->Delete();
-  data->Delete();
+  subdivide->RemoveObservers( vtkCommand::StartEvent );
+  subdivide->RemoveObservers( vtkCommand::ProgressEvent );
+  subdivide->RemoveObservers( vtkCommand::EndEvent );
+
+  // Why do I need this extra un register??
+  progress->UnRegister();
 }

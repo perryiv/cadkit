@@ -32,7 +32,7 @@ struct ISubdivideTriangles : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1136432950u };
 
-  virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet ) = 0;
+  virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions ) = 0;
 
 }; // struct ISubdivideTriangles
 

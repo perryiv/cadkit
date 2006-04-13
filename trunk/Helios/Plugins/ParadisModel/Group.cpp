@@ -10,6 +10,7 @@
 #include "Group.h"
 
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Interfaces/IDecimateTriangles.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 
@@ -20,9 +21,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Group( Vertices *vertices, Normals *normalsT, Elements *indices ) :
+Group::Group( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices ) :
 _vertices ( vertices ),
 _normalsT ( normalsT ),
+_normalsV ( normalsV ),
 _indices ( indices ),
 _group ( new osg::Group ),
 _mt ( new osg::MatrixTransform ),
@@ -43,6 +45,7 @@ _material ( new osg::Material )
 Group::Group() :
 _vertices ( new Vertices ),
 _normalsT ( new Normals ),
+_normalsV ( new Normals ),
 _indices ( new Elements ),
 _group ( new osg::Group ),
 _mt ( new osg::MatrixTransform ),
@@ -94,8 +97,11 @@ void Group::_init()
 {
   _geometry->setVertexArray ( _vertices.get() );
 
-  _geometry->setNormalArray ( _normalsT.get() );
-  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  /*_geometry->setNormalArray ( _normalsT.get() );
+  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );*/
+
+  _geometry->setNormalArray ( _normalsV.get() );
+  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
 
   _geometry->addPrimitiveSet ( _indices.get() );
 
@@ -354,3 +360,17 @@ float Group::getTransparency () const
   return td;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decimate the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction )
+{
+  decimate->decimateTriangles( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), reduction );
+
+  _geometry->dirtyDisplayList();
+  _geometry->dirtyBound();
+}

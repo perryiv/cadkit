@@ -378,16 +378,14 @@ void ParadisDocument::smoothModel ( )
 
 void ParadisDocument::decimateModel ( )
 {
-#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IDecimateTriangles::IID ) );
   Usul::Interfaces::IDecimateTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    plugin->decimateTriangles( _triangles.get() );
+    _triangles->decimate( plugin.get(), 0.50 );
     this->modified( true );
   }
-#endif
 }
 
 

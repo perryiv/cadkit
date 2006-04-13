@@ -17,6 +17,10 @@ class vtkPolyData;
 
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
+#include "osg/Array"
+
+namespace osg { class DrawElementsUInt; }
+
 #include <vector>
 
 namespace VTKTools {
@@ -40,6 +44,16 @@ public:
 
   /// Convert a TriangleSet to a vector of vtkPolyData.  Each poly data will be from a group.
   static void triangleSetToPolyData ( OsgTools::Triangles::TriangleSet*, PolyDataVector & );
+
+  /// Convert an osg::Vec3Array and DrawElements to a vtkPolyData
+  static void verticesToPolyData ( const osg::Vec3Array *vertices, const osg::DrawElementsUInt *indices, vtkPolyData *data);
+
+  /// Convert vtkPolyData to osg data.
+  static void polyDataToVertices ( vtkPolyData *data, 
+                                   osg::Vec3Array &vertices, 
+                                   osg::DrawElementsUInt &indices, 
+                                   osg::Vec3Array &normalsT, 
+                                   osg::Vec3Array &normalsV );
 };
 
 }

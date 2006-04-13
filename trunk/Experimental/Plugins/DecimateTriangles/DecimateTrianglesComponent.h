@@ -48,6 +48,10 @@ protected:
   virtual std::string getPluginName() const;
     
   /// Usul::Interfaces::IDecimateTriangles
+
+  virtual void decimateTriangles ( osg::Array *inVerts, osg::DrawElementsUInt *inIndices,
+                                   osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction );
+
   virtual void decimateTriangles ( OsgTools::Triangles::TriangleSet* );
 };
 

@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(VTK_INC_DIR);$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VTK_TOOLS"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,13 +80,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="vtkCommon.lib vtkGraphics.lib vtkFiltering.lib osgd.lib"
-				OutputFile="$(USUL_LIB_DIR)/VTKToolsd.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/VTKToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VTKToolsd.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/VTKToolsd.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/VTKToolsd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(VTK_INC_DIR);../;$(USUL_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(VTK_INC_DIR);$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VTK_TOOLS"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,12 +178,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="vtkCommon.lib vtkGraphics.lib vtkFiltering.lib osg.lib"
-				OutputFile="$(USUL_LIB_DIR)/VTKTools.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/VTKTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VTKTools.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/VTKTools.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/VTKTools.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -246,6 +246,18 @@
 				</File>
 				<File
 					RelativePath=".\Commands\Progress.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Triangles"
+				>
+				<File
+					RelativePath=".\Triangles\Mesher.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Mesher.h"
 					>
 				</File>
 			</Filter>

@@ -148,5 +148,5 @@ std::string SubdivideModelComponent::statusBarText() const
 
 std::string SubdivideModelComponent::menuGroup() const
 {
-  return "";
+  return "Primitives";
 }

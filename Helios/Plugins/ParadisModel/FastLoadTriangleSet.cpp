@@ -144,3 +144,33 @@ void FastLoadTriangleSet::decimate ( Usul::Interfaces::IDecimateTriangles* decim
     (*iter)->decimate( decimate, reduction );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Smooth the triangle set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FastLoadTriangleSet::smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations )
+{
+  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
+  {
+    (*iter)->smooth( smooth, numIterations );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Subdivide the triangle set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FastLoadTriangleSet::subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations )
+{
+  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
+  {
+    (*iter)->subdivide( subdivide, numIterations );
+  }
+}

@@ -169,7 +169,7 @@ std::string GroupPrimitivesComponent::statusBarText() const
 
 std::string GroupPrimitivesComponent::menuGroup() const
 {
-  return "";
+  return "Primitives";
 }
 
 

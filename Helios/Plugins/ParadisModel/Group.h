@@ -25,7 +25,15 @@
 
 #include <map>
 
-namespace Usul { namespace Interfaces { struct IDecimateTriangles; } }
+namespace Usul 
+{ 
+  namespace Interfaces 
+  { 
+    struct IDecimateTriangles; 
+    struct ISmoothTriangles; 
+    struct ISubdivideTriangles; 
+  } 
+}
 
 class Group : public Usul::Base::Referenced,
               public Usul::Interfaces::IPrimitiveGroup
@@ -60,7 +68,14 @@ public:
 
   osg::Node* buildScene ( const Options &options = Options(), Unknown *caller = 0x0 );
 
+  /// Decimate
   void                         decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction );
+
+  /// Smooth
+  void                         smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations );
+
+  /// Subdivide
+  void                         subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations );
 
   /// Usul::Interfaces::IPrimitiveGroup
 

@@ -152,9 +152,8 @@ void DecimateTrianglesComponent::decimateTriangles ( OsgTools::Triangles::Triang
 }
 
 
-void DecimateTrianglesComponent::decimateTriangles ( 
-                                   osg::Array *inVerts_, osg::DrawElementsUInt *indices,
-                                   osg::Array *nT, osg::Array *nV, float reduction )
+void DecimateTrianglesComponent::decimateTriangles ( osg::Array *inVerts_, osg::DrawElementsUInt *indices,
+                                                     osg::Array *nT, osg::Array *nV, float reduction )
 {
   osg::ref_ptr < osg::Vec3Array > inVerts ( dynamic_cast < osg::Vec3Array * > ( inVerts_ ) );
 

@@ -22,6 +22,9 @@
 
 #include "VTKTools/Convert/PolyData.h"
 
+#include "osg/Array"
+#include "osg/PrimitiveSet"
+
 // Disable deprecated warning in Visual Studio 8
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
 #pragma warning ( disable : 4996 )
@@ -116,4 +119,32 @@ void SmoothTrianglesComponent::smoothTriangles ( OsgTools::Triangles::TriangleSe
 
   smooth->Delete();
   data->Delete();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Smooth the vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  SmoothTrianglesComponent::smoothTriangles ( osg::Array *v, osg::DrawElementsUInt *indices,
+                                                  osg::Array *nT, osg::Array *nV, unsigned int numIterations )
+{
+  osg::ref_ptr < osg::Vec3Array > vertices ( dynamic_cast < osg::Vec3Array * > ( v ) );
+
+  vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
+
+  VTKTools::Convert::PolyData::verticesToPolyData( vertices.get(), indices, data );
+
+  vtkSmartPointer < vtkWindowedSincPolyDataFilter > smooth ( vtkWindowedSincPolyDataFilter::New() );
+  smooth->SetInput ( data );
+  smooth->SetNumberOfIterations( numIterations );
+  smooth->Update();
+  vtkSmartPointer < vtkPolyData > nData ( smooth->GetOutput() );
+  
+  osg::ref_ptr < osg::Vec3Array > normalsT ( dynamic_cast < osg::Vec3Array * > ( nT ) );
+  osg::ref_ptr < osg::Vec3Array > normalsV ( dynamic_cast < osg::Vec3Array * > ( nV ) );
+
+  VTKTools::Convert::PolyData::polyDataToVertices ( nData, *vertices, *indices, *normalsT, *normalsV );
 }

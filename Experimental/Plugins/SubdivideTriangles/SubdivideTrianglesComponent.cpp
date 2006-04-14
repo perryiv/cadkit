@@ -24,6 +24,9 @@
 #include "VTKTools/Convert/PolyData.h"
 #include "VTKTools/Commands/Progress.h"
 
+#include "osg/Array"
+#include "osg/PrimitiveSet"
+
 // Disable deprecated warning in Visual Studio 8
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
 #pragma warning ( disable : 4996 )
@@ -100,11 +103,7 @@ void SubdivideTrianglesComponent::subdivideTriangles ( OsgTools::Triangles::Tria
 {
   vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
 
-  double start ( Usul::System::Clock::milliseconds() );
   VTKTools::Convert::PolyData::triangleSetToPolyData( triangleSet, data );
-  ::printf ( "%8.4f seconds .... Time to convert to polydata.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
-
-  start = Usul::System::Clock::milliseconds();
   
   vtkSmartPointer < vtkLoopSubdivisionFilter > subdivide	( vtkLoopSubdivisionFilter::New() );
   subdivide->SetInput ( data );
@@ -119,12 +118,53 @@ void SubdivideTrianglesComponent::subdivideTriangles ( OsgTools::Triangles::Tria
 
   subdivide->Update();
   
-  vtkPolyData *nData ( subdivide->GetOutput() );
-  ::printf ( "%8.4f seconds .... Time to subdivide.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+  vtkSmartPointer < vtkPolyData > nData ( subdivide->GetOutput() );
 
-  start = Usul::System::Clock::milliseconds();
   VTKTools::Convert::PolyData::polyDataToTriangleSet ( nData, triangleSet );
-  ::printf ( "%8.4f seconds .... Time to convert to triangle set.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+
+  subdivide->RemoveObservers( vtkCommand::StartEvent );
+  subdivide->RemoveObservers( vtkCommand::ProgressEvent );
+  subdivide->RemoveObservers( vtkCommand::EndEvent );
+
+  // Why do I need this extra un register??
+  progress->UnRegister();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Subdivide the vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SubdivideTrianglesComponent::subdivideTriangles ( osg::Array *v, osg::DrawElementsUInt *indices,
+                                                       osg::Array *nT, osg::Array *nV, unsigned int numSubdivisions )
+{
+  osg::ref_ptr< osg::Vec3Array > vertices ( dynamic_cast < osg::Vec3Array * > ( v ) );
+
+  vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
+
+  VTKTools::Convert::PolyData::verticesToPolyData( vertices.get(), indices, data );
+  
+  vtkSmartPointer < vtkLoopSubdivisionFilter > subdivide	( vtkLoopSubdivisionFilter::New() );
+  subdivide->SetInput ( data );
+  subdivide->SetNumberOfSubdivisions( numSubdivisions );
+
+  vtkSmartPointer < VTKTools::Commands::Progress > progress ( new VTKTools::Commands::Progress );
+  progress->progressBar ( Usul::Resources::progressBar() );
+
+  subdivide->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
+  subdivide->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );
+  subdivide->AddObserver( vtkCommand::EndEvent, progress.GetPointer() );
+
+  subdivide->Update();
+  
+  vtkSmartPointer < vtkPolyData > nData ( subdivide->GetOutput() );
+
+  osg::ref_ptr< osg::Vec3Array > normalsT ( dynamic_cast < osg::Vec3Array * > ( nT ) );
+  osg::ref_ptr< osg::Vec3Array > normalsV ( dynamic_cast < osg::Vec3Array * > ( nV ) );
+
+  VTKTools::Convert::PolyData::polyDataToVertices ( nData, *vertices, *indices, *normalsT, *normalsV );
 
   subdivide->RemoveObservers( vtkCommand::StartEvent );
   subdivide->RemoveObservers( vtkCommand::ProgressEvent );

@@ -357,16 +357,14 @@ Usul::Interfaces::IUnknown* ParadisDocument::getPrimitiveGroup ( unsigned int i 
 
 void ParadisDocument::smoothModel ( )
 {
-#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ISmoothTriangles::IID ) );
   Usul::Interfaces::ISmoothTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    plugin->smoothTriangles( _triangles.get() );
+    _triangles->smooth ( plugin.get(), 20 );
     this->modified( true );
   }
-#endif
 }
 
 
@@ -397,16 +395,14 @@ void ParadisDocument::decimateModel ( )
 
 void ParadisDocument::subdivideModel ( unsigned int numSubdivisions )
 {
-#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ISubdivideTriangles::IID ) );
   Usul::Interfaces::ISubdivideTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    plugin->subdivideTriangles( _triangles.get(), numSubdivisions );
+    _triangles->subdivide ( plugin.get(), numSubdivisions );
     this->modified( true );
   }
-#endif
 }
 
 

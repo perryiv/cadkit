@@ -20,6 +20,8 @@
 
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
+namespace osg { class Array; class DrawElementsUInt; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -31,6 +33,9 @@ struct ISubdivideTriangles : public Usul::Interfaces::IUnknown
 
   /// Id for this interface.
   enum { IID = 1136432950u };
+
+  virtual void subdivideTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
+                                    osg::Array *normalsT, osg::Array *normalsV, unsigned int numSubdivisions ) = 0;
 
   virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions ) = 0;
 

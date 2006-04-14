@@ -576,7 +576,6 @@ void ParadisReader::_buildVerticesNormalsTriangles()
 
     PrecipitateRecord record ( _precipitates.at( i ) );
 
-
     vertices->reserve( record.numVerts );
     normalsT->reserve ( record.numTris / 3 );
     elements->reserve ( record.numTris );
@@ -595,8 +594,6 @@ void ParadisReader::_buildVerticesNormalsTriangles()
       osg::Vec3 normal ( *iter, *(iter + 1), *(iter + 2 ) );
 
       normalsT->push_back( normal );
-      //normals->push_back( normal );
-      //normals->push_back( normal );
     }
 
     // Add the triangles.
@@ -609,11 +606,8 @@ void ParadisReader::_buildVerticesNormalsTriangles()
       elements->push_back ( v0 );
       elements->push_back ( v1 );
       elements->push_back ( v2 );
-
-
     }
 
-    
     Usul::Interfaces::ICalculatePerVertexNormals::QueryPtr plugin ( unknown );
 
     if ( plugin.valid() )

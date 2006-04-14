@@ -47,6 +47,10 @@ protected:
   virtual std::string getPluginName() const;
     
   /// Usul::Interfaces::ISubdivideTriangles
+
+  virtual void subdivideTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
+                                    osg::Array *normalsT, osg::Array *normalsV, unsigned int numIterations );
+
   virtual void subdivideTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions );
 };
 

@@ -47,6 +47,9 @@ protected:
   virtual std::string getPluginName() const;
     
   /// Usul::Interfaces::ISmoothTriangles
+  virtual void smoothTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
+                                 osg::Array *normalsT, osg::Array *normalsV, unsigned int numIterations );
+
   virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet* );
 };
 

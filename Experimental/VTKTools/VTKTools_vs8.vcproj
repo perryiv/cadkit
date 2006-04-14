@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: VTKTools"
 	ProjectGUID="{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}"
+	RootNamespace="lib: VTKTools"
 	>
 	<Platforms>
 		<Platform
@@ -220,6 +221,14 @@
 			<Filter
 				Name="Convert"
 				>
+				<File
+					RelativePath=".\Convert\ImageData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\ImageData.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Convert\PolyData.cpp"
 					>

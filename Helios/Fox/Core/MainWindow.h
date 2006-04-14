@@ -16,7 +16,7 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_
 
-#include "OsgFox/Core/Export.h"
+#include "Helios/Fox/Core/Export.h"
 
 #include "Usul/Errors/Stack.h"
 #include "Usul/Interfaces/IClassFactory.h"
@@ -181,6 +181,7 @@ public:
     ID_EYE_DISTANCE,
     ID_LIGHTS,
     ID_SCENE_STAGE,
+    ID_CENTEROFROTATION,
     ID_LAST
   };
 
@@ -280,6 +281,7 @@ public:
   long                                  onCommandEyeDistance       ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onCommandLights            ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onCommandSceneStage        ( FX::FXObject *, FX::FXSelector, void * );
+  long                                  onCommandCenterOfRotation  ( FX::FXObject *, FX::FXSelector, void * );
 
   // Update messages.
   long                                  onUpdateNotBusy            ( FX::FXObject *, FX::FXSelector, void * );
@@ -318,6 +320,7 @@ public:
   long                                  onUpdateEyeDistance        ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onUpdateLights             ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onUpdateSceneStage         ( FX::FXObject *, FX::FXSelector, void * );
+  long                                  onUpdateCenterOfRotation   ( FX::FXObject *, FX::FXSelector, void * );
 
   void                                  outputFile ( const std::string &of ) { _output = of; }
   const std::string &                   outputFile() const { return _output; }

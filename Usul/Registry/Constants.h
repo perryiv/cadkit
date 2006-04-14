@@ -59,6 +59,7 @@ namespace Usul
       const std::string HIGH_LODS                 = "high_lods";
       const std::string FOV                       = "fov";
       const std::string PERSPECTIVE               = "perspective";
+      const std::string COR_NAME                  = "center_of_rotation";
     };
   };
 };

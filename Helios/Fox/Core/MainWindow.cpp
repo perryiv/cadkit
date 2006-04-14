@@ -13,9 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Core/Precompiled.h"
-#include "OsgFox/Core/MainWindow.h"
-#include "OsgFox/Core/Preferences.h"
+#include "Helios/Fox/Core/Precompiled.h"
+#include "Helios/Fox/Core/MainWindow.h"
+#include "Helios/Fox/Core/Preferences.h"
 
 #include "FoxTools/Errors/ErrorChecker.h"
 #include "FoxTools/App/Application.h"
@@ -101,6 +101,7 @@
 #include "Usul/Interfaces/IOsgFoxView.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/ICamera.h"
+#include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/EventQueue.h"
@@ -268,6 +269,8 @@ FXDEFMAP ( MainWindow ) WindowMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, MainWindow::ID_LIGHTS,                MainWindow::onCommandLights            ),
   FXMAPFUNC ( FX::SEL_COMMAND, MainWindow::ID_SCENE_STAGE,           MainWindow::onCommandSceneStage        ),
   FXMAPFUNC ( FX::SEL_UPDATE,  MainWindow::ID_SCENE_STAGE,           MainWindow::onUpdateSceneStage         ),
+  FXMAPFUNC ( FX::SEL_COMMAND, MainWindow::ID_CENTEROFROTATION,      MainWindow::onCommandCenterOfRotation  ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  MainWindow::ID_CENTEROFROTATION,      MainWindow::onUpdateCenterOfRotation   ),
 };
 
 FOX_TOOLS_IMPLEMENT_ABSTRACT ( MainWindow, MainWindow::BaseClass, WindowMap, ARRAYNUMBER ( WindowMap ) );
@@ -694,6 +697,7 @@ void MainWindow::_initViewMenu()
     view->append ( new MenuCheck ( "Axes",                "", "Hide/Show Axes.",                           this, MainWindow::ID_AXES               ) );
     view->append ( new MenuCheck ( "Lights",              "", "Hide/Show Lights.",                         this, MainWindow::ID_LIGHTS             ) );
     view->append ( new MenuCheck ( "Stage",               "", "Hide/Show Scene Stage.",                    this, MainWindow::ID_SCENE_STAGE        ) );
+    view->append ( new MenuCheck ( "Center of Rotation",  "", "Hide/Show Center of Rotation.",             this, MainWindow::ID_CENTEROFROTATION   ) );
   _menuBar->append ( view );
 }
 
@@ -3653,3 +3657,30 @@ long MainWindow::onUpdateSceneStage ( FX::FXObject *object, FX::FXSelector, void
   FoxTools::Functions::check ( Usul::App::Controller::instance().sceneStage(), object );
   return 1;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center of rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+  
+long MainWindow::onCommandCenterOfRotation  ( FX::FXObject *, FX::FXSelector, void *data )
+{
+  Usul::App::Controller::instance().centerOfRotationSet ( data ? true : false );
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the center of rotation checked?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long MainWindow::onUpdateCenterOfRotation   ( FX::FXObject *object, FX::FXSelector, void * )
+{
+  FoxTools::Functions::check ( Usul::App::Controller::instance().centerOfRotationCheck(), object );
+  return 1;
+}
+

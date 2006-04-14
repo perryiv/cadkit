@@ -17,7 +17,7 @@
 
 #include "Usul/Documents/Document.h"
 
-#include "OsgFox/Views/Canvas.h"
+#include "Helios/Fox/Views/Canvas.h"
 
 #include "FoxTools/Windows/MdiChildWindow.h"
 #include "FoxTools/Functions/GLVisual.h"

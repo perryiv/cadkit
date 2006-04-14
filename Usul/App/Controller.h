@@ -29,13 +29,13 @@ class USUL_EXPORT Controller
 public:
 
   // Typedefs
-  typedef Usul::Interfaces::IPolygonMode IPolygonMode;
-  typedef Usul::Interfaces::IShadeModel  IShadeModel;
-  typedef Usul::Documents::Document Document;
-  typedef std::pair<std::string,std::string>    Filter;
-  typedef std::vector<Filter>                   Filters;
-  typedef std::pair < unsigned int, std::string > StereoMode;
-  typedef std::vector < StereoMode > StereoModes;
+  typedef Usul::Interfaces::IPolygonMode           IPolygonMode;
+  typedef Usul::Interfaces::IShadeModel            IShadeModel;
+  typedef Usul::Documents::Document                Document;
+  typedef std::pair<std::string,std::string>       Filter;
+  typedef std::vector<Filter>                      Filters;
+  typedef std::pair < unsigned int, std::string >  StereoMode;
+  typedef std::vector < StereoMode >               StereoModes;
 
   // Singleton.
   static Controller &         instance();
@@ -64,6 +64,9 @@ public:
 
   void                        camera ( unsigned int option );
   bool                        cameraEnable ();
+
+  void                        centerOfRotationSet ( bool b );
+  bool                        centerOfRotationCheck ();
 
   bool                        displayLists();
   void                        displayListsToggle();

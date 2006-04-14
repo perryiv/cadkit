@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Views/LightEditor.h"
+#include "Helios/Fox/Views/LightEditor.h"
 
 #include "Usul/Cast/Cast.h"
 

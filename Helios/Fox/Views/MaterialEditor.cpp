@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Views/MaterialEditor.h"
+#include "Helios/Fox/Views/MaterialEditor.h"
 
 #include "Usul/Cast/Cast.h"
 
@@ -24,7 +24,7 @@
 
 #include "FoxTools/Widgets/SliderTextField.h"
 
-//#include "OsgFox/Views/Canvas.h"
+//#include "Helios/Fox/Views/Canvas.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"

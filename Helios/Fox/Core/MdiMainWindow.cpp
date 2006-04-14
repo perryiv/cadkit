@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Core/MdiMainWindow.h"
+#include "Helios/Fox/Core/MdiMainWindow.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Cast/Cast.h"

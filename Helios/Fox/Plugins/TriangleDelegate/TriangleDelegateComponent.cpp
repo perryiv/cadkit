@@ -17,7 +17,7 @@
 
 #include "Usul/Documents/Document.h"
 
-#include "OsgFox/Views/Canvas.h"
+#include "Helios/Fox/Views/Canvas.h"
 
 #include "OsgTools/Triangles/Loop.h"
 

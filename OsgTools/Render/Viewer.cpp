@@ -24,6 +24,7 @@
 #include "OsgTools/Sphere.h"
 #include "OsgTools/Jitter.h"
 #include "OsgTools/GlassBoundingBox.h"
+#include "OsgTools/ShapeFactory.h"
 #include "OsgTools/State/PolygonMode.h"
 #include "OsgTools/State/ShadeModel.h"
 #include "OsgTools/State/StateSet.h"
@@ -92,6 +93,7 @@
 #include "osg/FrameBufferObject"
 #include "osg/Notify"
 #include "osg/Stencil"
+#include "osg/AutoTransform"
 
 #include "osg/GL"
 
@@ -368,6 +370,9 @@ void Viewer::render()
 
   // Set the lights
   this->_setLights();
+
+  // Set the center of rotation
+  this->_setCenterOfRotation();
 
   // Set high lod callbacks if we should
   if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::HIGH_LODS ) )
@@ -2745,6 +2750,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ILights* > ( this );
   case Usul::Interfaces::ISceneStage::IID:
     return static_cast < Usul::Interfaces::ISceneStage * > ( this );
+  case Usul::Interfaces::ICenterOfRotation::IID:
+    return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
   default:
     return 0x0;
   }
@@ -5203,7 +5210,7 @@ Viewer::Filters Viewer::filtersExport() const
   Filters filters;
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
-  filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
+  //filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
   filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
   filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
   filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
@@ -5238,4 +5245,97 @@ bool Viewer::exportFile ( const std::string& filename )
   }
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide/Show the center of rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::showCenterOfRotation ( bool b )
+{
+  if ( b )
+  {
+    _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _SHOW_COR );
+  }
+  else
+  {
+    _flags = Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _SHOW_COR );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the center of rotation is shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::showCenterOfRotation ( ) const
+{
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_COR );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center of rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_setCenterOfRotation()
+{
+  osg::ref_ptr< osg::Group > group ( this->getGroup ( Usul::Registry::Keys::COR_NAME ) );
+
+  group->removeChild( 0, group->getNumChildren() );
+
+  if ( ! this->showCenterOfRotation() )
+    return;
+
+  osg::Vec3 center ( this->getCenter() );
+
+  osg::ref_ptr < OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable ( sf->sphere ( 15 ) );
+
+  osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+  vertices->push_back ( osg::Vec3 ( -30.0, 0.0,  0.0  ) );
+  vertices->push_back ( osg::Vec3 (  30.0, 0.0,  0.0  ) );
+  vertices->push_back ( osg::Vec3 (  0.0, -30.0, 0.0  ) );
+  vertices->push_back ( osg::Vec3 (  0.0,  30.0, 0.0  ) );
+  vertices->push_back ( osg::Vec3 (  0.0,  0.0, -30.0 ) );
+  vertices->push_back ( osg::Vec3 (  0.0,  0.0,  30.0 ) );
+
+  osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+  colors->push_back ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+
+  geom->setVertexArray ( vertices.get() );
+  geom->setColorArray ( colors.get() );
+  geom->setColorBinding ( osg::Geometry::BIND_OVERALL );
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, vertices->size() ) );
+
+  OsgTools::State::StateSet::setLighting ( geom->getOrCreateStateSet(), false );
+
+  geode->addDrawable ( geom.get( ) );
+
+  osg::ref_ptr< osg::AutoTransform > transform ( new osg::AutoTransform ( ) );
+  transform->setPosition ( center );
+  transform->setAutoScaleToScreen ( true );
+
+  // Set the normalize state to true, so when the sphere size changes it still looks correct.
+  OsgTools::State::StateSet::setNormalize ( transform.get(), true );
+
+  transform->addChild ( geode.get() );
+
+  // Set the material.
+  OsgTools::MaterialSetter ms;
+  ms.diffuse ( osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+  ms ( transform.get() );
+  
+  group->addChild ( transform.get() );
 }

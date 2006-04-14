@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Plugins/Triangulate/TriangulateFactory.h"
-#include "OsgFox/Plugins/Triangulate/TriangulateComponent.h"
+#include "Helios/Plugins/Triangulate/TriangulateFactory.h"
+#include "Helios/Plugins/Triangulate/TriangulateComponent.h"
 
 #include "Usul/Components/Create.h"
 

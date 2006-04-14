@@ -16,8 +16,8 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_
 
-#include "OsgFox/Views/Export.h"
-#include "OsgFox/Views/FoxCanvas.h"
+#include "Helios/Fox/Views/Export.h"
+#include "Helios/Fox/Views/FoxCanvas.h"
 
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Threads/Guard.h"

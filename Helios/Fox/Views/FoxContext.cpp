@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Views/FoxContext.h"
-#include "OsgFox/Views/FoxCanvas.h"
+#include "Helios/Fox/Views/FoxContext.h"
+#include "Helios/Fox/Views/FoxCanvas.h"
 
 using namespace OsgFox::Views;
 

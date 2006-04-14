@@ -32,7 +32,7 @@
 #include "Usul/Interfaces/IMenuBar.h"
 #include "Usul/Resources/MenuBar.h"
 
-#include "OsgFox/Views/ImageView.h"
+#include "Helios/Fox/Views/ImageView.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageDelegateComponent , ImageDelegateComponent::BaseClass );
 

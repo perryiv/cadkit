@@ -11,7 +11,7 @@
 #define _CPP_CMATH 1
 #endif
 
-#include "OsgFox/Core/Preferences.h"
+#include "Helios/Fox/Core/Preferences.h"
 
 #include "Usul/Registry/Constants.h"
 

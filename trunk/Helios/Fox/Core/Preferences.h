@@ -10,7 +10,7 @@
 #ifndef __OSG_FOX_PREFERENCES_H__
 #define __OSG_FOX_PREFERENCES_H__
 
-#include "OsgFox/Core/Export.h"
+#include "Helios/Fox/Core/Export.h"
 
 #include "FoxTools/Headers/DialogBox.h"
 

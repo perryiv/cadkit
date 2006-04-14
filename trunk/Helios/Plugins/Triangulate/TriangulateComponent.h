@@ -17,7 +17,7 @@
 #ifndef _TRIANGULATE_H_
 #define _TRIANGULATE_H_
 
-#include "OsgFox/Plugins/Triangulate/CompileGuard.h"
+#include "Helios/Plugins/Triangulate/CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Vector2.h"

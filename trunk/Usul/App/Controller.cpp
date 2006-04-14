@@ -40,6 +40,7 @@
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ISceneStage.h"
+#include "Usul/Interfaces/ICenterOfRotation.h"
 
 #include <iostream>
 #include <sstream>
@@ -1343,8 +1344,31 @@ void Controller::sceneStage ( bool b )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center of rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
   
+void Controller::centerOfRotationSet ( bool b )
+{
+  Usul::Interfaces::ICenterOfRotation::QueryPtr cor ( this->activeView() );
+  if ( cor.valid() )
+  {
+    cor->showCenterOfRotation ( b );
+    this->activeView()->render();
+  }
+}
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the center of rotation checked?
+//
+///////////////////////////////////////////////////////////////////////////////
 
-
+bool Controller::centerOfRotationCheck ()
+{
+  Usul::Interfaces::ICenterOfRotation::QueryPtr cor ( this->activeView() );
+  return cor.valid() && cor->showCenterOfRotation();
+}

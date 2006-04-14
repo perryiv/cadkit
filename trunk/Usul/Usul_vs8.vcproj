@@ -845,6 +845,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICenterOfRotation.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetBoundingBox.h"
 						>
 					</File>

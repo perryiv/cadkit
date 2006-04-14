@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Core/MdiMainWindow.h"
+#include "Helios/Fox/Core/MdiMainWindow.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 

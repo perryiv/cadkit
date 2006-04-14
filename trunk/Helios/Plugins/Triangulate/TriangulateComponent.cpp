@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Plugins/Triangulate/TriangulateComponent.h"
+#include "Helios/Plugins/Triangulate/TriangulateComponent.h"
 
 // The following header file needs to have REAL defined. We are
 // choosing to use 64 bit floats for the triangulation

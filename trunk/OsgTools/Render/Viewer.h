@@ -54,6 +54,7 @@
 #include "Usul/Interfaces/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/ISceneStage.h"
+#include "Usul/Interfaces/ICenterOfRotation.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -115,7 +116,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IBackground,
                                 public Usul::Interfaces::IOsgFoxView,
                                 public Usul::Interfaces::ILights,
-                                public Usul::Interfaces::ISceneStage
+                                public Usul::Interfaces::ISceneStage,
+                                public Usul::Interfaces::ICenterOfRotation
 {
   public:
 
@@ -461,6 +463,8 @@ protected:
   void                  _removeAxes ();
   void                  _setAxes (); 
 
+  void                  _setCenterOfRotation();
+
   void                  _accPerspective ( double fov, double aspect, double zNear, double zFar, double pixdx, double pixdy ); 
 
   void                  _cullAndDraw();
@@ -662,6 +666,10 @@ protected:
   virtual Filters               filtersExport() const;
   virtual bool                  exportFile ( const std::string& filename );
 
+  /// Usul::Interfaces::ICenterOrRotation
+  virtual void showCenterOfRotation ( bool b );
+  virtual bool showCenterOfRotation ( ) const;
+
 private:
 
   // Do not copy.
@@ -678,6 +686,7 @@ private:
     _SHOW_AXES          = 0x00000010,
     _SHOW_LIGHTS        = 0x00000020,
     _SHOW_STAGE         = 0x00000040,
+    _SHOW_COR           = 0x00000080
   };
 
   // Local integer constants.

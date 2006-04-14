@@ -16,7 +16,7 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_
 
-#include "OsgFox/Core/MainWindow.h"
+#include "Helios/Fox/Core/MainWindow.h"
 
 namespace FX { class FXMDIClient; class FXMDIMenu; }
 

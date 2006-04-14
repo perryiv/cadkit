@@ -16,8 +16,8 @@
 #include "VolumeDelegateComponent.h"
 #include "SettingsDialog.h"
 
-#include "OsgFox/Views/Canvas.h"
-#include "OsgFox/Views/TFView.h"
+#include "Helios/Fox/Views/Canvas.h"
+#include "Helios/Fox/Views/TFView.h"
 
 #include "FoxTools/Windows/MdiChildWindow.h"
 #include "FoxTools/Functions/GLVisual.h"

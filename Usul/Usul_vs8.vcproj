@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib User32.lib"
+				AdditionalDependencies="User32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib User32.lib"
+				AdditionalDependencies="User32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -540,6 +540,10 @@
 				<Filter
 					Name="GUI"
 					>
+					<File
+						RelativePath=".\Interfaces\IAboutString.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Interfaces\ICancelButton.h"
 						>

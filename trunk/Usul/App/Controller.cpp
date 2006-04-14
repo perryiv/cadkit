@@ -15,7 +15,6 @@
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Cast/Cast.h"
-#include "Usul/Headers/OpenGL.h"
 #include "Usul/State/Busy.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
@@ -41,6 +40,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
+#include "Usul/Interfaces/IAboutString.h"
 
 #include <iostream>
 #include <sstream>
@@ -509,56 +509,19 @@ bool Controller::boundingSphereCheck  ()
 
 std::string Controller::aboutMessage ( )
 {
-  // Get the date.
-  std::istringstream date ( __DATE__ );
-  std::string day, month, year;
-  date >> month >> day >> year;
+  typedef Usul::Components::Manager Manager;
+  typedef Manager::UnknownSet Plugins;
+  Plugins plugins ( Manager::instance().getInterfaces ( Usul::Interfaces::IAboutString::IID ) );
 
-  // Format the string.
-  std::ostringstream message;
-  message << "3D viewer application based on:";
-  message << "\n  -- CAD Toolkit (cadkit.sourceforge.net)";
-  message << "\n  -- FOX-Toolkit (www.fox-toolkit.org)";
-  message << "\n  -- Open Scene Graph (www.openscenegraph.org)";
-  message << "\n  -- OpenGL (www.opengl.org)";
-  message << '\n';
-  message << "\nPrimary authors include:";
-  message << "\n  -- Perry L Miller IV";
-  message << "\n  -- Adam Kubach";
-  message << "\n  -- Mike Jackson";
+  std::string about;
 
-  // If there is an active view...
-  if ( this->activeView() ) // TODO, move to plugin
+  for ( Plugins::const_iterator iter = plugins.begin(); iter != plugins.end(); ++iter )
   {
-    //this->activeView()->makeCurrent();
-    message << '\n';
-    message << "\nOpenGL Information:";
-    const char *vendor     ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_VENDOR     ) ) );
-    const char *renderer   ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_RENDERER   ) ) );
-    const char *version    ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_VERSION    ) ) );
-    const char *extensions ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_EXTENSIONS ) ) );
-    if ( vendor )
-      message << "\n  -- Vendor: " << vendor;
-    if ( renderer )
-      message << "\n  -- Renderer: " << renderer;
-    if ( version )
-      message << "\n  -- Version: " << version;
-
-    #ifdef _DEBUG
-
-    if ( extensions )
-    {
-      std::string e ( extensions );
-      std::replace ( e.begin(), e.end(), ' ', '\n' );
-      message << "\n  -- Extensions: " << e;
-    }
-
-    #endif
+    Usul::Interfaces::IAboutString::ValidQueryPtr ptr ( iter->get() );
+    about += ptr->aboutString();
   }
 
-  message << "\n\nBuilt on " << day << ' ' << month << ' ' << year << " at " << __TIME__;
-
-  return message.str();
+  return about;
 }
 
 

@@ -269,19 +269,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Subdivide Triangles",
 		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: CenterOfRotation", "..\Plugins\CenterOfRotation\CenterOfRotation.vcproj", "{D2DEF158-501E-4E19-BF4C-73FB23FBF3FC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: CalcPerVertexNormals", "..\Plugins\CalcPerVertexNormals\CalcPerVertexNormals_vs8.vcproj", "{898F6EAD-A540-4A1E-9371-5CC78D9A0D9A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: VolumeToTriangles", "Plugins\VolumeToTriangles\VolumeToTriangles.vcproj", "{2C59B090-B72A-49FF-9E4D-9A9C4BC14AC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: About", "..\Plugins\About\About_vs8.vcproj", "{28577530-46B2-433F-A317-5A106C4BEE36}"
 	ProjectSection(ProjectDependencies) = postProject
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
@@ -472,10 +471,6 @@ Global
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Debug|Win32.Build.0 = Debug|Win32
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Release|Win32.ActiveCfg = Release|Win32
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Release|Win32.Build.0 = Release|Win32
-		{D2DEF158-501E-4E19-BF4C-73FB23FBF3FC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D2DEF158-501E-4E19-BF4C-73FB23FBF3FC}.Debug|Win32.Build.0 = Debug|Win32
-		{D2DEF158-501E-4E19-BF4C-73FB23FBF3FC}.Release|Win32.ActiveCfg = Release|Win32
-		{D2DEF158-501E-4E19-BF4C-73FB23FBF3FC}.Release|Win32.Build.0 = Release|Win32
 		{898F6EAD-A540-4A1E-9371-5CC78D9A0D9A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{898F6EAD-A540-4A1E-9371-5CC78D9A0D9A}.Debug|Win32.Build.0 = Debug|Win32
 		{898F6EAD-A540-4A1E-9371-5CC78D9A0D9A}.Release|Win32.ActiveCfg = Release|Win32
@@ -484,6 +479,10 @@ Global
 		{2C59B090-B72A-49FF-9E4D-9A9C4BC14AC1}.Debug|Win32.Build.0 = Debug|Win32
 		{2C59B090-B72A-49FF-9E4D-9A9C4BC14AC1}.Release|Win32.ActiveCfg = Release|Win32
 		{2C59B090-B72A-49FF-9E4D-9A9C4BC14AC1}.Release|Win32.Build.0 = Release|Win32
+		{28577530-46B2-433F-A317-5A106C4BEE36}.Debug|Win32.ActiveCfg = Debug|Win32
+		{28577530-46B2-433F-A317-5A106C4BEE36}.Debug|Win32.Build.0 = Debug|Win32
+		{28577530-46B2-433F-A317-5A106C4BEE36}.Release|Win32.ActiveCfg = Release|Win32
+		{28577530-46B2-433F-A317-5A106C4BEE36}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

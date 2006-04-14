@@ -20,6 +20,8 @@
 
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
+namespace osg { class Array; class DrawElementsUInt; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -31,6 +33,9 @@ struct ISmoothTriangles : public Usul::Interfaces::IUnknown
 
   /// Id for this interface.
   enum { IID = 1100046596u };
+
+  virtual void smoothTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
+                                 osg::Array *normalsT, osg::Array *normalsV, unsigned int numIterations ) = 0;
 
   virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet* ) = 0;
 

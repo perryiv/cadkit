@@ -149,5 +149,5 @@ std::string DecimateModelComponent::statusBarText() const
 
 std::string DecimateModelComponent::menuGroup() const
 {
-  return "";
+  return "Primitives";
 }

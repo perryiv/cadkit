@@ -148,5 +148,5 @@ std::string SmoothingComponent::statusBarText() const
 
 std::string SmoothingComponent::menuGroup() const
 {
-  return "";
+  return "Primitives";
 }

@@ -11,6 +11,10 @@
 
 #include "Usul/Adaptors/Random.h"
 #include "Usul/Interfaces/IDecimateTriangles.h"
+#include "Usul/Interfaces/ISmoothTriangles.h"
+#include "Usul/Interfaces/ISubdivideTriangles.h"
+
+#include "OsgTools/HasOption.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 
@@ -153,6 +157,18 @@ void Group::_init()
 
 osg::Node* Group::buildScene ( const Options &options, Unknown *caller )
 {
+  // Set the correct normal-vectors.
+  if ( OsgTools::Options::has ( options, "normals", "per-vertex" ) )
+  {
+    _geometry->setNormalArray ( _normalsV.get() );
+    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  }
+  else
+  {
+    _geometry->setNormalArray ( _normalsT.get() );
+    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  }
+
   return _group.get();
 }
 
@@ -370,6 +386,36 @@ float Group::getTransparency () const
 void Group::decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction )
 {
   decimate->decimateTriangles( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), reduction );
+
+  _geometry->dirtyDisplayList();
+  _geometry->dirtyBound();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Smooth the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations )
+{
+  smooth->smoothTriangles ( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), numIterations );
+
+  _geometry->dirtyDisplayList();
+  _geometry->dirtyBound();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Subdivide the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations )
+{
+  subdivide->subdivideTriangles ( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), numIterations );
 
   _geometry->dirtyDisplayList();
   _geometry->dirtyBound();

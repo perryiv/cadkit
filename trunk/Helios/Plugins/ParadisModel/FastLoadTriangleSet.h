@@ -27,7 +27,15 @@
 #include <map>
 #include <string>
 
-namespace Usul { namespace Interfaces { struct IDecimateTriangles; } }
+namespace Usul 
+{ 
+  namespace Interfaces 
+  { 
+    struct IDecimateTriangles; 
+    struct ISmoothTriangles;
+    struct ISubdivideTriangles;
+  } 
+}
 
 namespace osg { class Node; }
 
@@ -75,6 +83,13 @@ public:
 
   /// Update the bounding box.
   void                    updateBounds ( const osg::Vec3& vertex );
+
+  /// Smooth
+  void                    smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations );
+
+  /// Subdivide
+  void                    subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations );
+
 protected:
 
   /// Use reference counting.

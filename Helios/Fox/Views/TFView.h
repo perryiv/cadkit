@@ -28,7 +28,7 @@
 namespace FX { struct FXEvent; }
 namespace osgUtil { class Hit; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Views {
 
 

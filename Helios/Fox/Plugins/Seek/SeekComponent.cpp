@@ -39,10 +39,6 @@
 #include "osg/Vec3"
 #include "osg/Quat"
 
-using namespace OsgFox;
-using namespace OsgFox::Plugins;
-using namespace OsgFox::Plugins::Seek;
-
 FXDEFMAP ( SeekComponent ) MessageMap[] = 
 {
   //          Message Type     ID                   Message Handler.

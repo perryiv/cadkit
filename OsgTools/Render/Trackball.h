@@ -41,7 +41,7 @@ public:
   Trackball ( const Trackball &, const osg::CopyOp & );
 
   // Plumbing.
-  META_Object ( OsgFox, Trackball );
+  META_Object ( OsgTools, Trackball );
 
   // Set/get the center.
   void                    center ( const osg::Vec3 &c ) { _center = c; }

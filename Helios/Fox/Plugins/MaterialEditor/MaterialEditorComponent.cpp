@@ -39,7 +39,7 @@
 #include "FoxTools/Headers/Splitter.h"
 #include "FoxTools/Builder/Reader.h"
 
-#include "OsgFox/Views/Canvas.h"
+#include "Helios/Fox/Views/Canvas.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -123,7 +123,7 @@ void MaterialEditorComponent::runModalDialog()
 #if 0
   FX::FXDialogBox dialog ( FoxTools::Functions::mainWindow(), "Material Editor", FX::DECOR_TITLE | FX::DECOR_CLOSE | FX::DECOR_BORDER | FX::DECOR_RESIZE, ZEROS );
   FoxTools::Builder::Reader reader;
-  reader.read ( "E:\\perry\\src\\OsgFox\\Plugins\\MaterialEditor\\config.xml", &dialog );
+  reader.read ( "E:\\perry\\src\\Helios\\Plugins\\MaterialEditor\\config.xml", &dialog );
   dialog.execute ( FX::PLACEMENT_OWNER );
 #else
   #ifdef NDEBUG
@@ -331,7 +331,7 @@ void MaterialEditorComponent::_makeMaterialPalette ( FX::FXComposite *parent )
   {
     //FX::FXGLCanvas *view ( new FX::FXGLCanvas ( scroll.get(), FoxTools::Functions::visual() ) );
     FX::FXHorizontalFrame *hf ( new FX::FXHorizontalFrame ( vf, FX::LAYOUT_FILL_X | FX::LAYOUT_FIX_HEIGHT, 0, 0, 0, size ) );
-    //OsgFox::Views::View *view ( new OsgFox::Views::View ( 0x0, hf, FoxTools::Functions::visual() ) );
+    //Helios::Views::View *view ( new Helios::Views::View ( 0x0, hf, FoxTools::Functions::visual() ) );
     hf->setBackColor ( FX::normalize ( FX::FXVec3f ( random(), random(), random() ) ) );
     //view->setWidth  ( size );
     //view->setHeight ( size );

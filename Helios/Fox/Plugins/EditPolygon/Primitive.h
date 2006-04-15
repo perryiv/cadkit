@@ -18,7 +18,7 @@ namespace FX { class FXCursor; }
 
 namespace osgUtil { class Hit; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -67,7 +67,7 @@ private:
 
 } //namespace EditPolygons
 } //namespace Plugins
-} //namespace OsgFox
+} //namespace Helios
 
 #endif //__DELETE_PRIMITIVE_H__
 

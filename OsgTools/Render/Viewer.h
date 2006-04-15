@@ -47,7 +47,7 @@
 #include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IBackground.h"
-#include "Usul/Interfaces/IOsgFoxView.h"
+#include "Usul/Interfaces/IHeliosView.h"
 #include "Usul/Interfaces/ILights.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
@@ -114,7 +114,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::ISetTool,
                                 public Usul::Interfaces::ISpin,
                                 public Usul::Interfaces::IBackground,
-                                public Usul::Interfaces::IOsgFoxView,
+                                public Usul::Interfaces::IHeliosView,
                                 public Usul::Interfaces::ILights,
                                 public Usul::Interfaces::ISceneStage,
                                 public Usul::Interfaces::ICenterOfRotation
@@ -649,9 +649,9 @@ protected:
   virtual void               redraw();
   virtual void               setStatsDisplay ( bool b );
 
-  /// Usul::Interfaces::IOsgFoxView
-  virtual OsgTools::Render::Viewer*            osgFoxView()       { return this; }
-  virtual const OsgTools::Render::Viewer*      osgFoxView() const { return this; }
+  /// Usul::Interfaces::IHeliosView
+  virtual OsgTools::Render::Viewer*            HeliosView()       { return this; }
+  virtual const OsgTools::Render::Viewer*      HeliosView() const { return this; }
 
   /// Usul::Interfaces::ILights
   virtual void               setLights ( bool );

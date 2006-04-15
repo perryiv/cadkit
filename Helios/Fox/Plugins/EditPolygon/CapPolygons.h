@@ -16,7 +16,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -55,7 +55,7 @@ protected:
 
 } //namespace EditPolygons
 } //namespace Plugins
-} //namespace OsgFox
+} //namespace Helios
 
 
 #endif // __EDIT_POLYGONS_CAP_POLYGONS_H__

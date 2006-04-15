@@ -32,7 +32,7 @@
 
 namespace Usul { namespace Interfaces { struct IActiveView; } }
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -121,7 +121,7 @@ private:
 
 } // namespace EditPolygons
 } // namespace Plugins
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif // _EDIT_POLYGON_COMPONENT_CLASS_H_

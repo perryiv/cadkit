@@ -27,7 +27,7 @@
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////

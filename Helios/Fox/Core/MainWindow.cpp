@@ -98,7 +98,7 @@
 #include "Usul/Interfaces/IFoxDockBar.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/INewDocumentCreate.h"
-#include "Usul/Interfaces/IOsgFoxView.h"
+#include "Usul/Interfaces/IHeliosView.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
@@ -114,7 +114,7 @@
 #include <limits>
 #include <iterator>
 
-using namespace OsgFox::Core;
+using namespace Helios::Core;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ typedef FoxTools::App::Application Application;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace OsgFox
+namespace Helios
 {
   namespace Core
   {
@@ -347,7 +347,7 @@ MainWindow::MainWindow (
   FoxTools::Functions::mainWindow( this );
 
   // Set this sooner rather than later.
-  OsgFox::Core::Preferences::owner ( this );
+  Helios::Core::Preferences::owner ( this );
 
   // Set the resources
   Usul::Resources::cancelButton ( this );
@@ -437,7 +437,7 @@ void MainWindow::create()
   const std::string tf0 ( "E:/perry/models/kelvin/ive/FishingReel.ive" );
   Usul::Documents::Document::ValidRefPtr td0 ( this->createDocument ( tf0 ) );
   td0->open ( tf0, IUnknown::ValidQueryPtr ( this ) );
-  OsgFox::View* tv0 ( new OsgFox::View ( td0, tempToolBar, FoxTools::Functions::visual() ) );
+  Helios::View* tv0 ( new Helios::View ( td0, tempToolBar, FoxTools::Functions::visual() ) );
   tv0->create();
   tv0->resize ( 32, 32 );
   tv0->writeImageFile ( "E:/perry/models/kelvin/ive/FishingReel.jpg" );
@@ -1484,7 +1484,7 @@ bool MainWindow::_exiting()
   Usul::Documents::Manager::instance().documents().clear();
 
   // Release the preferences.
-  OsgFox::Core::Preferences::releaseInstance();
+  Helios::Core::Preferences::releaseInstance();
 
   // Clear the menu before the plugins are released.
   _recentFiles->clear();
@@ -1555,7 +1555,7 @@ void MainWindow::_writeToRegistry() const
   FoxTools::Registry::write ( Usul::Registry::Sections::VIEWER_SETTINGS, Usul::Registry::Keys::DISPLAY_LISTS, displayLists );
 
   // Tell preferences to write to registry.
-  OsgFox::Core::Preferences::instance()->writeOutValues();
+  Helios::Core::Preferences::instance()->writeOutValues();
 }
 
 
@@ -2160,7 +2160,7 @@ void MainWindow::_initTabControl()
 
 Usul::Interfaces::IUnknown* MainWindow::getPreferences ( )
 {
-  return OsgFox::Core::Preferences::instance()->queryInterface( Usul::Interfaces::IUnknown::IID );
+  return Helios::Core::Preferences::instance()->queryInterface( Usul::Interfaces::IUnknown::IID );
 }
 
 
@@ -2931,7 +2931,7 @@ long MainWindow::onUpdatePick ( FX::FXObject *object, FX::FXSelector, void * )
 
 long MainWindow::onCommandPreferences ( FX::FXObject *, FX::FXSelector, void * )
 {
-  OsgFox::Core::Preferences::instance()->showDialog();
+  Helios::Core::Preferences::instance()->showDialog();
   return 1;
 }
 

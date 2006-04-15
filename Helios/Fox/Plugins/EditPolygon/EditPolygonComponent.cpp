@@ -39,7 +39,7 @@
 #include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ICleanUp.h"
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( EditPolygonComponent , EditPolygonComponent::BaseClass );
 

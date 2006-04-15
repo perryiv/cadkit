@@ -21,7 +21,7 @@ namespace osg { class Group; }
 
 #include "Usul/Math/Vector2.h"
 
-namespace OsgFox {
+namespace Helios {
 namespace Views {
 
 

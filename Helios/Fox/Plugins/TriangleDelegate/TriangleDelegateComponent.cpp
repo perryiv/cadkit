@@ -261,7 +261,7 @@ void TriangleDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
   LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, mdiMenu, 0 ) ); 
 
   // Make the view
-  OsgFox::Views::Canvas* canvas ( new OsgFox::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
+  Helios::Views::Canvas* canvas ( new Helios::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( canvas->viewer() );
@@ -296,11 +296,11 @@ void TriangleDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
 
 void TriangleDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IOsgFoxView::QueryPtr osgFoxView ( viewer );
+  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
 
-  if ( osgFoxView.valid() )
+  if ( HeliosView.valid() )
   {
-    OsgTools::Render::Viewer* canvas ( osgFoxView->osgFoxView() );
+    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
 

@@ -21,7 +21,7 @@
 #include <map>
 #include <vector>
 
-namespace OsgFox {
+namespace Helios {
 namespace Core {
 
 class OSG_FOX_CORE_EXPORT Preferences : public FX::FXDialogBox,
@@ -111,7 +111,7 @@ private:
 };
 
 } // namespace Core
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif //__OSG_FOX_PREFERENCES_H__

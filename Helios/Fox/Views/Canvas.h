@@ -42,7 +42,7 @@
 namespace FX { class FXMenuPane; }
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Views {
 
 class OSG_FOX_VIEWS_EXPORT Canvas : public FoxCanvas,
@@ -243,7 +243,7 @@ private:
 };
 
 } // namespace Views
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif // _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_

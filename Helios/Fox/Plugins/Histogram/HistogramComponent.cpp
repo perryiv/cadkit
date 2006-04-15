@@ -34,7 +34,7 @@
 #include "osg/ref_ptr"
 #include "osg/Image"
 
-#include "OsgFox/Views/ChartView.h"
+#include "Helios/Fox/Views/ChartView.h"
 
 
 #include <iostream>
@@ -201,10 +201,10 @@ void HistorgramComponent::execute ( Usul::Interfaces::IUnknown *caller )
       LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, (FX::FXMenuPane * ) mdiMenu, 0 ) ); 
 
       // Make the view
-      OsgFox::Views::ChartView *view ( new OsgFox::Views::ChartView ( doc, child.get(), FoxTools::Functions::visual() ) );
+      Helios::Views::ChartView *view ( new Helios::Views::ChartView ( doc, child.get(), FoxTools::Functions::visual() ) );
 
-      typedef OsgFox::Views::ChartView::Point Point;
-      typedef OsgFox::Views::ChartView::Plot Plot;
+      typedef Helios::Views::ChartView::Point Point;
+      typedef Helios::Views::ChartView::Plot Plot;
       if( false == red.empty( ) )
       {
         Plot plot;

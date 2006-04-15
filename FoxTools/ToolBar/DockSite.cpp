@@ -93,7 +93,7 @@ void DockSite::build()
 #if 0
     //Get the registry
   FX::FXRegistry &reg = this->getApp()->reg();
-  const char *section = OsgFox::Registry::MAIN_WINDOW;
+  const char *section = Helios::Registry::MAIN_WINDOW;
 
   //Get the registry key names
   std::string nameShown    ( name + "_shown" );
@@ -109,7 +109,7 @@ void DockSite::build()
   //Read from the registry
   bool shown   ( ( reg.readIntEntry ( section, nameShown.c_str(),    1 ) ? true : false  ) );
   bool docked  ( ( reg.readIntEntry ( section, nameDocked.c_str(),   1 ) ? true : false  ) );
-  int location ( reg.readIntEntry ( section, nameLocation.c_str(), OsgFox::Enums::TOP_DOCK ) );
+  int location ( reg.readIntEntry ( section, nameLocation.c_str(), Helios::Enums::TOP_DOCK ) );
   int x        ( reg.readIntEntry ( section, nameX.c_str(),        0 ) );
   int y        ( reg.readIntEntry ( section, nameY.c_str(),        0 ) );
   int height   ( reg.readIntEntry ( section, nameHeight.c_str(),   0 ) );
@@ -139,13 +139,13 @@ void DockSite::build()
   FX::FXDockSite *parent ( 0x0 );
 
   //Get the dock location
-  if( OsgFox::Enums::TOP_DOCK == location )
+  if( Helios::Enums::TOP_DOCK == location )
     parent = FoxTools::ToolBar::Factory::instance().topDock()->dockSite();
-  else if ( OsgFox::Enums::LEFT_DOCK == location )
+  else if ( Helios::Enums::LEFT_DOCK == location )
     parent = FoxTools::ToolBar::Factory::instance().leftDock()->dockSite();
-  else if ( OsgFox::Enums::BOTTOM_DOCK == location )
+  else if ( Helios::Enums::BOTTOM_DOCK == location )
     parent = FoxTools::ToolBar::Factory::instance().bottomDock()->dockSite();
-  else if ( OsgFox::Enums::RIGHT_DOCK == location )
+  else if ( Helios::Enums::RIGHT_DOCK == location )
     parent = FoxTools::ToolBar::Factory::instance().rightDock()->dockSite();
   else
     throw std::runtime_error ( "Error 3968942484: Dock site location is not valid." );

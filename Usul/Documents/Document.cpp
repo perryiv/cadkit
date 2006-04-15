@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Document class. OsgFox windows have reference-counted smart-pointers to 
+//  Document class. Helios windows have reference-counted smart-pointers to 
 //  this class. Since fox deletes its own windows its own way, this class 
 //  simply has raw pointers to fox windows. Care must be taken to ensure the 
 //  set of windows does not have any dangling pointers.

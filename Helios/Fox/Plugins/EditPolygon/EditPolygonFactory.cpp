@@ -18,7 +18,7 @@
 
 #include "Usul/Components/Create.h"
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( EditPolygonFactory, EditPolygonFactory::BaseClass );
 
@@ -104,7 +104,7 @@ Usul::Interfaces::IUnknown *EditPolygonFactory::queryInterface ( unsigned long i
 Usul::Interfaces::IUnknown *EditPolygonFactory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  OsgFox::Plugins::EditPolygons::EditPolygonComponent::ValidAccessRefPtr component ( new OsgFox::Plugins::EditPolygons::EditPolygonComponent() );
+  Helios::Plugins::EditPolygons::EditPolygonComponent::ValidAccessRefPtr component ( new Helios::Plugins::EditPolygons::EditPolygonComponent() );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );

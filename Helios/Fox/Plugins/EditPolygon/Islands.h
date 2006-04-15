@@ -17,7 +17,7 @@
 namespace FX { class FXCursor; }
 namespace osgUtil { class Hit; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -59,7 +59,7 @@ private:
 
 } //namespace EditPolygons
 } //namespace Plugins
-} //namespae OsgFox
+} //namespae Helios
 
 
 #endif // __DELETION_DELETE_ALL_ISLANDS_H__

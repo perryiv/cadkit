@@ -25,7 +25,7 @@ namespace FX { class FXMDIClient; class FXMDIMenu; }
 
 namespace FoxTools { namespace Windows { class MdiChildWindow; } }
 
-namespace OsgFox {
+namespace Helios {
 
 namespace Documents { class Document; }
 
@@ -91,7 +91,7 @@ private:
 };
 
 } // namespace Core
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif //_OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_

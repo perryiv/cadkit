@@ -47,7 +47,7 @@
 
 #include <algorithm>
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AddTriangle , AddTriangle::BaseClass );
 

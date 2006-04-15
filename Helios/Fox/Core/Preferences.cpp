@@ -33,7 +33,7 @@
 #include "Usul/Cast/Cast.h"
 #include "Usul/Shared/Preferences.h"
 
-using namespace OsgFox::Core;
+using namespace Helios::Core;
 
 FXDEFMAP ( Preferences ) PreferencesMap[] =
 {
@@ -151,7 +151,7 @@ Preferences::~Preferences()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace OsgFox
+namespace Helios
 {
   namespace Core
   {

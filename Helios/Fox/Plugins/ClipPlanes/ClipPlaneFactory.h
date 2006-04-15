@@ -22,7 +22,7 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace ClipPlanes {
 
@@ -63,7 +63,7 @@ protected:
 
 }; // namespace ClipPlanes
 }; // namespace Plugins
-}; // namespace OsgFox
+}; // namespace Helios
 
 
 #endif // _VIEW_SEEK_FACTORY_CLASS_H_

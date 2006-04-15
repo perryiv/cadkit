@@ -18,9 +18,9 @@
 
 #include "Usul/Components/Create.h"
 
-using namespace OsgFox;
-using namespace OsgFox::Plugins;
-using namespace OsgFox::Plugins::SceneTree;
+using namespace Helios;
+using namespace Helios::Plugins;
+using namespace Helios::Plugins::SceneTree;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneTreeFactory, SceneTreeFactory::BaseClass );
 

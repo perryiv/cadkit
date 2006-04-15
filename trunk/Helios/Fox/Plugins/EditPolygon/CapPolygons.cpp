@@ -20,7 +20,7 @@
 #include "Usul/State/Busy.h"
 
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 
 ///////////////////////////////////////////////////////////////////////////////

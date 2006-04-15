@@ -29,7 +29,7 @@
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ void MaterialEditor::show (  )
 #if 0
 
   // Make a canvas for showing the material
-  std::auto_ptr < OsgFox::Views::Canvas > canvas ( new OsgFox::Views::Canvas ( 0x0, hframe, FoxTools::Functions::visual() ) );
+  std::auto_ptr < Helios::Views::Canvas > canvas ( new Helios::Views::Canvas ( 0x0, hframe, FoxTools::Functions::visual() ) );
 
   // Set the scene
   //canvas->scene( document->buildScene() );

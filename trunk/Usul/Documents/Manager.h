@@ -96,7 +96,7 @@ private:
 
 
 }; // namespace Documents
-}; // namespace OsgFox
+}; // namespace Usul
 
 
 #endif // _USUL_DOCUMENT_MANAGER_H_

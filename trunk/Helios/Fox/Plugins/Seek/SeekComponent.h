@@ -31,11 +31,6 @@
 #include <memory>
 
 
-namespace OsgFox {
-namespace Plugins {
-namespace Seek {
-
-
 class SeekComponent : public Usul::Base::Referenced,
                       public Usul::Interfaces::IFoxEvent,
                       public Usul::Interfaces::IFoxToolbar,
@@ -112,9 +107,6 @@ protected:
   FoxTools::ToolBar::ToggleButton::ValidAccessRefPtr _seekButton;
 };
 
-}; // namespace Seek
-}; // namespace Plugins
-}; // namespace OsgFox
 
 
 #endif // _VIEW_SEEK_COMPONENT_CLASS_H_

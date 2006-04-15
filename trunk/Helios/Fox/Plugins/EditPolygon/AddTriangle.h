@@ -27,7 +27,7 @@ namespace OsgTools { namespace Triangles { class SharedVertex; } }
 #include <list>
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -87,7 +87,7 @@ private:
 
 } //namespace EditPolygons
 } //namespace Plugins
-} //namespace OsgFox
+} //namespace Helios
 
 
 #endif //__ADD_TRIANGLE_H__

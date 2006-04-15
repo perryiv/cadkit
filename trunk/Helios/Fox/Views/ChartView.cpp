@@ -9,8 +9,8 @@
 
 #define NOMINMAX
 
-#include "OsgFox/Views/ChartView.h"
-#include "OsgFox/Views/FoxContext.h"
+#include "Helios/Fox/Views/ChartView.h"
+#include "Helios/Fox/Views/FoxContext.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Math/MinMax.h"
@@ -30,7 +30,7 @@
 
 #include <limits>
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -29,7 +29,7 @@
 
 #include "osgUtil/IntersectVisitor"
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Geometry , Geometry::BaseClass );
 

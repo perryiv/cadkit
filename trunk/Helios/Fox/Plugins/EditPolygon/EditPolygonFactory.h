@@ -22,7 +22,7 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -62,7 +62,7 @@ protected:
 
 } // namespace EditPolygons
 } // namespace Plugins
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif // _DELETION_PRIMITIVE_FACTORY_CLASS_H_

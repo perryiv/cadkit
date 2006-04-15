@@ -7,9 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Views/FoxCanvas.h"
-#include "OsgFox/Views/FoxContext.h"
-#include "OsgFox/Views/Registry.h"
+#include "Helios/Fox/Views/FoxCanvas.h"
+#include "Helios/Fox/Views/FoxContext.h"
+#include "Helios/Fox/Views/Registry.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Registry/Constants.h"
@@ -17,7 +17,7 @@
 
 #include "OsgTools/Render/Defaults.h"
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +115,7 @@ void FoxCanvas::create()
     _viewer->create();
 
     // Get the background color from the registry
-    _viewer->backgroundColor ( OsgFox::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgTools::Render::Defaults::CLEAR_COLOR ) );
+    _viewer->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgTools::Render::Defaults::CLEAR_COLOR ) );
   }
 
   // Create the cursors.

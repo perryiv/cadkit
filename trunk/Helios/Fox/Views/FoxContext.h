@@ -10,12 +10,12 @@
 #ifndef __OSG_FOX_VIEWS_OPEN_GL_CONTEXT_H__
 #define __OSG_FOX_VIEWS_OPEN_GL_CONTEXT_H__
 
-#include "OsgFox/Views/Export.h"
+#include "Helios/Fox/Views/Export.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 
-namespace OsgFox {
+namespace Helios {
 namespace Views {
 
 class FoxCanvas;

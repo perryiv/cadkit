@@ -13,13 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Views/Registry.h"
+#include "Helios/Fox/Views/Registry.h"
 
 #include "FoxTools/Registry/Registry.h"
 
 #include <sstream>
 
-namespace OsgFox {
+namespace Helios {
 namespace Registry {
 
 
@@ -141,4 +141,4 @@ void write ( const std::string &section, const std::string &key, const osg::Vec4
 
 
 }; // namespace Registry
-}; // namespace OsgFox
+}; // namespace Helios

@@ -35,7 +35,7 @@
 #include "osg/ClipPlane"
 #include "osg/Plane"
 
-using namespace OsgFox::Plugins::ClipPlanes;
+using namespace Helios::Plugins::ClipPlanes;
 
 FXDEFMAP ( ClipComponent ) MessageMap[] = 
 {

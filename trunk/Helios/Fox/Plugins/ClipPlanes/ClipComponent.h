@@ -29,7 +29,7 @@
 
 namespace FX { class FXVerticalFrame; class FXList; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace ClipPlanes {
 
@@ -94,7 +94,7 @@ protected:
 
 }; // namespace ClipPlanes
 }; // namespace Plugins
-}; // namespace OsgFox
+}; // namespace Helios
 
 
 #endif // _CLIP_PLANES_COMPONENT_CLASS_H_

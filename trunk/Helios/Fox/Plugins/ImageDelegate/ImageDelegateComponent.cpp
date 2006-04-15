@@ -121,7 +121,7 @@ void ImageDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
   LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, (FX::FXMenuPane * ) mdiMenu, 0 ) ); 
 
   // Create the view
-  OsgFox::Views::ImageView* view ( new OsgFox::Views::ImageView ( doc, child.get(), FoxTools::Functions::visual() ) );
+  Helios::Views::ImageView* view ( new Helios::Views::ImageView ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( view );
@@ -153,7 +153,7 @@ void ImageDelegateComponent::refreshView  ( Usul::Documents::Document *document,
 
   if( getImageView.valid() )
   {
-    OsgFox::Views::ImageView *imageView ( getImageView->imageView() );
+    Helios::Views::ImageView *imageView ( getImageView->imageView() );
     
     Usul::Interfaces::IImage::QueryPtr getImage ( document );
 

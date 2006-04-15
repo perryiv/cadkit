@@ -39,7 +39,7 @@
 #include "FoxTools/Menu/Button.h"
 #include "FoxTools/Menu/Separator.h"
 
-using namespace OsgFox::Core;
+using namespace Helios::Core;
 
 
 ///////////////////////////////////////////////////////////////////////////////

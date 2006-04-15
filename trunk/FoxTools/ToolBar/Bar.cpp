@@ -121,16 +121,16 @@ void Bar::clear()
       // Find what dockbar it's on...
       FX::FXWindow *dock ( toolBar->getParent() );
 
-      int location ( OsgFox::Enums::TOP_DOCK );
+      int location ( Helios::Enums::TOP_DOCK );
 
       typedef FoxTools::ToolBar::Factory Factory;
 
       if ( Factory::instance().leftDock()->dockSite() == dock )
-        location = OsgFox::Enums::LEFT_DOCK;
+        location = Helios::Enums::LEFT_DOCK;
       else if ( Factory::instance().rightDock()->dockSite() == dock )
-        location = OsgFox::Enums::RIGHT_DOCK;
+        location = Helios::Enums::RIGHT_DOCK;
       else if ( Factory::instance().bottomDock()->dockSite() == dock )
-        location = OsgFox::Enums::BOTTOM_DOCK;
+        location = Helios::Enums::BOTTOM_DOCK;
 
       //Write it's loaction
       reg.writeIntEntry ( section, nameLocation.c_str(), location );

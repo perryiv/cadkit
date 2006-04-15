@@ -24,7 +24,7 @@ namespace FoxTools { namespace Widgets { class SliderTextField; } }
 
 namespace osg { class Vec4f; typedef Vec4f Vec4; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Views {
 
 class MaterialEditor : public FX::FXDialogBox
@@ -73,6 +73,6 @@ private:
 };
 
 } // namespace Views
-} // namespace OsgFox
+} // namespace Helios
 
 #endif // __OSG_FOX_MATERIAL_EDITOR_H__

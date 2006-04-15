@@ -24,17 +24,17 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IOsgFoxView : public Usul::Interfaces::IUnknown
+struct IHeliosView : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IOsgFoxView );
+  USUL_DECLARE_QUERY_POINTERS ( IHeliosView );
 
   /// Id for this interface.
   enum { IID = 2445428656u };
 
-  virtual OsgTools::Render::Viewer*       osgFoxView() = 0;
-  virtual const OsgTools::Render::Viewer* osgFoxView() const = 0;
-}; // struct IOsgFoxView
+  virtual OsgTools::Render::Viewer*       HeliosView() = 0;
+  virtual const OsgTools::Render::Viewer* HeliosView() const = 0;
+}; // struct IHeliosView
 
 
 }; // namespace Interfaces

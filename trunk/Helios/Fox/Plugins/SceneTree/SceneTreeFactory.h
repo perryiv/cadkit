@@ -22,7 +22,7 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace SceneTree {
 
@@ -63,7 +63,7 @@ protected:
 
 }; // namespace SceneTree
 }; // namespace Plugins
-}; // namespace OsgFox
+}; // namespace Helios
 
 
 #endif // _SCENE_TREE_FACTORY_CLASS_H_

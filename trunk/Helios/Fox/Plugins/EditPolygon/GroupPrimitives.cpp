@@ -30,7 +30,7 @@
 
 #include "Usul/State/Busy.h"
 
-using namespace OsgFox::Plugins::EditPolygons;
+using namespace Helios::Plugins::EditPolygons;
 
 GroupPrimitives::GroupPrimitives( Usul::Interfaces::IUnknown *mainWindow) : BaseClass(),
 _mainWindow( mainWindow )

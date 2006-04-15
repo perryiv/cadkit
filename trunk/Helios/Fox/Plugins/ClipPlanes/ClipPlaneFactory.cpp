@@ -18,9 +18,9 @@
 
 #include "Usul/Components/Create.h"
 
-using namespace OsgFox;
-using namespace OsgFox::Plugins;
-using namespace OsgFox::Plugins::ClipPlanes;
+using namespace Helios;
+using namespace Helios::Plugins;
+using namespace Helios::Plugins::ClipPlanes;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ClipPlaneFactory, ClipPlaneFactory::BaseClass );
 
@@ -106,7 +106,7 @@ Usul::Interfaces::IUnknown *ClipPlaneFactory::queryInterface ( unsigned long iid
 Usul::Interfaces::IUnknown *ClipPlaneFactory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  OsgFox::Plugins::ClipPlanes::ClipComponent::ValidAccessRefPtr component ( new OsgFox::Plugins::ClipPlanes::ClipComponent() );
+  Helios::Plugins::ClipPlanes::ClipComponent::ValidAccessRefPtr component ( new Helios::Plugins::ClipPlanes::ClipComponent() );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );

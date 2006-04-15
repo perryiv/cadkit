@@ -618,7 +618,7 @@ int Loop::isCoplanar( Usul::Interfaces::IUnknown *caller) const
 void Loop::printQuakePolygonFile( Usul::Interfaces::IUnknown *caller ) 
 {
   std::cout << "#============== BEGIN POLY FILE ====================" << std::endl;
-  std::cout << "# Poly file for Loop\n# This was generated from OsgFox Code" << std::endl;
+  std::cout << "# Poly file for Loop\n# This was generated from Helios Code" << std::endl;
   std::cout << this->size() << " 2 1 0" << std::endl;
 
   Usul::Interfaces::IGetVertex::ValidQueryPtr getVertex ( caller );

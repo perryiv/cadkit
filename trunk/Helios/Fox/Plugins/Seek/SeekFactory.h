@@ -22,10 +22,6 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-namespace OsgFox {
-namespace Plugins {
-namespace Seek {
-
 
 class SeekFactory : public Usul::Base::Referenced,
                     public Usul::Interfaces::IClassFactory
@@ -60,10 +56,6 @@ protected:
   /// Return an unknown pointer to this new component.
   virtual Unknown *       createInstance ( unsigned long iid );
 };
-
-}; // namespace Seek
-}; // namespace Plugins
-}; // namespace OsgFox
 
 
 #endif // _VIEW_SEEK_FACTORY_CLASS_H_

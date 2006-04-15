@@ -17,7 +17,7 @@
 namespace FX { class FXCursor; }
 
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -57,7 +57,7 @@ private:
 
 } //namespace EditPolygons
 } //namespace Plugins
-} //namespace OsgFox
+} //namespace Helios
 
 #endif //__FLIP_NORMAL_H__
 

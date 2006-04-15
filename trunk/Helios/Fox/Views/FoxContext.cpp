@@ -10,7 +10,7 @@
 #include "Helios/Fox/Views/FoxContext.h"
 #include "Helios/Fox/Views/FoxCanvas.h"
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 
 void FoxContext::makeCurrent()

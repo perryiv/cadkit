@@ -77,7 +77,7 @@ namespace Usul
   namespace Documents  { class Document; }
 }
 
-namespace OsgFox {
+namespace Helios {
 namespace Core {
 
 class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
@@ -527,7 +527,7 @@ private:
 };
 
 } // namespace Core
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif //_OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_

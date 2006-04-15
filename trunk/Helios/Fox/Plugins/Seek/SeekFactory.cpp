@@ -19,10 +19,6 @@
 
 #include "Usul/Components/Create.h"
 
-using namespace OsgFox;
-using namespace OsgFox::Plugins;
-using namespace OsgFox::Plugins::Seek;
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SeekFactory, SeekFactory::BaseClass );
 
 
@@ -108,7 +104,7 @@ Usul::Interfaces::IUnknown *SeekFactory::queryInterface ( unsigned long iid )
 Usul::Interfaces::IUnknown *SeekFactory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  OsgFox::Plugins::Seek::SeekComponent::ValidAccessRefPtr component ( new OsgFox::Plugins::Seek::SeekComponent() );
+  SeekComponent::ValidAccessRefPtr component ( new SeekComponent() );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );

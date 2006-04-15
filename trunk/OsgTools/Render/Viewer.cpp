@@ -252,7 +252,7 @@ void Viewer::create()
   _sceneView->getState()->setContextID ( _contextId );
 
   // Set the background color.
-  //this->backgroundColor ( OsgFox::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgFox::Defaults::CLEAR_COLOR ) );
+  //this->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, Helios::Defaults::CLEAR_COLOR ) );
 
   // This is a work-around for the fact that some geometries have a 
   // calculated near or far distance of zero. SceneViewer::cull() does not 
@@ -1282,7 +1282,7 @@ void Viewer::backgroundColor ( const osg::Vec4 &color )
     this->viewer()->setClearColor ( color );
 
   // Write it to the registry.
-  // OsgFox::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
+  // Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
 }
 
 
@@ -2744,8 +2744,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ISpin* > ( this );
   case Usul::Interfaces::IBackground::IID:
     return static_cast < Usul::Interfaces::IBackground* > ( this );
-  case Usul::Interfaces::IOsgFoxView::IID:
-    return static_cast < Usul::Interfaces::IOsgFoxView* > ( this );
+  case Usul::Interfaces::IHeliosView::IID:
+    return static_cast < Usul::Interfaces::IHeliosView* > ( this );
   case Usul::Interfaces::ILights::IID:
     return static_cast < Usul::Interfaces::ILights* > ( this );
   case Usul::Interfaces::ISceneStage::IID:

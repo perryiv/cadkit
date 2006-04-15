@@ -47,7 +47,7 @@ private:
 
 
 } // namespace Views
-} // namespace OsgFox
+} // namespace Helios
 
 
 #endif // _OPEN_SCENE_GRAPH_FOX_BINDING_ACTION_ADAPTER_H_

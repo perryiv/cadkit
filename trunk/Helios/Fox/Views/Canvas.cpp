@@ -18,10 +18,10 @@
 #pragma warning ( disable : 4996 )
 #endif
 
-#include "OsgFox/Views/Precompiled.h"
-#include "OsgFox/Views/Canvas.h"
-#include "OsgFox/Views/Registry.h"
-#include "OsgFox/Views/FoxContext.h"
+#include "Helios/Fox/Views/Precompiled.h"
+#include "Helios/Fox/Views/Canvas.h"
+#include "Helios/Fox/Views/Registry.h"
+#include "Helios/Fox/Views/FoxContext.h"
 
 #include "OsgTools/Draggers/Dragger.h"
 #include "OsgTools/Render/Defaults.h"
@@ -64,7 +64,7 @@
 
 #include <limits>
 
-using namespace OsgFox::Views;
+using namespace Helios::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ long Canvas::onFocusIn ( FX::FXObject *object, FX::FXSelector selector, void *ca
 {
 #if 0
   // Update the tree control.
-  MainWindow *main ( OsgFox::mainWindow ( this->getParent() ) );
+  MainWindow *main ( Helios::mainWindow ( this->getParent() ) );
   Usul::Interfaces::IUpdateTreeControls::QueryPtr update ( main->queryInterface( Usul::Interfaces::IUpdateTreeControls::IID ) );
   if( update.valid() )  
     update->updateTreeControls ( this->scene() );
@@ -249,7 +249,7 @@ void Canvas::backgroundColor ( const osg::Vec4 &color )
     this->viewer()->backgroundColor ( color );
 
   // Write it to the registry.
-  OsgFox::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
+  Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
 }
 
 

@@ -17,7 +17,7 @@
 namespace FX { class FXCursor; }
 namespace osgUtil { class Hit; }
 
-namespace OsgFox {
+namespace Helios {
 namespace Plugins {
 namespace EditPolygons {
 
@@ -56,7 +56,7 @@ private:
 
 } //namespace EditPolygon
 } //namespace Plugin
-} //namespace OsgFox
+} //namespace Helios
 
 #endif //__DELETE_GEOMETRY_H__
 

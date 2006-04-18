@@ -13,7 +13,7 @@
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Registry/Constants.h"
-#include "Usul/Interfaces/ISetCursor.h"
+#include "Usul/Interfaces/Fox/ISetCursor.h"
 
 #include "OsgTools/Render/Defaults.h"
 

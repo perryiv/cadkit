@@ -23,7 +23,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Adaptors/ProgressBarUpdate.h"
+#include "Usul/Interfaces/IProgressBar.h" 
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 
@@ -147,7 +147,7 @@ void MoleculeDocument::read ( const std::string &name, Unknown *caller )
     throw std::runtime_error ( "Error in reading file." );
 
   // Update functor
-  Usul::Adaptors::ProgressBarUpdate update( caller );
+  Usul::Interfaces::IProgressBar::UpdateProgressBar update( 0.0, 100.0, caller );
 
   // Parse the pdb file
   reader->parse ( in, Usul::File::size( name ), update );

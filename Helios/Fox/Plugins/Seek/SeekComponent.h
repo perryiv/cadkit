@@ -25,7 +25,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/Fox/IFoxToolbar.h"
-#include "Usul/Interfaces/ISetCursor.h"
+#include "Usul/Interfaces/Fox/ISetCursor.h"
 #include "Usul/Interfaces/IPlugin.h"
 
 #include <memory>

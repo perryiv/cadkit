@@ -544,6 +544,10 @@
 						RelativePath=".\Interfaces\Fox\IFoxWindow.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Interfaces\Fox\ISetCursor.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="GUI"
@@ -606,10 +610,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISelectionBox.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ISetCursor.h"
 						>
 					</File>
 					<File
@@ -1074,10 +1074,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Math\Math.h"
-					>
-				</File>
-				<File
 					RelativePath="Math\Matrix44.h"
 					>
 				</File>
@@ -1095,6 +1091,10 @@
 				</File>
 				<File
 					RelativePath=".\Math\Transpose.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\UMath.h"
 					>
 				</File>
 				<File

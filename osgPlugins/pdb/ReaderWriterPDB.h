@@ -10,7 +10,7 @@
 #ifndef __READER_WRITER_PDB_H__
 #define __READER_WRITER_PDB_H__
 
-#include "Usul/Adaptors/ProgressBarUpdate.h"
+#include "Usul/Interfaces/IProgressBar.h"
 
 #include "osgDB/ReaderWriter"
 
@@ -44,7 +44,7 @@ public:
   typedef Molecule::ShapeFactory ShapeFactory;
   typedef Molecule::Atom Atom;
   typedef Molecule::Bond Bond;
-  typedef Usul::Adaptors::ProgressBarUpdate Update;
+  typedef Usul::Interfaces::IProgressBar::UpdateProgressBar Update;
 
   ReaderWriterPDB();
 

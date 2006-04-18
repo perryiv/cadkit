@@ -93,7 +93,7 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
     }
 
     //Send an update to the progress bar
-    void operator () ( unsigned int current, unsigned int total )
+    void operator () ( unsigned int current, unsigned int total ) const
     {
       double percent ( (double) current / total );
       percent *= _finish - _start;
@@ -113,8 +113,8 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
     double _start;
     double _finish;
 
-    IProgressBar::QueryPtr                   _progressBar;
-    Usul::Interfaces::IFlushEvents::QueryPtr _flush;
+    mutable IProgressBar::QueryPtr                   _progressBar;
+    mutable Usul::Interfaces::IFlushEvents::QueryPtr _flush;
   };
 };
 

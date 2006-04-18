@@ -170,17 +170,17 @@ ReaderWriterPDB::ReadResult ReaderWriterPDB::_read ( const std::string &file, co
   //std::ifstream psf( psfPath.c_str());
 
   //Use null pointer to disable updatinig
-  Update progress ( 0x0 );
+  Update update ( 0.0, 100.0, (Usul::Interfaces::IProgressBar*)0x0 );
 
   // Parse all the file and build internal data.
-  this->_parse ( in, Usul::File::size ( file ), progress );
+  this->_parse ( in, Usul::File::size ( file ), update );
 
   // Build the scene.
   osg::ref_ptr<osg::Group> root ( _build() );
 
   // Initialized again to free accumulated data.
   this->_init();
-
+ 
   // Return the scene
   return root.release();
 }
@@ -290,10 +290,8 @@ void ReaderWriterPDB::_parse ( std::ifstream &in, unsigned int filesize, const U
         columnStart += columnLength;
       }
 	  }*/
-
-    float total ( ( float ) bytesReadSoFar / filesize );
     
-    progress ( total * 100 );
+    progress ( bytesReadSoFar, filesize );
   }
 
 //  if ( psf.is_open() && this->hasFlags ( PDB::LOAD_BONDS ) )

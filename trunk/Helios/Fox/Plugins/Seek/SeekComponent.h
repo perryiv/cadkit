@@ -23,7 +23,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/Fox/IFoxEvent.h"
+#include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/Fox/IFoxToolbar.h"
 #include "Usul/Interfaces/ISetCursor.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -32,7 +32,7 @@
 
 
 class SeekComponent : public Usul::Base::Referenced,
-                      public Usul::Interfaces::IFoxEvent,
+                      public Usul::Interfaces::ITool,
                       public Usul::Interfaces::IFoxToolbar,
                       public Usul::Interfaces::ISetCursor,
                       public Usul::Interfaces::IPlugin,
@@ -69,7 +69,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Usul::Interfaces::IFoxEvent
+  //  Usul::Interfaces::ITool
   //
   /////////////////////////////////////////////////////////////////////////////
 

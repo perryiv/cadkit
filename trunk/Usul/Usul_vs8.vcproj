@@ -505,10 +505,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\Fox\IFoxEvent.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\Fox\IFoxImage.h"
 						>
 					</File>
@@ -782,6 +778,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISetTool.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITool.h"
 						>
 					</File>
 				</Filter>

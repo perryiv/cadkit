@@ -43,7 +43,7 @@
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMode.h"
-#include "Usul/Interfaces/Fox/IFoxEvent.h"
+#include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IBackground.h"
@@ -158,7 +158,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   typedef osgGA::MatrixManipulator MatrixManip;
   typedef osg::ref_ptr<MatrixManip> MatrixManipPtr;
   typedef OsgTools::Draggers::Dragger Dragger;
-  typedef Usul::Interfaces::IFoxEvent IFoxEvent;
+  typedef Usul::Interfaces::ITool ITool;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IOpenGLContext IContext;
   typedef Usul::Interfaces::ISetCursorType ISetCursorType;
@@ -440,8 +440,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
 
   ///  Usul::Interfaces::ISetTool
   // Set and Release the tool
-  virtual void setTool ( IFoxEvent * );
-  virtual IFoxEvent* getTool ();
+  virtual void setTool ( ITool * );
+  virtual ITool* getTool ();
   virtual void doneTool ();
   virtual void loadLastTool ();
 
@@ -736,8 +736,8 @@ private:
   unsigned int _flags;
   OsgTools::Render::Animation _animation;
   MatrixManipPtr _navManip; 
-  IFoxEvent::QueryPtr _currentTool;
-  IFoxEvent::QueryPtr _lastTool;
+  ITool::QueryPtr _currentTool;
+  ITool::QueryPtr _lastTool;
   ViewMode _currentMode;
   LightEditors _lightEditors;
   unsigned int _contextId;

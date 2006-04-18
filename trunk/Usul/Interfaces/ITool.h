@@ -21,17 +21,17 @@
 namespace Usul {
 namespace Interfaces   {
     
-struct IFoxEvent : public Usul::Interfaces::IUnknown
+struct ITool : public Usul::Interfaces::IUnknown
 {
   typedef Usul::Interfaces::IUnknown Unknown;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IFoxEvent );
+  USUL_DECLARE_QUERY_POINTERS ( ITool );
 
   enum { IID = 1100798022u };
 
   virtual bool execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z ) = 0;
-}; //class IFoxEvent
+}; //class ITool
 
 } //namespace Interfaces
 } //namespace Usul

@@ -100,8 +100,8 @@ Usul::Interfaces::IUnknown *AddTriangle::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IFoxEvent::IID:
-    return static_cast< Usul::Interfaces::IFoxEvent* >(this);
+  case Usul::Interfaces::ITool::IID:
+    return static_cast< Usul::Interfaces::ITool* >(this);
   case Usul::Interfaces::ISetCursor::IID:
     return static_cast< Usul::Interfaces::ISetCursor*>(this);
   case Usul::Interfaces::ICleanUp::IID:

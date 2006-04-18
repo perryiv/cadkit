@@ -12,7 +12,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Interfaces/Fox/IFoxEvent.h"
+#include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/ISetCursor.h"
 #include "Usul/Interfaces/ICleanUp.h"
 
@@ -28,7 +28,7 @@ namespace OsgTools { namespace Triangles { class SharedVertex; } }
 
 
 class AddTriangle : public Usul::Base::Referenced,
-                    public Usul::Interfaces::IFoxEvent,
+                    public Usul::Interfaces::ITool,
                     public Usul::Interfaces::ISetCursor,
                     public Usul::Interfaces::ICleanUp
 {
@@ -49,7 +49,7 @@ public:
 
   AddTriangle();
 
-  // Usul::Interfaces::IFoxEvent
+  // Usul::Interfaces::ITool
   virtual bool            execute ( Usul::Interfaces::IUnknown *caller, bool left, bool middle, bool right, bool motion, float x, float y, float z );
 
   // Usul::Interfaces::ISetCursor

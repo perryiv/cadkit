@@ -17,10 +17,6 @@
 namespace FX { class FXCursor; }
 namespace osgUtil { class Hit; }
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
 
 class Islands : public Usul::Base::Referenced,
                 public Usul::Interfaces::IFoxEvent,
@@ -55,11 +51,6 @@ private:
 
   FX::FXCursor *_cursor;
 };
-
-
-} //namespace EditPolygons
-} //namespace Plugins
-} //namespae Helios
 
 
 #endif // __DELETION_DELETE_ALL_ISLANDS_H__

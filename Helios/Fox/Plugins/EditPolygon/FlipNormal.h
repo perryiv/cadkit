@@ -16,11 +16,6 @@
 
 namespace FX { class FXCursor; }
 
-
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
 class FlipNormal : public Usul::Base::Referenced,
                    public Usul::Interfaces::IFoxEvent,
                    public Usul::Interfaces::ISetCursor
@@ -53,11 +48,6 @@ private:
 
 }; // class FlipNormal
 
-
-
-} //namespace EditPolygons
-} //namespace Plugins
-} //namespace Helios
 
 #endif //__FLIP_NORMAL_H__
 

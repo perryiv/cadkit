@@ -32,15 +32,12 @@
 
 namespace Usul { namespace Interfaces { struct IActiveView; } }
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
 
 class EditPolygonComponent : public Usul::Base::Referenced,
-                  public Usul::Interfaces::IFoxSubMenu,
-                  public Usul::Interfaces::IFoxToolbar,
-                  public Usul::Interfaces::IPlugin,
-                  public FX::FXObject
+                             public Usul::Interfaces::IFoxSubMenu,
+                             public Usul::Interfaces::IFoxToolbar,
+                             public Usul::Interfaces::IPlugin,
+                             public FX::FXObject
 {
 FXDECLARE ( EditPolygonComponent )
 public:
@@ -115,13 +112,9 @@ private:
   Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _addTriangle;
   Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _flipNormal;
 
-  EditPolygons::CapPolygons::ValidAccessRefPtr _capPolygons;
+  CapPolygons::ValidAccessRefPtr _capPolygons;
 
 };
-
-} // namespace EditPolygons
-} // namespace Plugins
-} // namespace Helios
 
 
 #endif // _EDIT_POLYGON_COMPONENT_CLASS_H_

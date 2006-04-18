@@ -22,12 +22,8 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
 class EditPolygonFactory : public Usul::Base::Referenced,
-                public Usul::Interfaces::IClassFactory
+                           public Usul::Interfaces::IClassFactory
 {
 public:
 
@@ -59,10 +55,6 @@ protected:
   /// Return an unknown pointer to this new component.
   virtual Unknown *       createInstance ( unsigned long iid );
 };
-
-} // namespace EditPolygons
-} // namespace Plugins
-} // namespace Helios
 
 
 #endif // _DELETION_PRIMITIVE_FACTORY_CLASS_H_

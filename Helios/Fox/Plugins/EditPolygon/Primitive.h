@@ -18,10 +18,6 @@ namespace FX { class FXCursor; }
 
 namespace osgUtil { class Hit; }
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
 class Primitive : public Usul::Base::Referenced,
                   public Usul::Interfaces::IFoxEvent,
                   public Usul::Interfaces::ISetCursor
@@ -65,9 +61,6 @@ private:
 
 }; // class Primitive
 
-} //namespace EditPolygons
-} //namespace Plugins
-} //namespace Helios
 
 #endif //__DELETE_PRIMITIVE_H__
 

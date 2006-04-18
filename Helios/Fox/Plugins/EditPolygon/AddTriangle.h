@@ -27,11 +27,6 @@ namespace OsgTools { namespace Triangles { class SharedVertex; } }
 #include <list>
 
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
-
 class AddTriangle : public Usul::Base::Referenced,
                     public Usul::Interfaces::IFoxEvent,
                     public Usul::Interfaces::ISetCursor,
@@ -83,11 +78,6 @@ private:
   Vertices _vertices;
   FX::FXCursor *_cursor; // Raw pointer allows forward declaration above.
 };
-
-
-} //namespace EditPolygons
-} //namespace Plugins
-} //namespace Helios
 
 
 #endif //__ADD_TRIANGLE_H__

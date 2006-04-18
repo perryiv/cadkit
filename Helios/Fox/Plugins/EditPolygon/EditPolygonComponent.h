@@ -27,7 +27,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/Fox/IFoxSubMenu.h"
 #include "Usul/Interfaces/Fox/IFoxToolbar.h"
-#include "Usul/Interfaces/Fox/IFoxEvent.h"
+#include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/IPlugin.h"
 
 namespace Usul { namespace Interfaces { struct IActiveView; } }
@@ -99,18 +99,18 @@ protected:
 
 private:
 
-  long _onCommand ( Usul::Interfaces::IFoxEvent * );
-  long _onUpdate  ( FX::FXObject*, Usul::Interfaces::IFoxEvent * );
+  long _onCommand ( Usul::Interfaces::ITool * );
+  long _onUpdate  ( FX::FXObject*, Usul::Interfaces::ITool * );
 
   void _init   ( Usul::Interfaces::IUnknown *caller );
 
   Usul::Interfaces::IUnknown::ValidAccessQueryPtr _caller;
 
-  Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _deletePrimitive;
-  Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _deleteGeometry;
-  Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _keepConnected;
-  Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _addTriangle;
-  Usul::Interfaces::IFoxEvent::ValidAccessQueryPtr _flipNormal;
+  Usul::Interfaces::ITool::ValidAccessQueryPtr _deletePrimitive;
+  Usul::Interfaces::ITool::ValidAccessQueryPtr _deleteGeometry;
+  Usul::Interfaces::ITool::ValidAccessQueryPtr _keepConnected;
+  Usul::Interfaces::ITool::ValidAccessQueryPtr _addTriangle;
+  Usul::Interfaces::ITool::ValidAccessQueryPtr _flipNormal;
 
   CapPolygons::ValidAccessRefPtr _capPolygons;
 

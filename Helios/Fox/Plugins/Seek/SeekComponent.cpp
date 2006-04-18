@@ -94,8 +94,8 @@ Usul::Interfaces::IUnknown *SeekComponent::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IFoxEvent::IID:
-    return static_cast < Usul::Interfaces::IFoxEvent*>(this);
+  case Usul::Interfaces::ITool::IID:
+    return static_cast < Usul::Interfaces::ITool*>(this);
   case Usul::Interfaces::IFoxToolbar::IID:
     return static_cast < Usul::Interfaces::IFoxToolbar*>(this);
   case Usul::Interfaces::ISetCursor::IID:

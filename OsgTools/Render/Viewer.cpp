@@ -3939,7 +3939,7 @@ void Viewer::setMode ( ViewMode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setTool ( Usul::Interfaces::IFoxEvent *tool )
+void Viewer::setTool ( Usul::Interfaces::ITool *tool )
 {
   // Clean up existing tool if we can.
   Usul::Interfaces::ICleanUp::QueryPtr cleanUp ( _currentTool );
@@ -3960,7 +3960,7 @@ void Viewer::setTool ( Usul::Interfaces::IFoxEvent *tool )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IFoxEvent *Viewer::getTool()
+Usul::Interfaces::ITool *Viewer::getTool()
 {
   return _currentTool.get();
 }
@@ -3981,7 +3981,7 @@ void Viewer::doneTool()
   if ( _currentTool.valid() )
   {
     _lastTool = _currentTool;
-    _currentTool = static_cast < IFoxEvent * > ( 0x0 );
+    _currentTool = static_cast < ITool * > ( 0x0 );
     this->updateCursor();
   }
 }

@@ -340,7 +340,7 @@ long EditPolygonComponent::onUpdateFlipNormal ( FX::FXObject *object, FX::FXSele
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long EditPolygonComponent::_onCommand ( Usul::Interfaces::IFoxEvent *tool )
+long EditPolygonComponent::_onCommand ( Usul::Interfaces::ITool *tool )
 {
   Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
   Usul::Interfaces::ISetTool::ValidQueryPtr    setTool    ( activeView->getActiveView() );
@@ -369,7 +369,7 @@ long EditPolygonComponent::_onCommand ( Usul::Interfaces::IFoxEvent *tool )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long EditPolygonComponent::_onUpdate  ( FX::FXObject* object, Usul::Interfaces::IFoxEvent *tool )
+long EditPolygonComponent::_onUpdate  ( FX::FXObject* object, Usul::Interfaces::ITool *tool )
 {
   Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
   Usul::Interfaces::ISetTool::QueryPtr setTool ( activeView.valid() ? activeView->getActiveView() : 0x0 );

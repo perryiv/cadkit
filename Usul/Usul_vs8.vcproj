@@ -314,6 +314,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CommandLine\Flags.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CommandLine\Flags.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CommandLine\Options.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CommandLine\Options.h"
+					>
+				</File>
+				<File
 					RelativePath="CommandLine\Parser.h"
 					>
 				</File>

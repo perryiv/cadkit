@@ -20,8 +20,8 @@
 #include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IImage.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/IFoxClientArea.h"
-#include "Usul/Interfaces/IFoxMDIMenu.h"
+#include "Usul/Interfaces/Fox/IFoxClientArea.h"
+#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
 #include "Usul/Documents/Document.h"
 
 #include "FoxTools/Windows/MdiChildWindow.h"

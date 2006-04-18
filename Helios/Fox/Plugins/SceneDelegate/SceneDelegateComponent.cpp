@@ -23,8 +23,8 @@
 #include "FoxTools/Functions/GLVisual.h"
 #include "FoxTools/Headers/MDIButton.h"
 
-#include "Usul/Interfaces/IFoxClientArea.h"
-#include "Usul/Interfaces/IFoxMDIMenu.h"
+#include "Usul/Interfaces/Fox/IFoxClientArea.h"
+#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IBuildScene.h"
 
 #include "Usul/Shared/Preferences.h"

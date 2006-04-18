@@ -25,9 +25,9 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/IFoxSubMenu.h"
-#include "Usul/Interfaces/IFoxToolbar.h"
-#include "Usul/Interfaces/IFoxEvent.h"
+#include "Usul/Interfaces/Fox/IFoxSubMenu.h"
+#include "Usul/Interfaces/Fox/IFoxToolbar.h"
+#include "Usul/Interfaces/Fox/IFoxEvent.h"
 #include "Usul/Interfaces/IPlugin.h"
 
 namespace Usul { namespace Interfaces { struct IActiveView; } }

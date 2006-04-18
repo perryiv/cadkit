@@ -17,8 +17,8 @@
 #include "FoxTools/Headers/Button.h"
 #include "FoxTools/Headers/GroupBox.h"
 
-#include "Usul/Interfaces/IFoxTabBook.h"
-#include "Usul/Interfaces/IFoxTabItem.h"
+#include "Usul/Interfaces/Fox/IFoxTabBook.h"
+#include "Usul/Interfaces/Fox/IFoxTabItem.h"
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IRedraw.h"

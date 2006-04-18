@@ -25,7 +25,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IFoxAddTab.h"
+#include "Usul/Interfaces/Fox/IFoxAddTab.h"
 
 namespace FX { class FXVerticalFrame; class FXList; }
 

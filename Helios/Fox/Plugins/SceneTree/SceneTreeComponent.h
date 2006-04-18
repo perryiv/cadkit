@@ -21,7 +21,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/IFoxAddTab.h"
+#include "Usul/Interfaces/Fox/IFoxAddTab.h"
 #include "Usul/Interfaces/IUpdateTreeControls.h"
 #include "Usul/Interfaces/IPlugin.h"
 

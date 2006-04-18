@@ -17,7 +17,7 @@
 #define _USUL_INTERFACE_SET_TOOL_H_
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/IFoxEvent.h"
+#include "Usul/Interfaces/Fox/IFoxEvent.h"
 
 namespace Usul {
 namespace Interfaces {

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: Helios Fox Core"
 	ProjectGUID="{DE06D290-6744-4FC5-BBC6-E28271369ACA}"
+	RootNamespace="lib: Helios Fox Core"
 	>
 	<Platforms>
 		<Platform
@@ -257,7 +258,7 @@
 			Name="Notes"
 			>
 			<File
-				RelativePath="..\TODO.htm"
+				RelativePath="..\..\TODO.htm"
 				DeploymentContent="true"
 				>
 			</File>

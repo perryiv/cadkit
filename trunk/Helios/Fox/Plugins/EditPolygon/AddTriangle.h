@@ -13,7 +13,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/ITool.h"
-#include "Usul/Interfaces/ISetCursor.h"
+#include "Usul/Interfaces/Fox/ISetCursor.h"
 #include "Usul/Interfaces/ICleanUp.h"
 
 namespace FX { class FXCursor; }

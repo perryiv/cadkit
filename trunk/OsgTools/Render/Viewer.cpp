@@ -61,7 +61,6 @@
 #include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IMaterialEditor.h"
 #include "Usul/Interfaces/ICleanUp.h"
-#include "Usul/Interfaces/ISetCursor.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Resources/StatusBar.h"

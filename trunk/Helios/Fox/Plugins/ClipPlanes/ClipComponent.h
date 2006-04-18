@@ -29,11 +29,6 @@
 
 namespace FX { class FXVerticalFrame; class FXList; }
 
-namespace Helios {
-namespace Plugins {
-namespace ClipPlanes {
-
-
 class ClipComponent : public Usul::Base::Referenced,
                       public Usul::Interfaces::IPlugin,
                       public Usul::Interfaces::IFoxAddTab,
@@ -91,10 +86,6 @@ protected:
   FX::FXList          *_list;
 
 };
-
-}; // namespace ClipPlanes
-}; // namespace Plugins
-}; // namespace Helios
 
 
 #endif // _CLIP_PLANES_COMPONENT_CLASS_H_

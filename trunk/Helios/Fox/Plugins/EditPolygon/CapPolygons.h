@@ -16,9 +16,6 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
 
 class CapPolygons : public Usul::Base::Referenced
 {
@@ -37,9 +34,6 @@ public:
 
  
 protected:
-
-  
-
   
   //For fox do not use
   CapPolygons () { }
@@ -52,10 +46,6 @@ protected:
 
 };
 
-
-} //namespace EditPolygons
-} //namespace Plugins
-} //namespace Helios
 
 
 #endif // __EDIT_POLYGONS_CAP_POLYGONS_H__

@@ -29,8 +29,6 @@
 
 #include "osgUtil/IntersectVisitor"
 
-using namespace Helios::Plugins::EditPolygons;
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Islands , Islands::BaseClass );
 
 

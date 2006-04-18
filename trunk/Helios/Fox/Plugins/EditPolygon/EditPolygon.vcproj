@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="plug: Edit Polygon"
 	ProjectGUID="{3A66C2D2-62F7-42B2-AE40-838B654C830B}"
+	RootNamespace="plug: Edit Polygon"
 	>
 	<Platforms>
 		<Platform
@@ -271,14 +272,6 @@
 				</File>
 				<File
 					RelativePath=".\Geometry.h"
-					>
-				</File>
-				<File
-					RelativePath=".\GroupPrimitives.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GroupPrimitives.h"
 					>
 				</File>
 				<File

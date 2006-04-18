@@ -39,9 +39,8 @@
 #include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ICleanUp.h"
 
-using namespace Helios::Plugins::EditPolygons;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( EditPolygonComponent , EditPolygonComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( EditPolygonComponent, EditPolygonComponent::BaseClass );
 
 
 FXDEFMAP ( EditPolygonComponent ) DeletionMap[] = 

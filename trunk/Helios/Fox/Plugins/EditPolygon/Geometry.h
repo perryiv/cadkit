@@ -17,10 +17,6 @@
 namespace FX { class FXCursor; }
 namespace osgUtil { class Hit; }
 
-namespace Helios {
-namespace Plugins {
-namespace EditPolygons {
-
 class Geometry : public Usul::Base::Referenced,
                   public Usul::Interfaces::IFoxEvent,
                   public Usul::Interfaces::ISetCursor
@@ -54,9 +50,6 @@ private:
   FX::FXCursor *_cursor;
 };
 
-} //namespace EditPolygon
-} //namespace Plugin
-} //namespace Helios
 
 #endif //__DELETE_GEOMETRY_H__
 

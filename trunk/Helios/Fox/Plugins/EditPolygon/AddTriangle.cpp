@@ -47,7 +47,6 @@
 
 #include <algorithm>
 
-using namespace Helios::Plugins::EditPolygons;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AddTriangle , AddTriangle::BaseClass );
 

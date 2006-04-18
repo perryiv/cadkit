@@ -14,8 +14,8 @@
 
 #include "FoxTools/Headers/DialogBox.h"
 
-#include "Usul/Interfaces/IFoxTabItem.h"
-#include "Usul/Interfaces/IFoxTabBook.h"
+#include "Usul/Interfaces/Fox/IFoxTabItem.h"
+#include "Usul/Interfaces/Fox/IFoxTabBook.h"
 
 #include <string>
 #include <map>

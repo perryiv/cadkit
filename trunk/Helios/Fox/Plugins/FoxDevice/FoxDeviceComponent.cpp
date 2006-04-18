@@ -16,7 +16,7 @@
 #include "FoxDeviceComponent.h"
 #include "FoxMouse.h"
 
-#include "Usul/Interfaces/IFoxWindow.h"
+#include "Usul/Interfaces/Fox/IFoxWindow.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FoxDeviceComponent , FoxDeviceComponent::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( FoxDeviceComponent );

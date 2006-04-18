@@ -43,7 +43,7 @@
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMode.h"
-#include "Usul/Interfaces/IFoxEvent.h"
+#include "Usul/Interfaces/Fox/IFoxEvent.h"
 #include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IBackground.h"

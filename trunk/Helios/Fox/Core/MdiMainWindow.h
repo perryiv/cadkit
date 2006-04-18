@@ -20,8 +20,8 @@
 
 namespace FX { class FXMDIClient; class FXMDIMenu; }
 
-#include "Usul/Interfaces/IFoxClientArea.h"
-#include "Usul/Interfaces/IFoxMDIMenu.h"
+#include "Usul/Interfaces/Fox/IFoxClientArea.h"
+#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
 
 namespace FoxTools { namespace Windows { class MdiChildWindow; } }
 

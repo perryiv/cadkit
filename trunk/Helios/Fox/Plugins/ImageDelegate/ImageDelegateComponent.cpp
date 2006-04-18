@@ -24,8 +24,8 @@
 #include "FoxTools/Menu/Group.h"
 #include "FoxTools/Menu/Button.h"
 
-#include "Usul/Interfaces/IFoxClientArea.h"
-#include "Usul/Interfaces/IFoxMDIMenu.h"
+#include "Usul/Interfaces/Fox/IFoxClientArea.h"
+#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IImageView.h"
 #include "Usul/Interfaces/IImage.h"
 #include "Usul/Interfaces/ISendMessage.h"

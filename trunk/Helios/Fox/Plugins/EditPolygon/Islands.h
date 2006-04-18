@@ -11,7 +11,7 @@
 #define __DELETION_DELETE_ALL_ISLANDS_H__
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/IFoxEvent.h"
+#include "Usul/Interfaces/Fox/IFoxEvent.h"
 #include "Usul/Interfaces/ISetCursor.h"
 
 namespace FX { class FXCursor; }

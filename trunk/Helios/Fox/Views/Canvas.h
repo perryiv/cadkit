@@ -26,7 +26,7 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Devices/IDevice.h"
 
-#include "Usul/Interfaces/IFoxWindow.h"
+#include "Usul/Interfaces/Fox/IFoxWindow.h"
 #include "Usul/Interfaces/IBackground.h"
 #include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Devices/IKeyListener.h"

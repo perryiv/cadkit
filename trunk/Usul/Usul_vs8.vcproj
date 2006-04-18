@@ -477,63 +477,59 @@
 					Name="FOX"
 					>
 					<File
-						RelativePath=".\Interfaces\IFoxAddTab.h"
+						RelativePath=".\Interfaces\Fox\IFoxAddTab.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxClientArea.h"
+						RelativePath=".\Interfaces\Fox\IFoxClientArea.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxDockBar.h"
+						RelativePath=".\Interfaces\Fox\IFoxDockBar.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxEvent.h"
+						RelativePath=".\Interfaces\Fox\IFoxEvent.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxImage.h"
+						RelativePath=".\Interfaces\Fox\IFoxImage.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxMDIMenu.h"
+						RelativePath=".\Interfaces\Fox\IFoxMDIMenu.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxMenuPane.h"
+						RelativePath=".\Interfaces\Fox\IFoxMenuPane.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxRadioButton.h"
+						RelativePath=".\Interfaces\Fox\IFoxRadioButton.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxSubMenu.h"
+						RelativePath=".\Interfaces\Fox\IFoxSubMenu.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxTabBook.h"
+						RelativePath=".\Interfaces\Fox\IFoxTabBook.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxTabItem.h"
+						RelativePath=".\Interfaces\Fox\IFoxTabItem.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToggleButton.h"
+						RelativePath=".\Interfaces\Fox\IFoxToggleButton.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToolbar.h"
+						RelativePath=".\Interfaces\Fox\IFoxToolbar.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToolbarDock.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IFoxWindow.h"
+						RelativePath=".\Interfaces\Fox\IFoxWindow.h"
 						>
 					</File>
 				</Filter>

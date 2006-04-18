@@ -861,6 +861,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IHeliosView.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IImageView.h"
 						>
 					</File>
@@ -878,10 +882,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IOpenGLState.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IOsgFoxView.h"
 						>
 					</File>
 					<File

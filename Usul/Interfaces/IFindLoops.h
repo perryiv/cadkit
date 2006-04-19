@@ -18,9 +18,9 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IFlushEvents.h"
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "Usul/Policies/Update.h"
 #include <list>

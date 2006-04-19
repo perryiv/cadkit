@@ -31,7 +31,7 @@
 #include "Usul/Interfaces/ICanClose.h"
 #include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IViewer.h"
-#include "Usul/Interfaces/IWindow.h"
+#include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 
 #include <string>

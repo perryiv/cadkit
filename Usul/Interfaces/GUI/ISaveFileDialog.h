@@ -16,7 +16,7 @@
 #ifndef _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
 #define _USUL_INTERFACE_SAVE_FILE_DIALOG_H_
 
-#include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 
 #include <string>
 #include <vector>

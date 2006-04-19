@@ -569,63 +569,59 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ILoadFileDialog.h"
+						RelativePath=".\Interfaces\GUI\ILoadFileDialog.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMaterialEditor.h"
+						RelativePath=".\Interfaces\GUI\IMaterialEditor.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMenuEntry.h"
+						RelativePath=".\Interfaces\GUI\IMenuEntry.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IPreferencesManager.h"
+						RelativePath=".\Interfaces\GUI\IPreferencesManager.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IProgressBar.h"
+						RelativePath=".\Interfaces\GUI\IProgressBar.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IQuestion.h"
+						RelativePath=".\Interfaces\GUI\IQuestion.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IReportErrors.h"
+						RelativePath=".\Interfaces\GUI\IReportErrors.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISaveFileDialog.h"
+						RelativePath=".\Interfaces\GUI\ISaveFileDialog.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISelectionBox.h"
+						RelativePath=".\Interfaces\GUI\ISetCursorType.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISetCursorType.h"
+						RelativePath=".\Interfaces\GUI\IStatusBar.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IStatusBar.h"
+						RelativePath=".\Interfaces\GUI\IUpdateGUI.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateGUI.h"
+						RelativePath=".\Interfaces\GUI\IUpdateTextWindow.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateTextWindow.h"
+						RelativePath=".\Interfaces\GUI\IUpdateTreeControls.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateTreeControls.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IWindow.h"
+						RelativePath=".\Interfaces\GUI\IWindow.h"
 						>
 					</File>
 				</Filter>
@@ -674,6 +670,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ISceneStage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISelectionBox.h"
 						>
 					</File>
 					<File
@@ -949,19 +949,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IAddTriangle.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\ICalculatePerVertexNormals.h"
 						>
 					</File>
 					<File
 						RelativePath=".\Interfaces\IDecimateModel.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IDecimateTriangles.h"
 						>
 					</File>
 					<File
@@ -989,10 +981,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetTriangleNormal.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\IGetVertex.h"
 						>
 					</File>
@@ -1017,11 +1005,35 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISmoothTriangles.h"
+						RelativePath=".\Interfaces\ISubdivideModel.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Triangles"
+					>
+					<File
+						RelativePath=".\Interfaces\IAddTriangle.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISubdivideModel.h"
+						RelativePath=".\Interfaces\ICreateTriangleSet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IDecimateTriangles.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IGetTriangleNormal.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISaveTriangleSet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISmoothTriangles.h"
 						>
 					</File>
 					<File
@@ -1030,6 +1042,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITriangle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITriangleSet.h"
 						>
 					</File>
 					<File

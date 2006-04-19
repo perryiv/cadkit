@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Resources/TextWindow.h"
-#include "Usul/Interfaces/IUpdateTextWindow.h"
+#include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 
 #include <iostream>
 

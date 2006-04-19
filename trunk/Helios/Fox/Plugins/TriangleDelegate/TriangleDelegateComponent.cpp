@@ -48,8 +48,8 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/ICancelButton.h"
-#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/GUI/ICancelButton.h"
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IGroup.h"
@@ -92,7 +92,7 @@
 
 // for now
 #include "Usul/Resources/MenuBar.h"
-#include "Usul/Interfaces/IMenuBar.h"
+#include "Usul/Interfaces/Fox/IMenuBar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //

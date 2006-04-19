@@ -230,14 +230,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Adaptors\ProgressBarUpdate.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Adaptors\ProgressBarUpdate.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Adaptors\Random.h"
 					>
 				</File>
@@ -545,6 +537,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\Fox\IMenuBar.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\Fox\ISetCursor.h"
 						>
 					</File>
@@ -553,23 +549,23 @@
 					Name="GUI"
 					>
 					<File
-						RelativePath=".\Interfaces\IAboutString.h"
+						RelativePath=".\Interfaces\GUI\IAboutString.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICancelButton.h"
+						RelativePath=".\Interfaces\GUI\ICancelButton.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFlushEvents.h"
+						RelativePath=".\Interfaces\GUI\IFlushEvents.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGUIDelegate.h"
+						RelativePath=".\Interfaces\GUI\IGUIDelegate.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGUIServer.h"
+						RelativePath=".\Interfaces\GUI\IGUIServer.h"
 						>
 					</File>
 					<File
@@ -578,10 +574,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IMaterialEditor.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IMenuBar.h"
 						>
 					</File>
 					<File

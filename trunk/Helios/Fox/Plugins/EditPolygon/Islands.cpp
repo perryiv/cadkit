@@ -22,7 +22,7 @@
 #include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IKeepAllConnected.h"
 #include "Usul/Interfaces/ISetTool.h"
-#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IProgressBar.h"
 
 #include "Usul/State/Busy.h"

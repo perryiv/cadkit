@@ -18,7 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
 
 namespace Usul {
 namespace Interfaces {

@@ -27,7 +27,8 @@
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IProgressBar.h"
-#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/GUI/IAboutString.h"
+#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IExport.h"
 #include "Usul/Interfaces/IFlipNormals.h"
 #include "Usul/Interfaces/IMode.h"
@@ -40,7 +41,6 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
-#include "Usul/Interfaces/IAboutString.h"
 
 #include <iostream>
 #include <sstream>

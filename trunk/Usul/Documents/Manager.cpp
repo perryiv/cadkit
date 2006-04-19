@@ -18,7 +18,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
-#include "Usul/Interfaces/IGUIDelegate.h"
+#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 
 #include <algorithm>
 

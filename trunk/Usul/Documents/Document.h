@@ -32,7 +32,7 @@
 #include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/IWindow.h"
-#include "Usul/Interfaces/IGUIDelegate.h"
+#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 
 #include <string>
 #include <list>

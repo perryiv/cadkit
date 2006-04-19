@@ -29,7 +29,7 @@
 #include "Usul/Interfaces/IImageView.h"
 #include "Usul/Interfaces/IImage.h"
 #include "Usul/Interfaces/ISendMessage.h"
-#include "Usul/Interfaces/IMenuBar.h"
+#include "Usul/Interfaces/Fox/IMenuBar.h"
 #include "Usul/Resources/MenuBar.h"
 
 #include "Helios/Fox/Views/ImageView.h"

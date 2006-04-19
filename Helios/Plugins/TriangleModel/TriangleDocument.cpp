@@ -26,7 +26,7 @@
 
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/ISmoothTriangles.h"

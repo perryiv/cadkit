@@ -18,7 +18,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IAboutString.h"
+#include "Usul/Interfaces/GUI/IAboutString.h"
 
 
 class AboutComponent : public Usul::Base::Referenced,

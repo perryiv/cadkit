@@ -75,7 +75,7 @@
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabItem.h"
-#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Interfaces/ICreateMovie.h"
 #include "Usul/Interfaces/IGroup.h"
 

@@ -9,7 +9,7 @@
 
 #include "Progress.h"
 
-#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Resources/EventQueue.h"
 
 using namespace VTKTools::Commands;

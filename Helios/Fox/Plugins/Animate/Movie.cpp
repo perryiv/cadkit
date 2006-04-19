@@ -21,7 +21,7 @@
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Interfaces/IWriteMovieFile.h"
 
 #include "Usul/Adaptors/MemberFunction.h"

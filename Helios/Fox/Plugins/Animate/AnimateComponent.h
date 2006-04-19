@@ -33,7 +33,7 @@
 #include "Usul/Interfaces/IAddFrame.h"
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
-#include "Usul/Interfaces/IGUIDelegate.h"
+#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/INewDocumentCreate.h"
 
 #include <map>

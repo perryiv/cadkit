@@ -416,7 +416,7 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
         }
         
         //If we don't have the right number of adjacent polygons...
-        if( adjacentPolygons.size() < vertsPerPoly + 1 )
+        if( adjacentPolygons.size() < vertsPerPoly )
         {
             uncapped.push_back( (*iter)->index() );
             Detail::findEdge( adjacentPolygons, iter->get() );

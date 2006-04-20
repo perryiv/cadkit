@@ -426,6 +426,8 @@ protected:
   // Perform Auto Placement of model
   void                          _doAutoPlacement( const bool replace_matrix );
   
+  void _dumpStreamToFile();
+  
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hideSelected     ( MenuKit::Message m, MenuKit::Item *item );
@@ -576,19 +578,20 @@ protected:
   bool              _animations;
   std::string       _tmpDirName;
   double            _nextFrameTime;
-
+  
+    std::stringstream                   _sinterStream;
+    std::string                         _sinterNodeName;
+    std::string                         _sinterFileType;
 # if defined (USE_SINTERPOINT)
     // SinterPoint variables
     sinter::Receiver*                   _sinterReceiver;
-    std::stringstream                   _sinterStream;
     int                                 _sinterStreamSize;
     int                                 _sinterDataSize;
     cluster::UserData< SinterAppData >  _sinterAppData;
     SinterState                         _sinterState;
-    std::string                         _sinterNodeName;
     bool                                _sinterDiffFlag;
     std::string                         _sinterTmpString;
-    std::string                         _sinterFileType;
+
 
     // Functions used for networked file loading with SinterPoint, if enabled
     void            _sinterPointInit();

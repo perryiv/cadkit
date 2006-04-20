@@ -507,6 +507,11 @@
     </menu>
     <menu>
       <text>World</text>
+      <button>
+        <text>Toggle Animations</text>
+        <info>Start/Stop Animations</info>
+        <id>toggle_animations</id>
+      </button>
     </menu>
     <menu>
       <text>Help</text>

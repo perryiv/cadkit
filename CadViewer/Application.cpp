@@ -1065,7 +1065,7 @@ void Application::_processButtons()
     case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)" << std::endl; break;
   }
 #endif
-
+  
   // Let the menu process first.
   if ( this->_handleMenuEvent() )
     return;
@@ -3627,6 +3627,24 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
 
 # endif
 
+
+void Application::_dumpStreamToFile()
+{
+  // Save model stream to file
+  std::string tmpNodeFileName = _tmpDirName + "sinterStream.txt";
+  std::ofstream nodeFile;
+  nodeFile.open ( tmpNodeFileName.c_str() );
+  if ( !nodeFile.is_open() )
+  {
+    std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
+  }
+  else
+  {
+    _sinterStream.seekg(0);
+    nodeFile << _sinterStream.rdbuf();
+    nodeFile.close();
+  }
+}
     
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3649,13 +3667,27 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
       // application data for the other machines
       int size;
       
-      // we could do this in a while loop, but it overwhelms the shared
-      // application data
       while( (size = _sinterReceiver->Receive(0)) > 0)
       {
         _sinterTmpString = _sinterReceiver->Data();
         _sinterTmpString.resize(size);
         _sinterAppData->_data.append(_sinterTmpString);
+      }
+      
+      // process error codes from negative size
+      if(size < 0)
+      {
+        switch(size)
+        {
+          case -ETIMEDOUT:
+            break;
+          case -EPROTONOSUPPORT:
+            std::cout << "Error receiving data" << std::endl;
+            _dumpStreamToFile();
+            break;
+          default:
+            break;
+        }
       }
     }
   }
@@ -3698,12 +3730,14 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
           _sinterStream.write( data, data_size );
           _sinterStreamSize += data_size;
           _sinterState = DATA;
-
+          
+          std::cout << "." << std::flush;
+          
           // Check to see if we are finished receiving data
           if ( _sinterStreamSize == _sinterDataSize )
           {
             _sinterTime2 = _getClockTime();
-            std::cout << "OSG node receive completed" << std::endl;
+            std::cout << "\nOSG node receive completed" << std::endl;
             std::cout << "Total comm time = " << _sinterTime2-_sinterTime1 << std::endl;
             _sinterDataSize = 0;
 

@@ -87,6 +87,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="TRUE"
 				PrecompiledHeaderFile=".\Debug/DemoJtOsgJtk.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -100,11 +101,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib CkCt.lib CkDbJt.lib CkDbOsg.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib CkCtd.lib CkDbJtd.lib CkDbOsgd.lib"
 				OutputFile="../../bin/jt2osgd.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\src\todd\CadKit\Controllers\Release,C:\src\todd\CadKit\Database\Jupiter\Release,C:\src\todd\CadKit\Database\OpenSceneGraph\Release"
+				AdditionalLibraryDirectories="C:\src\todd\CadKit\Controllers\Debug,C:\src\todd\CadKit\Database\Jupiter\Debug,C:\src\todd\CadKit\Database\OpenSceneGraph\Debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/jt2osgd.pdb"
 				SubSystem="1"

@@ -22,9 +22,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../,$(JTTK_DEV_PATH)/include"
-				PreprocessorDefinitions="_DEBUG;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_JUPITER_LIBRARY;_CADKIT_USE_JTOPEN"
+				PreprocessorDefinitions="_DEBUG;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_JUPITER_LIBRARY;_CADKIT_USE_JTOPEN;_CADKIT_SL_PRINT_DEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="DbJtPrecompiled.h"
@@ -45,9 +46,10 @@
 				OutputFile="../../bin/CkDbJtd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/Windows"
-				GenerateDebugInformation="FALSE"
+				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_32"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CkDbJtd.pdb"
+				GenerateMapFile="FALSE"
 				ImportLibrary=".\Debug/CkDbJtd.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -114,7 +116,7 @@
 				OutputFile="../../bin/CkDbJt.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/Windows"
+				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_32"
 				ProgramDatabaseFile=".\Release/CkDbJt.pdb"
 				ImportLibrary=".\Release/CkDbJt.lib"
 				TargetMachine="1"/>

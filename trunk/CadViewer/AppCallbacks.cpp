@@ -1908,3 +1908,24 @@ void Application::_toggleAnimations ( MenuKit::Message m, MenuKit::Item *item )
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Step Animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void Application::_animStepFwd ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 3042741394u, isAppThread(), CV::NOT_APP_THREAD );
+
+  // Process the message.
+  if( m==MenuKit::MESSAGE_SELECTED )
+  {
+    osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
+    if (m){
+      this->_animStep( 5,  m );
+    }
+  }
+}
+

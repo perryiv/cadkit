@@ -273,6 +273,8 @@ Application::Application ( Args &args ) :
   _scribeBranch   ( new osg::MatrixTransform ),
   _autoPlacement  ( false ),
   _animations     ( true ),
+  _anim_steps     ( 0 ),
+  _animModel      ( NULL ),
   _nextFrameTime  ( 0.0 )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
@@ -813,6 +815,7 @@ void Application::_initMenu()
   CV_REGISTER ( _rotateWorld,      "rotate_world" );
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
   CV_REGISTER (_toggleAnimations,  "toggle_animations" );
+  CV_REGISTER (_animStepFwd,  "animation_step_fwd" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
@@ -1393,6 +1396,16 @@ void Application::_postFrame()
     if ( this->getFrameStamp()->getFrameNumber() > 10 )
       this->_initText();
 #endif
+
+  if(_anim_steps)
+  {
+    _anim_steps--;
+    if( _anim_steps == 0 && _animModel != NULL)
+    {
+      _animationsOnOff(false, _animModel);
+      _animModel = NULL;
+    }
+  }
 
 # if defined (USE_SINTERPOINT)
     this->_sinterProcessData();
@@ -3567,6 +3580,23 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Step animation by num frames
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animStep ( int num, osg::Node *model )
+{ 
+  _animModel = model;
+  
+  _animationsOnOff(true, model);
+  
+  if(num > 0)
+    _anim_steps = num;
+  
+  return;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

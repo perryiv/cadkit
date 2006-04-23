@@ -423,6 +423,9 @@ protected:
   // Turn animations on/off
   void							_animationsOnOff ( bool onOff, osg::Node *model );
   
+  // Step Animation by num frames
+  void							_animStep ( int num, osg::Node *model );
+  
   // Perform Auto Placement of model
   void                          _doAutoPlacement( const bool replace_matrix );
   
@@ -488,6 +491,7 @@ protected:
   void                          _rotateWorld      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dropToFloor      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _toggleAnimations ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _animStepFwd      ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;
@@ -576,6 +580,8 @@ protected:
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;
   bool              _animations;
+  int               _anim_steps;
+  osg::Node         *_animModel;
   std::string       _tmpDirName;
   double            _nextFrameTime;
   

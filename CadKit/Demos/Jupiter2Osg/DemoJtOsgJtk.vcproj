@@ -43,7 +43,7 @@
 				OutputFile="../../bin/jt2osg.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\src\todd\CadKit\Controllers\Release,C:\src\todd\CadKit\Database\Jupiter\Release,C:\src\todd\CadKit\Database\OpenSceneGraph\Release"
+				AdditionalLibraryDirectories="..\..\Controllers\Release,..\..\Database\Jupiter\Release,..\..\Database\OpenSceneGraph\Release"
 				ProgramDatabaseFile=".\Release/jt2osg.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
@@ -105,7 +105,7 @@
 				OutputFile="../../bin/jt2osgd.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\src\todd\CadKit\Controllers\Debug,C:\src\todd\CadKit\Database\Jupiter\Debug,C:\src\todd\CadKit\Database\OpenSceneGraph\Debug"
+				AdditionalLibraryDirectories="..\..\Controllers\Debug,..\..\Database\Jupiter\Debug,..\..\Database\OpenSceneGraph\Debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/jt2osgd.pdb"
 				SubSystem="1"

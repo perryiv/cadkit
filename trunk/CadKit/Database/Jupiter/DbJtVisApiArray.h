@@ -64,7 +64,7 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
 
   if ( _p )
   {
-    #ifdef _WIN32
+/*    #ifdef _WIN32
 
       #ifdef _DEBUG
 
@@ -74,12 +74,14 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
 
         // Get the path to the DLL.
         std::string path ( ::getenv ( "DMDTK_DEV_PATH" ) );
+        //std::string path ( ::getenv ( "JTTK_DEV_PATH" ) );
 
         // If we got a path...
         if ( false == path.empty() )
         {
           // Make the full path.
-          path += "\\lib\\Windows\\DMDataTk50.dll";
+          //path += "\\lib\\Windows\\DMDataTk50.dll";
+          path += "\\lib\\win_32\\JtTk22.dll";
 
           // Lose any double-slashes from the append above.
           //path.replace ( "\\\\", "\\" );
@@ -111,10 +113,10 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
       #endif
 
     #else // unix
-
+*/
       delete [] _p;
 
-    #endif
+//    #endif
   }
 }
 

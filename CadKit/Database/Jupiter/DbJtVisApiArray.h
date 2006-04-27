@@ -64,59 +64,11 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
 
   if ( _p )
   {
-/*    #ifdef _WIN32
-
-      #ifdef _DEBUG
-
-        // The purpose of this section is to somehow delete the pointer
-        // without crashing (it was allocated on DMDTk's heap because DMDTk 
-        // is statically linked to the c-runtime library).
-
-        // Get the path to the DLL.
-        std::string path ( ::getenv ( "DMDTK_DEV_PATH" ) );
-        //std::string path ( ::getenv ( "JTTK_DEV_PATH" ) );
-
-        // If we got a path...
-        if ( false == path.empty() )
-        {
-          // Make the full path.
-          //path += "\\lib\\Windows\\DMDataTk50.dll";
-          path += "\\lib\\win_32\\JtTk22.dll";
-
-          // Lose any double-slashes from the append above.
-          //path.replace ( "\\\\", "\\" );
-
-          // Get the handle to the DRDTk DLL.
-          HMODULE module = ::GetModuleHandle ( path.c_str() );
-
-          // If we got a module...
-          if ( module )
-          {
-            // Get the address of the "free" function in the DRDTk DLL.
-            typedef void FreeFunc ( void * );
-            //FreeFunc *func = (FreeFunc *) ::GetProcAddress ( module, "GlobalFree" );
-            FreeFunc *func = (FreeFunc *) ::GetProcAddress ( module, "free" );
-
-            // If we found the function...
-            if ( func )
-            {
-              // Call the function.
-              func ( _p );
-            }
-          }
-        }
-
-      #else // release
-
-        delete [] _p;
-
-      #endif
-
-    #else // unix
-*/
-      delete [] _p;
-
-//    #endif
+#ifdef _CADKIT_USE_JTOPEN
+    JtkEntityFactory::deleteMemory ( _p );
+#else
+    delete [] _p;
+#endif
   }
 }
 

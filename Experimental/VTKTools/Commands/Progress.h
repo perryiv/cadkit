@@ -12,7 +12,7 @@
 
 #include "VTKTools/Export/Export.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "vtkCommand.h"
 

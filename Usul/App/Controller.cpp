@@ -359,7 +359,7 @@ void Controller::axesShow ( bool b )
 
 void Controller::documentOpen ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
-    // typedefs
+  // Typedefs.
   typedef Usul::Documents::Manager   DocManager;
   typedef DocManager::Documents      Documents;
 

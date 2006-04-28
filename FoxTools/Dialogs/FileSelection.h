@@ -18,7 +18,7 @@
 
 #include "FoxTools/Export/Export.h"
 
-#include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 
 #include <string>
 #include <vector>

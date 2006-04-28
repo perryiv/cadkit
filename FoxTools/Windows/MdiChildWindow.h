@@ -24,8 +24,8 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/IViewer.h"
-#include "Usul/Interfaces/IWindow.h"
-#include "Usul/Interfaces/IQuestion.h"
+#include "Usul/Interfaces/GUI/IWindow.h"
+#include "Usul/Interfaces/GUI/IQuestion.h"
 
 namespace FX
 {

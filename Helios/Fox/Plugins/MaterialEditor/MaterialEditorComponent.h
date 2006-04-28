@@ -22,7 +22,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IMaterialEditor.h"
+#include "Usul/Interfaces/GUI/IMaterialEditor.h"
 
 #include "osg/ref_ptr"
 #include "osg/Material"

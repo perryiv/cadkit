@@ -23,7 +23,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Interfaces/IProgressBar.h" 
+#include "Usul/Interfaces/GUI/IProgressBar.h" 
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 

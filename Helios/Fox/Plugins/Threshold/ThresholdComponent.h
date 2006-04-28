@@ -23,7 +23,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IMenuEntry.h"
+#include "Usul/Interfaces/GUI/IMenuEntry.h"
 #include "Usul/Interfaces/ICommand.h"
 
 

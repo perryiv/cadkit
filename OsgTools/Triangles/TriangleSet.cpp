@@ -40,8 +40,8 @@
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/TextWindow.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
-#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IRedraw.h"

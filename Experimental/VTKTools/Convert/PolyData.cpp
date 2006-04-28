@@ -12,7 +12,7 @@
 #include "Usul/Math/Vector3.h"
 
 #include "Usul/Resources/StatusBar.h"
-#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/Triangles/Blocks.h"
@@ -168,7 +168,7 @@ void PolyData::polyDataToTriangleSet ( vtkPolyData *data, OsgTools::Triangles::T
   }
 
   // Rebuild the groups.  This is a work around.
-  triangleSet->groupTriangles ( Usul::Resources::statusBar()->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  //triangleSet->groupTriangles ( Usul::Resources::statusBar()->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 

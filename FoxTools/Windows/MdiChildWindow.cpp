@@ -21,9 +21,9 @@
 #include "FoxTools/Functions/MainWindow.h"
 #include "FoxTools/Dialogs/Message.h"
 
-#include "Usul/Interfaces/IReportErrors.h"
-#include "Usul/Interfaces/IStatusBar.h"
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IReportErrors.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IGetTitle.h"
 #include "Usul/Interfaces/ISendMessage.h"
 

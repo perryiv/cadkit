@@ -51,6 +51,39 @@ void ImageData::osgImageToImageData ( const osg::Image &image, vtkImageData &vtk
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert series of osg images to one image data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageData::osgImageToImageData ( const ImageList &imageList, vtkImageData &vtkImage )
+{
+  vtkImage.SetSpacing ( 1.0, 1.0, 1.0 );
+  vtkImage.SetOrigin ( 0.0, 0.0, 0.0 );
+  vtkImage.SetDimensions ( imageList.front()->s(), imageList.front()->t(), imageList.size() );
+  vtkImage.SetNumberOfScalarComponents(1);
+  vtkImage.SetScalarTypeToUnsignedChar();
+  vtkImage.AllocateScalars();
+
+  for ( ImageList::const_iterator iter = imageList.begin(); iter != imageList.end(); ++iter )
+  {
+
+    const int z ( iter - imageList.begin() );
+
+    for ( int x = 0; x < (*iter)->s(); ++x )
+    {
+      for ( int y = 0; y < (*iter)->t(); ++y )
+      {
+        unsigned char *data = static_cast < unsigned char* > ( vtkImage.GetScalarPointer( x, y , z ) );
+          
+        *data = *(*iter)->data( x, y, 0 );
+      }
+    }
+
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Convert image data to osg image.
 //
 ///////////////////////////////////////////////////////////////////////////////

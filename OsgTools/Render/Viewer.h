@@ -51,7 +51,7 @@
 #include "Usul/Interfaces/ILights.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
-#include "Usul/Interfaces/ISetCursorType.h"
+#include "Usul/Interfaces/GUI/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"

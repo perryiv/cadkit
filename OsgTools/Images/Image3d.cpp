@@ -11,7 +11,7 @@
 
 #include "Usul/Policies/Update.h"
 #include "Usul/Resources/ProgressBar.h"
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Types/Types.h"
 
 #include "osg/ref_ptr"

@@ -19,7 +19,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/IMenuEntry.h"
+#include "Usul/Interfaces/GUI/IMenuEntry.h"
 
 
 class GroupPrimitivesComponent : public Usul::Base::Referenced,

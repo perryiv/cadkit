@@ -21,15 +21,15 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
+#include "Usul/Interfaces/ICreateTriangleDocument.h"
 
 #include <string>
-
-class TriangleDocument;
 
 
 class TriangleComponent : public Usul::Base::Referenced,
                           public Usul::Interfaces::IPlugin,
-                          public Usul::Interfaces::IDocumentCreate
+                          public Usul::Interfaces::IDocumentCreate,
+                          public Usul::Interfaces::ICreateTriangleDocument
 {
 public:
 
@@ -50,15 +50,16 @@ public:
   /// Default construction.
   TriangleComponent();
 
+protected: 
+
   /// Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Triangle Model"; }
 
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *            createDocument ( Unknown *caller = 0x0 );
 
-protected: 
-
-  friend class TriangleDocument;
+  /// Usul::Interfaces::ICreateTriangleDocument
+  virtual void                  createTriangleDocument ( OsgTools::Triangles::TriangleSet*, IUnknown *caller = 0x0 );
 
   // Do not copy.
   TriangleComponent ( const TriangleComponent & );

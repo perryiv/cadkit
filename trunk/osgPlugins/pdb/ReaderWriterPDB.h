@@ -10,7 +10,7 @@
 #ifndef __READER_WRITER_PDB_H__
 #define __READER_WRITER_PDB_H__
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "osgDB/ReaderWriter"
 

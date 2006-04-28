@@ -88,7 +88,7 @@
 #include "Usul/Registry/Constants.h"
 #include "Usul/App/Controller.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/IMenuEntry.h"
+#include "Usul/Interfaces/GUI/IMenuEntry.h"
 #include "Usul/Interfaces/Fox/IFoxRadioButton.h"
 #include "Usul/Interfaces/Fox/IFoxToggleButton.h"
 #include "Usul/Interfaces/Fox/IFoxSubMenu.h"

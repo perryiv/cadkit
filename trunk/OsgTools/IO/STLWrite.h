@@ -14,7 +14,7 @@
 #include "Usul/Types/Types.h"
 #include "Usul/IO/Writer.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Exceptions/Thrower.h"

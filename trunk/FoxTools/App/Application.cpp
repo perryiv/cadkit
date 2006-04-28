@@ -33,7 +33,7 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Resources/ReportErrors.h"
-#include "Usul/Interfaces/IReportErrors.h"
+#include "Usul/Interfaces/GUI/IReportErrors.h"
 
 using namespace FoxTools::App;
 

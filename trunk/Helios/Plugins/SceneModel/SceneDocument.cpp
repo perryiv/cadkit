@@ -24,8 +24,8 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
-#include "Usul/Interfaces/IProgressBar.h"
-#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 
 #include "osg/Group"
 #include "osg/Geode"

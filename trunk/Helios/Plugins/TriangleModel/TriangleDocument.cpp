@@ -27,8 +27,8 @@
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Interfaces/IStatusBar.h"
-#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/ISmoothTriangles.h"
 #include "Usul/Interfaces/IDecimateTriangles.h"
 #include "Usul/Interfaces/ISubdivideTriangles.h"
@@ -492,7 +492,7 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
  
   for( Loops::iterator i = copy.begin(); i != copy.end(); ++ i )
   {
-    try 
+    try
     {
       OsgTools::Triangles::LoopSplitter::Loops splitLoops = ls.split(*i);
       if (splitLoops.size() == 0) 

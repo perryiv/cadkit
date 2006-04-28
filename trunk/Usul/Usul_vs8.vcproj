@@ -1017,6 +1017,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICreateTriangleDocument.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ICreateTriangleSet.h"
 						>
 					</File>

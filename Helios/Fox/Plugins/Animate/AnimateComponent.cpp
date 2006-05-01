@@ -70,6 +70,7 @@
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/ICreateMovie.h"
 #include "Usul/Interfaces/IGroup.h"
+#include "Usul/Interfaces/IWriteMovieFile.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/IPreferencesManager.h"
@@ -1094,7 +1095,7 @@ long AnimateComponent::onCommandSaveMovie ( FX::FXObject *, FX::FXSelector, void
 
 long AnimateComponent::onUpdateSaveMovie ( FX::FXObject *object, FX::FXSelector, void * )
 {
-  Usul::Interfaces::ICreateMovie::QueryPtr create ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ICreateMovie::IID ) );
+  Usul::Interfaces::IWriteMovieFile::QueryPtr create ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IWriteMovieFile::IID ) );
 
   FoxTools::Functions::enable ( this->_validMovieAndView() && create.valid(), object );
 

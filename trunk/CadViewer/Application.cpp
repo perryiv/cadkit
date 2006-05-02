@@ -3696,14 +3696,16 @@ void Application::_dumpStreamToFile()
       // The writer obtains the new osg file from Sinterpoint here and sends out
       // application data for the other machines
       int size;
-      
-      while( (size = _sinterReceiver->Receive(0)) > 0)
+      bool binary=false;
+
+      while( (size = _sinterReceiver->Receive(0,binary)) > 0)
       {
-        _sinterTmpString = _sinterReceiver->Data();
+        _sinterTmpString.clear();
+        _sinterTmpString.append(_sinterReceiver->Data(),size);
         _sinterTmpString.resize(size);
         _sinterAppData->_data.append(_sinterTmpString);
       }
-      
+
       // process error codes from negative size
       if(size < 0)
       {
@@ -3747,7 +3749,8 @@ void Application::_dumpStreamToFile()
         // If we are in data receive mode, just keep grabbing data
         if ( _sinterState == DATA )
         {        
-          const char *data = _sinterAppData->_data.c_str() + processed_size;
+          // Avoid the c_str() command in case we have binary data; pointer to beginning of _data is better
+          const char *data = &(_sinterAppData->_data)[0] + processed_size;
           int data_size = size - processed_size;
 
           // if necessary, reduce data size so we don't copy too much data into the stream
@@ -3798,7 +3801,7 @@ void Application::_dumpStreamToFile()
                 nodeFile.close();
               }
             }
-                        
+
             _sinterState = COMMAND;
           }
 

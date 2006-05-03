@@ -314,8 +314,6 @@
 		431BB4AF0924611E00ED2131 /* ImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB4900924611E00ED2131 /* ImageView.h */; };
 		431BB4B30924611E00ED2131 /* MaterialEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB4940924611E00ED2131 /* MaterialEditor.cpp */; };
 		431BB4B40924611E00ED2131 /* MaterialEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB4950924611E00ED2131 /* MaterialEditor.h */; };
-		431BB4B50924611E00ED2131 /* MotionListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB4960924611E00ED2131 /* MotionListener.cpp */; };
-		431BB4B60924611E00ED2131 /* MotionListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB4970924611E00ED2131 /* MotionListener.h */; };
 		431BB4B70924611E00ED2131 /* Precompiled.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB4980924611E00ED2131 /* Precompiled.h */; };
 		431BB4B80924611E00ED2131 /* Registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB4990924611E00ED2131 /* Registry.cpp */; };
 		431BB4B90924611E00ED2131 /* Registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB49A0924611E00ED2131 /* Registry.h */; };
@@ -339,7 +337,6 @@
 		431BB7AD0924671000ED2131 /* FrameTab.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB654092466C300ED2131 /* FrameTab.h */; };
 		431BB7AE0924671000ED2131 /* Movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB656092466C300ED2131 /* Movie.cpp */; };
 		431BB7AF0924671000ED2131 /* Movie.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB657092466C300ED2131 /* Movie.h */; };
-		431BB7B00924671000ED2131 /* Precompiled.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB658092466C300ED2131 /* Precompiled.h */; };
 		431BB7BA092467D800ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		431BB7BE0924680200ED2131 /* libFoxTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAF5509245D4B00ED2131 /* libFoxTools.dylib */; };
 		431BB7E50924684200ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -396,8 +393,6 @@
 		431BB91309246C4C00ED2131 /* FlipNormal.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB697092466C300ED2131 /* FlipNormal.h */; };
 		431BB91409246C4C00ED2131 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB698092466C300ED2131 /* Geometry.cpp */; };
 		431BB91509246C4C00ED2131 /* Geometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB699092466C300ED2131 /* Geometry.h */; };
-		431BB91609246C4C00ED2131 /* GroupPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB69A092466C300ED2131 /* GroupPrimitives.cpp */; };
-		431BB91709246C4C00ED2131 /* GroupPrimitives.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB69B092466C300ED2131 /* GroupPrimitives.h */; };
 		431BB91809246C4C00ED2131 /* Islands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB69C092466C300ED2131 /* Islands.cpp */; };
 		431BB91909246C4C00ED2131 /* Islands.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB69D092466C300ED2131 /* Islands.h */; };
 		431BB91A09246C4C00ED2131 /* Precompiled.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB69F092466C300ED2131 /* Precompiled.h */; };
@@ -485,11 +480,6 @@
 		431BB96C09246D2A00ED2131 /* SeekComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB738092466C400ED2131 /* SeekComponent.cpp */; };
 		431BB96D09246D2A00ED2131 /* Precompiled.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB737092466C400ED2131 /* Precompiled.h */; };
 		431BB96E09246D2A00ED2131 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB734092466C400ED2131 /* CompileGuard.h */; };
-		431BB96F09246D3C00ED2131 /* SelectionObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB743092466C400ED2131 /* SelectionObject.h */; };
-		431BB97009246D3C00ED2131 /* SelectionObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB742092466C400ED2131 /* SelectionObject.cpp */; };
-		431BB97109246D3D00ED2131 /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB740092466C400ED2131 /* Factory.h */; };
-		431BB97209246D3E00ED2131 /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB73F092466C400ED2131 /* Factory.cpp */; };
-		431BB97309246D3E00ED2131 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB73D092466C400ED2131 /* CompileGuard.h */; };
 		431BB97409246D4900ED2131 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB745092466C400ED2131 /* CompileGuard.h */; };
 		431BB97509246D4A00ED2131 /* ThresholdComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB748092466C400ED2131 /* ThresholdComponent.cpp */; };
 		431BB97609246D4A00ED2131 /* ThresholdComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB749092466C400ED2131 /* ThresholdComponent.h */; };
@@ -913,7 +903,6 @@
 		439228AA095CB158004A602C /* FrustumVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 439228A6095CB158004A602C /* FrustumVisitor.h */; };
 		439933DC0958770D00538B7E /* InstanceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439933DA0958770D00538B7E /* InstanceManager.cpp */; };
 		43A005030960CF9400F3BC07 /* ParadisReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 437B6C380944A12000C9F948 /* ParadisReader.cpp */; };
-		43A005050960CF9900F3BC07 /* ParadisSTLWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F6687309253F5D006DE918 /* ParadisSTLWriter.cpp */; };
 		43A005070960CF9A00F3BC07 /* TriangleComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB760092466C400ED2131 /* TriangleComponent.cpp */; };
 		43A0050A0960CF9C00F3BC07 /* TriangleDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB763092466C400ED2131 /* TriangleDocument.cpp */; };
 		43A0050C0960CF9D00F3BC07 /* TriangleFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB765092466C400ED2131 /* TriangleFactory.cpp */; };
@@ -1210,15 +1199,12 @@
 		43F6668B0924823A006DE918 /* TriangleDelegateComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB759092466C400ED2131 /* TriangleDelegateComponent.h */; };
 		43F6668C0924823A006DE918 /* TriangleDelegateFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BB75A092466C400ED2131 /* TriangleDelegateFactory.cpp */; };
 		43F6668D0924823A006DE918 /* TriangleDelegateFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BB75B092466C400ED2131 /* TriangleDelegateFactory.h */; };
-		43F6687409253F5D006DE918 /* ParadisSTLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F6687209253F5D006DE918 /* ParadisSTLWriter.h */; };
-		43F6687509253F5D006DE918 /* ParadisSTLWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F6687309253F5D006DE918 /* ParadisSTLWriter.cpp */; };
 		43F66C7109259AFA006DE918 /* libFoxTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAF5509245D4B00ED2131 /* libFoxTools.dylib */; };
 		43F66C7309259B07006DE918 /* libViews.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB474092460FC00ED2131 /* libViews.dylib */; };
 		43F66C7509259B1D006DE918 /* libViews.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB474092460FC00ED2131 /* libViews.dylib */; };
 		43F66C7E09259B2E006DE918 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		43F66C8109259B4D006DE918 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		43FED6360924520D00EBB610 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED6340924520D00EBB610 /* main.cpp */; };
-		43FED860092452F800EBB610 /* ProgressBarUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED6F8092452F700EBB610 /* ProgressBarUpdate.cpp */; };
 		43FED868092452F800EBB610 /* Referenced.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED702092452F700EBB610 /* Referenced.cpp */; };
 		43FED86A092452F800EBB610 /* Typed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED704092452F700EBB610 /* Typed.cpp */; };
 		43FED86E092452F800EBB610 /* Arguments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED70B092452F700EBB610 /* Arguments.cpp */; };
@@ -1261,6 +1247,7 @@
 		6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 		6687115809D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
 		6687115909D5E0020003384F /* GLFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
+		668711C409D5F5030003384F /* XHelios_Prefix.pch in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 4337B57A09677AFC008DF27C /* XHelios_Prefix.pch */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -1858,6 +1845,7 @@
 				43A005650960D21300F3BC07 /* osgUtil.framework in Copy OSG Frameworks */,
 				433212C20974512400C16FE3 /* ViewerBridge.h in Copy OSG Frameworks */,
 				6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */,
+				668711C409D5F5030003384F /* XHelios_Prefix.pch in Copy OSG Frameworks */,
 			);
 			name = "Copy OSG Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2347,267 +2335,227 @@
 		431BB09309245DAE00ED2131 /* MdiChildWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MdiChildWindow.cpp; path = ../FoxTools/Windows/MdiChildWindow.cpp; sourceTree = SOURCE_ROOT; };
 		431BB09409245DAE00ED2131 /* MdiChildWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MdiChildWindow.h; path = ../FoxTools/Windows/MdiChildWindow.h; sourceTree = SOURCE_ROOT; };
 		431BB41E0924603300ED2131 /* libCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		431BB4260924606700ED2131 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Export.h; path = ../OsgFox/Core/Export.h; sourceTree = SOURCE_ROOT; };
-		431BB4270924606700ED2131 /* MainWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MainWindow.cpp; path = ../OsgFox/Core/MainWindow.cpp; sourceTree = SOURCE_ROOT; };
-		431BB4280924606700ED2131 /* MainWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MainWindow.h; path = ../OsgFox/Core/MainWindow.h; sourceTree = SOURCE_ROOT; };
-		431BB42A0924606700ED2131 /* MdiMainWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MdiMainWindow.cpp; path = ../OsgFox/Core/MdiMainWindow.cpp; sourceTree = SOURCE_ROOT; };
-		431BB42B0924606700ED2131 /* MdiMainWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MdiMainWindow.h; path = ../OsgFox/Core/MdiMainWindow.h; sourceTree = SOURCE_ROOT; };
-		431BB42C0924606700ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Core/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB42D0924606700ED2131 /* Preferences.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Preferences.cpp; path = ../OsgFox/Core/Preferences.cpp; sourceTree = SOURCE_ROOT; };
-		431BB42E0924606700ED2131 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Preferences.h; path = ../OsgFox/Core/Preferences.h; sourceTree = SOURCE_ROOT; };
+		431BB4260924606700ED2131 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
+		431BB4270924606700ED2131 /* MainWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MainWindow.cpp; sourceTree = "<group>"; };
+		431BB4280924606700ED2131 /* MainWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MainWindow.h; sourceTree = "<group>"; };
+		431BB42A0924606700ED2131 /* MdiMainWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MdiMainWindow.cpp; sourceTree = "<group>"; };
+		431BB42B0924606700ED2131 /* MdiMainWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MdiMainWindow.h; sourceTree = "<group>"; };
+		431BB42C0924606700ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Precompiled.h; sourceTree = "<group>"; };
+		431BB42D0924606700ED2131 /* Preferences.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Preferences.cpp; sourceTree = "<group>"; };
+		431BB42E0924606700ED2131 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
 		431BB474092460FC00ED2131 /* libViews.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libViews.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		431BB4870924611E00ED2131 /* Canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas.cpp; path = ../OsgFox/Views/Canvas.cpp; sourceTree = SOURCE_ROOT; };
-		431BB4880924611E00ED2131 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../OsgFox/Views/Canvas.h; sourceTree = SOURCE_ROOT; };
-		431BB4890924611E00ED2131 /* ChartView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ChartView.cpp; path = ../OsgFox/Views/ChartView.cpp; sourceTree = SOURCE_ROOT; };
-		431BB48A0924611E00ED2131 /* ChartView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ChartView.h; path = ../OsgFox/Views/ChartView.h; sourceTree = SOURCE_ROOT; };
-		431BB48F0924611E00ED2131 /* ImageView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageView.cpp; path = ../OsgFox/Views/ImageView.cpp; sourceTree = SOURCE_ROOT; };
-		431BB4900924611E00ED2131 /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageView.h; path = ../OsgFox/Views/ImageView.h; sourceTree = SOURCE_ROOT; };
-		431BB4940924611E00ED2131 /* MaterialEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialEditor.cpp; path = ../OsgFox/Views/MaterialEditor.cpp; sourceTree = SOURCE_ROOT; };
-		431BB4950924611E00ED2131 /* MaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MaterialEditor.h; path = ../OsgFox/Views/MaterialEditor.h; sourceTree = SOURCE_ROOT; };
-		431BB4960924611E00ED2131 /* MotionListener.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MotionListener.cpp; path = ../OsgFox/Views/MotionListener.cpp; sourceTree = SOURCE_ROOT; };
-		431BB4970924611E00ED2131 /* MotionListener.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MotionListener.h; path = ../OsgFox/Views/MotionListener.h; sourceTree = SOURCE_ROOT; };
-		431BB4980924611E00ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Views/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB4990924611E00ED2131 /* Registry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Registry.cpp; path = ../OsgFox/Views/Registry.cpp; sourceTree = SOURCE_ROOT; };
-		431BB49A0924611E00ED2131 /* Registry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Registry.h; path = ../OsgFox/Views/Registry.h; sourceTree = SOURCE_ROOT; };
-		431BB49B0924611E00ED2131 /* TFView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TFView.cpp; path = ../OsgFox/Views/TFView.cpp; sourceTree = SOURCE_ROOT; };
-		431BB49C0924611E00ED2131 /* TFView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TFView.h; path = ../OsgFox/Views/TFView.h; sourceTree = SOURCE_ROOT; };
+		431BB4870924611E00ED2131 /* Canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Canvas.cpp; sourceTree = "<group>"; };
+		431BB4880924611E00ED2131 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Canvas.h; sourceTree = "<group>"; };
+		431BB4890924611E00ED2131 /* ChartView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ChartView.cpp; sourceTree = "<group>"; };
+		431BB48A0924611E00ED2131 /* ChartView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ChartView.h; sourceTree = "<group>"; };
+		431BB48F0924611E00ED2131 /* ImageView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageView.cpp; sourceTree = "<group>"; };
+		431BB4900924611E00ED2131 /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
+		431BB4940924611E00ED2131 /* MaterialEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialEditor.cpp; sourceTree = "<group>"; };
+		431BB4950924611E00ED2131 /* MaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MaterialEditor.h; sourceTree = "<group>"; };
+		431BB4980924611E00ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Precompiled.h; sourceTree = "<group>"; };
+		431BB4990924611E00ED2131 /* Registry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Registry.cpp; sourceTree = "<group>"; };
+		431BB49A0924611E00ED2131 /* Registry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
+		431BB49B0924611E00ED2131 /* TFView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TFView.cpp; sourceTree = "<group>"; };
+		431BB49C0924611E00ED2131 /* TFView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TFView.h; sourceTree = "<group>"; };
 		431BB644092465C300ED2131 /* Animate.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = Animate.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
-		431BB64A092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Animate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
+		431BB64A092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		431BB64B092466C300ED2131 /* AnimateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AnimateComponent.cpp; sourceTree = "<group>"; };
 		431BB64C092466C300ED2131 /* AnimateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AnimateComponent.h; sourceTree = "<group>"; };
 		431BB64E092466C300ED2131 /* AnimateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AnimateFactory.cpp; sourceTree = "<group>"; };
 		431BB64F092466C300ED2131 /* AnimateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AnimateFactory.h; sourceTree = "<group>"; };
-		431BB650092466C300ED2131 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Frame.h; path = ../OsgFox/Plugins/Animate/Frame.h; sourceTree = SOURCE_ROOT; };
-		431BB651092466C300ED2131 /* FrameDumpDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FrameDumpDialog.cpp; path = ../OsgFox/Plugins/Animate/FrameDumpDialog.cpp; sourceTree = SOURCE_ROOT; };
-		431BB652092466C300ED2131 /* FrameDumpDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FrameDumpDialog.h; path = ../OsgFox/Plugins/Animate/FrameDumpDialog.h; sourceTree = SOURCE_ROOT; };
-		431BB653092466C300ED2131 /* FrameTab.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FrameTab.cpp; path = ../OsgFox/Plugins/Animate/FrameTab.cpp; sourceTree = SOURCE_ROOT; };
-		431BB654092466C300ED2131 /* FrameTab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FrameTab.h; path = ../OsgFox/Plugins/Animate/FrameTab.h; sourceTree = SOURCE_ROOT; };
-		431BB656092466C300ED2131 /* Movie.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Movie.cpp; path = ../OsgFox/Plugins/Animate/Movie.cpp; sourceTree = SOURCE_ROOT; };
-		431BB657092466C300ED2131 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Movie.h; path = ../OsgFox/Plugins/Animate/Movie.h; sourceTree = SOURCE_ROOT; };
-		431BB658092466C300ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Plugins/Animate/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB65A092466C300ED2131 /* AtomInfoComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = AtomInfoComponent.cpp; path = ../OsgFox/Plugins/AtomInfo/AtomInfoComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB65B092466C300ED2131 /* AtomInfoComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AtomInfoComponent.h; path = ../OsgFox/Plugins/AtomInfo/AtomInfoComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB65C092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/AtomInfo/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB65E092466C300ED2131 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = ../OsgFox/Plugins/AtomInfo/Factory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB65F092466C300ED2131 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = ../OsgFox/Plugins/AtomInfo/Factory.h; sourceTree = SOURCE_ROOT; };
-		431BB662092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/CalculateEnergy/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB663092466C300ED2131 /* EnergyComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = EnergyComponent.cpp; path = ../OsgFox/Plugins/CalculateEnergy/EnergyComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB664092466C300ED2131 /* EnergyComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = EnergyComponent.h; path = ../OsgFox/Plugins/CalculateEnergy/EnergyComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB666092466C300ED2131 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = ../OsgFox/Plugins/CalculateEnergy/Factory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB667092466C300ED2131 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = ../OsgFox/Plugins/CalculateEnergy/Factory.h; sourceTree = SOURCE_ROOT; };
-		431BB66A092466C300ED2131 /* ClipComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ClipComponent.cpp; path = ../OsgFox/Plugins/ClipPlanes/ClipComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB66B092466C300ED2131 /* ClipComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ClipComponent.h; path = ../OsgFox/Plugins/ClipPlanes/ClipComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB66C092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/ClipPlanes/CompileGuard.h; sourceTree = SOURCE_ROOT; };
+		431BB650092466C300ED2131 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
+		431BB651092466C300ED2131 /* FrameDumpDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FrameDumpDialog.cpp; sourceTree = "<group>"; };
+		431BB652092466C300ED2131 /* FrameDumpDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FrameDumpDialog.h; sourceTree = "<group>"; };
+		431BB653092466C300ED2131 /* FrameTab.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FrameTab.cpp; sourceTree = "<group>"; };
+		431BB654092466C300ED2131 /* FrameTab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FrameTab.h; sourceTree = "<group>"; };
+		431BB656092466C300ED2131 /* Movie.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Movie.cpp; sourceTree = "<group>"; };
+		431BB657092466C300ED2131 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
+		431BB66A092466C300ED2131 /* ClipComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ClipComponent.cpp; sourceTree = "<group>"; };
+		431BB66B092466C300ED2131 /* ClipComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ClipComponent.h; sourceTree = "<group>"; };
+		431BB66C092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		431BB66E092466C300ED2131 /* ClipPlaneFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ClipPlaneFactory.cpp; sourceTree = "<group>"; };
 		431BB66F092466C300ED2131 /* ClipPlaneFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ClipPlaneFactory.h; sourceTree = "<group>"; };
-		431BB672092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Convolve/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB673092466C300ED2131 /* ConvolveComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ConvolveComponent.cpp; path = ../OsgFox/Plugins/Convolve/ConvolveComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB674092466C300ED2131 /* ConvolveComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ConvolveComponent.h; path = ../OsgFox/Plugins/Convolve/ConvolveComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB675092466C300ED2131 /* ConvolveFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ConvolveFactory.cpp; path = ../OsgFox/Plugins/Convolve/ConvolveFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB676092466C300ED2131 /* ConvolveFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ConvolveFactory.h; path = ../OsgFox/Plugins/Convolve/ConvolveFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB67A092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/DirectXJoystick/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB67B092466C300ED2131 /* DirectXJoyStick.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DirectXJoyStick.cpp; path = ../OsgFox/Plugins/DirectXJoystick/DirectXJoyStick.cpp; sourceTree = SOURCE_ROOT; };
-		431BB67C092466C300ED2131 /* DirectXJoyStick.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DirectXJoyStick.h; path = ../OsgFox/Plugins/DirectXJoystick/DirectXJoyStick.h; sourceTree = SOURCE_ROOT; };
-		431BB67D092466C300ED2131 /* DXJoystickComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DXJoystickComponent.cpp; path = ../OsgFox/Plugins/DirectXJoystick/DXJoystickComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB67E092466C300ED2131 /* DXJoystickComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DXJoystickComponent.h; path = ../OsgFox/Plugins/DirectXJoystick/DXJoystickComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB67F092466C300ED2131 /* DXJoystickFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DXJoystickFactory.cpp; path = ../OsgFox/Plugins/DirectXJoystick/DXJoystickFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB680092466C300ED2131 /* DXJoystickFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DXJoystickFactory.h; path = ../OsgFox/Plugins/DirectXJoystick/DXJoystickFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB684092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/EdgeDetect/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB685092466C300ED2131 /* EdgeDetectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeDetectComponent.cpp; path = ../OsgFox/Plugins/EdgeDetect/EdgeDetectComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB686092466C300ED2131 /* EdgeDetectComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = EdgeDetectComponent.h; path = ../OsgFox/Plugins/EdgeDetect/EdgeDetectComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB687092466C300ED2131 /* EdgeDetectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeDetectFactory.cpp; path = ../OsgFox/Plugins/EdgeDetect/EdgeDetectFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB688092466C300ED2131 /* EdgeDetectFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = EdgeDetectFactory.h; path = ../OsgFox/Plugins/EdgeDetect/EdgeDetectFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB68C092466C300ED2131 /* AddTriangle.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = AddTriangle.cpp; path = ../OsgFox/Plugins/EditPolygon/AddTriangle.cpp; sourceTree = SOURCE_ROOT; };
-		431BB68D092466C300ED2131 /* AddTriangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AddTriangle.h; path = ../OsgFox/Plugins/EditPolygon/AddTriangle.h; sourceTree = SOURCE_ROOT; };
-		431BB68E092466C300ED2131 /* CapPolygons.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CapPolygons.cpp; path = ../OsgFox/Plugins/EditPolygon/CapPolygons.cpp; sourceTree = SOURCE_ROOT; };
-		431BB68F092466C300ED2131 /* CapPolygons.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CapPolygons.h; path = ../OsgFox/Plugins/EditPolygon/CapPolygons.h; sourceTree = SOURCE_ROOT; };
-		431BB690092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/EditPolygon/CompileGuard.h; sourceTree = SOURCE_ROOT; };
+		431BB672092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB673092466C300ED2131 /* ConvolveComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ConvolveComponent.cpp; sourceTree = "<group>"; };
+		431BB674092466C300ED2131 /* ConvolveComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConvolveComponent.h; sourceTree = "<group>"; };
+		431BB675092466C300ED2131 /* ConvolveFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ConvolveFactory.cpp; sourceTree = "<group>"; };
+		431BB676092466C300ED2131 /* ConvolveFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConvolveFactory.h; sourceTree = "<group>"; };
+		431BB684092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB685092466C300ED2131 /* EdgeDetectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeDetectComponent.cpp; sourceTree = "<group>"; };
+		431BB686092466C300ED2131 /* EdgeDetectComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = EdgeDetectComponent.h; sourceTree = "<group>"; };
+		431BB687092466C300ED2131 /* EdgeDetectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeDetectFactory.cpp; sourceTree = "<group>"; };
+		431BB688092466C300ED2131 /* EdgeDetectFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = EdgeDetectFactory.h; sourceTree = "<group>"; };
+		431BB68C092466C300ED2131 /* AddTriangle.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AddTriangle.cpp; sourceTree = "<group>"; };
+		431BB68D092466C300ED2131 /* AddTriangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AddTriangle.h; sourceTree = "<group>"; };
+		431BB68E092466C300ED2131 /* CapPolygons.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CapPolygons.cpp; sourceTree = "<group>"; };
+		431BB68F092466C300ED2131 /* CapPolygons.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CapPolygons.h; sourceTree = "<group>"; };
+		431BB690092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		431BB691092466C300ED2131 /* EditPolygonComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = EditPolygonComponent.cpp; sourceTree = "<group>"; };
 		431BB692092466C300ED2131 /* EditPolygonComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = EditPolygonComponent.h; sourceTree = "<group>"; };
 		431BB694092466C300ED2131 /* EditPolygonFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = EditPolygonFactory.cpp; sourceTree = "<group>"; };
 		431BB695092466C300ED2131 /* EditPolygonFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = EditPolygonFactory.h; sourceTree = "<group>"; };
-		431BB696092466C300ED2131 /* FlipNormal.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FlipNormal.cpp; path = ../OsgFox/Plugins/EditPolygon/FlipNormal.cpp; sourceTree = SOURCE_ROOT; };
-		431BB697092466C300ED2131 /* FlipNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FlipNormal.h; path = ../OsgFox/Plugins/EditPolygon/FlipNormal.h; sourceTree = SOURCE_ROOT; };
-		431BB698092466C300ED2131 /* Geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Geometry.cpp; path = ../OsgFox/Plugins/EditPolygon/Geometry.cpp; sourceTree = SOURCE_ROOT; };
-		431BB699092466C300ED2131 /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Geometry.h; path = ../OsgFox/Plugins/EditPolygon/Geometry.h; sourceTree = SOURCE_ROOT; };
-		431BB69A092466C300ED2131 /* GroupPrimitives.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GroupPrimitives.cpp; path = ../OsgFox/Plugins/EditPolygon/GroupPrimitives.cpp; sourceTree = SOURCE_ROOT; };
-		431BB69B092466C300ED2131 /* GroupPrimitives.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GroupPrimitives.h; path = ../OsgFox/Plugins/EditPolygon/GroupPrimitives.h; sourceTree = SOURCE_ROOT; };
-		431BB69C092466C300ED2131 /* Islands.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Islands.cpp; path = ../OsgFox/Plugins/EditPolygon/Islands.cpp; sourceTree = SOURCE_ROOT; };
-		431BB69D092466C300ED2131 /* Islands.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Islands.h; path = ../OsgFox/Plugins/EditPolygon/Islands.h; sourceTree = SOURCE_ROOT; };
-		431BB69F092466C300ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Plugins/EditPolygon/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB6A0092466C300ED2131 /* Primitive.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Primitive.cpp; path = ../OsgFox/Plugins/EditPolygon/Primitive.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6A1092466C300ED2131 /* Primitive.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Primitive.h; path = ../OsgFox/Plugins/EditPolygon/Primitive.h; sourceTree = SOURCE_ROOT; };
-		431BB6A3092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/FoxDevice/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6A5092466C300ED2131 /* FoxDeviceComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FoxDeviceComponent.cpp; path = ../OsgFox/Plugins/FoxDevice/FoxDeviceComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6A6092466C300ED2131 /* FoxDeviceComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FoxDeviceComponent.h; path = ../OsgFox/Plugins/FoxDevice/FoxDeviceComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6A7092466C300ED2131 /* FoxDeviceFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FoxDeviceFactory.cpp; path = ../OsgFox/Plugins/FoxDevice/FoxDeviceFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6A8092466C300ED2131 /* FoxDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FoxDeviceFactory.h; path = ../OsgFox/Plugins/FoxDevice/FoxDeviceFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6A9092466C300ED2131 /* FoxMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FoxMouse.cpp; path = ../OsgFox/Plugins/FoxDevice/FoxMouse.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6AA092466C300ED2131 /* FoxMouse.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FoxMouse.h; path = ../OsgFox/Plugins/FoxDevice/FoxMouse.h; sourceTree = SOURCE_ROOT; };
-		431BB6AD092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Grayscale/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6AF092466C300ED2131 /* GrayscaleComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GrayscaleComponent.cpp; path = ../OsgFox/Plugins/Grayscale/GrayscaleComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6B0092466C300ED2131 /* GrayscaleComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GrayscaleComponent.h; path = ../OsgFox/Plugins/Grayscale/GrayscaleComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6B1092466C300ED2131 /* GrayscaleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GrayscaleFactory.cpp; path = ../OsgFox/Plugins/Grayscale/GrayscaleFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6B2092466C300ED2131 /* GrayscaleFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GrayscaleFactory.h; path = ../OsgFox/Plugins/Grayscale/GrayscaleFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6B5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Histogram/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6B7092466C300ED2131 /* HistogramComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HistogramComponent.cpp; path = ../OsgFox/Plugins/Histogram/HistogramComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6B8092466C300ED2131 /* HistogramComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HistogramComponent.h; path = ../OsgFox/Plugins/Histogram/HistogramComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6B9092466C300ED2131 /* HistogramFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HistogramFactory.cpp; path = ../OsgFox/Plugins/Histogram/HistogramFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6BA092466C300ED2131 /* HistogramFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HistogramFactory.h; path = ../OsgFox/Plugins/Histogram/HistogramFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6BD092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/ImageDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6BF092466C300ED2131 /* ImageDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageDelegateComponent.cpp; path = ../OsgFox/Plugins/ImageDelegate/ImageDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6C0092466C300ED2131 /* ImageDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageDelegateComponent.h; path = ../OsgFox/Plugins/ImageDelegate/ImageDelegateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6C1092466C300ED2131 /* ImageDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageDelegateFactory.cpp; path = ../OsgFox/Plugins/ImageDelegate/ImageDelegateFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6C2092466C300ED2131 /* ImageDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageDelegateFactory.h; path = ../OsgFox/Plugins/ImageDelegate/ImageDelegateFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6C5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/ImageModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6C7092466C300ED2131 /* ImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageComponent.cpp; path = ../OsgFox/Plugins/ImageModel/ImageComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6C8092466C300ED2131 /* ImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageComponent.h; path = ../OsgFox/Plugins/ImageModel/ImageComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6C9092466C300ED2131 /* ImageDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageDocument.cpp; path = ../OsgFox/Plugins/ImageModel/ImageDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6CA092466C300ED2131 /* ImageDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageDocument.h; path = ../OsgFox/Plugins/ImageModel/ImageDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB6CB092466C300ED2131 /* ImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageFactory.cpp; path = ../OsgFox/Plugins/ImageModel/ImageFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6CC092466C300ED2131 /* ImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageFactory.h; path = ../OsgFox/Plugins/ImageModel/ImageFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6CF092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/ImageMorphology/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6D0092466C300ED2131 /* DilateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DilateComponent.cpp; path = ../OsgFox/Plugins/ImageMorphology/DilateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6D1092466C300ED2131 /* DilateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DilateComponent.h; path = ../OsgFox/Plugins/ImageMorphology/DilateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6D2092466C300ED2131 /* ErodeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ErodeComponent.cpp; path = ../OsgFox/Plugins/ImageMorphology/ErodeComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6D3092466C300ED2131 /* ErodeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ErodeComponent.h; path = ../OsgFox/Plugins/ImageMorphology/ErodeComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6D5092466C300ED2131 /* ImageMorphologyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageMorphologyFactory.cpp; path = ../OsgFox/Plugins/ImageMorphology/ImageMorphologyFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6D6092466C300ED2131 /* ImageMorphologyFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageMorphologyFactory.h; path = ../OsgFox/Plugins/ImageMorphology/ImageMorphologyFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6D8092466C300ED2131 /* SmoothComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SmoothComponent.cpp; path = ../OsgFox/Plugins/ImageMorphology/SmoothComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6D9092466C300ED2131 /* SmoothComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SmoothComponent.h; path = ../OsgFox/Plugins/ImageMorphology/SmoothComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6DB092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/IMD/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6DD092466C300ED2131 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = ../OsgFox/Plugins/IMD/Factory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6DE092466C300ED2131 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = ../OsgFox/Plugins/IMD/Factory.h; sourceTree = SOURCE_ROOT; };
-		431BB6DF092466C300ED2131 /* IMD.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IMD.cpp; path = ../OsgFox/Plugins/IMD/IMD.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6E0092466C300ED2131 /* IMD.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMD.h; path = ../OsgFox/Plugins/IMD/IMD.h; sourceTree = SOURCE_ROOT; };
-		431BB6E1092466C300ED2131 /* IMDComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IMDComponent.cpp; path = ../OsgFox/Plugins/IMD/IMDComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6E2092466C300ED2131 /* IMDComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMDComponent.h; path = ../OsgFox/Plugins/IMD/IMDComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6E3092466C300ED2131 /* IMDHeader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IMDHeader.h; path = ../OsgFox/Plugins/IMD/IMDHeader.h; sourceTree = SOURCE_ROOT; };
-		431BB6E5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/InvertImage/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6E7092466C300ED2131 /* InvertImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = InvertImageComponent.cpp; path = ../OsgFox/Plugins/InvertImage/InvertImageComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6E8092466C300ED2131 /* InvertImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InvertImageComponent.h; path = ../OsgFox/Plugins/InvertImage/InvertImageComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6E9092466C300ED2131 /* InvertImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = InvertImageFactory.cpp; path = ../OsgFox/Plugins/InvertImage/InvertImageFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6EA092466C300ED2131 /* InvertImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InvertImageFactory.h; path = ../OsgFox/Plugins/InvertImage/InvertImageFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6EF092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/MaterialEditor/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6F2092466C300ED2131 /* MaterialEditorComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialEditorComponent.cpp; path = ../OsgFox/Plugins/MaterialEditor/MaterialEditorComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6F3092466C300ED2131 /* MaterialEditorComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MaterialEditorComponent.h; path = ../OsgFox/Plugins/MaterialEditor/MaterialEditorComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6F4092466C300ED2131 /* MaterialEditorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialEditorFactory.cpp; path = ../OsgFox/Plugins/MaterialEditor/MaterialEditorFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6F5092466C300ED2131 /* MaterialEditorFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MaterialEditorFactory.h; path = ../OsgFox/Plugins/MaterialEditor/MaterialEditorFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB6F7092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/MoleculeModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB6FA092466C300ED2131 /* MoleculeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MoleculeComponent.cpp; path = ../OsgFox/Plugins/MoleculeModel/MoleculeComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6FB092466C300ED2131 /* MoleculeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MoleculeComponent.h; path = ../OsgFox/Plugins/MoleculeModel/MoleculeComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB6FC092466C300ED2131 /* MoleculeDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MoleculeDocument.cpp; path = ../OsgFox/Plugins/MoleculeModel/MoleculeDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6FD092466C300ED2131 /* MoleculeDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MoleculeDocument.h; path = ../OsgFox/Plugins/MoleculeModel/MoleculeDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB6FE092466C300ED2131 /* MoleculeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MoleculeFactory.cpp; path = ../OsgFox/Plugins/MoleculeModel/MoleculeFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB6FF092466C300ED2131 /* MoleculeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MoleculeFactory.h; path = ../OsgFox/Plugins/MoleculeModel/MoleculeFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB701092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/MovieBuilder/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB704092466C300ED2131 /* MovieBuilderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MovieBuilderComponent.cpp; path = ../OsgFox/Plugins/MovieBuilder/MovieBuilderComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB705092466C300ED2131 /* MovieBuilderComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MovieBuilderComponent.h; path = ../OsgFox/Plugins/MovieBuilder/MovieBuilderComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB706092466C300ED2131 /* MovieBuilderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MovieBuilderFactory.cpp; path = ../OsgFox/Plugins/MovieBuilder/MovieBuilderFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB707092466C300ED2131 /* MovieBuilderFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MovieBuilderFactory.h; path = ../OsgFox/Plugins/MovieBuilder/MovieBuilderFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB709092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/ScaleImage/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB70C092466C400ED2131 /* ScaleImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ScaleImageComponent.cpp; path = ../OsgFox/Plugins/ScaleImage/ScaleImageComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB70D092466C400ED2131 /* ScaleImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ScaleImageComponent.h; path = ../OsgFox/Plugins/ScaleImage/ScaleImageComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB70E092466C400ED2131 /* ScaleImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ScaleImageFactory.cpp; path = ../OsgFox/Plugins/ScaleImage/ScaleImageFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB70F092466C400ED2131 /* ScaleImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ScaleImageFactory.h; path = ../OsgFox/Plugins/ScaleImage/ScaleImageFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB711092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/SceneDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB714092466C400ED2131 /* SceneDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneDelegateComponent.cpp; path = ../OsgFox/Plugins/SceneDelegate/SceneDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB715092466C400ED2131 /* SceneDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneDelegateComponent.h; path = ../OsgFox/Plugins/SceneDelegate/SceneDelegateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB716092466C400ED2131 /* SceneDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneDelegateFactory.cpp; path = ../OsgFox/Plugins/SceneDelegate/SceneDelegateFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB717092466C400ED2131 /* SceneDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneDelegateFactory.h; path = ../OsgFox/Plugins/SceneDelegate/SceneDelegateFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB719092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/SceneModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB71C092466C400ED2131 /* SceneComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneComponent.cpp; path = ../OsgFox/Plugins/SceneModel/SceneComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB71D092466C400ED2131 /* SceneComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneComponent.h; path = ../OsgFox/Plugins/SceneModel/SceneComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB71E092466C400ED2131 /* SceneDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneDocument.cpp; path = ../OsgFox/Plugins/SceneModel/SceneDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB71F092466C400ED2131 /* SceneDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneDocument.h; path = ../OsgFox/Plugins/SceneModel/SceneDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB720092466C400ED2131 /* SceneFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneFactory.cpp; path = ../OsgFox/Plugins/SceneModel/SceneFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB721092466C400ED2131 /* SceneFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneFactory.h; path = ../OsgFox/Plugins/SceneModel/SceneFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB723092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/SceneStatsOSG/CompileGuard.h; sourceTree = SOURCE_ROOT; };
+		431BB696092466C300ED2131 /* FlipNormal.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FlipNormal.cpp; sourceTree = "<group>"; };
+		431BB697092466C300ED2131 /* FlipNormal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FlipNormal.h; sourceTree = "<group>"; };
+		431BB698092466C300ED2131 /* Geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Geometry.cpp; sourceTree = "<group>"; };
+		431BB699092466C300ED2131 /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		431BB69C092466C300ED2131 /* Islands.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Islands.cpp; sourceTree = "<group>"; };
+		431BB69D092466C300ED2131 /* Islands.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Islands.h; sourceTree = "<group>"; };
+		431BB69F092466C300ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Precompiled.h; sourceTree = "<group>"; };
+		431BB6A0092466C300ED2131 /* Primitive.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Primitive.cpp; sourceTree = "<group>"; };
+		431BB6A1092466C300ED2131 /* Primitive.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Primitive.h; sourceTree = "<group>"; };
+		431BB6A3092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6A5092466C300ED2131 /* FoxDeviceComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FoxDeviceComponent.cpp; sourceTree = "<group>"; };
+		431BB6A6092466C300ED2131 /* FoxDeviceComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FoxDeviceComponent.h; sourceTree = "<group>"; };
+		431BB6A7092466C300ED2131 /* FoxDeviceFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FoxDeviceFactory.cpp; sourceTree = "<group>"; };
+		431BB6A8092466C300ED2131 /* FoxDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FoxDeviceFactory.h; sourceTree = "<group>"; };
+		431BB6A9092466C300ED2131 /* FoxMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FoxMouse.cpp; sourceTree = "<group>"; };
+		431BB6AA092466C300ED2131 /* FoxMouse.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FoxMouse.h; sourceTree = "<group>"; };
+		431BB6AD092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6AF092466C300ED2131 /* GrayscaleComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GrayscaleComponent.cpp; sourceTree = "<group>"; };
+		431BB6B0092466C300ED2131 /* GrayscaleComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GrayscaleComponent.h; sourceTree = "<group>"; };
+		431BB6B1092466C300ED2131 /* GrayscaleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GrayscaleFactory.cpp; sourceTree = "<group>"; };
+		431BB6B2092466C300ED2131 /* GrayscaleFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GrayscaleFactory.h; sourceTree = "<group>"; };
+		431BB6B5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6B7092466C300ED2131 /* HistogramComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = HistogramComponent.cpp; sourceTree = "<group>"; };
+		431BB6B8092466C300ED2131 /* HistogramComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HistogramComponent.h; sourceTree = "<group>"; };
+		431BB6B9092466C300ED2131 /* HistogramFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = HistogramFactory.cpp; sourceTree = "<group>"; };
+		431BB6BA092466C300ED2131 /* HistogramFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HistogramFactory.h; sourceTree = "<group>"; };
+		431BB6BD092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6BF092466C300ED2131 /* ImageDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDelegateComponent.cpp; sourceTree = "<group>"; };
+		431BB6C0092466C300ED2131 /* ImageDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageDelegateComponent.h; sourceTree = "<group>"; };
+		431BB6C1092466C300ED2131 /* ImageDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDelegateFactory.cpp; sourceTree = "<group>"; };
+		431BB6C2092466C300ED2131 /* ImageDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageDelegateFactory.h; sourceTree = "<group>"; };
+		431BB6C5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6C7092466C300ED2131 /* ImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageComponent.cpp; sourceTree = "<group>"; };
+		431BB6C8092466C300ED2131 /* ImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageComponent.h; sourceTree = "<group>"; };
+		431BB6C9092466C300ED2131 /* ImageDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDocument.cpp; sourceTree = "<group>"; };
+		431BB6CA092466C300ED2131 /* ImageDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageDocument.h; sourceTree = "<group>"; };
+		431BB6CB092466C300ED2131 /* ImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageFactory.cpp; sourceTree = "<group>"; };
+		431BB6CC092466C300ED2131 /* ImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageFactory.h; sourceTree = "<group>"; };
+		431BB6CF092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6D0092466C300ED2131 /* DilateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DilateComponent.cpp; sourceTree = "<group>"; };
+		431BB6D1092466C300ED2131 /* DilateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DilateComponent.h; sourceTree = "<group>"; };
+		431BB6D2092466C300ED2131 /* ErodeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ErodeComponent.cpp; sourceTree = "<group>"; };
+		431BB6D3092466C300ED2131 /* ErodeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ErodeComponent.h; sourceTree = "<group>"; };
+		431BB6D5092466C300ED2131 /* ImageMorphologyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageMorphologyFactory.cpp; sourceTree = "<group>"; };
+		431BB6D6092466C300ED2131 /* ImageMorphologyFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageMorphologyFactory.h; sourceTree = "<group>"; };
+		431BB6D8092466C300ED2131 /* SmoothComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SmoothComponent.cpp; sourceTree = "<group>"; };
+		431BB6D9092466C300ED2131 /* SmoothComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SmoothComponent.h; sourceTree = "<group>"; };
+		431BB6E5092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6E7092466C300ED2131 /* InvertImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = InvertImageComponent.cpp; sourceTree = "<group>"; };
+		431BB6E8092466C300ED2131 /* InvertImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InvertImageComponent.h; sourceTree = "<group>"; };
+		431BB6E9092466C300ED2131 /* InvertImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = InvertImageFactory.cpp; sourceTree = "<group>"; };
+		431BB6EA092466C300ED2131 /* InvertImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InvertImageFactory.h; sourceTree = "<group>"; };
+		431BB6EF092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6F2092466C300ED2131 /* MaterialEditorComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialEditorComponent.cpp; sourceTree = "<group>"; };
+		431BB6F3092466C300ED2131 /* MaterialEditorComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MaterialEditorComponent.h; sourceTree = "<group>"; };
+		431BB6F4092466C300ED2131 /* MaterialEditorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialEditorFactory.cpp; sourceTree = "<group>"; };
+		431BB6F5092466C300ED2131 /* MaterialEditorFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MaterialEditorFactory.h; sourceTree = "<group>"; };
+		431BB6F7092466C300ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB6FA092466C300ED2131 /* MoleculeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MoleculeComponent.cpp; sourceTree = "<group>"; };
+		431BB6FB092466C300ED2131 /* MoleculeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MoleculeComponent.h; sourceTree = "<group>"; };
+		431BB6FC092466C300ED2131 /* MoleculeDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MoleculeDocument.cpp; sourceTree = "<group>"; };
+		431BB6FD092466C300ED2131 /* MoleculeDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MoleculeDocument.h; sourceTree = "<group>"; };
+		431BB6FE092466C300ED2131 /* MoleculeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MoleculeFactory.cpp; sourceTree = "<group>"; };
+		431BB6FF092466C300ED2131 /* MoleculeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MoleculeFactory.h; sourceTree = "<group>"; };
+		431BB709092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB70C092466C400ED2131 /* ScaleImageComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleImageComponent.cpp; sourceTree = "<group>"; };
+		431BB70D092466C400ED2131 /* ScaleImageComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScaleImageComponent.h; sourceTree = "<group>"; };
+		431BB70E092466C400ED2131 /* ScaleImageFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleImageFactory.cpp; sourceTree = "<group>"; };
+		431BB70F092466C400ED2131 /* ScaleImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScaleImageFactory.h; sourceTree = "<group>"; };
+		431BB711092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB714092466C400ED2131 /* SceneDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneDelegateComponent.cpp; sourceTree = "<group>"; };
+		431BB715092466C400ED2131 /* SceneDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneDelegateComponent.h; sourceTree = "<group>"; };
+		431BB716092466C400ED2131 /* SceneDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneDelegateFactory.cpp; sourceTree = "<group>"; };
+		431BB717092466C400ED2131 /* SceneDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneDelegateFactory.h; sourceTree = "<group>"; };
+		431BB719092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB71C092466C400ED2131 /* SceneComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneComponent.cpp; sourceTree = "<group>"; };
+		431BB71D092466C400ED2131 /* SceneComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneComponent.h; sourceTree = "<group>"; };
+		431BB71E092466C400ED2131 /* SceneDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneDocument.cpp; sourceTree = "<group>"; };
+		431BB71F092466C400ED2131 /* SceneDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneDocument.h; sourceTree = "<group>"; };
+		431BB720092466C400ED2131 /* SceneFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFactory.cpp; sourceTree = "<group>"; };
+		431BB721092466C400ED2131 /* SceneFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneFactory.h; sourceTree = "<group>"; };
+		431BB723092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		431BB724092466C400ED2131 /* SceneStatsOSGComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneStatsOSGComponent.cpp; sourceTree = "<group>"; };
 		431BB725092466C400ED2131 /* SceneStatsOSGComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneStatsOSGComponent.h; sourceTree = "<group>"; };
 		431BB727092466C400ED2131 /* SceneStatsOSGFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneStatsOSGFactory.cpp; sourceTree = "<group>"; };
 		431BB728092466C400ED2131 /* SceneStatsOSGFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneStatsOSGFactory.h; sourceTree = "<group>"; };
-		431BB72A092466C400ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Plugins/SceneStatsOSG/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB72C092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/SceneTree/CompileGuard.h; sourceTree = SOURCE_ROOT; };
+		431BB72A092466C400ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Precompiled.h; sourceTree = "<group>"; };
+		431BB72C092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		431BB72E092466C400ED2131 /* SceneTreeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeFactory.cpp; sourceTree = "<group>"; };
 		431BB72F092466C400ED2131 /* SceneTreeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneTreeFactory.h; sourceTree = "<group>"; };
-		431BB731092466C400ED2131 /* SceneTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTreeComponent.cpp; path = ../OsgFox/Plugins/SceneTree/SceneTreeComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB732092466C400ED2131 /* SceneTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SceneTreeComponent.h; path = ../OsgFox/Plugins/SceneTree/SceneTreeComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB734092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Seek/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB737092466C400ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Precompiled.h; path = ../OsgFox/Plugins/Seek/Precompiled.h; sourceTree = SOURCE_ROOT; };
-		431BB738092466C400ED2131 /* SeekComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SeekComponent.cpp; path = ../OsgFox/Plugins/Seek/SeekComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB739092466C400ED2131 /* SeekComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SeekComponent.h; path = ../OsgFox/Plugins/Seek/SeekComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB73A092466C400ED2131 /* SeekFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SeekFactory.cpp; path = ../OsgFox/Plugins/Seek/SeekFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB73B092466C400ED2131 /* SeekFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SeekFactory.h; path = ../OsgFox/Plugins/Seek/SeekFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB73D092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/SelectionSTL/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB73F092466C400ED2131 /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Factory.cpp; path = ../OsgFox/Plugins/SelectionSTL/Factory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB740092466C400ED2131 /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = ../OsgFox/Plugins/SelectionSTL/Factory.h; sourceTree = SOURCE_ROOT; };
-		431BB742092466C400ED2131 /* SelectionObject.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SelectionObject.cpp; path = ../OsgFox/Plugins/SelectionSTL/SelectionObject.cpp; sourceTree = SOURCE_ROOT; };
-		431BB743092466C400ED2131 /* SelectionObject.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SelectionObject.h; path = ../OsgFox/Plugins/SelectionSTL/SelectionObject.h; sourceTree = SOURCE_ROOT; };
-		431BB745092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Threshold/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB748092466C400ED2131 /* ThresholdComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdComponent.cpp; path = ../OsgFox/Plugins/Threshold/ThresholdComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB749092466C400ED2131 /* ThresholdComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ThresholdComponent.h; path = ../OsgFox/Plugins/Threshold/ThresholdComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB74A092466C400ED2131 /* ThresholdFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ThresholdFactory.cpp; path = ../OsgFox/Plugins/Threshold/ThresholdFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB74B092466C400ED2131 /* ThresholdFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ThresholdFactory.h; path = ../OsgFox/Plugins/Threshold/ThresholdFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB74D092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/TransparencyControl/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB750092466C400ED2131 /* TransparencyComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TransparencyComponent.cpp; path = ../OsgFox/Plugins/TransparencyControl/TransparencyComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB751092466C400ED2131 /* TransparencyComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TransparencyComponent.h; path = ../OsgFox/Plugins/TransparencyControl/TransparencyComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB752092466C400ED2131 /* TransparencyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TransparencyFactory.cpp; path = ../OsgFox/Plugins/TransparencyControl/TransparencyFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB753092466C400ED2131 /* TransparencyFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TransparencyFactory.h; path = ../OsgFox/Plugins/TransparencyControl/TransparencyFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB755092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/TriangleDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB758092466C400ED2131 /* TriangleDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleDelegateComponent.cpp; path = ../OsgFox/Plugins/TriangleDelegate/TriangleDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB759092466C400ED2131 /* TriangleDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleDelegateComponent.h; path = ../OsgFox/Plugins/TriangleDelegate/TriangleDelegateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB75A092466C400ED2131 /* TriangleDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleDelegateFactory.cpp; path = ../OsgFox/Plugins/TriangleDelegate/TriangleDelegateFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB75B092466C400ED2131 /* TriangleDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleDelegateFactory.h; path = ../OsgFox/Plugins/TriangleDelegate/TriangleDelegateFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB75D092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/TriangleModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB760092466C400ED2131 /* TriangleComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleComponent.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB761092466C400ED2131 /* TriangleComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleComponent.h; path = ../OsgFox/Plugins/TriangleModel/TriangleComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB762092466C400ED2131 /* TriangleConstants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleConstants.h; path = ../OsgFox/Plugins/TriangleModel/TriangleConstants.h; sourceTree = SOURCE_ROOT; };
-		431BB763092466C400ED2131 /* TriangleDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleDocument.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB764092466C400ED2131 /* TriangleDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleDocument.h; path = ../OsgFox/Plugins/TriangleModel/TriangleDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB765092466C400ED2131 /* TriangleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleFactory.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB766092466C400ED2131 /* TriangleFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleFactory.h; path = ../OsgFox/Plugins/TriangleModel/TriangleFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB767092466C400ED2131 /* TriangleHelpersTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleHelpersTDF.h; path = ../OsgFox/Plugins/TriangleModel/TriangleHelpersTDF.h; sourceTree = SOURCE_ROOT; };
-		431BB768092466C400ED2131 /* TriangleReaderR3D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleReaderR3D.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderR3D.cpp; sourceTree = SOURCE_ROOT; };
-		431BB769092466C400ED2131 /* TriangleReaderR3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleReaderR3D.h; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderR3D.h; sourceTree = SOURCE_ROOT; };
-		431BB76A092466C400ED2131 /* TriangleReaderSTL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleReaderSTL.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderSTL.cpp; sourceTree = SOURCE_ROOT; };
-		431BB76B092466C400ED2131 /* TriangleReaderSTL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleReaderSTL.h; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderSTL.h; sourceTree = SOURCE_ROOT; };
-		431BB76C092466C400ED2131 /* TriangleReaderTDF.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleReaderTDF.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderTDF.cpp; sourceTree = SOURCE_ROOT; };
-		431BB76D092466C400ED2131 /* TriangleReaderTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleReaderTDF.h; path = ../OsgFox/Plugins/TriangleModel/TriangleReaderTDF.h; sourceTree = SOURCE_ROOT; };
-		431BB76E092466C400ED2131 /* TriangleWriterSTL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleWriterSTL.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleWriterSTL.cpp; sourceTree = SOURCE_ROOT; };
-		431BB76F092466C400ED2131 /* TriangleWriterSTL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleWriterSTL.h; path = ../OsgFox/Plugins/TriangleModel/TriangleWriterSTL.h; sourceTree = SOURCE_ROOT; };
-		431BB770092466C400ED2131 /* TriangleWriterTDF.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleWriterTDF.cpp; path = ../OsgFox/Plugins/TriangleModel/TriangleWriterTDF.cpp; sourceTree = SOURCE_ROOT; };
-		431BB771092466C400ED2131 /* TriangleWriterTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleWriterTDF.h; path = ../OsgFox/Plugins/TriangleModel/TriangleWriterTDF.h; sourceTree = SOURCE_ROOT; };
-		431BB773092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/Triangulate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB776092466C400ED2131 /* TriangulateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangulateComponent.cpp; path = ../OsgFox/Plugins/Triangulate/TriangulateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB777092466C400ED2131 /* TriangulateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangulateComponent.h; path = ../OsgFox/Plugins/Triangulate/TriangulateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB778092466C400ED2131 /* TriangulateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangulateFactory.cpp; path = ../OsgFox/Plugins/Triangulate/TriangulateFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB779092466C400ED2131 /* TriangulateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangulateFactory.h; path = ../OsgFox/Plugins/Triangulate/TriangulateFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB77B092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/VolumeDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB77E092466C400ED2131 /* SettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsDialog.cpp; path = ../OsgFox/Plugins/VolumeDelegate/SettingsDialog.cpp; sourceTree = SOURCE_ROOT; };
-		431BB77F092466C400ED2131 /* SettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SettingsDialog.h; path = ../OsgFox/Plugins/VolumeDelegate/SettingsDialog.h; sourceTree = SOURCE_ROOT; };
-		431BB780092466C400ED2131 /* VolumeDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeDelegateComponent.cpp; path = ../OsgFox/Plugins/VolumeDelegate/VolumeDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB781092466C400ED2131 /* VolumeDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeDelegateComponent.h; path = ../OsgFox/Plugins/VolumeDelegate/VolumeDelegateComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB782092466C400ED2131 /* VolumeDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeDelegateFactory.cpp; path = ../OsgFox/Plugins/VolumeDelegate/VolumeDelegateFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB783092466C400ED2131 /* VolumeDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeDelegateFactory.h; path = ../OsgFox/Plugins/VolumeDelegate/VolumeDelegateFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB785092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/VolumeModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB788092466C400ED2131 /* VolumeCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeCallback.cpp; path = ../OsgFox/Plugins/VolumeModel/VolumeCallback.cpp; sourceTree = SOURCE_ROOT; };
-		431BB789092466C400ED2131 /* VolumeCallback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeCallback.h; path = ../OsgFox/Plugins/VolumeModel/VolumeCallback.h; sourceTree = SOURCE_ROOT; };
-		431BB78A092466C400ED2131 /* VolumeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeComponent.cpp; path = ../OsgFox/Plugins/VolumeModel/VolumeComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB78B092466C400ED2131 /* VolumeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeComponent.h; path = ../OsgFox/Plugins/VolumeModel/VolumeComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB78C092466C400ED2131 /* VolumeDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeDocument.cpp; path = ../OsgFox/Plugins/VolumeModel/VolumeDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB78D092466C400ED2131 /* VolumeDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeDocument.h; path = ../OsgFox/Plugins/VolumeModel/VolumeDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB78E092466C400ED2131 /* VolumeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeFactory.cpp; path = ../OsgFox/Plugins/VolumeModel/VolumeFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB78F092466C400ED2131 /* VolumeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VolumeFactory.h; path = ../OsgFox/Plugins/VolumeModel/VolumeFactory.h; sourceTree = SOURCE_ROOT; };
-		431BB791092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../OsgFox/Plugins/VoxelModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		431BB793092466C400ED2131 /* ImageInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageInfo.cpp; path = ../OsgFox/Plugins/VoxelModel/ImageInfo.cpp; sourceTree = SOURCE_ROOT; };
-		431BB794092466C400ED2131 /* ImageInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageInfo.h; path = ../OsgFox/Plugins/VoxelModel/ImageInfo.h; sourceTree = SOURCE_ROOT; };
-		431BB796092466C400ED2131 /* VoxelComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VoxelComponent.cpp; path = ../OsgFox/Plugins/VoxelModel/VoxelComponent.cpp; sourceTree = SOURCE_ROOT; };
-		431BB797092466C400ED2131 /* VoxelComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VoxelComponent.h; path = ../OsgFox/Plugins/VoxelModel/VoxelComponent.h; sourceTree = SOURCE_ROOT; };
-		431BB798092466C400ED2131 /* VoxelDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VoxelDocument.cpp; path = ../OsgFox/Plugins/VoxelModel/VoxelDocument.cpp; sourceTree = SOURCE_ROOT; };
-		431BB799092466C400ED2131 /* VoxelDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VoxelDocument.h; path = ../OsgFox/Plugins/VoxelModel/VoxelDocument.h; sourceTree = SOURCE_ROOT; };
-		431BB79A092466C400ED2131 /* VoxelFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VoxelFactory.cpp; path = ../OsgFox/Plugins/VoxelModel/VoxelFactory.cpp; sourceTree = SOURCE_ROOT; };
-		431BB79B092466C400ED2131 /* VoxelFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VoxelFactory.h; path = ../OsgFox/Plugins/VoxelModel/VoxelFactory.h; sourceTree = SOURCE_ROOT; };
+		431BB731092466C400ED2131 /* SceneTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeComponent.cpp; sourceTree = "<group>"; };
+		431BB732092466C400ED2131 /* SceneTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneTreeComponent.h; sourceTree = "<group>"; };
+		431BB734092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB737092466C400ED2131 /* Precompiled.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Precompiled.h; sourceTree = "<group>"; };
+		431BB738092466C400ED2131 /* SeekComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SeekComponent.cpp; sourceTree = "<group>"; };
+		431BB739092466C400ED2131 /* SeekComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SeekComponent.h; sourceTree = "<group>"; };
+		431BB73A092466C400ED2131 /* SeekFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SeekFactory.cpp; sourceTree = "<group>"; };
+		431BB73B092466C400ED2131 /* SeekFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SeekFactory.h; sourceTree = "<group>"; };
+		431BB745092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB748092466C400ED2131 /* ThresholdComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ThresholdComponent.cpp; sourceTree = "<group>"; };
+		431BB749092466C400ED2131 /* ThresholdComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ThresholdComponent.h; sourceTree = "<group>"; };
+		431BB74A092466C400ED2131 /* ThresholdFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ThresholdFactory.cpp; sourceTree = "<group>"; };
+		431BB74B092466C400ED2131 /* ThresholdFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ThresholdFactory.h; sourceTree = "<group>"; };
+		431BB74D092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB750092466C400ED2131 /* TransparencyComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TransparencyComponent.cpp; sourceTree = "<group>"; };
+		431BB751092466C400ED2131 /* TransparencyComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TransparencyComponent.h; sourceTree = "<group>"; };
+		431BB752092466C400ED2131 /* TransparencyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TransparencyFactory.cpp; sourceTree = "<group>"; };
+		431BB753092466C400ED2131 /* TransparencyFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TransparencyFactory.h; sourceTree = "<group>"; };
+		431BB755092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB758092466C400ED2131 /* TriangleDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleDelegateComponent.cpp; sourceTree = "<group>"; };
+		431BB759092466C400ED2131 /* TriangleDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleDelegateComponent.h; sourceTree = "<group>"; };
+		431BB75A092466C400ED2131 /* TriangleDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleDelegateFactory.cpp; sourceTree = "<group>"; };
+		431BB75B092466C400ED2131 /* TriangleDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleDelegateFactory.h; sourceTree = "<group>"; };
+		431BB75D092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB760092466C400ED2131 /* TriangleComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleComponent.cpp; sourceTree = "<group>"; };
+		431BB761092466C400ED2131 /* TriangleComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleComponent.h; sourceTree = "<group>"; };
+		431BB762092466C400ED2131 /* TriangleConstants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleConstants.h; sourceTree = "<group>"; };
+		431BB763092466C400ED2131 /* TriangleDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleDocument.cpp; sourceTree = "<group>"; };
+		431BB764092466C400ED2131 /* TriangleDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleDocument.h; sourceTree = "<group>"; };
+		431BB765092466C400ED2131 /* TriangleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleFactory.cpp; sourceTree = "<group>"; };
+		431BB766092466C400ED2131 /* TriangleFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleFactory.h; sourceTree = "<group>"; };
+		431BB767092466C400ED2131 /* TriangleHelpersTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleHelpersTDF.h; sourceTree = "<group>"; };
+		431BB768092466C400ED2131 /* TriangleReaderR3D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleReaderR3D.cpp; sourceTree = "<group>"; };
+		431BB769092466C400ED2131 /* TriangleReaderR3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleReaderR3D.h; sourceTree = "<group>"; };
+		431BB76A092466C400ED2131 /* TriangleReaderSTL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleReaderSTL.cpp; sourceTree = "<group>"; };
+		431BB76B092466C400ED2131 /* TriangleReaderSTL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleReaderSTL.h; sourceTree = "<group>"; };
+		431BB76C092466C400ED2131 /* TriangleReaderTDF.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleReaderTDF.cpp; sourceTree = "<group>"; };
+		431BB76D092466C400ED2131 /* TriangleReaderTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleReaderTDF.h; sourceTree = "<group>"; };
+		431BB76E092466C400ED2131 /* TriangleWriterSTL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleWriterSTL.cpp; sourceTree = "<group>"; };
+		431BB76F092466C400ED2131 /* TriangleWriterSTL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleWriterSTL.h; sourceTree = "<group>"; };
+		431BB770092466C400ED2131 /* TriangleWriterTDF.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleWriterTDF.cpp; sourceTree = "<group>"; };
+		431BB771092466C400ED2131 /* TriangleWriterTDF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangleWriterTDF.h; sourceTree = "<group>"; };
+		431BB773092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB776092466C400ED2131 /* TriangulateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateComponent.cpp; sourceTree = "<group>"; };
+		431BB777092466C400ED2131 /* TriangulateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangulateComponent.h; sourceTree = "<group>"; };
+		431BB778092466C400ED2131 /* TriangulateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateFactory.cpp; sourceTree = "<group>"; };
+		431BB779092466C400ED2131 /* TriangulateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TriangulateFactory.h; sourceTree = "<group>"; };
+		431BB77B092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB77E092466C400ED2131 /* SettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsDialog.cpp; sourceTree = "<group>"; };
+		431BB77F092466C400ED2131 /* SettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SettingsDialog.h; sourceTree = "<group>"; };
+		431BB780092466C400ED2131 /* VolumeDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeDelegateComponent.cpp; sourceTree = "<group>"; };
+		431BB781092466C400ED2131 /* VolumeDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeDelegateComponent.h; sourceTree = "<group>"; };
+		431BB782092466C400ED2131 /* VolumeDelegateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeDelegateFactory.cpp; sourceTree = "<group>"; };
+		431BB783092466C400ED2131 /* VolumeDelegateFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeDelegateFactory.h; sourceTree = "<group>"; };
+		431BB785092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB788092466C400ED2131 /* VolumeCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeCallback.cpp; sourceTree = "<group>"; };
+		431BB789092466C400ED2131 /* VolumeCallback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeCallback.h; sourceTree = "<group>"; };
+		431BB78A092466C400ED2131 /* VolumeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeComponent.cpp; sourceTree = "<group>"; };
+		431BB78B092466C400ED2131 /* VolumeComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeComponent.h; sourceTree = "<group>"; };
+		431BB78C092466C400ED2131 /* VolumeDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeDocument.cpp; sourceTree = "<group>"; };
+		431BB78D092466C400ED2131 /* VolumeDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeDocument.h; sourceTree = "<group>"; };
+		431BB78E092466C400ED2131 /* VolumeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeFactory.cpp; sourceTree = "<group>"; };
+		431BB78F092466C400ED2131 /* VolumeFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VolumeFactory.h; sourceTree = "<group>"; };
+		431BB791092466C400ED2131 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		431BB793092466C400ED2131 /* ImageInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ImageInfo.cpp; sourceTree = "<group>"; };
+		431BB794092466C400ED2131 /* ImageInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ImageInfo.h; sourceTree = "<group>"; };
+		431BB796092466C400ED2131 /* VoxelComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VoxelComponent.cpp; sourceTree = "<group>"; };
+		431BB797092466C400ED2131 /* VoxelComponent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VoxelComponent.h; sourceTree = "<group>"; };
+		431BB798092466C400ED2131 /* VoxelDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VoxelDocument.cpp; sourceTree = "<group>"; };
+		431BB799092466C400ED2131 /* VoxelDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VoxelDocument.h; sourceTree = "<group>"; };
+		431BB79A092466C400ED2131 /* VoxelFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = VoxelFactory.cpp; sourceTree = "<group>"; };
+		431BB79B092466C400ED2131 /* VoxelFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VoxelFactory.h; sourceTree = "<group>"; };
 		431BB7EA0924684200ED2131 /* ClipPlanes.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ClipPlanes.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		431BB7F5092468BE00ED2131 /* Convolve.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = Convolve.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		431BB7FE092468D300ED2131 /* EdgeDetect.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = EdgeDetect.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2760,10 +2708,6 @@
 		437B6C360944A0F900C9F948 /* FileStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FileStream.h; sourceTree = "<group>"; };
 		437B6C380944A12000C9F948 /* ParadisReader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ParadisReader.cpp; sourceTree = "<group>"; };
 		437B6C390944A12000C9F948 /* ParadisReader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ParadisReader.h; sourceTree = "<group>"; };
-		437B6C3C0944A14A00C9F948 /* AVIWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AVIWriter.cpp; sourceTree = "<group>"; };
-		437B6C3D0944A14A00C9F948 /* AVIWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AVIWriter.h; sourceTree = "<group>"; };
-		437B6C3E0944A14A00C9F948 /* MOVWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MOVWriter.cpp; sourceTree = "<group>"; };
-		437B6C3F0944A14A00C9F948 /* MOVWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MOVWriter.h; sourceTree = "<group>"; };
 		437B6C430944A1CC00C9F948 /* AddTriangle.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = AddTriangle.gif; sourceTree = "<group>"; };
 		437B6C440944A1CC00C9F948 /* arrow.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = arrow.gif; sourceTree = "<group>"; };
 		437B6C450944A1CC00C9F948 /* Back.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Back.gif; sourceTree = "<group>"; };
@@ -2901,8 +2845,8 @@
 		43D724D0094DE500009181E3 /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = /Library/Frameworks/osgText.framework; sourceTree = "<absolute>"; };
 		43D724D1094DE500009181E3 /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = /Library/Frameworks/osgUtil.framework; sourceTree = "<absolute>"; };
 		43D72610094DEC32009181E3 /* Helios.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Helios.icns; path = ../Helios/Cocoa/Resources/Helios.icns; sourceTree = "<group>"; };
-		43DB3400099BDA89007DE491 /* FoxCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FoxCanvas.cpp; path = ../OsgFox/Views/FoxCanvas.cpp; sourceTree = SOURCE_ROOT; };
-		43DB3401099BDA89007DE491 /* FoxCanvas.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FoxCanvas.h; path = ../OsgFox/Views/FoxCanvas.h; sourceTree = SOURCE_ROOT; };
+		43DB3400099BDA89007DE491 /* FoxCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FoxCanvas.cpp; sourceTree = "<group>"; };
+		43DB3401099BDA89007DE491 /* FoxCanvas.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FoxCanvas.h; sourceTree = "<group>"; };
 		43DB3419099BDE86007DE491 /* IChangeMenuBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IChangeMenuBar.h; path = ../Usul/Interfaces/IChangeMenuBar.h; sourceTree = SOURCE_ROOT; };
 		43DB341A099BDE86007DE491 /* IDecimateModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDecimateModel.h; path = ../Usul/Interfaces/IDecimateModel.h; sourceTree = SOURCE_ROOT; };
 		43DB341B099BDE86007DE491 /* IDecimateTriangles.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDecimateTriangles.h; path = ../Usul/Interfaces/IDecimateTriangles.h; sourceTree = SOURCE_ROOT; };
@@ -2915,14 +2859,10 @@
 		43DB3422099BDE86007DE491 /* IWriteMovieFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IWriteMovieFile.h; path = ../Usul/Interfaces/IWriteMovieFile.h; sourceTree = SOURCE_ROOT; };
 		43E1AAFF09461A18007F0715 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		43F66684092481C5006DE918 /* TriangleDelegate.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangleDelegate.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
-		43F6687209253F5D006DE918 /* ParadisSTLWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParadisSTLWriter.h; sourceTree = "<group>"; };
-		43F6687309253F5D006DE918 /* ParadisSTLWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParadisSTLWriter.cpp; sourceTree = "<group>"; };
-		43FED6340924520D00EBB610 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../OsgFox/Example/main.cpp; sourceTree = SOURCE_ROOT; };
+		43FED6340924520D00EBB610 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		43FED6F2092452E100EBB610 /* libUsul.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libUsul.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		43FED6F6092452F700EBB610 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Bind.h; path = ../Usul/Adaptors/Bind.h; sourceTree = SOURCE_ROOT; };
 		43FED6F7092452F700EBB610 /* MemberFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MemberFunction.h; path = ../Usul/Adaptors/MemberFunction.h; sourceTree = SOURCE_ROOT; };
-		43FED6F8092452F700EBB610 /* ProgressBarUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ProgressBarUpdate.cpp; path = ../Usul/Adaptors/ProgressBarUpdate.cpp; sourceTree = SOURCE_ROOT; };
-		43FED6F9092452F700EBB610 /* ProgressBarUpdate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ProgressBarUpdate.h; path = ../Usul/Adaptors/ProgressBarUpdate.h; sourceTree = SOURCE_ROOT; };
 		43FED6FA092452F700EBB610 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Random.h; path = ../Usul/Adaptors/Random.h; sourceTree = SOURCE_ROOT; };
 		43FED6FC092452F700EBB610 /* ConvexHullSort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ConvexHullSort.h; path = ../Usul/Algorithms/ConvexHullSort.h; sourceTree = SOURCE_ROOT; };
 		43FED6FD092452F700EBB610 /* Extract.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Extract.h; path = ../Usul/Algorithms/Extract.h; sourceTree = SOURCE_ROOT; };
@@ -3824,15 +3764,15 @@
 		08FB7794FE84155DC02AAC07 /* Helios */ = {
 			isa = PBXGroup;
 			children = (
+				431BAD8709245AB600ED2131 /* OsgTools */,
 				4392274B095C9F1B004A602C /* Helios */,
 				43887E750945DA6B00B519D0 /* Helios.app */,
 				43FED6F4092452F700EBB610 /* Usul */,
 				43FEDAEA092454D500EBB610 /* Threads */,
-				431BAD8709245AB600ED2131 /* OsgTools */,
 				431BAFE309245DAE00ED2131 /* FoxTools */,
 				431BB4220924606700ED2131 /* Core */,
 				431BB4800924611E00ED2131 /* Views */,
-				43FED6300924520C00EBB610 /* Example */,
+				43FED6300924520C00EBB610 /* Fox */,
 				431BB648092466C300ED2131 /* Plugins */,
 				437B6C400944A1B700C9F948 /* Resources */,
 				431BBB270924772500ED2131 /* Quake */,
@@ -4420,7 +4360,7 @@
 				431BB42E0924606700ED2131 /* Preferences.h */,
 			);
 			name = Core;
-			path = ../OsgFox/Core;
+			path = ../Helios/Fox/Core;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB4800924611E00ED2131 /* Views */ = {
@@ -4440,8 +4380,6 @@
 				431BB4900924611E00ED2131 /* ImageView.h */,
 				431BB4940924611E00ED2131 /* MaterialEditor.cpp */,
 				431BB4950924611E00ED2131 /* MaterialEditor.h */,
-				431BB4960924611E00ED2131 /* MotionListener.cpp */,
-				431BB4970924611E00ED2131 /* MotionListener.h */,
 				431BB4980924611E00ED2131 /* Precompiled.h */,
 				431BB4990924611E00ED2131 /* Registry.cpp */,
 				431BB49A0924611E00ED2131 /* Registry.h */,
@@ -4449,18 +4387,15 @@
 				431BB49C0924611E00ED2131 /* TFView.h */,
 			);
 			name = Views;
-			path = ../OsgFox/Views;
+			path = ../Helios/Fox/Views;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB648092466C300ED2131 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
 				431BB649092466C300ED2131 /* Animate */,
-				431BB659092466C300ED2131 /* AtomInfo */,
-				431BB661092466C300ED2131 /* CalculateEnergy */,
 				431BB669092466C300ED2131 /* ClipPlanes */,
 				431BB671092466C300ED2131 /* Convolve */,
-				431BB679092466C300ED2131 /* DirectXJoystick */,
 				431BB683092466C300ED2131 /* EdgeDetect */,
 				431BB68B092466C300ED2131 /* EditPolygon */,
 				431BB6A2092466C300ED2131 /* FoxDevice */,
@@ -4469,18 +4404,15 @@
 				431BB6BC092466C300ED2131 /* ImageDelegate */,
 				431BB6C4092466C300ED2131 /* ImageModel */,
 				431BB6CE092466C300ED2131 /* ImageMorphology */,
-				431BB6DA092466C300ED2131 /* IMD */,
 				431BB6E4092466C300ED2131 /* InvertImage */,
 				431BB6EE092466C300ED2131 /* MaterialEditor */,
 				431BB6F6092466C300ED2131 /* MoleculeModel */,
-				431BB700092466C300ED2131 /* MovieBuilder */,
 				431BB708092466C400ED2131 /* ScaleImage */,
 				431BB710092466C400ED2131 /* SceneDelegate */,
 				431BB718092466C400ED2131 /* SceneModel */,
 				431BB722092466C400ED2131 /* SceneStatsOSG */,
 				431BB72B092466C400ED2131 /* SceneTree */,
 				431BB733092466C400ED2131 /* Seek */,
-				431BB73C092466C400ED2131 /* SelectionSTL */,
 				431BB744092466C400ED2131 /* Threshold */,
 				431BB74C092466C400ED2131 /* TransparencyControl */,
 				431BB754092466C400ED2131 /* TriangleDelegate */,
@@ -4491,7 +4423,7 @@
 				431BB790092466C400ED2131 /* VoxelModel */,
 			);
 			name = Plugins;
-			path = ../OsgFox/Plugins;
+			path = ../Helios/Fox/Plugins;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB649092466C300ED2131 /* Animate */ = {
@@ -4509,37 +4441,9 @@
 				431BB654092466C300ED2131 /* FrameTab.h */,
 				431BB656092466C300ED2131 /* Movie.cpp */,
 				431BB657092466C300ED2131 /* Movie.h */,
-				431BB658092466C300ED2131 /* Precompiled.h */,
 			);
-			name = Animate;
-			path = ../OsgFox/Plugins/Animate;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB659092466C300ED2131 /* AtomInfo */ = {
-			isa = PBXGroup;
-			children = (
-				431BB65A092466C300ED2131 /* AtomInfoComponent.cpp */,
-				431BB65B092466C300ED2131 /* AtomInfoComponent.h */,
-				431BB65C092466C300ED2131 /* CompileGuard.h */,
-				431BB65E092466C300ED2131 /* Factory.cpp */,
-				431BB65F092466C300ED2131 /* Factory.h */,
-			);
-			name = AtomInfo;
-			path = ../OsgFox/Plugins/AtomInfo;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB661092466C300ED2131 /* CalculateEnergy */ = {
-			isa = PBXGroup;
-			children = (
-				431BB662092466C300ED2131 /* CompileGuard.h */,
-				431BB663092466C300ED2131 /* EnergyComponent.cpp */,
-				431BB664092466C300ED2131 /* EnergyComponent.h */,
-				431BB666092466C300ED2131 /* Factory.cpp */,
-				431BB667092466C300ED2131 /* Factory.h */,
-			);
-			name = CalculateEnergy;
-			path = ../OsgFox/Plugins/CalculateEnergy;
-			sourceTree = SOURCE_ROOT;
+			path = Animate;
+			sourceTree = "<group>";
 		};
 		431BB669092466C300ED2131 /* ClipPlanes */ = {
 			isa = PBXGroup;
@@ -4550,9 +4454,8 @@
 				431BB66E092466C300ED2131 /* ClipPlaneFactory.cpp */,
 				431BB66F092466C300ED2131 /* ClipPlaneFactory.h */,
 			);
-			name = ClipPlanes;
-			path = ../OsgFox/Plugins/ClipPlanes;
-			sourceTree = SOURCE_ROOT;
+			path = ClipPlanes;
+			sourceTree = "<group>";
 		};
 		431BB671092466C300ED2131 /* Convolve */ = {
 			isa = PBXGroup;
@@ -4563,24 +4466,8 @@
 				431BB675092466C300ED2131 /* ConvolveFactory.cpp */,
 				431BB676092466C300ED2131 /* ConvolveFactory.h */,
 			);
-			name = Convolve;
-			path = ../OsgFox/Plugins/Convolve;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB679092466C300ED2131 /* DirectXJoystick */ = {
-			isa = PBXGroup;
-			children = (
-				431BB67A092466C300ED2131 /* CompileGuard.h */,
-				431BB67B092466C300ED2131 /* DirectXJoyStick.cpp */,
-				431BB67C092466C300ED2131 /* DirectXJoyStick.h */,
-				431BB67D092466C300ED2131 /* DXJoystickComponent.cpp */,
-				431BB67E092466C300ED2131 /* DXJoystickComponent.h */,
-				431BB67F092466C300ED2131 /* DXJoystickFactory.cpp */,
-				431BB680092466C300ED2131 /* DXJoystickFactory.h */,
-			);
-			name = DirectXJoystick;
-			path = ../OsgFox/Plugins/DirectXJoystick;
-			sourceTree = SOURCE_ROOT;
+			path = Convolve;
+			sourceTree = "<group>";
 		};
 		431BB683092466C300ED2131 /* EdgeDetect */ = {
 			isa = PBXGroup;
@@ -4591,9 +4478,8 @@
 				431BB687092466C300ED2131 /* EdgeDetectFactory.cpp */,
 				431BB688092466C300ED2131 /* EdgeDetectFactory.h */,
 			);
-			name = EdgeDetect;
-			path = ../OsgFox/Plugins/EdgeDetect;
-			sourceTree = SOURCE_ROOT;
+			path = EdgeDetect;
+			sourceTree = "<group>";
 		};
 		431BB68B092466C300ED2131 /* EditPolygon */ = {
 			isa = PBXGroup;
@@ -4611,17 +4497,14 @@
 				431BB697092466C300ED2131 /* FlipNormal.h */,
 				431BB698092466C300ED2131 /* Geometry.cpp */,
 				431BB699092466C300ED2131 /* Geometry.h */,
-				431BB69A092466C300ED2131 /* GroupPrimitives.cpp */,
-				431BB69B092466C300ED2131 /* GroupPrimitives.h */,
 				431BB69C092466C300ED2131 /* Islands.cpp */,
 				431BB69D092466C300ED2131 /* Islands.h */,
 				431BB69F092466C300ED2131 /* Precompiled.h */,
 				431BB6A0092466C300ED2131 /* Primitive.cpp */,
 				431BB6A1092466C300ED2131 /* Primitive.h */,
 			);
-			name = EditPolygon;
-			path = ../OsgFox/Plugins/EditPolygon;
-			sourceTree = SOURCE_ROOT;
+			path = EditPolygon;
+			sourceTree = "<group>";
 		};
 		431BB6A2092466C300ED2131 /* FoxDevice */ = {
 			isa = PBXGroup;
@@ -4634,9 +4517,8 @@
 				431BB6A9092466C300ED2131 /* FoxMouse.cpp */,
 				431BB6AA092466C300ED2131 /* FoxMouse.h */,
 			);
-			name = FoxDevice;
-			path = ../OsgFox/Plugins/FoxDevice;
-			sourceTree = SOURCE_ROOT;
+			path = FoxDevice;
+			sourceTree = "<group>";
 		};
 		431BB6AC092466C300ED2131 /* Grayscale */ = {
 			isa = PBXGroup;
@@ -4648,7 +4530,7 @@
 				431BB6B2092466C300ED2131 /* GrayscaleFactory.h */,
 			);
 			name = Grayscale;
-			path = ../OsgFox/Plugins/Grayscale;
+			path = ../Helios/Plugins/Grayscale;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB6B4092466C300ED2131 /* Histogram */ = {
@@ -4660,9 +4542,8 @@
 				431BB6B9092466C300ED2131 /* HistogramFactory.cpp */,
 				431BB6BA092466C300ED2131 /* HistogramFactory.h */,
 			);
-			name = Histogram;
-			path = ../OsgFox/Plugins/Histogram;
-			sourceTree = SOURCE_ROOT;
+			path = Histogram;
+			sourceTree = "<group>";
 		};
 		431BB6BC092466C300ED2131 /* ImageDelegate */ = {
 			isa = PBXGroup;
@@ -4673,9 +4554,8 @@
 				431BB6C1092466C300ED2131 /* ImageDelegateFactory.cpp */,
 				431BB6C2092466C300ED2131 /* ImageDelegateFactory.h */,
 			);
-			name = ImageDelegate;
-			path = ../OsgFox/Plugins/ImageDelegate;
-			sourceTree = SOURCE_ROOT;
+			path = ImageDelegate;
+			sourceTree = "<group>";
 		};
 		431BB6C4092466C300ED2131 /* ImageModel */ = {
 			isa = PBXGroup;
@@ -4689,7 +4569,7 @@
 				431BB6CC092466C300ED2131 /* ImageFactory.h */,
 			);
 			name = ImageModel;
-			path = ../OsgFox/Plugins/ImageModel;
+			path = ../Helios/Plugins/ImageModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB6CE092466C300ED2131 /* ImageMorphology */ = {
@@ -4706,23 +4586,7 @@
 				431BB6D9092466C300ED2131 /* SmoothComponent.h */,
 			);
 			name = ImageMorphology;
-			path = ../OsgFox/Plugins/ImageMorphology;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB6DA092466C300ED2131 /* IMD */ = {
-			isa = PBXGroup;
-			children = (
-				431BB6DB092466C300ED2131 /* CompileGuard.h */,
-				431BB6DD092466C300ED2131 /* Factory.cpp */,
-				431BB6DE092466C300ED2131 /* Factory.h */,
-				431BB6DF092466C300ED2131 /* IMD.cpp */,
-				431BB6E0092466C300ED2131 /* IMD.h */,
-				431BB6E1092466C300ED2131 /* IMDComponent.cpp */,
-				431BB6E2092466C300ED2131 /* IMDComponent.h */,
-				431BB6E3092466C300ED2131 /* IMDHeader.h */,
-			);
-			name = IMD;
-			path = ../OsgFox/Plugins/IMD;
+			path = ../Helios/Plugins/ImageMorphology;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB6E4092466C300ED2131 /* InvertImage */ = {
@@ -4735,7 +4599,7 @@
 				431BB6EA092466C300ED2131 /* InvertImageFactory.h */,
 			);
 			name = InvertImage;
-			path = ../OsgFox/Plugins/InvertImage;
+			path = ../Helios/Plugins/InvertImage;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB6EE092466C300ED2131 /* MaterialEditor */ = {
@@ -4747,9 +4611,8 @@
 				431BB6F4092466C300ED2131 /* MaterialEditorFactory.cpp */,
 				431BB6F5092466C300ED2131 /* MaterialEditorFactory.h */,
 			);
-			name = MaterialEditor;
-			path = ../OsgFox/Plugins/MaterialEditor;
-			sourceTree = SOURCE_ROOT;
+			path = MaterialEditor;
+			sourceTree = "<group>";
 		};
 		431BB6F6092466C300ED2131 /* MoleculeModel */ = {
 			isa = PBXGroup;
@@ -4763,24 +4626,7 @@
 				431BB6FF092466C300ED2131 /* MoleculeFactory.h */,
 			);
 			name = MoleculeModel;
-			path = ../OsgFox/Plugins/MoleculeModel;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB700092466C300ED2131 /* MovieBuilder */ = {
-			isa = PBXGroup;
-			children = (
-				437B6C3C0944A14A00C9F948 /* AVIWriter.cpp */,
-				437B6C3D0944A14A00C9F948 /* AVIWriter.h */,
-				437B6C3E0944A14A00C9F948 /* MOVWriter.cpp */,
-				437B6C3F0944A14A00C9F948 /* MOVWriter.h */,
-				431BB701092466C300ED2131 /* CompileGuard.h */,
-				431BB704092466C300ED2131 /* MovieBuilderComponent.cpp */,
-				431BB705092466C300ED2131 /* MovieBuilderComponent.h */,
-				431BB706092466C300ED2131 /* MovieBuilderFactory.cpp */,
-				431BB707092466C300ED2131 /* MovieBuilderFactory.h */,
-			);
-			name = MovieBuilder;
-			path = ../OsgFox/Plugins/MovieBuilder;
+			path = ../Helios/Plugins/MoleculeModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB708092466C400ED2131 /* ScaleImage */ = {
@@ -4793,7 +4639,7 @@
 				431BB70F092466C400ED2131 /* ScaleImageFactory.h */,
 			);
 			name = ScaleImage;
-			path = ../OsgFox/Plugins/ScaleImage;
+			path = ../Helios/Plugins/ScaleImage;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB710092466C400ED2131 /* SceneDelegate */ = {
@@ -4805,9 +4651,8 @@
 				431BB716092466C400ED2131 /* SceneDelegateFactory.cpp */,
 				431BB717092466C400ED2131 /* SceneDelegateFactory.h */,
 			);
-			name = SceneDelegate;
-			path = ../OsgFox/Plugins/SceneDelegate;
-			sourceTree = SOURCE_ROOT;
+			path = SceneDelegate;
+			sourceTree = "<group>";
 		};
 		431BB718092466C400ED2131 /* SceneModel */ = {
 			isa = PBXGroup;
@@ -4821,7 +4666,7 @@
 				431BB721092466C400ED2131 /* SceneFactory.h */,
 			);
 			name = SceneModel;
-			path = ../OsgFox/Plugins/SceneModel;
+			path = ../Helios/Plugins/SceneModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB722092466C400ED2131 /* SceneStatsOSG */ = {
@@ -4835,7 +4680,7 @@
 				431BB72A092466C400ED2131 /* Precompiled.h */,
 			);
 			name = SceneStatsOSG;
-			path = ../OsgFox/Plugins/SceneStatsOSG;
+			path = ../Helios/Plugins/SceneStatsOSG;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB72B092466C400ED2131 /* SceneTree */ = {
@@ -4849,9 +4694,8 @@
 				431BB731092466C400ED2131 /* SceneTreeComponent.cpp */,
 				431BB732092466C400ED2131 /* SceneTreeComponent.h */,
 			);
-			name = SceneTree;
-			path = ../OsgFox/Plugins/SceneTree;
-			sourceTree = SOURCE_ROOT;
+			path = SceneTree;
+			sourceTree = "<group>";
 		};
 		431BB733092466C400ED2131 /* Seek */ = {
 			isa = PBXGroup;
@@ -4863,22 +4707,8 @@
 				431BB73A092466C400ED2131 /* SeekFactory.cpp */,
 				431BB73B092466C400ED2131 /* SeekFactory.h */,
 			);
-			name = Seek;
-			path = ../OsgFox/Plugins/Seek;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BB73C092466C400ED2131 /* SelectionSTL */ = {
-			isa = PBXGroup;
-			children = (
-				431BB73D092466C400ED2131 /* CompileGuard.h */,
-				431BB73F092466C400ED2131 /* Factory.cpp */,
-				431BB740092466C400ED2131 /* Factory.h */,
-				431BB742092466C400ED2131 /* SelectionObject.cpp */,
-				431BB743092466C400ED2131 /* SelectionObject.h */,
-			);
-			name = SelectionSTL;
-			path = ../OsgFox/Plugins/SelectionSTL;
-			sourceTree = SOURCE_ROOT;
+			path = Seek;
+			sourceTree = "<group>";
 		};
 		431BB744092466C400ED2131 /* Threshold */ = {
 			isa = PBXGroup;
@@ -4889,9 +4719,8 @@
 				431BB74A092466C400ED2131 /* ThresholdFactory.cpp */,
 				431BB74B092466C400ED2131 /* ThresholdFactory.h */,
 			);
-			name = Threshold;
-			path = ../OsgFox/Plugins/Threshold;
-			sourceTree = SOURCE_ROOT;
+			path = Threshold;
+			sourceTree = "<group>";
 		};
 		431BB74C092466C400ED2131 /* TransparencyControl */ = {
 			isa = PBXGroup;
@@ -4902,9 +4731,8 @@
 				431BB752092466C400ED2131 /* TransparencyFactory.cpp */,
 				431BB753092466C400ED2131 /* TransparencyFactory.h */,
 			);
-			name = TransparencyControl;
-			path = ../OsgFox/Plugins/TransparencyControl;
-			sourceTree = SOURCE_ROOT;
+			path = TransparencyControl;
+			sourceTree = "<group>";
 		};
 		431BB754092466C400ED2131 /* TriangleDelegate */ = {
 			isa = PBXGroup;
@@ -4915,9 +4743,8 @@
 				431BB75A092466C400ED2131 /* TriangleDelegateFactory.cpp */,
 				431BB75B092466C400ED2131 /* TriangleDelegateFactory.h */,
 			);
-			name = TriangleDelegate;
-			path = ../OsgFox/Plugins/TriangleDelegate;
-			sourceTree = SOURCE_ROOT;
+			path = TriangleDelegate;
+			sourceTree = "<group>";
 		};
 		431BB75C092466C400ED2131 /* TriangleModel */ = {
 			isa = PBXGroup;
@@ -4925,8 +4752,6 @@
 				437B6C380944A12000C9F948 /* ParadisReader.cpp */,
 				437B6C390944A12000C9F948 /* ParadisReader.h */,
 				431BB75D092466C400ED2131 /* CompileGuard.h */,
-				43F6687209253F5D006DE918 /* ParadisSTLWriter.h */,
-				43F6687309253F5D006DE918 /* ParadisSTLWriter.cpp */,
 				431BB760092466C400ED2131 /* TriangleComponent.cpp */,
 				431BB761092466C400ED2131 /* TriangleComponent.h */,
 				431BB762092466C400ED2131 /* TriangleConstants.h */,
@@ -4947,7 +4772,7 @@
 				431BB771092466C400ED2131 /* TriangleWriterTDF.h */,
 			);
 			name = TriangleModel;
-			path = ../OsgFox/Plugins/TriangleModel;
+			path = ../Helios/Plugins/TriangleModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB772092466C400ED2131 /* Triangulate */ = {
@@ -4960,7 +4785,7 @@
 				431BB779092466C400ED2131 /* TriangulateFactory.h */,
 			);
 			name = Triangulate;
-			path = ../OsgFox/Plugins/Triangulate;
+			path = ../Helios/Plugins/Triangulate;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB77A092466C400ED2131 /* VolumeDelegate */ = {
@@ -4974,9 +4799,8 @@
 				431BB782092466C400ED2131 /* VolumeDelegateFactory.cpp */,
 				431BB783092466C400ED2131 /* VolumeDelegateFactory.h */,
 			);
-			name = VolumeDelegate;
-			path = ../OsgFox/Plugins/VolumeDelegate;
-			sourceTree = SOURCE_ROOT;
+			path = VolumeDelegate;
+			sourceTree = "<group>";
 		};
 		431BB784092466C400ED2131 /* VolumeModel */ = {
 			isa = PBXGroup;
@@ -4992,7 +4816,7 @@
 				431BB78F092466C400ED2131 /* VolumeFactory.h */,
 			);
 			name = VolumeModel;
-			path = ../OsgFox/Plugins/VolumeModel;
+			path = ../Helios/Plugins/VolumeModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB790092466C400ED2131 /* VoxelModel */ = {
@@ -5009,7 +4833,7 @@
 				431BB79B092466C400ED2131 /* VoxelFactory.h */,
 			);
 			name = VoxelModel;
-			path = ../OsgFox/Plugins/VoxelModel;
+			path = ../Helios/Plugins/VoxelModel;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BB9DE09246F3B00ED2131 /* Plugin Libs */ = {
@@ -5362,7 +5186,7 @@
 				437B6C9B0944A1CC00C9F948 /* xyz.gif */,
 			);
 			name = Images;
-			path = ../OsgFox/Images;
+			path = ../Helios/Images;
 			sourceTree = SOURCE_ROOT;
 		};
 		43887E750945DA6B00B519D0 /* Helios.app */ = {
@@ -5473,13 +5297,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		43FED6300924520C00EBB610 /* Example */ = {
+		43FED6300924520C00EBB610 /* Fox */ = {
 			isa = PBXGroup;
 			children = (
 				43FED6340924520D00EBB610 /* main.cpp */,
 			);
-			name = Example;
-			path = ../OsgFox/Example;
+			name = Fox;
+			path = ../Helios/Fox;
 			sourceTree = SOURCE_ROOT;
 		};
 		43FED6F4092452F700EBB610 /* Usul */ = {
@@ -5505,9 +5329,9 @@
 				43FED752092452F700EBB610 /* Functions */,
 				43FED755092452F700EBB610 /* Functors */,
 				43FED75A092452F700EBB610 /* Headers */,
-				43FED75D092452F700EBB610 /* ID */,
 				43FED760092452F700EBB610 /* Interfaces */,
 				43FED7DC092452F700EBB610 /* IO */,
+				43FED75D092452F700EBB610 /* ID */,
 				43FED7E0092452F700EBB610 /* Loops */,
 				43FED7E8092452F700EBB610 /* Math */,
 				43FED7F7092452F700EBB610 /* Memory */,
@@ -5537,8 +5361,6 @@
 			children = (
 				43FED6F6092452F700EBB610 /* Bind.h */,
 				43FED6F7092452F700EBB610 /* MemberFunction.h */,
-				43FED6F8092452F700EBB610 /* ProgressBarUpdate.cpp */,
-				43FED6F9092452F700EBB610 /* ProgressBarUpdate.h */,
 				43FED6FA092452F700EBB610 /* Random.h */,
 			);
 			name = Adaptors;
@@ -5781,9 +5603,8 @@
 				43FED75E092452F700EBB610 /* GUID.cpp */,
 				43FED75F092452F700EBB610 /* GUID.h */,
 			);
-			name = ID;
-			path = ../Usul/ID;
-			sourceTree = SOURCE_ROOT;
+			path = ID;
+			sourceTree = "<group>";
 		};
 		43FED760092452F700EBB610 /* Interfaces */ = {
 			isa = PBXGroup;
@@ -6464,7 +6285,6 @@
 				431BB4A90924611E00ED2131 /* ChartView.h in Headers */,
 				431BB4AF0924611E00ED2131 /* ImageView.h in Headers */,
 				431BB4B40924611E00ED2131 /* MaterialEditor.h in Headers */,
-				431BB4B60924611E00ED2131 /* MotionListener.h in Headers */,
 				431BB4B70924611E00ED2131 /* Precompiled.h in Headers */,
 				431BB4B90924611E00ED2131 /* Registry.h in Headers */,
 				431BB4BB0924611E00ED2131 /* TFView.h in Headers */,
@@ -6485,7 +6305,6 @@
 				431BB7AB0924671000ED2131 /* FrameDumpDialog.h in Headers */,
 				431BB7AD0924671000ED2131 /* FrameTab.h in Headers */,
 				431BB7AF0924671000ED2131 /* Movie.h in Headers */,
-				431BB7B00924671000ED2131 /* Precompiled.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6530,7 +6349,6 @@
 				431BB91109246C4C00ED2131 /* EditPolygonFactory.h in Headers */,
 				431BB91309246C4C00ED2131 /* FlipNormal.h in Headers */,
 				431BB91509246C4C00ED2131 /* Geometry.h in Headers */,
-				431BB91709246C4C00ED2131 /* GroupPrimitives.h in Headers */,
 				431BB91909246C4C00ED2131 /* Islands.h in Headers */,
 				431BB91A09246C4C00ED2131 /* Precompiled.h in Headers */,
 				431BB91C09246C4C00ED2131 /* Primitive.h in Headers */,
@@ -6636,9 +6454,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				431BB96F09246D3C00ED2131 /* SelectionObject.h in Headers */,
-				431BB97109246D3D00ED2131 /* Factory.h in Headers */,
-				431BB97309246D3E00ED2131 /* CompileGuard.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6740,7 +6555,6 @@
 				431BB99109246D7100ED2131 /* TriangleReaderTDF.h in Headers */,
 				431BB99309246D7100ED2131 /* TriangleWriterSTL.h in Headers */,
 				431BB99509246D7100ED2131 /* TriangleWriterTDF.h in Headers */,
-				43F6687409253F5D006DE918 /* ParadisSTLWriter.h in Headers */,
 				437B6C3B0944A12000C9F948 /* ParadisReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -8170,7 +7984,6 @@
 				431BB4A80924611E00ED2131 /* ChartView.cpp in Sources */,
 				431BB4AE0924611E00ED2131 /* ImageView.cpp in Sources */,
 				431BB4B30924611E00ED2131 /* MaterialEditor.cpp in Sources */,
-				431BB4B50924611E00ED2131 /* MotionListener.cpp in Sources */,
 				431BB4B80924611E00ED2131 /* Registry.cpp in Sources */,
 				431BB4BA0924611E00ED2131 /* TFView.cpp in Sources */,
 				437A27C309447DFE0024AFBC /* LightEditor.cpp in Sources */,
@@ -8228,7 +8041,6 @@
 				431BB91009246C4C00ED2131 /* EditPolygonFactory.cpp in Sources */,
 				431BB91209246C4C00ED2131 /* FlipNormal.cpp in Sources */,
 				431BB91409246C4C00ED2131 /* Geometry.cpp in Sources */,
-				431BB91609246C4C00ED2131 /* GroupPrimitives.cpp in Sources */,
 				431BB91809246C4C00ED2131 /* Islands.cpp in Sources */,
 				431BB91B09246C4C00ED2131 /* Primitive.cpp in Sources */,
 			);
@@ -8323,8 +8135,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				431BB97009246D3C00ED2131 /* SelectionObject.cpp in Sources */,
-				431BB97209246D3E00ED2131 /* Factory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8414,7 +8224,6 @@
 				431BB99009246D7100ED2131 /* TriangleReaderTDF.cpp in Sources */,
 				431BB99209246D7100ED2131 /* TriangleWriterSTL.cpp in Sources */,
 				431BB99409246D7100ED2131 /* TriangleWriterTDF.cpp in Sources */,
-				43F6687509253F5D006DE918 /* ParadisSTLWriter.cpp in Sources */,
 				437B6C3A0944A12000C9F948 /* ParadisReader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -8457,7 +8266,6 @@
 			files = (
 				434D2D72095B2DBC00642126 /* main.mm in Sources */,
 				43A005030960CF9400F3BC07 /* ParadisReader.cpp in Sources */,
-				43A005050960CF9900F3BC07 /* ParadisSTLWriter.cpp in Sources */,
 				43A005070960CF9A00F3BC07 /* TriangleComponent.cpp in Sources */,
 				43A0050A0960CF9C00F3BC07 /* TriangleDocument.cpp in Sources */,
 				43A0050C0960CF9D00F3BC07 /* TriangleFactory.cpp in Sources */,
@@ -8498,7 +8306,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43FED860092452F800EBB610 /* ProgressBarUpdate.cpp in Sources */,
 				43FED868092452F800EBB610 /* Referenced.cpp in Sources */,
 				43FED86A092452F800EBB610 /* Typed.cpp in Sources */,
 				43FED86E092452F800EBB610 /* Arguments.cpp in Sources */,

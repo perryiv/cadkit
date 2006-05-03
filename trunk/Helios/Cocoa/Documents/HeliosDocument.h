@@ -14,7 +14,7 @@
 
 
 #include "OSGView.h"
-#include "OsgFox/Plugins/TriangleModel/TriangleDocument.h"
+#include "Helios/Plugins/TriangleModel/TriangleDocument.h"
 
 
 @interface HeliosDocument : NSDocument

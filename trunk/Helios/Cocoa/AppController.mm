@@ -44,14 +44,15 @@
   NSLog (@"applicationWillFinishLaunching");
   //Set the Thread Mutex...
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-#if 0
-  #ifdef _DEBUG
+
+#ifdef _DEBUG
   Usul::Components::Manager::instance().addPluginExtension ( "plugd" );
 #else 
   Usul::Components::Manager::instance().addPluginExtension ( "plug" );
 #endif
   Usul::App::Controller::instance().loadPlugins();
-#endif
+
+  
 }
 
 @end

@@ -528,7 +528,7 @@ void Viewer::_multiPassRender()
     const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
 
     // Loop through the passes...
-    for ( unsigned i = 0; i < this->numRenderPasses(); ++i )
+    for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
     {
       // Set the proper projection matrix.
       OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, matrix );

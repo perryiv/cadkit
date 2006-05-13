@@ -39,7 +39,7 @@ public:
   // Constructor.
   EventAdapter();
 
-#if 0
+#if 1
   // Get the properties.
   virtual EventType       getEventType()  const { return _type; }
   virtual int             getKey()        const { return _key; }
@@ -69,7 +69,7 @@ protected:
   // Use reference counting.
   virtual ~EventAdapter();
 
-#if 0
+#if 1
   EventType _type;
   int _key;
   int _button;

@@ -1,4 +1,4 @@
-﻿
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2005, Adam Kubach
@@ -30,7 +30,7 @@ struct ICreateTriangleDocument : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( ICreateTriangleDocument );
 
   /// Id for this interface.
-  enum { IID = 1538593750u };
+  enum { IID = 102523u };
 
   virtual void    createTriangleDocument ( OsgTools::Triangles::TriangleSet*, IUnknown *caller = 0x0 ) = 0;
 

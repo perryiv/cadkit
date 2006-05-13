@@ -2509,7 +2509,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // 4. Set the viewport and projection as it is now.
   // 5. Read from the texture and add it to final image.
 
-  if ( osg::FBOExtensions::instance( _contextId, true )->isSupported() )
+  if ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() )
   {
     // Set up the texture.
     osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );

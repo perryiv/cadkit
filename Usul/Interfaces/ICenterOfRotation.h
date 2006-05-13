@@ -1,4 +1,4 @@
-﻿
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2005, Adam Kubach
@@ -28,7 +28,7 @@ struct ICenterOfRotation : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( ICenterOfRotation );
 
   /// Id for this interface.
-  enum { IID = 1376266839u };
+  enum { IID = 10212668u };
 
   virtual void showCenterOfRotation ( bool b ) = 0;
   virtual bool showCenterOfRotation ( ) const = 0;

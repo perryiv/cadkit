@@ -1,4 +1,4 @@
-﻿
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2006, Adam Kubach
@@ -30,7 +30,7 @@ struct IAboutString : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IAboutString );
 
   /// Id for this interface.
-  enum { IID = 1107031250u };
+  enum { IID = 1100312u };
 
   virtual std::string       aboutString() const = 0;
 }; // struct IAboutString

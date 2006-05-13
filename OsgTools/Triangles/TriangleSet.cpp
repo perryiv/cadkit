@@ -2152,7 +2152,7 @@ void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
     message << "Grouping Triangles. Found " << islands.size();
     
     status( message.str(), true );
-    progress->updateProgressBar( ( (double) totalVisited / numTriangles ) * 100 );
+    progress->updateProgressBar( ( static_cast < unsigned int > ( (double) totalVisited / numTriangles ) * 100 ) );
   }
 
   // Have the triangle set create subsets from our list of connected items.

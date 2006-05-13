@@ -70,7 +70,7 @@ bool TriangleReaderSTL::_isAscii() const
   std::ifstream in ( _file.c_str(), std::ifstream::in | std::ifstream::binary );
 
   // Move the cursor so that it's almost to the end.
-  in.seekg ( ( size > 100 ) ? size - 100 : size * 0.9 );
+  in.seekg ( static_cast < std::streamoff > ( ( size > 100 ) ? size - 100 : size * 0.9 ) );
 
   // Get the remainder of the file as a string.
   std::string file;

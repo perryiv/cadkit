@@ -1,4 +1,12 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __QUICK_TIME_HELPER_H__
 #define __QUICK_TIME_HELPER_H__
 
@@ -7,17 +15,19 @@
 #include "Movies.h"
 
 #include <string>
+#include <vector>
 
 class QuickTimeHelper
 {
 public:
 
+  typedef std::string Filename;
+  typedef std::vector< Filename > Filenames;
+
   QuickTimeHelper();
   ~QuickTimeHelper();
 
   void initialize();
-
-  void checkError ( OSErr error );
 
   void createMovie ( const std::string& filename );
 
@@ -25,9 +35,11 @@ public:
 
   void insertTrackIntoMedia ();
 
-  void initImageAddition();
+  void addImages ( const Filenames& filenames );
 
-  void addImage ( unsigned char *data, unsigned int size );
+  void flattenMovieFile();
+
+private:
 
   struct ScopedMediaEdits
   {
@@ -41,12 +53,26 @@ public:
     QuickTimeHelper &_qt;
   };
 
-private:
+  void _checkError ( OSErr error );
+  void _drawFame ( const std::string& filename );
+
+  short _width;
+  short _height;
+
   Movie _movie;
   short _resRef;
+  FSSpec _file;
 
-  Track _track;
-  Media _media;
+  Track                   _track;
+  Media                   _media;
+  GWorldPtr               _gWorld;
+  PixMapHandle            _pixMap;
+  CGrafPtr                _savedPort;
+  GDHandle                _savedDevice;
+  Rect                    _trackFrame;
+  ImageDescriptionHandle  _imageDescription;
+  Handle                  _compressedDataHandle;
+  Ptr                     _compressedDataPtr;
 };
 
 #endif

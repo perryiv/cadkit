@@ -294,7 +294,7 @@ void FoxCanvas::unref ( bool )
 void FoxCanvas::startAnimation ( double timeout )
 {
   // Use the callback to animate.
-  this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, timeout );
+  this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, static_cast < unsigned int > ( timeout ) );
   _timeouts[ ID_ANIMATION_TIMEOUT ] = timeout;
 }
 
@@ -311,7 +311,7 @@ long FoxCanvas::onTimeoutAnimation ( FX::FXObject *, FX::FXSelector, void * )
   {
     // Set the matrix and see if we should continue.
     if ( this->viewer()->timeoutAnimate () ) 
-      this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, _timeouts[ ID_ANIMATION_TIMEOUT ] );
+      this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, static_cast < unsigned int > ( _timeouts[ ID_ANIMATION_TIMEOUT ] ) );
   }
   
   return 1;
@@ -331,7 +331,7 @@ long FoxCanvas::onTimeoutSpin ( FX::FXObject *object, FX::FXSelector selector, v
     this->viewer()->timeoutSpin();
 
     // Set a new timeout event.
-    this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, _timeouts[ ID_SPIN_TIMEOUT ] );
+    this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, static_cast < unsigned int > ( _timeouts[ ID_SPIN_TIMEOUT ] ) );
   }
 
   // Message handled.
@@ -364,7 +364,7 @@ void FoxCanvas::stopSpin ( )
 
 void FoxCanvas::startSpin ( double timeout )
 {
-  this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, timeout );
+  this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, static_cast < unsigned int > ( timeout ) );
   _timeouts[ ID_SPIN_TIMEOUT ] = timeout;
 }
 

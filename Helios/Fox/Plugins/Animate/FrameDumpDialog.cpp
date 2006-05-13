@@ -104,11 +104,11 @@ Usul::Interfaces::IFrameDump* FrameDumpDialog::getFrameDumpProperties( Usul::Int
   FX::FXMatrix *matrix ( new FXMatrix( theFrame ,5,LAYOUT_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|MATRIX_BY_ROWS) );
 
   //Labels
-  FX::FXLabel* directoryName ( new FX::FXLabel  ( matrix, "Directory:",            0x0, FX::LAYOUT_RIGHT ) );
-  FX::FXLabel* fileName      ( new FX::FXLabel  ( matrix, "Base Filename:",        0x0, FX::LAYOUT_RIGHT ) );
-  FX::FXLabel* fileExtension ( new FX::FXLabel  ( matrix, "File Type:",            0x0, FX::LAYOUT_RIGHT ) );
-  FX::FXLabel* numStart      ( new FX::FXLabel  ( matrix, "Starting file number:", 0x0, FX::LAYOUT_RIGHT ) );
-  FX::FXLabel* numDigits     ( new FX::FXLabel  ( matrix, "Number of digits:",     0x0, FX::LAYOUT_RIGHT ) );
+  new FX::FXLabel  ( matrix, "Directory:",            0x0, FX::LAYOUT_RIGHT );
+  new FX::FXLabel  ( matrix, "Base Filename:",        0x0, FX::LAYOUT_RIGHT );
+  new FX::FXLabel  ( matrix, "File Type:",            0x0, FX::LAYOUT_RIGHT );
+  new FX::FXLabel  ( matrix, "Starting file number:", 0x0, FX::LAYOUT_RIGHT );
+  new FX::FXLabel  ( matrix, "Number of digits:",     0x0, FX::LAYOUT_RIGHT );
 
   //The directory
   _directory = new FX::FXTextField ( matrix, 75, 0x0, 0, FRAME_SUNKEN|FRAME_THICK|LAYOUT_SIDE_TOP|LAYOUT_LEFT,0,0,0,0 );
@@ -142,8 +142,8 @@ Usul::Interfaces::IFrameDump* FrameDumpDialog::getFrameDumpProperties( Usul::Int
 
   //Accept and cancel buttons
   FX::FXHorizontalFrame*  buttonFrame ( new FX::FXHorizontalFrame ( theFrame, LAYOUT_FILL_X|LAYOUT_FILL_Y ) );
-  FX::FXButton *accept ( new FX::FXButton ( buttonFrame, "Accept",NULL, dialog.get(), FX::FXDialogBox::ID_ACCEPT,FX::LAYOUT_LEFT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20) );
-  FX::FXButton *cancel ( new FX::FXButton ( buttonFrame, "Cancel",NULL, dialog.get(), FX::FXDialogBox::ID_CANCEL,FX::LAYOUT_RIGHT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20) );
+  new FX::FXButton ( buttonFrame, "Accept",NULL, dialog.get(), FX::FXDialogBox::ID_ACCEPT,FX::LAYOUT_LEFT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20);
+  new FX::FXButton ( buttonFrame, "Cancel",NULL, dialog.get(), FX::FXDialogBox::ID_CANCEL,FX::LAYOUT_RIGHT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20);
 
   dialog->create();
 

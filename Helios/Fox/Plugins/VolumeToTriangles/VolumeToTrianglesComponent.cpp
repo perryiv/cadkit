@@ -25,7 +25,6 @@
 #include "OsgTools/Images/Image3d.h"
 #include "OsgTools/Triangles/TriangleSet.h"
 
-#include "VTKTools/Triangles/Mesher.h"
 #include "VTKTools/Convert/ImageData.h"
 #include "VTKTools/Convert/PolyData.h"
 
@@ -33,6 +32,9 @@
 
 #include "vtkImageData.h"
 #include "vtkPolyData.h"
+#include "vtkDiscreteMarchingCubes.h"
+#include "vtkTriangleFilter.h"
+#include "vtkSmartPointer.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeToTrianglesComponent , VolumeToTrianglesComponent::BaseClass );
 
@@ -115,13 +117,19 @@ void VolumeToTrianglesComponent::execute ( Usul::Interfaces::IUnknown *caller )
     //VTKTools::Convert::ImageData::osgImageToImageData( *image, *vtkImage );
     VTKTools::Convert::ImageData::osgImageToImageData( imageList->getImageList(), *vtkImage );
 
-    VTKTools::Triangles::Mesher mesher;
+    vtkSmartPointer < vtkDiscreteMarchingCubes > surface ( vtkDiscreteMarchingCubes::New() );
+    surface->SetInput( vtkImage.GetPointer() );
+    surface->SetValue ( 0, 255.0 );
+	  surface->ComputeScalarsOff();
+	  surface->ComputeNormalsOn();
+	  surface->ComputeGradientsOff();
 
-    vtkSmartPointer < vtkPolyData> data ( mesher.mesh ( vtkImage.GetPointer() ) );
+    vtkSmartPointer < vtkTriangleFilter > triangles ( vtkTriangleFilter::New() );
+    triangles->SetInput ( surface->GetOutput() );
 
     OsgTools::Triangles::TriangleSet::ValidRefPtr triangleSet ( new OsgTools::Triangles::TriangleSet );
 
-    VTKTools::Convert::PolyData::polyDataToTriangleSet ( data.GetPointer(), triangleSet.get() );
+    VTKTools::Convert::PolyData::polyDataToTriangleSet ( triangles->GetOutput(), triangleSet.get() );
 
     typedef Usul::Components::Manager PluginManager;
     typedef Usul::Interfaces::ICreateTriangleDocument Creator;

@@ -7,18 +7,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ANIMATE_FRAME_TAB_H__
-#define __ANIMATE_FRAME_TAB_H__
+#ifndef __FRAME_TAB_H__
+#define __FRAME_TAB_H__
 
-#include "Animate/CompileGuard.h"
+#include "CompileGuard.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "FoxTools/Headers/Object.h"
 
 namespace FX { class FXVerticalFrame; }
-
-namespace Animate {
 
 class FrameTab : public FX::FXObject
 {
@@ -69,7 +67,5 @@ private:
   FXDECLARE( FrameTab )
 };
 
-}
 
-
-#endif // __ANIMATE_FRAME_TAB_H__
+#endif // __FRAME_TAB_H__

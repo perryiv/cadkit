@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Animate/FrameTab.h"
+#include "FrameTab.h"
 
 #include "FoxTools/Headers/TabItem.h"
 #include "FoxTools/Headers/VerticalFrame.h"
@@ -30,8 +30,6 @@
 #include "osg/Quat"
 
 #include <limits>
-
-using namespace Animate;
 
 
 ///////////////////////////////////////////////////////////////////////////////

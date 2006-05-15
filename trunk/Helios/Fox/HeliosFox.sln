@@ -292,6 +292,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: View Tab", "Plugins\V
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: HideShowNormals", "..\Plugins\HideShowNormals\HideShowNormals.vcproj", "{E899B03F-569A-411D-BF68-B49B9021EC4E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -494,6 +500,10 @@ Global
 		{3991F87F-4623-4765-9AF1-AA5DA17FABE3}.Debug|Win32.Build.0 = Debug|Win32
 		{3991F87F-4623-4765-9AF1-AA5DA17FABE3}.Release|Win32.ActiveCfg = Release|Win32
 		{3991F87F-4623-4765-9AF1-AA5DA17FABE3}.Release|Win32.Build.0 = Release|Win32
+		{E899B03F-569A-411D-BF68-B49B9021EC4E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E899B03F-569A-411D-BF68-B49B9021EC4E}.Debug|Win32.Build.0 = Debug|Win32
+		{E899B03F-569A-411D-BF68-B49B9021EC4E}.Release|Win32.ActiveCfg = Release|Win32
+		{E899B03F-569A-411D-BF68-B49B9021EC4E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

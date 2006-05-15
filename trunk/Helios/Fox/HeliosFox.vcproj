@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\OsgFox\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
+				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
 			/>
 		</Configuration>
 		<Configuration
@@ -205,7 +205,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\OsgFox\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
+				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
 			/>
 		</Configuration>
 	</Configurations>

@@ -337,6 +337,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utilities\FindNormals.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utilities\FindNormals.h"
+					>
+				</File>
+				<File
 					RelativePath=".\FlipNormals.h"
 					>
 				</File>
@@ -782,6 +790,14 @@
 				</File>
 				<File
 					RelativePath=".\Io\STLWrite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\STLWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\STLWriter.h"
 					>
 				</File>
 				<File

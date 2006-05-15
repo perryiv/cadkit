@@ -45,6 +45,8 @@ public:
   virtual void apply(osg::LOD& lod);
 
 protected:
+  virtual ~STLPrintVisitor() { }
+
   void _writeDrawable( osg::Drawable& );
 
   void _handleDrawArrays ( const osg::DrawArrays& drawArrays, 
@@ -164,6 +166,7 @@ protected:
     }
   }
 
+private:
   Writer _writer;
   std::ostream &_out;
 }; //PrintVisitor

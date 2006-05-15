@@ -20,7 +20,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "</xsl:text> <xsl:value-of select="PluginTemplate/FactoryHeader/@className" /><xsl:text>.h"</xsl:text><xsl:text>
-Usul/Components/Create.h</xsl:text>
+#include "Usul/Components/Create.h"
+</xsl:text>
 <xsl:for-each select="PluginTemplate/FactorySource/LibInclude">
     <xsl:text>#include "</xsl:text><xsl:value-of select="@file" /><xsl:text>"&#xa;</xsl:text>
 </xsl:for-each>

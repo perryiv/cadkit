@@ -323,7 +323,7 @@ namespace CodeGenWF
 
             XmlElement compileGuardElement = xml.CreateElement( "CompileGuard" );
             compileGuardElement.SetAttribute( "headerDefine", headerDefine );
-            compileGuardElement.SetAttribute( "compileGuard", compileGuard );
+            compileGuardElement.SetAttribute("compilePreprocess", compileGuard);
 
             return compileGuardElement;
         }
@@ -392,7 +392,7 @@ namespace CodeGenWF
             XmlElement element = xml.CreateElement( "FactorySource" );
 
             XmlElement e = xml.CreateElement( "LibInclude" );
-            String fileName = _pluginName.Text.Replace( " ", "" ) + ".h";
+            String fileName = _pluginName.Text.Replace( " ", "" ) + "Component.h";
             e.SetAttribute( "file", fileName );
 
             element.AppendChild( e );
@@ -487,7 +487,7 @@ namespace CodeGenWF
 
             String pluginName = _pluginName.Text.Replace( " ", "" );
 
-            String compileGuard = "_COMPILING_" + _pluginName.Text.ToUpper().Replace( ' ', '_' );
+            String compileGuard = _pluginName.Text.ToUpper().Replace( ' ', '_' );
 
             // Make a guid.
             String guid = Guid.NewGuid().ToString();

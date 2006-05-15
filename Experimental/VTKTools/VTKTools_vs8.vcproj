@@ -258,18 +258,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="Triangles"
-				>
-				<File
-					RelativePath=".\Triangles\Mesher.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Mesher.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

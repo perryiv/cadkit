@@ -1,4 +1,6 @@
+INV3RSION_NAV = NO
 SINTERPOINT = NO
+AVATAR = NO
 #NO/YES
 
 SOURCE = \
@@ -58,7 +60,8 @@ INCLUDES = \
 	-I./ \
 	-I../ \
 	-I${VJ_BASE_DIR}/include \
-	-I${OSG_INC_DIR}
+	-I${OSG_INC_DIR} \
+	-I${OPENTHREADS_INC_DIR}
 
 LOCAL_LIBS = \
 	-L$(BIN_DIR) \
@@ -100,6 +103,19 @@ ifeq "$(SINTERPOINT)" "YES"
 COMPILER_FLAGS	+= -DUSE_SINTERPOINT 
 INCLUDES		+= -I$(SINTERPOINT_BASE_DIR)/include
 LOCAL_LIBS		+= -L$(SINTERPOINT_BASE_DIR)/lib -lsinter
+endif
+
+# Add Inv3rsion navigation if requested
+ifeq "$(INV3RSION_NAV)" "YES"
+COMPILER_FLAGS	+= -DINV3RSION_NAV 
+INCLUDES	+= -I$(INVR_BASE_DIR)/include
+endif
+
+# Add vjAvatar via SinterPoint if requested
+ifeq "$(AVATAR)" "YES"
+COMPILER_FLAGS	+= -DUSE_AVATAR 
+INCLUDES	+= -I$(AVATAR_BASE_DIR)/include -I$(CAL3D_BASE_DIR)/include
+LOCAL_LIBS	+= -L$(AVATAR_BASE_DIR)/lib -lavatar -L$(CAL3D_BASE_DIR)/lib -lcal3d
 endif
 
 COMPILE_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)

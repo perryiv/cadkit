@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4305EF250A15879800F7B9FB /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B1FF09F6CA5000444335 /* CompileGuard.h */; };
+		4305EF330A15881200F7B9FB /* IVEDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4305EEB30A1584AD00F7B9FB /* IVEDocument.mm */; };
+		4305EFA90A158C3A00F7B9FB /* SceneComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20209F6CA5100444335 /* SceneComponent.cpp */; };
+		4305EFAA0A158C3A00F7B9FB /* SceneDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20409F6CA5100444335 /* SceneDocument.cpp */; };
+		4305EFAB0A158C3A00F7B9FB /* SceneFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20609F6CA5100444335 /* SceneFactory.cpp */; };
 		430D316F09677CE0003C3140 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 430D316709677CE0003C3140 /* Credits.rtf */; };
 		430D317009677CE0003C3140 /* HeliosDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = 430D316909677CE0003C3140 /* HeliosDocument.nib */; };
 		430D317109677CE0003C3140 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 430D316B09677CE0003C3140 /* MainMenu.nib */; };
@@ -394,48 +399,8 @@
 		431DDB5409EAB469001E3925 /* TriangleModel.plugd in Copy Libs */ = {isa = PBXBuildFile; fileRef = 431BB8D409246B9A00ED2131 /* TriangleModel.plugd */; };
 		431DDB5509EAB469001E3925 /* VolumeDelegate.plugd in Copy Libs */ = {isa = PBXBuildFile; fileRef = 431BB8DD09246BB300ED2131 /* VolumeDelegate.plugd */; };
 		431DDB5609EAB469001E3925 /* VolumeModel.plugd in Copy Libs */ = {isa = PBXBuildFile; fileRef = 431BB8E809246BD700ED2131 /* VolumeModel.plugd */; };
-		431F903D094B89BD00E38CD0 /* osgdb_3dc.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9012094B896600E38CD0 /* osgdb_3dc.so */; };
-		431F903E094B89BD00E38CD0 /* osgdb_3ds.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9013094B896600E38CD0 /* osgdb_3ds.so */; };
-		431F903F094B89BD00E38CD0 /* osgdb_ac.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9014094B896600E38CD0 /* osgdb_ac.so */; };
-		431F9040094B89BD00E38CD0 /* osgdb_bmp.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9015094B896600E38CD0 /* osgdb_bmp.so */; };
-		431F9041094B89BD00E38CD0 /* osgdb_dds.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9016094B896600E38CD0 /* osgdb_dds.so */; };
-		431F9042094B89BD00E38CD0 /* osgdb_dw.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9017094B896600E38CD0 /* osgdb_dw.so */; };
-		431F9043094B89BD00E38CD0 /* osgdb_dxf.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9018094B896600E38CD0 /* osgdb_dxf.so */; };
-		431F9044094B89BD00E38CD0 /* osgdb_flt.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9019094B896600E38CD0 /* osgdb_flt.so */; };
-		431F9045094B89BD00E38CD0 /* osgdb_freetype.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901A094B896600E38CD0 /* osgdb_freetype.so */; };
-		431F9046094B89BD00E38CD0 /* osgdb_gdal.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901B094B896600E38CD0 /* osgdb_gdal.so */; };
-		431F9047094B89BD00E38CD0 /* osgdb_geo.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901C094B896600E38CD0 /* osgdb_geo.so */; };
-		431F9048094B89BD00E38CD0 /* osgdb_hdr.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901D094B896600E38CD0 /* osgdb_hdr.so */; };
-		431F9049094B89BD00E38CD0 /* osgdb_ive.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901E094B896600E38CD0 /* osgdb_ive.so */; };
-		431F904A094B89BD00E38CD0 /* osgdb_logo.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F901F094B896600E38CD0 /* osgdb_logo.so */; };
-		431F904B094B89BD00E38CD0 /* osgdb_lwo.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9020094B896600E38CD0 /* osgdb_lwo.so */; };
-		431F904C094B89BD00E38CD0 /* osgdb_lws.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9021094B896600E38CD0 /* osgdb_lws.so */; };
-		431F904D094B89BD00E38CD0 /* osgdb_md2.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9022094B896600E38CD0 /* osgdb_md2.so */; };
-		431F904E094B89BD00E38CD0 /* osgdb_net.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9023094B896600E38CD0 /* osgdb_net.so */; };
-		431F904F094B89BD00E38CD0 /* osgdb_obj.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9024094B896600E38CD0 /* osgdb_obj.so */; };
-		431F9050094B89BD00E38CD0 /* osgdb_osg.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9025094B896600E38CD0 /* osgdb_osg.so */; };
-		431F9051094B89BD00E38CD0 /* osgdb_osga.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9026094B896600E38CD0 /* osgdb_osga.so */; };
-		431F9052094B89BD00E38CD0 /* osgdb_osgFX.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9027094B896600E38CD0 /* osgdb_osgFX.so */; };
-		431F9053094B89BD00E38CD0 /* osgdb_osgParticle.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9028094B896600E38CD0 /* osgdb_osgParticle.so */; };
-		431F9054094B89BD00E38CD0 /* osgdb_osgSim.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9029094B896600E38CD0 /* osgdb_osgSim.so */; };
-		431F9055094B89BD00E38CD0 /* osgdb_osgText.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902A094B896700E38CD0 /* osgdb_osgText.so */; };
-		431F9056094B89BD00E38CD0 /* osgdb_osgtgz.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902B094B896700E38CD0 /* osgdb_osgtgz.so */; };
-		431F9057094B89BD00E38CD0 /* osgdb_pic.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902C094B896700E38CD0 /* osgdb_pic.so */; };
-		431F9058094B89BD00E38CD0 /* osgdb_pnm.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902D094B896700E38CD0 /* osgdb_pnm.so */; };
-		431F9059094B89BD00E38CD0 /* osgdb_qt.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902E094B896700E38CD0 /* osgdb_qt.so */; };
-		431F905A094B89BD00E38CD0 /* osgdb_rgb.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F902F094B896700E38CD0 /* osgdb_rgb.so */; };
-		431F905B094B89BD00E38CD0 /* osgdb_rot.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9030094B896700E38CD0 /* osgdb_rot.so */; };
-		431F905C094B89BD00E38CD0 /* osgdb_scale.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9031094B896700E38CD0 /* osgdb_scale.so */; };
-		431F905D094B89BD00E38CD0 /* osgdb_stl.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9032094B896700E38CD0 /* osgdb_stl.so */; };
-		431F905E094B89BD00E38CD0 /* osgdb_tga.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9033094B896700E38CD0 /* osgdb_tga.so */; };
-		431F905F094B89BD00E38CD0 /* osgdb_tgz.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9034094B896700E38CD0 /* osgdb_tgz.so */; };
-		431F9060094B89BD00E38CD0 /* osgdb_trans.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9035094B896700E38CD0 /* osgdb_trans.so */; };
-		431F9061094B89BD00E38CD0 /* osgdb_txp.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9036094B896700E38CD0 /* osgdb_txp.so */; };
-		431F9062094B89BD00E38CD0 /* osgdb_x.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9037094B896700E38CD0 /* osgdb_x.so */; };
-		431F9063094B89BD00E38CD0 /* osgdb_zip.so in Copy OSG Plugins */ = {isa = PBXBuildFile; fileRef = 431F9038094B896700E38CD0 /* osgdb_zip.so */; };
 		432FB6670929183A0065FC78 /* libFoxTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAF5509245D4B00ED2131 /* libFoxTools.dylib */; };
 		432FB6680929183A0065FC78 /* libViews.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB474092460FC00ED2131 /* libViews.dylib */; };
-		433212C20974512400C16FE3 /* ViewerBridge.h in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 433212C00974512400C16FE3 /* ViewerBridge.h */; };
 		433212C30974512400C16FE3 /* ViewerBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 433212C10974512400C16FE3 /* ViewerBridge.mm */; };
 		4332AE820961D48400E99739 /* CocoaProgressBar.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4332AE800961D48400E99739 /* CocoaProgressBar.mm */; };
 		4337B57009677A9F008DF27C /* CocoaGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4337B56C09677A9F008DF27C /* CocoaGLContext.mm */; };
@@ -555,6 +520,8 @@
 		4337C0940945E1190051EE2A /* times.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337C0880945E0FF0051EE2A /* times.ttf */; };
 		4337C0F40945E6590051EE2A /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4337C0F20945E6590051EE2A /* Factory.cpp */; };
 		4337C0F50945E6590051EE2A /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4337C0F30945E6590051EE2A /* Factory.h */; };
+		433937160A1054FE004B952D /* osgFX.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 433937120A1054ED004B952D /* osgFX.framework */; };
+		433937170A1054FE004B952D /* osgSim.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 433937130A1054ED004B952D /* osgSim.framework */; };
 		43442B33096068B6000A1AB5 /* ClipPlaneCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43442B2E096068B6000A1AB5 /* ClipPlaneCallback.cpp */; };
 		43442B34096068B6000A1AB5 /* ClipPlaneCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 43442B2F096068B6000A1AB5 /* ClipPlaneCallback.h */; };
 		43442B35096068B6000A1AB5 /* Defaults.h in Headers */ = {isa = PBXBuildFile; fileRef = 43442B30096068B6000A1AB5 /* Defaults.h */; };
@@ -573,6 +540,7 @@
 		43442FE80960ABD8000A1AB5 /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CF094DE500009181E3 /* osgGA.framework */; };
 		43442FE90960ABD8000A1AB5 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		434D2D72095B2DBC00642126 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 434D2D71095B2DBC00642126 /* main.mm */; };
+		4356ECF70A11068C00AC9847 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4358F804095B3320008F7E5E /* OpenGL.framework */; };
 		4358F7FD095B32CA008F7E5E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4358F7FC095B32CA008F7E5E /* AppKit.framework */; };
 		4358F800095B32DB008F7E5E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4358F7FE095B32DB008F7E5E /* Cocoa.framework */; };
 		4358F801095B32DB008F7E5E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4358F7FF095B32DB008F7E5E /* CoreData.framework */; };
@@ -581,6 +549,53 @@
 		4358F963095B55F9008F7E5E /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
 		4358F964095B55F9008F7E5E /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CD094DE500009181E3 /* osg.framework */; };
 		4358F965095B55F9008F7E5E /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		4366F2310A158D5500882B30 /* SceneComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20309F6CA5100444335 /* SceneComponent.h */; };
+		4366F2320A158D5500882B30 /* SceneDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20509F6CA5100444335 /* SceneDocument.h */; };
+		4366F2330A158D5500882B30 /* SceneFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20709F6CA5100444335 /* SceneFactory.h */; };
+		4366F2340A158D5500882B30 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B1FF09F6CA5000444335 /* CompileGuard.h */; };
+		4366F2360A158D5500882B30 /* SceneComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20209F6CA5100444335 /* SceneComponent.cpp */; };
+		4366F2370A158D5500882B30 /* SceneDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20409F6CA5100444335 /* SceneDocument.cpp */; };
+		4366F23A0A158D5500882B30 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		4366F23B0A158D5500882B30 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		4366F23C0A158D5500882B30 /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
+		4366F23D0A158D5500882B30 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CD094DE500009181E3 /* osg.framework */; };
+		4366F23E0A158D5500882B30 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		4366F23F0A158D5500882B30 /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CF094DE500009181E3 /* osgGA.framework */; };
+		4366F2400A158D5500882B30 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		4366F2410A158D5500882B30 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		4366F2480A158D6D00882B30 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22309F6CA7100444335 /* CompileGuard.h */; };
+		4366F2490A158D6D00882B30 /* ParadisReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22709F6CA7100444335 /* ParadisReader.h */; };
+		4366F24A0A158D6D00882B30 /* TriangleComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22909F6CA7100444335 /* TriangleComponent.h */; };
+		4366F24B0A158D6D00882B30 /* TriangleConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22A09F6CA7100444335 /* TriangleConstants.h */; };
+		4366F24C0A158D6D00882B30 /* TriangleDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22C09F6CA7100444335 /* TriangleDocument.h */; };
+		4366F24D0A158D6D00882B30 /* TriangleFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22E09F6CA7100444335 /* TriangleFactory.h */; };
+		4366F24E0A158D6D00882B30 /* TriangleHelpersTDF.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B22F09F6CA7100444335 /* TriangleHelpersTDF.h */; };
+		4366F24F0A158D6D00882B30 /* TriangleReaderR3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B23209F6CA7100444335 /* TriangleReaderR3D.h */; };
+		4366F2500A158D6D00882B30 /* TriangleReaderSTL.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B23409F6CA7100444335 /* TriangleReaderSTL.h */; };
+		4366F2510A158D6D00882B30 /* TriangleReaderTDF.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B23609F6CA7100444335 /* TriangleReaderTDF.h */; };
+		4366F2520A158D6D00882B30 /* TriangleWriterSTL.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B23809F6CA7100444335 /* TriangleWriterSTL.h */; };
+		4366F2530A158D6D00882B30 /* TriangleWriterTDF.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B23A09F6CA7100444335 /* TriangleWriterTDF.h */; };
+		4366F2550A158D6D00882B30 /* ParadisReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B22609F6CA7100444335 /* ParadisReader.cpp */; };
+		4366F2560A158D6D00882B30 /* TriangleComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B22809F6CA7100444335 /* TriangleComponent.cpp */; };
+		4366F2570A158D6D00882B30 /* TriangleDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B22B09F6CA7100444335 /* TriangleDocument.cpp */; };
+		4366F2590A158D6D00882B30 /* TriangleReaderR3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B23109F6CA7100444335 /* TriangleReaderR3D.cpp */; };
+		4366F25A0A158D6D00882B30 /* TriangleReaderSTL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B23309F6CA7100444335 /* TriangleReaderSTL.cpp */; };
+		4366F25B0A158D6D00882B30 /* TriangleReaderTDF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B23509F6CA7100444335 /* TriangleReaderTDF.cpp */; };
+		4366F25C0A158D6D00882B30 /* TriangleWriterSTL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B23709F6CA7100444335 /* TriangleWriterSTL.cpp */; };
+		4366F25D0A158D6D00882B30 /* TriangleWriterTDF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B23909F6CA7100444335 /* TriangleWriterTDF.cpp */; };
+		4366F25F0A158D6D00882B30 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		4366F2600A158D6D00882B30 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		4366F2610A158D6D00882B30 /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
+		4366F2620A158D6D00882B30 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CD094DE500009181E3 /* osg.framework */; };
+		4366F2630A158D6D00882B30 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		4366F2640A158D6D00882B30 /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CF094DE500009181E3 /* osgGA.framework */; };
+		4366F2650A158D6D00882B30 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		4366F2660A158D6D00882B30 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		4366F26F0A158DCA00882B30 /* libSceneModel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4366F2450A158D5500882B30 /* libSceneModel.dylib */; };
+		4366F2700A158DCA00882B30 /* libTriangleModel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */; };
+		4366F2710A158DDA00882B30 /* libSceneModel.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 4366F2450A158D5500882B30 /* libSceneModel.dylib */; };
+		4366F2720A158DDA00882B30 /* libTriangleModel.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */; };
+		4366F2A80A15918900882B30 /* LOD.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4366F2A70A15918900882B30 /* LOD.gif */; };
 		437A27A709447D270024AFBC /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 437A27A509447D270024AFBC /* Controller.cpp */; };
 		437A27B209447D790024AFBC /* BoundingSphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 437A27AE09447D790024AFBC /* BoundingSphere.cpp */; };
 		437A27B309447D790024AFBC /* BoundingSphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 437A27AF09447D790024AFBC /* BoundingSphere.h */; };
@@ -679,7 +694,7 @@
 		437B6CF30944A1CD00C9F948 /* writing.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 437B6C9A0944A1CC00C9F948 /* writing.gif */; };
 		437B6CF40944A1CD00C9F948 /* xyz.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 437B6C9B0944A1CC00C9F948 /* xyz.gif */; };
 		43887E8B0945DADF00B519D0 /* xLauncher in Copy Launch Script */ = {isa = PBXBuildFile; fileRef = 43887E8A0945DADF00B519D0 /* xLauncher */; };
-		43887EA90945DBC200B519D0 /* Helios in Copy Libs */ = {isa = PBXBuildFile; fileRef = 8DD76F6C0486A84900D96B5E /* Helios */; };
+		43887EA90945DBC200B519D0 /* OsgFox-cli in Copy Libs */ = {isa = PBXBuildFile; fileRef = 8DD76F6C0486A84900D96B5E /* OsgFox-cli */; };
 		43887EAA0945DBC200B519D0 /* libUsul.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		43887EAB0945DBC200B519D0 /* libOpenThreadsEx.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
 		43887EAD0945DBC200B519D0 /* libOsgTools.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
@@ -728,31 +743,31 @@
 		43A19326094F203D0029ED97 /* TranslateScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A19312094F203D0029ED97 /* TranslateScreen.h */; };
 		43A1940C094F2A180029ED97 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		43A1940D094F2A180029ED97 /* libFoxTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAF5509245D4B00ED2131 /* libFoxTools.dylib */; };
-		43C617EC09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C617ED09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C617EE09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182209C128B5000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182309C128C2000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182509C128D2000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182609C128DA000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182C09C12908000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182D09C1290E000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182E09C12913000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6182F09C1291C000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183009C12931000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183109C12937000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183209C1293C000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183709C129C9000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183809C129D6000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183C09C12A04000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183D09C12A0B000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183E09C12A1B000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6183F09C12A25000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6184009C12A30000E2E46 /* libFOX-1.4.0.0.15.dylib in Headers */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6184109C12A45000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6184409C12AC7000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6184809C131F6000E2E46 /* libFOX-1.4.0.0.15.dylib in Copy Fox Toolkit */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
-		43C6184909C13214000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */; };
+		43C617EC09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C617ED09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C617EE09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182209C128B5000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182309C128C2000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182509C128D2000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182609C128DA000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182C09C12908000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182D09C1290E000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182E09C12913000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6182F09C1291C000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183009C12931000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183109C12937000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183209C1293C000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183709C129C9000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183809C129D6000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183C09C12A04000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183D09C12A0B000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183E09C12A1B000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6183F09C12A25000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6184009C12A30000E2E46 /* libFOX-1.4.dylib in Headers */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6184109C12A45000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6184409C12AC7000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6184809C131F6000E2E46 /* libFOX-1.4.dylib in Copy Fox Toolkit */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
+		43C6184909C13214000E2E46 /* libFOX-1.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */; };
 		43CE0B7409C0D7A00000EBE0 /* DateTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43CE0B7209C0D7A00000EBE0 /* DateTime.cpp */; };
 		43D1DABA094750B2007C0DB7 /* Flags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D1DAB6094750B2007C0DB7 /* Flags.cpp */; };
 		43D1DABC094750B2007C0DB7 /* Options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D1DAB8094750B2007C0DB7 /* Options.cpp */; };
@@ -968,9 +983,6 @@
 		43D725B1094DE5A8009181E3 /* osgUtil.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		43D725C3094DE8CF009181E3 /* libQTriangle.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 431BBB240924771900ED2131 /* libQTriangle.dylib */; };
 		43D72611094DEC32009181E3 /* Helios.icns in Resources */ = {isa = PBXBuildFile; fileRef = 43D72610094DEC32009181E3 /* Helios.icns */; };
-		43E1AB0309461A34007F0715 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43E1AAFF09461A18007F0715 /* OpenGL.framework */; };
-		43E1ABE509461D4D007F0715 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43E1AAFF09461A18007F0715 /* OpenGL.framework */; };
-		43E1AC0F09462312007F0715 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43E1AAFF09461A18007F0715 /* OpenGL.framework */; };
 		43E9B00D09F6BCB900444335 /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B00509F6BCB900444335 /* Export.h */; };
 		43E9B00E09F6BCB900444335 /* MainWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B00609F6BCB900444335 /* MainWindow.cpp */; };
 		43E9B00F09F6BCB900444335 /* MainWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B00709F6BCB900444335 /* MainWindow.h */; };
@@ -1144,12 +1156,8 @@
 		43E9B1FB09F6CA4200444335 /* ScaleImageComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B1F509F6CA4200444335 /* ScaleImageComponent.h */; };
 		43E9B1FC09F6CA4200444335 /* ScaleImageFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B1F609F6CA4200444335 /* ScaleImageFactory.cpp */; };
 		43E9B1FD09F6CA4200444335 /* ScaleImageFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B1F709F6CA4200444335 /* ScaleImageFactory.h */; };
-		43E9B20909F6CA5100444335 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B1FF09F6CA5000444335 /* CompileGuard.h */; };
-		43E9B20B09F6CA5100444335 /* SceneComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20209F6CA5100444335 /* SceneComponent.cpp */; };
 		43E9B20C09F6CA5100444335 /* SceneComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20309F6CA5100444335 /* SceneComponent.h */; };
-		43E9B20D09F6CA5100444335 /* SceneDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20409F6CA5100444335 /* SceneDocument.cpp */; };
 		43E9B20E09F6CA5100444335 /* SceneDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20509F6CA5100444335 /* SceneDocument.h */; };
-		43E9B20F09F6CA5100444335 /* SceneFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43E9B20609F6CA5100444335 /* SceneFactory.cpp */; };
 		43E9B21009F6CA5100444335 /* SceneFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B20709F6CA5100444335 /* SceneFactory.h */; };
 		43E9B21B09F6CA5F00444335 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B21209F6CA5F00444335 /* CompileGuard.h */; };
 		43E9B21D09F6CA5F00444335 /* Precompiled.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E9B21509F6CA5F00444335 /* Precompiled.h */; };
@@ -1242,8 +1250,6 @@
 		43FED996092452F800EBB610 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED859092452F700EBB610 /* Types.cpp */; };
 		43FEDAF5092454D500EBB610 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FEDAEE092454D500EBB610 /* Mutex.cpp */; };
 		43FEDAF6092454D500EBB610 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43FEDAEF092454D500EBB610 /* Mutex.h */; };
-		6687115609D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
-		6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 		6687115809D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
 		6687115909D5E0020003384F /* GLFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 /* End PBXBuildFile section */
@@ -1628,6 +1634,20 @@
 			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
 			remoteInfo = OsgTools;
 		};
+		4366F26B0A158DBC00882B30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4366F2460A158D6D00882B30;
+			remoteInfo = "TriangleModel-DYLIB";
+		};
+		4366F26D0A158DBC00882B30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4366F22F0A158D5500882B30;
+			remoteInfo = "SceneModel-DYLIB";
+		};
 		43D725B5094DE634009181E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 431BBB180924771800ED2131 /* Triangle.xcodeproj */;
@@ -1664,6 +1684,8 @@
 				43D725AF094DE5A8009181E3 /* osgGA.framework in Copy Frameworks */,
 				43D725B0094DE5A8009181E3 /* osgText.framework in Copy Frameworks */,
 				43D725B1094DE5A8009181E3 /* osgUtil.framework in Copy Frameworks */,
+				433937160A1054FE004B952D /* osgFX.framework in Copy Frameworks */,
+				433937170A1054FE004B952D /* osgSim.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1674,45 +1696,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				431F903D094B89BD00E38CD0 /* osgdb_3dc.so in Copy OSG Plugins */,
-				431F903E094B89BD00E38CD0 /* osgdb_3ds.so in Copy OSG Plugins */,
-				431F903F094B89BD00E38CD0 /* osgdb_ac.so in Copy OSG Plugins */,
-				431F9040094B89BD00E38CD0 /* osgdb_bmp.so in Copy OSG Plugins */,
-				431F9041094B89BD00E38CD0 /* osgdb_dds.so in Copy OSG Plugins */,
-				431F9042094B89BD00E38CD0 /* osgdb_dw.so in Copy OSG Plugins */,
-				431F9043094B89BD00E38CD0 /* osgdb_dxf.so in Copy OSG Plugins */,
-				431F9044094B89BD00E38CD0 /* osgdb_flt.so in Copy OSG Plugins */,
-				431F9045094B89BD00E38CD0 /* osgdb_freetype.so in Copy OSG Plugins */,
-				431F9046094B89BD00E38CD0 /* osgdb_gdal.so in Copy OSG Plugins */,
-				431F9047094B89BD00E38CD0 /* osgdb_geo.so in Copy OSG Plugins */,
-				431F9048094B89BD00E38CD0 /* osgdb_hdr.so in Copy OSG Plugins */,
-				431F9049094B89BD00E38CD0 /* osgdb_ive.so in Copy OSG Plugins */,
-				431F904A094B89BD00E38CD0 /* osgdb_logo.so in Copy OSG Plugins */,
-				431F904B094B89BD00E38CD0 /* osgdb_lwo.so in Copy OSG Plugins */,
-				431F904C094B89BD00E38CD0 /* osgdb_lws.so in Copy OSG Plugins */,
-				431F904D094B89BD00E38CD0 /* osgdb_md2.so in Copy OSG Plugins */,
-				431F904E094B89BD00E38CD0 /* osgdb_net.so in Copy OSG Plugins */,
-				431F904F094B89BD00E38CD0 /* osgdb_obj.so in Copy OSG Plugins */,
-				431F9050094B89BD00E38CD0 /* osgdb_osg.so in Copy OSG Plugins */,
-				431F9051094B89BD00E38CD0 /* osgdb_osga.so in Copy OSG Plugins */,
-				431F9052094B89BD00E38CD0 /* osgdb_osgFX.so in Copy OSG Plugins */,
-				431F9053094B89BD00E38CD0 /* osgdb_osgParticle.so in Copy OSG Plugins */,
-				431F9054094B89BD00E38CD0 /* osgdb_osgSim.so in Copy OSG Plugins */,
-				431F9055094B89BD00E38CD0 /* osgdb_osgText.so in Copy OSG Plugins */,
-				431F9056094B89BD00E38CD0 /* osgdb_osgtgz.so in Copy OSG Plugins */,
-				431F9057094B89BD00E38CD0 /* osgdb_pic.so in Copy OSG Plugins */,
-				431F9058094B89BD00E38CD0 /* osgdb_pnm.so in Copy OSG Plugins */,
-				431F9059094B89BD00E38CD0 /* osgdb_qt.so in Copy OSG Plugins */,
-				431F905A094B89BD00E38CD0 /* osgdb_rgb.so in Copy OSG Plugins */,
-				431F905B094B89BD00E38CD0 /* osgdb_rot.so in Copy OSG Plugins */,
-				431F905C094B89BD00E38CD0 /* osgdb_scale.so in Copy OSG Plugins */,
-				431F905D094B89BD00E38CD0 /* osgdb_stl.so in Copy OSG Plugins */,
-				431F905E094B89BD00E38CD0 /* osgdb_tga.so in Copy OSG Plugins */,
-				431F905F094B89BD00E38CD0 /* osgdb_tgz.so in Copy OSG Plugins */,
-				431F9060094B89BD00E38CD0 /* osgdb_trans.so in Copy OSG Plugins */,
-				431F9061094B89BD00E38CD0 /* osgdb_txp.so in Copy OSG Plugins */,
-				431F9062094B89BD00E38CD0 /* osgdb_x.so in Copy OSG Plugins */,
-				431F9063094B89BD00E38CD0 /* osgdb_zip.so in Copy OSG Plugins */,
 			);
 			name = "Copy OSG Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1841,8 +1824,6 @@
 				43A005630960D21300F3BC07 /* osgGA.framework in Copy OSG Frameworks */,
 				43A005640960D21300F3BC07 /* osgText.framework in Copy OSG Frameworks */,
 				43A005650960D21300F3BC07 /* osgUtil.framework in Copy OSG Frameworks */,
-				433212C20974512400C16FE3 /* ViewerBridge.h in Copy OSG Frameworks */,
-				6687115709D5E0020003384F /* GLFeedback.h in Copy OSG Frameworks */,
 			);
 			name = "Copy OSG Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1880,7 +1861,7 @@
 				431DDB5509EAB469001E3925 /* VolumeDelegate.plugd in Copy Libs */,
 				431DDB5609EAB469001E3925 /* VolumeModel.plugd in Copy Libs */,
 				43D725C3094DE8CF009181E3 /* libQTriangle.dylib in Copy Libs */,
-				43887EA90945DBC200B519D0 /* Helios in Copy Libs */,
+				43887EA90945DBC200B519D0 /* OsgFox-cli in Copy Libs */,
 				43887EAA0945DBC200B519D0 /* libUsul.dylib in Copy Libs */,
 				43887EAB0945DBC200B519D0 /* libOpenThreadsEx.dylib in Copy Libs */,
 				43887EAD0945DBC200B519D0 /* libOsgTools.dylib in Copy Libs */,
@@ -1908,6 +1889,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				4366F2710A158DDA00882B30 /* libSceneModel.dylib in Copy Libs */,
+				4366F2720A158DDA00882B30 /* libTriangleModel.dylib in Copy Libs */,
 				43A005750960D27100F3BC07 /* libUsul.dylib in Copy Libs */,
 				43A005760960D27100F3BC07 /* libOpenThreadsEx.dylib in Copy Libs */,
 				43A005770960D27100F3BC07 /* libOsgTools.dylib in Copy Libs */,
@@ -1945,7 +1928,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				43C6184809C131F6000E2E46 /* libFOX-1.4.0.0.15.dylib in Copy Fox Toolkit */,
+				43C6184809C131F6000E2E46 /* libFOX-1.4.dylib in Copy Fox Toolkit */,
 			);
 			name = "Copy Fox Toolkit";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2050,6 +2033,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4305EEB20A1584AD00F7B9FB /* IVEDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVEDocument.h; sourceTree = "<group>"; };
+		4305EEB30A1584AD00F7B9FB /* IVEDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = IVEDocument.mm; sourceTree = "<group>"; };
 		430D316809677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		430D316A09677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HeliosDocument.nib; sourceTree = "<group>"; };
 		430D316C09677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
@@ -2450,6 +2435,8 @@
 		4337C0880945E0FF0051EE2A /* times.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = times.ttf; sourceTree = "<group>"; };
 		4337C0F20945E6590051EE2A /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Factory.cpp; sourceTree = "<group>"; };
 		4337C0F30945E6590051EE2A /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Factory.h; sourceTree = "<group>"; };
+		433937120A1054ED004B952D /* osgFX.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgFX.framework; path = /Library/Frameworks/osgFX.framework; sourceTree = "<absolute>"; };
+		433937130A1054ED004B952D /* osgSim.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgSim.framework; path = /Library/Frameworks/osgSim.framework; sourceTree = "<absolute>"; };
 		43442B2E096068B6000A1AB5 /* ClipPlaneCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ClipPlaneCallback.cpp; sourceTree = "<group>"; };
 		43442B2F096068B6000A1AB5 /* ClipPlaneCallback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ClipPlaneCallback.h; sourceTree = "<group>"; };
 		43442B30096068B6000A1AB5 /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
@@ -2462,13 +2449,20 @@
 		43442F900960A341000A1AB5 /* Enum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Enum.h; sourceTree = "<group>"; };
 		43442F920960A375000A1AB5 /* Intersect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Intersect.cpp; sourceTree = "<group>"; };
 		43442F930960A375000A1AB5 /* Intersect.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Intersect.h; sourceTree = "<group>"; };
-		434D2D15095B2CA700642126 /* XHelios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XHelios.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		434D2D15095B2CA700642126 /* Helios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		434D2D71095B2DBC00642126 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		4358F7FC095B32CA008F7E5E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		4358F7FE095B32DB008F7E5E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4358F7FF095B32DB008F7E5E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		4358F802095B32FE008F7E5E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		4358F804095B3320008F7E5E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		4358FB770A1A4BAC008F482D /* ICreateTriangleDocument.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ICreateTriangleDocument.h; sourceTree = "<group>"; };
+		4358FB780A1A4BAC008F482D /* ICreateTriangleSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ICreateTriangleSet.h; sourceTree = "<group>"; };
+		4358FB790A1A4BAC008F482D /* ISaveTriangleSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ISaveTriangleSet.h; sourceTree = "<group>"; };
+		4358FB7A0A1A4BAC008F482D /* ITriangleSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ITriangleSet.h; sourceTree = "<group>"; };
+		4366F2450A158D5500882B30 /* libSceneModel.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libSceneModel.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libTriangleModel.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4366F2A70A15918900882B30 /* LOD.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = LOD.gif; sourceTree = "<group>"; };
 		437A27A509447D270024AFBC /* Controller.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
 		437A27A609447D270024AFBC /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
 		437A27AE09447D790024AFBC /* BoundingSphere.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = BoundingSphere.cpp; sourceTree = "<group>"; };
@@ -2568,7 +2562,7 @@
 		437B6C9A0944A1CC00C9F948 /* writing.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = writing.gif; sourceTree = "<group>"; };
 		437B6C9B0944A1CC00C9F948 /* xyz.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = xyz.gif; sourceTree = "<group>"; };
 		43887E710945DA3F00B519D0 /* Helios_app.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Helios_app.plist; sourceTree = "<group>"; };
-		43887E720945DA3F00B519D0 /* Helios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43887E720945DA3F00B519D0 /* OsgFox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OsgFox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43887E8A0945DADF00B519D0 /* xLauncher */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = xLauncher; sourceTree = "<group>"; };
 		4392273F095C9C22004A602C /* Viewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Viewer.h; sourceTree = "<group>"; };
 		43922740095C9C22004A602C /* Viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Viewer.cpp; sourceTree = "<group>"; };
@@ -2600,21 +2594,20 @@
 		43A19310094F203D0029ED97 /* Translate3.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Translate3.h; sourceTree = "<group>"; };
 		43A19311094F203D0029ED97 /* TranslateScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TranslateScreen.cpp; sourceTree = "<group>"; };
 		43A19312094F203D0029ED97 /* TranslateScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TranslateScreen.h; sourceTree = "<group>"; };
-		43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libFOX-1.4.0.0.15.dylib"; path = "../../../Shared/OpenSource/fox-1.4.15/bin/libFOX-1.4.0.0.15.dylib"; sourceTree = SOURCE_ROOT; };
+		43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libFOX-1.4.dylib"; path = "/usr/local/lib/libFOX-1.4.dylib"; sourceTree = "<absolute>"; };
 		43CE0B7209C0D7A00000EBE0 /* DateTime.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DateTime.cpp; sourceTree = "<group>"; };
 		43CE0B7309C0D7A00000EBE0 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
 		43D1DAB6094750B2007C0DB7 /* Flags.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Flags.cpp; sourceTree = "<group>"; };
 		43D1DAB7094750B2007C0DB7 /* Flags.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Flags.h; sourceTree = "<group>"; };
 		43D1DAB8094750B2007C0DB7 /* Options.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cpp; sourceTree = "<group>"; };
 		43D1DAB9094750B2007C0DB7 /* Options.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
-		43D724CC094DE500009181E3 /* OpenThreads.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenThreads.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/OpenThreads.framework"; sourceTree = "<absolute>"; };
-		43D724CD094DE500009181E3 /* osg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osg.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/osg.framework"; sourceTree = "<absolute>"; };
-		43D724CE094DE500009181E3 /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/osgDB.framework"; sourceTree = "<absolute>"; };
-		43D724CF094DE500009181E3 /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/osgGA.framework"; sourceTree = "<absolute>"; };
-		43D724D0094DE500009181E3 /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/osgText.framework"; sourceTree = "<absolute>"; };
-		43D724D1094DE500009181E3 /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = "/Users/Shared/OpenSource/OSG-1.0/Frameworks/osgUtil.framework"; sourceTree = "<absolute>"; };
+		43D724CC094DE500009181E3 /* OpenThreads.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenThreads.framework; path = /Library/Frameworks/OpenThreads.framework; sourceTree = "<absolute>"; };
+		43D724CD094DE500009181E3 /* osg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osg.framework; path = /Library/Frameworks/osg.framework; sourceTree = "<absolute>"; };
+		43D724CE094DE500009181E3 /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = /Library/Frameworks/osgDB.framework; sourceTree = "<absolute>"; };
+		43D724CF094DE500009181E3 /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = /Library/Frameworks/osgGA.framework; sourceTree = "<absolute>"; };
+		43D724D0094DE500009181E3 /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = /Library/Frameworks/osgText.framework; sourceTree = "<absolute>"; };
+		43D724D1094DE500009181E3 /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = /Library/Frameworks/osgUtil.framework; sourceTree = "<absolute>"; };
 		43D72610094DEC32009181E3 /* Helios.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Helios.icns; path = ../Helios/Cocoa/Resources/Helios.icns; sourceTree = "<group>"; };
-		43E1AAFF09461A18007F0715 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		43E9AF4909F6B98D00444335 /* IFoxAddTab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFoxAddTab.h; path = ../Usul/Interfaces/Fox/IFoxAddTab.h; sourceTree = SOURCE_ROOT; };
 		43E9AF4A09F6B98D00444335 /* IFoxClientArea.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFoxClientArea.h; path = ../Usul/Interfaces/Fox/IFoxClientArea.h; sourceTree = SOURCE_ROOT; };
 		43E9AF4B09F6B98D00444335 /* IFoxDockBar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFoxDockBar.h; path = ../Usul/Interfaces/Fox/IFoxDockBar.h; sourceTree = SOURCE_ROOT; };
@@ -3169,7 +3162,7 @@
 		43FEDAEF092454D500EBB610 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Mutex.h; path = ../Threads/OpenThreads/Mutex.h; sourceTree = SOURCE_ROOT; };
 		6687115409D5E0020003384F /* GLFeedback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GLFeedback.cpp; sourceTree = "<group>"; };
 		6687115509D5E0020003384F /* GLFeedback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLFeedback.h; sourceTree = "<group>"; };
-		8DD76F6C0486A84900D96B5E /* Helios */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Helios; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76F6C0486A84900D96B5E /* OsgFox-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "OsgFox-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3177,7 +3170,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43E1ABE509461D4D007F0715 /* OpenGL.framework in Frameworks */,
+				4356ECF70A11068C00AC9847 /* OpenGL.framework in Frameworks */,
 				431BAD7809245A4600ED2131 /* libUsul.dylib in Frameworks */,
 				43D7259E094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D7259F094DE500009181E3 /* osg.framework in Frameworks */,
@@ -3199,7 +3192,7 @@
 				43D724D5094DE500009181E3 /* osgGA.framework in Frameworks */,
 				43D724D6094DE500009181E3 /* osgText.framework in Frameworks */,
 				43D724D7094DE500009181E3 /* osgUtil.framework in Frameworks */,
-				43C617EC09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C617EC09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3215,7 +3208,7 @@
 				43D724DB094DE500009181E3 /* osgGA.framework in Frameworks */,
 				43D724DC094DE500009181E3 /* osgText.framework in Frameworks */,
 				43D724DD094DE500009181E3 /* osgUtil.framework in Frameworks */,
-				43C617ED09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C617ED09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3223,7 +3216,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43E1AC0F09462312007F0715 /* OpenGL.framework in Frameworks */,
 				431BB52A092461FB00ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB46E092460FC00ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB470092460FC00ED2131 /* libUsul.dylib in Frameworks */,
@@ -3233,7 +3225,7 @@
 				43D724E1094DE500009181E3 /* osgGA.framework in Frameworks */,
 				43D724E2094DE500009181E3 /* osgText.framework in Frameworks */,
 				43D724E3094DE500009181E3 /* osgUtil.framework in Frameworks */,
-				43C617EE09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C617EE09C12430000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3241,7 +3233,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182209C128B5000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182209C128B5000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BB7BE0924680200ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB7BA092467D800ED2131 /* libUsul.dylib in Frameworks */,
 				43D724E4094DE500009181E3 /* OpenThreads.framework in Frameworks */,
@@ -3257,7 +3249,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182309C128C2000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182309C128C2000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BB9BF09246E0400ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB7E50924684200ED2131 /* libUsul.dylib in Frameworks */,
 				43D724EA094DE500009181E3 /* OpenThreads.framework in Frameworks */,
@@ -3276,7 +3268,7 @@
 				431BB9C609246E6400ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB9C709246E6400ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB7F1092468BE00ED2131 /* libUsul.dylib in Frameworks */,
-				43C6182509C128D2000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182509C128D2000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43D724F0094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D724F1094DE500009181E3 /* osg.framework in Frameworks */,
 				43D724F2094DE500009181E3 /* osgDB.framework in Frameworks */,
@@ -3293,7 +3285,7 @@
 				431BB9DF09246F8700ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB9E009246F8700ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB7FA092468D300ED2131 /* libUsul.dylib in Frameworks */,
-				43C6182609C128DA000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182609C128DA000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43D724F6094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D724F7094DE500009181E3 /* osg.framework in Frameworks */,
 				43D724F8094DE500009181E3 /* osgDB.framework in Frameworks */,
@@ -3307,7 +3299,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182C09C12908000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182C09C12908000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BB9F10924703E00ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB80B0924694800ED2131 /* libUsul.dylib in Frameworks */,
 				431BB9EA0924701E00ED2131 /* libFoxTools.dylib in Frameworks */,
@@ -3324,7 +3316,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182D09C1290E000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182D09C1290E000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BB8140924697900ED2131 /* libUsul.dylib in Frameworks */,
 				43D72502094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D72503094DE500009181E3 /* osg.framework in Frameworks */,
@@ -3339,7 +3331,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182E09C12913000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182E09C12913000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBA02092470B900ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB81F0924699100ED2131 /* libUsul.dylib in Frameworks */,
 				43D72508094DE500009181E3 /* OpenThreads.framework in Frameworks */,
@@ -3355,7 +3347,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6182F09C1291C000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6182F09C1291C000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBA0E0924710400ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BBA170924712400ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BBA0F0924710400ED2131 /* libViews.dylib in Frameworks */,
@@ -3373,7 +3365,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183009C12931000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183009C12931000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43F66C8109259B4D006DE918 /* libOsgTools.dylib in Frameworks */,
 				43F66C7309259B07006DE918 /* libViews.dylib in Frameworks */,
 				43F66C7109259AFA006DE918 /* libFoxTools.dylib in Frameworks */,
@@ -3391,7 +3383,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183109C12937000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183109C12937000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43F66C7E09259B2E006DE918 /* libOsgTools.dylib in Frameworks */,
 				43F66C7509259B1D006DE918 /* libViews.dylib in Frameworks */,
 				431BBA31092471BE00ED2131 /* libFoxTools.dylib in Frameworks */,
@@ -3409,7 +3401,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183209C1293C000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183209C1293C000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBA3E0924720000ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB847092469F500ED2131 /* libUsul.dylib in Frameworks */,
 				43D72520094DE500009181E3 /* OpenThreads.framework in Frameworks */,
@@ -3440,7 +3432,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183709C129C9000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183709C129C9000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBA5A0924728700ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BBA590924728700ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB85909246A3100ED2131 /* libUsul.dylib in Frameworks */,
@@ -3458,7 +3450,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				431BBAC00924741C00ED2131 /* libFoxTools.dylib in Frameworks */,
-				43C6183D09C12A0B000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183D09C12A0B000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BB86409246A7000ED2131 /* libUsul.dylib in Frameworks */,
 				43D72550094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D72551094DE500009181E3 /* osg.framework in Frameworks */,
@@ -3502,7 +3494,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183809C129D6000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183809C129D6000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBA6D092472F200ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BBA770924730500ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BBA6E092472F200ED2131 /* libViews.dylib in Frameworks */,
@@ -3552,7 +3544,7 @@
 				431BB8A609246B1D00ED2131 /* libUsul.dylib in Frameworks */,
 				43A1940C094F2A180029ED97 /* libOsgTools.dylib in Frameworks */,
 				43A1940D094F2A180029ED97 /* libFoxTools.dylib in Frameworks */,
-				43C6183C09C12A04000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183C09C12A04000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43D7254A094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D7254B094DE500009181E3 /* osg.framework in Frameworks */,
 				43D7254C094DE500009181E3 /* osgDB.framework in Frameworks */,
@@ -3566,7 +3558,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6183E09C12A1B000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183E09C12A1B000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBAD3092474BB00ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BBADB092474C800ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB8AF09246B3500ED2131 /* libUsul.dylib in Frameworks */,
@@ -3585,7 +3577,7 @@
 			files = (
 				431BBAE30924750700ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BB8BA09246B5700ED2131 /* libUsul.dylib in Frameworks */,
-				43C6183F09C12A25000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6183F09C12A25000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				43D72562094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D72563094DE500009181E3 /* osg.framework in Frameworks */,
 				43D72564094DE500009181E3 /* osgDB.framework in Frameworks */,
@@ -3629,7 +3621,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6184109C12A45000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6184109C12A45000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				431BBB590924787700ED2131 /* libFoxTools.dylib in Frameworks */,
 				431BBB630924788900ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BBB5A0924787700ED2131 /* libViews.dylib in Frameworks */,
@@ -3676,6 +3668,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4366F26F0A158DCA00882B30 /* libSceneModel.dylib in Frameworks */,
+				4366F2700A158DCA00882B30 /* libTriangleModel.dylib in Frameworks */,
 				43922894095CB07D004A602C /* libUsul.dylib in Frameworks */,
 				43442FDE0960AB85000A1AB5 /* libOpenThreadsEx.dylib in Frameworks */,
 				43442FDF0960AB88000A1AB5 /* libOsgTools.dylib in Frameworks */,
@@ -3693,6 +3687,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4366F2390A158D5500882B30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F23A0A158D5500882B30 /* libOsgTools.dylib in Frameworks */,
+				4366F23B0A158D5500882B30 /* libUsul.dylib in Frameworks */,
+				4366F23C0A158D5500882B30 /* OpenThreads.framework in Frameworks */,
+				4366F23D0A158D5500882B30 /* osg.framework in Frameworks */,
+				4366F23E0A158D5500882B30 /* osgDB.framework in Frameworks */,
+				4366F23F0A158D5500882B30 /* osgGA.framework in Frameworks */,
+				4366F2400A158D5500882B30 /* osgText.framework in Frameworks */,
+				4366F2410A158D5500882B30 /* osgUtil.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4366F25E0A158D6D00882B30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F25F0A158D6D00882B30 /* libOsgTools.dylib in Frameworks */,
+				4366F2600A158D6D00882B30 /* libUsul.dylib in Frameworks */,
+				4366F2610A158D6D00882B30 /* OpenThreads.framework in Frameworks */,
+				4366F2620A158D6D00882B30 /* osg.framework in Frameworks */,
+				4366F2630A158D6D00882B30 /* osgDB.framework in Frameworks */,
+				4366F2640A158D6D00882B30 /* osgGA.framework in Frameworks */,
+				4366F2650A158D6D00882B30 /* osgText.framework in Frameworks */,
+				4366F2660A158D6D00882B30 /* osgUtil.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43887E6C0945DA3F00B519D0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -3704,7 +3728,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6184409C12AC7000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6184409C12AC7000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				432FB6670929183A0065FC78 /* libFoxTools.dylib in Frameworks */,
 				432FB6680929183A0065FC78 /* libViews.dylib in Frameworks */,
 				43F6667F092481C5006DE918 /* libOsgTools.dylib in Frameworks */,
@@ -3722,7 +3746,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43E1AB0309461A34007F0715 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3744,7 +3767,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6184909C13214000E2E46 /* libFOX-1.4.0.0.15.dylib in Frameworks */,
+				43C6184909C13214000E2E46 /* libFOX-1.4.dylib in Frameworks */,
 				438DD04F094DDEE3003E4441 /* libOpenThreadsEx.dylib in Frameworks */,
 				431BB5F30924648D00ED2131 /* libUsul.dylib in Frameworks */,
 				431BB5F60924649B00ED2131 /* libOsgTools.dylib in Frameworks */,
@@ -3785,7 +3808,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Base Libs */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76F6C0486A84900D96B5E /* Helios */,
+				8DD76F6C0486A84900D96B5E /* OsgFox-cli */,
 				43FED6F2092452E100EBB610 /* libUsul.dylib */,
 				43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */,
 				431BAD7D09245A4600ED2131 /* libOsgTools.dylib */,
@@ -4491,7 +4514,7 @@
 				431F9038094B896700E38CD0 /* osgdb_zip.so */,
 			);
 			name = PlugIns;
-			path = "/Users/Shared/OpenSource/OSG-1.0/PlugIns";
+			path = "/Library/Application Support/OpenSceneGraph/PlugIns";
 			sourceTree = "<absolute>";
 		};
 		4337B56A09677A9F008DF27C /* Views */ = {
@@ -4514,6 +4537,8 @@
 			children = (
 				4337B57609677AD7008DF27C /* HeliosDocument.h */,
 				4337B57709677AD7008DF27C /* HeliosDocument.mm */,
+				4305EEB20A1584AD00F7B9FB /* IVEDocument.h */,
+				4305EEB30A1584AD00F7B9FB /* IVEDocument.mm */,
 			);
 			path = Documents;
 			sourceTree = "<group>";
@@ -4559,6 +4584,7 @@
 				4337B59D09677C07008DF27C /* TwoSidedLighting.gif */,
 				4337B59E09677C07008DF27C /* VertexLighting.gif */,
 				4337B59F09677C07008DF27C /* WireframeRender.gif */,
+				4366F2A70A15918900882B30 /* LOD.gif */,
 			);
 			name = Images;
 			path = ../Helios/Cocoa/Resources/Images;
@@ -4834,14 +4860,15 @@
 			children = (
 				4358F6A8095B3210008F7E5E /* Other Frameworks */,
 				4358F6A5095B3210008F7E5E /* Linked Frameworks */,
-				43C617EB09C12430000E2E46 /* libFOX-1.4.0.0.15.dylib */,
+				43C617EB09C12430000E2E46 /* libFOX-1.4.dylib */,
 				43D724CC094DE500009181E3 /* OpenThreads.framework */,
 				43D724CD094DE500009181E3 /* osg.framework */,
 				43D724CE094DE500009181E3 /* osgDB.framework */,
 				43D724CF094DE500009181E3 /* osgGA.framework */,
 				43D724D0094DE500009181E3 /* osgText.framework */,
 				43D724D1094DE500009181E3 /* osgUtil.framework */,
-				43E1AAFF09461A18007F0715 /* OpenGL.framework */,
+				433937120A1054ED004B952D /* osgFX.framework */,
+				433937130A1054ED004B952D /* osgSim.framework */,
 				431F900F094B890E00E38CD0 /* PlugIns */,
 			);
 			name = Frameworks/Libs;
@@ -4850,6 +4877,10 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				4358FB770A1A4BAC008F482D /* ICreateTriangleDocument.h */,
+				4358FB780A1A4BAC008F482D /* ICreateTriangleSet.h */,
+				4358FB790A1A4BAC008F482D /* ISaveTriangleSet.h */,
+				4358FB7A0A1A4BAC008F482D /* ITriangleSet.h */,
 				43E9AF4809F6B98D00444335 /* Fox */,
 				43E9AF5809F6B98D00444335 /* GUI */,
 				43E9AF6C09F6B98D00444335 /* IActiveDocument.h */,
@@ -5486,8 +5517,10 @@
 		43F66685092481C5006DE918 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				43887E720945DA3F00B519D0 /* Helios.app */,
-				434D2D15095B2CA700642126 /* XHelios.app */,
+				43887E720945DA3F00B519D0 /* OsgFox.app */,
+				434D2D15095B2CA700642126 /* Helios.app */,
+				4366F2450A158D5500882B30 /* libSceneModel.dylib */,
+				4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6545,10 +6578,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43E9B20909F6CA5100444335 /* CompileGuard.h in Headers */,
 				43E9B20C09F6CA5100444335 /* SceneComponent.h in Headers */,
 				43E9B20E09F6CA5100444335 /* SceneDocument.h in Headers */,
 				43E9B21009F6CA5100444335 /* SceneFactory.h in Headers */,
+				4305EF250A15879800F7B9FB /* CompileGuard.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6658,6 +6691,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4366F2300A158D5500882B30 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F2310A158D5500882B30 /* SceneComponent.h in Headers */,
+				4366F2320A158D5500882B30 /* SceneDocument.h in Headers */,
+				4366F2330A158D5500882B30 /* SceneFactory.h in Headers */,
+				4366F2340A158D5500882B30 /* CompileGuard.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4366F2470A158D6D00882B30 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F2480A158D6D00882B30 /* CompileGuard.h in Headers */,
+				4366F2490A158D6D00882B30 /* ParadisReader.h in Headers */,
+				4366F24A0A158D6D00882B30 /* TriangleComponent.h in Headers */,
+				4366F24B0A158D6D00882B30 /* TriangleConstants.h in Headers */,
+				4366F24C0A158D6D00882B30 /* TriangleDocument.h in Headers */,
+				4366F24D0A158D6D00882B30 /* TriangleFactory.h in Headers */,
+				4366F24E0A158D6D00882B30 /* TriangleHelpersTDF.h in Headers */,
+				4366F24F0A158D6D00882B30 /* TriangleReaderR3D.h in Headers */,
+				4366F2500A158D6D00882B30 /* TriangleReaderSTL.h in Headers */,
+				4366F2510A158D6D00882B30 /* TriangleReaderTDF.h in Headers */,
+				4366F2520A158D6D00882B30 /* TriangleWriterSTL.h in Headers */,
+				4366F2530A158D6D00882B30 /* TriangleWriterTDF.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43887E690945DA3F00B519D0 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -6669,7 +6732,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43C6184009C12A30000E2E46 /* libFOX-1.4.0.0.15.dylib in Headers */,
+				43C6184009C12A30000E2E46 /* libFOX-1.4.dylib in Headers */,
 				43E9B19009F6C92200444335 /* CompileGuard.h in Headers */,
 				43E9B19309F6C92200444335 /* TriangleDelegateComponent.h in Headers */,
 				43E9B19509F6C92200444335 /* TriangleDelegateFactory.h in Headers */,
@@ -7503,9 +7566,9 @@
 			productReference = 431BB8F109246BF100ED2131 /* VoxelModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		434D2D14095B2CA700642126 /* XHelios */ = {
+		434D2D14095B2CA700642126 /* Helios */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "XHelios" */;
+			buildConfigurationList = 434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "Helios" */;
 			buildPhases = (
 				434D2D11095B2CA700642126 /* Resources */,
 				434D2D12095B2CA700642126 /* Sources */,
@@ -7538,10 +7601,12 @@
 				43442BFB09606E94000A1AB5 /* PBXTargetDependency */,
 				43442BFD09606E94000A1AB5 /* PBXTargetDependency */,
 				43442BFF09606E94000A1AB5 /* PBXTargetDependency */,
+				4366F26C0A158DBC00882B30 /* PBXTargetDependency */,
+				4366F26E0A158DBC00882B30 /* PBXTargetDependency */,
 			);
-			name = XHelios;
+			name = Helios;
 			productName = XHelios;
-			productReference = 434D2D15095B2CA700642126 /* XHelios.app */;
+			productReference = 434D2D15095B2CA700642126 /* Helios.app */;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -7568,6 +7633,58 @@
 </plist>
 ";
 			productType = "com.apple.product-type.application";
+		};
+		4366F22F0A158D5500882B30 /* SceneModel-DYLIB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4366F2420A158D5500882B30 /* Build configuration list for PBXNativeTarget "SceneModel-DYLIB" */;
+			buildPhases = (
+				4366F2300A158D5500882B30 /* Headers */,
+				4366F2350A158D5500882B30 /* Sources */,
+				4366F2390A158D5500882B30 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Animate;
+				ZERO_LINK = YES;
+			};
+			dependencies = (
+			);
+			name = "SceneModel-DYLIB";
+			productName = Animate;
+			productReference = 4366F2450A158D5500882B30 /* libSceneModel.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		4366F2460A158D6D00882B30 /* TriangleModel-DYLIB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4366F2670A158D6D00882B30 /* Build configuration list for PBXNativeTarget "TriangleModel-DYLIB" */;
+			buildPhases = (
+				4366F2470A158D6D00882B30 /* Headers */,
+				4366F2540A158D6D00882B30 /* Sources */,
+				4366F25E0A158D6D00882B30 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Animate;
+				ZERO_LINK = YES;
+			};
+			dependencies = (
+			);
+			name = "TriangleModel-DYLIB";
+			productName = Animate;
+			productReference = 4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 		43887E680945DA3F00B519D0 /* AppBundle */ = {
 			isa = PBXNativeTarget;
@@ -7609,7 +7726,7 @@
 			name = AppBundle;
 			productInstallPath = "$(USER_LIBRARY_DIR)/Bundles";
 			productName = AppBundle;
-			productReference = 43887E720945DA3F00B519D0 /* Helios.app */;
+			productReference = 43887E720945DA3F00B519D0 /* OsgFox.app */;
 			productType = "com.apple.product-type.bundle";
 		};
 		43F66662092481C5006DE918 /* TriangleDelegate */ = {
@@ -7693,9 +7810,9 @@
 			productReference = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		8DD76F620486A84900D96B5E /* Helios */ = {
+		8DD76F620486A84900D96B5E /* osgfox.exe */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "Helios" */;
+			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "osgfox.exe" */;
 			buildPhases = (
 				8DD76F640486A84900D96B5E /* Sources */,
 				8DD76F660486A84900D96B5E /* Frameworks */,
@@ -7741,10 +7858,10 @@
 				431BBC010924797900ED2131 /* PBXTargetDependency */,
 				431BBC030924797900ED2131 /* PBXTargetDependency */,
 			);
-			name = Helios;
+			name = osgfox.exe;
 			productInstallPath = "$(HOME)/bin";
 			productName = Helios;
-			productReference = 8DD76F6C0486A84900D96B5E /* Helios */;
+			productReference = 8DD76F6C0486A84900D96B5E /* OsgFox-cli */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -7770,9 +7887,11 @@
 				},
 			);
 			targets = (
-				434D2D14095B2CA700642126 /* XHelios */,
+				434D2D14095B2CA700642126 /* Helios */,
+				4366F2460A158D6D00882B30 /* TriangleModel-DYLIB */,
+				4366F22F0A158D5500882B30 /* SceneModel-DYLIB */,
 				43887E680945DA3F00B519D0 /* AppBundle */,
-				8DD76F620486A84900D96B5E /* Helios */,
+				8DD76F620486A84900D96B5E /* osgfox.exe */,
 				43FED6F1092452E100EBB610 /* Usul */,
 				43FED9A9092454C300EBB610 /* Threads */,
 				431BAD5B09245A4600ED2131 /* OsgTools */,
@@ -7868,6 +7987,7 @@
 				430D317109677CE0003C3140 /* MainMenu.nib in Resources */,
 				430D317209677CE0003C3140 /* XHelios-Info.plist in Resources */,
 				430D319D0967815E003C3140 /* Info.plist in Resources */,
+				4366F2A80A15918900882B30 /* LOD.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8227,9 +8347,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43E9B20B09F6CA5100444335 /* SceneComponent.cpp in Sources */,
-				43E9B20D09F6CA5100444335 /* SceneDocument.cpp in Sources */,
-				43E9B20F09F6CA5100444335 /* SceneFactory.cpp in Sources */,
+				4305EFA90A158C3A00F7B9FB /* SceneComponent.cpp in Sources */,
+				4305EFAA0A158C3A00F7B9FB /* SceneDocument.cpp in Sources */,
+				4305EFAB0A158C3A00F7B9FB /* SceneFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8340,7 +8460,31 @@
 				4337B58609677B3F008DF27C /* UKFirstResponder.m in Sources */,
 				4337B58809677B3F008DF27C /* UKToolbarFactory.m in Sources */,
 				433212C30974512400C16FE3 /* ViewerBridge.mm in Sources */,
-				6687115609D5E0020003384F /* GLFeedback.cpp in Sources */,
+				4305EF330A15881200F7B9FB /* IVEDocument.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4366F2350A158D5500882B30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F2360A158D5500882B30 /* SceneComponent.cpp in Sources */,
+				4366F2370A158D5500882B30 /* SceneDocument.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4366F2540A158D6D00882B30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4366F2550A158D6D00882B30 /* ParadisReader.cpp in Sources */,
+				4366F2560A158D6D00882B30 /* TriangleComponent.cpp in Sources */,
+				4366F2570A158D6D00882B30 /* TriangleDocument.cpp in Sources */,
+				4366F2590A158D6D00882B30 /* TriangleReaderR3D.cpp in Sources */,
+				4366F25A0A158D6D00882B30 /* TriangleReaderSTL.cpp in Sources */,
+				4366F25B0A158D6D00882B30 /* TriangleReaderTDF.cpp in Sources */,
+				4366F25C0A158D6D00882B30 /* TriangleWriterSTL.cpp in Sources */,
+				4366F25D0A158D6D00882B30 /* TriangleWriterTDF.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8649,7 +8793,7 @@
 		};
 		4337C0F80945E6840051EE2A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8DD76F620486A84900D96B5E /* Helios */;
+			target = 8DD76F620486A84900D96B5E /* osgfox.exe */;
 			targetProxy = 4337C0F70945E6840051EE2A /* PBXContainerItemProxy */;
 		};
 		43442BFB09606E94000A1AB5 /* PBXTargetDependency */ = {
@@ -8666,6 +8810,16 @@
 			isa = PBXTargetDependency;
 			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
 			targetProxy = 43442BFE09606E94000A1AB5 /* PBXContainerItemProxy */;
+		};
+		4366F26C0A158DBC00882B30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4366F2460A158D6D00882B30 /* TriangleModel-DYLIB */;
+			targetProxy = 4366F26B0A158DBC00882B30 /* PBXContainerItemProxy */;
+		};
+		4366F26E0A158DBC00882B30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4366F22F0A158D5500882B30 /* SceneModel-DYLIB */;
+			targetProxy = 4366F26D0A158DBC00882B30 /* PBXContainerItemProxy */;
 		};
 		43D725B6094DE634009181E3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -8730,7 +8884,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -8743,9 +8897,9 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = Helios;
+				PRODUCT_NAME = "OsgFox-cli";
 				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = ../;
 				ZERO_LINK = NO;
@@ -8758,7 +8912,7 @@
 				ARCHS = i386;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -8771,8 +8925,8 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
-				PRODUCT_NAME = Helios;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PRODUCT_NAME = "OsgFox-cli";
 				USER_HEADER_SEARCH_PATHS = ../;
 				ZERO_LINK = NO;
 			};
@@ -8808,7 +8962,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -8842,7 +8996,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -8872,7 +9026,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -8891,10 +9045,7 @@
 					"/usr/local/include/fox-1.4",
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxTools;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -8912,7 +9063,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -8928,10 +9079,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+rX";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxTools;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -8948,7 +9096,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -8967,10 +9115,7 @@
 					"/usr/local/include/fox-1.4",
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Core;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -8988,7 +9133,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9004,12 +9149,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+rX";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/lib,
-					"/Users/Shared/OpenSource/fox-1.4.15/src/.libs",
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Core;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -9026,7 +9166,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -9045,10 +9185,7 @@
 					"/usr/local/include/fox-1.4",
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Views;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9066,7 +9203,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9082,12 +9219,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+rX";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/lib,
-					"/Users/Shared/OpenSource/fox-1.4.15/src/.libs",
-					"/Users/Shared/OpenSource/fox-1.4.15/bin",
-					"$(SRCROOT)/../../../Shared/OpenSource/fox-1.4.15/bin",
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Views;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -9104,7 +9236,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9125,7 +9257,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Animate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9142,7 +9274,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9160,7 +9292,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Animate;
 				ZERO_LINK = NO;
@@ -9175,7 +9307,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9196,7 +9328,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ClipPlanes;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9213,7 +9345,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9231,7 +9363,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ClipPlanes;
 				ZERO_LINK = NO;
@@ -9246,7 +9378,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9267,7 +9399,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Convolve;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9284,7 +9416,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9302,7 +9434,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Convolve;
 				ZERO_LINK = NO;
@@ -9317,7 +9449,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9338,7 +9470,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = EdgeDetect;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9355,7 +9487,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9373,7 +9505,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = EdgeDetect;
 				ZERO_LINK = NO;
@@ -9388,7 +9520,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9409,7 +9541,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = EditPolygon;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9426,7 +9558,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9444,7 +9576,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = EditPolygon;
 				ZERO_LINK = NO;
@@ -9459,7 +9591,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9480,7 +9612,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxDevice;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9497,7 +9629,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9515,7 +9647,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = FoxDevice;
 				ZERO_LINK = NO;
@@ -9530,7 +9662,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9551,7 +9683,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = GrayScale;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9568,7 +9700,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9586,7 +9718,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = GrayScale;
 				ZERO_LINK = NO;
@@ -9601,7 +9733,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9622,7 +9754,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Histogram;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9639,7 +9771,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9657,7 +9789,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Histogram;
 				ZERO_LINK = NO;
@@ -9672,7 +9804,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9693,7 +9825,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageDelegate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9710,7 +9842,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9728,7 +9860,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageDelegate;
 				ZERO_LINK = NO;
@@ -9743,7 +9875,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9764,7 +9896,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageModel;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9781,7 +9913,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9799,7 +9931,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageModel;
 				ZERO_LINK = NO;
@@ -9814,7 +9946,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9835,7 +9967,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageMorphology;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9852,7 +9984,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9870,7 +10002,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ImageMorphology;
 				ZERO_LINK = NO;
@@ -9885,7 +10017,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9906,7 +10038,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = InvertImage;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9923,7 +10055,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -9941,7 +10073,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = InvertImage;
 				ZERO_LINK = NO;
@@ -9956,7 +10088,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -9977,7 +10109,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = MaterialEditor;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -9994,7 +10126,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10012,7 +10144,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = MaterialEditor;
 				ZERO_LINK = NO;
@@ -10027,7 +10159,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10048,7 +10180,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Seek;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10065,7 +10197,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10083,7 +10215,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Seek;
 				ZERO_LINK = NO;
@@ -10098,7 +10230,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10119,7 +10251,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SelectionSTL;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10136,7 +10268,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10154,7 +10286,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SelectionSTL;
 				ZERO_LINK = NO;
@@ -10169,7 +10301,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10190,7 +10322,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ScaleImage;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10207,7 +10339,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10225,7 +10357,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = ScaleImage;
 				ZERO_LINK = NO;
@@ -10240,7 +10372,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10261,7 +10393,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneDelegate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10278,7 +10410,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10296,7 +10428,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneDelegate;
 				ZERO_LINK = NO;
@@ -10311,7 +10443,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10332,7 +10464,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneModel;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10349,7 +10481,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10367,7 +10499,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneModel;
 				ZERO_LINK = NO;
@@ -10382,7 +10514,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10403,7 +10535,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneStatsOSG;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10420,7 +10552,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10438,7 +10570,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneStatsOSG;
 				ZERO_LINK = NO;
@@ -10453,7 +10585,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10474,7 +10606,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneTree;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10491,7 +10623,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10509,7 +10641,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = SceneTree;
 				ZERO_LINK = NO;
@@ -10524,7 +10656,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10545,7 +10677,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Threshold;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10562,7 +10694,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10580,7 +10712,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Threshold;
 				ZERO_LINK = NO;
@@ -10595,7 +10727,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10616,7 +10748,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TransparencyControl;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10633,7 +10765,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10651,7 +10783,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TransparencyControl;
 				ZERO_LINK = NO;
@@ -10666,7 +10798,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10686,7 +10818,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Triangulate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10704,7 +10836,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10723,7 +10855,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Triangulate;
 				USER_HEADER_SEARCH_PATHS = ../../Development;
@@ -10738,9 +10870,8 @@
 				EXECUTABLE_EXTENSION = plugd;
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
-					/System/Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS)",
 					/Library/Frameworks,
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10761,7 +10892,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TriangleModel;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10778,7 +10909,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10796,7 +10927,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TriangleModel;
 				ZERO_LINK = NO;
@@ -10811,7 +10942,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10832,7 +10963,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VolumeDelegate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10849,7 +10980,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10867,7 +10998,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VolumeDelegate;
 				ZERO_LINK = NO;
@@ -10882,7 +11013,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10903,7 +11034,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VolumeModel;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10920,7 +11051,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -10938,7 +11069,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VolumeModel;
 				ZERO_LINK = NO;
@@ -10953,7 +11084,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -10974,7 +11105,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VoxelModel;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -10991,7 +11122,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -11009,7 +11140,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = VoxelModel;
 				ZERO_LINK = NO;
@@ -11022,7 +11153,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -11035,13 +11166,14 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					_DEBUG,
 					_COMPILING_TRIANGLE_MODEL,
+					_COMPILING_SCENE_MODEL,
 				);
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ../Helios/Cocoa/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				PRODUCT_NAME = XHelios;
+				PRODUCT_NAME = Helios;
 				USER_HEADER_SEARCH_PATHS = ../;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -11051,11 +11183,14 @@
 		434D2D1A095B2CA900642126 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = (
+					i386,
+					ppc,
+				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -11063,15 +11198,160 @@
 				GCC_OBJC_CALL_CXX_CDTORS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
-				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_TRIANGLE_MODEL;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_TRIANGLE_MODEL,
+					_COMPILING_SCENE_MODEL,
+				);
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = ../Helios/Cocoa/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				PRODUCT_NAME = XHelios;
+				PRODUCT_NAME = Helios;
 				USER_HEADER_SEARCH_PATHS = ../;
 				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		4366F2430A158D5500882B30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_DEBUG,
+					_COMPILING_SCENE_MODEL,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					../,
+					../GenericNurbs,
+					/usr/local/include,
+					"/usr/local/include/fox-1.4",
+					../OsgFox/Plugins,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = SceneModel;
+				STRIP_INSTALLED_PRODUCT = NO;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		4366F2440A158D5500882B30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				COPY_PHASE_STRIP = YES;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_SCENE_MODEL;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				HEADER_SEARCH_PATHS = (
+					../,
+					../GenericNurbs,
+					/usr/local/include,
+					"/usr/local/include/fox-1.4",
+					../OsgFox/Plugins,
+				);
+				INSTALL_MODE_FLAG = "a-w,a+r";
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = SceneModel;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		4366F2680A158D6D00882B30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_DEBUG,
+					_COMPILING_TRIANGLE_MODEL,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					../,
+					../GenericNurbs,
+					/usr/local/include,
+					"/usr/local/include/fox-1.4",
+					../OsgFox/Plugins,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = TriangleModel;
+				STRIP_INSTALLED_PRODUCT = NO;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		4366F2690A158D6D00882B30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				COPY_PHASE_STRIP = YES;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_TRIANGLE_MODEL;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				HEADER_SEARCH_PATHS = (
+					../,
+					../GenericNurbs,
+					/usr/local/include,
+					"/usr/local/include/fox-1.4",
+					../OsgFox/Plugins,
+				);
+				INSTALL_MODE_FLAG = "a-w,a+r";
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = TriangleModel;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -11084,7 +11364,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Helios;
+				PRODUCT_NAME = OsgFox;
 				SECTORDER_FLAGS = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -11100,7 +11380,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Helios;
+				PRODUCT_NAME = OsgFox;
 				SECTORDER_FLAGS = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -11115,7 +11395,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -11136,7 +11416,7 @@
 					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TriangleDelegate;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -11153,7 +11433,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -11171,7 +11451,7 @@
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "/Users/Shared/OpenSource/fox-1.4.15/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = TriangleDelegate;
 				ZERO_LINK = NO;
@@ -11184,7 +11464,10 @@
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_EXTENSION = dylib;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -11199,6 +11482,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -11213,7 +11497,10 @@
 				ARCHS = i386;
 				COPY_PHASE_STRIP = YES;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -11225,6 +11512,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_MODE_FLAG = "a-w,a+rX";
 				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = Usul;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -11242,7 +11530,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -11258,7 +11546,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = OpenThreadsEx;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -11276,7 +11564,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
-					"/Users/Shared/OpenSource/OSG-1.0/Frameworks",
+					/Library/Frameworks,
 				);
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -11289,7 +11577,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_MODE_FLAG = "a-w,a+rX";
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = OpenThreadsEx;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -11301,7 +11589,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "Helios" */ = {
+		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "osgfox.exe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB923208733DC60010E9CD /* Debug */,
@@ -11598,11 +11886,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "XHelios" */ = {
+		434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "Helios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				434D2D19095B2CA900642126 /* Debug */,
 				434D2D1A095B2CA900642126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4366F2420A158D5500882B30 /* Build configuration list for PBXNativeTarget "SceneModel-DYLIB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4366F2430A158D5500882B30 /* Debug */,
+				4366F2440A158D5500882B30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4366F2670A158D6D00882B30 /* Build configuration list for PBXNativeTarget "TriangleModel-DYLIB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4366F2680A158D6D00882B30 /* Debug */,
+				4366F2690A158D6D00882B30 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,6 +7,9 @@
     cause CadViewer to not work properly.
   </comment>
   <preferences>
+    <user>
+      <name>Todd</name>
+    </user>
     <machine>
       <comment>
         Specify the machine that will write files. Without this, when the 
@@ -142,5 +145,15 @@
       <center>0.0 4.0 -5.0</center>
       <radius>4.0</radius>
     </auto_placement>
+    <invr_nav>
+      <invert_rotation>false</invert_rotation>
+      <new_rotation_style>true</new_rotation_style>
+      <acceleration>2.5</acceleration>
+      <icon_color>0.0 0.0 1.0 0.65</icon_color>
+      <icon_size>0.75</icon_size>
+    </invr_nav>
+    <avatar>
+      <wait_frames>10</wait_frames>
+    </avatar>
   </preferences>
 </cv>

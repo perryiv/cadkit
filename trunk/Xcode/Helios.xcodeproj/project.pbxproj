@@ -15,7 +15,7 @@
 		430D316F09677CE0003C3140 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 430D316709677CE0003C3140 /* Credits.rtf */; };
 		430D317009677CE0003C3140 /* HeliosDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = 430D316909677CE0003C3140 /* HeliosDocument.nib */; };
 		430D317109677CE0003C3140 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 430D316B09677CE0003C3140 /* MainMenu.nib */; };
-		430D317209677CE0003C3140 /* XHelios-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 430D316D09677CE0003C3140 /* XHelios-Info.plist */; };
+		430D317209677CE0003C3140 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 430D316D09677CE0003C3140 /* Info.plist */; };
 		430D317309677D4A003C3140 /* arial.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58B09677C07008DF27C /* arial.ttf */; };
 		430D317409677D4A003C3140 /* dirtydoz.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58C09677C07008DF27C /* dirtydoz.ttf */; };
 		430D317509677D4A003C3140 /* fudd.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58D09677C07008DF27C /* fudd.ttf */; };
@@ -409,7 +409,7 @@
 		4337B57F09677B1A008DF27C /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4337B57D09677B1A008DF27C /* AppController.mm */; };
 		4337B58609677B3F008DF27C /* UKFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4337B58209677B3F008DF27C /* UKFirstResponder.m */; };
 		4337B58809677B3F008DF27C /* UKToolbarFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4337B58409677B3F008DF27C /* UKToolbarFactory.m */; };
-		4337B5A109677C07008DF27C /* com.dnamerican.XHelios.HeliosDocument.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4337B58909677C07008DF27C /* com.dnamerican.XHelios.HeliosDocument.plist */; };
+		4337B5A109677C07008DF27C /* com.imts.Helios.HeliosDocument.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4337B58909677C07008DF27C /* com.imts.Helios.HeliosDocument.plist */; };
 		4337B5A709677C07008DF27C /* Helios.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Helios.icns */; };
 		4337B5A809677C07008DF27C /* Axis.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59209677C07008DF27C /* Axis.gif */; };
 		4337B5A909677C07008DF27C /* BoundBox.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59309677C07008DF27C /* BoundBox.gif */; };
@@ -2040,7 +2040,7 @@
 		430D316809677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		430D316A09677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HeliosDocument.nib; sourceTree = "<group>"; };
 		430D316C09677CE0003C3140 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		430D316E09677CE0003C3140 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; name = English; path = "English.lproj/XHelios-Info.plist"; sourceTree = "<group>"; };
+		430D316E09677CE0003C3140 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; name = English; path = English.lproj/Info.plist; sourceTree = "<group>"; };
 		430D319C0967815E003C3140 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = Info.plist; path = ../Helios/Cocoa/Resources/Info.plist; sourceTree = SOURCE_ROOT; };
 		431BAD7D09245A4600ED2131 /* libOsgTools.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOsgTools.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		431BAD8809245AB600ED2131 /* Axes.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Axes.cpp; path = ../OsgTools/Axes.cpp; sourceTree = SOURCE_ROOT; };
@@ -2409,7 +2409,7 @@
 		4337B58209677B3F008DF27C /* UKFirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = UKFirstResponder.m; sourceTree = "<group>"; };
 		4337B58309677B3F008DF27C /* UKToolbarFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = UKToolbarFactory.h; sourceTree = "<group>"; };
 		4337B58409677B3F008DF27C /* UKToolbarFactory.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = UKToolbarFactory.m; sourceTree = "<group>"; };
-		4337B58909677C07008DF27C /* com.dnamerican.XHelios.HeliosDocument.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = com.dnamerican.XHelios.HeliosDocument.plist; path = ../Helios/Cocoa/Resources/com.dnamerican.XHelios.HeliosDocument.plist; sourceTree = SOURCE_ROOT; };
+		4337B58909677C07008DF27C /* com.imts.Helios.HeliosDocument.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = com.imts.Helios.HeliosDocument.plist; path = ../Helios/Cocoa/Resources/com.imts.Helios.HeliosDocument.plist; sourceTree = SOURCE_ROOT; };
 		4337B58B09677C07008DF27C /* arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = arial.ttf; path = ../Helios/Cocoa/Resources/fonts/arial.ttf; sourceTree = SOURCE_ROOT; };
 		4337B58C09677C07008DF27C /* dirtydoz.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = dirtydoz.ttf; path = ../Helios/Cocoa/Resources/fonts/dirtydoz.ttf; sourceTree = SOURCE_ROOT; };
 		4337B58D09677C07008DF27C /* fudd.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = fudd.ttf; path = ../Helios/Cocoa/Resources/fonts/fudd.ttf; sourceTree = SOURCE_ROOT; };
@@ -3829,7 +3829,7 @@
 				430D316709677CE0003C3140 /* Credits.rtf */,
 				430D316909677CE0003C3140 /* HeliosDocument.nib */,
 				430D316B09677CE0003C3140 /* MainMenu.nib */,
-				430D316D09677CE0003C3140 /* XHelios-Info.plist */,
+				430D316D09677CE0003C3140 /* Info.plist */,
 			);
 			name = NIBs;
 			path = ../Helios/Cocoa/NIBs;
@@ -4624,7 +4624,7 @@
 			isa = PBXGroup;
 			children = (
 				430D319C0967815E003C3140 /* Info.plist */,
-				4337B58909677C07008DF27C /* com.dnamerican.XHelios.HeliosDocument.plist */,
+				4337B58909677C07008DF27C /* com.imts.Helios.HeliosDocument.plist */,
 				4337B58A09677C07008DF27C /* fonts */,
 				4337B59009677C07008DF27C /* Helios.icns */,
 				4337B59109677C07008DF27C /* Images */,
@@ -7973,7 +7973,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4337B5A109677C07008DF27C /* com.dnamerican.XHelios.HeliosDocument.plist in Resources */,
+				4337B5A109677C07008DF27C /* com.imts.Helios.HeliosDocument.plist in Resources */,
 				4337B5A709677C07008DF27C /* Helios.icns in Resources */,
 				4337B5A809677C07008DF27C /* Axis.gif in Resources */,
 				4337B5A909677C07008DF27C /* BoundBox.gif in Resources */,
@@ -7992,7 +7992,7 @@
 				430D316F09677CE0003C3140 /* Credits.rtf in Resources */,
 				430D317009677CE0003C3140 /* HeliosDocument.nib in Resources */,
 				430D317109677CE0003C3140 /* MainMenu.nib in Resources */,
-				430D317209677CE0003C3140 /* XHelios-Info.plist in Resources */,
+				430D317209677CE0003C3140 /* Info.plist in Resources */,
 				430D319D0967815E003C3140 /* Info.plist in Resources */,
 				4366F2A80A15918900882B30 /* LOD.gif in Resources */,
 			);
@@ -8874,12 +8874,12 @@
 			path = ../Helios/Cocoa/NIBs;
 			sourceTree = SOURCE_ROOT;
 		};
-		430D316D09677CE0003C3140 /* XHelios-Info.plist */ = {
+		430D316D09677CE0003C3140 /* Info.plist */ = {
 			isa = PBXVariantGroup;
 			children = (
 				430D316E09677CE0003C3140 /* English */,
 			);
-			name = "XHelios-Info.plist";
+			name = Info.plist;
 			path = ../Helios/Cocoa/NIBs;
 			sourceTree = SOURCE_ROOT;
 		};

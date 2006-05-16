@@ -18,7 +18,6 @@
 
 #include "Animate/CompileGuard.h"
 #include "Animate/Movie.h"
-#include "Animate/FrameTab.h"
 
 #include "FoxTools/Headers/Object.h"
 #include "FoxTools/Menu/Group.h"
@@ -27,7 +26,6 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/Fox/IFoxMenuPane.h"
 #include "Usul/Interfaces/Fox/IFoxDockBar.h"
-#include "Usul/Interfaces/Fox/IFoxAddTab.h"
 #include "Usul/Interfaces/INotifyClose.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IAddFrame.h"
@@ -47,7 +45,6 @@ class AnimateComponent : public Usul::Base::Referenced,
                   public Usul::Interfaces::IPlugin,
                   public Usul::Interfaces::IFoxDockBar,
                   public Usul::Interfaces::IAddFrame,
-                  public Usul::Interfaces::IFoxAddTab,
                   public Usul::Interfaces::IAnimate,
                   public Usul::Interfaces::IDocumentCreate,
                   public Usul::Interfaces::IGUIDelegate,
@@ -120,9 +117,6 @@ public:
   //Usul::Interfaces::IAddFrame
   virtual void addFrame ( const std::string& groupName, const osg::Vec3& center, float distance, const osg::Quat& rotation );
   virtual void clear    ( const std::string& groupName );
-
-  //Usul::Interfaces::FoxAddTab
-  virtual void foxAddTab( Usul::Interfaces::IUnknown *caller );
 
   //Usul::Interfaces::IAnimate
   //Animate from current position to given position
@@ -231,7 +225,6 @@ protected:
   Movies                            _movies;
   MenuGroup::ValidAccessRefPtr      _menu;
   Movie::Parameter                  _animationTime;
-  FrameTab                          _frameTab;
 
   FXDECLARE( AnimateComponent )
 };

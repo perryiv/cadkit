@@ -254,14 +254,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\FrameTab.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FrameTab.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Movie.cpp"
 					>
 				</File>

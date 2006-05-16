@@ -70,6 +70,9 @@
 // Get/Set show axes state.
 - (IBAction) toggleAxis:(id)sender;
 
+// Get/Set the Low LODS
+- (IBAction) toggleLOD:(id)sender;
+
   // Set/get the bounding-box state.
 - (IBAction) toggleBoundingBox:(id)sender;
 

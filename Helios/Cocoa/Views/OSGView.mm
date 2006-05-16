@@ -160,9 +160,9 @@
 // -----------------------------------------------------------------------------
 - (void) drawRect: (NSRect) bounds
 {
-  NSLog(@"  drawRect....");
+//  NSLog(@"  drawRect....");
   if ( [renderLock tryLock] ) {
-    NSLog(@"...got Lock");
+  //  NSLog(@"...got Lock");
     /// Make sure we have a view to draw into.
     if ( [[self openGLContext] view] == NULL )
     {  
@@ -182,7 +182,7 @@
       NSLog (@"OSG was NOT initialized.. NO rendering will take place." );
     }
     [renderLock unlock];
-    NSLog(@"    renderLock unlocked");
+  //  NSLog(@"    renderLock unlocked");
   }
 }
 
@@ -757,6 +757,16 @@
 {
   bool spin = Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN );
   Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::ALLOW_SPIN, !spin );
+}
+
+// -----------------------------------------------------------------------------
+//  Turn on/off the use of LODS
+// -----------------------------------------------------------------------------
+- (IBAction) toggleLOD:(id)sender
+{
+  typedef Usul::Shared::Preferences Prefs;
+  bool lod = Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::LOW_LODS );
+  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::LOW_LODS, !lod );
 }
 
 // -----------------------------------------------------------------------------

@@ -22,6 +22,7 @@
     <string>FitModel</string>
     <string>ResetView</string>
     <string>ModelSpin</string>
+    <string>LOD</string>
     <string>NSToolbarShowColorsItem</string>
 	</array>  
   <key>Items</key>
@@ -156,7 +157,15 @@
 			<key>ToolTip</key>
 			<string>Automatically Spin the Model</string>
 		</dict>
-
+    <key>LOD</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleLOD:</string>
+			<key>Label</key>
+			<string>LOD</string>
+			<key>ToolTip</key>
+			<string>Turn on or off LODs</string>
+		</dict>
     <key>NSToolbarShowColorsItem</key>
     <dict>
 			<key>Action</key>

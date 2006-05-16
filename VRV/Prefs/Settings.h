@@ -25,7 +25,7 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Matrix44.h"
-#include "Usul/Math/Math.h"
+#include "Usul/Math/Absolute.h"
 
 #include <string>
 #include <vector>
@@ -209,6 +209,30 @@ public:
   void                  autoPlaceCenter ( Vec3f v ) { _autoPlaceCenter = v; }
   float                 autoPlaceRadius () { return _autoPlaceRadius; }
   void                  autoPlaceRadius ( float r ) { _autoPlaceRadius = r; }
+  float                 autoRotationAngle () { return _autoRotationAngle; }
+  void                  autoRotationAngle ( float r ) { _autoRotationAngle = r; }
+  const Vec3f &         autoRotationVector () { return _autoRotationVector; }
+  void                  autoRotationVector ( Vec3f v ) { _autoRotationVector = v; }
+  
+  // Set/get INVR navigation settings
+  bool                  invertRotation() const { return _invertRotation; }
+  void                  invertRotation ( bool state ) { _invertRotation = state; }
+  bool                  newRotation() const { return _newRotation; }
+  void                  newRotation ( bool state ) { _newRotation = state; }
+  float                 acceleration() const { return _acceleration; }
+  void                  acceleration ( float a ) { _acceleration = a; }
+  const Vec4f &         iconColor() const         { return _iconColor; }
+  void                  iconColor(const Vec4f& c) { _iconColor = c; }
+  float                 iconSize() const { return _iconSize; }
+  void                  iconSize ( float s ) { _iconSize = s; }
+  
+  // Set/get user settings
+  const std::string    userName() const { return _userName; }
+  void                 userName( std::string s ) { _userName = s; }
+  
+  // Set/get avatar settings
+  int         avatarWaitFrames() const { return _avatarWaitFrames; }
+  void        avatarWaitFrames( int w ) {  _avatarWaitFrames = w; }
   
 protected:
 
@@ -257,6 +281,15 @@ private:
   bool _autoPlacement;
   Vec3f _autoPlaceCenter;
   float _autoPlaceRadius;
+  bool _invertRotation;
+  bool _newRotation;
+  float _acceleration;
+  Vec4f _iconColor;
+  float _iconSize;
+  float _autoRotationAngle;
+  Vec3f _autoRotationVector;
+  std::string _userName;
+  int _avatarWaitFrames;
 };
 
 

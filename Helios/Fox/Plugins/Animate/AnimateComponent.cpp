@@ -244,8 +244,7 @@ AnimateComponent::AnimateComponent() : BaseClass(),
   _current        ( 0x0 ),
   _movies         (),
   _menu           ( 0x0 ),
-  _animationTime  ( 2 ),
-  _frameTab       ()
+  _animationTime  ( 2 )
 {
   Movie::ValidRefPtr movie ( new Movie );
   _current = movie;
@@ -297,8 +296,6 @@ Usul::Interfaces::IUnknown *AnimateComponent::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::IFoxDockBar* > ( this );
   case Usul::Interfaces::IAddFrame::IID:
     return static_cast < Usul::Interfaces::IAddFrame* > ( this );
-  case Usul::Interfaces::IFoxAddTab::IID:
-    return static_cast < Usul::Interfaces::IFoxAddTab* > ( this );
   case Usul::Interfaces::IAnimate::IID:
     return static_cast < Usul::Interfaces::IAnimate* > ( this );
   case Usul::Interfaces::IDocumentCreate::IID:
@@ -1745,18 +1742,6 @@ long AnimateComponent::onUpdateCurrentCamera ( FX::FXObject *object, FX::FXSelec
   Usul::Interfaces::IActiveView::ValidQueryPtr view ( _caller );
   FoxTools::Functions::enable ( ( view.valid() && view->getActiveView() ), object );
   return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the frame tab to tab control
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AnimateComponent::foxAddTab( Usul::Interfaces::IUnknown *caller )
-{
-  _frameTab.initialize ( caller );
 }
 
 

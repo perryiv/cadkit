@@ -70,7 +70,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Helios.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.dnamerican.XHelios</string>
+	<string>com.imts.Helios</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>

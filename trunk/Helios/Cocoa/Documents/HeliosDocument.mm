@@ -128,23 +128,21 @@
   CocoaProgressBar::RefPtr progPtr ( new CocoaProgressBar (self, _progressBar, _statusText) );
   [self setCocoaProgressBar:progPtr.get()];
   
- // if ( [[self fileType] isEqualToString:@"STLFile"] ) {
-    const std::string fn ( [[self fileName] cString] );
-    _tDoc = new TriangleDocument();
-    _tDoc.get()->read(fn,0x0);
-    if ( _tDoc ) {
-      [_osgView setDocument: (Usul::Documents::Document*)_tDoc  ];
-      BOOL success = [_osgView initializeOSG];
-      if ( NO == success ) {
-        _tDoc = 0x0;
-        return NO;
-      }
-    } else {
+  const std::string fn ( [[self fileName] cString] );
+  _tDoc = new TriangleDocument();
+  _tDoc.get()->read(fn,0x0);
+  if ( _tDoc ) {
+    [_osgView setDocument: (Usul::Documents::Document*)_tDoc  ];
+    BOOL success = [_osgView initializeOSG];
+    if ( NO == success ) {
+      _tDoc = 0x0;
       return NO;
     }
-    return YES;
- // }
- // return NO;
+  } else {
+    return NO;
+  }
+  return YES;
+
 }
 
 

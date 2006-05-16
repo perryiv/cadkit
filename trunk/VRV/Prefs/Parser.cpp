@@ -158,7 +158,16 @@ void Parser::_read ( const std::string &filename )
   MemFun setAutoPlacement  ( this, &Parser::_setAutoPlacement  );
   MemFun setAutoPlaceCenter  ( this, &Parser::_setAutoPlaceCenter  );
   MemFun setAutoPlaceRadius  ( this, &Parser::_setAutoPlaceRadius  );
-
+  MemFun setNavInvertRotation  ( this, &Parser::_setNavInvertRotation  );
+  MemFun setNavNewRotation  ( this, &Parser::_setNavNewRotation  );
+  MemFun setNavAcceleration  ( this, &Parser::_setNavAcceleration  );
+  MemFun setNavIconColor  ( this, &Parser::_setNavIconColor  );
+  MemFun setNavIconSize   ( this, &Parser::_setNavIconSize   );
+  MemFun setAutoRotationAngle  ( this, &Parser::_setAutoRotationAngle  );
+  MemFun setAutoRotationVector ( this, &Parser::_setAutoRotationVector );
+  MemFun setUserName           ( this, &Parser::_setUserName );
+  MemFun setAvatarWaitFrames   ( this, &Parser::_setAvatarWaitFrames );
+  
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
@@ -204,7 +213,16 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "auto_placement/enable",    setAutoPlacement  );
   Helper::add ( reader, start, "auto_placement/center",    setAutoPlaceCenter );
   Helper::add ( reader, start, "auto_placement/radius",    setAutoPlaceRadius );
-
+  Helper::add ( reader, start, "auto_placement/auto_rotation_angle_rad",    setAutoRotationAngle );
+  Helper::add ( reader, start, "auto_placement/auto_rotation_vector",      setAutoRotationVector );
+  Helper::add ( reader, start, "invr_nav/invert_rotation",    setNavInvertRotation );
+  Helper::add ( reader, start, "invr_nav/new_rotation_style", setNavNewRotation    );
+  Helper::add ( reader, start, "invr_nav/acceleration",       setNavAcceleration   );
+  Helper::add ( reader, start, "invr_nav/icon_color",         setNavIconColor      );
+  Helper::add ( reader, start, "invr_nav/icon_size",          setNavIconSize      );
+  Helper::add ( reader, start, "user/name",                   setUserName         );
+  Helper::add ( reader, start, "avatar/wait_frames",          setAvatarWaitFrames );
+  
   // Read the file.
   try
   {
@@ -397,7 +415,7 @@ void Parser::_offsetGrid ( const std::string &s )
 void Parser::_setNearClip ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->nearClippingDistance ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->nearClippingDistance ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -410,7 +428,7 @@ void Parser::_setNearClip ( const std::string &s )
 void Parser::_setViewAllScale ( const std::string &s )
 {
   ErrorChecker ( 1083817591u, !s.empty() );
-  _settings->viewAllScaleZ ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->viewAllScaleZ ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -701,7 +719,7 @@ void Parser::_scaleStatus ( const std::string &s )
 void Parser::_setTransSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->translationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->translationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -714,7 +732,7 @@ void Parser::_setTransSpeed ( const std::string &s )
 void Parser::_setRotSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->rotationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->rotationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -727,7 +745,7 @@ void Parser::_setRotSpeed ( const std::string &s )
 void Parser::_setScaleSpeed ( const std::string &s )
 {
   ErrorChecker ( 2973371103u, !s.empty() );
-  _settings->scaleSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->scaleSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -791,7 +809,7 @@ void Parser::_setScribeColor ( const std::string &s )
 void Parser::_setScribeWidth ( const std::string &s )
 {
   ErrorChecker ( 2973371108u, !s.empty() );
-  _settings->scribeWidth ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->scribeWidth ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -830,5 +848,122 @@ void Parser::_setAutoPlaceCenter ( const std::string &s )
 void Parser::_setAutoPlaceRadius ( const std::string &s )
 {
   ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoPlaceRadius ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
+  _settings->autoPlaceRadius ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set rotation inversion
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNavInvertRotation ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->invertRotation ( Helper::toBool ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set new rotation style
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNavNewRotation ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->newRotation ( Helper::toBool ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set accleration factor
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNavAcceleration ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->acceleration ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set navigation icon color
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNavIconColor ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->iconColor ( Helper::ToVec<Settings::Vec4f>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set navigation icon size
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setNavIconSize ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->iconSize ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set auto rotation angle
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAutoRotationAngle ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->autoRotationAngle ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set auto rotation vector
+//    
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAutoRotationVector ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->autoRotationVector ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the user's name
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setUserName ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->userName( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of frames to wait between avatar updates
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setAvatarWaitFrames ( const std::string &s )
+{
+  ErrorChecker ( 108381759u, !s.empty() );
+  _settings->avatarWaitFrames ( int ( Usul::Math::absolute ( ::atoi ( s.c_str() ) ) ) );
 }

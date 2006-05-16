@@ -1211,6 +1211,8 @@
 		43F66C7509259B1D006DE918 /* libViews.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BB474092460FC00ED2131 /* libViews.dylib */; };
 		43F66C7E09259B2E006DE918 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		43F66C8109259B4D006DE918 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		43F6DFD90A1A526E00216A12 /* STLWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F6DFD70A1A526E00216A12 /* STLWriter.cpp */; };
+		43F6DFDA0A1A526E00216A12 /* STLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F6DFD80A1A526E00216A12 /* STLWriter.h */; };
 		43FED6360924520D00EBB610 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED6340924520D00EBB610 /* main.cpp */; };
 		43FED868092452F800EBB610 /* Referenced.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED702092452F700EBB610 /* Referenced.cpp */; };
 		43FED86A092452F800EBB610 /* Typed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED704092452F700EBB610 /* Typed.cpp */; };
@@ -2967,6 +2969,8 @@
 		43E9B28909F6CA9D00444335 /* VoxelFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VoxelFactory.cpp; path = ../Helios/Plugins/VoxelModel/VoxelFactory.cpp; sourceTree = SOURCE_ROOT; };
 		43E9B28A09F6CA9D00444335 /* VoxelFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VoxelFactory.h; path = ../Helios/Plugins/VoxelModel/VoxelFactory.h; sourceTree = SOURCE_ROOT; };
 		43F66684092481C5006DE918 /* TriangleDelegate.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangleDelegate.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		43F6DFD70A1A526E00216A12 /* STLWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = STLWriter.cpp; sourceTree = "<group>"; };
+		43F6DFD80A1A526E00216A12 /* STLWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = STLWriter.h; sourceTree = "<group>"; };
 		43FED6340924520D00EBB610 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../Helios/Fox/main.cpp; sourceTree = SOURCE_ROOT; };
 		43FED6F2092452E100EBB610 /* libUsul.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libUsul.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		43FED6F6092452F700EBB610 /* Bind.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Bind.h; path = ../Usul/Adaptors/Bind.h; sourceTree = SOURCE_ROOT; };
@@ -3790,12 +3794,12 @@
 			isa = PBXGroup;
 			children = (
 				4392274B095C9F1B004A602C /* Helios */,
-				43887E750945DA6B00B519D0 /* Helios.app */,
+				437B6C400944A1B700C9F948 /* Resources */,
+				43887E750945DA6B00B519D0 /* X-Window */,
 				43FED6F4092452F700EBB610 /* Usul */,
 				43FEDAEA092454D500EBB610 /* Threads */,
 				431BAD8709245AB600ED2131 /* OsgTools */,
 				431BAFE309245DAE00ED2131 /* FoxTools */,
-				437B6C400944A1B700C9F948 /* Resources */,
 				431BBB270924772500ED2131 /* Quake */,
 				1AB674ADFE9D54B511CA2CBB /* Base Libs */,
 				431BB9DE09246F3B00ED2131 /* Plugin Libs */,
@@ -3962,6 +3966,8 @@
 		431BADBE09245AB700ED2131 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				43F6DFD70A1A526E00216A12 /* STLWriter.cpp */,
+				43F6DFD80A1A526E00216A12 /* STLWriter.h */,
 				6687115409D5E0020003384F /* GLFeedback.cpp */,
 				6687115509D5E0020003384F /* GLFeedback.h */,
 				431BADBF09245AB700ED2131 /* STLPrintVisitor.h */,
@@ -4772,13 +4778,13 @@
 			path = ../OsgFox/Images;
 			sourceTree = SOURCE_ROOT;
 		};
-		43887E750945DA6B00B519D0 /* Helios.app */ = {
+		43887E750945DA6B00B519D0 /* X-Window */ = {
 			isa = PBXGroup;
 			children = (
 				43887E8A0945DADF00B519D0 /* xLauncher */,
 				43887E710945DA3F00B519D0 /* Helios_app.plist */,
 			);
-			name = Helios.app;
+			name = "X-Window";
 			sourceTree = "<group>";
 		};
 		4392274B095C9F1B004A602C /* Helios */ = {
@@ -6229,6 +6235,7 @@
 				43442F910960A341000A1AB5 /* Enum.h in Headers */,
 				43442F950960A375000A1AB5 /* Intersect.h in Headers */,
 				6687115909D5E0020003384F /* GLFeedback.h in Headers */,
+				43F6DFDA0A1A526E00216A12 /* STLWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8103,6 +8110,7 @@
 				43442F8E0960A303000A1AB5 /* ClipPlane.cpp in Sources */,
 				43442F940960A375000A1AB5 /* Intersect.cpp in Sources */,
 				6687115809D5E0020003384F /* GLFeedback.cpp in Sources */,
+				43F6DFD90A1A526E00216A12 /* STLWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11239,8 +11247,6 @@
 					../,
 					../GenericNurbs,
 					/usr/local/include,
-					"/usr/local/include/fox-1.4",
-					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -11273,8 +11279,6 @@
 					../,
 					../GenericNurbs,
 					/usr/local/include,
-					"/usr/local/include/fox-1.4",
-					../OsgFox/Plugins,
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -11310,8 +11314,6 @@
 					../,
 					../GenericNurbs,
 					/usr/local/include,
-					"/usr/local/include/fox-1.4",
-					../OsgFox/Plugins,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -11344,8 +11346,6 @@
 					../,
 					../GenericNurbs,
 					/usr/local/include,
-					"/usr/local/include/fox-1.4",
-					../OsgFox/Plugins,
 				);
 				INSTALL_MODE_FLAG = "a-w,a+r";
 				INSTALL_PATH = "@executable_path/../Plugins";

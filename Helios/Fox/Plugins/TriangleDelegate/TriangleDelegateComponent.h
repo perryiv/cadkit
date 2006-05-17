@@ -88,6 +88,8 @@ public:
     ID_TOGGLE_GROUP,
     ID_HIDE_GROUPS,
     ID_SHOW_GROUPS,
+    ID_HIDE_ALL_GROUPS,
+    ID_SHOW_ALL_GROUPS,
     ID_GROUP_TRANSPARENCY,
     ID_LAST
   };
@@ -110,6 +112,8 @@ public:
   long                      onCommandToggleGroup       ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandHideGroups        ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandShowGroups        ( FX::FXObject *, FX::FXSelector, void * );
+  long                      onCommandHideAllGroups     ( FX::FXObject *, FX::FXSelector, void * );
+  long                      onCommandShowAllGroups     ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandGroupTransparency ( FX::FXObject *, FX::FXSelector, void * );
 
   /// Update message maps.

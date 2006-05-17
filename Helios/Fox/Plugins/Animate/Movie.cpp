@@ -40,10 +40,13 @@
 #include "XmlDom/File.h"
 
 #include "OsgTools/ShapeFactory.h"
+#include "OsgTools/State/StateSet.h"
+#include "OsgTools/Draggers/Translate3.h"
 
 #include "osg/Geode"
 #include "osg/Group"
 #include "osg/MatrixTransform"
+#include "osg/AutoTransform"
 #include "osg/LineWidth"
 #include "osg/LightModel"
 #include "osg/Material"
@@ -1258,6 +1261,13 @@ void Movie::writeMovie ( const Filename& filename, const Filenames& filenames )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the animation path to view in the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Node* Movie::buildAnimationPath()
 {
   osg::ref_ptr< osg::Group > group ( new osg::Group );
@@ -1271,20 +1281,8 @@ osg::Node* Movie::buildAnimationPath()
   mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
   mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.1, 0.1, 0.1, 1.0 ) );
   mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
-  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-  ss->setAttribute  ( mat.get() );
-
-  // Set the line width
-  osg::ref_ptr < osg::LineWidth > lw ( new osg::LineWidth ( 3.0 ) );
-  ss->setAttribute ( lw.get() );
-
-  // Make a light-model.
-  osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
-  lm->setTwoSided( true );
-
-  // Set the state. Make it override any other similar states.
-  typedef osg::StateAttribute Attribute;
-  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
+  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.4, 0.4, 0.4, 1.0 ) );
+  ss->setAttribute  ( mat.get(), osg::StateAttribute::ON );
 
   // First add the key frames
   osg::ref_ptr < OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
@@ -1298,19 +1296,33 @@ osg::Node* Movie::buildAnimationPath()
 
     osg::Vec3 eye ( this->_getEyePostion( center, d, rot ) );
 
-    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    /*osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
     osg::Matrix matrix;
     matrix.setTrans( eye );
-    mt->setMatrix( matrix );
+    mt->setMatrix( matrix );*/
+
+    osg::ref_ptr < osg::AutoTransform > transform ( new osg::AutoTransform );
+    transform->setPosition( eye );
+    transform->setAutoScaleToScreen ( true );
+
+    //mt->addChild( transform.get() );
+
+    // 3D dragger doesn't show up when using auto transform.  why?
+    //osg::ref_ptr< OsgTools::Draggers::Translate3 > dragger ( new OsgTools::Draggers::Translate3 );
+    //transform->addChild( dragger.get() );
 
     osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable ( sf->sphere( 50 ) );
+    geode->addDrawable ( sf->sphere( 15 ) );
 
-    mt->addChild( geode.get() );
+    transform->addChild( geode.get() );
 
-    group->addChild( mt.get() );
+    // Set the normalize state to true, so when the sphere size changes it still looks correct.
+    OsgTools::State::StateSet::setNormalize ( transform.get(), true );
+
+    //mt->addChild( geode.get() );
+
+    group->addChild( transform.get() );
   }
-
 
   // Build the vertex list
   osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
@@ -1332,12 +1344,10 @@ osg::Node* Movie::buildAnimationPath()
   // Reserve enough room.
   vertices->reserve( uValues.size() );
 
-
   typedef DoubleCurve::Vector Point;
   typedef DoubleCurve::SizeType SizeType;
   typedef IndependentSequence::const_iterator ConstIterator;
   typedef std::greater<Parameter> IsGreater;
-
 
   // Should be true.
   USUL_ASSERT ( rotations.size() == params.size() );
@@ -1418,12 +1428,30 @@ osg::Node* Movie::buildAnimationPath()
   // Add the geometry to the geode.
   geode->addDrawable ( geometry.get() );
 
+  osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+  colors->push_back ( osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
+
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_PRIMITIVE );
+
+  // Set the line width to 3.0
+  OsgTools::State::StateSet::setLineWidth ( geode.get(), 3.0 );
+
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting( geode.get(), false );
+
   // Add the geode to the group.
   group->addChild ( geode.get() );
 
   return group.release();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get eye position from frame data.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 osg::Vec3 Movie::_getEyePostion ( const osg::Vec3& center, float distance, const osg::Quat& rot ) const
 {

@@ -62,10 +62,8 @@ Usul::Interfaces::IUnknown *SceneTreeComponent::queryInterface ( unsigned long i
     return static_cast< Usul::Interfaces::IFoxAddTab*>(this);
   case Usul::Interfaces::IUpdateTreeControls::IID:
     return static_cast< Usul::Interfaces::IUpdateTreeControls*> ( this );
-#ifdef _DEBUG
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
-#endif
   default:
     return 0x0;
   }

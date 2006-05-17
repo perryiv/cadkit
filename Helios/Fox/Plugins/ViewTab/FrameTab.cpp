@@ -16,12 +16,15 @@
 #include "FoxTools/Headers/TabBook.h"
 #include "FoxTools/Headers/Button.h"
 #include "FoxTools/Headers/GroupBox.h"
+#include "FoxTools/Functions/Enable.h"
 
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabItem.h"
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Interfaces/IExport.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 
 #include "Usul/Cast/Cast.h"
 
@@ -41,22 +44,26 @@
 FXDEFMAP ( FrameTab ) MessageMap[] = 
 {
   //          Message Type     ID                                   Message Handler.
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_X,     FrameTab::onCommandCenterX     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_X,     FrameTab::onUpdateCenterX       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_Y,     FrameTab::onCommandCenterY     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_Y,     FrameTab::onUpdateCenterY       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_Z,     FrameTab::onCommandCenterZ     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_Z,     FrameTab::onUpdateCenterZ       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_DISTANCE,     FrameTab::onCommandDistance     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_DISTANCE,     FrameTab::onUpdateDistance       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_X,   FrameTab::onCommandRotationX     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_X,   FrameTab::onUpdateRotationX       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_Y,   FrameTab::onCommandRotationY     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_Y,   FrameTab::onUpdateRotationY       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_Z,   FrameTab::onCommandRotationZ     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_Z,   FrameTab::onUpdateRotationZ       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_W,   FrameTab::onCommandRotationW     ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_W,   FrameTab::onUpdateRotationW       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_X,       FrameTab::onCommandCenterX      ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_X,       FrameTab::onUpdateCenterX       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_Y,       FrameTab::onCommandCenterY      ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_Y,       FrameTab::onUpdateCenterY       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_CENTER_Z,       FrameTab::onCommandCenterZ      ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_CENTER_Z,       FrameTab::onUpdateCenterZ       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_DISTANCE,       FrameTab::onCommandDistance     ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_DISTANCE,       FrameTab::onUpdateDistance      ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_X,     FrameTab::onCommandRotationX    ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_X,     FrameTab::onUpdateRotationX     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_Y,     FrameTab::onCommandRotationY    ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_Y,     FrameTab::onUpdateRotationY     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_Z,     FrameTab::onCommandRotationZ    ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_Z,     FrameTab::onUpdateRotationZ     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_ROTATION_W,     FrameTab::onCommandRotationW    ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_ROTATION_W,     FrameTab::onUpdateRotationW     ),
+  FXMAPFUNC ( FX::SEL_CHANGED, FrameTab::ID_HEIGHT_CHANGED, FrameTab::onChangedHeight       ),
+  FXMAPFUNC ( FX::SEL_CHANGED, FrameTab::ID_WIDTH_CHANGED,  FrameTab::onChangedWidght       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, FrameTab::ID_EXPORT_IMAGE,   FrameTab::onCommandExportImage  ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  FrameTab::ID_EXPORT_IMAGE,   FrameTab::onUpdateExportImage   ),
 };
 
 FOX_TOOLS_IMPLEMENT ( FrameTab, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
@@ -89,7 +96,7 @@ FrameTab::~FrameTab()
   Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( _caller );
 
   if( tabItem.valid( ) )
-    tabItem->deleteTab( "Camera" );
+    tabItem->deleteTab( "View" );
 
   if( 0x0 != _contents )
     delete _contents;
@@ -112,8 +119,8 @@ void FrameTab::initialize( Usul::Interfaces::IUnknown *caller )
   if( tabItem.valid() && foxTabBook.valid() )
   {
     _caller = caller;
-    tabItem->addTab ( "Camera" );
-    FX::FXTabItem *cameraTab ( tabItem->tabItem( "Camera" ) );
+    tabItem->addTab ( "View" );
+    FX::FXTabItem *cameraTab ( tabItem->tabItem( "View" ) );
 
     FX::FXTabBook *tabBook ( foxTabBook->tabBook() );
 
@@ -169,6 +176,23 @@ void FrameTab::initialize( Usul::Interfaces::IUnknown *caller )
     rotationW->setRange( -1, 1 );
     rotationW->setIncrement ( 0.01 );
 
+    FX::FXGroupBox *imageGroup ( new FX::FXGroupBox( _contents, "Image Export",GROUPBOX_TITLE_LEFT|FRAME_RIDGE|LAYOUT_FILL_X ) );
+    frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
+    new FX::FXLabel  ( frame,  "Width:", 0x0, FX::LAYOUT_LEFT  );
+    FX::FXSpinner *widthSpinner ( new FX::FXSpinner ( frame, 5, this, ID_WIDTH_CHANGED ) );
+    widthSpinner->setRange( 1, 4048 );
+    widthSpinner->setIncrement( 10 );
+    widthSpinner->setValue( 800 );
+
+    frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
+    new FX::FXLabel  ( frame,  "Height:", 0x0, FX::LAYOUT_LEFT  );
+    FX::FXSpinner *heightSpinner ( new FX::FXSpinner ( frame, 5, this, ID_HEIGHT_CHANGED ) );
+    heightSpinner->setRange( 1, 4048 );
+    heightSpinner->setIncrement( 10 );
+    heightSpinner->setValue( 600 );
+
+    frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
+    new FX::FXButton( frame, "Image Export", 0x0, this, ID_EXPORT_IMAGE );
   }
 }
 
@@ -719,3 +743,87 @@ long FrameTab::onUpdateRotationW   ( FX::FXObject *object, FX::FXSelector, void 
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The height changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FrameTab::onChangedHeight ( FX::FXObject *object, FX::FXSelector, void * )
+{
+  FX::FXSpinner *spinner = SAFE_CAST_FOX ( FX::FXSpinner, object );
+  if( 0x0 == spinner )
+    return 0;
+
+  _height = static_cast < unsigned int > ( spinner->getValue() );
+
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The width changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FrameTab::onChangedWidght ( FX::FXObject *object, FX::FXSelector, void * )
+{
+  FX::FXSpinner *spinner = SAFE_CAST_FOX ( FX::FXSpinner, object );
+  if( 0x0 == spinner )
+    return 0;
+
+  _width = static_cast < unsigned int > ( spinner->getValue() );
+
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FrameTab::onCommandExportImage ( FX::FXObject *, FX::FXSelector, void * )
+{
+  Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
+
+  Usul::Interfaces::IExport::QueryPtr exportFile ( activeView.valid() ? activeView->getActiveView() : 0x0 );
+
+  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( _caller );
+
+  if( saveDialog.valid() && exportFile.valid() )
+  {
+    Usul::Interfaces::IExport::Filters filters ( exportFile->filtersWriteImage() );
+
+    Usul::Interfaces::ISaveFileDialog::FileResult result ( saveDialog->getSaveFileName( "Export Image", filters ) );
+
+    std::string filename ( result.first );
+
+    if ( !filename.empty() )
+      exportFile->writeImageFile( filename, _height, _width );
+  }
+
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the export image button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+long FrameTab::onUpdateExportImage  ( FX::FXObject *object, FX::FXSelector, void * )
+{
+  Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
+
+  Usul::Interfaces::IExport::QueryPtr exportFile ( activeView.valid() ? activeView->getActiveView() : 0x0 );
+
+  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( _caller );
+
+  FoxTools::Functions::enable( exportFile.valid() && saveDialog.valid(), object );
+
+  return 1;
+}

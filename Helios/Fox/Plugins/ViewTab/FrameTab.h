@@ -31,7 +31,11 @@ public:
     ID_ROTATION_X,
     ID_ROTATION_Y,
     ID_ROTATION_Z,
-    ID_ROTATION_W
+    ID_ROTATION_W,
+    ID_WIDTH_CHANGED,
+    ID_HEIGHT_CHANGED,
+    ID_EXPORT_IMAGE,
+    ID_LAST
   };
 
   FrameTab();
@@ -48,6 +52,12 @@ public:
   long onCommandRotationZ   ( FX::FXObject *, FX::FXSelector, void * );
   long onCommandRotationW   ( FX::FXObject *, FX::FXSelector, void * );
 
+  long onChangedHeight ( FX::FXObject *, FX::FXSelector, void * );
+  long onChangedWidght ( FX::FXObject *, FX::FXSelector, void * );
+
+  long onCommandExportImage ( FX::FXObject *, FX::FXSelector, void * );
+  long onUpdateExportImage  ( FX::FXObject *, FX::FXSelector, void * );
+
   long onUpdateCenterX   ( FX::FXObject *, FX::FXSelector, void * );
   long onUpdateCenterY   ( FX::FXObject *, FX::FXSelector, void * );
   long onUpdateCenterZ   ( FX::FXObject *, FX::FXSelector, void * );
@@ -62,6 +72,10 @@ private:
   float _centerIncrement;
   float _distanceIncrement;
   float _rotationIncrement;
+
+  unsigned int _height;
+  unsigned int _width;
+
   FX::FXVerticalFrame *_contents;
 
   FXDECLARE( FrameTab )

@@ -12,6 +12,7 @@
 #include "GN/Interpolate/Global.h"
 #include "GN/Algorithms/KnotVector.h"
 #include "GN/Algorithms/Fill.h"
+#include "GN/Tessellate/Bisect.h"
 
 #include "Usul/Math/Transpose.h"
 #include "Usul/Errors/Assert.h"
@@ -37,6 +38,16 @@
 #include "XmlDom/Visitor.h"
 #include "XmlDom/Convert.h"
 #include "XmlDom/File.h"
+
+#include "OsgTools/ShapeFactory.h"
+
+#include "osg/Geode"
+#include "osg/Group"
+#include "osg/MatrixTransform"
+#include "osg/LineWidth"
+#include "osg/LightModel"
+#include "osg/Material"
+#include "osg/ref_ptr"
 
 #include <sstream>
 #include <fstream>
@@ -1245,4 +1256,185 @@ void Movie::writeMovie ( const Filename& filename, const Filenames& filenames )
       write->writeMovie ( filename, filenames );
     }
   }
+}
+
+osg::Node* Movie::buildAnimationPath()
+{
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+  
+  // Get or create the state set
+  osg::ref_ptr<osg::StateSet> ss ( group->getOrCreateStateSet() );
+
+  // Set the material properties
+  osg::ref_ptr< osg::Material > mat = new osg::Material();
+  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
+  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
+  mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.1, 0.1, 0.1, 1.0 ) );
+  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
+  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
+  ss->setAttribute  ( mat.get() );
+
+  // Set the line width
+  osg::ref_ptr < osg::LineWidth > lw ( new osg::LineWidth ( 3.0 ) );
+  ss->setAttribute ( lw.get() );
+
+  // Make a light-model.
+  osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
+  lm->setTwoSided( true );
+
+  // Set the state. Make it override any other similar states.
+  typedef osg::StateAttribute Attribute;
+  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
+
+  // First add the key frames
+  osg::ref_ptr < OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+
+  // Loop through our frames
+  for ( Movie::const_iterator i = this->begin(); i != this->end(); ++i )
+  {
+    const osg::Vec3& center ( i->getCenter() );
+    const float d           ( i->getDistance() );
+    const osg::Quat& rot    ( i->getRotation() );
+
+    osg::Vec3 eye ( this->_getEyePostion( center, d, rot ) );
+
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    osg::Matrix matrix;
+    matrix.setTrans( eye );
+    mt->setMatrix( matrix );
+
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    geode->addDrawable ( sf->sphere( 50 ) );
+
+    mt->addChild( geode.get() );
+
+    group->addChild( mt.get() );
+  }
+
+
+  // Build the vertex list
+  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+  IndependentSequence params;
+
+  DependentContainer rotations;
+
+  DoubleCurve positions;
+
+  this->_interpolate( this->begin(), this->end(), positions, rotations, params  );
+
+  // Container that the bisecter will fill with u values.
+  IndependentSequence uValues;
+
+  // Bisect the curve.  Need a better way to determine the chord height
+  GN::Tessellate::bisect ( positions, 1, uValues );
+  
+  // Reserve enough room.
+  vertices->reserve( uValues.size() );
+
+
+  typedef DoubleCurve::Vector Point;
+  typedef DoubleCurve::SizeType SizeType;
+  typedef IndependentSequence::const_iterator ConstIterator;
+  typedef std::greater<Parameter> IsGreater;
+
+
+  // Should be true.
+  USUL_ASSERT ( rotations.size() == params.size() );
+
+  // Handle bad input.
+  if ( params.empty() || 0 == positions.numControlPoints() )
+    throw std::runtime_error ( "Error 3536980075: Bad parameters or positions." );
+  
+  // Initialize.
+  ConstIterator iu = params.begin();
+
+  // Make a point for the position and rotation.
+  Point pos ( positions.dimension() );
+  DependentSequence r0 ( rotations.size(), 0 );
+  DependentSequence r1 ( rotations.size(), 0 );
+
+
+  // Loop through the u values.
+  for ( float i = 0.0f; i < 1.0f; i+= 0.01f )//IndependentSequence::const_iterator i = uValues.begin(); i != uValues.end(); ++i )
+  {
+    //The independent variable.
+    Parameter u ( i );
+
+    u = std::min ( u, positions.lastKnot() );
+
+    // Evaluate the point.
+    GN::Evaluate::point ( positions, u, pos );
+
+    ConstIterator theend ( params.end() );
+    // Find the span in the list of parameters.
+    iu = std::find_if ( iu, theend, std::bind2nd ( IsGreater(), u ) );
+
+    // Convert this to an index into the list of rotations.
+    const SizeType ir1 ( std::distance < ConstIterator > ( params.begin(), iu ) );
+    const SizeType ir0 ( ir1 - 1 );
+
+    // Get the parameters.
+    const Parameter u0 ( params.at ( ir0 ) );
+    const Parameter u1 ( params.at ( ir1 ) );
+
+    // Get the quaternions.
+    r0 = rotations.at ( ir0 );
+    r1 = rotations.at ( ir1 );
+
+    // What fraction are we between the adjacent parameters?
+    const Parameter fraction ( ( u - u0 ) / ( u1 - u0 ) );
+
+    // Spherical linear interpolation.
+    const osg::Quat q0 ( r0.at(0), r0.at(1), r0.at(2), r0.at(3) );
+    const osg::Quat q1 ( r1.at(0), r1.at(1), r1.at(2), r1.at(3) );
+    osg::Quat quat;
+    quat.slerp ( fraction, q0, q1 );
+
+    // Set the trackball.
+    const osg::Vec3 center ( pos.at(0), pos.at(1), pos.at( 2 ) );
+
+    vertices->push_back( this->_getEyePostion( center, pos.at(3), quat ) );
+  }
+
+  // Ensure that we end up where we are supposed to be. If we don't do this, 
+  // then depending on how long things take in the above loop, the model may 
+  // not be left in the final position.
+  GN::Evaluate::point ( positions, 1, pos );
+  r0 = rotations.back();
+  const osg::Quat quat ( r0.at(0), r0.at(1), r0.at(2), r0.at(3) );
+  const osg::Vec3 center ( pos.at(0), pos.at(1), pos.at( 2 ) );
+  vertices->push_back( this->_getEyePostion( center, pos.at( 3 ), quat ) );
+
+
+  // Make the geode and geometery.
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+  // Add the vertices
+  geometry->setVertexArray ( vertices.get() );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+  
+  // Add the geometry to the geode.
+  geode->addDrawable ( geometry.get() );
+
+  // Add the geode to the group.
+  group->addChild ( geode.get() );
+
+  return group.release();
+}
+
+
+osg::Vec3 Movie::_getEyePostion ( const osg::Vec3& center, float distance, const osg::Quat& rot ) const
+{
+  // From TrackballManipulator::getMatrix()
+  osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
+                  osg::Matrixd::rotate(rot)*
+                  osg::Matrixd::translate(center) );
+
+  osg::Vec3 eye, c, up;
+
+  m.inverse( m ).getLookAt ( eye, c, up );      
+
+  return eye;
 }

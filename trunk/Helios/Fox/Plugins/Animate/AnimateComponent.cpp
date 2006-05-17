@@ -91,6 +91,8 @@
 #include "Usul/Math/Transpose.h"
 #include "Usul/Errors/Assert.h"
 
+#include "OsgTools/ShapeFactory.h"
+
 #include "osg/Vec4"
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -98,6 +100,7 @@
 #include "osg/Group"
 #include "osg/LineWidth"
 #include "osg/LightModel"
+#include "osg/MatrixTransform"
 
 #include <string>
 #include <fstream>
@@ -1880,148 +1883,137 @@ long AnimateComponent::onCommandAnimationPath ( FX::FXObject *, FX::FXSelector, 
       // Get the group.
       osg::ref_ptr< osg::Group > g ( group->getGroup ( "Animation_Group" ) );
 
-      // Get or create the state set
-      osg::ref_ptr<osg::StateSet> ss ( g->getOrCreateStateSet() );
+      g->addChild( _current->buildAnimationPath() );
 
-      // Set the material properties
-      osg::ref_ptr< osg::Material > mat = new osg::Material();
-      mat->setAmbient   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
-	    mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 ) );
-	    mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.1, 0.1, 0.1, 1.0 ) );
-	    mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
-	    mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-      ss->setAttribute  ( mat.get() );
-
-      // Set the line width
-      osg::ref_ptr < osg::LineWidth > lw ( new osg::LineWidth ( 3.0 ) );
-      ss->setAttribute ( lw.get() );
-
-      // Make a light-model.
-      osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
-      lm->setTwoSided( true );
-
-      // Set the state. Make it override any other similar states.
-      typedef osg::StateAttribute Attribute;
-      ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
-
-      // Build the vertex list
-      osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
       
-      // Useful typedefs.
-      typedef GN::Config::UsulConfig < double, double, unsigned int > DoubleConfig;
-      typedef GN::Splines::Curve < DoubleConfig >  DoubleCurve;
-      typedef DoubleCurve::IndependentSequence     IndependentSequence;
-      typedef DoubleCurve::DependentContainer      DependentContainer;
-      typedef DoubleCurve::DependentSequence       DependentSequence;
-      typedef DoubleCurve::IndependentType         IndependentType;
-      typedef DoubleCurve::ErrorCheckerType        ErrorCheckerType;
-      typedef DoubleCurve::Power                   PowerFunctor;
-      typedef DoubleCurve::SizeType                SizeType;
-      typedef DoubleCurve::Vector                  Point;
-      typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
-
-      // Container for the data.
-      DependentContainer points;
-
-      // Container for independent variables.
-      IndependentSequence params;
-
-      osg::ref_ptr< osg::Vec3Array > lines ( new osg::Vec3Array );
-
-      // Loop through our frames
-      for ( Movie::const_iterator i = _current->begin(); i != _current->end(); ++i )
-      {
-        const osg::Vec3& center ( i->getCenter() );
-        const float d                 ( i->getDistance() );
-        const osg::Quat& rot    ( i->getRotation() );
-
-        osg::Vec3 direction;
-        osg::Quat::value_type angle ( 0.0 );
-
-        rot.getRotate ( angle, direction );
-
-        direction.normalize();
-
-        direction *= d;
-
-        osg::Vec3 eye ( center - direction ); 
-
-        lines->push_back ( center );
-        lines->push_back ( eye );
-
-        lines->push_back ( direction );
-        lines->push_back ( center );
-
-        DependentSequence point;
-        point.push_back ( eye[0] );
-        point.push_back ( eye[1] );
-        point.push_back ( eye[2] );
-        points.push_back ( point );
-      }
-
-      // Make the parameters evenly spaced.
-      GN::Algorithms::fill ( params, points.size(), 0, 1 );
-
-      // Should be true.
-      USUL_ASSERT ( params.size() == points.size() );
-
-      // Transpose so that the first index of "points" is the dimension.
-      Usul::Math::transpose ( points );
-
-      // Make the knot vector. Size it for interpolation.
-      IndependentSequence knots;
-      const SizeType cubic ( 4 );
-      const SizeType order ( std::min<SizeType> ( cubic, params.size() ) ); // TODO, the order should be a preference.
-      knots.resize ( params.size() + order );
-      KnotVectorBuilder::build ( params, order, knots );
-
-      // The curve.
-      DoubleCurve curve;
-
-      // Interpolate the positions.
-      GN::Interpolate::global ( order, params, knots, points, curve );
-
-      // Container that the bisecter will fill with u values.
-      IndependentSequence uValues;
-
-      // Bisect the curve.  Need a better way to determine the chord height
-      GN::Tessellate::bisect ( curve, 1, uValues );
       
-      // Reserve enough room.
-      vertices->reserve( uValues.size() );
-
-      Point pos ( curve.dimension() );
-
-      // Loop through the u values.
-      for ( IndependentSequence::const_iterator i = uValues.begin(); i != uValues.end(); ++i )
-      {
-        // Evaluate the point at given u.
-        GN::Evaluate::point ( curve, *i, pos );
-
-        osg::Vec3 v ( pos.at(0), pos.at(1), pos.at( 2 ) );
-
-        vertices->push_back ( v );
-      }
-
-      // Make the geode and geometery.
-      osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-
-      // Add the vertices
-      geometry->setVertexArray ( vertices.get() );
-      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
       
-      // Add the geometry to the geode.
-      geode->addDrawable ( geometry.get() );
-      
-      osg::ref_ptr< osg::Geometry > geom ( new osg::Geometry );
-      geom->setVertexArray ( lines.get() );
-      geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, lines->size() ) );
-      
-      geode->addDrawable ( geom.get() );
-
-      // Add the geode to the group.
-      g->addChild ( geode.get() );
+//      // Useful typedefs.
+//      typedef GN::Config::UsulConfig < double, double, unsigned int > DoubleConfig;
+//      typedef GN::Splines::Curve < DoubleConfig >  DoubleCurve;
+//      typedef DoubleCurve::IndependentSequence     IndependentSequence;
+//      typedef DoubleCurve::DependentContainer      DependentContainer;
+//      typedef DoubleCurve::DependentSequence       DependentSequence;
+//      typedef DoubleCurve::IndependentType         IndependentType;
+//      typedef DoubleCurve::ErrorCheckerType        ErrorCheckerType;
+//      typedef DoubleCurve::Power                   PowerFunctor;
+//      typedef DoubleCurve::SizeType                SizeType;
+//      typedef DoubleCurve::Vector                  Point;
+//      typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
+//
+//      // Container for the data.
+//      DependentContainer points;
+//
+//      // Container for independent variables.
+//      IndependentSequence params;
+//
+//      osg::ref_ptr < OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+//
+//      // Loop through our frames
+//      for ( Movie::const_iterator i = _current->begin(); i != _current->end(); ++i )
+//      {
+//        const osg::Vec3& center ( i->getCenter() );
+//        const float d           ( i->getDistance() );
+//        const osg::Quat& rot    ( i->getRotation() );
+//
+//        // From TrackballManipulator::getMatrix()
+//        osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,d)*osg::Matrixd::rotate(rot)*osg::Matrixd::translate(center) );
+//
+//        osg::Vec3 eye, c, up;
+//
+//        m.inverse( m ).getLookAt ( eye, c, up );        
+//
+//        osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+//        osg::Matrix matrix;
+//        matrix.setTrans( eye );
+//        mt->setMatrix( matrix );
+//
+//        osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+//        geode->addDrawable ( sf->sphere( 50 ) );
+//
+//        mt->addChild( geode.get() );
+//
+//        g->addChild( mt.get() );
+//#if 1
+//        
+//
+//        DependentSequence point;
+//        point.push_back ( eye[0] );
+//        point.push_back ( eye[1] );
+//        point.push_back ( eye[2] );
+//        
+//        /*
+//        point.push_back ( center[0] );
+//        point.push_back ( center[1] );
+//        point.push_back ( [2] );
+//        point.push_back ( d    );
+//        point.push_back ( r[0] );
+//        point.push_back ( r[1] );
+//        point.push_back ( r[2] );
+//        point.push_back ( r[3] );*/
+//
+//        points.push_back ( point );
+//#endif
+//      }
+//#if 1
+//      // Make the parameters evenly spaced.
+//      GN::Algorithms::fill ( params, points.size(), 0, 1 );
+//
+//      // Should be true.
+//      USUL_ASSERT ( params.size() == points.size() );
+//
+//      // Transpose so that the first index of "points" is the dimension.
+//      Usul::Math::transpose ( points );
+//
+//      // Make the knot vector. Size it for interpolation.
+//      IndependentSequence knots;
+//      const SizeType cubic ( 4 );
+//      const SizeType order ( std::min<SizeType> ( cubic, params.size() ) ); // TODO, the order should be a preference.
+//      knots.resize ( params.size() + order );
+//      KnotVectorBuilder::build ( params, order, knots );
+//
+//      // The curve.
+//      DoubleCurve curve;
+//
+//      // Interpolate the positions.
+//      GN::Interpolate::global ( order, params, knots, points, curve );
+//
+//      // Container that the bisecter will fill with u values.
+//      IndependentSequence uValues;
+//
+//      // Bisect the curve.  Need a better way to determine the chord height
+//      GN::Tessellate::bisect ( curve, 1, uValues );
+//      
+//      // Reserve enough room.
+//      vertices->reserve( uValues.size() );
+//
+//      Point pos ( curve.dimension() );
+//
+//      // Loop through the u values.
+//      for ( IndependentSequence::const_iterator i = uValues.begin(); i != uValues.end(); ++i )
+//      {
+//        // Evaluate the point at given u.
+//        GN::Evaluate::point ( curve, *i, pos );
+//
+//        osg::Vec3 v ( pos.at(0), pos.at(1), pos.at( 2 ) );
+//
+//        vertices->push_back ( v );
+//      }
+//
+//      // Make the geode and geometery.
+//      osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+//      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+//
+//      // Add the vertices
+//      geometry->setVertexArray ( vertices.get() );
+//      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+//      
+//      // Add the geometry to the geode.
+//      geode->addDrawable ( geometry.get() );
+//
+//      // Add the geode to the group.
+//      g->addChild ( geode.get() );
+//#endif
     }
   }
 

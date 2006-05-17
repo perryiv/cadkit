@@ -37,12 +37,13 @@ struct IExport : public Usul::Interfaces::IUnknown
 
   //// Write the current frame to an image file.
   //virtual bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const = 0;
+  virtual bool                  writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const = 0;
 
   //// Write the current scene to file.
   //virtual bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const = 0;
 
   //virtual Filters               filtersWriteScene() const = 0;
-  //virtual Filters               filtersWriteImage() const = 0;
+  virtual Filters               filtersWriteImage() const = 0;
 
   virtual bool                  canExport ( const std::string &filename ) = 0;
   virtual Filters               filtersExport() const = 0;

@@ -2490,7 +2490,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   me->_context->makeCurrent();
 
 // Hack to make large pictures.
-#if 1
+#if 0
   height = 4048;
   width = 4048;
 #endif
@@ -5200,20 +5200,33 @@ bool Viewer::canExport ( const std::string &filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Return the filters for the images that we can expoxt.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::Filters Viewer::filtersWriteImage() const
+{
+  Filters filters;
+  filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
+  filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
+  filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
+  filters.push_back ( Filter ( "RGBA Image (*.rgba)", "*.rgba" ) );
+  return filters;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the filters that we can export.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Viewer::Filters Viewer::filtersExport() const
 {
-  Filters filters;
+  Filters filters ( this->filtersWriteImage() );
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
   //filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
-  filters.push_back ( Filter ( "JPEG Image (*.jpg)", "*.jpg"   ) );
-  filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
-  filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
-  filters.push_back ( Filter ( "RGBA Image (*.rgba)", "*.rgba" ) );
   filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
   return filters;
 }
@@ -5244,6 +5257,18 @@ bool Viewer::exportFile ( const std::string& filename )
   }
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the image to the file with given height and width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const
+{
+  return this->_writeImageFile( filename, height, width );
 }
 
 

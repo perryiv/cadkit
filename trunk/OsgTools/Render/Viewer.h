@@ -664,7 +664,9 @@ protected:
   /// Usul::Interfaces::IExport
   virtual bool                  canExport ( const std::string &filename );
   virtual Filters               filtersExport() const;
+  virtual Filters               filtersWriteImage() const;
   virtual bool                  exportFile ( const std::string& filename );
+  virtual bool                  writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
 
   /// Usul::Interfaces::ICenterOrRotation
   virtual void showCenterOfRotation ( bool b );

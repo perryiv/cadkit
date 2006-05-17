@@ -25,6 +25,8 @@
 #include <list>
 #include <iosfwd>
 
+namespace osg { class Node; }
+
 namespace Animate {
 
 
@@ -33,13 +35,13 @@ class Movie : public Usul::Documents::Document
 public:
 
   /// Typedefs.
-  typedef Usul::Documents::Document  BaseClass;
+  typedef Usul::Documents::Document    BaseClass;
   typedef Animate::Frame               Frame;
   typedef std::vector < Frame >        Frames;
   typedef Frames::iterator             iterator;
   typedef Frames::const_iterator       const_iterator;
   typedef Frames::size_type            size_type;
-  typedef std::vector < Frame > Sequence;
+  typedef std::vector < Frame >        Sequence;
   typedef GN::Config::UsulConfig < double, double, unsigned int > DoubleConfig;
   typedef GN::Splines::Curve < DoubleConfig >  DoubleCurve;
   typedef DoubleCurve::IndependentSequence     IndependentSequence;
@@ -47,8 +49,8 @@ public:
   typedef DoubleCurve::DependentSequence       DependentSequence;
   typedef DoubleCurve::IndependentType         Parameter;
   typedef Usul::Interfaces::IUnknown           IUnknown;
-  typedef std::string                           Filename;
-  typedef std::vector< Filename >               Filenames;
+  typedef std::string                          Filename;
+  typedef std::vector< Filename >              Filenames;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Movie );
@@ -160,7 +162,11 @@ public:
   void                          loop ( bool b ) { _loop = b; }
   bool                          loop () const   { return _loop; }
 
+  osg::Node*                    buildAnimationPath();
+
 protected:
+
+  osg::Vec3                     _getEyePostion ( const osg::Vec3& center, float distance, const osg::Quat& rot ) const;
 
   virtual void                  _forward ( IUnknown* caller );
   virtual void                  _reverse ( IUnknown* caller );

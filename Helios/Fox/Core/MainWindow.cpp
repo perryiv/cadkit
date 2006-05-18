@@ -1476,9 +1476,10 @@ bool MainWindow::_exiting()
   // Get any remaining documents.  These documents aren't associated with any window.
   Documents &documents ( Usul::Documents::Manager::instance().documents() );
 
-  // Set delegates to null.  This is needed so delegates are unreferenced and properly deleted.
+  // Tell the remaining open documents that the application is about to close.
+  // This allows the document to clean up any circular references.
   for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
-    (*i)->delegate ( 0x0 );
+    (*i)->applicationClosing();
 
   // Clear documents.
   Usul::Documents::Manager::instance().documents().clear();

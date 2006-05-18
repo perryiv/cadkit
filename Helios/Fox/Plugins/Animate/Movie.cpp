@@ -210,6 +210,7 @@ const Frame& Movie::frame ( unsigned int index ) const
   return *i;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Return frame at the given index

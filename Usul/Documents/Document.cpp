@@ -59,7 +59,8 @@ Document::Document ( const std::string &type ) : BaseClass(),
   _active    (),
   _typeName  ( type ),
   _delegate  (),
-  _options   ()
+  _options   (),
+  _modifiedObservers()
 {
   // Assign default filename.
   static unsigned int count ( 0 );
@@ -79,6 +80,23 @@ Document::Document ( const std::string &type ) : BaseClass(),
 Document::~Document()
 {
   // Note: the windows should already be destroyed, or will be by fox.
+  _modifiedObservers.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The application is about to close.  Clean up any circular references.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::applicationClosing ()
+{
+  //Set delegate to null.  This is needed so delegates are unreferenced and properly deleted.
+  this->delegate( 0x0 );
+
+  // Clear the modified observers.
+  _modifiedObservers.clear();
 }
 
 
@@ -157,6 +175,8 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICanInsert* > ( this );
   case Usul::Interfaces::ICanClose::IID:
     return static_cast < Usul::Interfaces::ICanClose* > ( this );
+  case Usul::Interfaces::IModifiedSubject::IID:
+    return static_cast < Usul::Interfaces::IModifiedSubject* > ( this );
   default:
     return 0x0;
   }
@@ -816,3 +836,46 @@ const Document::Options& Document::options( View* view ) const
   return _options;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a modified observer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer )
+{
+  if ( 0x0 == observer )
+    return;
+
+  _modifiedObservers.insert( observer );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a modified observer
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
+{
+  if ( false == _modifiedObservers.empty() )
+    _modifiedObservers.erase( observer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the modified flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document:: modified ( bool m )
+{
+  _file.modified ( m );
+
+  for ( ModifiedObservers::iterator iter = _modifiedObservers.begin(); iter != _modifiedObservers.end(); ++iter )
+  {
+    (*iter)->subjectModified( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+  }
+}

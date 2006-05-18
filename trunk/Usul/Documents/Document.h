@@ -33,12 +33,15 @@
 #include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IModifiedSubject.h"
+#include "Usul/Interfaces/IModifiedObserver.h"
 
 #include <string>
 #include <list>
 #include <vector>
 #include <map>
 #include <iosfwd>
+#include <set>
 
 
 namespace Usul {
@@ -51,7 +54,8 @@ class USUL_EXPORT Document : public Usul::Base::Referenced,
                              public Usul::Interfaces::IRead,
                              public Usul::Interfaces::IGetTitle,
                              public Usul::Interfaces::ICanClose,
-                             public Usul::Interfaces::ICanInsert
+                             public Usul::Interfaces::ICanInsert,
+                             public Usul::Interfaces::IModifiedSubject
 {
 public:
 
@@ -83,7 +87,7 @@ public:
   /// Construction.
   Document ( const std::string &type );
 
-  // Get/Set the active view
+  /// Get/Set the active view
   virtual void                activeView  ( View *view );
   virtual View*               activeView  (  ) const;
 
@@ -91,7 +95,10 @@ public:
   virtual void                addWindow   ( Window *window );
   virtual void                addView     ( View   *view   );
 
-  // The given window is closing
+  /// The application is about to close.
+  virtual void                applicationClosing ();
+
+  /// The given window is closing
   virtual void                closing     ( Window *window );
 
   /// Iterators to the begining of the windows
@@ -158,7 +165,7 @@ public:
 
   /// Set/get the modified flag.
   virtual bool                modified() const { return _file.modified(); }
-  virtual void                modified ( bool m ) { _file.modified ( m ); }
+  virtual void                modified ( bool m );
 
   /// Notify this document of the message.
   virtual void                notify ( unsigned short message );
@@ -243,7 +250,13 @@ protected:
   /// Usul::Interfaces::IGetTitle
   virtual std::string         getTitle ( Window* );
 
+  /// Usul::Interfaces::IModifiedSubject
+  virtual void addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );
+  virtual void removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer );
 private:
+
+  typedef Usul::Interfaces::IModifiedObserver::ValidRefPtr ModifiedObserverPtr;
+  typedef std::set < ModifiedObserverPtr > ModifiedObservers;
 
   FileInfo _file;
   Windows _windows;
@@ -255,6 +268,8 @@ private:
   //typedef std::map < Usul::Interfaces::IViewer*, Options > OptionMap;
   //mutable OptionMap     _options;
   Options _options;
+
+  ModifiedObservers _modifiedObservers;
 };
 
 

@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/INewDocumentCreate.h"
+#include "Usul/Interfaces/IModifiedObserver.h"
 
 #include <map>
 
@@ -49,6 +50,7 @@ class AnimateComponent : public Usul::Base::Referenced,
                   public Usul::Interfaces::IDocumentCreate,
                   public Usul::Interfaces::IGUIDelegate,
                   public Usul::Interfaces::INewDocumentCreate,
+                  public Usul::Interfaces::IModifiedObserver,
                   public FX::FXObject
 {
 public:
@@ -191,7 +193,11 @@ protected:
   /// Use reference counting.
   virtual ~AnimateComponent();
 
+  void                      _buildGUIForCurrentMovie ( );
+
   Frame                     _currentFrame();
+
+  Movie*                    _createMovie( const std::string& );
 
   void                      _clearButtons();
   void                      _buildButtons();
@@ -218,6 +224,10 @@ protected:
   /// Name of the document.
   virtual std::string         documentTypeName();
 
+  /// Usul::Interfaces::IModifiedObserver
+  virtual void subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+private:
   typedef std::map < std::string, Movie::ValidRefPtr > Movies;
 
   IUnknown::QueryPtr                _caller;

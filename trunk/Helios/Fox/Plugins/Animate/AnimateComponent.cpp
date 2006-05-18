@@ -56,6 +56,7 @@
 #include "FoxTools/Headers/TabItem.h"
 #include "FoxTools/Headers/Slider.h"
 
+#include "Usul/Documents/Manager.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Cast/Cast.h"
@@ -79,6 +80,8 @@
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabItem.h"
+#include "Usul/Interfaces/IModifiedSubject.h"
+#include "Usul/Interfaces/ISendMessage.h"
 
 #include "GN/Config/UsulConfig.h"
 #include "GN/Splines/Curve.h"
@@ -249,9 +252,7 @@ AnimateComponent::AnimateComponent() : BaseClass(),
   _menu           ( 0x0 ),
   _animationTime  ( 2 )
 {
-  Movie::ValidRefPtr movie ( new Movie );
-  _current = movie;
-  _movies.insert( Movies::value_type( movie->fileName(), movie ) );
+  this->_createMovie( "" );
 }
 
 
@@ -272,7 +273,14 @@ AnimateComponent::~AnimateComponent()
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
 
   for ( Movies::iterator i = _movies.begin(); i != _movies.end(); ++i )
+  {
+    Usul::Interfaces::IModifiedSubject::QueryPtr subject ( i->second );
+
+    if ( subject.valid() )
+      subject->removeModifiedObserver( this );
+
     i->second->closing( 0x0 );
+  }
 
   _movies.clear();
 }
@@ -307,6 +315,8 @@ Usul::Interfaces::IUnknown *AnimateComponent::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::IGUIDelegate* > ( this );
   case Usul::Interfaces::INewDocumentCreate::IID:
     return static_cast < Usul::Interfaces::INewDocumentCreate* > ( this );
+  case Usul::Interfaces::IModifiedObserver::IID:
+    return static_cast < Usul::Interfaces::IModifiedObserver * > ( this );
   default:
     return 0x0;
   }
@@ -506,7 +516,7 @@ long AnimateComponent::onCommandPrependFrame ( FX::FXObject *, FX::FXSelector, v
   Movie::RefPtr movie ( _current.get() );
 
   movie->prependFrame ( this->_currentFrame() );
-  this->_buildButtons();
+  //this->_buildButtons();
 
   // Set the current frame to this one
   movie->setCurrentFrame ( 0 );
@@ -526,7 +536,7 @@ long AnimateComponent::onCommandAppendFrame ( FX::FXObject *, FX::FXSelector, vo
   Movie::RefPtr movie ( _current.get() );
 
   movie->appendFrame ( this->_currentFrame() );
-  this->_buildButtons();
+  //this->_buildButtons();
 
   // Set the current frame to this one
   movie->setCurrentFrame ( movie->getNumberFrames() - 1 );
@@ -768,22 +778,22 @@ long AnimateComponent::onCommandLoadAnimation ( FX::FXObject *, FX::FXSelector, 
   typedef ILoadFileDialog::Filters Filters;
   typedef ILoadFileDialog::FileResult FileResult;
 
-  Movie::RefPtr movie ( new Movie );
+  Filename filename;
 
-  ILoadFileDialog::ValidQueryPtr loadFileDialog ( _caller );
-  Filters filters ( movie->filtersOpen() );
-  FileResult result ( loadFileDialog->getLoadFileName ( "Load Animation", filters ) );
-  const Filename &filename = result.first;
+  {
+    Movie::RefPtr movie ( new Movie );
+    ILoadFileDialog::ValidQueryPtr loadFileDialog ( _caller );
+    Filters filters ( movie->filtersOpen() );
+    FileResult result ( loadFileDialog->getLoadFileName ( "Load Animation", filters ) );
+    filename = result.first;
+  }
 
   if ( false == filename.empty() )
   {
+    Movie::RefPtr movie ( this->_createMovie ( filename ) );
+
     movie->open ( filename );
-    _current = movie;
-    
-    _movies.insert ( Movies::value_type ( movie->fileName(), movie.get() ) );
   }
-  else
-    movie = 0x0;
 
   this->_buildButtons();
 
@@ -1149,7 +1159,7 @@ long AnimateComponent::onCommandChangeAnimation ( FX::FXObject *object, FX::FXSe
   if ( i != _movies.end() )
     _current = i->second;
 
-  this->_buildButtons();
+  this->_buildGUIForCurrentMovie();
 
   return 1;
 }
@@ -1565,7 +1575,7 @@ long AnimateComponent::onCommandDeleteFrame ( FX::FXObject *, FX::FXSelector, vo
     }
   }  
 
-  this->_buildButtons();
+  //this->_buildButtons();
 
   //Get the new current frame
   const Frame& f = _current->currentFrame(  );
@@ -1711,7 +1721,7 @@ void AnimateComponent::addFrame ( const std::string& groupName, const osg::Vec3&
   Movie::ValidRefPtr movie ( iter->second );
   Frame frame ( center, distance, rotation );
   movie->appendFrame ( frame );
-  this->_buildButtons();
+  //this->_buildButtons();
 }
 
 
@@ -1729,7 +1739,7 @@ void AnimateComponent::clear ( const std::string& groupName )
   {
     iter->second->clear();
 
-    this->_buildButtons();
+    //this->_buildButtons();
   }
 }
 
@@ -1885,6 +1895,11 @@ long AnimateComponent::onCommandAnimationPath ( FX::FXObject *, FX::FXSelector, 
 
       g->addChild( _current->buildAnimationPath() );
     }
+
+    Usul::Interfaces::IDocument::QueryPtr document       ( Usul::Documents::Manager::instance().active() );
+    Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
+    if ( sendMessage.valid() )
+      sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
   }
 
   return 1;
@@ -1996,3 +2011,77 @@ long AnimateComponent::onUpdateLoop ( FX::FXObject *object, FX::FXSelector, void
   return 1;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has been modified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimateComponent::subjectModified ( Usul::Interfaces::IUnknown *caller )
+{
+  this->_buildGUIForCurrentMovie();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the GUI for the movie
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimateComponent::_buildGUIForCurrentMovie ( )
+{
+  // Rebuild the buttons
+  this->_buildButtons();
+
+  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
+  Usul::Interfaces::IGroup::QueryPtr           group      ( activeView->getActiveView() );
+
+  if( group.valid() )
+  {
+    if( group->hasGroup ( "Animation_Group" ) )
+    {
+      osg::ref_ptr< osg::Group > g ( group->getGroup ( "Animation_Group" ) );
+
+      g->removeChild( 0, g->getNumChildren() );
+
+      g->addChild( _current->buildAnimationPath() );
+
+      Usul::Interfaces::IDocument::QueryPtr document       ( Usul::Documents::Manager::instance().active() );
+      Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
+      if ( sendMessage.valid() )
+        sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a movie.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Movie* AnimateComponent::_createMovie( const std::string& file )
+{
+  Movie::RefPtr movie ( new Movie );
+
+  _current = movie;
+
+  std::string filename ( file );
+
+  if( file.empty() )
+    filename = movie->fileName();
+
+  _movies.insert ( Movies::value_type ( movie->fileName(), movie.get() ) );
+
+  // Add this as an observer
+  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( movie );
+  if ( subject.valid() )
+    subject->addModifiedObserver( this );
+
+  Usul::Documents::Manager::instance().add( movie.get() );
+
+  return movie.get();
+}

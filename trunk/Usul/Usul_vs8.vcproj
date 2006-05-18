@@ -481,6 +481,14 @@
 			<Filter
 				Name="Interfaces"
 				>
+				<File
+					RelativePath=".\Interfaces\IModifiedObserver.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IModifiedSubject.h"
+					>
+				</File>
 				<Filter
 					Name="FOX"
 					>

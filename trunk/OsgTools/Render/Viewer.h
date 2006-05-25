@@ -456,8 +456,6 @@ protected:
 
   void                  _render();
 
-  void                  _reportErrors ( unsigned int options, bool clear = false );
-
   void                  _setNavCursor ( bool left, bool middle, bool right, EventAdapter::EventType type );
 
   void                  _setDisplayListsGeode ( osg::Geode *geode );

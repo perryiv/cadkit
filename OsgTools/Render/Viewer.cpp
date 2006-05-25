@@ -5064,10 +5064,23 @@ osg::Image* Viewer::screenCapture ( const osg::Vec3f& center, float distance, co
 {
   osg::ref_ptr< osg::Image > image ( new osg::Image() );
 
+  osg::Matrix oldViewMatrix ( this->getViewMatrix() );
+
+  osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
+                  osg::Matrixd::rotate(rotation)*
+                  osg::Matrixd::translate(center) );
+
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  me->setViewMatrix ( m.inverse( m ) );
+
   // Make enough space
   image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
   
   this->_fboScreenCapture ( *image, height, width );
+
+  me->setViewMatrix( oldViewMatrix );
 
   return image.release();
 }
@@ -5143,6 +5156,9 @@ void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigne
 
   // Set the old root back to the scene data.
   me->viewer()->setSceneData ( group.get() );
+
+  // Figure out how to avoid this last render.
+  me->render();
 }
 
 

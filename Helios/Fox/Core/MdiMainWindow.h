@@ -73,8 +73,6 @@ protected:
   MdiMainWindow();
   virtual ~MdiMainWindow();
 
-  virtual bool                          _exiting();
-
   virtual void                          _fullScreenStart();
   virtual void                          _fullScreenEnd();
 

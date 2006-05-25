@@ -1476,6 +1476,13 @@ bool MainWindow::_exiting()
   // Get any remaining documents.  These documents aren't associated with any window.
   Documents &documents ( Usul::Documents::Manager::instance().documents() );
 
+  // See if any documents need to be saved.
+  for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
+  {
+    if ( false == (*i)->canClose ( this->asUnknown() ) )
+      return false;
+  }
+
   // Tell the remaining open documents that the application is about to close.
   // This allows the document to clean up any circular references.
   for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )

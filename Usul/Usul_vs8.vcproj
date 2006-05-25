@@ -489,6 +489,10 @@
 					RelativePath=".\Interfaces\IModifiedSubject.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Interfaces\IScreenCapture.h"
+					>
+				</File>
 				<Filter
 					Name="FOX"
 					>

@@ -202,6 +202,9 @@ protected:
   void                      _clearButtons();
   void                      _buildButtons();
 
+  void                      _clearSlides();
+  void                      _buildSlides();
+
   void                      _go ( const Frame &frame );
   void                      _go ( const Frame &from, const Frame& to, double duration );
 
@@ -235,6 +238,7 @@ private:
   Movies                            _movies;
   MenuGroup::ValidAccessRefPtr      _menu;
   Movie::Parameter                  _animationTime;
+  FX::FXVerticalFrame *             _slideContents;
 
   FXDECLARE( AnimateComponent )
 };

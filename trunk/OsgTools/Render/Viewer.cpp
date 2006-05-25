@@ -125,21 +125,19 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 
 Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _context         ( context ),
+  _renderer        ( new Renderer ),
   _setCursor       ( caller ),
   _timeoutSpin     ( caller ),
   _caller          ( caller ),
-  _sceneView       ( new SceneView ),
   _scene           ( new Group ),
   _clipNode        ( new osg::ClipNode ),
   _projectionNode  ( new osg::Projection ),
   _lods            (),
-  _times           (),
   _document        ( doc ),
   _frameDump       (),
   _groupMap        (),
   _projectionMap   (),
   _textMap         (),
-  _numPasses       ( 1 ),
   _refCount        ( 0 ),
   _flags           ( _UPDATE_TIMES | _SHOW_AXES ),
   _animation       (),
@@ -167,12 +165,6 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet () );
   ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
 
-  // Set the update-visitor.
-  _sceneView->setUpdateVisitor ( new osgUtil::UpdateVisitor );
-
-  // Set the display settings.
-  _sceneView->setDisplaySettings ( new osg::DisplaySettings() );
-
   // Initialize the clock.
   Usul::System::Clock::milliseconds();
 
@@ -189,6 +181,8 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   // Unique context id to uniquely identify this viewer in OSG.
   static unsigned int count ( 0 );
   _contextId = ++count;
+
+  _renderer->scene( _scene.get() );
 
 #ifdef _DEBUG
   osg::setNotifyLevel ( osg::INFO );
@@ -217,9 +211,6 @@ Viewer::~Viewer()
 
 void Viewer::create()
 {
-  // Set the viewer's defaults.
-  _sceneView->setDefaults();
-
   // If we have a valid context...
   if ( _context.valid() )
   {
@@ -227,15 +218,7 @@ void Viewer::create()
     // Make this context current.
     _context->makeCurrent();
 
-    // See if there is an accumulation buffer.
-    GLint red ( 0 ), green ( 0 ), blue ( 0 ), alpha ( 0 );
-    ::glGetIntegerv ( GL_ACCUM_RED_BITS,   &red   );
-    ::glGetIntegerv ( GL_ACCUM_GREEN_BITS, &green );
-    ::glGetIntegerv ( GL_ACCUM_BLUE_BITS,  &blue  );
-    ::glGetIntegerv ( GL_ACCUM_ALPHA_BITS, &alpha );
-    const bool hasAccum ( red && green && blue && alpha );
-    _flags = ( hasAccum ) ? Usul::Bits::add < unsigned int, unsigned int > ( _flags, _HAS_ACCUM_BUFFER ) 
-      : Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _HAS_ACCUM_BUFFER );
+    _renderer->init();
 
     // Set default stereo modes.
     this->stereoEyeDistance( 0.01f );
@@ -248,7 +231,7 @@ void Viewer::create()
 
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
-  _sceneView->getState()->setContextID ( _contextId );
+  _renderer->uniqueID ( _contextId );
 
   // Set the background color.
   //this->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, Helios::Defaults::CLEAR_COLOR ) );
@@ -256,7 +239,7 @@ void Viewer::create()
   // This is a work-around for the fact that some geometries have a 
   // calculated near or far distance of zero. SceneViewer::cull() does not 
   // handle this case, and the projection matrix ends up with NANs.
-  osgUtil::CullVisitor *cv ( _sceneView->getCullVisitor() );
+  osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
   cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
 
   // Related to above, and new with 0.9.8-2. osgUtil::SceneView and 
@@ -297,8 +280,7 @@ void Viewer::clear()
   if ( _context.valid() )
   {
     _context->makeCurrent();
-    _sceneView->releaseAllGLObjects();
-    _sceneView->flushAllDeletedGLObjects();
+    _renderer->clear();
   }
 
   _context = 0x0;
@@ -306,6 +288,7 @@ void Viewer::clear()
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -328,12 +311,7 @@ void Viewer::defaultBackground()
 
 void Viewer::updateScene()
 {
-  // Update the scene.
-  if ( _sceneView.valid() )
-  {
-    RecordTime ut ( this, "update" );
-    _sceneView->update();
-  }
+  _renderer->updateScene();
 }
 
 
@@ -346,14 +324,8 @@ void Viewer::updateScene()
 void Viewer::render()
 {
   // Handle no viewer or scene.
-  if ( !_sceneView.valid() || !_scene.valid() || !_sceneView->getSceneData() || !_context.valid() )
+  if ( !this->viewer() || !_scene.valid() || !this->viewer()->getSceneData() || !_context.valid() )
     return;
-
-  // Handle particles and osg-animations.
-  osg::ref_ptr<osg::FrameStamp> fs ( new osg::FrameStamp );
-  fs->setFrameNumber ( fs->getFrameNumber() + 1 );
-  fs->setReferenceTime ( ::time ( 0x0 )  );
-  _sceneView->setFrameStamp ( fs.get() );
 
   // Initialize the error.
   ::glGetError();
@@ -380,8 +352,57 @@ void Viewer::render()
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 
-  // Draw
-  this->_render();
+  // If we are doing hidden-line rendering...
+  if ( this->hasHiddenLines() && _clipNode->getNumChildren() > 0 )
+  {
+    // Temporarily re-structure the scene. Better to do/undo this than keep 
+    // it altered. An altered scene may mess up intersections.
+    osg::ref_ptr<osg::Node> model ( _clipNode->getChild ( 0 ) );
+    osg::ref_ptr<osg::Group> root   ( new osg::Group );
+    osg::ref_ptr<osg::Group> normal ( new osg::Group );
+    osg::ref_ptr<osg::Group> hidden ( new osg::Group );
+    root->addChild ( normal.get() );
+    root->addChild ( hidden.get() );
+    normal->addChild ( model.get() );
+    hidden->addChild ( model.get() );
+
+    // Safely...
+    try
+    {
+      // Set the new scene.
+      this->scene ( root.get() );
+
+      // Set the state-sets for the branches.
+      OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
+
+      /*osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
+
+      model->accept( *v );*/
+
+      // Draw.
+      this->_render();
+
+      /*osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
+
+      model->accept( *unset );*/
+    }
+
+    // Catch all exceptions.
+    catch ( ... )
+    {
+      // Restore the scene and re-throw.
+      this->scene ( model.get() );
+      throw;
+    }
+
+    // Restore the scene.
+    this->scene ( model.get() );
+  }
+  else
+  {
+    // Draw.
+    this->_render();
+  }
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
@@ -413,170 +434,7 @@ void Viewer::render()
 
 void Viewer::_render()
 {
-  // If there is no scene then clear the screen. 
-  // Otherwise, weird artifacts may show up.
-  if ( !_scene.valid() || _clipNode->getNumChildren() == 0 )
-  {
-    const osg::Vec4 &color = this->backgroundColor();
-    ::glClearColor ( color[0], color[1], color[2], color[3] );
-    ::glClear ( _sceneView->getRenderStage()->getClearMask() );
-  }
-
-  // See if we are supposed to use multiple passes.
-  if ( this->numRenderPasses() > 1 )
-    this->_multiPassRender();
-  else
-    this->_singlePassRender();
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle single-pass rendering.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_singlePassRender()
-{
-  // Handle no viewer.
-  if ( !_sceneView.valid() )
-    return;
-
-  // If we are doing hidden-line rendering...
-  if ( this->hasHiddenLines() && _clipNode->getNumChildren() > 0 )
-  {
-    // Temporarily re-structure the scene. Better to do/undo this than keep 
-    // it altered. An altered scene may mess up intersections.
-    osg::ref_ptr<osg::Node> model ( _clipNode->getChild ( 0 ) );
-    osg::ref_ptr<osg::Group> root   ( new osg::Group );
-    osg::ref_ptr<osg::Group> normal ( new osg::Group );
-    osg::ref_ptr<osg::Group> hidden ( new osg::Group );
-    root->addChild ( normal.get() );
-    root->addChild ( hidden.get() );
-    normal->addChild ( model.get() );
-    hidden->addChild ( model.get() );
-
-    // Safely...
-    try
-    {
-      // Set the new scene.
-      this->scene ( root.get() );
-
-      // Set the state-sets for the branches.
-      OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
-
-      /*osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
-
-      model->accept( *v );*/
-
-      // Cull and draw.
-      this->_cullAndDraw();
-
-      /*osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
-
-      model->accept( *unset );*/
-    }
-
-    // Catch all exceptions.
-    catch ( ... )
-    {
-      // Restore the scene and re-throw.
-      this->scene ( model.get() );
-      throw;
-    }
-
-    // Restore the scene.
-    this->scene ( model.get() );
-  }
-  else
-  {
-    // Cull and draw.
-    this->_cullAndDraw();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle multi-pass rendering.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_multiPassRender()
-{
-  // Handle no viewer.
-  if ( !_sceneView.valid() )
-    return;
-
-  // Safely...
-  try
-  {
-    // Save original projection matrix.
-    OsgTools::ScopedProjection sp ( _sceneView.get() );
-
-    // Clear the accumulation buffer.
-    ::glClearAccum ( 0.0f, 0.0f, 0.0f, 0.0f );
-    ::glClear ( GL_ACCUM_BUFFER_BIT );
-
-    // Check for errors.
-    USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-
-    // Needed in the loop.
-    osg::Matrixd matrix;
-    osg::ref_ptr<osg::Viewport> vp ( this->viewport() );
-    const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
-
-    // Loop through the passes...
-    for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
-    {
-      // Set the proper projection matrix.
-      OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, matrix );
-      _sceneView->setProjectionMatrix ( matrix );
-
-      // Render a single pass.
-      this->_singlePassRender();
-
-      // Check for errors.
-      USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-
-      // Accumulate the pixels from the frame buffer.
-      float value ( 1.0f / static_cast < float > ( this->numRenderPasses() ) );
-      ::glAccum ( GL_ACCUM, value );
-
-      // Check for errors.
-      USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-    }
-
-    // Transfer the accumulation buffer into the frame buffer.
-    ::glAccum ( GL_RETURN, 1.0f );
-
-    // Check for errors.
-    USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-  }
-
-  // Catch all exceptions and reset the number of passes. Otherwise, you 
-  // can get stuck in a loop where the error dialog causes a render, and 
-  // the render causes an error dialog, etc.
-
-  // Standard exceptions.
-  catch ( const std::exception &e )
-  {
-    Usul::Errors::Stack::instance().push ( e.what() );
-    std::ostringstream message;
-    message << "Error 2156758683: Standard exception caught when attempting to render with " << this->numRenderPasses() << " passes";
-    this->numRenderPasses ( 1 );
-    throw std::runtime_error ( message.str() );
-  }
-
-  // Unknown exceptions.
-  catch ( ... )
-  {
-    std::ostringstream message;
-    message << "Error 3880806891: Unknown exception caught when attempting to render with " << this->numRenderPasses() << " passes";
-    this->numRenderPasses ( 1 );
-    throw std::runtime_error ( message.str() );
-  }
+  _renderer->render();
 }
 
 
@@ -588,7 +446,7 @@ void Viewer::_multiPassRender()
 
 Viewer::SceneView *Viewer::viewer()
 {
-  return _sceneView.get();
+  return _renderer->viewer();
 }
 
 
@@ -600,7 +458,7 @@ Viewer::SceneView *Viewer::viewer()
 
 const Viewer::SceneView *Viewer::viewer() const
 {
-  return _sceneView.get();
+  return _renderer->viewer();
 }
 
 
@@ -612,7 +470,7 @@ const Viewer::SceneView *Viewer::viewer() const
 
 void Viewer::viewer ( Viewer::SceneView *viewer )
 {
-  _sceneView = viewer;
+  _renderer->viewer( viewer );
 }
 
 
@@ -790,8 +648,7 @@ void Viewer::scene ( osg::Node *node )
   }
 
   // Give the scene to the viewer.
-  if ( _sceneView.valid() )
-    _sceneView->setSceneData ( _scene.get() );
+  _renderer->scene ( _scene.get() );
 
   // The scene changed.
   this->changedScene(); 
@@ -823,9 +680,9 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   double width ( w ), height ( h );
   double aspect ( width / height );
 
-  if ( _sceneView.valid() )
+  if ( this->viewer() )
   {
-    _sceneView->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
+    this->viewer()->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
     //_sceneView->setProjectionMatrixAsOrtho ( 0, w, 0, h, -10000, 10000 );
 
     _projectionNode->setMatrix( osg::Matrix::ortho( 0, w ,0, h, -10000, 10000 ) );
@@ -841,8 +698,7 @@ void Viewer::resize ( unsigned int w, unsigned int h )
 
 void Viewer::viewport ( osg::Viewport *vp )
 {
-  if ( _sceneView.valid() )
-    _sceneView->setViewport ( vp );
+  _renderer->viewport( vp );
 }
 
 
@@ -854,8 +710,7 @@ void Viewer::viewport ( osg::Viewport *vp )
 
 void Viewer::viewport ( int x, int y, unsigned int w, unsigned int h )
 {
-  if ( _sceneView.valid() )
-    _sceneView->setViewport ( x, y, (int) w, (int) h );
+  _renderer->viewport ( x, y, w, h );
 }
 
 
@@ -867,7 +722,7 @@ void Viewer::viewport ( int x, int y, unsigned int w, unsigned int h )
 
 const osg::Viewport *Viewer::viewport() const
 {
-  return ( _sceneView.valid() ) ? _sceneView->getViewport() : 0x0;
+  return _renderer->viewport();
 }
 
 
@@ -879,7 +734,7 @@ const osg::Viewport *Viewer::viewport() const
 
 osg::Viewport *Viewer::viewport()
 {
-  return ( _sceneView.valid() ) ? _sceneView->getViewport() : 0x0;
+  return _renderer->viewport();
 }
 
 
@@ -1227,34 +1082,6 @@ bool Viewer::lighting() const
   return Usul::Bits::has ( ss->getMode( GL_LIGHTING ), osg::StateAttribute::ON );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the clipping plane distances.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::nearFar ( double &n, double &f ) const
-{
-  // If we have a valid viewer...
-  if ( _sceneView.valid() )
-  {
-    // Get the projection matrix.
-    osg::Matrix P ( _sceneView->getProjectionMatrix() );
-
-    // Try to get perspective parameters.
-    double left, right, bottom, top;
-    if ( P.getFrustum ( left, right, bottom, top, n, f ) )
-      return;
-
-    // Try to get orthographic parameters.
-    if ( P.getOrtho ( left, right, bottom, top, n, f ) )
-      return;
-  }
-
-  // If we get to here then it did not work.
-  throw ( std::runtime_error ( "Failed to calculate far clipping distance" ) );
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1396,60 +1223,13 @@ Viewer::LowLods::~LowLods()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Record the start-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::RecordTime::RecordTime ( Viewer *c, const std::string &name ) : _c ( c ), _name ( name )
-{
-  USUL_ERROR_CHECKER ( 0x0 != _c );
-
-  // Record the time.
-  TimePair now ( (double) Usul::System::Clock::milliseconds() / (double) CLOCKS_PER_SEC, 0 );
-  _c->_times[_name].push_back ( now );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Record the end-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::RecordTime::~RecordTime()
-{
-  USUL_ERROR_CHECKER ( 0x0 != _c );
-
-  // Record the end-time.
-  TimeHistory &h = _c->_times[_name];
-  TimePair &p = h.back();
-  p.second = (double) Usul::System::Clock::milliseconds() / (double) CLOCKS_PER_SEC;
-
-  // Trim to a reasonable size.
-  while ( h.size() > 100 )
-    h.pop_front();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the last time.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 double Viewer::timeLast ( const std::string &name ) const
 {
-  // Try to get the time-history.
-  TimeHistories::const_iterator i = _times.find ( name );
-  if ( _times.end() == i )
-  {
-    return 0.0;
-  }
-
-  // Return the most recent time.
-  const TimeHistory &h = i->second;
-  const TimePair &p = h.back();
-  return ( p.second - p.first );
+  return _renderer->timeLast( name );
 }
 
 
@@ -1461,24 +1241,7 @@ double Viewer::timeLast ( const std::string &name ) const
 
 double Viewer::timeAverage ( const std::string &name ) const
 {
-  // Try to get the time-history.
-  TimeHistories::const_iterator i = _times.find ( name );
-  if ( _times.end() == i )
-  {
-    return 0.0;
-  }
-
-  // Sum the durations.
-  const TimeHistory &h = i->second;
-  double sum ( 0 );
-  for ( TimeHistory::const_iterator j = h.begin(); j != h.end(); ++j )
-  {
-    const TimePair &p = *j;
-    sum += ( p.second - p.first );
-  }
-
-  // Return the average.
-  return sum / h.size();
+  return _renderer->timeAverage( name );
 }
 
 
@@ -1559,7 +1322,7 @@ void Viewer::setStatusBarText ( const std::string &text, bool force )
 void Viewer::copyCamera() const
 {
   _cameraCopyBuffer.first  = true; 
-  _cameraCopyBuffer.second = _sceneView->getViewMatrix();
+  _cameraCopyBuffer.second = this->viewer()->getViewMatrix();
 
   if ( this->navManip() )
     _navManipCopyBuffer = dynamic_cast < MatrixManip * > ( this->navManip()->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
@@ -1580,7 +1343,7 @@ void Viewer::pasteCamera()
     {
       _navManip = dynamic_cast < MatrixManip * > ( this->navManip()->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
     }
-    _sceneView->setViewMatrix ( _cameraCopyBuffer.second );
+    this->viewer()->setViewMatrix ( _cameraCopyBuffer.second );
   } 
 }
 
@@ -2077,7 +1840,7 @@ Viewer::Document *Viewer::document()
 void Viewer::setDisplayLists()
 {
   // Handle no viewer or scene.
-  if ( !_sceneView.valid() || !_scene.valid() )
+  if ( !this->viewer() || !_scene.valid() )
     return;
 
   // Declare the visitor.
@@ -2093,8 +1856,8 @@ void Viewer::setDisplayLists()
   if ( !use )
   {
     // Delete all display-lists associated with our context id.
-    _sceneView->releaseAllGLObjects();
-    _sceneView->flushAllDeletedGLObjects();
+    this->viewer()->releaseAllGLObjects();
+    this->viewer()->flushAllDeletedGLObjects();
   }
 }
 
@@ -2102,7 +1865,7 @@ void Viewer::setDisplayLists(bool on)
 {
   Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, on );
   // Handle no viewer or scene.
-  if ( !_sceneView.valid() || !_scene.valid() )
+  if ( !this->viewer() || !_scene.valid() )
     return;
   
   // Declare the visitor.
@@ -2118,8 +1881,8 @@ void Viewer::setDisplayLists(bool on)
   if ( !use )
   {
     // Delete all display-lists associated with our context id.
-    _sceneView->releaseAllGLObjects();
-    _sceneView->flushAllDeletedGLObjects();
+    this->viewer()->releaseAllGLObjects();
+    this->viewer()->flushAllDeletedGLObjects();
   }
 }
 
@@ -2156,8 +1919,19 @@ void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 
 void Viewer::numRenderPasses ( unsigned int num )
 {
-  if ( 1 == num || OsgTools::Jitter::instance().available ( num ) )
-    _numPasses = num;
+  _renderer->numRenderPasses( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of rendering passes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Viewer::numRenderPasses ( ) const
+{
+  return _renderer->numRenderPasses();
 }
 
 
@@ -2270,32 +2044,6 @@ void Viewer::setHiddenLines()
 
   // Set the flag.
   _flags = Usul::Bits::add < unsigned int, unsigned int >( _flags, _HIDDEN_LINES );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle the cull and draw.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_cullAndDraw()
-{
-  // Handle no viewer.
-  if ( false == _sceneView.valid() )
-    return;
-
-  // Cull.
-  {
-    RecordTime ct ( this, "cull" );
-    _sceneView->cull();
-  }
-
-  // Draw.
-  {
-    RecordTime dt ( this, "draw" );
-    _sceneView->draw();
-  }
 }
 
 
@@ -2483,11 +2231,6 @@ bool Viewer::_writeImageFile ( const std::string &filename, double percent ) con
 
 bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const
 {
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-
-  // Make this context current.
-  me->_context->makeCurrent();
 
 // Hack to make large pictures.
 #if 0
@@ -2499,7 +2242,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   osg::ref_ptr<osg::Image> image ( new osg::Image );
 
   // Make enough space
-  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE ); 
+  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
 
   // What I think should happen here:
   // 1. Check for frame buffer object support.
@@ -2511,65 +2254,15 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
 
   if ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() )
   {
-    // Set up the texture.
-    osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
-    tex->setTextureSize(width, height);
-    tex->setInternalFormat(GL_RGBA);
-    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
-    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
-    tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-    tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-    
-    // Make the fbo.
-    osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
-    fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
-    fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
- 
-    // Make the camera buffer.
-    osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
-    camera->setClearColor( _sceneView->getClearColor() );
-    camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    camera->setViewport(0, 0, width, height);
-
-    // Set the camera to render before the main camera.
-    camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
-
-    // Set the projection matrix.
-    double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
-    double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
-    double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
-    double w ( width ), h ( height );
-    double aspect ( w / h );
-
-    camera->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
-
-    // Set view.
-    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-    camera->setViewMatrix ( _sceneView->getViewMatrix() );
-
-    // Tell the camera to use OpenGL frame buffer object where supported.
-    camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
-
-    // Attach the texture and use it as the color buffer.
-    camera->attach( osg::CameraNode::COLOR_BUFFER, image.get() );
-
-    // Save the old root.
-    GroupPtr group = _scene;
-
-    // Add the scene to the camera.
-    camera->addChild ( me->_scene.get() );
-
-    // Make the camera file the scene data.
-    me->_sceneView->setSceneData ( camera.get() );
-
-    // Render to the image.
-    me->render();
-
-    // Set the old root back to the scene data.
-    me->_sceneView->setSceneData ( group.get() );
+    this->_fboScreenCapture( *image, height, width );
   }
   else
   {
+    // Get non const pointer to this
+    Viewer *me ( const_cast < Viewer * > ( this ) );
+
+    // Make this context current.
+    me->_context->makeCurrent();
 
     // Tile height and width
     const unsigned int tileWidth ( 256 );
@@ -2618,7 +2311,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
         currentTileWidth = width - ( ( numCols - 1 ) * tileWidth );    
 
       // Set the view port to the tile width and height
-      me->_sceneView->setViewport ( 0, 0, currentTileWidth, currentTileHeight );
+      me->viewer()->setViewport ( 0, 0, currentTileWidth, currentTileHeight );
 
       // compute projection parameters
       const double currentLeft   ( left          + ( right - left ) *  ( currentCol * tileWidth ) / width );
@@ -2627,7 +2320,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
       const double currentTop    ( currentBottom + ( top - bottom ) *           currentTileHeight / height );
 
       // Set the new frustum
-      me->_sceneView->setProjectionMatrixAsFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
+      me->viewer()->setProjectionMatrixAsFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
       
       // Draw
       me->render();
@@ -2751,6 +2444,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ISceneStage * > ( this );
   case Usul::Interfaces::ICenterOfRotation::IID:
     return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
+  case Usul::Interfaces::IScreenCapture::IID:
+    return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
   default:
     return 0x0;
   }
@@ -2914,7 +2609,7 @@ void Viewer::_setAxes ()
   mat.makeIdentity();
 
   // Get the view matrix.
-  osg::Matrix view ( _sceneView->getViewMatrix() );
+  osg::Matrix view ( this->viewer()->getViewMatrix() );
 
   osg::Matrix::value_type *ptr = mat.ptr();
   osg::Matrix::value_type *vptr = view.ptr();
@@ -3407,7 +3102,7 @@ void Viewer::clearScene()
 
 int Viewer::x()
 {
-  return _sceneView->getViewport()->x();
+  return this->viewer()->getViewport()->x();
 }
 
 
@@ -3419,7 +3114,7 @@ int Viewer::x()
 
 int Viewer::y()
 {
-  return _sceneView->getViewport()->y();
+  return this->viewer()->getViewport()->y();
 }
 
 
@@ -3431,7 +3126,7 @@ int Viewer::y()
 
 int Viewer::height()
 {
-  return _sceneView->getViewport()->height();
+  return this->viewer()->getViewport()->height();
 }
 
 
@@ -3443,7 +3138,7 @@ int Viewer::height()
 
 int Viewer::width()
 {
-  return _sceneView->getViewport()->width();
+  return this->viewer()->getViewport()->width();
 }
 
 
@@ -3455,7 +3150,7 @@ int Viewer::width()
 
 int Viewer::x() const
 {
-  return _sceneView->getViewport()->x();
+  return this->viewer()->getViewport()->x();
 }
 
 
@@ -3467,7 +3162,7 @@ int Viewer::x() const
 
 int Viewer::y() const
 {
-  return _sceneView->getViewport()->y();
+  return this->viewer()->getViewport()->y();
 }
 
 
@@ -3479,7 +3174,7 @@ int Viewer::y() const
 
 int Viewer::height() const
 {
-  return _sceneView->getViewport()->height();
+  return this->viewer()->getViewport()->height();
 }
 
 
@@ -3491,7 +3186,7 @@ int Viewer::height() const
 
 int Viewer::width() const
 {
-  return _sceneView->getViewport()->width();
+  return this->viewer()->getViewport()->width();
 }
 
 
@@ -3823,24 +3518,28 @@ void Viewer::_editMaterial  ( osgUtil::Hit &hit )
   typedef Usul::Interfaces::IMaterialEditor Editor;
   typedef Usul::Components::Manager Manager;
   Editor::QueryPtr editor ( Manager::instance().getInterface ( Editor::IID ) );
-  editor->setCurrentMaterial ( mat.get() );
-  editor->runModalDialog();
 
-  // Set the proper attributes for transparency or opaque
-  if ( mat->getAmbient( osg::Material::FRONT )[3] < 255.0 || 
-       mat->getDiffuse( osg::Material::FRONT )[3] < 255.0 || 
-       mat->getSpecular( osg::Material::FRONT )[3] < 255.0 || 
-       mat->getEmission( osg::Material::FRONT )[3] < 255.0 )
+  if( editor.valid() )
   {
-    stateset->setMode ( GL_BLEND,      osg::StateAttribute::ON  );
-    stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON );
-    stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-  }
-  else
-  {
-    stateset->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
-    stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
-    stateset->setRenderingHint( osg::StateSet::DEFAULT_BIN );
+    editor->setCurrentMaterial ( mat.get() );
+    editor->runModalDialog();
+
+    // Set the proper attributes for transparency or opaque
+    if ( mat->getAmbient( osg::Material::FRONT )[3] < 255.0 || 
+         mat->getDiffuse( osg::Material::FRONT )[3] < 255.0 || 
+         mat->getSpecular( osg::Material::FRONT )[3] < 255.0 || 
+         mat->getEmission( osg::Material::FRONT )[3] < 255.0 )
+    {
+      stateset->setMode ( GL_BLEND,      osg::StateAttribute::ON  );
+      stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON );
+      stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+    }
+    else
+    {
+      stateset->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
+      stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
+      stateset->setRenderingHint( osg::StateSet::DEFAULT_BIN );
+    }
   }
 
 }
@@ -4157,8 +3856,22 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
       // If it's anything else, render using 1 render pass.  Reset to proper value.
       else
       {
-        Usul::Scope::Reset< unsigned int > reset ( _numPasses, 1, _numPasses );
-        this->render();
+        unsigned int oldValue ( this->numRenderPasses() );
+        
+        try
+        {
+          this->numRenderPasses ( 1 );
+          this->render();
+        }
+
+        // Catch any exceptions and reset the number of rendering passes.
+        catch ( ... )
+        {
+          this->numRenderPasses ( oldValue );
+          throw;
+        }
+
+        this->numRenderPasses ( oldValue );
       }
     }
   }
@@ -5362,4 +5075,108 @@ void Viewer::_setCenterOfRotation()
   ms ( transform.get() );
   
   group->addChild ( transform.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Screen capture at the given view with the given height and width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Viewer::screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
+{
+  osg::ref_ptr< osg::Image > image ( new osg::Image() );
+
+  // Make enough space
+  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+  
+  this->_fboScreenCapture ( *image, height, width );
+
+  return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Capture the screen using a frame buffer object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width ) const
+{
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  // Make this context current.
+  me->_context->makeCurrent();
+
+  // Set up the texture.
+  osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
+  tex->setTextureSize(width, height);
+  tex->setInternalFormat(GL_RGBA);
+  tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
+  tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
+  tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+  tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+  
+  // Make the fbo.
+  osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
+  fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
+  fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
+
+  // Make the camera buffer.
+  osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
+  camera->setClearColor( this->viewer()->getClearColor() );
+  camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  camera->setViewport(0, 0, width, height);
+
+  // Set the camera to render before the main camera.
+  camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
+
+  // Set the projection matrix.
+  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
+  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
+  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
+  double w ( width ), h ( height );
+  double aspect ( w / h );
+
+  camera->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
+
+  // Set view.
+  camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+  camera->setViewMatrix ( this->viewer()->getViewMatrix() );
+
+  // Tell the camera to use OpenGL frame buffer object where supported.
+  camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
+
+  // Attach the texture and use it as the color buffer.
+  camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
+
+  // Save the old root.
+  GroupPtr group = _scene;
+
+  // Add the scene to the camera.
+  camera->addChild ( me->_scene.get() );
+
+  // Make the camera file the scene data.
+  me->viewer()->setSceneData ( camera.get() );
+
+  // Render to the image.
+  me->render();
+
+  // Set the old root back to the scene data.
+  me->viewer()->setSceneData ( group.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there an accumulation buffer?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasAccumBuffer() const
+{
+  return _renderer->hasAccumBuffer();
 }

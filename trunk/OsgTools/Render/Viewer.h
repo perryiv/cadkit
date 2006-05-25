@@ -55,10 +55,12 @@
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
+#include "Usul/Interfaces/IScreenCapture.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
 #include "OsgTools/Render/EventAdapter.h"
+#include "OsgTools/Render/Renderer.h"
 
 #include "OsgTools/Draggers/Dragger.h"
 
@@ -117,11 +119,12 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IHeliosView,
                                 public Usul::Interfaces::ILights,
                                 public Usul::Interfaces::ISceneStage,
-                                public Usul::Interfaces::ICenterOfRotation
+                                public Usul::Interfaces::ICenterOfRotation,
+                                public Usul::Interfaces::IScreenCapture
 {
-  public:
+public:
 
-    /// Smart-pointer definitions.
+  /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Viewer );
 
   // Usul::Interfaces::IUnknown members.
@@ -129,32 +132,18 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
 
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
-  typedef Usul::Errors::Stack ErrorStack;
   typedef osgUtil::SceneView SceneView;
-  typedef osg::ref_ptr<SceneView> SceneViewPtr;
   typedef osg::Node Node;
   typedef osg::Group Group;
-  typedef osg::ref_ptr<Node> NodePtr;
-  typedef osg::ref_ptr<Group> GroupPtr;
   typedef osg::Viewport Viewport;
   typedef osg::PolygonMode PolygonMode;
   typedef osg::ShadeModel ShadeModel;
-  typedef osg::ref_ptr<osg::LOD> LodPtr;
-  typedef std::vector<LodPtr> LodList;
-  typedef std::pair<bool,LodList> Lods;
-  typedef Usul::Threads::Mutex Mutex;
-  typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Interfaces::IDocument Document;
-  typedef osg::ref_ptr< osg::Geode > GeodePtr;
   typedef std::pair<std::string,std::string> Filter;
   typedef std::vector<Filter> Filters;
   typedef Usul::Interfaces::ICamera::CameraOption CameraOption;
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef Usul::Interfaces::IPolygonMode IPolygonMode;
-  typedef OsgTools::Render::FrameDump FrameDump;
-  typedef OsgTools::Render::Trackball Trackball;
-  typedef OsgTools::Render::ActionAdapter ActionAdapter;
-  typedef OsgTools::Render::EventAdapter EventAdapter;
   typedef osgGA::MatrixManipulator MatrixManip;
   typedef osg::ref_ptr<MatrixManip> MatrixManipPtr;
   typedef OsgTools::Draggers::Dragger Dragger;
@@ -248,7 +237,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   void                  handleTool       ( bool left, bool middle, bool right, bool motion, float x, float y, float z );
 
   // Is there an accumulation buffer?
-  bool                  hasAccumBuffer() const { return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _HAS_ACCUM_BUFFER ); }
+  bool                  hasAccumBuffer() const;
 
   // Is it created?
   bool                  isCreated() const;
@@ -262,12 +251,10 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   MatrixManip *         navManip();
   void                  navManip ( MatrixManip * );
 
-  // Get the clipping plane distances.
-  void                  nearFar ( double &n, double &f ) const;
 
   // Set/get the number of rendering passes. Unavailable numbers have no effect.
   void                  numRenderPasses ( unsigned int );
-  unsigned int          numRenderPasses() const { return _numPasses; }
+  unsigned int          numRenderPasses() const;
 
   // Get the model
   const osg::Node *     model () const;
@@ -375,7 +362,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
   // Spin
   void                  timeoutSpin ();
 
-  // Animate            
+  // Animate
   bool                  timeoutAnimate ();
 
   // Set/Get two sided lighting
@@ -428,16 +415,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
     Viewer *_c;
   };
 
-  // Record the start- and end-times.
-  struct RecordTime
-  {
-    RecordTime ( Viewer *c, const std::string &name );
-    ~RecordTime();
-  private:
-    Viewer *_c;
-    std::string _name;
-  };
-
   ///  Usul::Interfaces::ISetTool
   // Set and Release the tool
   virtual void setTool ( ITool * );
@@ -465,21 +442,17 @@ protected:
 
   void                  _setCenterOfRotation();
 
-  void                  _accPerspective ( double fov, double aspect, double zNear, double zFar, double pixdx, double pixdy ); 
-
-  void                  _cullAndDraw();
-
   void                  _dumpFrame();
 
   void                  _editLight     ( osgUtil::Hit &hit );
   void                  _editMaterial  ( osgUtil::Hit &hit );
 
+  void                  _fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width ) const;
+
   void                  _findDragger ( const osgUtil::Hit &hit );
 
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
-
-  void                  _multiPassRender();
 
   void                  _render();
 
@@ -489,7 +462,6 @@ protected:
 
   void                  _setDisplayListsGeode ( osg::Geode *geode );
   void                  _setLodCullCallback ( osg::NodeCallback *cb );
-  void                  _singlePassRender();
 
   // Add/Remove selection box from the scene.
   void                  _drawSelectionBox ( const osg::Vec3&, const osg::Vec3& );
@@ -672,6 +644,9 @@ protected:
   virtual void showCenterOfRotation ( bool b );
   virtual bool showCenterOfRotation ( ) const;
 
+  /// Usul::Interfaces::IScreenCapture
+  virtual osg::Image* screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
+
 private:
 
   // Do not copy.
@@ -682,7 +657,6 @@ private:
   enum
   {
     _UPDATE_TIMES       = 0x00000001,
-    _HAS_ACCUM_BUFFER   = 0x00000002,
     _HIDDEN_LINES       = 0x00000004,
     _SORT_BACK_TO_FRONT = 0x00000008,
     _SHOW_AXES          = 0x00000010,
@@ -698,46 +672,49 @@ private:
     _ANIMATION_DURATION_MILLISECONDS = 500 // Half a second.
   };
 
-  typedef std::pair < double, double > TimePair;
-  typedef std::list < TimePair > TimeHistory;
-  typedef std::map < std::string, TimeHistory > TimeHistories;
+  typedef Usul::Threads::Mutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef osg::ref_ptr<osg::LOD> LodPtr;
+  typedef osg::ref_ptr< osg::Geode > GeodePtr;
+  typedef osg::ref_ptr<Node> NodePtr;
+  typedef osg::ref_ptr<Group> GroupPtr;
+  typedef osg::ref_ptr < osg::ClipNode > ClipNodePtr;
+  typedef osg::ref_ptr < osg::Projection > ProjectionPtr;
+  typedef osg::ref_ptr < osgText::Text > TextPtr;
   typedef std::pair < bool,osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
   typedef osg::ref_ptr < osg::Projection > SelectionBox;
   typedef std::map < std::string, GroupPtr > GroupMap;
   typedef std::pair < float, float > XYPair;
   typedef std::pair < int, int > MatrixProperties;
-  typedef osg::ref_ptr < osgText::Text > TextPtr;
   typedef std::vector < std::vector< TextPtr > > TextMatrix;
   typedef std::pair < TextMatrix, GeodePtr > MatrixPair;
   typedef std::pair < MatrixPair, MatrixProperties > MatrixData;
   typedef std::map < XYPair, MatrixData > TextMap;
-  typedef osg::ref_ptr < osg::ClipNode > ClipNodePtr;
-  typedef osg::ref_ptr < osg::Projection > ProjectionPtr;
   typedef std::map< osg::Geode *, osg::Light * > LightEditors;
+  typedef std::vector<LodPtr> LodList;
+  typedef std::pair<bool,LodList> Lods;
 
   static CameraBuffer _cameraCopyBuffer;
   static MatrixManipPtr _navManipCopyBuffer;
   IContext::RefPtr _context;
+  Renderer::ValidRefPtr _renderer;
   ISetCursorType::QueryPtr _setCursor;
   ITimeoutSpin::QueryPtr _timeoutSpin;
   IUnknown::QueryPtr _caller;
-  SceneViewPtr _sceneView;
   GroupPtr _scene;
   ClipNodePtr _clipNode;
   ProjectionPtr _projectionNode;
   Lods _lods;
-  TimeHistories _times;
   DocumentPtr _document;
   FrameDump _frameDump;
   GroupMap _groupMap;
   GroupMap _projectionMap;
   TextMap _textMap;
-  unsigned int _numPasses;
   unsigned int _refCount;
   unsigned int _flags;
   OsgTools::Render::Animation _animation;
-  MatrixManipPtr _navManip; 
+  MatrixManipPtr _navManip;
   ITool::QueryPtr _currentTool;
   ITool::QueryPtr _lastTool;
   ViewMode _currentMode;

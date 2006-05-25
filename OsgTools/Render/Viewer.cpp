@@ -19,10 +19,8 @@
 
 #include "OsgTools/Group.h"
 #include "OsgTools/ScopedOptions.h"
-#include "OsgTools/ScopedProjection.h"
 #include "OsgTools/Box.h"
 #include "OsgTools/Sphere.h"
-#include "OsgTools/Jitter.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/State/PolygonMode.h"
@@ -53,7 +51,6 @@
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/UMath.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/System/LastError.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"

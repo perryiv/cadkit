@@ -449,17 +449,6 @@ void AnimateComponent::_buildButtons()
     if( combo )
       combo->appendItem ( name.str().c_str() );
 
-    /*
-    // Add frame to the slides tab item.
-    //if ( contents )
-    //{
-      // TODO
-      // I think we should ask the active document's delegate to create an image view for the ith frame.
-      // This will probably have to be moved else where because the images should change when the active document changes.
-    }
-    */
-    //}
-
     // Append the help string.
     description << "Switch to camera " << count;
 
@@ -476,10 +465,6 @@ void AnimateComponent::_buildButtons()
   _menu->rebuild();
   _menu->create();
 
-  /*
-  if ( slidesTab )
-    slidesTab->create();
-    */
 }
 
 
@@ -1100,15 +1085,15 @@ long AnimateComponent::onUpdateSaveMovie ( FX::FXObject *object, FX::FXSelector,
 bool AnimateComponent::notifyClose ( Usul::Interfaces::IUnknown *caller )
 {
   // Loop through all our movies.
-  for( Movies::iterator i = _movies.begin(); i != _movies.end(); ++ i )
-  {
-    // For convience and readability.
-    Movie::ValidRefPtr movie ( i->second );
+  //for( Movies::iterator i = _movies.begin(); i != _movies.end(); ++ i )
+  //{
+  //  // For convience and readability.
+  //  Movie::ValidRefPtr movie ( i->second );
 
-    // Ask the document if we can close.
-    if ( false == movie->canClose ( caller ) )
-      return false;
-  }
+  //  // Ask the document if we can close.
+  //  if ( false == movie->canClose ( caller ) )
+  //    return false;
+  //}
 
   // Ok to close app.
   return true;
@@ -2158,7 +2143,6 @@ void AnimateComponent::_buildSlides()
         }
       }
 
-      //new FX::FXImageView ( frame, foxImage, 0x0, 0, FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_X );
       new FX::FXButton ( frame, "", foxImage, 0x0, 0, FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_X );
       
     }    
@@ -2171,4 +2155,7 @@ void AnimateComponent::_buildSlides()
   }
 
   _slideContents->create();
+
+  // Need this to have the slides tab to always show up after the first frame is added.
+  tabBook->layout();
 }

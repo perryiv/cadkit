@@ -26,7 +26,7 @@ namespace Render {
 template < class ViewerType > struct RecordTime
 {
   // Constructor adds start time.
-  RecordTime ( const std::string &name, ViewerType &v ) : _v ( v ), _name ( name )
+  RecordTime ( ViewerType &v, const std::string &name ) : _v ( v ), _name ( name )
   {
     _v.timeStart ( _name );
   }

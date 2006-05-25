@@ -57,6 +57,7 @@
 #include "FoxTools/Headers/Slider.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/App/Controller.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Cast/Cast.h"
@@ -82,6 +83,7 @@
 #include "Usul/Interfaces/Fox/IFoxTabItem.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/ISendMessage.h"
+#include "Usul/Interfaces/IScreenCapture.h"
 
 #include "GN/Config/UsulConfig.h"
 #include "GN/Splines/Curve.h"
@@ -104,6 +106,7 @@
 #include "osg/LineWidth"
 #include "osg/LightModel"
 #include "osg/MatrixTransform"
+#include "osg/Image"
 
 #include <string>
 #include <fstream>
@@ -250,7 +253,8 @@ AnimateComponent::AnimateComponent() : BaseClass(),
   _current        ( 0x0 ),
   _movies         (),
   _menu           ( 0x0 ),
-  _animationTime  ( 2 )
+  _animationTime  ( 2 ),
+  _slideContents  ( 0x0 )
 {
   this->_createMovie( "" );
 }
@@ -264,10 +268,7 @@ AnimateComponent::AnimateComponent() : BaseClass(),
 
 AnimateComponent::~AnimateComponent()
 {
-  //Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( _caller );
-
-  //if( tabItem.valid( ) )
-    //tabItem->deleteTab( "Slides" );
+  this->_clearSlides();
 
   _menu = 0x0;
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
@@ -378,11 +379,6 @@ void AnimateComponent::_clearButtons()
   // Clear the combo box
   if( combo )
     combo->clearItems();
-
-  Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( _caller );
-
-  //if( tabItem.valid( ) )
-    //tabItem->deleteTab( "Slides" );
 }
 
 
@@ -427,10 +423,6 @@ void AnimateComponent::_buildButtons()
   // Make the camera menu, but don't add it yet.
   MenuGroup::ValidRefPtr cameras ( new MenuGroup ( "Cameras" ) );
 
-  // Contents for the slides tab item
-  //FX::FXVerticalFrame *contents ( 0x0 );
-  //FX::FXTabItem *slidesTab ( 0x0 );
-
   // If we have cameras...
   if ( !movie->empty() )
   {
@@ -438,20 +430,6 @@ void AnimateComponent::_buildButtons()
     _menu->append ( new MenuSeparator( MENU_TOKEN ) );
     cameras->scroll ( true );
     _menu->append ( cameras );
-
-    // Query for interfaces
-    //Usul::Interfaces::IFoxTabItem::QueryPtr tabItem    ( _caller );
-    //Usul::Interfaces::IFoxTabBook::QueryPtr foxTabBook ( _caller );
-
-    //if( tabItem.valid() && foxTabBook.valid() )
-    //{
-      //tabItem->addTab ( "Slides" );
-      //slidesTab = tabItem->tabItem( "Slides" );
-
-      //FX::FXTabBook *tabBook ( foxTabBook->tabBook() );
-
-     //contents = new FX::FXVerticalFrame ( tabBook, LAYOUT_FILL_X|LAYOUT_FILL_Y );
-    //}
   }
 
   // Loop through the list.
@@ -2035,6 +2013,9 @@ void AnimateComponent::_buildGUIForCurrentMovie ( )
   // Rebuild the buttons
   this->_buildButtons();
 
+  // Rebuild the slides.
+  this->_buildSlides();
+
   Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
   Usul::Interfaces::IGroup::QueryPtr           group      ( activeView->getActiveView() );
 
@@ -2084,4 +2065,110 @@ Movie* AnimateComponent::_createMovie( const std::string& file )
   Usul::Documents::Manager::instance().add( movie.get() );
 
   return movie.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the slides.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimateComponent::_clearSlides()
+{
+  if( _slideContents )
+    delete _slideContents;
+
+  _slideContents = 0x0;
+
+  Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( _caller );
+
+  if( tabItem.valid( ) )
+    tabItem->deleteTab( "Slides" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the slides.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimateComponent::_buildSlides()
+{
+  this->_clearSlides();
+
+  // Get current movie.
+  Movie::RefPtr movie ( _current.get() );
+
+  //Query for interfaces
+  Usul::Interfaces::IFoxTabItem::QueryPtr tabItem    ( _caller );
+  Usul::Interfaces::IFoxTabBook::QueryPtr foxTabBook ( _caller );
+  Usul::Interfaces::IScreenCapture::QueryPtr screenCapture ( Usul::App::Controller::instance().activeView() );
+
+  if ( movie->empty() || !tabItem.valid() || !foxTabBook.valid() || !screenCapture.valid() )
+    return;
+
+  tabItem->addTab ( "Slides" );
+  FX::FXTabItem * slidesTab ( tabItem->tabItem( "Slides" ) );
+
+  slidesTab->create();
+
+  FX::FXTabBook *tabBook ( foxTabBook->tabBook() );
+
+  _slideContents = new FX::FXVerticalFrame ( tabBook, LAYOUT_FILL_X|LAYOUT_FILL_Y );
+
+  FX::FXScrollWindow *scrollArea ( new FX::FXScrollWindow( _slideContents, FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y ) );
+
+  FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( scrollArea, LAYOUT_FILL_X|LAYOUT_FILL_Y ) );
+
+  // Loop through the list.
+  unsigned int count ( 0 );
+  for ( Movie::iterator i = movie->begin(); i != movie->end(); ++i )
+  {
+    // Make the text.
+    std::ostringstream name, description;
+
+    // Get the name from the frame if is has one, if not build it from frame count
+    if ( i->getName().empty() )
+      name << "Camera " << count;
+    else
+      name << i->getName();
+
+    // Add frame to the slides tab item.
+    if ( _slideContents )
+    {
+      new FX::FXLabel( frame, name.str().c_str() );
+      
+      const unsigned int width ( 200 );
+      const unsigned int height ( 200 );
+      osg::ref_ptr< osg::Image > image ( screenCapture->screenCapture( i->getCenter(), i->getDistance(), i->getRotation(), height, width ) );
+
+      FX::FXIcon *foxImage ( new FX::FXIcon( FoxTools::Functions::application(), 0x0, FXRGB ( 0, 0, 0 ), FX::IMAGE_OWNED, width, height ) );
+
+      // Convert Osg image to fox image.  TODO put this in a library or plugin.
+      for( int y = 0; y < image->t(); ++y )
+      {
+        for( int x = 0; x < image->s(); ++x )
+        {
+          unsigned char* source = image->data(x,y,0);
+
+          FXColor color ( FXRGB ( *source, *(source+1), *(source+2) ) );
+          foxImage->setPixel ( x, image->t() - y - 1, color );
+        }
+      }
+
+      //new FX::FXImageView ( frame, foxImage, 0x0, 0, FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_X );
+      new FX::FXButton ( frame, "", foxImage, 0x0, 0, FX::LAYOUT_FILL_Y | FX::LAYOUT_FILL_X );
+      
+    }    
+
+    // Append the help string.
+    description << "Switch to camera " << count;
+
+    // Don't increment until now.
+    ++count;
+  }
+
+  _slideContents->create();
 }

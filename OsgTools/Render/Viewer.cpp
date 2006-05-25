@@ -1100,12 +1100,7 @@ void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 
 void Viewer::backgroundColor ( const osg::Vec4 &color )
 {
-  // Set the color.
-  if ( this->viewer() )
-    this->viewer()->setClearColor ( color );
-
-  // Write it to the registry.
-  // Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
+  _renderer->backgroundColor( color );
 }
 
 
@@ -1117,9 +1112,7 @@ void Viewer::backgroundColor ( const osg::Vec4 &color )
 
 const osg::Vec4 &Viewer::backgroundColor() const
 {
-  if ( !this->viewer() )
-    throw ( std::runtime_error ( "Cannot get the background color because there is no viewer" ) );
-  return this->viewer()->getClearColor();
+  return _renderer->backgroundColor();
 }
 
 
@@ -1354,20 +1347,6 @@ void Viewer::pasteCamera()
 bool Viewer::canPasteCamera() const
 {
   return _cameraCopyBuffer.first;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Report any errors.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_reportErrors ( unsigned int options, bool clear )
-{
-  Usul::Interfaces::IReportErrors::QueryPtr report ( Usul::Resources::reportErrors() );
-  if( report.valid() )
-    report->reportErrors ( options, clear );
 }
 
 

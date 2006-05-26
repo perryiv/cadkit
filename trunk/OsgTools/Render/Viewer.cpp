@@ -1792,31 +1792,6 @@ void Viewer::setDisplayLists()
   }
 }
 
-void Viewer::setDisplayLists(bool on) 
-{
-  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, on );
-  
-  // Handle no viewer or model.
-  if ( !this->viewer() || !this->model() )
-    return;
-  
-  // Declare the visitor.
-  osg::ref_ptr<osg::NodeVisitor> visitor ( 
-             OsgTools::MakeVisitor<osg::Geode>::make ( 
-             Usul::Adaptors::memberFunction ( this, &Viewer::_setDisplayListsGeode ) ) );
-  
-  // Visit the scene.
-  this->model()->accept ( *visitor );
-  
-  // If we are not using display lists, and we have been created...
-  const bool use ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
-  if ( !use )
-  {
-    // Delete all display-lists associated with our context id.
-    this->viewer()->releaseAllGLObjects();
-    this->viewer()->flushAllDeletedGLObjects();
-  }
-}
 
 //Return if DisplayLists are being used
 bool Viewer::displayLists() const

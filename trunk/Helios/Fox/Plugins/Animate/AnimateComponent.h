@@ -26,7 +26,6 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/Fox/IFoxMenuPane.h"
 #include "Usul/Interfaces/Fox/IFoxDockBar.h"
-#include "Usul/Interfaces/INotifyClose.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IAddFrame.h"
 #include "Usul/Interfaces/IAnimate.h"
@@ -42,7 +41,6 @@ namespace Animate {
 
 class AnimateComponent : public Usul::Base::Referenced,
                   public Usul::Interfaces::IFoxMenuPane,
-                  public Usul::Interfaces::INotifyClose,
                   public Usul::Interfaces::IPlugin,
                   public Usul::Interfaces::IFoxDockBar,
                   public Usul::Interfaces::IAddFrame,
@@ -109,9 +107,6 @@ public:
 
   //  Usul::Interfaces::IFoxMenuPane
   virtual void              buildMenu ( Usul::Interfaces::IUnknown *caller, FoxTools::Menu::Bar *menuBar );
-
-  //  Usul::Interfaces::INotifyClose
-  virtual bool              notifyClose ( Usul::Interfaces::IUnknown *caller );
 
   //  Usul::Interfaces::IFoxDockBar
   virtual void addDockBar( Usul::Interfaces::IUnknown *caller );

@@ -90,13 +90,26 @@ Document::~Document()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::applicationClosing ()
+void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
 {
   //Set delegate to null.  This is needed so delegates are unreferenced and properly deleted.
   this->delegate( 0x0 );
 
   // Clear the modified observers.
   _modifiedObservers.clear();
+
+  typedef std::list< Window * > Temp;
+  Temp temp ( _windows.begin(), _windows.end() );
+
+  // Loop through the windows.
+  for ( Temp::iterator i = temp.begin(); i != temp.end(); ++i )
+  {
+    Window *window ( *i );
+    window->handleMessage ( Document::ID_CLOSE );
+  }
+
+  // Let anyone else who may be open that the document is closing
+  this->sendMessage( Document::ID_CLOSE );
 }
 
 

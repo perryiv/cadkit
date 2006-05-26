@@ -308,8 +308,6 @@ public:
   // Set all the display-lists to on/off according to the global setting.
   bool                  displayLists() const;
   void                  setDisplayLists();
-  // Over ride the Global setting for display Lists
-  void                  setDisplayLists(bool use);
 
   // Get the number of clipping planes in the scene
   unsigned int          planes ();

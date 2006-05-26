@@ -61,6 +61,7 @@
 #include "OsgTools/Render/Animation.h"
 #include "OsgTools/Render/EventAdapter.h"
 #include "OsgTools/Render/Renderer.h"
+#include "OsgTools/Render/SceneManager.h"
 
 #include "OsgTools/Draggers/Dragger.h"
 
@@ -78,7 +79,7 @@
 #include <list>
 #include <string>
 
-namespace osg { class ClipNode; class ClipPlane; }
+namespace osg { class ClipPlane; }
 
 namespace osgUtil { class Hit; }
 
@@ -335,8 +336,11 @@ public:
 
   // Set/get the scene.
   virtual void          scene ( Node * );
-  virtual const Group * scene() const;
-  virtual Group *       scene();
+  virtual const Node *  scene() const;
+  virtual Node *        scene();
+
+  /// Get the scene manager
+  SceneManager *        sceneManager() { return _sceneManager.get(); }
 
   // Get/Set back to front sorting.
   bool                  sortBackToFront () const;
@@ -348,7 +352,6 @@ public:
 
   // Start/stop the spin.
   void                  spin ( bool );
-
 
   // Set text on canvas
   void                  text             ( float x, float y, unsigned int row, unsigned int col, const std::string& text );
@@ -422,11 +425,6 @@ public:
   virtual void doneTool ();
   virtual void loadLastTool ();
 
-  // Add/Remove group from projection node
-  osg::Group*           getGroupProjection    ( const std::string& );
-  void                  removeGroupProjection ( const std::string& );
-  bool                  hasGroupProjection    ( const std::string& );
-
 protected:
 
   // Do not use.
@@ -470,11 +468,6 @@ protected:
 
   // Get the trackball.
   Trackball*            _trackball();
-
-  // Add/Remove group from scene
-  osg::Group*           _getGroup    ( const std::string& );
-  void                  _removeGroup ( const std::string& );
-  bool                  _hasGroup    ( const std::string& );
 
   // Write the current frame to an image file.
   bool                  _writeImageFile ( const std::string &filename ) const;
@@ -676,13 +669,9 @@ private:
   typedef osg::ref_ptr< osg::Geode > GeodePtr;
   typedef osg::ref_ptr<Node> NodePtr;
   typedef osg::ref_ptr<Group> GroupPtr;
-  typedef osg::ref_ptr < osg::ClipNode > ClipNodePtr;
-  typedef osg::ref_ptr < osg::Projection > ProjectionPtr;
   typedef osg::ref_ptr < osgText::Text > TextPtr;
   typedef std::pair < bool,osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
-  typedef osg::ref_ptr < osg::Projection > SelectionBox;
-  typedef std::map < std::string, GroupPtr > GroupMap;
   typedef std::pair < float, float > XYPair;
   typedef std::pair < int, int > MatrixProperties;
   typedef std::vector < std::vector< TextPtr > > TextMatrix;
@@ -697,17 +686,13 @@ private:
   static MatrixManipPtr _navManipCopyBuffer;
   IContext::RefPtr _context;
   Renderer::ValidRefPtr _renderer;
+  SceneManager::ValidRefPtr _sceneManager;
   ISetCursorType::QueryPtr _setCursor;
   ITimeoutSpin::QueryPtr _timeoutSpin;
   IUnknown::QueryPtr _caller;
-  GroupPtr _scene;
-  ClipNodePtr _clipNode;
-  ProjectionPtr _projectionNode;
   Lods _lods;
   DocumentPtr _document;
   FrameDump _frameDump;
-  GroupMap _groupMap;
-  GroupMap _projectionMap;
   TextMap _textMap;
   unsigned int _refCount;
   unsigned int _flags;

@@ -244,7 +244,7 @@ void ChartView::addPlot( const Plot& plot, const ColorArray& colors )
 void ChartView::_resize ( unsigned int width, unsigned int height )
 {
   this->viewer()->resize ( width, height );
-  this->_rebuildScene ( *this->viewer()->getGroupProjection ( "2D_PLOT" ), width, height );
+  this->_rebuildScene ( *this->viewer()->sceneManager()->projectionGroupGet ( "2D_PLOT" ), width, height );
 }
 
 

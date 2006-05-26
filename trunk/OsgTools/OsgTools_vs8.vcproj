@@ -765,6 +765,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Render\SceneManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\SceneManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Render\Trackball.cpp"
 					>
 				</File>

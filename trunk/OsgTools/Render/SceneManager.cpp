@@ -1,0 +1,266 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "SceneManager.h"
+
+
+using namespace OsgTools::Render;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SceneManager::SceneManager (  ) :
+  BaseClass(),
+  _scene           ( new Group ),
+  _clipNode        ( new osg::ClipNode ),
+  _projectionNode  ( new osg::Projection ),
+  _groupMap        (),
+  _projectionMap   ()
+{
+  _scene->addChild( _clipNode.get() );
+ 
+  _scene->addChild ( _projectionNode.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SceneManager::~SceneManager (  ) 
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * SceneManager::scene()
+{
+  return _scene.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Node * SceneManager::scene() const
+{
+  return _scene.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::model( osg::Node* node )
+{
+  // Remove any thing that may be under the clip node
+  _clipNode->removeChild ( 0 , _clipNode->getNumChildren() );
+
+  // If we are given null...
+  if ( 0x0 == node )
+  {
+    // Clear the scene
+    _scene->removeChild ( 0 , _clipNode->getNumChildren() ); 
+
+    // Re-add the clip node
+    _scene->addChild ( _clipNode.get() );
+  }
+
+  // Otherwise...
+  else
+  {
+    // Add the node
+    _clipNode->addChild ( node );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* SceneManager::model()
+{
+  if( _clipNode->getNumChildren() > 0 )
+    return _clipNode->getChild( 0 );
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Node* SceneManager::model() const
+{
+  if( _clipNode->getNumChildren() > 0 )
+    return _clipNode->getChild( 0 );
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get group with given key.  Creates one if doesn't exist
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* SceneManager::groupGet ( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _groupMap[ key ];
+
+  // Has the group been created
+  if ( !group.valid() )
+  {
+    // Make a new group
+    group = new osg::Group;
+
+    // Set the name
+    group->setName( key );
+
+    // Add the group to the scene
+    _scene->addChild( group.get() );
+  }
+
+  return group.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove group with given key
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::groupRemove ( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _groupMap[key];
+  _scene->removeChild ( group.get() );
+  group = 0x0;
+
+  // Remove key from group map.
+  _groupMap.erase ( key );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the group created?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SceneManager::groupHas ( const std::string& key ) const
+{
+  GroupMap::const_iterator i = _groupMap.find ( key );
+  return i != _groupMap.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get group under the projection node with given key.  Creates one if doesn't exist
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* SceneManager::projectionGroupGet ( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _projectionMap[ key ];
+
+  // Has the group been created
+  if ( !group.valid() )
+  {
+    // Make a new group
+    group = new osg::Group;
+
+    // Set the name
+    group->setName( key );
+
+    // Add the group to the scene
+    _projectionNode->addChild( group.get() );
+    _projectionNode->dirtyBound();
+  }
+
+  return group.get();
+}
+  
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove group with given key
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::projectionGroupRemove ( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _projectionMap[key];
+  _projectionNode->removeChild ( group.get() );
+  _projectionNode->dirtyBound();
+  group = 0x0;
+
+  // Remove key from group map.
+  _projectionMap.erase ( key );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the group created?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SceneManager::projectionGroupHas ( const std::string& key ) const
+{
+  GroupMap::const_iterator i = _projectionMap.find ( key );
+  return i != _projectionMap.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the projection node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Projection* SceneManager::projection()
+{
+  return _projectionNode.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the clip node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::ClipNode* SceneManager::clipNode()
+{
+  return _clipNode.get();
+}

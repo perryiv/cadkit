@@ -123,17 +123,13 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _context         ( context ),
   _renderer        ( new Renderer ),
+  _sceneManager    ( new SceneManager ),
   _setCursor       ( caller ),
   _timeoutSpin     ( caller ),
   _caller          ( caller ),
-  _scene           ( new Group ),
-  _clipNode        ( new osg::ClipNode ),
-  _projectionNode  ( new osg::Projection ),
   _lods            (),
   _document        ( doc ),
   _frameDump       (),
-  _groupMap        (),
-  _projectionMap   (),
   _textMap         (),
   _refCount        ( 0 ),
   _flags           ( _UPDATE_TIMES | _SHOW_AXES ),
@@ -149,17 +145,11 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   if( this->document() )
     this->document()->addView ( this );
 
-  // Add the clip node to the scene.
-  _scene->addChild ( _clipNode.get() );
-
   // Light so that other lights don't after geometry under the projection node.
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   light->setLightNum ( 1 );
   light->setDiffuse ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-
-  // Add the projection node to the scene
-  _scene->addChild( _projectionNode.get() );
-  osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet () );
+  osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet () );
   ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
 
   // Initialize the clock.
@@ -179,7 +169,7 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   static unsigned int count ( 0 );
   _contextId = ++count;
 
-  _renderer->scene( _scene.get() );
+  _renderer->scene( _sceneManager->scene() );
 
 #ifdef _DEBUG
   osg::setNotifyLevel ( osg::INFO );
@@ -211,7 +201,6 @@ void Viewer::create()
   // If we have a valid context...
   if ( _context.valid() )
   {
-
     // Make this context current.
     _context->makeCurrent();
 
@@ -223,7 +212,6 @@ void Viewer::create()
     ::glGetBooleanv ( GL_STEREO, &hasStereo );
     if( GL_TRUE == hasStereo )
       this->stereoMode( osg::DisplaySettings::QUAD_BUFFER );
-
   }
 
   // Counter for display-list id. OSG will handle using the correct display 
@@ -321,7 +309,7 @@ void Viewer::updateScene()
 void Viewer::render()
 {
   // Handle no viewer or scene.
-  if ( !this->viewer() || !_scene.valid() || !this->viewer()->getSceneData() || !_context.valid() )
+  if ( !this->viewer() || !this->viewer()->getSceneData() || !_context.valid() )
     return;
 
   // Initialize the error.
@@ -350,11 +338,11 @@ void Viewer::render()
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 
   // If we are doing hidden-line rendering...
-  if ( this->hasHiddenLines() && _clipNode->getNumChildren() > 0 )
+  if ( this->hasHiddenLines() && ( 0x0 != _sceneManager->model() ) )
   {
     // Temporarily re-structure the scene. Better to do/undo this than keep 
     // it altered. An altered scene may mess up intersections.
-    osg::ref_ptr<osg::Node> model ( _clipNode->getChild ( 0 ) );
+    osg::ref_ptr<osg::Node> model ( _sceneManager->model() );
     osg::ref_ptr<osg::Group> root   ( new osg::Group );
     osg::ref_ptr<osg::Group> normal ( new osg::Group );
     osg::ref_ptr<osg::Group> hidden ( new osg::Group );
@@ -594,9 +582,9 @@ void Viewer::camera ( CameraOption option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Group *Viewer::scene() const
+const osg::Node *Viewer::scene() const
 {
-  return _scene.get();
+  return _sceneManager->scene();
 }
 
 
@@ -606,9 +594,9 @@ const osg::Group *Viewer::scene() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Viewer::scene()
+osg::Node *Viewer::scene()
 {
-  return _scene.get();
+  return _sceneManager->scene();
 }
 
 
@@ -621,31 +609,13 @@ osg::Group *Viewer::scene()
 void Viewer::scene ( osg::Node *node )
 {
   // Handle same scene.
-  if ( 0x0 != node && node == _scene.get() )
+  if ( 0x0 != node && node == _sceneManager->model() )
     return;
 
-  // Remove any thing that may be under the clip node
-  _clipNode->removeChild ( 0 , _clipNode->getNumChildren() );
-
-  // If we are given null...
-  if ( 0x0 == node )
-  {
-    // Clear the scene
-    _scene->removeChild ( 0 , _clipNode->getNumChildren() ); 
-
-    // Re-add the clip node
-    _scene->addChild ( _clipNode.get() );
-  }
-
-  // Otherwise...
-  else
-  {
-    // Add the node
-    _clipNode->addChild ( node );
-  }
+  _sceneManager->model( node );
 
   // Give the scene to the viewer.
-  _renderer->scene ( _scene.get() );
+  _renderer->scene ( _sceneManager->scene() );
 
   // The scene changed.
   this->changedScene(); 
@@ -682,7 +652,7 @@ void Viewer::resize ( unsigned int w, unsigned int h )
     this->viewer()->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
     //_sceneView->setProjectionMatrixAsOrtho ( 0, w, 0, h, -10000, 10000 );
 
-    _projectionNode->setMatrix( osg::Matrix::ortho( 0, w ,0, h, -10000, 10000 ) );
+    _sceneManager->projection()->setMatrix( osg::Matrix::ortho( 0, w ,0, h, -10000, 10000 ) );
   }
 }
 
@@ -1362,7 +1332,7 @@ void Viewer::_drawSelectionBox ( const osg::Vec3& v1, const osg::Vec3& v2 )
   osg::Vec3 v4 ( v1[0], v2[1], 0.0 );
 
   // Get the group for selection box, if it exists.
-  osg::ref_ptr<osg::Group> group ( this->getGroupProjection( OsgTools::Render::Constants::SELECTION_BOX ) );
+  osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::SELECTION_BOX ) );
   
   // Has the selection box been created?
   if ( !group.valid() )
@@ -1378,9 +1348,6 @@ void Viewer::_drawSelectionBox ( const osg::Vec3& v1, const osg::Vec3& v2 )
     modelview_abs->addChild ( box.get() );
 
     group->addChild ( modelview_abs );
-
-    // Add the selection box to the scene
-    _scene->addChild ( group.get() );
 
     // Get or create the state set
     osg::ref_ptr<osg::StateSet> ss ( group->getOrCreateStateSet() );
@@ -1440,7 +1407,7 @@ void Viewer::_drawSelectionBox ( const osg::Vec3& v1, const osg::Vec3& v2 )
 
 void Viewer::_removeSelectionBox()
 {
-  this->_removeGroup ( OsgTools::Render::Constants::SELECTION_BOX );
+  _sceneManager->groupRemove( OsgTools::Render::Constants::SELECTION_BOX );
 }
 
 
@@ -1518,19 +1485,20 @@ bool Viewer::writeSceneFile ( const std::string &filename, const std::string &op
 
 void Viewer::boundingBox ( bool state )
 {
-  // Get the existing bounding box, if it exists.
-  osg::ref_ptr<osg::Group> &group = _groupMap[OsgTools::Render::Constants::BOUNDING_BOX];
+  
 
   // Remove the bounding box if it exists.
-  if ( group.valid() )
+  if ( _sceneManager->groupHas( OsgTools::Render::Constants::BOUNDING_BOX ) )
   {
-    _scene->removeChild ( group.get() );
-    group = 0x0;
+    _sceneManager->groupRemove( OsgTools::Render::Constants::BOUNDING_BOX );
   }
 
   // If we are supposed to show the bounding box...
   if ( state )
   {
+    // Get the existing bounding box, if it exists.
+    osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::BOUNDING_BOX ) );
+
     // Get the model's bounding box.
     osg::BoundingBox bb;
 
@@ -1555,10 +1523,6 @@ void Viewer::boundingBox ( bool state )
     // Wire-frame.
     OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
     OsgTools::State::StateSet::setLighting ( mt.get(), false );
-
-    // Add it to the group-map and scene.
-    group = mt.get();
-    _scene->addChild ( group.get() ); 
   }
 }
 
@@ -1571,8 +1535,7 @@ void Viewer::boundingBox ( bool state )
 
 bool Viewer::boundingBox() const
 {
-  GroupMap::const_iterator i = _groupMap.find ( OsgTools::Render::Constants::BOUNDING_BOX );
-  return ( ( _groupMap.end() != i ) && ( i->second.valid() ) );
+  return _sceneManager->groupHas ( OsgTools::Render::Constants::BOUNDING_BOX );
 }
 
 
@@ -1584,21 +1547,20 @@ bool Viewer::boundingBox() const
 
 void Viewer::boundingSphere ( bool state )
 {
-  // Get the existing bounding sphere, if it exists.
-  osg::ref_ptr<osg::Group> &group = _groupMap[OsgTools::Render::Constants::BOUNDING_SPHERE];
-
   // Remove the bounding sphere if it exists.
-  if ( group.valid() )
+  if ( _sceneManager->groupHas ( OsgTools::Render::Constants::BOUNDING_SPHERE ) )
   {
-    _scene->removeChild ( group.get() );
-    group = 0x0;
+    _sceneManager->groupRemove ( OsgTools::Render::Constants::BOUNDING_SPHERE );
   }
 
   // If we are supposed to show the bounding sphere...
   if ( state )
   {
+    // Get the group for the bounding sphere
+    osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::BOUNDING_SPHERE ) );
+
     // Get the scene's bounding sphere.
-    const osg::BoundingSphere &bound = _scene->getBound();
+    const osg::BoundingSphere &bound = _sceneManager->model()->getBound();
 
     // Make a new red sphere.
     OsgTools::ColorSphere sphere ( bound );
@@ -1612,10 +1574,6 @@ void Viewer::boundingSphere ( bool state )
     // Wire-frame.
     OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
     OsgTools::State::StateSet::setLighting ( mt.get(), false );
-
-    // Add it to the group-map and scene.
-    group = mt.get();
-    _scene->addChild ( group.get() );
   }
 }
 
@@ -1628,8 +1586,7 @@ void Viewer::boundingSphere ( bool state )
 
 bool Viewer::boundingSphere() const
 {
-  GroupMap::const_iterator i = _groupMap.find ( OsgTools::Render::Constants::BOUNDING_SPHERE );
-  return ( ( _groupMap.end() != i ) && ( i->second.valid() ) );
+  return _sceneManager->groupHas( OsgTools::Render::Constants::BOUNDING_SPHERE );
 }
 
 
@@ -1705,11 +1662,10 @@ void Viewer::text ( float x, float y, unsigned int row, unsigned int col, const 
 
 void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth )
 {
-  // Get the group for text matrices, if it exists.
-  osg::ref_ptr<osg::Group> &group = _groupMap[OsgTools::Render::Constants::TEXT_MATRIX];
-
-  if ( !group.valid() )
+  if ( ! _sceneManager->groupHas( OsgTools::Render::Constants::TEXT_MATRIX ) )
   {
+    osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+
     osg::ref_ptr< osg::Projection > projection = new osg::Projection;
     projection->setMatrix( osg::Matrix::ortho2D( 0, this->width() ,0, this->height() ) );
 
@@ -1723,12 +1679,14 @@ void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned
     modelview_abs->setMatrix(osg::Matrix::identity());
 
     projection->addChild ( modelview_abs );
-    group = projection.get();
-    _scene->addChild( group.get() );
+
+    group->addChild( projection.get() );
   }
 
+  osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+
   // This is the matrix transform under the projection matrix
-  osg::ref_ptr< osg::Group > node = group->getChild( 0 )->asGroup();
+  osg::ref_ptr< osg::Group > node = group->getChild( 0 )->asGroup()->getChild( 0 )->asGroup();
 
   XYPair key ( x, y );
 
@@ -1764,10 +1722,7 @@ void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned
 
 void Viewer::textRemoveMatrix ( float x, float y )
 {
-  // Get the group for text matrices, if it exists.
-  osg::ref_ptr<osg::Group> &group = _groupMap[OsgTools::Render::Constants::TEXT_MATRIX];
-
-  if ( group.valid() )
+  if ( _sceneManager->groupHas ( OsgTools::Render::Constants::TEXT_MATRIX ) )
   {
     XYPair key ( x, y );
   
@@ -1815,8 +1770,8 @@ Viewer::Document *Viewer::document()
 
 void Viewer::setDisplayLists()
 {
-  // Handle no viewer or scene.
-  if ( !this->viewer() || !_scene.valid() )
+  // Handle no viewer or model.
+  if ( !this->viewer() || !this->model() )
     return;
 
   // Declare the visitor.
@@ -1840,8 +1795,9 @@ void Viewer::setDisplayLists()
 void Viewer::setDisplayLists(bool on) 
 {
   Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, on );
-  // Handle no viewer or scene.
-  if ( !this->viewer() || !_scene.valid() )
+  
+  // Handle no viewer or model.
+  if ( !this->viewer() || !this->model() )
     return;
   
   // Declare the visitor.
@@ -1913,63 +1869,6 @@ unsigned int Viewer::numRenderPasses ( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get group with given key.  Creates one if doesn't exist
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group* Viewer::_getGroup ( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _groupMap[ key ];
-
-  // Has the group been created
-  if ( !group.valid() )
-  {
-    // Make a new group
-    group = new osg::Group;
-
-    // Set the name
-    group->setName( key );
-
-    // Add the group to the scene
-    _scene->addChild( group.get() );
-  }
-
-  return group.get();
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove group with given key
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_removeGroup ( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _groupMap[key];
-  _scene->removeChild ( group.get() );
-  group = 0x0;
-
-  // Remove key from group map.
-  _groupMap.erase ( key );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the group created?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::_hasGroup    ( const std::string& key )
-{
-  GroupMap::const_iterator i = _groupMap.find ( key );
-  return i != _groupMap.end();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Toggle the hidden lines.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2033,7 +1932,7 @@ void Viewer::addPlane ( )
 {
   // Get the bounding box
   osg::BoundingBox bb; 
-  bb.expandBy ( _clipNode->getBound() );
+  bb.expandBy ( _sceneManager->clipNode()->getBound() );
 
   // Intial points for the plane
   osg::Vec3 top_left     ( bb.corner( 1 ) );
@@ -2055,7 +1954,7 @@ void Viewer::addPlane ( )
 osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 {
   //Make the clipping plane
-  osg::ref_ptr< osg::ClipPlane > clipPlane ( new osg::ClipPlane( _clipNode->getNumClipPlanes(), plane ) );
+  osg::ref_ptr< osg::ClipPlane > clipPlane ( new osg::ClipPlane( _sceneManager->clipNode()->getNumClipPlanes(), plane ) );
 
   if( widget )
   {
@@ -2065,12 +1964,12 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 
     osg::ref_ptr < OsgTools::Widgets::ClipPlane > widget ( new OsgTools::Widgets::ClipPlane ( bb, clipPlane.get() ) );
 
-    osg::ref_ptr< osg::Group > group ( this->_getGroup ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
+    osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
     group->addChild ( widget.get() );
   }
 
   // Add the plane
-  _clipNode->addClipPlane ( clipPlane.get() );
+  _sceneManager->clipNode()->addClipPlane ( clipPlane.get() );
 
   this->changedScene();
   this->render();
@@ -2087,7 +1986,7 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 
 void Viewer::addClipBox ( const osg::BoundingBox& bb )
 {
-  _clipNode->createClipBox ( bb );
+  _sceneManager->clipNode()->createClipBox ( bb );
   OsgTools::GlassBoundingBox gbb ( bb );
 }
 
@@ -2100,9 +1999,9 @@ void Viewer::addClipBox ( const osg::BoundingBox& bb )
 
 void Viewer::removePlane ( unsigned int index )
 {
-  _clipNode->removeClipPlane ( index );
+  _sceneManager->clipNode()->removeClipPlane ( index );
 
-  osg::ref_ptr< osg::Group > group ( this->_getGroup ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
+  osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
 
   group->removeChild ( index );
 
@@ -2118,7 +2017,7 @@ void Viewer::removePlane ( unsigned int index )
 
 void Viewer::removePlane ( osg::ClipPlane *plane )
 {
-  _clipNode->removeClipPlane ( plane );
+  _sceneManager->clipNode()->removeClipPlane ( plane );
 }
 
 
@@ -2131,11 +2030,11 @@ void Viewer::removePlane ( osg::ClipPlane *plane )
 void Viewer::removePlanes ()
 {
   typedef osg::ClipNode::ClipPlaneList ClipPlaneList;
-  ClipPlaneList cliplist ( _clipNode->getClipPlaneList() );
+  ClipPlaneList cliplist ( _sceneManager->clipNode()->getClipPlaneList() );
   for ( ClipPlaneList::iterator i = cliplist.begin(); i != cliplist.end(); ++i )
-    _clipNode->removeClipPlane ( i->get() );
+    _sceneManager->clipNode()->removeClipPlane ( i->get() );
 
-  osg::ref_ptr< osg::Group > group ( this->_getGroup ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
+  osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
 
   group->removeChild( 0, group->getNumChildren() );
   
@@ -2152,7 +2051,7 @@ void Viewer::removePlanes ()
 
 unsigned int Viewer::planes ()
 {
-  return _clipNode->getNumClipPlanes();
+  return _sceneManager->clipNode()->getNumClipPlanes();
 }
 
 
@@ -2501,7 +2400,7 @@ void Viewer::sortBackToFront ( bool b )
 
 const osg::Node* Viewer::model() const
 {
-  return _clipNode.get();
+  return _sceneManager->model();
 }
 
 
@@ -2513,7 +2412,7 @@ const osg::Node* Viewer::model() const
 
 osg::Node* Viewer::model()
 {
-  return _clipNode.get();
+  return _sceneManager->model();
 }
 
 
@@ -2527,7 +2426,7 @@ void Viewer::_addAxes ()
 {
   // Get the group.  It will be under a projection node that is set which each resize, so the geometry under it
   // won't get distorted by screen resizes.
-  osg::ref_ptr< osg::Group > group ( this->getGroupProjection( OsgTools::Render::Constants::AXES ) );
+  osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
 
   // Axes Dragger
   osg::ref_ptr< OsgTools::Widgets::Axes > dragger ( new OsgTools::Widgets::Axes );
@@ -2550,7 +2449,7 @@ void Viewer::_addAxes ()
 
 void Viewer::_removeAxes ()
 {
-  this->removeGroupProjection( OsgTools::Render::Constants::AXES );
+  _sceneManager->projectionGroupRemove ( OsgTools::Render::Constants::AXES );
 
   // The scene has changed.
   this->changedScene();
@@ -2569,7 +2468,7 @@ void Viewer::_setAxes ()
   if( !this->axes() )
     return;
 
-  osg::ref_ptr< osg::Group > group ( this->getGroupProjection( OsgTools::Render::Constants::AXES ) );
+  osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
   osg::ref_ptr< osg::MatrixTransform > mt ( dynamic_cast < osg::MatrixTransform* > (  group->getChild( 0 ) ) );
 
   // Return if we don't have a valid matrix transform.
@@ -3007,6 +2906,7 @@ Usul::Interfaces::IUnknown *Viewer::getDocument()
   return ( this->document() ) ? this->document()->queryInterface ( Usul::Interfaces::IUnknown::IID ) : 0x0;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get group with given key.  Creates one if doesn't exist
@@ -3015,7 +2915,7 @@ Usul::Interfaces::IUnknown *Viewer::getDocument()
 
 osg::Group*  Viewer::getGroup    ( const std::string& key )
 {
-  return this->_getGroup ( key );
+  return _sceneManager->groupGet ( key );
 }
 
 
@@ -3027,7 +2927,7 @@ osg::Group*  Viewer::getGroup    ( const std::string& key )
 
 void Viewer::removeGroup ( const std::string& key )
 {
-  this->_removeGroup ( key );
+  _sceneManager->groupRemove ( key );
 }
 
 
@@ -3039,7 +2939,7 @@ void Viewer::removeGroup ( const std::string& key )
 
 bool Viewer::hasGroup    ( const std::string& key )
 {
-  return this->_hasGroup ( key );
+  return _sceneManager->groupHas ( key );
 }
 
 
@@ -3227,8 +3127,8 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
   if ( useWindowCoords )
   {
     // Set the two points for our line-segment.
-    pt0 = osg::Vec3 ( x, y, -1 ) * osg::Matrix::inverse( _projectionNode->getMatrix() );
-    pt1 = osg::Vec3 ( x, y,  1 ) * osg::Matrix::inverse( _projectionNode->getMatrix() );
+    pt0 = osg::Vec3 ( x, y, -1 ) * osg::Matrix::inverse( _sceneManager->projection()->getMatrix() );
+    pt1 = osg::Vec3 ( x, y,  1 ) * osg::Matrix::inverse( _sceneManager->projection()->getMatrix() );
   }
 
   // Project into the scene.
@@ -3877,7 +3777,7 @@ void Viewer::handlePicking ( float x, float y, bool left, unsigned int numClicks
     // using just the screen coordniates.
     osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
     root->setMatrix ( osg::Matrix::identity() );
-    root->addChild( _projectionNode.get() );
+    root->addChild( _sceneManager->projection() );
 
     // List of transforms that had the reference frame changed from absolute to relative.
     typedef std::vector< osg::ref_ptr< osg::Transform > > TList;
@@ -4075,7 +3975,7 @@ void Viewer::setBackground ( const osg::Vec4 &color)
 
 void Viewer::_showLights()
 {
-  osg::ref_ptr<osg::Group> group ( this->getGroupProjection( OsgTools::Render::Constants::LIGHT ) );
+  osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::LIGHT ) );
 
   // Get the light from the scene view.
   osg::ref_ptr< osg::Light > light ( this->viewer()->getLight() );
@@ -4177,7 +4077,7 @@ void Viewer::_showLights()
 
 void Viewer::_removeLights()
 {
-  this->removeGroupProjection( OsgTools::Render::Constants::LIGHT );
+  _sceneManager->projectionGroupRemove ( OsgTools::Render::Constants::LIGHT );
 
   // The scene has changed.
   this->changedScene();
@@ -4227,65 +4127,6 @@ void Viewer::_editLight ( osgUtil::Hit &hit )
     std::cout << "Warning: Not implemented." << std::endl;
   }
 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get group under the projection node with given key.  Creates one if doesn't exist
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group* Viewer::getGroupProjection ( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _projectionMap[ key ];
-
-  // Has the group been created
-  if ( !group.valid() )
-  {
-    // Make a new group
-    group = new osg::Group;
-
-    // Set the name
-    group->setName( key );
-
-    // Add the group to the scene
-    _projectionNode->addChild( group.get() );
-    _projectionNode->dirtyBound();
-  }
-
-  return group.get();
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove group with given key
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::removeGroupProjection ( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _projectionMap[key];
-  _projectionNode->removeChild ( group.get() );
-  _projectionNode->dirtyBound();
-  group = 0x0;
-
-  // Remove key from group map.
-  _projectionMap.erase ( key );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the group created?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::hasGroupProjection    ( const std::string& key )
-{
-  GroupMap::const_iterator i = _projectionMap.find ( key );
-  return i != _projectionMap.end();
 }
 
 
@@ -4619,7 +4460,7 @@ void Viewer::_addSceneStage()
   if ( 0x0 == this->model() )
     return;
 
-  GroupPtr group ( this->_getGroup ( OsgTools::Render::Constants::STAGE ) );
+  GroupPtr group ( _sceneManager->groupGet ( OsgTools::Render::Constants::STAGE ) );
 
   osg::BoundingSphere bs ( this->scene()->getBound() );
   
@@ -4684,7 +4525,7 @@ void Viewer::_addSceneStage()
     rootDepth->setFunction(osg::Depth::LESS);
     rootDepth->setRange(0.0,1.0);
 
-    osg::StateSet* rootStateSet = _scene->getOrCreateStateSet();
+    osg::StateSet* rootStateSet = this->scene()->getOrCreateStateSet();
     rootStateSet->setAttribute(rootColorMask);
     rootStateSet->setAttribute(rootDepth);
 
@@ -4870,7 +4711,7 @@ void Viewer::_addSceneStage()
 
 void Viewer::_removeSceneStage()
 {
-  this->_removeGroup ( OsgTools::Render::Constants::STAGE );
+  _sceneManager->groupRemove ( OsgTools::Render::Constants::STAGE );
 }
 
 
@@ -5143,10 +4984,10 @@ void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigne
   camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
 
   // Save the old root.
-  GroupPtr group = _scene;
+  NodePtr node ( me->scene() );
 
   // Add the scene to the camera.
-  camera->addChild ( me->_scene.get() );
+  camera->addChild ( me->scene() );
 
   // Make the camera file the scene data.
   me->viewer()->setSceneData ( camera.get() );
@@ -5155,7 +4996,7 @@ void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigne
   me->render();
 
   // Set the old root back to the scene data.
-  me->viewer()->setSceneData ( group.get() );
+  me->viewer()->setSceneData ( node.get() );
 
   // Figure out how to avoid this last render.
   me->render();

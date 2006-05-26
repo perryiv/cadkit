@@ -142,19 +142,47 @@ bool SeekComponent::execute( Usul::Interfaces::IUnknown* caller, bool left, bool
 
     //Make copy of trackball's current rotation
     const osg::Quat rot ( tb->getRotation() );
+    const osg::Vec3 center ( tb->getCenter() );
+    const float distance ( tb->getDistance() );
+
+    osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
+                  osg::Matrixd::rotate(rot)*
+                  osg::Matrixd::translate(center) );
+
+    osg::Vec3 eye, c, up;
+
+    m.inverse( m ).getLookAt ( eye, c, up );
+
+    osg::Vec3 axis;
+    osg::Quat::value_type angle;
+
+    rot.getRotate( angle, axis );
 
     // Get the new center and distance.
     const osg::Vec3 c2 ( hit.getWorldIntersectPoint() );
     const float d2 ( tb->getDistance() * 1.00f ); // TODO, make this scale-factor a preference...
 
+
+    osg::Vec3 axis2 ( c2 - eye );
+
+    const float d3 (axis2.length() );
+
+    axis.normalize();
+
+    osg::Quat rot2 ( angle, axis2 );
+
     //Use the animation interface if we found a valid one
     if( animate.valid() )
-      animate->animate ( c2, d2, rot );
+    {
+      //animate->animate ( c2, d2, rot );
+      //::Sleep( 500 );
+      animate->animate ( c2, d3, rot2 );
+    }
 
     //If no animation interface exists, just set the trackball
     else
     {
-      tb->setTrackball( c2, d2, rot, true, true );
+      tb->setTrackball( c2, d2, rot2, true, true );
 
       Usul::Interfaces::IRedraw::QueryPtr redraw ( caller );
 

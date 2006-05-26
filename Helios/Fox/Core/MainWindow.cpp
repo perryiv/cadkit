@@ -1491,6 +1491,7 @@ bool MainWindow::_exiting()
     // This allows the document to clean up any circular references.
     for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
     {
+      // Grab the document in a smart pointer so it doesn't get deleted out from under us.
       Document::RefPtr doc ( *i );
       doc->applicationClosing( this->asUnknown() );
     }

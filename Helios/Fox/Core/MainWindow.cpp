@@ -1483,10 +1483,18 @@ bool MainWindow::_exiting()
       return false;
   }
 
-  // Tell the remaining open documents that the application is about to close.
-  // This allows the document to clean up any circular references.
-  for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
-    (*i)->applicationClosing();
+  {
+    // Make a copy because as the documents are closing, they remove themselves from the document manager.
+    Documents copy ( documents );
+
+    // Tell the remaining open documents that the application is about to close.
+    // This allows the document to clean up any circular references.
+    for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
+    {
+      Document::RefPtr doc ( *i );
+      doc->applicationClosing( this->asUnknown() );
+    }
+  }
 
   // Clear documents.
   Usul::Documents::Manager::instance().documents().clear();

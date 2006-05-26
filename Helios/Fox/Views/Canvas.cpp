@@ -191,6 +191,10 @@ void Canvas::defaultBackground()
   if ( this->viewer() )
   {
     this->viewer()->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
+    
+    // Write it to the registry.
+    Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, this->viewer()->backgroundColor() );
+    
     this->viewer()->render();
   }
 }

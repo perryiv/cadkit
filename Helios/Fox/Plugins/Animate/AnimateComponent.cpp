@@ -300,8 +300,6 @@ Usul::Interfaces::IUnknown *AnimateComponent::queryInterface ( unsigned long iid
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IFoxMenuPane::IID:
     return static_cast < Usul::Interfaces::IFoxMenuPane*>(this);
-  case Usul::Interfaces::INotifyClose::IID:
-    return static_cast < Usul::Interfaces::INotifyClose*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::IFoxDockBar::IID:
@@ -1073,30 +1071,6 @@ long AnimateComponent::onUpdateSaveMovie ( FX::FXObject *object, FX::FXSelector,
   FoxTools::Functions::enable ( this->_validMovieAndView() && create.valid(), object );
 
   return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Prompt the user if the animation needs saving
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool AnimateComponent::notifyClose ( Usul::Interfaces::IUnknown *caller )
-{
-  // Loop through all our movies.
-  //for( Movies::iterator i = _movies.begin(); i != _movies.end(); ++ i )
-  //{
-  //  // For convience and readability.
-  //  Movie::ValidRefPtr movie ( i->second );
-
-  //  // Ask the document if we can close.
-  //  if ( false == movie->canClose ( caller ) )
-  //    return false;
-  //}
-
-  // Ok to close app.
-  return true;
 }
 
 

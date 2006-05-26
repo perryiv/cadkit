@@ -96,7 +96,7 @@ public:
   virtual void                addView     ( View   *view   );
 
   /// The application is about to close.
-  virtual void                applicationClosing ();
+  virtual void                applicationClosing ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// The given window is closing
   virtual void                closing     ( Window *window );
@@ -247,6 +247,10 @@ protected:
   template < class Listeners, class Skip >
   void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 );
 
+  ///  Send the message to all windows.
+  template < class Listeners >
+  void                        _sendMessage ( Listeners &listeners, unsigned short message );
+
   /// Usul::Interfaces::IGetTitle
   virtual std::string         getTitle ( Window* );
 
@@ -300,6 +304,29 @@ void Document::_sendMessage ( Listeners &listeners, unsigned short message, cons
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Send the message to all windows except for one specified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Listeners >
+void Document::_sendMessage ( Listeners &listeners, unsigned short message )
+{
+  typedef typename Listeners::value_type Listener;
+
+  // Loop through the windows.
+  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
+  {
+    // Get the current window.
+    Listener listener ( *i );
+
+    // We can't return if the handle function returns zero because an object
+    // that does not handle the message id will also return zero.
+    listener->handleMessage ( message );
+  }
+}
 
 }; // namespace Documents
 }; // namespace Usul

@@ -1463,7 +1463,7 @@ osg::Vec3 Movie::_getEyePostion ( const osg::Vec3& center, float distance, const
 
   osg::Vec3 eye, c, up;
 
-  m.inverse( m ).getLookAt ( eye, c, up );      
+  m.inverse( m ).getLookAt ( eye, c, up );
 
   return eye;
 }

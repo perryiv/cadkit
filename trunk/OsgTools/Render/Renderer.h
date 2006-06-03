@@ -106,8 +106,6 @@ protected:
   void                  _multiPassRender();
   void                  _singlePassRender();
 
-  void                  _render();
-
   void                  _cullAndDraw();
 
 private:
@@ -117,15 +115,12 @@ private:
   typedef std::map < std::string, TimeHistory > TimeHistories;
 
   SceneViewPtr _sceneView;
-  osg::ref_ptr< osg::Node > _scene;
 
   TimeHistories _times;
 
   unsigned int _numPasses;  
   
   bool _hasAccumulationBuffer;
-
-  unsigned int _contextId;
 };
 
 }

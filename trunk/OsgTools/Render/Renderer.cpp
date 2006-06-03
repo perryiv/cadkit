@@ -32,11 +32,9 @@ using namespace OsgTools::Render;
 
 Renderer::Renderer() : BaseClass(),
 _sceneView ( new osgUtil::SceneView ),
-_scene ( 0x0 ),
 _times(),
 _numPasses ( 1 ),
-_hasAccumulationBuffer ( false ),
-_contextId ( 0 )
+_hasAccumulationBuffer ( false )
 {
   // Set the update-visitor.
   _sceneView->setUpdateVisitor ( new osgUtil::UpdateVisitor );
@@ -58,8 +56,6 @@ _contextId ( 0 )
 Renderer::~Renderer()
 {
   _sceneView = 0x0;
-
-  _scene = 0x0;
 }
 
 
@@ -143,9 +139,18 @@ void Renderer::nearFar ( double &n, double &f ) const
 
 void Renderer::render()
 {
-  // Handle no viewer or scene.
-  if ( !_sceneView.valid() || !_scene.valid() || !_sceneView->getSceneData() )
+  // Handle no viewer.
+  if ( !_sceneView.valid() )
     return;
+
+  // If there is no scene then clear the screen. 
+  // Otherwise, weird artifacts may show up.
+  if ( !_sceneView->getSceneData() )
+  {
+    const osg::Vec4 &color = this->backgroundColor();
+    ::glClearColor ( color[0], color[1], color[2], color[3] );
+    ::glClear ( _sceneView->getRenderStage()->getClearMask() );
+  }
 
   // Handle particles and osg-animations.
   osg::ref_ptr<osg::FrameStamp> fs ( new osg::FrameStamp );
@@ -154,38 +159,17 @@ void Renderer::render()
   _sceneView->setFrameStamp ( fs.get() );
 
   // Draw
-  this->_render();
-
-  // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Render the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_render()
-{
-  // If there is no scene then clear the screen. 
-  // Otherwise, weird artifacts may show up.
-  if ( !_scene.valid() )
-  {
-    const osg::Vec4 &color = this->backgroundColor();
-    ::glClearColor ( color[0], color[1], color[2], color[3] );
-    ::glClear ( _sceneView->getRenderStage()->getClearMask() );
-  }
-
   // See if we are supposed to use multiple passes.
   if ( this->numRenderPasses() > 1 )
     this->_multiPassRender();
   else
     this->_singlePassRender();
 
+  // Check for errors.
+  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -299,9 +283,6 @@ void Renderer::backgroundColor ( const osg::Vec4 &color )
   // Set the color.
   if ( this->viewer() )
     this->viewer()->setClearColor ( color );
-
-  // Write it to the registry.
-  // Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
 }
 
 
@@ -540,7 +521,6 @@ void Renderer::uniqueID ( unsigned int id )
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
   _sceneView->getState()->setContextID ( id );
-  _contextId = id;
 }
 
 
@@ -553,7 +533,6 @@ void Renderer::uniqueID ( unsigned int id )
 void Renderer::scene ( osg::Node *node )
 {
   _sceneView->setSceneData ( node );
-  _scene = node;
 }
 
 
@@ -577,7 +556,7 @@ const osg::Node * Renderer::scene() const
 
 osg::Node * Renderer::scene()
 {
-  return _scene.get();
+  return _sceneView->getSceneData ( );
 }
 
 

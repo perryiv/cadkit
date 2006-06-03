@@ -16,7 +16,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Vector3.h"
 
-#include "Usul/Interfaces/IPrimitiveGroup.h"
+#include "Usul/Interfaces/ISceneElement.h"
 
 #include "osg/BoundingBox"
 #include "osg/Geode"
@@ -30,7 +30,7 @@ namespace Triangles {
 class TriangleSet;
 
 class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced,
-                                public Usul::Interfaces::IPrimitiveGroup
+                                public Usul::Interfaces::ISceneElement
 {
 public:
 
@@ -80,7 +80,7 @@ public:
   /// Get the indices of the triangles in the Blocks.
   void                      triangleIndices ( TriangleIndices& ) const;
 
-  /// Usul::Interfaces::IPrimitiveGroup. Public for now.
+  /// Usul::Interfaces::ISceneElement. Public for now.
 
   /// Set the visiblity flag.
   virtual void                 setVisibility ( bool b );

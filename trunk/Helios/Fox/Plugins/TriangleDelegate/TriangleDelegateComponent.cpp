@@ -61,7 +61,7 @@
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IGroupPrimitives.h"
-#include "Usul/Interfaces/IPrimitiveGroup.h"
+#include "Usul/Interfaces/ISceneElement.h"
 
 #include "Usul/Registry/Constants.h"
 #include "Usul/Properties/Attribute.h"
@@ -1542,7 +1542,7 @@ void TriangleDelegateComponent::_buildGroupTab ( Usul::Interfaces::IUnknown* cal
       os << "Group " << i;
       _groupList->appendItem( os.str().c_str() );
 
-      //Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+      //Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
       //if( primitiveGroup.valid() )
         //_groupList->getItem(i)->setSelected( primitiveGroup->getVisibility() );
@@ -1584,7 +1584,7 @@ long TriangleDelegateComponent::onCommandToggleGroup ( FX::FXObject *object, FX:
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1629,7 +1629,7 @@ long TriangleDelegateComponent::onUpdateToggleGroup ( FX::FXObject *object, FX::
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1664,7 +1664,7 @@ long TriangleDelegateComponent::onCommandHideAllGroups ( FX::FXObject *object, F
 
   for ( unsigned int i = 0; i < groups->groupsNumber(); ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1700,7 +1700,7 @@ long TriangleDelegateComponent::onCommandShowAllGroups ( FX::FXObject *object, F
 
   for ( unsigned int i = 0; i < groups->groupsNumber(); ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1740,7 +1740,7 @@ long TriangleDelegateComponent::onCommandGroupTransparency ( FX::FXObject *objec
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1798,7 +1798,7 @@ long TriangleDelegateComponent::onCommandHideGroups ( FX::FXObject *object, FX::
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1832,7 +1832,7 @@ long TriangleDelegateComponent::onCommandShowGroups ( FX::FXObject *object, FX::
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )

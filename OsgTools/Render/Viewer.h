@@ -252,7 +252,6 @@ public:
   MatrixManip *         navManip();
   void                  navManip ( MatrixManip * );
 
-
   // Set/get the number of rendering passes. Unavailable numbers have no effect.
   void                  numRenderPasses ( unsigned int );
   unsigned int          numRenderPasses() const;

@@ -13,7 +13,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "Usul/Interfaces/IPrimitiveGroup.h"
+#include "Usul/Interfaces/ISceneElement.h"
 
 #include "osg/Array"
 #include "osg/ref_ptr"
@@ -36,7 +36,7 @@ namespace Usul
 }
 
 class Group : public Usul::Base::Referenced,
-              public Usul::Interfaces::IPrimitiveGroup
+              public Usul::Interfaces::ISceneElement
 {
 public:
   /// Typedefs
@@ -77,7 +77,7 @@ public:
   /// Subdivide
   void                         subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations );
 
-  /// Usul::Interfaces::IPrimitiveGroup
+  /// Usul::Interfaces::ISceneElement
 
   /// Set the visiblity flag.
   virtual void                 setVisibility ( bool b );

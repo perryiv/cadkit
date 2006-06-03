@@ -1485,9 +1485,7 @@ bool Viewer::writeSceneFile ( const std::string &filename, const std::string &op
 
 void Viewer::boundingBox ( bool state )
 {
-  
-
-  // Remove the bounding box if it exists.
+    // Remove the bounding box if it exists.
   if ( _sceneManager->groupHas( OsgTools::Render::Constants::BOUNDING_BOX ) )
   {
     _sceneManager->groupRemove( OsgTools::Render::Constants::BOUNDING_BOX );
@@ -1793,7 +1791,12 @@ void Viewer::setDisplayLists()
 }
 
 
-//Return if DisplayLists are being used
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return if DisplayLists are being used.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool Viewer::displayLists() const
 {
   return ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );

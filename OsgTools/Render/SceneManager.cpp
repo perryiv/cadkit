@@ -79,18 +79,8 @@ void SceneManager::model( osg::Node* node )
   // Remove any thing that may be under the clip node
   _clipNode->removeChild ( 0 , _clipNode->getNumChildren() );
 
-  // If we are given null...
-  if ( 0x0 == node )
-  {
-    // Clear the scene
-    _scene->removeChild ( 0 , _clipNode->getNumChildren() ); 
-
-    // Re-add the clip node
-    _scene->addChild ( _clipNode.get() );
-  }
-
-  // Otherwise...
-  else
+  // If we are given a valid node
+  if ( 0x0 != node )
   {
     // Add the node
     _clipNode->addChild ( node );

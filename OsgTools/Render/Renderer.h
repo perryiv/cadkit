@@ -21,6 +21,8 @@
 
 #include "osgUtil/SceneView"
 
+#include <vector>
+
 namespace OsgTools {
 namespace Render {
 
@@ -52,6 +54,9 @@ public:
   // Initialize.  Assumes the context is already current.
   void                  init();
 
+  // Use a FBO to capture the screen.
+  void                  fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width );
+
   // Set the view frustum.
   void                  frustum ( float left, float right, float bottom, float top, float near, float far );
 
@@ -72,6 +77,9 @@ public:
   void                  scene ( osg::Node *node );
   const osg::Node *     scene() const;
   osg::Node *           scene();
+
+  // Get a screen capture with the given view matrix.
+  osg::Image*           screenCapture ( const osg::Matrix& matrix, unsigned int height, unsigned int width );
 
   // Get the time.
   double                timeAverage ( const std::string &name ) const;
@@ -101,12 +109,18 @@ public:
   void                  viewer ( SceneView * );
 protected:
 
+  typedef std::vector < osg::ref_ptr < osg::Image > > ImageList;
+
   virtual ~Renderer();
 
   void                  _multiPassRender();
   void                  _singlePassRender();
 
   void                  _cullAndDraw();
+
+  osg::Image*           _accumulate ( const ImageList& images ) const;
+
+  void                  _fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
 private:
 

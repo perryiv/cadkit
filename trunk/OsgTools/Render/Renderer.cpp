@@ -13,13 +13,22 @@
 #include "OsgTools/Jitter.h"
 #include "OsgTools/Render/RecordTime.h"
 #include "OsgTools/ScopedProjection.h"
+#include "OsgTools/Render/Defaults.h"
+#include "OsgTools/Images/Matrix.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Shared/Preferences.h"
+#include "Usul/Registry/Constants.h"
+
+#include "osg/Texture2D"
 
 #include "osgUtil/UpdateVisitor"
+
+#include "osgDB/WriteFile"
+#include <iomanip>
 
 using namespace OsgTools::Render;
 
@@ -577,4 +586,250 @@ void Renderer::updateScene()
     RecordTime ut ( *this, "update" );
     _sceneView->update();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accumulate an image list into a single image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Renderer::_accumulate( const ImageList &images ) const
+{
+  osg::ref_ptr < osg::Image > image ( new osg::Image );
+
+  if ( images.size() > 1 )
+  {
+    osg::ref_ptr< const osg::Image > front ( images.front().get() );
+
+    unsigned int width ( front->s() );
+    unsigned int height ( front->t() );
+
+    OsgTools::Images::Matrix< osg::Vec3f > accumulationBuffer ( width, height );
+
+    float mult ( 1.0f / (float) images.size() );
+
+    unsigned int size ( front->getImageSizeInBytes() );
+
+    std::vector < float > buffer ( width * height * 3, 0.0 );
+
+    for( ImageList::const_iterator iter = images.begin(); iter != images.end(); ++iter )
+    {
+      const unsigned char *pixels ( (*iter)->data() );
+
+      for ( unsigned int i = 0; i < size; ++ i )
+      {
+        buffer.at( i ) += pixels[i] * mult;
+      }
+    }
+    
+    image->allocateImage ( width, height, 1, front->getPixelFormat(), front->getDataType() );
+
+    unsigned char *pixels ( image->data() );
+
+    for ( unsigned int i = 0; i < size; ++ i )
+    {
+      pixels[i] = buffer.at( i );
+    }
+#if 0
+
+      /*std::ostringstream out;
+      out << "E:/adam/models/image" << std::setw ( 3 ) << iter - images.begin() << ".jpg";
+      std::string outname ( out.str() );
+      std::replace ( outname.begin(), outname.end(), ' ', '0' );
+
+      osgDB::writeImageFile ( *(*iter), outname );*/
+
+      for( unsigned int t = 0; t < height; ++t )
+      {
+        for ( unsigned int s = 0; s < width; ++s )
+        {
+        
+          const unsigned char *temp ( (*iter)->data( s, t ) );
+
+          osg::Vec3f & data ( accumulationBuffer.at( s, t ) );
+
+          unsigned char red ( temp[0] );
+          unsigned char green ( temp[1] );
+          unsigned char blue ( temp[2] );
+
+          data[0] += red * mult;
+          data[1] += green * mult;
+          data[2] += blue * mult;
+        }
+      }
+    }
+
+    image->allocateImage ( width, height, 1, front->getPixelFormat(), front->getDataType() );
+
+    for ( unsigned int s = 0; s < width; ++s )
+    {
+      for( unsigned int t = 0; t < height; ++t )
+      {
+        const osg::Vec3f & temp ( accumulationBuffer.at( s, t ) );
+
+        unsigned char *data ( image->data( s, t ) );
+
+        *data = (unsigned char) temp[0];
+        *(data+1) = (unsigned char) temp[1];
+        *(data+2) = (unsigned char) temp[2];
+      }
+    }
+#endif
+  }
+
+  return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Screen capture at the given view with the given height and width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int height, unsigned int width )
+{
+  osg::ref_ptr< osg::Image > image ( new osg::Image() );
+
+  osg::Matrix oldViewMatrix ( _sceneView->getViewMatrix() );
+
+  try
+  {
+    _sceneView->setViewMatrix ( matrix );
+
+    if ( this->numRenderPasses() > 1 )
+    {
+      // Save original projection matrix.
+      OsgTools::ScopedProjection sp ( _sceneView.get() );
+
+      // Needed in the loop.
+      osg::Matrixd pMatrix;
+      //osg::ref_ptr<osg::Viewport> vp ( new osg::Viewport( 0, 0, width, height ) /*this->viewport()*/ );
+      osg::ref_ptr<osg::Viewport> vp ( this->viewport() );
+      const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
+
+      // vector to store the images.
+      ImageList images;
+
+      // Loop through the passes...
+      for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
+      {
+        // Set the proper projection matrix.
+        OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, pMatrix );
+        _sceneView->setProjectionMatrix ( pMatrix );
+
+        images.push_back( new osg::Image );
+        
+        // Make enough space
+        images.back()->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+        
+        this->_fboScreenCapture ( *images.back(), pMatrix, width, height );
+      }
+
+      image = this->_accumulate( images );
+    }
+    else
+    {
+      // Make enough space
+      image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+      
+      this->fboScreenCapture ( *image, height, width );
+    }
+  }
+
+  // If there is an exception, set the old view matrix and re throw.
+  catch ( ... )
+  {
+    _sceneView->setViewMatrix( oldViewMatrix );
+    throw;
+  }
+
+  _sceneView->setViewMatrix( oldViewMatrix );
+
+  return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Capture the screen using a frame buffer object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width )
+{
+  // Set the projection matrix.
+  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
+  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
+  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
+  double w ( width ), h ( height );
+  double aspect ( w / h );
+
+  this->_fboScreenCapture( image, osg::Matrix::perspective( fovy, aspect, zNear, zFar ) , width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Capture the screen using a frame buffer object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
+{
+  // Set up the texture.
+  osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
+  tex->setTextureSize(width, height);
+  tex->setInternalFormat(GL_RGBA);
+  tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
+  tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
+  tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+  tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+  
+  // Make the fbo.
+  osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
+  fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
+  fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
+
+  // Make the camera buffer.
+  osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
+  camera->setClearColor( this->viewer()->getClearColor() );
+  camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  camera->setViewport(0, 0, width, height);
+
+  // Set the camera to render before the main camera.
+  camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
+
+  // Set the projection matrix.
+  camera->setProjectionMatrix ( projection );
+
+  // Set view.
+  camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+  camera->setViewMatrix ( this->viewer()->getViewMatrix() );
+
+  // Tell the camera to use OpenGL frame buffer object where supported.
+  camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
+
+  // Attach the texture and use it as the color buffer.
+  camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
+
+  // Save the old root.
+  osg::ref_ptr< osg::Node > node ( this->scene() );
+
+  // Add the scene to the camera.
+  camera->addChild ( this->scene() );
+
+  // Make the camera file the scene data.
+  this->viewer()->setSceneData ( camera.get() );
+
+  // Render to the image.
+  this->_singlePassRender();
+
+  // Set the old root back to the scene data.
+  this->viewer()->setSceneData ( node.get() );
+
+  // Figure out how to avoid this last render.
+  this->render();
 }

@@ -217,9 +217,10 @@ public:
   // Set the default background.
   void                  defaultBackground();
 
-  // Get the document.
+  // Get/Set the document.
   Document *            document();
   const Document *      document() const;
+  void                  document ( Document * );
 
   // Get/Set the field of view
   void                  fovSet ( double fov );
@@ -442,8 +443,6 @@ protected:
   void                  _editLight     ( osgUtil::Hit &hit );
   void                  _editMaterial  ( osgUtil::Hit &hit );
 
-  void                  _fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width ) const;
-
   void                  _findDragger ( const osgUtil::Hit &hit );
 
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
@@ -634,6 +633,7 @@ protected:
 
   /// Usul::Interfaces::IScreenCapture
   virtual osg::Image* screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
+  virtual osg::Image* screenCapture ( unsigned int height, unsigned int width ) const;
 
 private:
 

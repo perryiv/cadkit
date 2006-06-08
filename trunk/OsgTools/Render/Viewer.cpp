@@ -42,6 +42,7 @@
 #include "OsgTools/Widgets/ClipPlane.h"
 #include "OsgTools/IO/WriteEPS.h"
 #include "OsgTools/Callbacks/HiddenLines.h"
+#include "OsgTools/Font.h"
 
 #include "OsgTools/Draggers/Trackball.h"
 
@@ -1597,8 +1598,8 @@ bool Viewer::boundingSphere() const
 void Viewer::text ( float x, float y, unsigned int row, unsigned int col, const std::string& string )
 {
   // Get xPos and yPos of upper left most point of the matrix
-  int xPos ( (int)(this->width()  * x) );
-  int yPos ( (int)(this->height() * y) );
+  int xPos ( x ); //(int)(this->width()  * x) );
+  int yPos ( y ); //(int)(this->height() * y) );
 
   XYPair key ( x, y );
 
@@ -1631,8 +1632,10 @@ void Viewer::text ( float x, float y, unsigned int row, unsigned int col, const 
   {
     text = new osgText::Text;
 
-    osg::Vec4 layoutColor(1.0f,0.0f,0.0f,1.0f);
-    float layoutCharacterSize = 20.0f;    
+    text->setFont ( OsgTools::Font::defaultFont() );
+
+    osg::Vec4 layoutColor(0.0f,0.0f,0.0f,1.0f);
+    float layoutCharacterSize = 24.0f;
 
     text->setColor(layoutColor);
     text->setCharacterSize(layoutCharacterSize);
@@ -1660,31 +1663,31 @@ void Viewer::text ( float x, float y, unsigned int row, unsigned int col, const 
 
 void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth )
 {
-  if ( ! _sceneManager->groupHas( OsgTools::Render::Constants::TEXT_MATRIX ) )
+  if ( ! _sceneManager->projectionGroupHas( OsgTools::Render::Constants::TEXT_MATRIX ) )
   {
-    osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+    osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
 
-    osg::ref_ptr< osg::Projection > projection = new osg::Projection;
-    projection->setMatrix( osg::Matrix::ortho2D( 0, this->width() ,0, this->height() ) );
+   // osg::ref_ptr< osg::Projection > projection = new osg::Projection;
+   // projection->setMatrix( osg::Matrix::ortho2D( 0, this->width() ,0, this->height() ) );
 
-    // Make sure it's drawn last ( on top )
-    osg::ref_ptr<osg::StateSet> ss ( projection->getOrCreateStateSet() );
-    ss->setRenderBinDetails ( 100, "RenderBin" );
-	  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+   // // Make sure it's drawn last ( on top )
+   // osg::ref_ptr<osg::StateSet> ss ( projection->getOrCreateStateSet() );
+   // ss->setRenderBinDetails ( 100, "RenderBin" );
+	  //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
     osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
     modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     modelview_abs->setMatrix(osg::Matrix::identity());
 
-    projection->addChild ( modelview_abs );
+   //projection->addChild ( modelview_abs );
 
-    group->addChild( projection.get() );
+    group->addChild( modelview_abs );
   }
 
-  osg::ref_ptr<osg::Group> group ( _sceneManager->groupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+  osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
 
   // This is the matrix transform under the projection matrix
-  osg::ref_ptr< osg::Group > node = group->getChild( 0 )->asGroup()->getChild( 0 )->asGroup();
+  osg::ref_ptr< osg::Group > node = group->getChild( 0 )->asGroup();
 
   XYPair key ( x, y );
 
@@ -1706,7 +1709,7 @@ void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned
     i = _textMap.find( key );
 
     // Add the geode to the text group
-    if( node.valid() )
+    if ( node.valid() )
       node->addChild( i->second.first.second.get() );
   }
 }
@@ -1720,7 +1723,7 @@ void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned
 
 void Viewer::textRemoveMatrix ( float x, float y )
 {
-  if ( _sceneManager->groupHas ( OsgTools::Render::Constants::TEXT_MATRIX ) )
+  if ( _sceneManager->projectionGroupHas ( OsgTools::Render::Constants::TEXT_MATRIX ) )
   {
     XYPair key ( x, y );
   
@@ -1757,6 +1760,18 @@ const Viewer::Document *Viewer::document() const
 Viewer::Document *Viewer::document()
 {
   return _document.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::document( Document *document )
+{
+  _document = document;
 }
 
 
@@ -2105,15 +2120,19 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // 4. Set the viewport and projection as it is now.
   // 5. Read from the texture and add it to final image.
 
-  if ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() )
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  if ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() && height <= 4048 && width <= 4048 )
   {
-    this->_fboScreenCapture( *image, height, width );
+    // Make this context current.
+    me->_context->makeCurrent();
+
+    //_renderer->fboScreenCapture( *image, height, width );
+    image = me->_renderer->screenCapture( this->getViewMatrix(), height, width );
   }
   else
   {
-    // Get non const pointer to this
-    Viewer *me ( const_cast < Viewer * > ( this ) );
-
     // Make this context current.
     me->_context->makeCurrent();
 
@@ -4881,37 +4900,27 @@ void Viewer::_setCenterOfRotation()
 
 osg::Image* Viewer::screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
 {
-  osg::ref_ptr< osg::Image > image ( new osg::Image() );
-
-  osg::Matrix oldViewMatrix ( this->getViewMatrix() );
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
 
   osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
                   osg::Matrixd::rotate(rotation)*
                   osg::Matrixd::translate(center) );
 
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
+  // Make this context current.
+  me->_context->makeCurrent();
 
-  me->setViewMatrix ( m.inverse( m ) );
-
-  // Make enough space
-  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-  
-  this->_fboScreenCapture ( *image, height, width );
-
-  me->setViewMatrix( oldViewMatrix );
-
-  return image.release();
+  return me->_renderer->screenCapture ( m.inverse( m ), height, width );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Capture the screen using a frame buffer object.
+//  Screen capture with given height and width
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width ) const
+osg::Image* Viewer::screenCapture ( unsigned int height, unsigned int width ) const
 {
   // Get non const pointer to this
   Viewer *me ( const_cast < Viewer * > ( this ) );
@@ -4919,65 +4928,7 @@ void Viewer::_fboScreenCapture ( osg::Image& image, unsigned int height, unsigne
   // Make this context current.
   me->_context->makeCurrent();
 
-  // Set up the texture.
-  osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
-  tex->setTextureSize(width, height);
-  tex->setInternalFormat(GL_RGBA);
-  tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
-  tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
-  tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-  tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-  
-  // Make the fbo.
-  osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
-  fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
-  fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
-
-  // Make the camera buffer.
-  osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
-  camera->setClearColor( this->viewer()->getClearColor() );
-  camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  camera->setViewport(0, 0, width, height);
-
-  // Set the camera to render before the main camera.
-  camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
-
-  // Set the projection matrix.
-  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
-  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
-  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
-  double w ( width ), h ( height );
-  double aspect ( w / h );
-
-  camera->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
-
-  // Set view.
-  camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-  camera->setViewMatrix ( this->viewer()->getViewMatrix() );
-
-  // Tell the camera to use OpenGL frame buffer object where supported.
-  camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
-
-  // Attach the texture and use it as the color buffer.
-  camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
-
-  // Save the old root.
-  NodePtr node ( me->scene() );
-
-  // Add the scene to the camera.
-  camera->addChild ( me->scene() );
-
-  // Make the camera file the scene data.
-  me->viewer()->setSceneData ( camera.get() );
-
-  // Render to the image.
-  me->render();
-
-  // Set the old root back to the scene data.
-  me->viewer()->setSceneData ( node.get() );
-
-  // Figure out how to avoid this last render.
-  me->render();
+  return me->_renderer->screenCapture ( this->getViewMatrix(), height, width );
 }
 
 

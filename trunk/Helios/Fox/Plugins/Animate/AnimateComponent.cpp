@@ -1750,7 +1750,7 @@ void AnimateComponent::animate ( const osg::Quat &r1, const osg::Quat &r2, doubl
 
 Usul::Documents::Document * AnimateComponent::createDocument ( Usul::Interfaces::IUnknown *caller )
 {
-  Movie::ValidRefPtr document ( new Movie );
+  Movie::ValidRefPtr document ( this->_createMovie( "" ) );
   return document.release();
 }
 

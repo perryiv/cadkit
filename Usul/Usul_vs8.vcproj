@@ -482,6 +482,14 @@
 				Name="Interfaces"
 				>
 				<File
+					RelativePath=".\Interfaces\IAssembly.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IAssemblyManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IModifiedObserver.h"
 					>
 				</File>
@@ -674,6 +682,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IRedraw.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISceneElement.h"
 						>
 					</File>
 					<File
@@ -1006,10 +1018,6 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IKeepAllConnected.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\IPrimitiveGroup.h"
 						>
 					</File>
 					<File

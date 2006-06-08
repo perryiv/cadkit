@@ -33,6 +33,7 @@ struct IScreenCapture : public Usul::Interfaces::IUnknown
   enum { IID = 1223175760u };
 
   virtual osg::Image* screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const = 0;
+  virtual osg::Image* screenCapture ( unsigned int height, unsigned int width ) const = 0;
 
 }; // struct IScreenCapture
 

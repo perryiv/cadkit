@@ -15,8 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IPRIMITIVEGROUP_H__
-#define __USUL_INTERFACES_IPRIMITIVEGROUP_H__
+#ifndef __USUL_INTERFACES_ISceneElement_H__
+#define __USUL_INTERFACES_ISceneElement_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -26,10 +26,10 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IPrimitiveGroup : public Usul::Interfaces::IUnknown
+struct ISceneElement : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IPrimitiveGroup );
+  USUL_DECLARE_QUERY_POINTERS ( ISceneElement );
 
   /// Id for this interface.
   enum { IID = 1142124871u };
@@ -82,11 +82,11 @@ struct IPrimitiveGroup : public Usul::Interfaces::IUnknown
   /// Export a snap shot
   //virtual void                 beginExportSnapShot ( osg::Image* image, unsigned int height, unsigned int width ) = 0;
   //virtual void                 endExportSnapShot   ( ) = 0;
-}; // struct IPrimitiveGroup
+}; // struct ISceneElement
 
 
 } // end namespace Interfaces
 } // end namespace Usul
 
 
-#endif /* __USUL_INTERFACES_IPRIMITIVEGROUP_H__ */
+#endif /* __USUL_INTERFACES_ISceneElement_H__ */

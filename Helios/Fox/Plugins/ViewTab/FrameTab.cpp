@@ -80,7 +80,9 @@ _caller(),
 _centerIncrement( 10 ),
 _distanceIncrement ( 10 ),
 _rotationIncrement ( .01 ),
-_contents ( 0x0 )
+_contents ( 0x0 ),
+_height ( 600 ),
+_width ( 800 )
 {
 }
 

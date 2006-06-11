@@ -20,6 +20,7 @@
 #include "Usul/Types/Types.h"
 
 #include <string>
+#include <time.h>
 
 
 namespace Usul {
@@ -28,8 +29,13 @@ namespace System {
 
 struct USUL_EXPORT DateTime
 {
-  static std::string        now();
-  static std::string        format ( long ); // time_t
+  static std::string        format ( time_t ); // time_t
+  static std::string        format();
+
+  static ::tm               local ( time_t );
+  static ::tm               local();
+
+  static std::string        now(); // Depreciated. Use format() instead.
 };
 
 

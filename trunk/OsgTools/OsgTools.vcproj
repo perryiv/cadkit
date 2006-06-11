@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="lib: OsgTools"
 	ProjectGUID="{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/OsgTools.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
-				ExceptionHandling="TRUE"
+				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="FALSE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
+				DisableLanguageExtensions="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -38,69 +61,99 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib"
 				OutputFile="../bin/OsgToolsd.dll"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/OsgToolsd.pdb"
-				ImportLibrary="../bin/OsgToolsd.lib"/>
+				ImportLibrary="../bin/OsgToolsd.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/OsgTools.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/OsgTools.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OSG_TOOLS"
-				StringPooling="TRUE"
-				ExceptionHandling="TRUE"
+				StringPooling="true"
+				ExceptionHandling="1"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -108,47 +161,56 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osgGA.lib OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib"
 				OutputFile="../bin/OsgTools.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(OPENTHREADS_LIB_DIR);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
-				ImportLibrary="../bin/OsgTools.lib"/>
+				ImportLibrary="../bin/OsgTools.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/OsgTools.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -156,576 +218,749 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Builders"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Builders\Arrow.cpp">
+					RelativePath=".\Builders\Arrow.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Builders\Arrow.h">
+					RelativePath=".\Builders\Arrow.h"
+					>
 				</File>
 				<File
-					RelativePath="Axes.cpp">
+					RelativePath="Axes.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Axes.h">
+					RelativePath="Axes.h"
+					>
 				</File>
 				<File
-					RelativePath="Box.h">
+					RelativePath="Box.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Circle.cpp">
+					RelativePath=".\Circle.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Circle.h">
+					RelativePath=".\Circle.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ColorPolicyFunctor.h">
+					RelativePath=".\ColorPolicyFunctor.h"
+					>
 				</File>
 				<File
-					RelativePath="Grid.cpp">
+					RelativePath="Grid.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Grid.h">
+					RelativePath="Grid.h"
+					>
 				</File>
 				<File
-					RelativePath=".\MaterialFactory.cpp">
+					RelativePath=".\MaterialFactory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\MaterialFactory.h">
+					RelativePath=".\MaterialFactory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Mesh.cpp">
+					RelativePath=".\Mesh.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Mesh.h">
+					RelativePath=".\Mesh.h"
+					>
 				</File>
 				<File
-					RelativePath="Ray.cpp">
+					RelativePath="Ray.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Ray.h">
+					RelativePath="Ray.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ShapeFactory.cpp">
+					RelativePath=".\ShapeFactory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\ShapeFactory.h">
+					RelativePath=".\ShapeFactory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Sphere.h">
+					RelativePath=".\Sphere.h"
+					>
 				</File>
 				<File
-					RelativePath="Text.cpp">
+					RelativePath="Text.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Text.h">
+					RelativePath="Text.h"
+					>
 				</File>
 				<File
-					RelativePath="Torus.cpp">
+					RelativePath="Torus.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Torus.h">
+					RelativePath="Torus.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Utilities"
-				Filter="">
+				>
 				<File
-					RelativePath=".\ColorSetter.cpp">
+					RelativePath=".\ColorSetter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\ColorSetter.h">
+					RelativePath=".\ColorSetter.h"
+					>
 				</File>
 				<File
-					RelativePath="Convert.h">
+					RelativePath="Convert.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Dimension.h">
+					RelativePath=".\Dimension.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Utilities\DirtyBounds.h">
+					RelativePath=".\Utilities\DirtyBounds.h"
+					>
 				</File>
 				<File
-					RelativePath=".\FlipNormals.h">
+					RelativePath=".\FlipNormals.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Font.cpp">
+					RelativePath=".\Font.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Font.h">
+					RelativePath=".\Font.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ForEach.h">
+					RelativePath=".\ForEach.h"
+					>
 				</File>
 				<File
-					RelativePath=".\GlassBoundingBox.cpp">
+					RelativePath=".\GlassBoundingBox.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\GlassBoundingBox.h">
+					RelativePath=".\GlassBoundingBox.h"
+					>
 				</File>
 				<File
-					RelativePath=".\GraphStreamVisitor.h">
+					RelativePath=".\GraphStreamVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath="Group.cpp">
+					RelativePath="Group.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Group.h">
+					RelativePath="Group.h"
+					>
 				</File>
 				<File
-					RelativePath=".\HasOption.h">
+					RelativePath=".\HasOption.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Index.h">
+					RelativePath=".\Index.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Utilities\Intersect.cpp">
+					RelativePath=".\Utilities\Intersect.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Utilities\Intersect.h">
+					RelativePath=".\Utilities\Intersect.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Jitter.cpp">
+					RelativePath=".\Jitter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Jitter.h">
+					RelativePath=".\Jitter.h"
+					>
 				</File>
 				<File
-					RelativePath=".\KeepFirst.h">
+					RelativePath=".\KeepFirst.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Lod.cpp">
+					RelativePath=".\Lod.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Lod.h">
+					RelativePath=".\Lod.h"
+					>
 				</File>
 				<File
-					RelativePath=".\MaterialSetter.cpp">
+					RelativePath=".\MaterialSetter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\MaterialSetter.h">
+					RelativePath=".\MaterialSetter.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ReadModel.cpp">
+					RelativePath=".\ReadModel.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\ReadModel.h">
+					RelativePath=".\ReadModel.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Utilities\ReferenceFrame.h">
+					RelativePath=".\Utilities\ReferenceFrame.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Sample.cpp">
+					RelativePath=".\Sample.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Sample.h">
+					RelativePath=".\Sample.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ScopedDisplayLists.h">
+					RelativePath=".\ScopedDisplayLists.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ScopedOptions.h">
+					RelativePath=".\ScopedOptions.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ScopedProjection.h">
+					RelativePath=".\ScopedProjection.h"
+					>
 				</File>
 				<File
-					RelativePath=".\SetDataVariance.h">
+					RelativePath=".\SetDataVariance.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Statistics.cpp">
+					RelativePath=".\Statistics.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Statistics.h">
+					RelativePath=".\Statistics.h"
+					>
 				</File>
 				<File
-					RelativePath="Visitor.h">
+					RelativePath="Visitor.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Misc"
-				Filter="">
+				>
 				<File
-					RelativePath="Declarations.h">
+					RelativePath="Declarations.h"
+					>
 				</File>
 				<File
-					RelativePath="Export.h">
+					RelativePath="Export.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Triangles"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Triangles\Block.cpp">
+					RelativePath=".\Triangles\Block.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Block.h">
+					RelativePath=".\Triangles\Block.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Blocks.cpp">
+					RelativePath=".\Triangles\Blocks.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Blocks.h">
+					RelativePath=".\Triangles\Blocks.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\ColorFunctor.cpp">
+					RelativePath=".\Triangles\ColorFunctor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\ColorFunctor.h">
+					RelativePath=".\Triangles\ColorFunctor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Constants.h">
+					RelativePath=".\Triangles\Constants.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Enum.h">
+					RelativePath=".\Triangles\Enum.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Factory.cpp">
+					RelativePath=".\Triangles\Factory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Factory.h">
+					RelativePath=".\Triangles\Factory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Loop.cpp">
+					RelativePath=".\Triangles\Loop.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Loop.h">
+					RelativePath=".\Triangles\Loop.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\LoopSplitter.cpp">
+					RelativePath=".\Triangles\LoopSplitter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\LoopSplitter.h">
+					RelativePath=".\Triangles\LoopSplitter.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\SharedVertex.cpp">
+					RelativePath=".\Triangles\SharedVertex.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\SharedVertex.h">
+					RelativePath=".\Triangles\SharedVertex.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Triangle.cpp">
+					RelativePath=".\Triangles\Triangle.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\Triangle.h">
+					RelativePath=".\Triangles\Triangle.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\TriangleSet.cpp">
+					RelativePath=".\Triangles\TriangleSet.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Triangles\TriangleSet.h">
+					RelativePath=".\Triangles\TriangleSet.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Images"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Images\EdgeDetect.cpp">
+					RelativePath=".\Images\EdgeDetect.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\EdgeDetect.h">
+					RelativePath=".\Images\EdgeDetect.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Grayscale.cpp">
+					RelativePath=".\Images\Grayscale.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Grayscale.h">
+					RelativePath=".\Images\Grayscale.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Histogram.cpp">
+					RelativePath=".\Images\Histogram.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Histogram.h">
+					RelativePath=".\Images\Histogram.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Image3d.cpp">
+					RelativePath=".\Images\Image3d.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Image3d.h">
+					RelativePath=".\Images\Image3d.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\ImageOr.cpp">
+					RelativePath=".\Images\ImageOr.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\ImageOr.h">
+					RelativePath=".\Images\ImageOr.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Invert.cpp">
+					RelativePath=".\Images\Invert.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Invert.h">
+					RelativePath=".\Images\Invert.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Matrix.h">
+					RelativePath=".\Images\Matrix.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Morphology.cpp">
+					RelativePath=".\Images\Morphology.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Morphology.h">
+					RelativePath=".\Images\Morphology.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Scale.cpp">
+					RelativePath=".\Images\Scale.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Scale.h">
+					RelativePath=".\Images\Scale.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Threshold.cpp">
+					RelativePath=".\Images\Threshold.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Images\Threshold.h">
+					RelativePath=".\Images\Threshold.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Callbacks"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Callbacks\BoundingBox.h">
+					RelativePath=".\Callbacks\BoundingBox.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Callbacks\BoundingSphere.cpp">
+					RelativePath=".\Callbacks\BoundingSphere.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Callbacks\BoundingSphere.h">
+					RelativePath=".\Callbacks\BoundingSphere.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Callbacks\SortBackToFront.cpp">
+					RelativePath=".\Callbacks\SortBackToFront.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Callbacks\SortBackToFront.h">
+					RelativePath=".\Callbacks\SortBackToFront.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Drawables"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Drawables\VoxelGeometry.cpp">
+					RelativePath=".\Drawables\VoxelGeometry.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Drawables\VoxelGeometry.h">
+					RelativePath=".\Drawables\VoxelGeometry.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Render"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Render\ActionAdapter.cpp">
+					RelativePath=".\Render\ActionAdapter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\ActionAdapter.h">
+					RelativePath=".\Render\ActionAdapter.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Animation.cpp">
+					RelativePath=".\Render\Animation.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Animation.h">
+					RelativePath=".\Render\Animation.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\ClampProjection.h">
+					RelativePath=".\Render\ClampProjection.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\ClipPlaneCallback.cpp">
+					RelativePath=".\Render\ClipPlaneCallback.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\ClipPlaneCallback.h">
+					RelativePath=".\Render\ClipPlaneCallback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Constants.h">
+					RelativePath=".\Render\Constants.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Defaults.h">
+					RelativePath=".\Render\Defaults.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\EventAdapter.cpp">
+					RelativePath=".\Render\EventAdapter.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\EventAdapter.h">
+					RelativePath=".\Render\EventAdapter.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\FrameDump.cpp">
+					RelativePath=".\Render\FrameDump.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\FrameDump.h">
+					RelativePath=".\Render\FrameDump.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\LightCallback.cpp">
+					RelativePath=".\Render\LightCallback.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\LightCallback.h">
+					RelativePath=".\Render\LightCallback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\LodCallbacks.h">
+					RelativePath=".\Render\LodCallbacks.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\RecordTime.h">
+					RelativePath=".\Render\RecordTime.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Trackball.cpp">
+					RelativePath=".\Render\Trackball.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Trackball.h">
+					RelativePath=".\Render\Trackball.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Viewer.cpp">
+					RelativePath=".\Render\Viewer.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Render\Viewer.h">
+					RelativePath=".\Render\Viewer.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="IO"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Io\STLPrintVisitor.h">
+					RelativePath=".\Io\STLPrintVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Io\STLWrite.h">
+					RelativePath=".\Io\STLWrite.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="State"
-				Filter="">
+				>
 				<File
-					RelativePath=".\State\PolygonMode.cpp">
+					RelativePath=".\State\PolygonMode.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\State\PolygonMode.h">
+					RelativePath=".\State\PolygonMode.h"
+					>
 				</File>
 				<File
-					RelativePath=".\State\ShadeModel.cpp">
+					RelativePath=".\State\ShadeModel.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\State\ShadeModel.h">
+					RelativePath=".\State\ShadeModel.h"
+					>
 				</File>
 				<File
-					RelativePath=".\State\StateSet.cpp">
+					RelativePath=".\State\StateSet.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\State\StateSet.h">
+					RelativePath=".\State\StateSet.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Draggers"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Draggers\Callback.cpp">
+					RelativePath=".\Draggers\Callback.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Callback.h">
+					RelativePath=".\Draggers\Callback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Dragger.cpp">
+					RelativePath=".\Draggers\Dragger.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Dragger.h">
+					RelativePath=".\Draggers\Dragger.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Plane.cpp">
+					RelativePath=".\Draggers\Plane.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Plane.h">
+					RelativePath=".\Draggers\Plane.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Rotate1.cpp">
+					RelativePath=".\Draggers\Rotate1.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Rotate1.h">
+					RelativePath=".\Draggers\Rotate1.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Trackball.cpp">
+					RelativePath=".\Draggers\Trackball.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Draggers\Trackball.h">
+					RelativePath=".\Draggers\Trackball.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate.cpp">
+					RelativePath=".\Draggers\Translate.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate.h">
+					RelativePath=".\Draggers\Translate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate1.cpp">
+					RelativePath=".\Draggers\Translate1.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate1.h">
+					RelativePath=".\Draggers\Translate1.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate2.cpp">
+					RelativePath=".\Draggers\Translate2.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate2.h">
+					RelativePath=".\Draggers\Translate2.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate3.cpp">
+					RelativePath=".\Draggers\Translate3.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\Translate3.h">
+					RelativePath=".\Draggers\Translate3.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\TranslateScreen.cpp">
+					RelativePath=".\Draggers\TranslateScreen.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draggers\TranslateScreen.h">
+					RelativePath=".\Draggers\TranslateScreen.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Intersect"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Intersect\Frustum.h">
+					RelativePath=".\Intersect\Frustum.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Intersect\FrustumFunctor.h">
+					RelativePath=".\Intersect\FrustumFunctor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Intersect\FrustumVisitor.cpp">
+					RelativePath=".\Intersect\FrustumVisitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Intersect\FrustumVisitor.h">
+					RelativePath=".\Intersect\FrustumVisitor.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Widgets"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Widgets\Axes.cpp">
+					RelativePath=".\Widgets\Axes.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Widgets\Axes.h">
+					RelativePath=".\Widgets\Axes.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Widgets\ClipPlane.cpp">
+					RelativePath=".\Widgets\ClipPlane.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Widgets\ClipPlane.h">
+					RelativePath=".\Widgets\ClipPlane.h"
+					>
 				</File>
 			</Filter>
 		</Filter>

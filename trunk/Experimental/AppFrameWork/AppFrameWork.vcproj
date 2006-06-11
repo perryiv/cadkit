@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="COMPILING_APP_FRAME_WORK;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -43,12 +43,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(USUL_LIB_DIR)/AppFrameWorkd.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/AppFrameWorkd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/AppFrameWorkd.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/AppFrameWorkd.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/AppFrameWorkd.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -59,7 +59,7 @@
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy Icons\*.* %USUL_LIB_DIR%\icons\ /f /i /k /y /c"/>
+				CommandLine="xcopy Icons\*.* %CADKIT_ROOT_DIR%\bin\icons\ /f /i /k /y /c"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -92,7 +92,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../;$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="COMPILING_APP_FRAME_WORK;_USRDLL;NDEBUG;WIN32;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -112,11 +112,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(USUL_LIB_DIR)/AppFrameWork.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/AppFrameWork.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ProgramDatabaseFile=".\Release/AppFrameWork.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/AppFrameWork.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/AppFrameWork.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -127,7 +127,7 @@
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy Icons\*.* %USUL_LIB_DIR%\icons\ /f /i /k /y /c"/>
+				CommandLine="xcopy Icons\*.* %CADKIT_ROOT_DIR%\bin\icons\ /f /i /k /y /c"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

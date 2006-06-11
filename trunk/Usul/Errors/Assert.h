@@ -18,12 +18,16 @@
 
 
 #ifdef _MSC_VER
-# if 1
-#  include <crtdbg.h>           // Has been giving me problems with stack
-#  define USUL_ASSERT _ASSERT   // corruption after clicking on "Retry"...
+# ifdef __CLR_VER
+#  define USUL_ASSERT System::Diagnostics::Debug::Assert
 # else
-#  include <assert.h>
-#  define USUL_ASSERT assert
+#  if 1                          // Use this to turn on/off standard assert.
+#   include <crtdbg.h>
+#   define USUL_ASSERT _ASSERT
+#  else
+#   include <assert.h>
+#   define USUL_ASSERT assert
+#  endif
 # endif
 #elif __sgi
 # include <assert.h>

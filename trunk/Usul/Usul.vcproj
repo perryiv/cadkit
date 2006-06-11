@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="lib: Usul"
 	ProjectGUID="{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/Usul.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
-				ExceptionHandling="TRUE"
+				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="FALSE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
+				DisableLanguageExtensions="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -38,69 +61,99 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="Ws2_32.lib opengl32.lib"
-				OutputFile="$(USUL_LIB_DIR)/Usuld.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usuld.dll"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Usuld.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Usuld.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Usul.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/Usul.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
-				StringPooling="TRUE"
-				ExceptionHandling="TRUE"
+				StringPooling="true"
+				ExceptionHandling="1"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -108,47 +161,56 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="Ws2_32.lib opengl32.lib"
-				OutputFile="$(USUL_LIB_DIR)/Usul.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usul.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Usul.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Usul.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Usul.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Usul.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -156,1238 +218,1569 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Adaptors"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Adaptors\Bind.h">
+					RelativePath=".\Adaptors\Bind.h"
+					>
 				</File>
 				<File
-					RelativePath="Adaptors\MemberFunction.h">
+					RelativePath="Adaptors\MemberFunction.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Adaptors\ProgressBarUpdate.cpp">
-				</File>
-				<File
-					RelativePath=".\Adaptors\ProgressBarUpdate.h">
-				</File>
-				<File
-					RelativePath=".\Adaptors\Random.h">
+					RelativePath=".\Adaptors\Random.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Algorithms"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Algorithms\ConvexHullSort.h">
+					RelativePath=".\Algorithms\ConvexHullSort.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\CopyIf.h">
+					RelativePath=".\Algorithms\CopyIf.h"
+					>
 				</File>
 				<File
-					RelativePath="Algorithms\Extract.h">
+					RelativePath="Algorithms\Extract.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\FindAllConnected.h">
+					RelativePath=".\Algorithms\FindAllConnected.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Sphere.h">
+					RelativePath=".\Algorithms\Sphere.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\TriStrip.h">
+					RelativePath=".\Algorithms\TriStrip.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Base"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Base\InstanceManager.cpp">
+					RelativePath=".\Base\InstanceManager.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Base\InstanceManager.h">
+					RelativePath=".\Base\InstanceManager.h"
+					>
 				</File>
 				<File
-					RelativePath="Base\Referenced.cpp">
+					RelativePath="Base\Referenced.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Base\Referenced.h">
+					RelativePath="Base\Referenced.h"
+					>
 				</File>
 				<File
-					RelativePath="Base\Typed.cpp">
+					RelativePath="Base\Typed.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Base\Typed.h">
+					RelativePath="Base\Typed.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Bits"
-				Filter="">
+				>
 				<File
-					RelativePath="Bits\Bits.h">
+					RelativePath="Bits\Bits.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="CommandLine"
-				Filter="">
+				>
 				<File
-					RelativePath=".\CommandLine\Arguments.cpp">
+					RelativePath=".\CommandLine\Arguments.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\CommandLine\Arguments.h">
+					RelativePath=".\CommandLine\Arguments.h"
+					>
 				</File>
 				<File
-					RelativePath="CommandLine\Parser.h">
+					RelativePath="CommandLine\Parser.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Components"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Components\Call.h">
+					RelativePath=".\Components\Call.h"
+					>
 				</File>
 				<File
-					RelativePath="Components\Create.h">
+					RelativePath="Components\Create.h"
+					>
 				</File>
 				<File
-					RelativePath="Components\Exceptions.h">
+					RelativePath="Components\Exceptions.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Components\Manager.cpp">
+					RelativePath=".\Components\Manager.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Components\Manager.h">
+					RelativePath=".\Components\Manager.h"
+					>
 				</File>
 				<File
-					RelativePath="Components\Object.cpp">
+					RelativePath="Components\Object.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Components\Object.h">
+					RelativePath="Components\Object.h"
+					>
 				</File>
 				<File
-					RelativePath="Components\Registry.cpp">
+					RelativePath="Components\Registry.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Components\Registry.h">
+					RelativePath="Components\Registry.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="DLL"
-				Filter="">
+				>
 				<File
-					RelativePath="DLL\Exceptions.h">
+					RelativePath="DLL\Exceptions.h"
+					>
 				</File>
 				<File
-					RelativePath="DLL\Library.cpp">
+					RelativePath="DLL\Library.cpp"
+					>
 				</File>
 				<File
-					RelativePath="DLL\Library.h">
+					RelativePath="DLL\Library.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Dll\Listener.cpp">
+					RelativePath=".\Dll\Listener.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Dll\Listener.h">
+					RelativePath=".\Dll\Listener.h"
+					>
 				</File>
 				<File
-					RelativePath="DLL\Loader.cpp">
+					RelativePath="DLL\Loader.cpp"
+					>
 				</File>
 				<File
-					RelativePath="DLL\Loader.h">
+					RelativePath="DLL\Loader.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Errors"
-				Filter="">
+				>
 				<File
-					RelativePath="Errors\Assert.h">
+					RelativePath="Errors\Assert.h"
+					>
 				</File>
 				<File
-					RelativePath="Errors\AssertPolicy.h">
+					RelativePath="Errors\AssertPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Errors\Checker.h">
+					RelativePath=".\Errors\Checker.h"
+					>
 				</File>
 				<File
-					RelativePath="Errors\CompositePolicy.h">
+					RelativePath="Errors\CompositePolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Errors\DoNothingPolicy.h">
+					RelativePath="Errors\DoNothingPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Errors\PrintingPolicy.h">
+					RelativePath="Errors\PrintingPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Errors\Stack.cpp">
+					RelativePath=".\Errors\Stack.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Errors\Stack.h">
+					RelativePath=".\Errors\Stack.h"
+					>
 				</File>
 				<File
-					RelativePath="Errors\ThrowingPolicy.h">
+					RelativePath="Errors\ThrowingPolicy.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Exceptions"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Exceptions\Canceled.h">
+					RelativePath=".\Exceptions\Canceled.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Exceptions\Catch.h">
+					RelativePath=".\Exceptions\Catch.h"
+					>
 				</File>
 				<File
-					RelativePath="Exceptions\Thrower.h">
+					RelativePath="Exceptions\Thrower.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Export"
-				Filter="">
+				>
 				<File
-					RelativePath="Export\Export.h">
+					RelativePath="Export\Export.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Functors"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Functors\Delete.h">
+					RelativePath=".\Functors\Delete.h"
+					>
 				</File>
 				<File
-					RelativePath="Functors\If.h">
+					RelativePath="Functors\If.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Functors\Increment.h">
+					RelativePath=".\Functors\Increment.h"
+					>
 				</File>
 				<File
-					RelativePath="Functors\Pair.h">
+					RelativePath="Functors\Pair.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="ID"
-				Filter="">
+				>
 				<File
-					RelativePath="ID\GUID.cpp">
+					RelativePath="ID\GUID.cpp"
+					>
 				</File>
 				<File
-					RelativePath="ID\GUID.h">
+					RelativePath="ID\GUID.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Interfaces"
-				Filter="">
+				>
 				<Filter
 					Name="FOX"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IFoxAddTab.h">
+						RelativePath=".\Interfaces\IFoxAddTab.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxClientArea.h">
+						RelativePath=".\Interfaces\IFoxClientArea.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxDockBar.h">
+						RelativePath=".\Interfaces\IFoxDockBar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxEvent.h">
+						RelativePath=".\Interfaces\IFoxEvent.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxImage.h">
+						RelativePath=".\Interfaces\IFoxImage.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxMDIMenu.h">
+						RelativePath=".\Interfaces\IFoxMDIMenu.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxMenuPane.h">
+						RelativePath=".\Interfaces\IFoxMenuPane.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxRadioButton.h">
+						RelativePath=".\Interfaces\IFoxRadioButton.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxSubMenu.h">
+						RelativePath=".\Interfaces\IFoxSubMenu.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxTabBook.h">
+						RelativePath=".\Interfaces\IFoxTabBook.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxTabItem.h">
+						RelativePath=".\Interfaces\IFoxTabItem.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToggleButton.h">
+						RelativePath=".\Interfaces\IFoxToggleButton.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToolbar.h">
+						RelativePath=".\Interfaces\IFoxToolbar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxToolbarDock.h">
+						RelativePath=".\Interfaces\IFoxToolbarDock.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxTreeList.h">
+						RelativePath=".\Interfaces\IFoxTreeList.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFoxWindow.h">
+						RelativePath=".\Interfaces\IFoxWindow.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="GUI"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\ICancelButton.h">
+						RelativePath=".\Interfaces\ICancelButton.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IChangeMenuBar.h">
+						RelativePath=".\Interfaces\IChangeMenuBar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFlushEvents.h">
+						RelativePath=".\Interfaces\IFlushEvents.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGUIDelegate.h">
+						RelativePath=".\Interfaces\IGUIDelegate.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGuiInit.h">
+						RelativePath=".\Interfaces\IGuiInit.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGUIServer.h">
+						RelativePath=".\Interfaces\IGUIServer.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ILoadFileDialog.h">
+						RelativePath=".\Interfaces\ILoadFileDialog.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMainWindow.h">
+						RelativePath=".\Interfaces\IMainWindow.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMaterialEditor.h">
+						RelativePath=".\Interfaces\IMaterialEditor.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMenuBar.h">
+						RelativePath=".\Interfaces\IMenuBar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMenuEntry.h">
+						RelativePath=".\Interfaces\IMenuEntry.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IPreferencesManager.h">
+						RelativePath=".\Interfaces\IPreferencesManager.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IProgressBar.h">
+						RelativePath=".\Interfaces\IProgressBar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IQuestion.h">
+						RelativePath=".\Interfaces\IQuestion.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IReportErrors.h">
+						RelativePath=".\Interfaces\IReportErrors.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISaveFileDialog.h">
+						RelativePath=".\Interfaces\ISaveFileDialog.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISelectionBox.h">
+						RelativePath=".\Interfaces\ISelectionBox.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISetCursor.h">
+						RelativePath=".\Interfaces\ISetCursor.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IStatusBar.h">
+						RelativePath=".\Interfaces\IStatusBar.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateGUI.h">
+						RelativePath=".\Interfaces\IUpdateGUI.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateTextWindow.h">
+						RelativePath=".\Interfaces\IUpdateTextWindow.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IUpdateTreeControls.h">
+						RelativePath=".\Interfaces\IUpdateTreeControls.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IWindow.h">
+						RelativePath=".\Interfaces\IWindow.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Scene"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IAddFrame.h">
+						RelativePath=".\Interfaces\IAddFrame.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IAnimate.h">
+						RelativePath=".\Interfaces\IAnimate.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IClippingPlanes.h">
+						RelativePath=".\Interfaces\IClippingPlanes.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICreateMovie.h">
+						RelativePath=".\Interfaces\ICreateMovie.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFrameDump.h">
+						RelativePath=".\Interfaces\IFrameDump.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGroup.h">
+						RelativePath=".\Interfaces\IGroup.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMatrixManip.h">
+						RelativePath=".\Interfaces\IMatrixManip.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOpenSceneGraph.h">
+						RelativePath=".\Interfaces\IOpenSceneGraph.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IPolygonMode.h">
+						RelativePath=".\Interfaces\IPolygonMode.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IRedraw.h">
+						RelativePath=".\Interfaces\IRedraw.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISceneIntersect.h">
+						RelativePath=".\Interfaces\ISceneIntersect.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IShadeModel.h">
+						RelativePath=".\Interfaces\IShadeModel.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ITextMatrix.h">
+						RelativePath=".\Interfaces\ITextMatrix.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ITrackball.h">
+						RelativePath=".\Interfaces\ITrackball.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IViewMatrix.h">
+						RelativePath=".\Interfaces\IViewMatrix.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="File"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IDocumentCreate.h">
+						RelativePath=".\Interfaces\IDocumentCreate.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IExport.h">
+						RelativePath=".\Interfaces\IExport.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFileSelectionFilters.h">
+						RelativePath=".\Interfaces\IFileSelectionFilters.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\INewDocumentCreate.h">
+						RelativePath=".\Interfaces\INewDocumentCreate.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IRead.h">
+						RelativePath=".\Interfaces\IRead.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Base"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IClassesFactory.h">
+						RelativePath=".\Interfaces\IClassesFactory.h"
+						>
 					</File>
 					<File
-						RelativePath="Interfaces\IClassFactory.h">
+						RelativePath="Interfaces\IClassFactory.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IPlugin.h">
+						RelativePath=".\Interfaces\IPlugin.h"
+						>
 					</File>
 					<File
-						RelativePath="Interfaces\IUnknown.h">
+						RelativePath="Interfaces\IUnknown.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Misc"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\ICleanUp.h">
+						RelativePath=".\Interfaces\ICleanUp.h"
+						>
 					</File>
 					<File
-						RelativePath="Interfaces\ICommand.h">
+						RelativePath="Interfaces\ICommand.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IHandle.h">
+						RelativePath=".\Interfaces\IHandle.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\INotify.h">
+						RelativePath=".\Interfaces\INotify.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\INotifyClose.h">
+						RelativePath=".\Interfaces\INotifyClose.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISetTool.h">
+						RelativePath=".\Interfaces\ISetTool.h"
+						>
 					</File>
 					<File
-						RelativePath="Interfaces\IUndo.h">
+						RelativePath="Interfaces\IUndo.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Molecule"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IGetMolecules.h">
+						RelativePath=".\Interfaces\IGetMolecules.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IParamFile.h">
+						RelativePath=".\Interfaces\IParamFile.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IPsfFile.h">
+						RelativePath=".\Interfaces\IPsfFile.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Document"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IActiveDocument.h">
+						RelativePath=".\Interfaces\IActiveDocument.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICanClose.h">
+						RelativePath=".\Interfaces\ICanClose.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICanInsert.h">
+						RelativePath=".\Interfaces\ICanInsert.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDocument.h">
+						RelativePath=".\Interfaces\IDocument.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetDocument.h">
+						RelativePath=".\Interfaces\IGetDocument.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetOptions.h">
+						RelativePath=".\Interfaces\IGetOptions.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetTitle.h">
+						RelativePath=".\Interfaces\IGetTitle.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IHandleActivatingDocument.h">
+						RelativePath=".\Interfaces\IHandleActivatingDocument.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IInitNewDocument.h">
+						RelativePath=".\Interfaces\IInitNewDocument.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISendMessage.h">
+						RelativePath=".\Interfaces\ISendMessage.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="View"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IActiveView.h">
+						RelativePath=".\Interfaces\IActiveView.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IAxes.h">
+						RelativePath=".\Interfaces\IAxes.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBackground.h">
+						RelativePath=".\Interfaces\IBackground.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBoundingBox.h">
+						RelativePath=".\Interfaces\IBoundingBox.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBoundingSphere.h">
+						RelativePath=".\Interfaces\IBoundingSphere.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBuildScene.h">
+						RelativePath=".\Interfaces\IBuildScene.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IBuildSceneVtk.h">
+						RelativePath=".\Interfaces\IBuildSceneVtk.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICamera.h">
+						RelativePath=".\Interfaces\ICamera.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetBoundingBox.h">
+						RelativePath=".\Interfaces\IGetBoundingBox.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IImageView.h">
+						RelativePath=".\Interfaces\IImageView.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IMode.h">
+						RelativePath=".\Interfaces\IMode.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOpenGLState.h">
+						RelativePath=".\Interfaces\IOpenGLState.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IOsgFoxView.h">
+						RelativePath=".\Interfaces\IOsgFoxView.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ISpin.h">
+						RelativePath=".\Interfaces\ISpin.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IStereo.h">
+						RelativePath=".\Interfaces\IStereo.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IView.h">
+						RelativePath=".\Interfaces\IView.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IViewer.h">
+						RelativePath=".\Interfaces\IViewer.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IVTKCanvas.h">
+						RelativePath=".\Interfaces\IVTKCanvas.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IWriteMovieFile.h">
+						RelativePath=".\Interfaces\IWriteMovieFile.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Image"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IGetImageData.h">
+						RelativePath=".\Interfaces\IGetImageData.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetImageProperties.h">
+						RelativePath=".\Interfaces\IGetImageProperties.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IImage.h">
+						RelativePath=".\Interfaces\IImage.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IImageList.h">
+						RelativePath=".\Interfaces\IImageList.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IImageToGrayScale.h">
+						RelativePath=".\Interfaces\IImageToGrayScale.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IReadImage.h">
+						RelativePath=".\Interfaces\IReadImage.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IReadProperties.h">
+						RelativePath=".\Interfaces\IReadProperties.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IReadTIFF.h">
+						RelativePath=".\Interfaces\IReadTIFF.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Primitives"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Interfaces\IAddSharedVertex.h">
+						RelativePath=".\Interfaces\IAddSharedVertex.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IAddTriangle.h">
+						RelativePath=".\Interfaces\IAddTriangle.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDeleteAllConnected.h">
+						RelativePath=".\Interfaces\IDeleteAllConnected.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IDeletePrimitive.h">
+						RelativePath=".\Interfaces\IDeletePrimitive.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFindLoops.h">
+						RelativePath=".\Interfaces\IFindLoops.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFlipNormal.h">
+						RelativePath=".\Interfaces\IFlipNormal.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFlipNormals.h">
+						RelativePath=".\Interfaces\IFlipNormals.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetLoops.h">
+						RelativePath=".\Interfaces\IGetLoops.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetTriangleNormal.h">
+						RelativePath=".\Interfaces\IGetTriangleNormal.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetVertex.h">
+						RelativePath=".\Interfaces\IGetVertex.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IGetVertexNormal.h">
+						RelativePath=".\Interfaces\IGetVertexNormal.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IKeepAllConnected.h">
+						RelativePath=".\Interfaces\IKeepAllConnected.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IShowNewPrimitives.h">
+						RelativePath=".\Interfaces\IShowNewPrimitives.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ITriangle.h">
+						RelativePath=".\Interfaces\ITriangle.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ITriangleSV.h">
+						RelativePath=".\Interfaces\ITriangleSV.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ITriangulate.h">
+						RelativePath=".\Interfaces\ITriangulate.h"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="Math"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Math\Absolute.h">
+					RelativePath=".\Math\Absolute.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Angle.h">
+					RelativePath=".\Math\Angle.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Constants.h">
+					RelativePath="Math\Constants.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Equality.h">
+					RelativePath="Math\Equality.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Finite.h">
+					RelativePath=".\Math\Finite.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Math.h">
+					RelativePath="Math\Math.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Matrix44.h">
+					RelativePath="Math\Matrix44.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\MinMax.h">
+					RelativePath=".\Math\MinMax.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\NaN.h">
+					RelativePath=".\Math\NaN.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Power.h">
+					RelativePath=".\Math\Power.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Transpose.h">
+					RelativePath=".\Math\Transpose.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Vector2.h">
+					RelativePath="Math\Vector2.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Vector3.h">
+					RelativePath="Math\Vector3.h"
+					>
 				</File>
 				<File
-					RelativePath="Math\Vector4.h">
+					RelativePath="Math\Vector4.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Pointers"
-				Filter="">
+				>
 				<File
-					RelativePath="Pointers\ArrayDelete.h">
+					RelativePath="Pointers\ArrayDelete.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\ArrayDeletePolicy.h">
+					RelativePath="Pointers\ArrayDeletePolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\Exceptions.h">
+					RelativePath="Pointers\Exceptions.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\Intrusive.h">
+					RelativePath="Pointers\Intrusive.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\NoReferencePolicy.h">
+					RelativePath="Pointers\NoReferencePolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\NullPolicy.h">
+					RelativePath="Pointers\NullPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\ObjectDelete.h">
+					RelativePath="Pointers\ObjectDelete.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\ObjectDeletePolicy.h">
+					RelativePath="Pointers\ObjectDeletePolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\Pointers.h">
+					RelativePath="Pointers\Pointers.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\QueryPointer.h">
+					RelativePath="Pointers\QueryPointer.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\RefCountPolicy.h">
+					RelativePath="Pointers\RefCountPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath="Pointers\SmartPointer.h">
+					RelativePath="Pointers\SmartPointer.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Predicates"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Predicates\CanWrite.cpp">
+					RelativePath=".\Predicates\CanWrite.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\CanWrite.h">
+					RelativePath=".\Predicates\CanWrite.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\CloseFloat.h">
+					RelativePath=".\Predicates\CloseFloat.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\CompareCoordinate.h">
+					RelativePath=".\Predicates\CompareCoordinate.h"
+					>
 				</File>
 				<File
-					RelativePath="Predicates\EndsWith.h">
+					RelativePath="Predicates\EndsWith.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\EqualVector.h">
+					RelativePath=".\Predicates\EqualVector.h"
+					>
 				</File>
 				<File
-					RelativePath="Predicates\FileExists.h">
+					RelativePath="Predicates\FileExists.h"
+					>
 				</File>
 				<File
-					RelativePath="Predicates\IsOfType.h">
+					RelativePath="Predicates\IsOfType.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\LessVector.h">
+					RelativePath=".\Predicates\LessVector.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates\Tolerance.h">
+					RelativePath=".\Predicates\Tolerance.h"
+					>
 				</File>
 				<File
-					RelativePath="Predicates\UnaryPair.h">
+					RelativePath="Predicates\UnaryPair.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Print"
-				Filter="">
+				>
 				<File
-					RelativePath="Print\Matrix.h">
+					RelativePath="Print\Matrix.h"
+					>
 				</File>
 				<File
-					RelativePath="Print\Node.h">
+					RelativePath="Print\Node.h"
+					>
 				</File>
 				<File
-					RelativePath="Print\Vector.h">
+					RelativePath="Print\Vector.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="System"
-				Filter="">
+				>
 				<File
-					RelativePath=".\System\Clock.cpp">
+					RelativePath=".\System\Clock.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Clock.h">
+					RelativePath=".\System\Clock.h"
+					>
 				</File>
 				<File
-					RelativePath=".\System\DateTime.cpp">
+					RelativePath=".\System\DateTime.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\DateTime.h">
+					RelativePath=".\System\DateTime.h"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Host.cpp">
+					RelativePath=".\System\Host.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Host.h">
+					RelativePath=".\System\Host.h"
+					>
 				</File>
 				<File
-					RelativePath="System\LastError.cpp">
+					RelativePath="System\LastError.cpp"
+					>
 				</File>
 				<File
-					RelativePath="System\LastError.h">
+					RelativePath="System\LastError.h"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Memory.cpp">
+					RelativePath=".\System\Memory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Memory.h">
+					RelativePath=".\System\Memory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Screen.cpp">
+					RelativePath=".\System\Screen.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Screen.h">
+					RelativePath=".\System\Screen.h"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Socket.cpp">
+					RelativePath=".\System\Socket.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\System\Socket.h">
+					RelativePath=".\System\Socket.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Types"
-				Filter="">
+				>
 				<File
-					RelativePath="Types\Types.cpp">
+					RelativePath="Types\Types.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Types\Types.h">
+					RelativePath="Types\Types.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Threads"
-				Filter="">
+				>
 				<File
-					RelativePath="Threads\Guard.h">
+					RelativePath="Threads\Guard.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Map.h">
+					RelativePath="Threads\Map.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Mutex.cpp">
+					RelativePath="Threads\Mutex.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Mutex.h">
+					RelativePath="Threads\Mutex.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Queue.h">
+					RelativePath="Threads\Queue.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Threads\RecursiveMutex.cpp">
+					RelativePath=".\Threads\RecursiveMutex.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Threads\RecursiveMutex.h">
+					RelativePath=".\Threads\RecursiveMutex.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Set.h">
+					RelativePath="Threads\Set.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\ThreadId.h">
+					RelativePath="Threads\ThreadId.h"
+					>
 				</File>
 				<File
-					RelativePath="Threads\Variable.h">
+					RelativePath="Threads\Variable.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Cast"
-				Filter="">
+				>
 				<File
-					RelativePath="Cast\Cast.h">
+					RelativePath="Cast\Cast.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Containers"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Containers\Array.h">
+					RelativePath=".\Containers\Array.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Containers\DynamicArray.h">
+					RelativePath=".\Containers\DynamicArray.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Containers\Hash.h">
+					RelativePath=".\Containers\Hash.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Containers\OctTree.h">
+					RelativePath=".\Containers\OctTree.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Containers\Vector.h">
+					RelativePath=".\Containers\Vector.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="File"
-				Filter="">
+				>
 				<File
-					RelativePath=".\File\Contents.h">
+					RelativePath=".\File\Contents.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Find.h">
+					RelativePath=".\File\Find.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Make.cpp">
+					RelativePath=".\File\Make.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Make.h">
+					RelativePath=".\File\Make.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Path.h">
+					RelativePath=".\File\Path.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Remove.cpp">
+					RelativePath=".\File\Remove.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Remove.h">
+					RelativePath=".\File\Remove.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Slash.h">
+					RelativePath=".\File\Slash.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Stats.h">
+					RelativePath=".\File\Stats.h"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Temp.cpp">
+					RelativePath=".\File\Temp.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\File\Temp.h">
+					RelativePath=".\File\Temp.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Scope"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Scope\Caller.h">
+					RelativePath=".\Scope\Caller.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\GLBeginEnd.h">
+					RelativePath=".\Scope\GLBeginEnd.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\GLPushPopAttrib.h">
+					RelativePath=".\Scope\GLPushPopAttrib.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\GLPushPopMatrix.h">
+					RelativePath=".\Scope\GLPushPopMatrix.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\Reset.h">
+					RelativePath=".\Scope\Reset.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\Timer.cpp">
+					RelativePath=".\Scope\Timer.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Scope\Timer.h">
+					RelativePath=".\Scope\Timer.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Endian"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Endian\Endian.h">
+					RelativePath=".\Endian\Endian.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="IO"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Io\Reader.h">
+					RelativePath=".\Io\Reader.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Io\Redirect.h">
+					RelativePath=".\Io\Redirect.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Io\Writer.h">
+					RelativePath=".\Io\Writer.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Polygons"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Polygons\Predicates.h">
+					RelativePath=".\Polygons\Predicates.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Polygons\Triangle.h">
+					RelativePath=".\Polygons\Triangle.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Strings"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Strings\Case.h">
+					RelativePath=".\Strings\Case.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Strings\Split.h">
+					RelativePath=".\Strings\Split.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Strings\Trim.h">
+					RelativePath=".\Strings\Trim.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Policies"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Policies\Update.h">
+					RelativePath=".\Policies\Update.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="State"
-				Filter="">
+				>
 				<File
-					RelativePath=".\State\Busy.cpp">
+					RelativePath=".\State\Busy.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\State\Busy.h">
+					RelativePath=".\State\Busy.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="MPL"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Mpl\SameType.h">
+					RelativePath=".\Mpl\SameType.h"
+					>
 				</File>
 				<File
-					RelativePath="MPL\StaticAssert.h">
+					RelativePath="MPL\StaticAssert.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Mpl\TypeWrap.h">
+					RelativePath=".\Mpl\TypeWrap.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Loops"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Loops\Direction.h">
+					RelativePath=".\Loops\Direction.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Loops\FillLoop.h">
+					RelativePath=".\Loops\FillLoop.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Loops\FindLoops.h">
+					RelativePath=".\Loops\FindLoops.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Properties"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Properties\Attribute.h">
+					RelativePath=".\Properties\Attribute.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Resources"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Resources\CancelButton.cpp">
+					RelativePath=".\Resources\CancelButton.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\CancelButton.h">
+					RelativePath=".\Resources\CancelButton.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\EventQueue.cpp">
+					RelativePath=".\Resources\EventQueue.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\EventQueue.h">
+					RelativePath=".\Resources\EventQueue.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\MenuBar.cpp">
+					RelativePath=".\Resources\MenuBar.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\MenuBar.h">
+					RelativePath=".\Resources\MenuBar.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\ProgressBar.cpp">
+					RelativePath=".\Resources\ProgressBar.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\ProgressBar.h">
+					RelativePath=".\Resources\ProgressBar.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\ReportErrors.cpp">
+					RelativePath=".\Resources\ReportErrors.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\ReportErrors.h">
+					RelativePath=".\Resources\ReportErrors.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\StatusBar.cpp">
+					RelativePath=".\Resources\StatusBar.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\StatusBar.h">
+					RelativePath=".\Resources\StatusBar.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\TextWindow.cpp">
+					RelativePath=".\Resources\TextWindow.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Resources\TextWindow.h">
+					RelativePath=".\Resources\TextWindow.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Shared"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Shared\Preferences.cpp">
+					RelativePath=".\Shared\Preferences.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Shared\Preferences.h">
+					RelativePath=".\Shared\Preferences.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Documents"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Documents\Document.cpp">
+					RelativePath=".\Documents\Document.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Documents\Document.h">
+					RelativePath=".\Documents\Document.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Documents\FileInfo.h">
+					RelativePath=".\Documents\FileInfo.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Documents\Manager.cpp">
+					RelativePath=".\Documents\Manager.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Documents\Manager.h">
+					RelativePath=".\Documents\Manager.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Functions\Color.h">
+					RelativePath=".\Functions\Color.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Headers"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Headers\OpenGL.h">
+					RelativePath=".\Headers\OpenGL.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Headers\SStream.h">
+					RelativePath=".\Headers\SStream.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Memory"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Memory\Block.h">
+					RelativePath=".\Memory\Block.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Memory\Pool.h">
+					RelativePath=".\Memory\Pool.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Devices"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Devices\BaseDevice.cpp">
+					RelativePath=".\Devices\BaseDevice.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\BaseDevice.h">
+					RelativePath=".\Devices\BaseDevice.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\Factory.cpp">
+					RelativePath=".\Devices\Factory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\Factory.h">
+					RelativePath=".\Devices\Factory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IButtonListener.h">
+					RelativePath=".\Devices\IButtonListener.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IDevice.h">
+					RelativePath=".\Devices\IDevice.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IDeviceCreate.h">
+					RelativePath=".\Devices\IDeviceCreate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IKeyboardDevice.h">
+					RelativePath=".\Devices\IKeyboardDevice.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IKeyListener.h">
+					RelativePath=".\Devices\IKeyListener.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\IMotionListener.h">
+					RelativePath=".\Devices\IMotionListener.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\Keys.h">
+					RelativePath=".\Devices\Keys.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\State.cpp">
+					RelativePath=".\Devices\State.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Devices\State.h">
+					RelativePath=".\Devices\State.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="App"
-				Filter="">
+				>
 				<File
-					RelativePath=".\App\Controller.cpp">
+					RelativePath=".\App\Controller.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\App\Controller.h">
+					RelativePath=".\App\Controller.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="User"
-				Filter="">
+				>
 				<File
-					RelativePath=".\User\Directory.cpp">
+					RelativePath=".\User\Directory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\User\Directory.h">
+					RelativePath=".\User\Directory.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Registry"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Registry\Constants.h">
+					RelativePath=".\Registry\Constants.h"
+					>
 				</File>
 			</Filter>
 		</Filter>

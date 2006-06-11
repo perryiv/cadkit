@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/User/Directory.h"
+#include "Usul/System/Environment.h"
 
 #ifdef _MSC_VER // Visual C++
 #include "windows.h"
@@ -32,8 +33,7 @@
 std::string Usul::User::Directory::home ( bool wantSlash )
 {
   // Look for environment variable.
-  const char *temp ( ::getenv ( "HOME" ) );
-  std::string dir ( ( temp ) ? temp : "" );
+  std::string dir ( Usul::System::Environment::get ( "HOME" ) );
 
 #ifdef _MSC_VER
 
@@ -85,7 +85,7 @@ std::string Usul::User::Directory::vendor ( const std::string &name, bool wantSl
   const std::string home ( Usul::User::Directory::home ( true ) );
 
   // Does the user have HOME set?
-  const bool hasHome ( 0x0 != ::getenv ( "HOME" ) );
+  const bool hasHome ( Usul::System::Environment::has ( "HOME" ) );
 
   // Append this string to home path.
   const std::string append ( ( wantSlash ) ? ( name + '/' ) : ( name ) );

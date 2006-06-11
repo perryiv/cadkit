@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(XERCES_INC_DIR);$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;$(XERCES_INC_DIR);$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_XML_TREE"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -48,13 +48,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="xerces-c_2D.lib"
-				OutputFile="$(USUL_LIB_DIR)/XmlTreed.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/XmlTreed.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/XmlTreed.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/XmlTreed.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/XmlTreed.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -94,7 +94,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../;$(XERCES_INC_DIR);$(USUL_INC_DIR);$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;$(XERCES_INC_DIR);$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_XML_TREE"
 				StringPooling="TRUE"
 				ExceptionHandling="TRUE"
@@ -117,12 +117,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="xerces-c_2.lib"
-				OutputFile="$(USUL_LIB_DIR)/XmlTree.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/XmlTree.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/XmlTree.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/XmlTree.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/XmlTree.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

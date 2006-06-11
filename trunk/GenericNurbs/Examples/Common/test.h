@@ -341,11 +341,11 @@ template < class SplineType > void inline testSurfacePoint ( const SplineType &s
 
         if ( global_output_flag )
         {
-          ::sprintf ( buffer, format.first.c_str(), u, v );
+          GN_FORMAT_STRING_2 ( buffer, bufSize, format.first.c_str(), u, v );
           OUTPUT << buffer;
           for ( SizeType d = 0; d < dimension; ++d )
           {
-            ::sprintf ( buffer, format.second.c_str(), d, pt[d] );
+            GN_FORMAT_STRING_2 ( buffer, bufSize, format.second.c_str(), d, pt[d] );
             OUTPUT << buffer;
           }
           OUTPUT << std::endl;
@@ -551,7 +551,7 @@ template < class SplineType > void inline testFindingKnotSpan ( const SplineType
       OUTPUT << indent2 << "<test j=\"" << j << "\">u = ";
       #ifdef _MSC_VER
       ::memset ( buffer, '\0', bufSize );
-      ::sprintf ( buffer, format.c_str(), u );
+      GN_FORMAT_STRING_1 ( buffer, bufSize, format.c_str(), u );
       OUTPUT << buffer;
       #else
       OUTPUT << u;
@@ -574,8 +574,9 @@ template < class SplineType > void inline testFindingKnotSpan ( const SplineType
 
 template < class SplineType > void inline printKnotMultiplicity ( const SplineType &s, typename SplineType::IndependentType u )
 {
-  char buffer[1024];
-  ::sprintf ( buffer, "<multiplicity_test> u = %6.4f  multiplicity = %d </multiplicity_test>\n", u, s.knotMultiplicity ( 0, u ) );
+  const unsigned int bufSize ( 1023 );
+  char buffer[bufSize + 1];
+  GN_FORMAT_STRING_2 ( buffer, bufSize, "<multiplicity_test> u = %6.4f  multiplicity = %d </multiplicity_test>\n", u, s.knotMultiplicity ( 0, u ) );
   OUTPUT << buffer;
 }
 

@@ -44,13 +44,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="foxdlld-1.4.lib"
-				OutputFile="$(USUL_LIB_DIR)/FoxToolsd.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxToolsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/FoxToolsd.pdb"
-				ImportLibrary="$(OSG_FOX_LIB_DIR)/FoxToolsd.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/FoxToolsd.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -114,12 +114,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="foxdll-1.4.lib"
-				OutputFile="$(USUL_LIB_DIR)/FoxTools.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/FoxTools.pdb"
-				ImportLibrary="$(OSG_FOX_LIB_DIR)/FoxTools.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/FoxTools.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"

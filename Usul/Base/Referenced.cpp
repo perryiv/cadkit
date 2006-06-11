@@ -101,7 +101,7 @@ Referenced::~Referenced()
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
-  USUL_ASSERT ( _rcMutex );
+  USUL_ASSERT ( 0x0 != _rcMutex );
 
   delete _rcMutex;
 }

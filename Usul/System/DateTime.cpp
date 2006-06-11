@@ -21,12 +21,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Returns current date and time in a formatted string.
+//  Maintained for backward compatability.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 std::string Usul::System::DateTime::now() 
 {
-  // Return current time.
+  return Usul::System::DateTime::format();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns current date and time in a formatted string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Usul::System::DateTime::format() 
+{
   return Usul::System::DateTime::format ( ::time ( 0x0 ) );
 }
 
@@ -37,14 +49,55 @@ std::string Usul::System::DateTime::now()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Usul::System::DateTime::format ( long t ) 
+std::string Usul::System::DateTime::format ( time_t t )
 {
   // Convert it to a string.
   const unsigned int size ( 1024 );
   char buffer[size];
   ::memset ( buffer, '\0', size );
-  ::strftime ( buffer, size - 1, "%a %Y-%b-%d %I:%M:%S %p", ::localtime ( &t ) );
+  ::tm lt ( Usul::System::DateTime::local ( t ) );
+  ::strftime ( buffer, size - 1, "%a %Y-%b-%d %I:%M:%S %p", &lt );
 
   // Return the string.
   return std::string ( buffer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns local time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+::tm Usul::System::DateTime::local ( time_t t )
+{
+  ::tm lt;
+  ::memset ( &lt, 0, sizeof ( ::tm ) );
+
+#if ( defined ( _MSC_VER ) && ( _MSC_VER >= 1400 ) )
+
+  if ( 0 != ::localtime_s ( &lt, &t ) )
+    throw std::runtime_error ( "Error 2825662448: failed to get local time" );
+  return lt;
+
+#else
+
+  ::tm *temp ( ::localtime ( &t ) );
+  if ( 0x0 != temp )
+    lt = *temp;
+  return lt;
+
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns local time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+::tm Usul::System::DateTime::local()
+{
+  return Usul::System::DateTime::local ( ::time ( 0x0 ) );
 }

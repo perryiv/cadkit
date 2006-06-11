@@ -1262,6 +1262,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\System\DateTime.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\DateTime.h"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Environment.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Environment.h"
+					>
+				</File>
+				<File
 					RelativePath=".\System\Host.cpp"
 					>
 				</File>
@@ -1327,6 +1343,14 @@
 				</File>
 				<File
 					RelativePath="Threads\Queue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\RecursiveMutex.h"
 					>
 				</File>
 				<File

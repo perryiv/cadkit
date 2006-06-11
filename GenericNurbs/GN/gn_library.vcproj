@@ -1,24 +1,48 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="lib: Generic Nurbs"
 	ProjectGUID="{1C8F8A43-B135-4301-959A-1ED41708A63F}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/GenericNurbs.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -26,118 +50,156 @@
 				PreprocessorDefinitions="_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="NcPrecompiled.h"
 				PrecompiledHeaderFile=".\Debug/GenericNurbs.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../bin/GenericNurbsd.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/GenericNurbsd.pdb"
 				ImportLibrary=".\Debug/GenericNurbsd.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/GenericNurbs.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/GenericNurbs.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="_USRDLL;NDEBUG;WIN32;_WINDOWS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="NcPrecompiled.h"
 				PrecompiledHeaderFile=".\Release/GenericNurbs.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../bin/GenericNurbs.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/GenericNurbs.pdb"
 				ImportLibrary=".\Release/GenericNurbs.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/GenericNurbs.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -145,212 +207,257 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Splines"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Splines\Curve.h">
+					RelativePath=".\Splines\Curve.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Splines\Spline.h">
+					RelativePath=".\Splines\Spline.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Splines\Surface.h">
+					RelativePath=".\Splines\Surface.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Config"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Config\BaseClass.h">
+					RelativePath=".\Config\BaseClass.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Config\GmtlConfig.h">
+					RelativePath=".\Config\GmtlConfig.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Config\OsgConfig.h">
+					RelativePath=".\Config\OsgConfig.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Config\UsulConfig.h">
+					RelativePath=".\Config\UsulConfig.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Limits"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Limits\Nurbs.h">
+					RelativePath=".\Limits\Nurbs.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Traits"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Traits\Arguments.h">
+					RelativePath=".\Traits\Arguments.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Traits\TypeTags.h">
+					RelativePath=".\Traits\TypeTags.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Transform"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Transform\Matrix.h">
+					RelativePath=".\Transform\Matrix.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Transform\Rotate.h">
+					RelativePath=".\Transform\Rotate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Transform\Scale.h">
+					RelativePath=".\Transform\Scale.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Transform\Translate.h">
+					RelativePath=".\Transform\Translate.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Macros"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Macros\ErrorCheck.h">
+					RelativePath=".\Macros\ErrorCheck.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="MPL"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Mpl\SameType.h">
+					RelativePath=".\Mpl\SameType.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Mpl\StaticAssert.h">
+					RelativePath=".\Mpl\StaticAssert.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Mpl\TypeCheck.h">
+					RelativePath=".\Mpl\TypeCheck.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Mpl\TypeWrap.h">
+					RelativePath=".\Mpl\TypeWrap.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Write"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Write\XML.h">
+					RelativePath=".\Write\XML.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Convert"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Convert\DtNurbs.h">
+					RelativePath=".\Convert\DtNurbs.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Algorithms"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Algorithms\BasisFunctions.h">
+					RelativePath=".\Algorithms\BasisFunctions.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Copy.h">
+					RelativePath=".\Algorithms\Copy.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Equal.h">
+					RelativePath=".\Algorithms\Equal.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Fill.h">
+					RelativePath=".\Algorithms\Fill.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\FindSpan.h">
+					RelativePath=".\Algorithms\FindSpan.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\InsertKnot.h">
+					RelativePath=".\Algorithms\InsertKnot.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\KnotVector.h">
+					RelativePath=".\Algorithms\KnotVector.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Parameterize.h">
+					RelativePath=".\Algorithms\Parameterize.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\Sort.h">
+					RelativePath=".\Algorithms\Sort.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Work"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Work\Container.h">
+					RelativePath=".\Work\Container.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Evaluate"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Evaluate\Point.h">
+					RelativePath=".\Evaluate\Point.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Tessellate"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Tessellate\Bisect.h">
+					RelativePath=".\Tessellate\Bisect.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Interpolate"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Interpolate\Global.h">
+					RelativePath=".\Interpolate\Global.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Predicates"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Predicates\Finite.h">
+					RelativePath=".\Predicates\Finite.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Math"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Math\Absolute.h">
+					RelativePath=".\Math\Absolute.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Distance.h">
+					RelativePath=".\Math\Distance.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\LinearBlend.h">
+					RelativePath=".\Math\LinearBlend.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math\Matrix.h">
+					RelativePath=".\Math\Matrix.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Create"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Create\Circle.h">
+					RelativePath=".\Create\Circle.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Create\Line.h">
+					RelativePath=".\Create\Line.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Create\Sphere.h">
+					RelativePath=".\Create\Sphere.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Interfaces"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Interfaces\ICurve.h">
+					RelativePath=".\Interfaces\ICurve.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IEvaluatePoint.h">
+					RelativePath=".\Interfaces\IEvaluatePoint.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IInterpolateGlobal.h">
+					RelativePath=".\Interfaces\IInterpolateGlobal.h"
+					>
 				</File>
 			</Filter>
 		</Filter>

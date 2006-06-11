@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(USUL_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_IMAGES"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -53,7 +53,7 @@
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/Imagesd.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Imagesd.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Imagesd.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -120,7 +120,7 @@
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Images.pdb"
-				ImportLibrary="$(USUL_LIB_DIR)/Images.lib"/>
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Images.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

@@ -38,6 +38,11 @@ public:
   typedef typename ImageType::ValueType ValueType;
   typedef typename ImageType::Channel Channel;
   typedef std::vector<unsigned int> Indices;
+  typedef typename Indices::iterator::iterator_category iterator_category;
+  typedef typename Indices::value_type value_type;
+  typedef typename Indices::difference_type difference_type;
+  typedef typename Indices::pointer pointer;
+  typedef typename Indices::reference reference;
 
 
   /////////////////////////////////////////////////////////////////////////////

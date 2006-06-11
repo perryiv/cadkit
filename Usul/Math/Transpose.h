@@ -35,10 +35,10 @@ template < class Matrix1_, class Matrix2_ > inline void transpose ( const Matrix
   const typename Matrix2_::size_type columns ( ( rows ) ? m.at(0).size() : 0 );
 
   t.resize ( columns );
-  for ( unsigned int c = 0; c < columns; ++c )
+  for ( size_t c = 0; c < columns; ++c )
   {
     t.at(c).resize ( rows );
-    for ( unsigned int r = 0; r < rows; ++r )
+    for ( size_t r = 0; r < rows; ++r )
     {
       if ( columns != m.at(r).size() )
         throw std::runtime_error ( "Error 3987300086: inconsistant sizes in given matrix" );

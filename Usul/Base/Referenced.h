@@ -45,8 +45,6 @@ public:
 
 protected:
 
-  typedef Usul::Threads::Mutex Mutex;
-
   explicit Referenced();
   Referenced ( const Referenced &r );
   Referenced &operator = ( const Referenced &r );
@@ -55,7 +53,7 @@ protected:
 private:
 
   unsigned long _refCount;
-  Mutex *_rcMutex;
+  Usul::Threads::Mutex *_rcMutex;
 };
 
 

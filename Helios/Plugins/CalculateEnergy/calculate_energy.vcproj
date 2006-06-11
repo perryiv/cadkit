@@ -51,7 +51,7 @@
 				OutputFile="../../../bin/CalculateEnergy.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OSG_FOX_LIB_DIR)"
+				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(CADKIT_ROOT_DIR)/bin"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug\CalculateEnergyd.pdb"
@@ -121,7 +121,7 @@
 				OutputFile="../../../bin/CalculateEnergy.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OSG_FOX_LIB_DIR)"
+				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(CADKIT_ROOT_DIR)/bin"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\CalculateEnergy.pdb"
 				ImportLibrary=".\Release\CalculateEnergy.lib"/>

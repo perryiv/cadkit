@@ -85,7 +85,7 @@
 				OutputFile="../../../bin/IMD.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OSG_FOX_LIB_DIR);$(OSG_BIN_DIR)"
+				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(CADKIT_ROOT_DIR)/bin;$(OSG_BIN_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\IMDd.pdb"

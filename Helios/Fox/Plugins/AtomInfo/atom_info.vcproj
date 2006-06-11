@@ -85,7 +85,7 @@
 				OutputFile="../../../bin/AtomInfo.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OSG_FOX_LIB_DIR)"
+				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(CADKIT_ROOT_DIR)/bin"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\AtomInfod.pdb"

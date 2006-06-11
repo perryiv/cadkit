@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.App", "App\Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.Lib", "Lib\Helios.Lib.csproj", "{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Persistence", "..\Persistence\CadKit.Persistence.csproj", "{DFD2710D-3AB3-4707-B74E-80F21E33A23F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins", "..\Plugins\Manager\CadKit.Plugins.csproj", "{38E6CB43-88D0-4549-B27D-0F23F50CC395}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F21F48D6-B182-46F1-9EEC-4DF35A852C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F21F48D6-B182-46F1-9EEC-4DF35A852C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F21F48D6-B182-46F1-9EEC-4DF35A852C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F21F48D6-B182-46F1-9EEC-4DF35A852C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD2710D-3AB3-4707-B74E-80F21E33A23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD2710D-3AB3-4707-B74E-80F21E33A23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD2710D-3AB3-4707-B74E-80F21E33A23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD2710D-3AB3-4707-B74E-80F21E33A23F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38E6CB43-88D0-4549-B27D-0F23F50CC395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38E6CB43-88D0-4549-B27D-0F23F50CC395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38E6CB43-88D0-4549-B27D-0F23F50CC395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38E6CB43-88D0-4549-B27D-0F23F50CC395}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

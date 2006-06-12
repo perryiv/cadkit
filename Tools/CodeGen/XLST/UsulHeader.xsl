@@ -7,7 +7,7 @@
         <xsl:text>
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, </xsl:text> <xsl:value-of select="PluginTemplate/User/@name" /><xsl:text>
+//  Copyright (c) 2005, </xsl:text><xsl:value-of select="PluginTemplate/User/@name" /><xsl:text>
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -34,7 +34,7 @@ struct </xsl:text><xsl:value-of select="PluginTemplate/UsulHeader/@className" />
   USUL_DECLARE_QUERY_POINTERS ( </xsl:text><xsl:value-of select="PluginTemplate/UsulHeader/@className" /><xsl:text> );
 
   /// Id for this interface.
-  enum { IID = </xsl:text><xsl:value-of select="PluginTemplate/UsulHeader/@IID" /><xsl:text> };
+  enum { IID = </xsl:text><xsl:value-of select="PluginTemplate/UsulHeader/@IID" /><xsl:text>u };
 
 }; // struct </xsl:text> <xsl:value-of select="PluginTemplate/UsulHeader/@className" /><xsl:text>
 

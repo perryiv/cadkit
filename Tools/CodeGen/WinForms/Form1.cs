@@ -435,7 +435,9 @@ namespace CodeGenWF
             XmlElement element = xml.CreateElement( "UsulHeader" );
 
             String s = DateTime.Now.Ticks.ToString();
-            String iid = s.Substring( s.Length - 10, 10 );
+            long l = long.Parse( s );
+            UInt32 i = (UInt32) ( l & 0x0FFFFFFF );
+            String iid = "" + i;
 
             String guard = _interfaceName.Text + "_H__";
             guard = guard.ToUpper();

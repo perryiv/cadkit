@@ -50,6 +50,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>copy $(TargetPath) $(CADKIT_ROOT_DIR)\bin\$(TargetFileName) /y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(CADKIT_ROOT_DIR)\bin\$(TargetFileName) /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

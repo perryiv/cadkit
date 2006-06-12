@@ -93,7 +93,7 @@ void TriangulateComponent::triangulate ( const Vertices &inVertices, InnerLoops&
   in.numberofpointattributes = 0; 
   std::vector<REAL> pointList;
   pointList.reserve( in.numberofpoints * 2 );
-  in.pointlist = &pointList.front(); 
+  
   
   for( Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
   {
@@ -102,13 +102,14 @@ void TriangulateComponent::triangulate ( const Vertices &inVertices, InnerLoops&
     pointList.push_back(point[1]);
   }
 
+  in.pointlist = &pointList.front(); 
+
   in.numberofsegments = inVertices.size();
   in.numberofholes = 0;
   in.numberofregions = 0;
   
   std::vector<int> segmentList( 0 );
   segmentList.reserve( in.numberofsegments * 2 );
-  in.segmentlist = &segmentList[0];
   
   for ( int i = 0; i < in.numberofsegments; ++i ) 
   {
@@ -119,12 +120,15 @@ void TriangulateComponent::triangulate ( const Vertices &inVertices, InnerLoops&
       segmentList.push_back(i+1);
   }
 
+  in.segmentlist = &segmentList[0];
+
   std::vector<REAL> regionList ( 0 );
-  in.regionlist = &regionList[0];
+  in.regionlist = 0x0; //&regionList[0];
+
   // init the holelist out here, I think this it was going out of scope
   std::vector<REAL> holeList;
   holeList.reserve ( inner.size() * 2 );
-  in.holelist = &holeList.front();
+  
   in.numberofholes = inner.size();
 
   // Do we have any inner loops?
@@ -167,10 +171,18 @@ void TriangulateComponent::triangulate ( const Vertices &inVertices, InnerLoops&
     }
     
   }
+
+  if ( holeList.size() > 1 )
+    in.holelist = &holeList.front();
+  else
+    in.holelist = 0x0;
+
   /// The vector gets reallocated and MOVED to a different memory spot!!!
   in.segmentlist = &segmentList[0];
   in.pointlist = &pointList[0];
-  in.holelist = &holeList[0];
+
+  //if ( in
+  //in.holelist = &holeList[0];
 
   std::vector<REAL> pointAttributeList ( in.numberofpoints );
   std::fill( pointAttributeList.begin(), pointAttributeList.end(), 0 );

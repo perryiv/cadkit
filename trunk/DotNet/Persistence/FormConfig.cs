@@ -42,6 +42,7 @@ namespace CadKit
       {
         if ( null == form || null == persistentName )
           return;
+
         // Get dimensions of screen.
         System.Drawing.Rectangle rect = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
         int sw = rect.Width;

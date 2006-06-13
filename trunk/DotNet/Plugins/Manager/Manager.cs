@@ -61,7 +61,9 @@ namespace CadKit.Plugins
                 if ( null != attr )
                 {
                   string path = info.DirectoryName + '/' + attr.Value;
-                  this._loadPlugin( path ); // Not getting the proper path here...
+                  path = path.Replace( '\\', '/' );
+                  path = path.Replace( "//", "/" );
+                  this._loadPlugin( path );
                 }
               }
             }
@@ -84,7 +86,11 @@ namespace CadKit.Plugins
     {
       try
       {
-        System.Reflection.Assembly plugin = System.Reflection.Assembly.Load( file );
+        System.Reflection.Assembly plugin = System.Reflection.Assembly.LoadFrom( file );
+        // Not working from here down...
+        System.Type type = System.Type.GetType( "CadKit.Interfaces.IClassFactory", false, true );
+        object temp = plugin.CreateInstance( type.ToString() );
+        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) temp;
       }
       catch ( System.Exception e )
       {

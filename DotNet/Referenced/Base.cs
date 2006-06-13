@@ -80,7 +80,9 @@ namespace CadKit
         get 
         {
           lock ( _mutex )
-          return _isClean;
+          {
+            return _isClean;
+          }
         }
       }
 
@@ -89,7 +91,9 @@ namespace CadKit
         get
         {
           lock ( _mutex )
-          return _refCount;
+          {
+            return _refCount;
+          }
         }
       }
 

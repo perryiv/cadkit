@@ -41,6 +41,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
+#include "Usul/Interfaces/IDocumentSelect.h"
 
 #include <iostream>
 #include <sstream>
@@ -371,35 +372,54 @@ void Controller::documentOpen ( const std::string& filename, Usul::Interfaces::I
   Usul::Interfaces::IProgressBar::ShowHide progress ( caller );
   Usul::Interfaces::ICancelButton::ShowHide cancel  ( caller );
 
-  // Get the set of documents that are open.
-  Documents &documents ( DocManager::instance().documents() );
-
-  // Loop through the documents.
-  for( Documents::iterator i = documents.begin(); i != documents.end(); ++ i )
+  // Check to see if there is a document already open with this filename.
   {
-    // Is a document open with this file name?
-    if( (*i)->fileName() == filename )
+    // Get the set of documents that are open.
+    Documents &documents ( DocManager::instance().documents() );
+
+    // Loop through the documents.
+    for( Documents::iterator i = documents.begin(); i != documents.end(); ++ i )
     {
-      //Needed to make g++ happy
-      Document::RefPtr d ( i->get() );
+      // Is a document open with this file name?
+      if( (*i)->fileName() == filename )
+      {
+        //Needed to make g++ happy
+        Document::RefPtr d ( i->get() );
 
-      // Bring this document's windows to the front.
-      d->windowsForward();
+        // Bring this document's windows to the front.
+        d->windowsForward();
 
-      // Document already open, return.
-      return;
+        // Document already open, return.
+        return;
+      }
     }
   }
 
   // Create the document.
-  Document::RefPtr document ( this->documentCreate ( filename ) );
+  Documents documents ( Usul::Documents::Manager::instance().create ( filename ) );
 
   // Make sure...
-  if ( false == document.valid() )
+  if ( documents.empty() )
   {
     std::ostringstream message;
     message << "Error 2565795720: Failed to create document for file: " << filename;
     throw std::runtime_error ( message.str() );
+  }
+
+  // The document to open.
+  Document::RefPtr document ( 0x0 );
+
+  Usul::Interfaces::IDocumentSelect::QueryPtr select ( caller );
+
+  if ( select.valid() && documents.size() > 1 )
+  {
+    // Get the document from the user.
+    document = select->selectDocument( documents );
+  }
+  else
+  {
+    // Just use the front if that's all we have, or if we don't have an interface to select a document.
+    document = documents.front();
   }
 
   // Initialize start time.
@@ -425,27 +445,6 @@ void Controller::documentOpen ( const std::string& filename, Usul::Interfaces::I
   std::cout << "Memory required: " << ( static_cast < double > ( Usul::System::Memory::usedPhysical() - usedMemory ) * 0.001 ) << " Kilobytes" << std::endl;
   std::cout << "Done opening document" << Usul::Resources::TextWindow::endl;
 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Documents::Document *Controller::documentCreate ( const std::string& filename )
-{
-  // Useful typedefs
-  typedef Usul::Documents::Document Document;
-
-  // Try to create the document from one of our readers.
-  Document::RefPtr document ( Usul::Documents::Manager::instance().create ( filename ) );
-  if ( document.valid() )
-    return document.release();
-
-  // If we get to here then no reader plugin was found.
-  return 0x0;
 }
 
 

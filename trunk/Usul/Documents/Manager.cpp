@@ -92,11 +92,11 @@ void Manager::reset()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create new document that can open given extension.
+//  Create new document(s) that can open given extension.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document *Manager::create ( const std::string &ext, Unknown *caller )
+Manager::Documents Manager::create ( const std::string &ext, Unknown *caller )
 {
   // Typedefs.
   typedef Usul::Components::Manager PluginManager;
@@ -107,27 +107,22 @@ Document *Manager::create ( const std::string &ext, Unknown *caller )
   // Ask for plugins that open documents.
   PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
 
-  // Initialize up here because we care about scope and order of destruction.
-  Document::RefPtr doc ( 0x0 );
+  Documents documentList;
 
   // Loop through the plugins.
   for ( PluginItr i = plugins.begin(); i != plugins.end(); ++i )
   {
     // Create the empty document.
     CreatorPtr creator ( (*i).get() );
-    doc = creator->createDocument ( caller );
+    Document::RefPtr doc ( creator->createDocument ( caller ) );
 
     // Can the document open the given file?
     if ( doc.valid() && doc->canOpen ( ext ) )
-      break;
-
-    // Otherwise, reset document pointer.
-    else
-      doc = 0x0;
+      documentList.push_back( doc.get() );
   }
 
-  // Return document pointer, which may still be null.
-  return doc.release();
+  // Return the document list, which may be empty;
+  return documentList;
 }
 
 
@@ -152,27 +147,6 @@ Document* Manager::create ( Unknown *component, Unknown *caller )
   }
 
   // Return document pointer, which may still be null.
-  return doc.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Open new document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Document *Manager::open ( const std::string &file, Unknown *caller )
-{
-  // Create document.
-  Document::RefPtr doc ( this->create ( file, caller ) );
-  if ( !doc.valid() )
-    return 0x0;
-
-  // Open the file.
-  doc->open ( file, caller );
-
-  // Return the document.
   return doc.release();
 }
 

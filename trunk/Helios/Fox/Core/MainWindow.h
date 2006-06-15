@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/IActiveDocument.h"
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IDocumentSelect.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -99,7 +100,8 @@ class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
                                        public Usul::Interfaces::IFoxTabBook,
                                        public Usul::Interfaces::IActiveDocument,
                                        public Usul::Interfaces::IQuestion,
-                                       public Usul::Interfaces::IMenuBar
+                                       public Usul::Interfaces::IMenuBar,
+                                       public Usul::Interfaces::IDocumentSelect
 {
 public:
 
@@ -494,6 +496,9 @@ protected:
 
   /// Usul::Interfaces::IMenuBar
   virtual FoxTools::Menu::Bar*          getMenuBar ();
+
+  /// Usul::Interfaces::IDocumentSelect
+  virtual Usul::Documents::Document*            selectDocument ( const Documents& );
 
 private:
 

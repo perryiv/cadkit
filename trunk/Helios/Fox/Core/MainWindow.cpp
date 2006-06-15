@@ -62,6 +62,8 @@
 #include "FoxTools/Headers/Text.h"
 #include "FoxTools/Headers/VerticalFrame.h"
 #include "FoxTools/Headers/DockSite.h"
+#include "FoxTools/Headers/DialogBox.h"
+#include "FoxTools/Headers/List.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
@@ -1750,6 +1752,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IQuestion* > ( this );
   case Usul::Interfaces::IMenuBar::IID:
     return static_cast < Usul::Interfaces::IMenuBar* > ( this );
+  case Usul::Interfaces::IDocumentSelect::IID:
+    return static_cast < Usul::Interfaces::IDocumentSelect* > ( this );
   default:
     return 0x0;
   }
@@ -3701,3 +3705,49 @@ long MainWindow::onUpdateCenterOfRotation   ( FX::FXObject *object, FX::FXSelect
   return 1;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Prompt the user to select a document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Documents::Document* MainWindow::selectDocument ( const Documents& documents )
+{
+  FX::FXDialogBox dialog ( this, "Choose Document" );
+
+  FX::FXVerticalFrame *frame ( new FX::FXVerticalFrame ( &dialog, FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y ) );
+
+  // Make the list
+  FX::FXList *list = new FX::FXList ( frame, 0x0, 0, FX::LIST_SINGLESELECT | FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y );
+
+  // Map for convienence.
+  typedef std::map < std::string, Usul::Documents::Document* > Map;
+  Map map;
+
+  // Add each document to the list
+  for( Documents::const_iterator i = documents.begin(); i != documents.end(); ++ i )
+  {
+    std::string name ( (*i)->typeName() );
+    list->appendItem( name.c_str() );
+
+    map.insert( Map::value_type ( name, i->get() ) );
+  }
+
+  list->setCurrentItem ( 0 );
+  list->getItem( 0 )->setSelected( true );
+
+  //Accept and cancel buttons
+  FX::FXHorizontalFrame*  buttonFrame ( new FX::FXHorizontalFrame ( frame, LAYOUT_FILL_X|LAYOUT_FILL_Y ) );
+  new FX::FXButton ( buttonFrame, "OK",NULL, &dialog, FX::FXDialogBox::ID_ACCEPT,FX::LAYOUT_LEFT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20);
+  new FX::FXButton ( buttonFrame, "Cancel",NULL, &dialog, FX::FXDialogBox::ID_CANCEL,FX::LAYOUT_RIGHT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK,0,0,0,0, 20,20);
+
+  if ( dialog.execute( FX::PLACEMENT_OWNER ) )
+  {
+    std::string name ( list->getItemText ( list->getCurrentItem() ).text() );
+
+    return map[name];
+  }
+
+  throw Usul::Exceptions::Canceled ( "User canceled selection of document." );
+}

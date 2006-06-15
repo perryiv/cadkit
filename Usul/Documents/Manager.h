@@ -54,8 +54,8 @@ public:
   // Close the document.  Does nothing if there are referenced windows
   void                  close ( Document* );
 
-  // Create new document that can open given extension.
-  Document *            create ( const std::string &ext, Unknown *caller = 0x0 );
+  // Create new document(s) that can open given extension.
+  Documents             create ( const std::string &ext, Unknown *caller = 0x0 );
 
   // Create new document with the given component
   Document *            create ( Unknown *component, Unknown *caller = 0x0 );
@@ -69,9 +69,6 @@ public:
 
   // Return all file-open filters.
   Filters               filtersOpen() const;
-
-  // Open new document.
-  Document *            open ( const std::string &file, Unknown *caller = 0x0 );
 
   // Deletes current instance. Clears cached data.
   static void           reset();

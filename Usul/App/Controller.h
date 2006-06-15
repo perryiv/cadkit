@@ -72,7 +72,6 @@ public:
   void                        displayListsToggle();
 
   void                        documentOpen ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
-  Usul::Documents::Document * documentCreate ( const std::string& filename );
   void                        documentInsert ( Usul::Interfaces::IUnknown* caller );
   void                        documentSave   ( Usul::Interfaces::IUnknown* caller );
   void                        documentSaveAs ( Usul::Interfaces::IUnknown* caller );

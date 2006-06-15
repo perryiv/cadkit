@@ -482,6 +482,10 @@
 				Name="Interfaces"
 				>
 				<File
+					RelativePath=".\Interfaces\IDocumentSelect.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IModifiedObserver.h"
 					>
 				</File>

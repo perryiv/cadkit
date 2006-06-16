@@ -1522,6 +1522,8 @@ void Viewer::boundingBox ( bool state )
     // Wire-frame.
     OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
     OsgTools::State::StateSet::setLighting ( mt.get(), false );
+
+    group->addChild ( mt.get() );
   }
 }
 
@@ -1573,6 +1575,8 @@ void Viewer::boundingSphere ( bool state )
     // Wire-frame.
     OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
     OsgTools::State::StateSet::setLighting ( mt.get(), false );
+
+    group->addChild ( mt.get() );
   }
 }
 

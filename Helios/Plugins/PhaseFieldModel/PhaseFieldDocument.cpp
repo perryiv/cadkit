@@ -51,8 +51,11 @@ Usul::Interfaces::IUnknown *PhaseFieldDocument::queryInterface ( unsigned long i
 {
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+  case Usul::Interfaces::IGetBoundingBox::IID:
+    return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -216,4 +219,20 @@ osg::Node *PhaseFieldDocument::buildScene ( const BaseClass::Options &opt, Unkno
 {
   // Return the scene
   return _scene.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::BoundingBox PhaseFieldDocument::getBoundingBox() const
+{
+  // Return hard coded values for now.
+  osg::BoundingBox bb;
+  bb.expandBy( 0.0, 0.0, 0.0 );
+  bb.expandBy ( 255.0, 255.0, 255.0 );
+  return bb;
 }

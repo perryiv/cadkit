@@ -20,11 +20,13 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IGetBoundingBox.h"
 
 #include "osg/ref_ptr"
 
 class PhaseFieldDocument : public Usul::Documents::Document,
-                           public Usul::Interfaces::IBuildScene
+                           public Usul::Interfaces::IBuildScene,
+                           public Usul::Interfaces::IGetBoundingBox
 {
 public:
   /// Useful typedefs.
@@ -65,6 +67,9 @@ protected:
 
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
+
+  // Usul::Interfaces::IGetBoundingBox
+  virtual osg::BoundingBox    getBoundingBox() const;
 
 private:
 

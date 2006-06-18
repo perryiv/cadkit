@@ -497,6 +497,10 @@
 					RelativePath=".\Interfaces\IScreenCapture.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Interfaces\ITimeVaryingData.h"
+					>
+				</File>
 				<Filter
 					Name="FOX"
 					>

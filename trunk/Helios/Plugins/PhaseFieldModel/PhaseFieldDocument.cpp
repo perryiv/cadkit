@@ -25,7 +25,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PhaseFieldDocument, PhaseFieldDocument::BaseCl
 ///////////////////////////////////////////////////////////////////////////////
 
 PhaseFieldDocument::PhaseFieldDocument() : BaseClass ( "Phase Field Document" ), 
-  _scene ( 0x0 )
+  _scene ( 0x0 ),
+  _current ( 0 ),
+  _filenames ()
 {
 }
 
@@ -56,6 +58,8 @@ Usul::Interfaces::IUnknown *PhaseFieldDocument::queryInterface ( unsigned long i
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IGetBoundingBox::IID:
     return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
+  case Usul::Interfaces::ITimeVaryingData::IID:
+    return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -83,8 +87,7 @@ bool PhaseFieldDocument::canExport ( const std::string &file ) const
 
 bool PhaseFieldDocument::canInsert ( const std::string &file ) const
 {
-  //return this->canOpen ( file );
-  return false;
+  return this->canOpen ( file );
 }
 
 
@@ -135,10 +138,7 @@ void PhaseFieldDocument::write ( const std::string &name, Unknown *caller  ) con
 
 void PhaseFieldDocument::read ( const std::string &name, Unknown *caller )
 {
-  osg::ref_ptr< osg::Node > node ( OsgTools::readModel ( name ) );
-
-  _scene = node;
-
+  _filenames.push_back ( name );
 }
 
 
@@ -203,9 +203,7 @@ PhaseFieldDocument::Filters PhaseFieldDocument::filtersOpen() const
 
 PhaseFieldDocument::Filters PhaseFieldDocument::filtersInsert() const
 {
-  //return this->filtersOpen();
-  Filters filters;
-  return filters;
+  return this->filtersOpen();
 }
 
 
@@ -217,6 +215,13 @@ PhaseFieldDocument::Filters PhaseFieldDocument::filtersInsert() const
 
 osg::Node *PhaseFieldDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
 {
+  if ( _filenames.empty() )
+    return 0x0;
+
+  osg::ref_ptr< osg::Node > node ( OsgTools::readModel ( _filenames.at( _current ) ) );
+
+  _scene = node;
+
   // Return the scene
   return _scene.get();
 }
@@ -235,4 +240,40 @@ osg::BoundingBox PhaseFieldDocument::getBoundingBox() const
   bb.expandBy( 0.0, 0.0, 0.0 );
   bb.expandBy ( 255.0, 255.0, 255.0 );
   return bb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current time step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PhaseFieldDocument::setCurrentTimeStep ( unsigned int current )
+{
+  _current = current;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current time step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int PhaseFieldDocument::getCurrentTimeStep () const
+{
+  return _current;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of timesteps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int PhaseFieldDocument::getNumberOfTimeSteps () const
+{
+  return _filenames.size();
 }

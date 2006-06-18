@@ -23,15 +23,45 @@
 #include "FoxTools/Windows/MdiChildWindow.h"
 #include "FoxTools/Functions/GLVisual.h"
 #include "FoxTools/Headers/MDIButton.h"
+#include "FoxTools/Headers/TabItem.h"
+#include "FoxTools/Headers/TabBook.h"
+#include "FoxTools/Headers/VerticalFrame.h"
+#include "FoxTools/Headers/HorizontalFrame.h"
+#include "FoxTools/Headers/Button.h"
+#include "FoxTools/Icons/Factory.h"
 
 #include "Usul/Interfaces/Fox/IFoxClientArea.h"
 #include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
+#include "Usul/Interfaces/Fox/IFoxTabItem.h"
+#include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ITimeVaryingData.h"
 
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
+#include "Usul/Documents/Manager.h"
+
+// for now
+#include "Usul/Resources/MenuBar.h"
+#include "Usul/Interfaces/Fox/IMenuBar.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PhaseFieldDelegateComponent , PhaseFieldDelegateComponent::BaseClass );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Message maps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+FXDEFMAP ( PhaseFieldDelegateComponent ) MessageMap[] = 
+{
+  //          Message Type     ID                                                   Message Handler.
+  FXMAPFUNC ( FX::SEL_COMMAND, PhaseFieldDelegateComponent::ID_FORWARD,             PhaseFieldDelegateComponent::onCommandForward       ),
+  FXMAPFUNC ( FX::SEL_COMMAND, PhaseFieldDelegateComponent::ID_BACKWARD,            PhaseFieldDelegateComponent::onCommandBackward      ),
+};
+
+FOX_TOOLS_IMPLEMENT ( PhaseFieldDelegateComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +69,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PhaseFieldDelegateComponent , PhaseFieldDelega
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PhaseFieldDelegateComponent::PhaseFieldDelegateComponent() 
+PhaseFieldDelegateComponent::PhaseFieldDelegateComponent() :
+_frame ( 0x0 )
 {
 }
 
@@ -51,6 +82,13 @@ PhaseFieldDelegateComponent::PhaseFieldDelegateComponent()
 
 PhaseFieldDelegateComponent::~PhaseFieldDelegateComponent() 
 {
+  Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( Usul::Resources::menuBar() );
+
+  if( tabItem.valid( ) )
+    tabItem->deleteTab( "PF" );
+
+  if( _frame )
+    delete _frame;
 }
 
 
@@ -69,6 +107,8 @@ Usul::Interfaces::IUnknown *PhaseFieldDelegateComponent::queryInterface ( unsign
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::IGUIDelegate::IID:
     return static_cast < Usul::Interfaces::IGUIDelegate*>(this);
+  case Usul::Interfaces::IHandleActivatingDocument::IID:
+    return static_cast < Usul::Interfaces::IHandleActivatingDocument * > ( this );
   default:
     return 0x0;
   }
@@ -174,3 +214,149 @@ void PhaseFieldDelegateComponent::refreshView ( Usul::Documents::Document *docum
   }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Given document is no longer active.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PhaseFieldDelegateComponent::noLongerActive ( Usul::Documents::Document* document, const std::string& activeType )
+{
+  Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( Usul::Resources::menuBar() );
+
+  if( tabItem.valid( ) )
+    tabItem->deleteTab( "PF" );
+
+  if( _frame )
+    delete _frame;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Given document is now active.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PhaseFieldDelegateComponent::nowActive ( Usul::Documents::Document* document, const std::string& oldType )
+{
+  Usul::Interfaces::IDocument::ValidQueryPtr doc ( document );
+
+    //Build the tabs
+  this->_buildTab  ( Usul::Resources::menuBar(), doc.get() );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Goto next timestep
+//
+/////////////////////////////////////////////////////////////////////////////
+
+long PhaseFieldDelegateComponent::onCommandForward ( FX::FXObject *, FX::FXSelector, void * )
+{
+  // Get needed interfaces
+  Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
+
+  Usul::Interfaces::ITimeVaryingData::QueryPtr data ( document );
+
+  if ( data.valid () )
+  {
+    unsigned int current ( data->getCurrentTimeStep() );
+
+    unsigned int num ( data->getNumberOfTimeSteps() );
+
+    if ( ++current != num )
+    {
+      data->setCurrentTimeStep( current );
+
+      Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
+
+      sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_BUILD_SCENE );
+      sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
+    }
+  }
+
+  return 1;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Goto previouse timestep
+//
+/////////////////////////////////////////////////////////////////////////////
+
+long PhaseFieldDelegateComponent::onCommandBackward ( FX::FXObject *, FX::FXSelector, void * )
+{
+  // Get needed interfaces
+  Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
+
+  Usul::Interfaces::ITimeVaryingData::QueryPtr data ( document );
+
+  if ( data.valid () )
+  {
+    unsigned int current ( data->getCurrentTimeStep() );
+
+    if ( current != 0 )
+    {
+      data->setCurrentTimeStep( --current );
+
+      Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
+
+      sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_BUILD_SCENE );
+      sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
+    }
+  }
+
+  return 1;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Build the tab.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void PhaseFieldDelegateComponent::_buildTab ( Usul::Interfaces::IUnknown* caller, Usul::Interfaces::IUnknown *document )
+{
+  // Get needed interfaces.
+  Usul::Interfaces::IFoxTabItem::QueryPtr         tabItem     ( caller );
+  Usul::Interfaces::IFoxTabBook::QueryPtr         foxTabBook  ( caller );
+
+  // Check to see if these interfaces are valid.
+  if( tabItem.valid() && foxTabBook.valid() )
+  {
+    //If we already have a frame, delete it.
+    if( _frame )
+    {
+      tabItem->deleteTab( "PF" );
+      delete _frame;
+      _frame = 0x0;
+    }
+
+    // Add a tab for groups.
+    tabItem->addTab ( "PF" );
+    FX::FXTabItem *tab ( tabItem->tabItem( "PF" ) );
+
+    tab->create();
+
+    // Get the tab book.
+    FX::FXTabBook *tabBook ( foxTabBook->tabBook() );
+
+    _frame = new FX::FXVerticalFrame ( tabBook, FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y );
+
+
+    FX::FXHorizontalFrame *hframe ( new FX::FXHorizontalFrame ( _frame, FX::LAYOUT_FILL_X ) );
+
+    typedef FoxTools::Icons::Factory Factory;
+
+    new FX::FXButton ( hframe, "", Factory::instance()->icon ( Factory::ICON_BACKWARD_ARROW ), this, ID_BACKWARD );
+    new FX::FXButton ( hframe, "", Factory::instance()->icon ( Factory::ICON_FORWARD_ARROW ), this, ID_FORWARD );
+
+    _frame->create();
+  }
+
+}

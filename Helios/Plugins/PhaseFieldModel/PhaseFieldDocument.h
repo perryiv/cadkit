@@ -21,12 +21,17 @@
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
+#include "Usul/Interfaces/ITimeVaryingData.h"
 
 #include "osg/ref_ptr"
 
+#include <vector>
+#include <string>
+
 class PhaseFieldDocument : public Usul::Documents::Document,
                            public Usul::Interfaces::IBuildScene,
-                           public Usul::Interfaces::IGetBoundingBox
+                           public Usul::Interfaces::IGetBoundingBox,
+                           public Usul::Interfaces::ITimeVaryingData
 {
 public:
   /// Useful typedefs.
@@ -71,6 +76,12 @@ protected:
   // Usul::Interfaces::IGetBoundingBox
   virtual osg::BoundingBox    getBoundingBox() const;
 
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void             setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int     getCurrentTimeStep () const;
+
+  virtual unsigned int     getNumberOfTimeSteps () const;
+
 private:
 
   /// Do not copy.
@@ -78,6 +89,12 @@ private:
   PhaseFieldDocument &operator = ( const PhaseFieldDocument & );
 
   osg::ref_ptr< osg::Node > _scene;
+
+  typedef std::vector < std::string > Filenames;
+
+  unsigned int _current;
+  Filenames _filenames;
+
 };
 
 

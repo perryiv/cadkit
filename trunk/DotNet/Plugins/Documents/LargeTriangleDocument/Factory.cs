@@ -7,13 +7,26 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.LargeTriangleDocument
+namespace CadKit.Plugins
 {
   class Factory : CadKit.Interfaces.IClassFactory
   {
-    object CadKit.Interfaces.IClassFactory.createInstance( System.Type type )
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public Factory()
     {
-      return null;
+    }
+
+    /// <summary>
+    /// Create the instance.
+    /// </summary>
+    object CadKit.Interfaces.IClassFactory.createInstance(System.Type type)
+    {
+      //if ( type.ToString() == System.Type.GetType ( CadKit.Interfaces.IPlugin ).ToString() )
+      //{
+        return new CadKit.LargeTriangleDocument.Document();
+      //}
     }
   }
 }

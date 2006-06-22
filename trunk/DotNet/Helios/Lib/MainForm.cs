@@ -47,9 +47,18 @@ namespace CadKit.Helios.Lib
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Text = "MainForm";
+        this.SuspendLayout();
+        // 
+        // MainForm
+        // 
+        this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        this.ClientSize = new System.Drawing.Size(757, 367);
+        this.Name = "MainForm";
+        this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+        this.Text = "MainForm";
+        this.ResumeLayout(false);
+
     }
 
     #endregion

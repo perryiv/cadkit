@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.App", "App\Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.Lib", "Lib\Helios.Lib.csproj", "{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}"
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.LargeTriangleDocumen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Referenced", "..\Referenced\CadKit.Referenced.csproj", "{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Interfaces", "..\Interfaces\CadKit.Interfaces.csproj", "{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Interfaces", "..\Interfaces\CadKit.Interfaces.csproj", "{233305C0-C997-440A-9AA2-BAFEF0D15156}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,10 @@ Global
 		{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{233305C0-C997-440A-9AA2-BAFEF0D15156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{233305C0-C997-440A-9AA2-BAFEF0D15156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{233305C0-C997-440A-9AA2-BAFEF0D15156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{233305C0-C997-440A-9AA2-BAFEF0D15156}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -87,10 +87,8 @@ namespace CadKit.Plugins
       try
       {
         System.Reflection.Assembly plugin = System.Reflection.Assembly.LoadFrom( file );
-        // Not working from here down...
-        System.Type type = System.Type.GetType( "CadKit.Interfaces.IClassFactory", false, true );
-        object temp = plugin.CreateInstance( type.ToString() );
-        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) temp;
+        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) plugin.CreateInstance("CadKit.Plugins.Factory");
+        CadKit.Interfaces.IPlugin startup = (CadKit.Interfaces.IPlugin) factory.createInstance(System.Type.GetType("CadKit.Interfaces.IPlugin"));
       }
       catch ( System.Exception e )
       {

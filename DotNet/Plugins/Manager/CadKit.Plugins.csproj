@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
-      <Project>{B17F2EB9-85AC-4D4D-982E-119BFAA5C91D}</Project>
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>

@@ -14,7 +14,7 @@ namespace CadKit.LargeTriangleDocument
     /// <summary>
     /// Construct a document.
     /// </summary>
-    private Document()
+    public Document()
     {
     }
 

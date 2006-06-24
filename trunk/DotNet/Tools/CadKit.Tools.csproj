@@ -6,15 +6,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tools</RootNamespace>
-    <AssemblyName>Tools</AssemblyName>
+    <RootNamespace>Cadkit.Tools</RootNamespace>
+    <AssemblyName>Cadkit.Tools</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +21,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,9 +35,16 @@
   <ItemGroup>
     <Compile Include="Control.cs" />
     <Compile Include="Parent.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Progress.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ToolStripPanel.cs" />
     <Compile Include="ToolWindow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

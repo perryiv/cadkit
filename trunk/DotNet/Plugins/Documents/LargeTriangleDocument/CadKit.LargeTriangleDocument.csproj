@@ -33,6 +33,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Component.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="AssemblyInfo.cs" />

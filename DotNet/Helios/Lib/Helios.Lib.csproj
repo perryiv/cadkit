@@ -39,8 +39,19 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Images\CadKit.Images.csproj">
+      <Project>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</Project>
+      <Name>CadKit.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Persistence\CadKit.Persistence.csproj">
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>
@@ -59,7 +70,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy $(ProjectDir)Icons $(TargetDir)icons /f /i /k /y /c</PostBuildEvent>
   </PropertyGroup>
 </Project>

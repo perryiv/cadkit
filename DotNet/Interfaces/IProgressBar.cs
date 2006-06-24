@@ -9,8 +9,10 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IClassFactory
+  public interface IProgressBar
   {
-    object createInstance ( string type );
+    string Text { get; set; }
+    int Range { get; }
+    int Value { get; set; }
   }
 }

@@ -7,32 +7,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.Tools
 {
-  namespace Tools
+  public class ToolStripPanel
   {
-    public class ToolStripPanel
+    /// <summary>
+    /// Make a tool-strip panel.
+    /// </summary>
+    public static System.Windows.Forms.ToolStripPanel make(System.Windows.Forms.DockStyle style, System.Windows.Forms.ToolStrip strip)
     {
-      /// <summary>
-      /// Make a tool-strip panel.
-      /// </summary>
-      public static System.Windows.Forms.ToolStripPanel make( System.Windows.Forms.DockStyle style, System.Windows.Forms.ToolStrip strip )
-      {
-        System.Windows.Forms.ToolStripPanel panel = CadKit.Tools.ToolStripPanel.make( style );
-        if ( null != panel && null != strip )
-          panel.Join( strip );
-        return panel;
-      }
+      System.Windows.Forms.ToolStripPanel panel = CadKit.Tools.ToolStripPanel.make(style);
+      if (null != panel && null != strip)
+        panel.Join(strip);
+      return panel;
+    }
 
-      /// <summary>
-      /// Make a tool-strip panel.
-      /// </summary>
-      public static System.Windows.Forms.ToolStripPanel make( System.Windows.Forms.DockStyle style )
-      {
-        System.Windows.Forms.ToolStripPanel panel = new System.Windows.Forms.ToolStripPanel();
-        panel.Dock = style;
-        return panel;
-      }
+    /// <summary>
+    /// Make a tool-strip panel.
+    /// </summary>
+    public static System.Windows.Forms.ToolStripPanel make(System.Windows.Forms.DockStyle style)
+    {
+      System.Windows.Forms.ToolStripPanel panel = new System.Windows.Forms.ToolStripPanel();
+      panel.Dock = style;
+      return panel;
     }
   }
 }

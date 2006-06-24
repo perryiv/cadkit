@@ -7,32 +7,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.Tools
 {
-  namespace Tools
+  public static class Parent
   {
-    public static class Parent
+    /// <summary>
+    /// Find the parent mdi form.
+    /// </summary>
+    public static System.Windows.Forms.Form findMdiParent(System.Windows.Forms.Control child)
     {
-      /// <summary>
-      /// Find the parent mdi form.
-      /// </summary>
-      public static System.Windows.Forms.Form findMdiParent ( System.Windows.Forms.Control child )
-      {
-        if ( null == child )
-          return null;
+      if (null == child)
+        return null;
 
-        System.Windows.Forms.Form parent = child.FindForm();
-        System.Windows.Forms.Form last = null;
-        while ( null != parent && last != parent )
-        {
-          last = parent;
-          parent = parent.FindForm();
-        }
-        if ( null != parent.MdiParent )
-          return parent.MdiParent;
-        else
-          return null;
+      System.Windows.Forms.Form parent = child.FindForm();
+      System.Windows.Forms.Form last = null;
+      while (null != parent && last != parent)
+      {
+        last = parent;
+        parent = parent.FindForm();
       }
+      if (null != parent.MdiParent)
+        return parent.MdiParent;
+      else
+        return null;
     }
   }
 }

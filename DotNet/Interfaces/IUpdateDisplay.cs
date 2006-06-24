@@ -9,8 +9,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IClassFactory
+  public interface IUpdateDisplay
   {
-    object createInstance ( string type );
+    void updateDisplay();
   }
 }

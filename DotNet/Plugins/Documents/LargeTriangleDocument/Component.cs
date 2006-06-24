@@ -9,27 +9,21 @@
 
 namespace CadKit.LargeTriangleDocument
 {
-  public class Document : CadKit.Interfaces.IDocument
+  public class Component : CadKit.Interfaces.IPlugin
   {
     /// <summary>
-    /// Construct a document.
+    /// Construct a component.
     /// </summary>
-    public Document()
+    public Component()
     {
+      System.Threading.Thread.Sleep(new System.TimeSpan(0, 0, 2));
     }
 
     /// <summary>
-    /// Set/get the modified flag.
+    /// Called when the plugin is loaded.
     /// </summary>
-    bool CadKit.Interfaces.IDocument.Modified
+    void CadKit.Interfaces.IPlugin.startupNotify ( object caller )
     {
-      get { return _modified; }
-      set { _modified = value; }
     }
-
-    /// <summary>
-    /// Data members.
-    /// </summary>
-    bool _modified = false;
   }
 }

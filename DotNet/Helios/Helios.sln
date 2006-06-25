@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Images", "..\Images\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Tools", "..\Tools\CadKit.Tools.csproj", "{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.LargeTriangleDelegate", "..\Plugins\Delegates\LargeTriangleDelegate\CadKit.LargeTriangleDelegate.csproj", "{C88114AA-FF74-47A6-9C28-0D65564A5BB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Commands", "..\Commands\CadKit.Commands.csproj", "{4255A478-49D3-4250-B06A-AB16AEF9579E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,14 @@ Global
 		{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C88114AA-FF74-47A6-9C28-0D65564A5BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C88114AA-FF74-47A6-9C28-0D65564A5BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C88114AA-FF74-47A6-9C28-0D65564A5BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C88114AA-FF74-47A6-9C28-0D65564A5BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

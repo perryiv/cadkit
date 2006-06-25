@@ -35,6 +35,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Persistence\CadKit.Persistence.csproj">
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>

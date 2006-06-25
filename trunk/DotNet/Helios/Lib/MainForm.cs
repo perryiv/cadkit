@@ -7,9 +7,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Helios.Lib
+namespace CadKit.Helios
 {
-  public partial class MainForm : CadKit.Persistence.Form
+  public partial class MainForm : 
+    CadKit.Persistence.Form,
+    CadKit.Interfaces.IMenuBar
   {
     /// <summary>
     /// Data members.
@@ -23,6 +25,7 @@ namespace CadKit.Helios.Lib
     {
       this.PersistentName = persistentName;
       this.InitializeComponent();
+      this._buildMenu();
       this.Load += this._formLoad;
     }
 
@@ -64,13 +67,30 @@ namespace CadKit.Helios.Lib
     #endregion
 
     /// <summary>
+    /// Get the menu bar.
+    /// </summary>
+    object CadKit.Interfaces.IMenuBar.MenuBar
+    {
+      get
+      {
+        if (null == this.MainMenuStrip)
+        {
+          System.Windows.Forms.MenuStrip menu = new System.Windows.Forms.MenuStrip();
+          this.Controls.Add(menu);
+          this.MainMenuStrip = menu;
+        }
+        return this.MainMenuStrip;
+      }
+    }
+
+    /// <summary>
     /// Load all appropriate plugins.
     /// </summary>
     protected void _loadPlugins ( object caller )
     {
       try
       {
-        string dir = CadKit.Helios.Lib.Application.instance().directory();
+        string dir = CadKit.Helios.Application.instance().directory();
         string name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
         string path = dir + '/' + name + ".xml";
         CadKit.Plugins.Manager.instance().load(path, caller);
@@ -115,16 +135,16 @@ namespace CadKit.Helios.Lib
     /// </summary>
     private void _showSplashScreen ( SplashDelegate del )
     {
-      CadKit.Helios.Lib.SplashScreen splash = null;
+      CadKit.Helios.SplashScreen splash = null;
       try
       {
-        System.DateTime start = System.DateTime.Now;
-        System.TimeSpan duration = new System.TimeSpan(0, 0, 5);
+        //System.DateTime start = System.DateTime.Now;
+        //System.TimeSpan duration = new System.TimeSpan(0, 0, 5);
         splash = this._buildSplashScreen();
         splash.Show();
         splash.Update();
         del ( splash );
-        this._safeSleep(duration - (System.DateTime.Now - start));
+        //this._safeSleep(duration - (System.DateTime.Now - start));
       }
       finally
       {
@@ -136,14 +156,37 @@ namespace CadKit.Helios.Lib
     /// <summary>
     /// Build the splash screen.
     /// </summary>
-    private CadKit.Helios.Lib.SplashScreen _buildSplashScreen()
+    private CadKit.Helios.SplashScreen _buildSplashScreen()
     {
-      CadKit.Helios.Lib.SplashScreen splash = new CadKit.Helios.Lib.SplashScreen();
-      string file = CadKit.Helios.Lib.Application.instance().directory() + "/icons/splash_screen.jpg";
+      CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
+      string file = CadKit.Helios.Application.instance().directory() + "/icons/splash_screen.jpg";
       splash.Image = CadKit.Images.Image.load(file);
       splash.Label.Text = "Hi Perry";
-      splash.Text = CadKit.Helios.Lib.Application.instance().Name;
+      splash.Text = CadKit.Helios.Application.instance().Name;
       return splash;
+    }
+
+    /// <summary>
+    /// Build the menu.
+    /// </summary>
+    private void _buildMenu()
+    {
+      object temp = (this as CadKit.Interfaces.IMenuBar).MenuBar;
+      System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
+      this.MainMenuStrip.Items.Add(menu);
+      this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
+      this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
+      menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+      this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
+    }
+
+    /// <summary>
+    /// Build the menu.
+    /// </summary>
+    private void _addMenuButton ( System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command )
+    {
+      if ( null != menu && null != command )
+        menu.DropDownItems.Add(command.MenuButton);
     }
   }
 }

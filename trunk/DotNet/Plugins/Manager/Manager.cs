@@ -60,14 +60,8 @@ namespace CadKit.Plugins
               System.Xml.XmlNode node = kids[i];
               if ( "plugin" == node.Name )
               {
-                System.Xml.XmlAttribute attr = node.Attributes["file"];
-                if ( null != attr )
-                {
-                  string path = info.DirectoryName + '/' + attr.Value;
-                  path = path.Replace( '\\', '/' );
-                  path = path.Replace( "//", "/" );
-                  names.Add ( path );
-                }
+                this._addFileName(names, info, node, "file");
+                this._addFileName(names, info, node, "delegate");
               }
             }
           }
@@ -85,6 +79,48 @@ namespace CadKit.Plugins
       return names;
     }
 
+    /// <summary>
+    /// Add the name to the list.
+    /// </summary>
+    private void _addFileName(Names names, System.IO.FileInfo info, System.Xml.XmlNode node, string attribute)
+    {
+      System.Xml.XmlAttribute attr = node.Attributes[attribute];
+      if (null != attr)
+      {
+        string path = info.DirectoryName + '/' + attr.Value;
+        path = path.Replace('\\', '/');
+        path = path.Replace("//", "/");
+        names.Add(path);
+      }
+    }
+
+    /// <summary>
+    /// See if there is a plugin with the given interface.
+    /// </summary>
+    public bool has<T>()
+    {
+      return (null != this.getFirst<T>());
+    }
+
+    /// <summary>
+    /// Get the first plugin that supports the given type.
+    /// </summary>
+    public T getFirst<T>()
+    {
+      foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+      {
+        try
+        {
+          T t = (T)plugin;
+          if (null != t)
+            return t;
+        }
+        catch (System.InvalidCastException)
+        {
+        }
+      }
+      return default(T);
+    }
 
     /// <summary>
     /// Load the plugins.
@@ -100,7 +136,7 @@ namespace CadKit.Plugins
         // Loop through the files.
         for ( int i = 0; i < names.Count; ++i )
         {
-          CadKit.Tools.Progress.notify("Loading file: " + names[i], i, names.Count, caller);
+          CadKit.Tools.Progress.notify("Loading: " + names[i], i, names.Count, caller);
           this._loadPlugin(names[i], caller);
         }
 
@@ -120,10 +156,12 @@ namespace CadKit.Plugins
     {
       try
       {
-        System.Reflection.Assembly plugin = this._findOrLoadAssembly(file);
-        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) plugin.CreateInstance("CadKit.Plugins.Factory");
-        CadKit.Interfaces.IPlugin startup = (CadKit.Interfaces.IPlugin) factory.createInstance("CadKit.Interfaces.IPlugin");
-        startup.startupNotify(caller);
+        System.Reflection.Assembly assembly = this._findOrLoadAssembly(file);
+        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) assembly.CreateInstance("CadKit.Plugins.Factory");
+        CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin) factory.createInstance("CadKit.Interfaces.IPlugin");
+        plugin.startupNotify(caller);
+        if ( false == _plugins.Contains ( plugin ) )
+          _plugins.Add(plugin);
       }
       catch ( System.Exception e )
       {
@@ -153,11 +191,13 @@ namespace CadKit.Plugins
     /// </summary>
     class Assemblies : System.Collections.Generic.Dictionary<string, System.Reflection.Assembly> { }
     class Names : System.Collections.Generic.List<string> { }
+    class Plugins : System.Collections.Generic.List<CadKit.Interfaces.IPlugin> { }
 
     /// <summary>
     /// Data members.
     /// </summary>
     private Assemblies _assemblies = new Assemblies();
+    private Plugins _plugins = new Plugins();
     private static Manager _instance = null;
   }
 }

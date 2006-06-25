@@ -7,27 +7,41 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Helios.Lib
+namespace CadKit.Helios
 {
   public class SplashScreen : 
     System.Windows.Forms.Form, 
     CadKit.Interfaces.IProgressBar,
-    CadKit.Interfaces.IUpdateDisplay
+    CadKit.Interfaces.IUpdateDisplay,
+    CadKit.Interfaces.IMenuBar
   {
     /// <summary>
     /// Constructor.
     /// </summary>
-    public SplashScreen()
+    public SplashScreen ( object caller )
     {
+      _caller = caller;
       InitializeComponent();
     }
-
-    private System.Windows.Forms.Label _label;
 
     /// <summary>
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
+    private System.Windows.Forms.Label _label = null;
+    private object _caller = null;
+
+    /// <summary>
+    /// Get the menu bar.
+    /// </summary>
+    object CadKit.Interfaces.IMenuBar.MenuBar
+    {
+      get
+      {
+        CadKit.Interfaces.IMenuBar bar = _caller as CadKit.Interfaces.IMenuBar;
+        return (null == bar) ? null : bar.MenuBar;
+      }
+    }
 
     /// <summary>
     /// Set/get the image.
@@ -38,7 +52,7 @@ namespace CadKit.Helios.Lib
       set
       {
         _label.Image = value;
-        this.Size = new System.Drawing.Size ( value.Width, value.Height + _progressBar.Height );
+        _label.Size = value.Size;
       }
     }
 
@@ -68,7 +82,7 @@ namespace CadKit.Helios.Lib
       set
       {
         _progressBar.Value = value;
-        this.Invalidate(true);
+        _progressBar.Invalidate(true);
       }
       get { return _progressBar.Value; }
     }
@@ -89,7 +103,7 @@ namespace CadKit.Helios.Lib
       set
       {
         _label.Text = value;
-        this.Invalidate(true);
+        _label.Invalidate(true);
       }
       get { return _label.Text; }
     }
@@ -99,7 +113,8 @@ namespace CadKit.Helios.Lib
     /// </summary>
     void CadKit.Interfaces.IUpdateDisplay.updateDisplay()
     {
-      this.Update();
+      _label.Update();
+      _progressBar.Update();
     }
 
     /// <summary>
@@ -144,7 +159,7 @@ namespace CadKit.Helios.Lib
       this._label.Size = new System.Drawing.Size(460, 331);
       this._label.TabIndex = 1;
       this._label.Text = "Default Text";
-      this._label.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+      this._label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
       // 
       // SplashScreen
       // 
@@ -156,7 +171,6 @@ namespace CadKit.Helios.Lib
       this.Name = "SplashScreen";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "SplashScreen";
-      this.TopMost = false;
       this.ResumeLayout(false);
 
     }

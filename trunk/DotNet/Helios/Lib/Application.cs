@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Helios.Lib
+namespace CadKit.Helios
 {
   public partial class Application
   {
@@ -40,7 +40,7 @@ namespace CadKit.Helios.Lib
     /// <summary>
     /// Set/get the main form.
     /// </summary>
-    public CadKit.Helios.Lib.MainForm MainForm
+    public CadKit.Helios.MainForm MainForm
     {
       get { return _mainForm; }
       set { _mainForm = value; }
@@ -80,6 +80,6 @@ namespace CadKit.Helios.Lib
     /// </summary>
     private static Application _instance = null;
     private string _name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost";
-    private CadKit.Helios.Lib.MainForm _mainForm = null;
+    private CadKit.Helios.MainForm _mainForm = null;
   }
 }

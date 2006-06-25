@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Helios.App
+namespace CadKit.Helios
 {
   static class Program
   {
@@ -21,9 +21,9 @@ namespace CadKit.Helios.App
       {
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault( false );
-        CadKit.Helios.Lib.Application.instance().Name = "Helios";
-        CadKit.Helios.Lib.MainForm form = new CadKit.Helios.Lib.MainForm( "CadKit.Helios.Lib.MainForm" );
-        CadKit.Helios.Lib.Application.instance().MainForm = form;
+        CadKit.Helios.Application.instance().Name = "Helios";
+        CadKit.Helios.MainForm form = new CadKit.Helios.MainForm( "CadKit.Helios.MainForm" );
+        CadKit.Helios.Application.instance().MainForm = form;
         System.Windows.Forms.Application.Run( form );
       }
       catch ( System.Exception e )

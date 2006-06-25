@@ -7,29 +7,27 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.LargeTriangleDocument
+namespace CadKit.Helios.Commands
 {
-  public class Document : CadKit.Interfaces.IDocument
+  class ExitCommand : CadKit.Commands.Command
   {
     /// <summary>
-    /// Data members.
+    /// Constructor.
     /// </summary>
-    bool _modified = false;
-
-    /// <summary>
-    /// Construct a document.
-    /// </summary>
-    public Document()
+    public ExitCommand ( object caller )
     {
+      _caller = caller;
+      _text = "E&xit";
     }
 
     /// <summary>
-    /// Set/get the modified flag.
+    /// Execute the command.
     /// </summary>
-    bool CadKit.Interfaces.IDocument.Modified
+    public override void execute()
     {
-      get { return _modified; }
-      set { _modified = value; }
+      System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
+      if (null != form)
+        form.Close();
     }
   }
 }

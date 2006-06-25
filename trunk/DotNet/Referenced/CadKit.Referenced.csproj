@@ -6,7 +6,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CadKit.Referenced</RootNamespace>
     <AssemblyName>CadKit.Referenced</AssemblyName>
   </PropertyGroup>
@@ -35,9 +34,6 @@
   <ItemGroup>
     <Compile Include="Base.cs" />
     <Compile Include="AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

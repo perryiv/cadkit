@@ -66,7 +66,8 @@
 #include "invr/Nav.h"
 #endif
 
-#if defined (USE_AVATAR)
+#if defined (INV3RSION_COLLABORATE)
+#include "invr/Draw.h"
 #include <vjAvatarFactory.h>
 
 #include <cal3d/quaternion.h>
@@ -90,8 +91,9 @@ public:
     handQuat.set(0.0, 0.0, 0.0, 1.0);
     headQuat.set(0.0, 0.0, 0.0, 1.0);
     bodyYaw = 0.0;
+    visible = true;
   }
-  ~AvatarData() {;}
+  ~AvatarData() { ; }
   
   // public data members
   vjAvatar *avatar;
@@ -100,6 +102,7 @@ public:
   gmtl::Quatf handQuat;
   gmtl::Quatf headQuat;
   float bodyYaw;
+  bool visible;
 };
 
 #endif
@@ -634,14 +637,15 @@ protected:
   std::string       _tmpDirName;
   double            _nextFrameTime;
 
-# if defined (INV3RSION_NAV)
+#if defined (INV3RSION_NAV)
   invr::nav::CAD    *_invrNav;
-# endif 
-
-  std::stringstream                   _sinterStream;
-  std::string                         _sinterNodeName;
-  std::string                         _sinterFileType;
 # if defined (USE_SINTERPOINT)
+  void            _sinterSendNavUpdate(const float *matrix, const bool cached);
+  void            _requestNavControl();
+#endif
+#endif 
+
+#if defined (USE_SINTERPOINT)
   // SinterPoint variables
   sinter::Receiver*                   _sinterReceiver;
   int                                 _sinterStreamSize;
@@ -650,12 +654,16 @@ protected:
   SinterState                         _sinterState;
   bool                                _sinterDiffFlag;
   std::string                         _sinterTmpString;
+  std::stringstream                   _sinterStream;
+  std::string                         _sinterNodeName;
+  std::string                         _sinterFileType;
 
 
   // Functions used for networked file loading with SinterPoint, if enabled
   void            _sinterPointInit();
   void            _sinterReceiveData();
   void            _sinterProcessData();
+  
 
   // Used to time sinterpoint loading
   double _getClockTime(){
@@ -693,12 +701,17 @@ protected:
     return res;
   }
 
-# endif
+#endif
 
-#if defined (USE_AVATAR)
+#if defined (INV3RSION_COLLABORATE)
+
+#ifndef USE_SINTERPOINT
+#error "Collaboration only available with SinterPoint compile"
+#endif
+
    // avatar methods
-   void _loadAvatar   ( const std::string &filename );
-   void _addAvatar ( const std::string &filename, const std::string &name, bool is_local );
+   void _registerAvatar   ( const std::string &filename );
+   void _addAvatar ( const std::string &filename, const std::string &name);
    void _updateAvatars();
    void _updateLocalAvatar();
    int _getAvatarIndexByName(std::string &name);
@@ -710,15 +723,27 @@ protected:
    vjAvatarFactory*                     _avatarFactory;
    std::vector<AvatarData*>                   _avatars;
    AvatarData*                            _localAvatar;
+   std::string 			      _localAvatarName;
+   std::string 			  _localAvatarFileName;
+   AvatarData*                          _controlAvatar;
    double                                  _avatarTime;
    float _bodyMaxYawRate;
    int _avatarWaitCount;
+   float                                  _prevHeadYaw;
+   float                                  _headYawOffset;
    
-   // SinterPoint send methods
-   void _sinterSendCommand(std::string &cmd);
+   // SinterPoint methods
+   void _sinterSendCommand(std::string &cmd, bool cached);
+   void _sinterCollabInit();
+   void _sinterCollabReceiveData();
+   void _sinterProcessCollabData();
+   void _sendAddAvatarCommand( const std::string &filename, const std::string &name );
+
    
    // SinterPoint variables
-   sinter::Sender*                       _sinterSender;
+   sinter::Sender*                       _sinterCollabSender;
+   sinter::Receiver*                     _sinterCollabReceiver;
+   cluster::UserData< SinterAppData >    _sinterCollabData;
 #endif
 
 };

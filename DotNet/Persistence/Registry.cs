@@ -29,19 +29,28 @@ namespace CadKit.Persistence
     /// </summary>
     private string _file()
     {
-      string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
-      string file = System.Windows.Forms.Application.LocalUserAppDataPath + @"\" + program + ".xml";
-      return file;
+      lock ( _mutex )
+      {
+        string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
+        string file = System.Windows.Forms.Application.LocalUserAppDataPath + @"\" + program + ".xml";
+        return file;
+      }
     }
 
     /// <summary>
     /// Single instance.
     /// </summary>
-    public static Registry instance()
+    public static Registry Instance
     {
-      if ( null == _instance )
-        _instance = new Registry();
-      return _instance;
+      get
+      {
+        lock ( "CadKit.Persistence.Registry.Instance" )
+        {
+          if (null == _instance)
+            _instance = new Registry();
+          return _instance;
+        }
+      }
     }
 
     /// <summary>
@@ -51,32 +60,33 @@ namespace CadKit.Persistence
     {
       try
       {
-        _sections = new Sections();
-
-        System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-        doc.Load( this._file() );
-
-        System.Xml.XmlNode root = doc.FirstChild;
-        if ( null == root )
-          return;
-
-        System.Xml.XmlNodeList kids = root.ChildNodes;
-        for ( int i = 0; i < kids.Count; ++i )
+        lock (_mutex)
         {
-          System.Xml.XmlNode node = kids[i];
-          string name = node.Name;
-          Section section = new Section();
-          _sections[name] = section;
+          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+          doc.Load(this._file());
 
-          System.Xml.XmlNodeList grandKids = node.ChildNodes;
-          if ( null != grandKids )
+          System.Xml.XmlNode root = doc.FirstChild;
+          if (null == root)
+            return;
+
+          System.Xml.XmlNodeList kids = root.ChildNodes;
+          for (int i = 0; i < kids.Count; ++i)
           {
-            for ( int j = 0; j < grandKids.Count; ++j )
+            System.Xml.XmlNode node = kids[i];
+            string name = node.Name;
+            Section section = new Section();
+            _sections[name] = section;
+
+            System.Xml.XmlNodeList grandKids = node.ChildNodes;
+            if (null != grandKids)
             {
-              node = grandKids[j];
-              string key = node.Name;
-              string value = node.InnerText;
-              section[key] = value;
+              for (int j = 0; j < grandKids.Count; ++j)
+              {
+                node = grandKids[j];
+                string key = node.Name;
+                string value = node.InnerText;
+                section[key] = value;
+              }
             }
           }
         }
@@ -98,25 +108,28 @@ namespace CadKit.Persistence
     {
       try
       {
-        System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-        System.Xml.XmlElement root = doc.CreateElement( "registry" );
-        doc.AppendChild( root );
-
-        foreach ( string section in _sections.Keys )
+        lock (_mutex)
         {
-          Section hash = this.getSectionHash( section );
-          System.Xml.XmlElement element = doc.CreateElement( section );
-          root.AppendChild( element );
-          foreach ( string key in hash.Keys )
-          {
-            string value = hash[key].ToString();
-            System.Xml.XmlElement child = doc.CreateElement( key );
-            child.InnerText = value;
-            element.AppendChild( child );
-          }
-        }
+          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+          System.Xml.XmlElement root = doc.CreateElement("registry");
+          doc.AppendChild(root);
 
-        doc.Save( this._file() );
+          foreach (string section in _sections.Keys)
+          {
+            Section hash = this.getSectionHash(section);
+            System.Xml.XmlElement element = doc.CreateElement(section);
+            root.AppendChild(element);
+            foreach (string key in hash.Keys)
+            {
+              string value = hash[key].ToString();
+              System.Xml.XmlElement child = doc.CreateElement(key);
+              child.InnerText = value;
+              element.AppendChild(child);
+            }
+          }
+
+          doc.Save(this._file());
+        }
       }
       catch ( System.Exception e )
       {
@@ -129,15 +142,18 @@ namespace CadKit.Persistence
     /// </summary>
     public string getString( string section, string key, string defaultValue )
     {
-      Section hash = this.getSectionHash( section );
-      try
+      lock (_mutex)
       {
-        return hash[key];
-      }
-      catch ( System.Collections.Generic.KeyNotFoundException )
-      {
-        hash[key] = defaultValue;
-        return defaultValue;
+        Section hash = this.getSectionHash(section);
+        try
+        {
+          return hash[key];
+        }
+        catch (System.Collections.Generic.KeyNotFoundException)
+        {
+          hash[key] = defaultValue;
+          return defaultValue;
+        }
       }
     }
 
@@ -146,8 +162,11 @@ namespace CadKit.Persistence
     /// </summary>
     public void setString( string section, string key, string value )
     {
-      Section hash = this.getSectionHash( section );
-      hash[key] = value;
+      lock (_mutex)
+      {
+        Section hash = this.getSectionHash(section);
+        hash[key] = value;
+      }
     }
 
     /// <summary>
@@ -155,7 +174,10 @@ namespace CadKit.Persistence
     /// </summary>
     public int getInt( string section, string key, int defaultValue )
     {
-      return System.Convert.ToInt32( this.getString( section, key, defaultValue.ToString() ) );
+      lock (_mutex)
+      {
+        return System.Convert.ToInt32(this.getString(section, key, defaultValue.ToString()));
+      }
     }
 
     /// <summary>
@@ -163,7 +185,10 @@ namespace CadKit.Persistence
     /// </summary>
     public void setInt( string section, string key, int value )
     {
-      this.getSectionHash( section )[key] = value.ToString();
+      lock (_mutex)
+      {
+        this.getSectionHash(section)[key] = value.ToString();
+      }
     }
 
     /// <summary>
@@ -171,7 +196,10 @@ namespace CadKit.Persistence
     /// </summary>
     public bool getBool( string section, string key, bool defaultValue )
     {
-      return System.Convert.ToBoolean( this.getString( section, key, defaultValue.ToString() ) );
+      lock (_mutex)
+      {
+        return System.Convert.ToBoolean(this.getString(section, key, defaultValue.ToString()));
+      }
     }
 
     /// <summary>
@@ -179,7 +207,10 @@ namespace CadKit.Persistence
     /// </summary>
     public void setBool( string section, string key, bool value )
     {
-      this.getSectionHash( section )[key] = value.ToString();
+      lock (_mutex)
+      {
+        this.getSectionHash(section)[key] = value.ToString();
+      }
     }
 
     /// <summary>
@@ -187,35 +218,38 @@ namespace CadKit.Persistence
     /// </summary>
     public System.Drawing.Color getColor( string section, string key, System.Drawing.Color defaultValue )
     {
-      System.Drawing.Color color = new System.Drawing.Color();
-      color = defaultValue;
-      string temp = this.getString( section, key, defaultValue.Name );
-      if ( null != temp )
+      lock (_mutex)
       {
-        System.Drawing.Color named = System.Drawing.Color.FromName( temp );
-        if ( 0 == named.A && 0 == named.R && 0 == named.G && 0 == named.B )
+        System.Drawing.Color color = new System.Drawing.Color();
+        color = defaultValue;
+        string temp = this.getString(section, key, defaultValue.Name);
+        if (null != temp)
         {
-          int a = color.A;
-          int r = color.R;
-          int g = color.G;
-          int b = color.B;
-
-          string[] parts = temp.Split( new char[] { ' ' } );
-          if ( 4 == parts.Length )
+          System.Drawing.Color named = System.Drawing.Color.FromName(temp);
+          if (0 == named.A && 0 == named.R && 0 == named.G && 0 == named.B)
           {
-            a = System.Convert.ToByte( parts[0] );
-            r = System.Convert.ToByte( parts[1] );
-            g = System.Convert.ToByte( parts[2] );
-            b = System.Convert.ToByte( parts[3] );
+            int a = color.A;
+            int r = color.R;
+            int g = color.G;
+            int b = color.B;
+
+            string[] parts = temp.Split(new char[] { ' ' });
+            if (4 == parts.Length)
+            {
+              a = System.Convert.ToByte(parts[0]);
+              r = System.Convert.ToByte(parts[1]);
+              g = System.Convert.ToByte(parts[2]);
+              b = System.Convert.ToByte(parts[3]);
+            }
+            color = System.Drawing.Color.FromArgb(a, r, g, b);
           }
-          color = System.Drawing.Color.FromArgb( a, r, g, b );
+          else
+          {
+            color = named;
+          }
         }
-        else
-        {
-          color = named;
-        }
+        return color;
       }
-      return color;
     }
 
     /// <summary>
@@ -223,16 +257,19 @@ namespace CadKit.Persistence
     /// </summary>
     public void setColor( string section, string key, System.Drawing.Color value )
     {
-      if ( null != value )
+      lock (_mutex)
       {
-        if ( true == value.IsNamedColor )
+        if (null != value)
         {
-          this.getSectionHash( section )[key] = value.Name;
-        }
-        else
-        {
-          string temp = System.String.Format( "{0} {1} {2} {3}", value.A, value.R, value.G, value.B );
-          this.getSectionHash( section )[key] = temp;
+          if (true == value.IsNamedColor)
+          {
+            this.getSectionHash(section)[key] = value.Name;
+          }
+          else
+          {
+            string temp = System.String.Format("{0} {1} {2} {3}", value.A, value.R, value.G, value.B);
+            this.getSectionHash(section)[key] = temp;
+          }
         }
       }
     }
@@ -242,29 +279,33 @@ namespace CadKit.Persistence
     /// </summary>
     public Section getSectionHash( string section )
     {
-      Section hash = null;
-      try
+      lock (_mutex)
       {
-        hash = _sections[section];
+        Section hash = null;
+        try
+        {
+          hash = _sections[section];
+        }
+        catch (System.Collections.Generic.KeyNotFoundException)
+        {
+          hash = null;
+        }
+        if (null == hash)
+        {
+          hash = new Section();
+          _sections[section] = hash;
+        }
+        return hash;
       }
-      catch ( System.Collections.Generic.KeyNotFoundException )
-      {
-        hash = null;
-      }
-      if ( null == hash )
-      {
-        hash = new Section();
-        _sections[section] = hash;
-      }
-      return hash;
     }
 
     /// <summary>
     /// Data members.
     /// </summary>
-    private static Registry _instance;
+    private static Registry _instance = null;
     public class Section : System.Collections.Generic.Dictionary<string, string> { }
     public class Sections : System.Collections.Generic.Dictionary<string, Section> { }
-    private Sections _sections;
+    private Sections _sections = new Sections();
+    private object _mutex = new object();
   }
 }

@@ -21,62 +21,71 @@ namespace CadKit.Plugins
     /// <summary>
     /// Single instance.
     /// </summary>
-    public static Manager instance()
+    public static Manager Instance
     {
-      if ( null == _instance )
-        _instance = new Manager();
-      return _instance;
+      get
+      {
+        lock ("CadKit.Plugins.Instance")
+        {
+          if (null == _instance)
+            _instance = new Manager();
+          return _instance;
+        }
+      }
     }
 
     /// <summary>
     /// Get the file names from the XML file.
     /// </summary>
-    private Names _getPluginFileNames ( string file )
+    private Names _getPluginFileNames(string file)
     {
-      // Initialize the names.
-      Names names = new Names();
-
-      // Open the configuration file.
-      try
+      lock (_mutex)
       {
-        // Parse the path string.
-        System.IO.FileInfo info = new System.IO.FileInfo ( file );
+        // Initialize the names.
+        Names names = new Names();
 
-        // Read the file.
-        System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-        doc.Load( file );
-
-        // Get top-level node.
-        System.Xml.XmlNode root = doc.FirstChild;
-
-        // While there is a top-level node...
-        while ( null != root )
+        // Open the configuration file.
+        try
         {
-          if ( "plugins" == root.Name )
+          // Parse the path string.
+          System.IO.FileInfo info = new System.IO.FileInfo(file);
+
+          // Read the file.
+          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+          doc.Load(file);
+
+          // Get top-level node.
+          System.Xml.XmlNode root = doc.FirstChild;
+
+          // While there is a top-level node...
+          while (null != root)
           {
-            System.Xml.XmlNodeList kids = root.ChildNodes;
-            for ( int i = 0; i < kids.Count; ++i )
+            if ("plugins" == root.Name)
             {
-              System.Xml.XmlNode node = kids[i];
-              if ( "plugin" == node.Name )
+              System.Xml.XmlNodeList kids = root.ChildNodes;
+              for (int i = 0; i < kids.Count; ++i)
               {
-                this._addFileName(names, info, node, "file");
-                this._addFileName(names, info, node, "delegate");
+                System.Xml.XmlNode node = kids[i];
+                if ("plugin" == node.Name)
+                {
+                  this._addFileName(names, info, node, "file");
+                  this._addFileName(names, info, node, "delegate");
+                }
               }
             }
+
+            // Go to next top-level node.
+            root = root.NextSibling;
           }
-
-          // Go to next top-level node.
-          root = root.NextSibling;
         }
-      }
-      catch ( System.Exception e )
-      {
-        System.Console.WriteLine( "Error 1813945695: {0}", e.Message );
-      }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 1813945695: {0}", e.Message);
+        }
 
-      // Return the names we have.
-      return names;
+        // Return the names we have.
+        return names;
+      }
     }
 
     /// <summary>
@@ -84,13 +93,16 @@ namespace CadKit.Plugins
     /// </summary>
     private void _addFileName(Names names, System.IO.FileInfo info, System.Xml.XmlNode node, string attribute)
     {
-      System.Xml.XmlAttribute attr = node.Attributes[attribute];
-      if (null != attr)
+      lock (_mutex)
       {
-        string path = info.DirectoryName + '/' + attr.Value;
-        path = path.Replace('\\', '/');
-        path = path.Replace("//", "/");
-        names.Add(path);
+        System.Xml.XmlAttribute attr = node.Attributes[attribute];
+        if (null != attr)
+        {
+          string path = info.DirectoryName + '/' + attr.Value;
+          path = path.Replace('\\', '/');
+          path = path.Replace("//", "/");
+          names.Add(path);
+        }
       }
     }
 
@@ -99,7 +111,10 @@ namespace CadKit.Plugins
     /// </summary>
     public bool has<T>()
     {
-      return (null != this.getFirst<T>());
+      lock (_mutex)
+      {
+        return (null != this.getFirst<T>());
+      }
     }
 
     /// <summary>
@@ -107,19 +122,22 @@ namespace CadKit.Plugins
     /// </summary>
     public T getFirst<T>()
     {
-      foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+      lock (_mutex)
       {
-        try
+        foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
         {
-          T t = (T)plugin;
-          if (null != t)
-            return t;
+          try
+          {
+            T t = (T)plugin;
+            if (null != t)
+              return t;
+          }
+          catch (System.InvalidCastException)
+          {
+          }
         }
-        catch (System.InvalidCastException)
-        {
-        }
+        return default(T);
       }
-      return default(T);
     }
 
     /// <summary>
@@ -130,18 +148,21 @@ namespace CadKit.Plugins
       // Open the configuration file.
       try
       {
-        // Get all the names.
-        Names names = this._getPluginFileNames(file);
-
-        // Loop through the files.
-        for ( int i = 0; i < names.Count; ++i )
+        lock (_mutex)
         {
-          CadKit.Tools.Progress.notify("Loading: " + names[i], i, names.Count, caller);
-          this._loadPlugin(names[i], caller);
-        }
+          // Get all the names.
+          Names names = this._getPluginFileNames(file);
 
-        // Done.
-        CadKit.Tools.Progress.notify("Done loading plugins", names.Count, names.Count, caller);
+          // Loop through the files.
+          for (int i = 0; i < names.Count; ++i)
+          {
+            CadKit.Tools.Progress.notify("Loading: " + names[i], i, names.Count, caller);
+            this._loadPlugin(names[i], caller);
+          }
+
+          // Done.
+          CadKit.Tools.Progress.notify("Done loading plugins", names.Count, names.Count, caller);
+        }
       }
       catch (System.Exception e)
       {
@@ -156,12 +177,15 @@ namespace CadKit.Plugins
     {
       try
       {
-        System.Reflection.Assembly assembly = this._findOrLoadAssembly(file);
-        CadKit.Interfaces.IClassFactory factory = ( CadKit.Interfaces.IClassFactory ) assembly.CreateInstance("CadKit.Plugins.Factory");
-        CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin) factory.createInstance("CadKit.Interfaces.IPlugin");
-        plugin.startupNotify(caller);
-        if ( false == _plugins.Contains ( plugin ) )
-          _plugins.Add(plugin);
+        lock (_mutex)
+        {
+          System.Reflection.Assembly assembly = this._findOrLoadAssembly(file);
+          CadKit.Interfaces.IClassFactory factory = (CadKit.Interfaces.IClassFactory)assembly.CreateInstance("CadKit.Plugins.Factory");
+          CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
+          plugin.startupNotify(caller);
+          if (false == _plugins.Contains(plugin))
+            _plugins.Add(plugin);
+        }
       }
       catch ( System.Exception e )
       {
@@ -174,15 +198,18 @@ namespace CadKit.Plugins
     /// </summary>
     private System.Reflection.Assembly _findOrLoadAssembly(string file)
     {
-      try
+      lock (_mutex)
       {
-        return _assemblies[file];
-      }
-      catch (System.Collections.Generic.KeyNotFoundException)
-      {
-        System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFrom(file);
-        _assemblies[file] = assembly;
-        return assembly;
+        try
+        {
+          return _assemblies[file];
+        }
+        catch (System.Collections.Generic.KeyNotFoundException)
+        {
+          System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFrom(file);
+          _assemblies[file] = assembly;
+          return assembly;
+        }
       }
     }
 
@@ -199,5 +226,6 @@ namespace CadKit.Plugins
     private Assemblies _assemblies = new Assemblies();
     private Plugins _plugins = new Plugins();
     private static Manager _instance = null;
+    private object _mutex = new object();
   }
 }

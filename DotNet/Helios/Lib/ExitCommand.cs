@@ -25,9 +25,12 @@ namespace CadKit.Helios.Commands
     /// </summary>
     public override void execute()
     {
-      System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
-      if (null != form)
-        form.Close();
+      lock (_mutex)
+      {
+        System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
+        if (null != form)
+          form.Close();
+      }
     }
   }
 }

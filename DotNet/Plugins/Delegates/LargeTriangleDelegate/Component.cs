@@ -14,6 +14,11 @@ namespace CadKit.LargeTriangleDelegate
     /// <summary>
     /// Construct a component.
     /// </summary>
+    private object _mutex = new object();
+
+    /// <summary>
+    /// Construct a component.
+    /// </summary>
     public Component()
     {
       //System.Threading.Thread.Sleep(new System.TimeSpan(0, 0, 2));
@@ -24,6 +29,9 @@ namespace CadKit.LargeTriangleDelegate
     /// </summary>
     void CadKit.Interfaces.IPlugin.startupNotify ( object caller )
     {
+      lock (_mutex)
+      {
+      }
     }
   }
 }

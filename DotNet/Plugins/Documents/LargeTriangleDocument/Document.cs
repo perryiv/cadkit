@@ -15,6 +15,7 @@ namespace CadKit.LargeTriangleDocument
     /// Data members.
     /// </summary>
     bool _modified = false;
+    private object _mutex = new object();
 
     /// <summary>
     /// Construct a document.
@@ -28,8 +29,20 @@ namespace CadKit.LargeTriangleDocument
     /// </summary>
     bool CadKit.Interfaces.IDocument.Modified
     {
-      get { return _modified; }
-      set { _modified = value; }
+      get
+      {
+        lock (_mutex)
+        {
+          return _modified;
+        }
+      }
+      set
+      {
+        lock (_mutex)
+        {
+          _modified = value;
+        }
+      }
     }
   }
 }

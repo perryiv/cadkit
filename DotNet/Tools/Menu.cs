@@ -16,9 +16,12 @@ namespace CadKit.Tools
     /// </summary>
     public static System.Windows.Forms.ToolStripMenuItem makeMenu(string text)
     {
-      System.Windows.Forms.ToolStripMenuItem menu = new System.Windows.Forms.ToolStripMenuItem();
-      menu.Text = text;
-      return menu;
+      lock ("CadKit.Tools.Menu.makeMenu")
+      {
+        System.Windows.Forms.ToolStripMenuItem menu = new System.Windows.Forms.ToolStripMenuItem();
+        menu.Text = text;
+        return menu;
+      }
     }
   }
 }

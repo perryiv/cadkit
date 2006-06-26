@@ -35,11 +35,14 @@ namespace CadKit.Helios
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose( bool disposing )
     {
-      if ( disposing && ( components != null ) )
+      lock (_mutex)
       {
-        components.Dispose();
+        if (disposing && (components != null))
+        {
+          components.Dispose();
+        }
+        base.Dispose(disposing);
       }
-      base.Dispose( disposing );
     }
 
     #region Windows Form Designer generated code
@@ -50,17 +53,19 @@ namespace CadKit.Helios
     /// </summary>
     private void InitializeComponent()
     {
-        this.SuspendLayout();
-        // 
-        // MainForm
-        // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(757, 367);
-        this.Name = "MainForm";
-        this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-        this.Text = "MainForm";
-        this.ResumeLayout(false);
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+      this.SuspendLayout();
+      // 
+      // MainForm
+      // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.ClientSize = new System.Drawing.Size(757, 367);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.Name = "MainForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+      this.Text = "MainForm";
+      this.ResumeLayout(false);
 
     }
 
@@ -73,13 +78,16 @@ namespace CadKit.Helios
     {
       get
       {
-        if (null == this.MainMenuStrip)
+        lock (_mutex)
         {
-          System.Windows.Forms.MenuStrip menu = new System.Windows.Forms.MenuStrip();
-          this.Controls.Add(menu);
-          this.MainMenuStrip = menu;
+          if (null == this.MainMenuStrip)
+          {
+            System.Windows.Forms.MenuStrip menu = new System.Windows.Forms.MenuStrip();
+            this.Controls.Add(menu);
+            this.MainMenuStrip = menu;
+          }
+          return this.MainMenuStrip;
         }
-        return this.MainMenuStrip;
       }
     }
 
@@ -90,10 +98,13 @@ namespace CadKit.Helios
     {
       try
       {
-        string dir = CadKit.Helios.Application.instance().directory();
-        string name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
-        string path = dir + '/' + name + ".xml";
-        CadKit.Plugins.Manager.instance().load(path, caller);
+        lock (_mutex)
+        {
+          string dir = CadKit.Helios.Application.Instance.directory();
+          string name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+          string path = dir + '/' + name + ".xml";
+          CadKit.Plugins.Manager.Instance.load(path, caller);
+        }
       }
       catch ( System.Exception e )
       {
@@ -113,7 +124,10 @@ namespace CadKit.Helios
     {
       try
       {
-        this._showSplashScreen(this._loadPlugins);
+        lock (_mutex)
+        {
+          this._showSplashScreen(this._loadPlugins);
+        }
       }
       catch (System.Exception e)
       {
@@ -126,8 +140,11 @@ namespace CadKit.Helios
     /// </summary>
     private void _safeSleep(System.TimeSpan duration)
     {
-      if ( duration.Ticks > 0 )
-        System.Threading.Thread.Sleep(duration);
+      lock (_mutex)
+      {
+        if (duration.Ticks > 0)
+          System.Threading.Thread.Sleep(duration);
+      }
     }
 
     /// <summary>
@@ -135,21 +152,24 @@ namespace CadKit.Helios
     /// </summary>
     private void _showSplashScreen ( SplashDelegate del )
     {
-      CadKit.Helios.SplashScreen splash = null;
-      try
+      lock (_mutex)
       {
-        //System.DateTime start = System.DateTime.Now;
-        //System.TimeSpan duration = new System.TimeSpan(0, 0, 5);
-        splash = this._buildSplashScreen();
-        splash.Show();
-        splash.Update();
-        del ( splash );
-        //this._safeSleep(duration - (System.DateTime.Now - start));
-      }
-      finally
-      {
-        if (null != splash)
-          splash.Close();
+        CadKit.Helios.SplashScreen splash = null;
+        try
+        {
+          //System.DateTime start = System.DateTime.Now;
+          //System.TimeSpan duration = new System.TimeSpan(0, 0, 5);
+          splash = this._buildSplashScreen();
+          splash.Show();
+          splash.Update();
+          del(splash);
+          //this._safeSleep(duration - (System.DateTime.Now - start));
+        }
+        finally
+        {
+          if (null != splash)
+            splash.Close();
+        }
       }
     }
 
@@ -158,12 +178,15 @@ namespace CadKit.Helios
     /// </summary>
     private CadKit.Helios.SplashScreen _buildSplashScreen()
     {
-      CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
-      string file = CadKit.Helios.Application.instance().directory() + "/icons/splash_screen.jpg";
-      splash.Image = CadKit.Images.Image.load(file);
-      splash.Label.Text = "Hi Perry";
-      splash.Text = CadKit.Helios.Application.instance().Name;
-      return splash;
+      lock (_mutex)
+      {
+        CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
+        string file = CadKit.Helios.Application.Instance.directory() + "/icons/splash_screen.jpg";
+        splash.Image = CadKit.Images.Image.load(file);
+        splash.Label.Text = "Hi Perry";
+        splash.Text = CadKit.Helios.Application.Instance.Name;
+        return splash;
+      }
     }
 
     /// <summary>
@@ -171,13 +194,16 @@ namespace CadKit.Helios
     /// </summary>
     private void _buildMenu()
     {
-      object temp = (this as CadKit.Interfaces.IMenuBar).MenuBar;
-      System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
-      this.MainMenuStrip.Items.Add(menu);
-      this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
-      this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
-      menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
-      this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
+      lock (_mutex)
+      {
+        object temp = (this as CadKit.Interfaces.IMenuBar).MenuBar;
+        System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
+        this.MainMenuStrip.Items.Add(menu);
+        this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
+        this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
+        menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+        this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
+      }
     }
 
     /// <summary>
@@ -185,8 +211,11 @@ namespace CadKit.Helios
     /// </summary>
     private void _addMenuButton ( System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command )
     {
-      if ( null != menu && null != command )
-        menu.DropDownItems.Add(command.MenuButton);
+      lock (_mutex)
+      {
+        if (null != menu && null != command)
+          menu.DropDownItems.Add(command.MenuButton);
+      }
     }
   }
 }

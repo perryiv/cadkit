@@ -25,21 +25,17 @@ namespace CadKit.Helios
     }
 
     /// <summary>
-    /// Data members.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
-    private System.Windows.Forms.Label _label = null;
-    private object _caller = null;
-
-    /// <summary>
     /// Get the menu bar.
     /// </summary>
     object CadKit.Interfaces.IMenuBar.MenuBar
     {
       get
       {
-        CadKit.Interfaces.IMenuBar bar = _caller as CadKit.Interfaces.IMenuBar;
-        return (null == bar) ? null : bar.MenuBar;
+        lock (_mutex)
+        {
+          CadKit.Interfaces.IMenuBar bar = _caller as CadKit.Interfaces.IMenuBar;
+          return (null == bar) ? null : bar.MenuBar;
+        }
       }
     }
 
@@ -48,11 +44,14 @@ namespace CadKit.Helios
     /// </summary>
     public System.Drawing.Image Image
     {
-      get { return _label.Image; }
+      get { lock (_mutex) { return _label.Image; } }
       set
       {
-        _label.Image = value;
-        _label.Size = value.Size;
+        lock (_mutex)
+        {
+          _label.Image = value;
+          _label.Size = value.Size;
+        }
       }
     }
 
@@ -61,8 +60,8 @@ namespace CadKit.Helios
     /// </summary>
     public System.Windows.Forms.Label Label
     {
-      get { return _label; }
-      set { _label = value; }
+      get { lock (_mutex) { return _label; } }
+      set { lock (_mutex) { _label = value; } }
     }
 
     /// <summary>
@@ -70,8 +69,8 @@ namespace CadKit.Helios
     /// </summary>
     public System.Windows.Forms.ProgressBar ProgressBar
     {
-      get { return _progressBar; }
-      set { _progressBar = value; }
+      get { lock (_mutex) { return _progressBar; } }
+      set { lock (_mutex) { _progressBar = value; } }
     }
 
     /// <summary>
@@ -81,10 +80,13 @@ namespace CadKit.Helios
     {
       set
       {
-        _progressBar.Value = value;
-        _progressBar.Invalidate(true);
+        lock (_mutex)
+        {
+          _progressBar.Value = value;
+          _progressBar.Invalidate(true);
+        }
       }
-      get { return _progressBar.Value; }
+      get { lock (_mutex) { return _progressBar.Value; } }
     }
 
     /// <summary>
@@ -92,7 +94,7 @@ namespace CadKit.Helios
     /// </summary>
     int CadKit.Interfaces.IProgressBar.Range
     {
-      get { return _progressBar.Maximum - _progressBar.Minimum; }
+      get { lock (_mutex) { return _progressBar.Maximum - _progressBar.Minimum; } }
     }
 
     /// <summary>
@@ -102,10 +104,13 @@ namespace CadKit.Helios
     {
       set
       {
-        _label.Text = value;
-        _label.Invalidate(true);
+        lock (_mutex)
+        {
+          _label.Text = value;
+          _label.Invalidate(true);
+        }
       }
-      get { return _label.Text; }
+      get { lock (_mutex) { return _label.Text; } }
     }
 
     /// <summary>
@@ -113,8 +118,11 @@ namespace CadKit.Helios
     /// </summary>
     void CadKit.Interfaces.IUpdateDisplay.updateDisplay()
     {
-      _label.Update();
-      _progressBar.Update();
+      lock (_mutex)
+      {
+        _label.Update();
+        _progressBar.Update();
+      }
     }
 
     /// <summary>
@@ -123,11 +131,14 @@ namespace CadKit.Helios
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
-      if (disposing && (components != null))
+      lock (_mutex)
       {
-        components.Dispose();
+        if (disposing && (components != null))
+        {
+          components.Dispose();
+        }
+        base.Dispose(disposing);
       }
-      base.Dispose(disposing);
     }
 
     #region Windows Form Designer generated code
@@ -138,6 +149,7 @@ namespace CadKit.Helios
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SplashScreen));
       this._progressBar = new System.Windows.Forms.ProgressBar();
       this._label = new System.Windows.Forms.Label();
       this.SuspendLayout();
@@ -168,6 +180,7 @@ namespace CadKit.Helios
       this.ClientSize = new System.Drawing.Size(460, 351);
       this.Controls.Add(this._label);
       this.Controls.Add(this._progressBar);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "SplashScreen";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "SplashScreen";
@@ -177,6 +190,13 @@ namespace CadKit.Helios
 
     #endregion
 
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+    private System.Windows.Forms.Label _label = null;
+    private object _caller = null;
     private System.Windows.Forms.ProgressBar _progressBar;
+    private object _mutex = new object();
   }
 }

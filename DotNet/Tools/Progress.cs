@@ -16,21 +16,24 @@ namespace CadKit.Tools
     /// </summary>
     public static void notify(string text, int value, int total, object caller)
     {
-      CadKit.Interfaces.IProgressBar progress = caller as CadKit.Interfaces.IProgressBar;
-      if (null != progress)
+      lock ("CadKit.Tools.Progress.notify")
       {
-        progress.Text = ( null != text ) ? text : "";
-        float v = value;
-        float t = total;
-        float fraction = v / t;
-        float position = fraction * progress.Range;
-        progress.Value = (int)position;
-      }
+        CadKit.Interfaces.IProgressBar progress = caller as CadKit.Interfaces.IProgressBar;
+        if (null != progress)
+        {
+          progress.Text = (null != text) ? text : "";
+          float v = value;
+          float t = total;
+          float fraction = v / t;
+          float position = fraction * progress.Range;
+          progress.Value = (int)position;
+        }
 
-      CadKit.Interfaces.IUpdateDisplay update = caller as CadKit.Interfaces.IUpdateDisplay;
-      if (null != update)
-      {
-        update.updateDisplay();
+        CadKit.Interfaces.IUpdateDisplay update = caller as CadKit.Interfaces.IUpdateDisplay;
+        if (null != update)
+        {
+          update.updateDisplay();
+        }
       }
     }
   }

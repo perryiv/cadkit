@@ -72,34 +72,22 @@ namespace CadKit
 
       protected virtual void _cleanup()
       {
-        _isClean = true;
+        lock (_mutex) { _isClean = true; }
       }
 
       public bool IsClean
       {
-        get 
-        {
-          lock ( _mutex )
-          {
-            return _isClean;
-          }
-        }
+        get { lock (_mutex) { return _isClean; } }
       }
 
       public uint RefCount
       {
-        get
-        {
-          lock ( _mutex )
-          {
-            return _refCount;
-          }
-        }
+        get { lock (_mutex) { return _refCount; } }
       }
 
-      uint _refCount = 0;
-      object _mutex = new object();
-      bool _isClean = false;
+      private uint _refCount = 0;
+      private object _mutex = new object();
+      private bool _isClean = false;
     }
   }
 }

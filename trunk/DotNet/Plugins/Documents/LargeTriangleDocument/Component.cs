@@ -17,6 +17,11 @@ namespace CadKit.LargeTriangleDocument
     /// <summary>
     /// Construct a component.
     /// </summary>
+    private object _mutex = new object();
+
+    /// <summary>
+    /// Construct a component.
+    /// </summary>
     public Component()
     {
       //System.Threading.Thread.Sleep(new System.TimeSpan(0, 0, 2));
@@ -27,6 +32,9 @@ namespace CadKit.LargeTriangleDocument
     /// </summary>
     void CadKit.Interfaces.IPlugin.startupNotify(object caller)
     {
+      lock (_mutex)
+      {
+      }
     }
 
     /// <summary>
@@ -34,7 +42,10 @@ namespace CadKit.LargeTriangleDocument
     /// </summary>
     object CadKit.Interfaces.IDocumentNew.createNewDocument(object caller)
     {
-      return new CadKit.LargeTriangleDocument.Document();
+      lock (_mutex)
+      {
+        return new CadKit.LargeTriangleDocument.Document();
+      }
     }
 
     /// <summary>
@@ -42,10 +53,13 @@ namespace CadKit.LargeTriangleDocument
     /// </summary>
     object CadKit.Interfaces.IDocumentOpen.openDocument(string file, object caller)
     {
-      CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew) this;
-      CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead) (creator.createNewDocument(caller));
-      reader.read(file, caller);
-      return reader;
+      lock (_mutex)
+      {
+        CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
+        CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.createNewDocument(caller));
+        reader.read(file, caller);
+        return reader;
+      }
     }
   }
 }

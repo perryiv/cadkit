@@ -15,6 +15,7 @@ namespace CadKit.Commands
     /// Data members.
     /// </summary>
     private static History _instance = null;
+    private object _mutex = new object();
 
     /// <summary>
     /// Constructor.
@@ -26,11 +27,17 @@ namespace CadKit.Commands
     /// <summary>
     /// Get the instance.
     /// </summary>
-    public static History instance()
+    public static History Instance
     {
-      if ( null == _instance )
-        _instance = new History();
-      return _instance;
+      get
+      {
+        lock ("CadKit.Commands.History.instance")
+        {
+          if (null == _instance)
+            _instance = new History();
+          return _instance;
+        }
+      }
     }
 
     /// <summary>
@@ -38,7 +45,10 @@ namespace CadKit.Commands
     /// </summary>
     public virtual bool canUndo()
     {
-      return ((this.Count > 0) && this.Last.Value.canUndo());
+      lock (_mutex)
+      {
+        return ((this.Count > 0) && this.Last.Value.canUndo());
+      }
     }
 
     /// <summary>
@@ -46,7 +56,10 @@ namespace CadKit.Commands
     /// </summary>
     public virtual bool canRedo()
     {
-      return ((this.Count > 0) && this.Last.Value.canRedo());
+      lock (_mutex)
+      {
+        return ((this.Count > 0) && this.Last.Value.canRedo());
+      }
     }
   }
 }

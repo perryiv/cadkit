@@ -14,6 +14,7 @@ namespace CadKit.Commands
     /// <summary>
     /// Data members.
     /// </summary>
+    protected object _mutex = new object();
     protected object _caller = null;
     protected System.Windows.Forms.ToolStripMenuItem _menuButton = null;
     protected System.Windows.Forms.ToolStripButton _toolButton = null;
@@ -58,18 +59,27 @@ namespace CadKit.Commands
     {
       get
       {
-        if (null == _menuButton)
+        lock (_mutex)
         {
-          _menuButton = new System.Windows.Forms.ToolStripMenuItem();
-          _menuButton.Text = _text;
-          _menuButton.Click += this._onButtonClicked;
-          _menuButton.Paint += this._onButtonPaint;
-          _menuButton.ShortcutKeys = _keys;
-          _menuButton.Image = _menuIcon;
+          if (null == _menuButton)
+          {
+            _menuButton = new System.Windows.Forms.ToolStripMenuItem();
+            _menuButton.Text = _text;
+            _menuButton.Click += this._onButtonClicked;
+            _menuButton.Paint += this._onButtonPaint;
+            _menuButton.ShortcutKeys = _keys;
+            _menuButton.Image = _menuIcon;
+          }
+          return _menuButton;
         }
-        return _menuButton;
       }
-      set { _menuButton = value; }
+      set
+      {
+        lock (_mutex)
+        {
+          _menuButton = value;
+        }
+      }
     }
 
     /// <summary>
@@ -79,35 +89,64 @@ namespace CadKit.Commands
     {
       get
       {
-        if (null == _toolButton)
+        lock (_mutex)
         {
-          _toolButton = new System.Windows.Forms.ToolStripButton();
-          _toolButton.Click += this._onButtonClicked;
-          _toolButton.Paint += this._onButtonPaint;
-          _toolButton.Image = _toolIcon;
+          if (null == _toolButton)
+          {
+            _toolButton = new System.Windows.Forms.ToolStripButton();
+            _toolButton.Click += this._onButtonClicked;
+            _toolButton.Paint += this._onButtonPaint;
+            _toolButton.Image = _toolIcon;
+          }
+          return _toolButton;
         }
-        return _toolButton;
       }
-      set { _toolButton = value; }
+      set
+      {
+        lock (_mutex)
+        {
+          _toolButton = value;
+        }
+      }
     }
 
     /// <summary>
     /// Called when the button is pressed.
     /// </summary>
-    private void _onButtonClicked(object sender, System.EventArgs e)
+    private void _onButtonClicked(object sender, System.EventArgs args)
     {
-      this.execute();
-      CadKit.Commands.History.instance().AddLast(this);
+      try
+      {
+        lock (_mutex)
+        {
+          this.execute();
+          CadKit.Commands.History.Instance.AddLast(this);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1887520459: {0}", e.Message);
+      }
     }
 
     /// <summary>
     /// Called when the button is about to be shown.
     /// </summary>
-    private void _onButtonPaint(object sender, System.Windows.Forms.PaintEventArgs e)
+    private void _onButtonPaint(object sender, System.Windows.Forms.PaintEventArgs args)
     {
-      System.Windows.Forms.ToolStripItem item = sender as System.Windows.Forms.ToolStripItem;
-      if (null != item)
-        item.Enabled = this._shouldBeEnabled();
+      try
+      {
+        lock (_mutex)
+        {
+          System.Windows.Forms.ToolStripItem item = sender as System.Windows.Forms.ToolStripItem;
+          if (null != item)
+            item.Enabled = this._shouldBeEnabled();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2046322558: {0}", e.Message);
+      }
     }
   }
 }

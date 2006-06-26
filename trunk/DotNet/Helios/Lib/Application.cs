@@ -9,7 +9,7 @@
 
 namespace CadKit.Helios
 {
-  public partial class Application
+  public class Application
   {
     /// <summary>
     /// Constructor
@@ -21,11 +21,17 @@ namespace CadKit.Helios
     /// <summary>
     /// Single instance.
     /// </summary>
-    public static Application instance()
+    public static Application Instance
     {
-      if ( null == _instance )
-        _instance = new Application();
-      return _instance;
+      get
+      {
+        lock ("CadKit.Helios.Application.Instance")
+        {
+          if (null == _instance)
+            _instance = new Application();
+          return _instance;
+        }
+      }
     }
 
     /// <summary>
@@ -33,8 +39,8 @@ namespace CadKit.Helios
     /// </summary>
     public string Name
     {
-      get { return _name; }
-      set { _name = value; }
+      get { lock (_mutex) { return _name; } }
+      set { lock (_mutex) { _name = value; } }
     }
 
     /// <summary>
@@ -42,8 +48,8 @@ namespace CadKit.Helios
     /// </summary>
     public CadKit.Helios.MainForm MainForm
     {
-      get { return _mainForm; }
-      set { _mainForm = value; }
+      get { lock (_mutex) { return _mainForm; } }
+      set { lock (_mutex) { _mainForm = value; } }
     }
 
     /// <summary>
@@ -51,9 +57,12 @@ namespace CadKit.Helios
     /// </summary>
     public string directory()
     {
-      string path = System.Windows.Forms.Application.ExecutablePath;
-      string dir = System.IO.Path.GetDirectoryName( path );
-      return dir;
+      lock (_mutex)
+      {
+        string path = System.Windows.Forms.Application.ExecutablePath;
+        string dir = System.IO.Path.GetDirectoryName(path);
+        return dir;
+      }
     }
 
     /// <summary>
@@ -61,7 +70,10 @@ namespace CadKit.Helios
     /// </summary>
     public string file()
     {
-      return System.Reflection.Assembly.GetEntryAssembly().GetName().Name + ".exe";
+      lock (_mutex)
+      {
+        return System.Reflection.Assembly.GetEntryAssembly().GetName().Name + ".exe";
+      }
     }
 
     /// <summary>
@@ -69,10 +81,13 @@ namespace CadKit.Helios
     /// </summary>
     public string iconDir()
     {
-      string dir = this.directory();
-      dir = dir.Replace( "\\bin\\Debug", "" );
-      dir = dir.Replace( "\\bin\\Release", "" );
-      return dir;
+      lock (_mutex)
+      {
+        string dir = this.directory();
+        dir = dir.Replace("\\bin\\Debug", "");
+        dir = dir.Replace("\\bin\\Release", "");
+        return dir;
+      }
     }
 
     /// <summary>
@@ -81,5 +96,6 @@ namespace CadKit.Helios
     private static Application _instance = null;
     private string _name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost";
     private CadKit.Helios.MainForm _mainForm = null;
+    private object _mutex = new object();
   }
 }

@@ -21,9 +21,9 @@ namespace CadKit.Helios
       {
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault( false );
-        CadKit.Helios.Application.instance().Name = "Helios";
+        CadKit.Helios.Application.Instance.Name = "Helios";
         CadKit.Helios.MainForm form = new CadKit.Helios.MainForm( "CadKit.Helios.MainForm" );
-        CadKit.Helios.Application.instance().MainForm = form;
+        CadKit.Helios.Application.Instance.MainForm = form;
         System.Windows.Forms.Application.Run( form );
       }
       catch ( System.Exception e )

@@ -16,10 +16,13 @@ namespace CadKit.Tools
     /// </summary>
     public static void last(System.Windows.Forms.Form form, System.Windows.Forms.Control control)
     {
-      if (null != form && null != form.Controls && null != control)
+      lock ("CadKit.Tools.Control.last")
       {
-        form.Controls.Remove(control);
-        form.Controls.Add(control);
+        if (null != form && null != form.Controls && null != control)
+        {
+          form.Controls.Remove(control);
+          form.Controls.Add(control);
+        }
       }
     }
   }

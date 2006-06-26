@@ -18,7 +18,7 @@ namespace CadKit.Helios.Commands
     {
       _caller = caller;
       _text = "&New...";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.instance().directory() + "/icons/new_document.png");
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.directory() + "/icons/new_document.png");
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
     }
 
@@ -27,6 +27,9 @@ namespace CadKit.Helios.Commands
     /// </summary>
     public override void execute()
     {
+      lock (_mutex)
+      {
+      }
     }
 
     /// <summary>
@@ -34,7 +37,10 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      return CadKit.Plugins.Manager.instance().has<CadKit.Interfaces.IDocumentNew>();
+      lock (_mutex)
+      {
+        return CadKit.Plugins.Manager.Instance.has<CadKit.Interfaces.IDocumentNew>();
+      }
     }
   }
 }

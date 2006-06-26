@@ -16,6 +16,7 @@ namespace CadKit.Plugins
     /// </summary>
     class TypeMap : System.Collections.Generic.Dictionary<string,System.Type> { }
     private TypeMap _types = new TypeMap();
+    private object _mutex = new object();
 
     /// <summary>
     /// Constructor.
@@ -30,8 +31,11 @@ namespace CadKit.Plugins
     /// </summary>
     private void _addType ( string key, string name )
     {
-      System.Type type = System.Type.GetType(name);
-      _types[key] = type;
+      lock (_mutex)
+      {
+        System.Type type = System.Type.GetType(name);
+        _types[key] = type;
+      }
     }
 
     /// <summary>
@@ -41,9 +45,12 @@ namespace CadKit.Plugins
     {
       try
       {
-        System.Type type = _types[key];
-        string name = type.ToString();
-        return System.Reflection.Assembly.GetExecutingAssembly().CreateInstance(name);
+        lock (_mutex)
+        {
+          System.Type type = _types[key];
+          string name = type.ToString();
+          return System.Reflection.Assembly.GetExecutingAssembly().CreateInstance(name);
+        }
       }
       catch (System.Collections.Generic.KeyNotFoundException)
       {

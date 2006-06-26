@@ -12,9 +12,10 @@ namespace CadKit.LargeTriangleDelegate
   public class Delegate : CadKit.Interfaces.IGuiDelegate
   {
     /// <summary>
-    /// Create the default gui.
+    /// Data members.
     /// </summary>
     CadKit.Interfaces.IDocument _document = null;
+    private object _mutex = new object();
 
     /// <summary>
     /// Construct a document.
@@ -28,7 +29,10 @@ namespace CadKit.LargeTriangleDelegate
     /// </summary>
     void CadKit.Interfaces.IGuiDelegate.setDocument(CadKit.Interfaces.IDocument doc)
     {
-      _document = doc;
+      lock (_mutex)
+      {
+        _document = doc;
+      }
     }
 
     /// <summary>
@@ -36,6 +40,9 @@ namespace CadKit.LargeTriangleDelegate
     /// </summary>
     void CadKit.Interfaces.IGuiDelegate.createDefaultGui(object caller)
     {
+      lock (_mutex)
+      {
+      }
     }
   }
 }

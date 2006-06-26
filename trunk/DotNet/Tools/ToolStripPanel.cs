@@ -16,10 +16,13 @@ namespace CadKit.Tools
     /// </summary>
     public static System.Windows.Forms.ToolStripPanel make(System.Windows.Forms.DockStyle style, System.Windows.Forms.ToolStrip strip)
     {
-      System.Windows.Forms.ToolStripPanel panel = CadKit.Tools.ToolStripPanel.make(style);
-      if (null != panel && null != strip)
-        panel.Join(strip);
-      return panel;
+      lock ("CadKit.Tools.ToolStripPanel.make.1")
+      {
+        System.Windows.Forms.ToolStripPanel panel = CadKit.Tools.ToolStripPanel.make(style);
+        if (null != panel && null != strip)
+          panel.Join(strip);
+        return panel;
+      }
     }
 
     /// <summary>
@@ -27,9 +30,12 @@ namespace CadKit.Tools
     /// </summary>
     public static System.Windows.Forms.ToolStripPanel make(System.Windows.Forms.DockStyle style)
     {
-      System.Windows.Forms.ToolStripPanel panel = new System.Windows.Forms.ToolStripPanel();
-      panel.Dock = style;
-      return panel;
+      lock ("CadKit.Tools.ToolStripPanel.make.2")
+      {
+        System.Windows.Forms.ToolStripPanel panel = new System.Windows.Forms.ToolStripPanel();
+        panel.Dock = style;
+        return panel;
+      }
     }
   }
 }

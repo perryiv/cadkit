@@ -43,21 +43,26 @@ namespace CadKit.Helios.Commands
         dialog.Title = CadKit.Helios.Application.Instance.Name + " -- Open Document";
         dialog.Multiselect = true;
 
-        // Get initial directory.
+        // Set filter string.
         string persistentName = this.GetType().ToString() + ".OpenFileDialog";
-        string key = "initial_directory";
-        dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, key, CadKit.Helios.Application.Instance.directory());
+        string filterIndexKey = "filter_index";
+        this._setFilterString(persistentName, filterIndexKey, dialog);
+
+        // Get initial directory.
+        string initialDirectoryKey = "initial_directory";
+        dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, initialDirectoryKey, CadKit.Helios.Application.Instance.directory());
 
         System.Windows.Forms.DialogResult result = dialog.ShowDialog();
         if (System.Windows.Forms.DialogResult.OK == result)
         {
           string[] names = dialog.FileNames;
 
-          // Save final directory.
+          // Save final directory and filter index.
           if (null != names && names.Length > 0)
           {
             System.IO.FileInfo info = new System.IO.FileInfo(names[0]);
-            CadKit.Persistence.Registry.Instance.setString(persistentName, key, info.DirectoryName);
+            CadKit.Persistence.Registry.Instance.setString(persistentName, initialDirectoryKey, info.DirectoryName);
+            CadKit.Persistence.Registry.Instance.setInt(persistentName, filterIndexKey, dialog.FilterIndex);
           }
 
           foreach (string name in names)
@@ -66,6 +71,38 @@ namespace CadKit.Helios.Commands
           }
         }
       }
+    }
+
+    /// <summary>
+    /// Return the filter string.
+    /// </summary>
+    private void _setFilterString(string persistentName, string key, System.Windows.Forms.OpenFileDialog dialog)
+    {
+      string finalFilter = "";
+      CadKit.Interfaces.IFiltersOpen[] filtersOpen = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IFiltersOpen>();
+
+      foreach (CadKit.Interfaces.IFiltersOpen filterOpen in filtersOpen)
+      {
+        CadKit.Interfaces.Filters filters = filterOpen.Filters;
+        foreach (CadKit.Interfaces.Filter filter in filters)
+        {
+          finalFilter += (filter.Text + '|' + filter.Extensions + '|');
+        }
+      }
+
+      finalFilter = finalFilter.TrimEnd(new char[] { '|' });
+
+      try
+      {
+        dialog.Filter = finalFilter;
+      }
+      catch (System.ArgumentException)
+      {
+        // No telling what filter strings the plugins will make.
+      }
+
+      // Get filter index.
+      dialog.FilterIndex = CadKit.Persistence.Registry.Instance.getInt(persistentName, key, 1);
     }
 
     /// <summary>

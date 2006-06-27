@@ -141,6 +141,32 @@ namespace CadKit.Plugins
     }
 
     /// <summary>
+    /// Get all the plugins that supports the given type.
+    /// </summary>
+    public T[] getAll<T>()
+    {
+      lock (_mutex)
+      {
+        System.Collections.Generic.List<T> types = new System.Collections.Generic.List<T>();
+        foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+        {
+          try
+          {
+            T t = (T)plugin;
+            if (null != t)
+            {
+              types.Add(t);
+            }
+          }
+          catch (System.InvalidCastException)
+          {
+          }
+        }
+        return types.ToArray();
+      }
+    }
+
+    /// <summary>
     /// Load the plugins.
     /// </summary>
     public void load(string file, object caller)

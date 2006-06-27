@@ -12,7 +12,8 @@ namespace CadKit.LargeTriangleDocument
   public class Component : 
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IDocumentNew,
-    CadKit.Interfaces.IDocumentOpen
+    CadKit.Interfaces.IDocumentOpen,
+    CadKit.Interfaces.IFiltersOpen
   {
     /// <summary>
     /// Construct a component.
@@ -59,6 +60,25 @@ namespace CadKit.LargeTriangleDocument
         CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.createNewDocument(caller));
         reader.read(file, caller);
         return reader;
+      }
+    }
+
+    /// <summary>
+    /// Return the filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+          filters.Add(new CadKit.Interfaces.Filter("All Triangle Files (*.tdf *.stl *.r3d)", "*.tdf;*.stl;*.r3d"));
+          filters.Add(new CadKit.Interfaces.Filter("Triangle Document Format (*.tdf)", "*.tdf"));
+          filters.Add(new CadKit.Interfaces.Filter("Stereolithography (*.stl)", "*.stl"));
+          filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
+          return filters;
+        }
       }
     }
   }

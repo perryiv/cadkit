@@ -34,43 +34,61 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
-        System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
-        dialog.AddExtension = true;
-        dialog.CheckFileExists = true;
-        dialog.CheckPathExists = true;
-        dialog.DereferenceLinks = true;
-        dialog.RestoreDirectory = false;
-        dialog.Title = CadKit.Helios.Application.Instance.Name + " -- Open Document";
-        dialog.Multiselect = true;
+        string[] names = this._askForFileNames();
 
-        // Set filter string.
-        string persistentName = this.GetType().ToString() + ".OpenFileDialog";
-        string filterIndexKey = "filter_index";
-        this._setFilterString(persistentName, filterIndexKey, dialog);
-
-        // Get initial directory.
-        string initialDirectoryKey = "initial_directory";
-        dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, initialDirectoryKey, CadKit.Helios.Application.Instance.directory());
-
-        System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-        if (System.Windows.Forms.DialogResult.OK == result)
+        // Open the files.
+        foreach (string name in names)
         {
-          string[] names = dialog.FileNames;
-
-          // Save final directory and filter index.
-          if (null != names && names.Length > 0)
+          try
           {
-            System.IO.FileInfo info = new System.IO.FileInfo(names[0]);
-            CadKit.Persistence.Registry.Instance.setString(persistentName, initialDirectoryKey, info.DirectoryName);
-            CadKit.Persistence.Registry.Instance.setInt(persistentName, filterIndexKey, dialog.FilterIndex);
+            // Open the document.
+            CadKit.Documents.Manager.Instance.open(name, null, _caller);
           }
-
-          foreach (string name in names)
+          catch (System.Exception e)
           {
-            //CadKit.Documents.Manager.Instance
+            System.Console.WriteLine("Error 8905677560: {0}", e.Message);
           }
         }
       }
+    }
+
+    /// <summary>
+    /// Ask for the file names.
+    /// </summary>
+    private string[] _askForFileNames()
+    {
+      System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
+      dialog.AddExtension = true;
+      dialog.CheckFileExists = true;
+      dialog.CheckPathExists = true;
+      dialog.DereferenceLinks = true;
+      dialog.RestoreDirectory = false;
+      dialog.Title = CadKit.Helios.Application.Instance.Name + " -- Open Document";
+      dialog.Multiselect = true;
+
+      // Set filter string.
+      string persistentName = this.GetType().ToString() + ".OpenFileDialog";
+      string filterIndexKey = "filter_index";
+      this._setFilterString(persistentName, filterIndexKey, dialog);
+
+      // Get initial directory.
+      string initialDirectoryKey = "initial_directory";
+      dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, initialDirectoryKey, CadKit.Helios.Application.Instance.directory());
+
+      // Show dialog and get names.
+      dialog.ShowDialog();
+      string[] names = dialog.FileNames;
+
+      // Save final directory and filter index.
+      if (null != names && names.Length > 0)
+      {
+        System.IO.FileInfo info = new System.IO.FileInfo(names[0]);
+        CadKit.Persistence.Registry.Instance.setString(persistentName, initialDirectoryKey, info.DirectoryName);
+        CadKit.Persistence.Registry.Instance.setInt(persistentName, filterIndexKey, dialog.FilterIndex);
+      }
+
+      // Return names.
+      return names;
     }
 
     /// <summary>

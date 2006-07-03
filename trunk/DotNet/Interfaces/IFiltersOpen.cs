@@ -16,10 +16,11 @@ namespace CadKit.Interfaces
       _text = text;
       _extensions = extensions;
     }
-    public string Text { get { return _text; } }
-    public string Extensions { get { return _extensions; } }
+    public string Text { get { lock (_mutex) { return _text; } } }
+    public string Extensions { get { lock (_mutex) { return _extensions; } } }
     private string _text = null;
     private string _extensions = null;
+    private object _mutex = new object();
   }
 
   public class Filters : System.Collections.Generic.List<Filter> { }

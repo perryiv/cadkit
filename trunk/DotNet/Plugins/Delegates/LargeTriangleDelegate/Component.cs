@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.LargeTriangleDelegate
+namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
   public class Component : CadKit.Interfaces.IPlugin
   {
@@ -21,7 +21,6 @@ namespace CadKit.LargeTriangleDelegate
     /// </summary>
     public Component()
     {
-      //System.Threading.Thread.Sleep(new System.TimeSpan(0, 0, 2));
     }
 
     /// <summary>
@@ -32,6 +31,22 @@ namespace CadKit.LargeTriangleDelegate
       lock (_mutex)
       {
       }
+    }
+
+    /// <summary>
+    /// Get the name of this plugin.
+    /// </summary>
+    string CadKit.Interfaces.IPlugin.Name
+    {
+      get { lock (_mutex) { return "Large Triangle Delegate"; } }
+    }
+
+    /// <summary>
+    /// Get the plugin's description.
+    /// </summary>
+    string CadKit.Interfaces.IPlugin.Description
+    {
+      get { lock (_mutex) { return "User-Interface for Large Triangle Document."; } }
     }
   }
 }

@@ -9,9 +9,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocumentOpen
+  public interface IWindowsForward
   {
-    bool canOpen(string name);
-    object openDocument(string name, object caller);
+    void windowsForward();
   }
 }

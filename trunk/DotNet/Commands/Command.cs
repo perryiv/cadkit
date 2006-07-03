@@ -69,6 +69,7 @@ namespace CadKit.Commands
             _menuButton.Paint += this._onButtonPaint;
             _menuButton.ShortcutKeys = _keys;
             _menuButton.Image = _menuIcon;
+            _menuButton.Enabled = false;
           }
           return _menuButton;
         }
@@ -97,6 +98,7 @@ namespace CadKit.Commands
             _toolButton.Click += this._onButtonClicked;
             _toolButton.Paint += this._onButtonPaint;
             _toolButton.Image = _toolIcon;
+            _toolButton.Enabled = false;
           }
           return _toolButton;
         }
@@ -120,7 +122,7 @@ namespace CadKit.Commands
         lock (_mutex)
         {
           this.execute();
-          CadKit.Commands.History.Instance.AddLast(this);
+          CadKit.Commands.History.Instance.add(this);
         }
       }
       catch (System.Exception e)

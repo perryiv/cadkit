@@ -23,7 +23,7 @@ namespace CadKit.Plugins
     /// </summary>
     public Factory()
     {
-      this._addType("CadKit.Interfaces.IPlugin", "CadKit.Plugins.Delegates.LargeTriangleDelegate.Component");
+      this._addType("CadKit.Interfaces.IPlugin", "CadKit.Plugins.Windows.OutputWindow.Component");
     }
 
     /// <summary>

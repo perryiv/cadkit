@@ -68,8 +68,7 @@ namespace CadKit.Plugins
                 System.Xml.XmlNode node = kids[i];
                 if ("plugin" == node.Name)
                 {
-                  this._addFileName(names, info, node, "file");
-                  this._addFileName(names, info, node, "delegate");
+                  this._addAttributes(names, info.DirectoryName, node);
                 }
               }
             }
@@ -89,21 +88,29 @@ namespace CadKit.Plugins
     }
 
     /// <summary>
-    /// Add the name to the list.
+    /// Add the attributes to the list.
     /// </summary>
-    private void _addFileName(Names names, System.IO.FileInfo info, System.Xml.XmlNode node, string attribute)
+    private void _addAttributes(Names names, string dir, System.Xml.XmlNode node)
     {
       lock (_mutex)
       {
-        System.Xml.XmlAttribute attr = node.Attributes[attribute];
-        if (null != attr)
+        foreach (System.Xml.XmlAttribute attr in node.Attributes)
         {
-          string path = info.DirectoryName + '/' + attr.Value;
-          path = path.Replace('\\', '/');
-          path = path.Replace("//", "/");
-          names.Add(path);
+          names.Add(this._getAbsolutePathIfFile(dir, attr.Value));
         }
       }
+    }
+
+    /// <summary>
+    /// If the attribute string is a file then return the absolute path.
+    /// </summary>
+    private string _getAbsolutePathIfFile(string dir, string attr)
+    {
+      string path = dir + '/' + attr;
+      path = path.Replace('\\', '/');
+      path = path.Replace("//", "/");
+      System.IO.FileInfo file = new System.IO.FileInfo(path);
+      return (true == file.Exists) ? path : attr;
     }
 
     /// <summary>
@@ -240,6 +247,40 @@ namespace CadKit.Plugins
     }
 
     /// <summary>
+    /// Return the number of plugins.
+    /// </summary>
+    public int NumPlugins
+    {
+      get { lock (_mutex) { return _plugins.Count; } }
+    }
+
+    /// <summary>
+    /// Return the plugin names.
+    /// </summary>
+    public string[] PluginNames
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          System.Collections.Generic.List<string> names = new System.Collections.Generic.List<string>();
+          foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+          {
+            try
+            {
+              names.Add(plugin.Name);
+            }
+            catch (System.Exception e)
+            {
+              System.Console.WriteLine("Error 3013611395: {0}", e.Message);
+            }
+          }
+          return names.ToArray();
+        }
+      }
+    }
+
+    /// <summary>
     /// Local types.
     /// </summary>
     class Assemblies : System.Collections.Generic.Dictionary<string, System.Reflection.Assembly> { }
@@ -249,9 +290,9 @@ namespace CadKit.Plugins
     /// <summary>
     /// Data members.
     /// </summary>
-    private Assemblies _assemblies = new Assemblies();
-    private Plugins _plugins = new Plugins();
     private static Manager _instance = null;
     private object _mutex = new object();
+    private Assemblies _assemblies = new Assemblies();
+    private Plugins _plugins = new Plugins();
   }
 }

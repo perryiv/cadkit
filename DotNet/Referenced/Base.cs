@@ -20,74 +20,71 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.Referenced
 {
-  namespace Referenced
+  public class Base
   {
-    public class Base
+    public Base()
     {
-      public Base()
-      {
-      }
-
-      ~Base()
-      {
-        System.Diagnostics.Debug.Assert( 0 == _refCount, "Error 3799827700: deleting object with reference count of " + _refCount.ToString() );
-        System.Diagnostics.Debug.Assert( true == _isClean, "Error 3427194855: deleting object that has not been cleaned" );
-      }
-
-      public void reference()
-      {
-        try
-        {
-          lock ( _mutex )
-          {
-            ++_refCount;
-          }
-        }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 3516250869: {0}\n{1}", e.Message, e.StackTrace );
-        }
-      }
-
-      public void dereference()
-      {
-        try
-        {
-          lock ( _mutex )
-          {
-            --_refCount;
-            if ( 0 == _refCount )
-            {
-              this._cleanup();
-            }
-          }
-        }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 2162012100: {0}\n{1}", e.Message, e.StackTrace );
-        }
-      }
-
-      protected virtual void _cleanup()
-      {
-        lock (_mutex) { _isClean = true; }
-      }
-
-      public bool IsClean
-      {
-        get { lock (_mutex) { return _isClean; } }
-      }
-
-      public uint RefCount
-      {
-        get { lock (_mutex) { return _refCount; } }
-      }
-
-      private uint _refCount = 0;
-      private object _mutex = new object();
-      private bool _isClean = false;
     }
+
+    ~Base()
+    {
+      System.Diagnostics.Debug.Assert(0 == _refCount, "Error 3799827700: deleting object with reference count of " + _refCount.ToString());
+      System.Diagnostics.Debug.Assert(true == _isClean, "Error 3427194855: deleting object that has not been cleaned");
+    }
+
+    public void reference()
+    {
+      try
+      {
+        lock (_mutex)
+        {
+          ++_refCount;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3516250869: {0}\n{1}", e.Message, e.StackTrace);
+      }
+    }
+
+    public void dereference()
+    {
+      try
+      {
+        lock (_mutex)
+        {
+          --_refCount;
+          if (0 == _refCount)
+          {
+            this._cleanup();
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2162012100: {0}\n{1}", e.Message, e.StackTrace);
+      }
+    }
+
+    protected virtual void _cleanup()
+    {
+      lock (_mutex) { _isClean = true; }
+    }
+
+    public bool IsClean
+    {
+      get { lock (_mutex) { return _isClean; } }
+    }
+
+    public uint RefCount
+    {
+      get { lock (_mutex) { return _refCount; } }
+    }
+
+    private uint _refCount = 0;
+    private object _mutex = new object();
+    private bool _isClean = false;
   }
 }

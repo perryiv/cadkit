@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C# Express 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.App", "App\Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Helios.App", "App\CadKit.Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.Lib", "Lib\Helios.Lib.csproj", "{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Helios.Lib", "Lib\CadKit.Helios.Lib.csproj", "{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Persistence", "..\Persistence\CadKit.Persistence.csproj", "{DFD2710D-3AB3-4707-B74E-80F21E33A23F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins", "..\Plugins\Manager\CadKit.Plugins.csproj", "{38E6CB43-88D0-4549-B27D-0F23F50CC395}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.LargeTriangleDocument", "..\Plugins\Documents\LargeTriangleDocument\CadKit.LargeTriangleDocument.csproj", "{82484E5E-E9B8-4BDA-AA3A-C84306FCB664}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Documents.LargeTriangleDocument", "..\Plugins\Documents\LargeTriangleDocument\CadKit.Plugins.Documents.LargeTriangleDocument.csproj", "{82484E5E-E9B8-4BDA-AA3A-C84306FCB664}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Referenced", "..\Referenced\CadKit.Referenced.csproj", "{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
 EndProject
@@ -19,9 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Images", "..\Images\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Tools", "..\Tools\CadKit.Tools.csproj", "{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.LargeTriangleDelegate", "..\Plugins\Delegates\LargeTriangleDelegate\CadKit.LargeTriangleDelegate.csproj", "{C88114AA-FF74-47A6-9C28-0D65564A5BB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Delegates.LargeTriangleDelegate", "..\Plugins\Delegates\LargeTriangleDelegate\CadKit.Plugins.Delegates.LargeTriangleDelegate.csproj", "{C88114AA-FF74-47A6-9C28-0D65564A5BB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Commands", "..\Commands\CadKit.Commands.csproj", "{4255A478-49D3-4250-B06A-AB16AEF9579E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Documents", "..\Documents\CadKit.Documents.csproj", "{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Win32", "..\Win32\CadKit.Win32.csproj", "{27AF0A5B-E349-4660-9603-F030860EDE0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.OutputWindow", "..\Plugins\Windows\OutputWindow\CadKit.Plugins.Windows.OutputWindow.csproj", "{18637335-FD1F-459F-90E3-719C82300B24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +79,18 @@ Global
 		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4255A478-49D3-4250-B06A-AB16AEF9579E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27AF0A5B-E349-4660-9603-F030860EDE0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27AF0A5B-E349-4660-9603-F030860EDE0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27AF0A5B-E349-4660-9603-F030860EDE0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27AF0A5B-E349-4660-9603-F030860EDE0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18637335-FD1F-459F-90E3-719C82300B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18637335-FD1F-459F-90E3-719C82300B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18637335-FD1F-459F-90E3-719C82300B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18637335-FD1F-459F-90E3-719C82300B24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,9 +9,10 @@
 
 namespace CadKit.Helios
 {
-  public partial class MainForm : 
+  public partial class MainForm :
     CadKit.Persistence.Form,
-    CadKit.Interfaces.IMenuBar
+    CadKit.Interfaces.IMenuBar,
+    CadKit.Interfaces.IMainForm
   {
     /// <summary>
     /// Data members.
@@ -21,7 +22,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Constructor.
     /// </summary>
-    public MainForm( string persistentName )
+    public MainForm(string persistentName)
     {
       this.PersistentName = persistentName;
       this.InitializeComponent();
@@ -33,7 +34,7 @@ namespace CadKit.Helios
     /// Clean up any resources being used.
     /// </summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose( bool disposing )
+    protected override void Dispose(bool disposing)
     {
       lock (_mutex)
       {
@@ -94,7 +95,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Load all appropriate plugins.
     /// </summary>
-    protected void _loadPlugins ( object caller )
+    protected void _loadPlugins(object caller)
     {
       try
       {
@@ -106,9 +107,9 @@ namespace CadKit.Helios
           CadKit.Plugins.Manager.Instance.load(path, caller);
         }
       }
-      catch ( System.Exception e )
+      catch (System.Exception e)
       {
-        System.Console.WriteLine( "Error 3359202912: {0}", e.Message );
+        System.Console.WriteLine("Error 3359202912: {0}", e.Message);
       }
     }
 
@@ -120,13 +121,14 @@ namespace CadKit.Helios
     /// <summary>
     /// Called when the form is shown.
     /// </summary>
-    private void _formLoad(object sender, System.EventArgs args )
+    private void _formLoad(object sender, System.EventArgs args)
     {
       try
       {
         lock (_mutex)
         {
           this._showSplashScreen(this._loadPlugins);
+          this._reportPluginInfo();
         }
       }
       catch (System.Exception e)
@@ -150,20 +152,20 @@ namespace CadKit.Helios
     /// <summary>
     /// Build and show the splash screen.
     /// </summary>
-    private void _showSplashScreen ( SplashDelegate del )
+    private void _showSplashScreen(SplashDelegate del)
     {
       lock (_mutex)
       {
         CadKit.Helios.SplashScreen splash = null;
         try
         {
-          //System.DateTime start = System.DateTime.Now;
-          //System.TimeSpan duration = new System.TimeSpan(0, 0, 5);
+          System.DateTime start = System.DateTime.Now;
+          System.TimeSpan duration = new System.TimeSpan(0, 0, 1);
           splash = this._buildSplashScreen();
           splash.Show();
           splash.Update();
           del(splash);
-          //this._safeSleep(duration - (System.DateTime.Now - start));
+          this._safeSleep(duration - (System.DateTime.Now - start));
         }
         finally
         {
@@ -197,24 +199,62 @@ namespace CadKit.Helios
       lock (_mutex)
       {
         object temp = (this as CadKit.Interfaces.IMenuBar).MenuBar;
-        System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
-        this.MainMenuStrip.Items.Add(menu);
-        this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
-        this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
-        menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
-        this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
+        {
+          System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
+          this.MainMenuStrip.Items.Add(menu);
+          this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
+          this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
+          menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+          this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
+        }
+        {
+          System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Edit");
+          this.MainMenuStrip.Items.Add(menu);
+          this._addMenuButton(menu, new CadKit.Helios.Commands.UndoCommand(this));
+          this._addMenuButton(menu, new CadKit.Helios.Commands.RedoCommand(this));
+        }
       }
     }
 
     /// <summary>
     /// Build the menu.
     /// </summary>
-    private void _addMenuButton ( System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command )
+    private void _addMenuButton(System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command)
     {
       lock (_mutex)
       {
         if (null != menu && null != command)
           menu.DropDownItems.Add(command.MenuButton);
+      }
+    }
+
+    /// <summary>
+    /// Return the main window.
+    /// </summary>
+    object CadKit.Interfaces.IMainForm.Form
+    {
+      get { lock (_mutex) { return this; } }
+    }
+
+    /// <summary>
+    /// Report the plugin info.
+    /// </summary>
+    private void _reportPluginInfo()
+    {
+      lock (_mutex)
+      {
+        string[] names = CadKit.Plugins.Manager.Instance.PluginNames;
+        System.Array.Sort(names);
+        if (null != names && names.Length > 0)
+        {
+          System.Console.Write("Found {0} {1}: ", names.Length, ((names.Length > 1) ? "plugins" : "plugin"));
+          foreach (string name in names)
+          {
+            System.Console.Write("{0}; ", name);
+          }
+          System.Console.WriteLine();
+          System.Console.Out.Flush();
+        }
       }
     }
   }

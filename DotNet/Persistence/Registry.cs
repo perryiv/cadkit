@@ -32,7 +32,7 @@ namespace CadKit.Persistence
       lock ( _mutex )
       {
         string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
-        string file = System.Windows.Forms.Application.LocalUserAppDataPath + @"\" + program + ".xml";
+        string file = System.Windows.Forms.Application.UserAppDataPath + "\\" + program + ".xml";
         return file;
       }
     }

@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <plugins>
-  <plugin file="CadKit.LargeTriangleDocument.plug" delegate="CadKit.LargeTriangleDelegate.plug"/>
+  <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug"/>
+  <plugin file="CadKit.Plugins.Windows.OutputWindow.plug"/>
+  <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug"/>
 </plugins>

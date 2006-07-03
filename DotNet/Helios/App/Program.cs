@@ -15,10 +15,12 @@ namespace CadKit.Helios
     /// The main entry point for the application.
     /// </summary>
     [System.STAThread]
-    static void Main()
+    static void Main ( string[] args )
     {
       try
       {
+        CadKit.Tools.Threading threading = CadKit.Tools.Threading.Instance;
+        CadKit.Tools.RedirectOutput redirect = CadKit.Tools.RedirectOutput.Instance;
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault( false );
         CadKit.Helios.Application.Instance.Name = "Helios";

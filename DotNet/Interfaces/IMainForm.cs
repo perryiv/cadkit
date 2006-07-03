@@ -9,9 +9,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocumentOpen
+  public interface IMainForm
   {
-    bool canOpen(string name);
-    object openDocument(string name, object caller);
+    object Form { get; }
   }
 }

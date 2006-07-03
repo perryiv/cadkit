@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.LargeTriangleDocument
+namespace CadKit.Plugins.Documents.LargeTriangleDocument
 {
   public class Component : 
     CadKit.Interfaces.IPlugin,
@@ -25,7 +25,6 @@ namespace CadKit.LargeTriangleDocument
     /// </summary>
     public Component()
     {
-      //System.Threading.Thread.Sleep(new System.TimeSpan(0, 0, 2));
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ namespace CadKit.LargeTriangleDocument
     {
       lock (_mutex)
       {
-        return new CadKit.LargeTriangleDocument.Document();
+        return new CadKit.Plugins.Documents.LargeTriangleDocument.Document();
       }
     }
 
@@ -60,6 +59,35 @@ namespace CadKit.LargeTriangleDocument
         CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.createNewDocument(caller));
         reader.read(file, caller);
         return reader;
+      }
+    }
+
+    /// <summary>
+    /// Return the short name of this type.
+    /// </summary>
+    string CadKit.Interfaces.IPlugin.Name
+    {
+      get { lock (_mutex) { return "Large Triangle Document"; } }
+    }
+
+    /// <summary>
+    /// Return the short name of this type.
+    /// </summary>
+    string CadKit.Interfaces.IPlugin.Description
+    {
+      get { lock (_mutex) { return "Document type for working with triangle document that are larger than system RAM"; } }
+    }
+
+    /// <summary>
+    /// See if we can open this document.
+    /// </summary>
+    bool CadKit.Interfaces.IDocumentOpen.canOpen(string name)
+    {
+      lock (_mutex)
+      {
+        System.IO.FileInfo info = new System.IO.FileInfo(name);
+        string ext = info.Extension.ToLower();
+        return (".tdf" == ext || ".stl" == ext || ".r3d" == ext);
       }
     }
 

@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.LargeTriangleDelegate
+namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
   public class Delegate : CadKit.Interfaces.IGuiDelegate
   {

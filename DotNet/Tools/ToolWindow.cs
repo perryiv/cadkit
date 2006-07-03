@@ -14,7 +14,7 @@ namespace CadKit.Tools
     /// <summary>
     /// Configure the tool window.
     /// </summary>
-    public static void configure(System.Windows.Forms.Form toolWindow, System.Windows.Forms.Form parent, string text)
+    public static void configure(System.Windows.Forms.Form toolWindow, System.Windows.Forms.Form parent, string text, bool modifyText )
     {
       lock ("CadKit.Tools.ToolWindow.configure")
       {
@@ -29,7 +29,7 @@ namespace CadKit.Tools
         if (null != parent)
         {
           // Set appropriate text.
-          toolWindow.Text = text + ": " + parent.Text;
+          toolWindow.Text = (true == modifyText) ? ( text + ": " + parent.Text ) : text;
 
           // Set the owner so that this property grid stays on top of the parent form.
           toolWindow.Owner = parent;
@@ -39,6 +39,9 @@ namespace CadKit.Tools
           // Set appropriate text.
           toolWindow.Text = text;
         }
+
+        // Set the name.
+        toolWindow.Name = toolWindow.Text;
       }
     }
   }

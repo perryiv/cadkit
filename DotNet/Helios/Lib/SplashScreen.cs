@@ -13,7 +13,8 @@ namespace CadKit.Helios
     System.Windows.Forms.Form, 
     CadKit.Interfaces.IProgressBar,
     CadKit.Interfaces.IUpdateDisplay,
-    CadKit.Interfaces.IMenuBar
+    CadKit.Interfaces.IMenuBar,
+    CadKit.Interfaces.IMainForm
   {
     /// <summary>
     /// Constructor.
@@ -35,6 +36,21 @@ namespace CadKit.Helios
         {
           CadKit.Interfaces.IMenuBar bar = _caller as CadKit.Interfaces.IMenuBar;
           return (null == bar) ? null : bar.MenuBar;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Get the main form.
+    /// </summary>
+    object CadKit.Interfaces.IMainForm.Form
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          CadKit.Interfaces.IMainForm form = _caller as CadKit.Interfaces.IMainForm;
+          return (null == form) ? null : form.Form;
         }
       }
     }

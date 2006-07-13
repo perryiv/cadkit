@@ -482,6 +482,14 @@
 				Name="Interfaces"
 				>
 				<File
+					RelativePath=".\Interfaces\IAssembly.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IAssemblyManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDocumentSelect.h"
 					>
 				</File>

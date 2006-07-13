@@ -111,7 +111,7 @@ bool SceneDocument::canInsert ( const std::string &file ) const
 bool SceneDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" );
+  return ( ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" || ext == "crss" );
 }
 
 
@@ -263,7 +263,8 @@ SceneDocument::Filters SceneDocument::filtersOpen() const
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg"       ) );
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive"       ) );
   filters.push_back ( Filter ( "YARN (*.yarn)",                 "*.yarn"      ) );
-  filters.push_back ( Filter ( "OpenFlight (*.flt)", "*.flt"                  ) );
+  filters.push_back ( Filter ( "CRSS (*.crss)",                 "*.crss"      ) );
+  filters.push_back ( Filter ( "OpenFlight (*.flt)",            "*.flt"       ) );
   return filters;
 }
 

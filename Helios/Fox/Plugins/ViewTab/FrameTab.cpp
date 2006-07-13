@@ -189,7 +189,7 @@ void FrameTab::initialize( Usul::Interfaces::IUnknown *caller )
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXLabel  ( frame,  "Height:", 0x0, FX::LAYOUT_LEFT  );
     FX::FXSpinner *heightSpinner ( new FX::FXSpinner ( frame, 5, this, ID_HEIGHT_CHANGED ) );
-    heightSpinner->setRange( 1, 4048 );
+    heightSpinner->setRange( 1, 4096 );
     heightSpinner->setIncrement( 10 );
     heightSpinner->setValue( 600 );
 

@@ -8,11 +8,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PhaseFieldDocument.h"
+#include "SceneElement.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
 #include "OsgTools/ReadModel.h"
+
+#include "osg/Group"
+#include "osg/MatrixTransform"
 
 #include "osgDB/WriteFile"
 
@@ -27,7 +31,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PhaseFieldDocument, PhaseFieldDocument::BaseCl
 PhaseFieldDocument::PhaseFieldDocument() : BaseClass ( "Phase Field Document" ), 
   _scene ( 0x0 ),
   _current ( 0 ),
-  _filenames ()
+  _filenames (),
+  _assemblies()
 {
 }
 
@@ -60,6 +65,8 @@ Usul::Interfaces::IUnknown *PhaseFieldDocument::queryInterface ( unsigned long i
     return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
   case Usul::Interfaces::ITimeVaryingData::IID:
     return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
+  case Usul::Interfaces::IAssemblyManager::IID:
+    return static_cast < Usul::Interfaces::IAssemblyManager * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -222,6 +229,49 @@ osg::Node *PhaseFieldDocument::buildScene ( const BaseClass::Options &opt, Unkno
 
   _scene = node;
 
+  _assemblies.clear();
+
+  // Should be a group if it's truely a phase field document.
+  if ( osg::Group *root = dynamic_cast < osg::Group * > ( _scene.get() ) )
+  {
+    for ( unsigned int i = 0; i < root->getNumChildren(); ++i )
+    {
+      Assembly::RefPtr assembly ( new Assembly );
+
+      osg::Node *n ( root->getChild ( i ) );
+
+      if ( osg::Group * group = dynamic_cast < osg::Group * > ( n ) )
+      {
+        for ( unsigned int j = 0; j < group->getNumChildren(); ++j )
+        {
+          osg::ref_ptr < osg::Node > child ( group->getChild ( j ) );
+          
+          if ( osg::MatrixTransform *mt = dynamic_cast < osg::MatrixTransform * > ( child.get() ) )
+          {
+            SceneElement::RefPtr element ( new SceneElement );
+            element->transform ( mt );
+            assembly->appendSceneElement ( element.get() );
+          }
+          else
+          {
+            group->removeChild ( child.get() );
+
+            osg::ref_ptr < osg::MatrixTransform > transform ( new osg::MatrixTransform );
+            transform->addChild ( child.get() );
+
+            group->addChild ( transform.get() );
+
+            SceneElement::RefPtr element ( new SceneElement );
+            element->transform ( transform.get() );
+            assembly->appendSceneElement ( element.get() );
+          }
+        }
+      }
+
+      _assemblies.insert ( Assemblies::value_type ( n->getName(), assembly.get() ) );
+    }
+  }
+
   // Return the scene
   return _scene.get();
 }
@@ -276,4 +326,23 @@ unsigned int PhaseFieldDocument::getCurrentTimeStep () const
 unsigned int PhaseFieldDocument::getNumberOfTimeSteps () const
 {
   return _filenames.size();
+}
+
+
+void PhaseFieldDocument::getAssemblyNames ( std::vector< std::string >& names )
+{
+  for ( Assemblies::const_iterator iter = _assemblies.begin(); iter != _assemblies.end(); ++iter )
+  {
+    names.push_back ( iter->first );
+  }
+}
+
+Usul::Interfaces::IAssembly* PhaseFieldDocument::getAssemblyByName ( const std::string& name )
+{
+  return _assemblies[ name ].get();
+}
+
+void PhaseFieldDocument::createAssembly ( const std::string& name )
+{
+  _assemblies.insert ( Assemblies::value_type ( name, new Assembly ) );
 }

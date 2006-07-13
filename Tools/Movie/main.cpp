@@ -59,9 +59,12 @@ int main ( int argc, char* argv[] )
 {
   const unsigned int width ( 800 );
   const unsigned int height ( 800 );
-  std::string iveDir ( "E:/adam/models/PhaseField/vf20/ive/" );
-  std::string ivePrefix ( "TEST_VF20-C16_T" );
-  std::string imageDir ( "E:/adam/models/PhaseField/vf20/ive/images/" );
+  const std::string iveDir ( "F:/Task_7/Data/VF54_Set-1/SurfaceMesh_IVE/" );
+  const std::string ivePrefix ( "TEST_VF54_Set-1_T" );
+  const std::string imageDir ( "F:/Task_7/Data/VF54_Set-1/SurfaceMesh_IVE/images/" );
+  const std::string name ( "VF54" );
+  const unsigned int start ( 23 );
+  const unsigned int finish ( 24 );
 
   Usul::CommandLine::Arguments::instance().set( argc, argv );
 
@@ -105,11 +108,9 @@ int main ( int argc, char* argv[] )
 
   Usul::Interfaces::ITextMatrix::ValidQueryPtr text ( canvas->viewer() );
 
-  std::string name ( "VF54" );
-
   text->createMatrix( 3, 5, 1, 1, 30, 320 );
 
-  for ( unsigned int i = 1; i < 100; ++i )
+  for ( unsigned int i = start; i < finish; ++i )
   {
     std::ostringstream hud;
     hud << name << " " << "Timestep: " << i;

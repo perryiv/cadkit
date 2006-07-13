@@ -19,8 +19,10 @@
 #include "osg/PolygonMode"
 #include "osg/LOD"
 #include "osg/Material"
+#include "osg/LineWidth"
 
 #include "OsgTools/Lod.h"
+#include "OsgTools/State/StateSet.h"
 
 #include <sstream>
 #include <iostream>
@@ -60,12 +62,25 @@ ReaderWriterCRSS::ReaderWriterCRSS() : BaseClass(),
   _max          ( 1, 1, 1 ),
   _spheres      (),
   _cubes        (),
+  _triangles    (),
+  _lines        (),
   _factory      ( new OsgTools::ShapeFactory ),
   _numLodKids   ( 5 ),
   _lodDistPower ( 1 ),
   _segsLat      ( 3, 25 ),
-  _segsLong     ( 6, 25 )
+  _segsLong     ( 6, 25 ),
+  _colors       ()
 {
+  // Populate the color map.
+  _colors.insert ( ColorMap::value_type ( "aqua",    osg::Vec4 ( 0,   220, 220, 1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "red",     osg::Vec4 ( 220, 0,   0,   1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "green",   osg::Vec4 ( 0,   220, 0,   1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "blue",    osg::Vec4 ( 0,   0,   220, 1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "purple",  osg::Vec4 ( 220, 0,   220, 1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "pink",    osg::Vec4 ( 220, 120, 190, 1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "orange",  osg::Vec4 ( 220, 120, 0,   1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "yellow",  osg::Vec4 ( 210, 207, 65,  1 ) ) );
+  _colors.insert ( ColorMap::value_type ( "lime",    osg::Vec4 ( 148, 212, 6,   1 ) ) );
 }
 
 
@@ -86,7 +101,7 @@ ReaderWriterCRSS::~ReaderWriterCRSS()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ReaderWriterCRSS::acceptsExtension ( const std::string &ext )
+bool ReaderWriterCRSS::acceptsExtension ( const std::string &ext ) const
 {
   return osgDB::equalCaseInsensitive ( ext, "crss" );
 }
@@ -110,7 +125,7 @@ const char* ReaderWriterCRSS::className()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterCRSS::Result ReaderWriterCRSS::readNode ( const std::string &file, const Options *options )
+ReaderWriterCRSS::Result ReaderWriterCRSS::readNode ( const std::string &file, const Options *options ) const
 {
   try
   {
@@ -322,6 +337,143 @@ osg::Node *ReaderWriterCRSS::_buildCubes() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build the triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* ReaderWriterCRSS::_buildTriangles() const
+{
+  // The geode to hold all triangles.
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+
+  OsgTools::State::StateSet::setTwoSidedLighting ( geode.get(), true );
+
+  // Loop through the triangles.
+  // This is horribly inefficent, but it gets the job done.
+  for ( Triangles::const_iterator i = _triangles.begin(); i != _triangles.end(); ++i )
+  {
+    // Make the geometry.
+    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
+
+    // Make the material.
+    osg::ref_ptr < osg::Material > material ( new osg::Material );
+
+    // Get the color from the color map.
+    ColorMap::const_iterator iter ( _colors.find ( i->color ) );
+    osg::Vec4 color ( iter != _colors.end() ? iter->second : osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+
+    material->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2, 0.2, 0.2, 1.0 ) );
+    material->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
+    material->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.5, 0.5, 0.5, 1.0 ) );
+    material->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
+
+    // Make a polygon-mode.
+    osg::ref_ptr<osg::PolygonMode> pm ( new osg::PolygonMode );
+
+    osg::PolygonMode::Mode mode ( i->mode == "fill" ? osg::PolygonMode::FILL : osg::PolygonMode::LINE );
+
+    // Set the polygon mode
+    pm->setMode ( osg::PolygonMode::FRONT_AND_BACK, mode );
+
+    // Set the state. Make it override any other similar states.
+    typedef osg::StateAttribute Attribute;
+    ss->setAttributeAndModes ( material.get(), Attribute::OVERRIDE | Attribute::ON );
+    ss->setAttributeAndModes ( pm.get(), Attribute::OVERRIDE | Attribute::ON );
+
+    // Make the vertices.
+    osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+    // Add the vertices
+    vertices->push_back ( i->v0 );
+    vertices->push_back ( i->v1 );
+    vertices->push_back ( i->v2 );
+
+    // Calculate the normal.
+    const osg::Vec3 t1 ( i->v1 - i->v0 );
+    const osg::Vec3 t2 ( i->v2 - i->v0 );
+    osg::Vec3 norm ( t1 ^ t2 );
+    norm.normalize();
+
+    // Make the normal array.
+    osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
+    normals->push_back ( norm );
+
+    geometry->setVertexArray ( vertices.get() );
+    geometry->setNormalArray ( normals.get() );
+    geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, 3 ) );
+
+    geode->addDrawable ( geometry.get() );
+  }
+
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the lines.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * ReaderWriterCRSS::_buildLines() const
+{
+  // The geode to hold all lines.
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+
+  OsgTools::State::StateSet::setTwoSidedLighting ( geode.get(), true );
+
+  // Loop through the lines.
+  // This is horribly inefficent, but it gets the job done.
+  for ( Lines::const_iterator i = _lines.begin(); i != _lines.end(); ++i )
+  {
+    // Make the geometry.
+    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
+
+    // Get the color from the color map.
+    ColorMap::const_iterator iter ( _colors.find ( i->color ) );
+    osg::Vec4 color ( iter != _colors.end() ? iter->second : osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+
+    osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
+    lw->setWidth( i->thickness );
+
+    // Set the state. Make it override any other similar states.
+    typedef osg::StateAttribute Attribute;
+    ss->setAttributeAndModes ( lw.get(), Attribute::OVERRIDE | Attribute::ON );
+
+    // Make the vertices.
+    osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+    // Add the vertices
+    vertices->push_back ( i->v0 );
+    vertices->push_back ( i->v1 );
+
+    // Make the color array.
+    osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+    colors->push_back ( color );
+
+    geometry->setVertexArray ( vertices.get() );
+    geometry->setColorArray ( colors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
+
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_LINES, 0, 2 ) );
+
+    geode->addDrawable ( geometry.get() );
+  }
+
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the boundary.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -370,6 +522,12 @@ osg::Group *ReaderWriterCRSS::_build() const
   // Add the cubes.
   root->addChild ( this->_buildCubes() );
 
+  // Add the triangles.
+  root->addChild( this->_buildTriangles() );
+
+  // Add the lines.
+  root->addChild ( this->_buildLines() );
+
   // Add the boundary.
   root->addChild ( this->_buildBounds() );
 
@@ -384,10 +542,12 @@ osg::Group *ReaderWriterCRSS::_build() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReaderWriterCRSS::_init()
+void ReaderWriterCRSS::_init() const
 {
   _spheres.clear();
   _cubes.clear();
+  _triangles.clear();
+  _lines.clear();
 
   // If we release the factory, then the user can close child windows and 
   // free up memory. If we do not release the factory, then multiple big 
@@ -403,7 +563,7 @@ void ReaderWriterCRSS::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReaderWriterCRSS::Result ReaderWriterCRSS::_read ( const std::string &filename, const Options *options )
+ReaderWriterCRSS::Result ReaderWriterCRSS::_read ( const std::string &filename, const Options *options ) const
 {
   // Make sure we handle files with this extension.
   if ( !this->acceptsExtension ( osgDB::getFileExtension ( filename ) ) )
@@ -423,30 +583,27 @@ ReaderWriterCRSS::Result ReaderWriterCRSS::_read ( const std::string &filename, 
   in >> _min[2] >> _max[2];
 
   // Needed below.
-  osg::Vec3 center;
-  float size;
-  char shape, type;
+  char shape;
 
   // Loop until the end of the file.
   while ( EOF != in.peek() )
   {
-    // Read the line.
-    in >> shape >> type;
-    in >> center[0] >> center[1] >> center[2];
-    in >> size;
-
-    // Is it an actual precipitate?
-    bool actual ( 'A' == type || 'a' == type );
+    // Read the shape type.
+    in >> shape;
 
     // Save the sphere or cube.
     if ( 'C' == shape || 'c' == shape )
-      _cubes.push_back ( Cube ( center, SizeAndType ( size, actual ) ) );
+      this->_readCube ( in );
     else if ( 'S' == shape || 's' == shape )
-      _spheres.push_back ( Sphere ( center, SizeAndType ( size, actual ) ) );
+      this->_readSphere ( in );
+    else if ( 'T' == shape || 't' == shape )
+      this->_readTriangle ( in );
+    else if ( 'L' == shape || 'l' == shape )
+      this->_readLineSegment ( in );
     else
     {
       std::ostringstream message;
-      message << "Error 3546502860: Unknown shape '" << type << " found in file: " << filename;
+      message << "Error 3546502860: Unknown shape '" << shape << " found in file: " << filename;
       throw std::runtime_error ( message.str() );
     }
   }
@@ -459,6 +616,93 @@ ReaderWriterCRSS::Result ReaderWriterCRSS::_read ( const std::string &filename, 
 
   // Return the scene
   return root.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a cube.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterCRSS::_readCube ( std::istream& in ) const
+{
+  // Needed below.
+  osg::Vec3 center;
+  float size;
+  char type;
+
+  // Read the line.
+  in >> type;
+  in >> center[0] >> center[1] >> center[2];
+  in >> size;
+
+  // Is it an actual precipitate?
+  bool actual ( 'A' == type || 'a' == type );
+
+  _cubes.push_back ( Cube ( center, SizeAndType ( size, actual ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterCRSS::_readSphere ( std::istream& in ) const
+{
+  // Needed below.
+  osg::Vec3 center;
+  float size;
+  char type;
+
+  // Read the line.
+  in >> type;
+  in >> center[0] >> center[1] >> center[2];
+  in >> size;
+
+  // Is it an actual precipitate?
+  bool actual ( 'A' == type || 'a' == type );
+
+  _spheres.push_back ( Sphere ( center, SizeAndType ( size, actual ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a cube.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterCRSS::_readTriangle ( std::istream& in ) const
+{
+  Triangle t;
+
+  in >> t.v0[0] >> t.v0[1] >> t.v0[2];
+  in >> t.v1[0] >> t.v1[1] >> t.v1[2];
+  in >> t.v2[0] >> t.v2[1] >> t.v2[2];
+  in >> t.mode >> t.color;
+
+  _triangles.push_back ( t );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a cube.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReaderWriterCRSS::_readLineSegment ( std::istream& in ) const
+{
+  Line l;
+
+  in >> l.v0[0] >> l.v0[1] >> l.v0[2];
+  in >> l.v1[0] >> l.v1[1] >> l.v1[2];
+  in >> l.thickness >> l.color;
+
+  _lines.push_back( l );
 }
 
 

@@ -59,8 +59,6 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef OsgTools::Triangles::Loop Loop;
   typedef Usul::Interfaces::IGetLoops::Loops Loops;
-/** MIKE **/
-  typedef Usul::Math::Vector3<Usul::Types::Int64> Vec3l;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( TriangleDelegateComponent );

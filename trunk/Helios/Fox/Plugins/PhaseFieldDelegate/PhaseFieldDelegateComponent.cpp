@@ -36,6 +36,7 @@
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
+#include "Usul/Interfaces/IAssemblyManager.h"
 
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
@@ -174,12 +175,12 @@ void PhaseFieldDelegateComponent::createDefaultGUI ( Usul::Documents::Document *
   // Set the view
   child->view ( viewer );
 
+  // Build scene.
+  child->onBuildScene ( 0x0, 0, 0x0 );
+
   // Create the child window.
   // Call create after the view has been set in the child window and the document
   child->create();
-
-  // Build scene.
-  child->onBuildScene ( 0x0, 0, 0x0 );
 
   // Make sure the new scene has the proper display-list settings.
   canvas->viewer()->setDisplayLists();
@@ -355,6 +356,20 @@ void PhaseFieldDelegateComponent::_buildTab ( Usul::Interfaces::IUnknown* caller
 
     new FX::FXButton ( hframe, "", Factory::instance()->icon ( Factory::ICON_BACKWARD_ARROW ), this, ID_BACKWARD );
     new FX::FXButton ( hframe, "", Factory::instance()->icon ( Factory::ICON_FORWARD_ARROW ), this, ID_FORWARD );
+
+    std::vector < std::string > names;
+
+    Usul::Interfaces::IAssemblyManager::QueryPtr assemblyManager ( document );
+
+    if ( assemblyManager.valid() )
+    {
+      assemblyManager->getAssemblyNames( names );
+
+      for ( unsigned int i = 0; i < names.size(); ++i )
+      {
+        new FX::FXCheckButton ( _frame, names.at( i ).c_str() );
+      }
+    }
 
     _frame->create();
   }

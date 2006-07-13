@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: FoxTools"
 	ProjectGUID="{C30C96F6-1E49-4C77-A570-A58D8874C393}"
+	RootNamespace="lib: FoxTools"
 	>
 	<Platforms>
 		<Platform

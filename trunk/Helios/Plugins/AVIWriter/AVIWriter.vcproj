@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="plug: AVIWriter"
 	ProjectGUID="{4F241186-BE0A-4F1D-BC81-B89E8EBD79C1}"
+	RootNamespace="plug: AVIWriter"
 	>
 	<Platforms>
 		<Platform

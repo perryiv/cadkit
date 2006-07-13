@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="plug: Animate"
 	ProjectGUID="{8F7CCB93-7E75-49B0-8881-0B29891C463C}"
+	RootNamespace="plug: Animate"
 	>
 	<Platforms>
 		<Platform

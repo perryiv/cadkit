@@ -294,6 +294,24 @@ struct SmartPointer
     const element_type *_p;
   };
 
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Predicate to determine if two smart pointers are equal.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct IsEqualBinary
+  {
+    IsEqualBinary ( )
+    {
+    }
+    template < class PointerType > bool operator() ( const PointerType &lhs, const PointerType &rhs ) const
+    {
+      return lhs.get() == rhs.get();
+    }
+  };
+
 protected:
 
   /////////////////////////////////////////////////////////////////////////////

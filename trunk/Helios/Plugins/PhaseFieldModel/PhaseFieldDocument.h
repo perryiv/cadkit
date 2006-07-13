@@ -16,22 +16,26 @@
 #ifndef __PHASE_FIELD_DOCUMENT_H__
 #define __PHASE_FIELD_DOCUMENT_H__
 
+#include "Assembly.h"
 
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
+#include "Usul/Interfaces/IAssemblyManager.h"
 
 #include "osg/ref_ptr"
 
 #include <vector>
 #include <string>
+#include <map>
 
 class PhaseFieldDocument : public Usul::Documents::Document,
                            public Usul::Interfaces::IBuildScene,
                            public Usul::Interfaces::IGetBoundingBox,
-                           public Usul::Interfaces::ITimeVaryingData
+                           public Usul::Interfaces::ITimeVaryingData,
+                           public Usul::Interfaces::IAssemblyManager
 {
 public:
   /// Useful typedefs.
@@ -82,6 +86,11 @@ protected:
 
   virtual unsigned int     getNumberOfTimeSteps () const;
 
+  /// Usul::Interfaces::IAssemblyManager
+  virtual void                                getAssemblyNames ( std::vector< std::string >& names );
+  virtual Usul::Interfaces::IAssembly*        getAssemblyByName ( const std::string& name );
+  virtual void                                createAssembly ( const std::string& name );
+
 private:
 
   /// Do not copy.
@@ -91,9 +100,12 @@ private:
   osg::ref_ptr< osg::Node > _scene;
 
   typedef std::vector < std::string > Filenames;
+  typedef std::map < std::string, Assembly::RefPtr > Assemblies;
 
   unsigned int _current;
   Filenames _filenames;
+
+  Assemblies _assemblies;
 
 };
 

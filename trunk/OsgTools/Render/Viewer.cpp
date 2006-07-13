@@ -1509,6 +1509,44 @@ void Viewer::boundingBox ( bool state )
     else
       bb.expandBy ( this->model()->getBound() );
 
+    /*osg::StateSet *ss ( group->getOrCreateStateSet () );
+
+    osg::Material *mat ( new osg::Material );
+    mat->setDiffuse ( osg::Material::FRONT, osg::Vec4 ( 255.0 / 255.0, 164.5 / 255.0, 85.0 / 255.0, 1 ) );
+
+    ss->setAttribute( mat, osg::StateAttribute::ON );
+
+    osg::ref_ptr< OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+    osg::Geode *geode ( new osg::Geode );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 4 ), bb.corner( 5 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 5 ), bb.corner( 7 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 7 ), bb.corner( 6 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 6 ), bb.corner( 4 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 3 ), bb.corner( 7 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 1 ), bb.corner( 5 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 3 ), bb.corner( 2 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 1 ), bb.corner( 0 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 3 ), bb.corner( 1 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 2 ), bb.corner( 0 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 2 ), bb.corner( 6 ) ) );
+    geode->addDrawable ( sf->cylinder ( 1.0, 20, bb.corner( 4 ), bb.corner( 0 ) ) );
+
+    group->addChild ( geode );
+
+    for ( unsigned int i = 0; i < 8; ++i )
+    {
+      osg::ref_ptr < osg::Geode > g ( new osg::Geode );
+      osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+      mt->setMatrix ( osg::Matrix::translate ( bb.corner( i ) ) );
+
+      mt->addChild ( g.get () );
+      group->addChild ( mt.get() );
+
+      OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
+      g->addDrawable ( sf->sphere ( 1.1 , size ) );
+    }*/
+    
+
     // Make a new blue box.
     OsgTools::ColorBox box ( bb );
     box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );

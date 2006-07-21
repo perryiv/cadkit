@@ -54,9 +54,6 @@ public:
   // Initialize.  Assumes the context is already current.
   void                  init();
 
-  // Use a FBO to capture the screen.
-  void                  fboScreenCapture ( osg::Image& image, unsigned int height, unsigned int width );
-
   // Set the view frustum.
   void                  frustum ( float left, float right, float bottom, float top, float near, float far );
 
@@ -79,7 +76,7 @@ public:
   osg::Node *           scene();
 
   // Get a screen capture with the given view matrix.
-  osg::Image*           screenCapture ( const osg::Matrix& matrix, unsigned int height, unsigned int width );
+  osg::Image*           screenCapture ( const osg::Matrix& matrix, unsigned int width, unsigned int height );
 
   // Get the time.
   double                timeAverage ( const std::string &name ) const;
@@ -120,7 +117,16 @@ protected:
 
   osg::Image*           _accumulate ( const ImageList& images ) const;
 
+  // Capture the screen.
+  void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );
+
+  // Use a FBO to capture the screen.
+  void                  _fboScreenCapture ( osg::Image& image, unsigned int width, unsigned int height );
   void                  _fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
+
+  // Use tiles to capture the screen.
+  void                  _tiledScreenCapture ( osg::Image& image, unsigned int width, unsigned int heigth );
+  void                  _tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
 private:
 
@@ -133,6 +139,7 @@ private:
   TimeHistories _times;
 
   unsigned int _numPasses;  
+  unsigned int _contextId;
   
   bool _hasAccumulationBuffer;
 };

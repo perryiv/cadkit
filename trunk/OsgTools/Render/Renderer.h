@@ -119,13 +119,12 @@ protected:
 
   // Capture the screen.
   void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );
+  void                  _screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
   // Use a FBO to capture the screen.
-  void                  _fboScreenCapture ( osg::Image& image, unsigned int width, unsigned int height );
   void                  _fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
   // Use tiles to capture the screen.
-  void                  _tiledScreenCapture ( osg::Image& image, unsigned int width, unsigned int heigth );
   void                  _tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
 private:

@@ -726,7 +726,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
         images.push_back( new osg::Image );
         
         // Fill in the image.
-        this->_screenCapture ( *image, width, height );
+        this->_screenCapture ( *images.back(), pMatrix, width, height );
       }
 
       image = this->_accumulate( images );
@@ -759,27 +759,6 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
 
 void Renderer::_screenCapture ( osg::Image& image, unsigned int width, unsigned int height )
 {
-  // Should we use frame buffer objects?
-  bool useFBO ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() && height <= 4096 && width <= 4096 );
-
-  // Make enough space
-  image.allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-      
-  if ( useFBO )
-    this->_fboScreenCapture ( image, width, height );
-  else
-    this->_tiledScreenCapture( image, height, height );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen using a frame buffer object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_fboScreenCapture ( osg::Image& image, unsigned int width, unsigned int height )
-{
   // Set the projection matrix.
   double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
   double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
@@ -787,7 +766,28 @@ void Renderer::_fboScreenCapture ( osg::Image& image, unsigned int width, unsign
   double w ( width ), h ( height );
   double aspect ( w / h );
 
-  this->_fboScreenCapture( image, osg::Matrix::perspective( fovy, aspect, zNear, zFar ) , width, height );
+  this->_screenCapture ( image, osg::Matrix::perspective( fovy, aspect, zNear, zFar ), width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Capture the screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
+{
+  // Should we use frame buffer objects?
+  bool useFBO ( osg::FBOExtensions::instance( _contextId/*, true*/ )->isSupported() && height <= 4096 && width <= 4096 );
+
+  // Make enough space
+  image.allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+      
+  if ( useFBO )
+    this->_fboScreenCapture ( image, projection, width, height );
+  else
+    this->_tiledScreenCapture( image, projection, width, height );
 }
 
 
@@ -861,25 +861,6 @@ void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& project
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::_tiledScreenCapture ( osg::Image& image, unsigned int width, unsigned int height )
-{
-  // Set the projection matrix.
-  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
-  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
-  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
-  double w ( width ), h ( height );
-  double aspect ( w / h );
-
-  this->_tiledScreenCapture( image, osg::Matrix::perspective( fovy, aspect, zNear, zFar ) , width, height );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen using tiles.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
 {
   // Tile height and width
@@ -894,7 +875,9 @@ void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& proje
     unsigned int currentTile ( 0 );
 
     // Get the old viewport
-    osg::ref_ptr<osg::Viewport> ovp ( this->viewport() );
+    osg::ref_ptr<osg::Viewport> ovp ( static_cast < osg::Viewport* > ( this->viewport()->clone( osg::CopyOp::DEEP_COPY_ALL ) ) );
+
+    osg::Matrix opm ( this->viewer()->getProjectionMatrix() );
 
     //double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
     double zNear ( 0.0 );
@@ -982,5 +965,6 @@ void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& proje
 
     // Restore old settings
     this->viewport ( ovp.get() );
+    this->viewer()->setProjectionMatrix( opm );
     //this->resize ( ovp->width(), ovp->height() );
 }

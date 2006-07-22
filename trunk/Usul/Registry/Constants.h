@@ -34,6 +34,7 @@ namespace Usul
       const std::string FILE_DIALOG_SAVE          = "file_dialog_save";
       const std::string VIEWER_SETTINGS           = "viewer_settings";
       const std::string PREFERENCES               = "preferences";
+      const std::string IMAGE_EXPORT_SIZE         = "image_export_size";
     };
 
     namespace Keys

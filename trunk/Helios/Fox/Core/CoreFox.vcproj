@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.4.lib shell32.lib"
+				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib shell32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCored.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.4.lib shell32.lib"
+				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib shell32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

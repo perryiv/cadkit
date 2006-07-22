@@ -14,13 +14,16 @@
 #include "OsgTools/Export.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/File/Temp.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Interfaces/IUnknown.h"
 
 #include "osg/ref_ptr"
 
 #include "osgUtil/SceneView"
 
+#include "boost/shared_ptr.hpp"
+
+#include <GL/gl.h>
 #include <vector>
 
 namespace OsgTools {
@@ -32,9 +35,6 @@ class Renderer : public Usul::Base::Referenced
 public:
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Renderer );
-
-  // Usul::Interfaces::IUnknown members.
-  //USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
@@ -70,6 +70,10 @@ public:
   // Render.  Assumes the context is already current.
   void                  render();
 
+  // Set/get the scatter scale.
+  double                scatterScale() const;
+  void                  scatterScale ( double );
+
   // Set/Get the scene
   void                  scene ( osg::Node *node );
   const osg::Node *     scene() const;
@@ -104,9 +108,11 @@ public:
   const SceneView *     viewer() const;
   SceneView *           viewer();
   void                  viewer ( SceneView * );
+
 protected:
 
-  typedef std::vector < osg::ref_ptr < osg::Image > > ImageList;
+  typedef boost::shared_ptr < Usul::File::Temp > TempFilePtr;
+  typedef std::vector < TempFilePtr > ImageList;
 
   virtual ~Renderer();
 
@@ -115,7 +121,7 @@ protected:
 
   void                  _cullAndDraw();
 
-  osg::Image*           _accumulate ( const ImageList& images ) const;
+  osg::Image*           _accumulate ( ImageList& images, unsigned int height, unsigned int width, GLenum pixelFormat, GLenum dataType ) const;
 
   // Capture the screen.
   void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );

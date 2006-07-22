@@ -41,7 +41,7 @@ Jitter *Jitter::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Jitter::Jitter() : _methods ( 65 )
+Jitter::Jitter() : _methods ( 65 ), _scatterScale ( 1 )
 {
   // Populate the points. Lots of inefficient memory shuffeling here, 
   // but it happens only once.
@@ -431,8 +431,9 @@ void Jitter::perspective ( unsigned int numPasses, unsigned int currentPass, con
   if ( currentPass >= points.size() )
     Usul::Exceptions::Thrower<std::range_error> ( "Error 3164801215: Jitter point ", currentPass, " is out of range for ", points.size(), "-pass rendering" );
 
-  // Get the point.
-  const Point &point = points.at ( currentPass );
+  // These "points" are actually fractions of a pixel size 
+  // so we multiply by the scaller-scale.
+  const Point point = _scatterScale * points.at ( currentPass );
 
   // Get the perspective values from the base matrix.
   double fovy ( 0 ), aspect ( 0 ), zNear ( 0 ), zFar ( 0 );
@@ -484,4 +485,28 @@ bool Jitter::available ( unsigned int num ) const
       return true;
   }
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Jitter::scatterScale ( double scale )
+{
+  _scatterScale = scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Jitter::scatterScale() const
+{
+  return _scatterScale;
 }

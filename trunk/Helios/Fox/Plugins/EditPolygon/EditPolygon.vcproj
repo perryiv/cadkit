@@ -79,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgUtild.lib foxdlld-1.4.lib osgTextd.lib"
+				AdditionalDependencies="osgd.lib osgUtild.lib foxdlld-1.6.lib osgTextd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/EditPolygon.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgUtil.lib foxdll-1.4.lib osgText.lib"
+				AdditionalDependencies="osg.lib osgUtil.lib foxdll-1.6.lib osgText.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/EditPolygon.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

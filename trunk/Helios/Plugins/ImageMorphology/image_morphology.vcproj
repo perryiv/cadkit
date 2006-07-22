@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdlld-1.4.lib osgUtild.lib osgd.lib"
+				AdditionalDependencies="foxdlld-1.6.lib osgUtild.lib osgd.lib"
 				OutputFile="../../../bin/ImageMorphology.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -181,7 +181,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdll-1.4.lib osgUtil.lib osg.lib"
+				AdditionalDependencies="foxdll-1.6.lib osgUtil.lib osg.lib"
 				OutputFile="../../../bin/ImageMorphology.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

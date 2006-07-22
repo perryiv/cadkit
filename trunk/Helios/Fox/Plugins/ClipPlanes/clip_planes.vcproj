@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdlld-1.4.lib osgUtild.lib osgd.lib"
+				AdditionalDependencies="foxdlld-1.6.lib osgUtild.lib osgd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/ClipPlanes.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdll-1.4.lib osgUtil.lib osg.lib"
+				AdditionalDependencies="foxdll-1.6.lib osgUtil.lib osg.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/ClipPlanes.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -18,17 +18,28 @@
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/System/Clock.h"
 #include "Usul/Errors/Stack.h"
-#include "Usul/Shared/Preferences.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/ICancelButton.h"
+#include "Usul/Policies/Update.h"
 #include "Usul/Registry/Constants.h"
+#include "Usul/Resources/ProgressBar.h"
+#include "Usul/Resources/StatusBar.h"
+#include "Usul/Resources/CancelButton.h"
+#include "Usul/Resources/TextWindow.h"
+#include "Usul/Shared/Preferences.h"
+#include "Usul/System/Clock.h"
 
 #include "osg/Texture2D"
 
 #include "osgUtil/UpdateVisitor"
 
 #include "osgDB/WriteFile"
+
 #include <iomanip>
+#include <list>
+#include <fstream>
 
 using namespace OsgTools::Render;
 
@@ -598,90 +609,117 @@ void Renderer::updateScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Renderer::_accumulate( const ImageList &images ) const
+osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsigned int width, GLenum pixelFormat, GLenum dataType ) const
 {
-  osg::ref_ptr < osg::Image > image ( new osg::Image );
+  // Handle empty list.
+  if ( true == images.empty() )
+    return 0x0;
 
-  if ( images.size() > 1 )
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
+  Usul::Policies::TimeBased elapsed ( 1000 );
+
+  // Make a temporary file and fill it with zeros. These will be the "pixels".
+  const unsigned int numChannels ( 3 );
+  const unsigned int size ( width * height * numChannels );
+  Usul::File::Temp answer ( Usul::File::Temp::BINARY );
+
+  // Fill the file with zeros, row by row.
+  typedef std::vector < unsigned int > Pixels;
+  Pixels answerRow ( width * numChannels, 0 );
+  const unsigned int bytesPerRow ( answerRow.size() * sizeof ( Pixels::value_type ) );
+  for ( unsigned int i = 0; i < height; ++ i )
+    answer.stream().write ( reinterpret_cast < const char * > ( &answerRow[0] ), bytesPerRow );
+  answer.stream().flush();
+
+  // Open answer file again for reading and writing.
+  std::fstream answerIO ( answer.name().c_str(), std::ios::binary | std::ios::in | std::ios::out );
+
+  const unsigned int total ( height * images.size() );
+  unsigned int count ( 0 );
+
+  // Loop through the image files.
+  for ( ImageList::iterator iter = images.begin(); iter != images.end(); ++iter )
   {
-    osg::ref_ptr< const osg::Image > front ( images.front().get() );
+    // Open the file.
+    std::ifstream in ( (*iter)->name().c_str(), std::ios::binary );
+    if ( false == in.is_open() )
+      throw std::runtime_error ( "Error 3674333031: Failed to open temporary image file: " + (*iter)->name() );
 
-    unsigned int width ( front->s() );
-    unsigned int height ( front->t() );
-
-    OsgTools::Images::Matrix< osg::Vec3f > accumulationBuffer ( width, height );
-
-    float mult ( 1.0f / (float) images.size() );
-
-    unsigned int size ( front->getImageSizeInBytes() );
-
-    std::vector < float > buffer ( width * height * 3, 0.0 );
-
-    for( ImageList::const_iterator iter = images.begin(); iter != images.end(); ++iter )
+    // Read the image size.
     {
-      const unsigned char *pixels ( (*iter)->data() );
-
-      for ( unsigned int i = 0; i < size; ++ i )
-      {
-        buffer.at( i ) += pixels[i] * mult;
-      }
+      unsigned int w ( 0 ), h ( 0 );
+      in.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
+      in.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
+      if ( w != width || h != height )
+        throw std::runtime_error ( "Error 2573216328: Inconsistant image sizes" );
     }
-    
-    image->allocateImage ( width, height, 1, front->getPixelFormat(), front->getDataType() );
 
-    unsigned char *pixels ( image->data() );
 
-    for ( unsigned int i = 0; i < size; ++ i )
+
+    // Read each row.
+    for ( unsigned int r = 0; r < height; ++r )
     {
-      pixels[i] = buffer.at( i );
-    }
-#if 0
+      // Pixels in temporary intermediate files are unsigned chars.
+      typedef std::vector < unsigned char > TempPixels;
+      TempPixels tempRow   ( answerRow.size(), 0 );
 
-      /*std::ostringstream out;
-      out << "E:/adam/models/image" << std::setw ( 3 ) << iter - images.begin() << ".jpg";
-      std::string outname ( out.str() );
-      std::replace ( outname.begin(), outname.end(), ' ', '0' );
+      // Read a single row from temp file.
+      in.read ( reinterpret_cast < std::ifstream::char_type * > ( &tempRow[0] ), tempRow.size() * sizeof ( TempPixels::value_type ) );
 
-      osgDB::writeImageFile ( *(*iter), outname );*/
+      // Read corresponding row from answer file.
+      answerIO.read ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
 
-      for( unsigned int t = 0; t < height; ++t )
+      // Accumulate answer.
+      for ( unsigned int c = 0; c < answerRow.size(); ++c )
+        answerRow[c] += tempRow[c];
+
+      // Write answer back into file.
+      answerIO.seekg ( answerIO.tellg() - static_cast < std::fstream::pos_type > ( bytesPerRow ), std::ios_base::beg );
+      answerIO.write ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
+
+      // Feedback
+      if ( elapsed() )
       {
-        for ( unsigned int s = 0; s < width; ++s )
-        {
-        
-          const unsigned char *temp ( (*iter)->data( s, t ) );
-
-          osg::Vec3f & data ( accumulationBuffer.at( s, t ) );
-
-          unsigned char red ( temp[0] );
-          unsigned char green ( temp[1] );
-          unsigned char blue ( temp[2] );
-
-          data[0] += red * mult;
-          data[1] += green * mult;
-          data[2] += blue * mult;
-        }
+        progress ( count, total );
+        std::ostringstream out;
+        out << "Accumulating row " << r << " of " << height << " in image " << std::distance ( images.begin(), iter ) + 1 << " of " << images.size();
+        status ( out.str(), true );
       }
+      ++count;
     }
-
-    image->allocateImage ( width, height, 1, front->getPixelFormat(), front->getDataType() );
-
-    for ( unsigned int s = 0; s < width; ++s )
-    {
-      for( unsigned int t = 0; t < height; ++t )
-      {
-        const osg::Vec3f & temp ( accumulationBuffer.at( s, t ) );
-
-        unsigned char *data ( image->data( s, t ) );
-
-        *data = (unsigned char) temp[0];
-        *(data+1) = (unsigned char) temp[1];
-        *(data+2) = (unsigned char) temp[2];
-      }
-    }
-#endif
   }
 
+  // Allocate the image.
+  osg::ref_ptr < osg::Image > image ( new osg::Image );
+  image->allocateImage ( width, height, 1, pixelFormat, dataType );
+
+  // Start at the beginning.
+  answerIO.seekg ( 0, std::ios_base::beg );
+
+  // Used to average.
+  const float mult ( 1.0f / (float) images.size() );
+
+  //unsigned char *buffer = image->data ( );
+
+  // Read each row.
+  for ( unsigned int r = 0; r < height; ++r )
+  {
+    // Read corresponding row from answer file.
+    answerIO.read ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
+
+    // Loop through the columns.
+    unsigned char *buffer = image->data ( 0, r );
+    for ( unsigned int c = 0; c < answerRow.size(); ++c )
+    {
+      buffer[c] = static_cast < unsigned char > ( static_cast < float > ( answerRow[c] ) * mult );
+      /*unsigned char value ( static_cast < unsigned char > ( static_cast < float > ( answerRow[c] ) * mult ) );
+      *buffer = value;
+      ++buffer;*/
+    }
+  }
+
+  // All done.
   return image.release();
 }
 
@@ -694,9 +732,14 @@ osg::Image* Renderer::_accumulate( const ImageList &images ) const
 
 osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int width, unsigned int height )
 {
-  osg::ref_ptr< osg::Image > image ( new osg::Image() );
-
+  osg::ref_ptr< osg::Image > answer ( new osg::Image() );
   osg::Matrix oldViewMatrix ( _sceneView->getViewMatrix() );
+
+  // Initialize progress bar.
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
+  Usul::Interfaces::ICancelButton::ShowHide cancel ( Usul::Resources::cancelButton() );
 
   try
   {
@@ -709,12 +752,12 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
 
       // Needed in the loop.
       osg::Matrixd pMatrix;
-      //osg::ref_ptr<osg::Viewport> vp ( new osg::Viewport( 0, 0, width, height ) /*this->viewport()*/ );
       osg::ref_ptr<osg::Viewport> vp ( this->viewport() );
       const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
 
-      // vector to store the images.
+      // Vector to store the images.
       ImageList images;
+      images.reserve ( this->numRenderPasses() );
 
       // Loop through the passes...
       for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
@@ -723,22 +766,66 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
         OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, pMatrix );
         _sceneView->setProjectionMatrix ( pMatrix );
 
-        images.push_back( new osg::Image );
-        
-        // Fill in the image.
-        this->_screenCapture ( *images.back(), pMatrix, width, height );
+        // Make a new image.
+        osg::ref_ptr < osg::Image > tempImage ( new osg::Image );
+
+        // Capture the image.
+        this->_screenCapture ( *tempImage, pMatrix, width, height );
+
+        // Write the image to file.
+        images.push_back ( TempFilePtr ( new Usul::File::Temp ( Usul::File::Temp::BINARY ) ) );
+        images.back()->stream().write ( reinterpret_cast < const char * > ( &width ), sizeof ( width ) );
+        images.back()->stream().write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
+        images.back()->stream().write ( reinterpret_cast < const char * > ( tempImage->data() ), tempImage->getImageSizeInBytes() );
+        images.back()->stream().flush();
+
+        // Read images back in and write to BMP.
+        #ifdef _DEBUG
+        {
+          // Open the file.
+          std::ifstream fin ( images.back()->name().c_str(), std::ios::binary );
+          USUL_ASSERT ( true == fin.is_open() );
+
+          // Read the image size.
+          {
+            unsigned int w ( 0 ), h ( 0 );
+            fin.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
+            fin.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
+            USUL_ASSERT ( w == width || h == height );
+            osg::ref_ptr<osg::Image> ti ( new osg::Image );
+            ti->allocateImage ( w, h, 1, GL_RGB, GL_UNSIGNED_BYTE );
+            fin.read ( reinterpret_cast < char * > ( ti->data() ), ti->getImageSizeInBytes() );
+            osgDB::writeImageFile ( *ti, images.back()->name() + ".bmp" );
+          }
+        }
+        #endif
+
+        // Feedback
+        {
+          progress ( i, this->numRenderPasses() );
+          std::ostringstream out;
+          out << "Capturing render pass " << i;
+          status ( out.str(), true );
+        }
       }
 
-      image = this->_accumulate( images );
+      answer = this->_accumulate ( images, height, width, GL_RGB, GL_UNSIGNED_BYTE );
+
+      #ifdef _DEBUG
+      {
+        for ( ImageList::iterator ii = images.begin(); ii != images.end(); ++ii )
+          (*ii)->release();
+      }
+      #endif
     }
     else
     {
       // Fill in the image.
-      this->_screenCapture ( *image, width, height );
+      this->_screenCapture ( *answer, width, height );
     }
   }
 
-  // If there is an exception, set the old view matrix and re throw.
+  // If there is an exception, set the old view matrix and re-throw.
   catch ( ... )
   {
     _sceneView->setViewMatrix( oldViewMatrix );
@@ -747,7 +834,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
 
   _sceneView->setViewMatrix( oldViewMatrix );
 
-  return image.release();
+  return answer.release();
 }
 
 
@@ -852,6 +939,30 @@ void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& project
 
   // Figure out how to avoid this last render.
   this->render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::scatterScale ( double scale )
+{
+  OsgTools::Jitter::instance().scatterScale ( scale );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Renderer::scatterScale() const
+{
+  return OsgTools::Jitter::instance().scatterScale();
 }
 
 

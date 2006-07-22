@@ -745,10 +745,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\IFileSelectionFilters.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\INewDocumentCreate.h"
 						>
 					</File>

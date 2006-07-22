@@ -54,6 +54,10 @@ public:
                                     const osg::Matrixd &base, 
                                     osg::Matrixd &mat );
 
+  // Set/get the scatter scale.
+  double              scatterScale() const;
+  void                scatterScale ( double );
+
 private:
 
   Jitter();
@@ -63,6 +67,7 @@ private:
 
   static Jitter *_instance;
   Methods _methods;
+  double _scatterScale;
 };
 
 

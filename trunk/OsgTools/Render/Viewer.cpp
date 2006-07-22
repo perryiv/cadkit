@@ -173,7 +173,7 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _renderer->scene( _sceneManager->scene() );
 
 #ifdef _DEBUG
-  osg::setNotifyLevel ( osg::INFO );
+  //osg::setNotifyLevel ( osg::INFO );
 #endif
 }
 
@@ -2153,11 +2153,11 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   // Make this context current.
   me->_context->makeCurrent();
 
+  // Capture image.
   image = me->_renderer->screenCapture( this->getViewMatrix(), width, height );
 
   // Write the image to file.
   return osgDB::writeImageFile ( *image, filename );
-
 }
 
 
@@ -4857,4 +4857,29 @@ osg::Image* Viewer::screenCapture ( unsigned int height, unsigned int width ) co
 bool Viewer::hasAccumBuffer() const
 {
   return _renderer->hasAccumBuffer();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::scatterScale ( double scale )
+{
+  if ( _renderer.valid() )
+    _renderer->scatterScale ( scale );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scatter scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Viewer::scatterScale() const
+{
+  return ( _renderer.valid() ) ? _renderer->scatterScale() : 1;
 }

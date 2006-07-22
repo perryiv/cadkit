@@ -17,6 +17,7 @@
 #include "FoxTools/Headers/Button.h"
 #include "FoxTools/Headers/GroupBox.h"
 #include "FoxTools/Functions/Enable.h"
+#include "FoxTools/Registry/Registry.h"
 
 #include "Usul/Interfaces/Fox/IFoxTabBook.h"
 #include "Usul/Interfaces/Fox/IFoxTabItem.h"
@@ -27,6 +28,7 @@
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 
 #include "Usul/Cast/Cast.h"
+#include "Usul/Registry/Constants.h"
 
 #include "osg/Vec3"
 #include "osg/Vec4"
@@ -76,13 +78,13 @@ FOX_TOOLS_IMPLEMENT ( FrameTab, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageM
 ///////////////////////////////////////////////////////////////////////////////
 
 FrameTab::FrameTab() :
-_caller(),
-_centerIncrement( 10 ),
-_distanceIncrement ( 10 ),
-_rotationIncrement ( .01 ),
-_contents ( 0x0 ),
-_height ( 600 ),
-_width ( 800 )
+  _caller(),
+  _centerIncrement   ( 10 ),
+  _distanceIncrement ( 10 ),
+  _rotationIncrement ( .01 ),
+  _contents ( 0x0 ),
+  _height ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::HEIGHT, 600 ) ),
+  _width  ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::WIDTH,  800 ) )
 {
 }
 
@@ -95,6 +97,9 @@ _width ( 800 )
 
 FrameTab::~FrameTab()
 {
+  FoxTools::Registry::write ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::WIDTH,  _width  );
+  FoxTools::Registry::write ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::HEIGHT, _height );
+
   Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( _caller );
 
   if( tabItem.valid( ) )
@@ -182,16 +187,16 @@ void FrameTab::initialize( Usul::Interfaces::IUnknown *caller )
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXLabel  ( frame,  "Width:", 0x0, FX::LAYOUT_LEFT  );
     FX::FXSpinner *widthSpinner ( new FX::FXSpinner ( frame, 5, this, ID_WIDTH_CHANGED ) );
-    widthSpinner->setRange( 1, 4048 );
+    widthSpinner->setRange( 1, 4096 );
     widthSpinner->setIncrement( 10 );
-    widthSpinner->setValue( 800 );
+    widthSpinner->setValue ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::WIDTH, 800 ) );
 
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXLabel  ( frame,  "Height:", 0x0, FX::LAYOUT_LEFT  );
     FX::FXSpinner *heightSpinner ( new FX::FXSpinner ( frame, 5, this, ID_HEIGHT_CHANGED ) );
     heightSpinner->setRange( 1, 4096 );
     heightSpinner->setIncrement( 10 );
-    heightSpinner->setValue( 600 );
+    heightSpinner->setValue ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::HEIGHT, 600 ) );
 
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXButton( frame, "Image Export", 0x0, this, ID_EXPORT_IMAGE );
@@ -790,19 +795,15 @@ long FrameTab::onChangedWidght ( FX::FXObject *object, FX::FXSelector, void * )
 long FrameTab::onCommandExportImage ( FX::FXObject *, FX::FXSelector, void * )
 {
   Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
-
   Usul::Interfaces::IExport::QueryPtr exportFile ( activeView.valid() ? activeView->getActiveView() : 0x0 );
-
   Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( _caller );
 
   if( saveDialog.valid() && exportFile.valid() )
   {
     Usul::Interfaces::IExport::Filters filters ( exportFile->filtersWriteImage() );
-
     Usul::Interfaces::ISaveFileDialog::FileResult result ( saveDialog->getSaveFileName( "Export Image", filters ) );
 
     std::string filename ( result.first );
-
     if ( !filename.empty() )
       exportFile->writeImageFile( filename, _height, _width );
   }

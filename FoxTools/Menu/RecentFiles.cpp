@@ -133,9 +133,9 @@ void RecentFiles::_build ( FX::FXComposite *parent )
   // Create a command for each recent file.
   for ( unsigned int i = FXRecentFiles::ID_FILE_1; i <= FXRecentFiles::ID_FILE_10; ++i )
   {
-    _commands.push_back ( new FX::FXMenuCommand ( parent, 0x0, 0x0, _recentFiles, i ) );
+    _commands.push_back ( new FX::FXMenuCommand ( parent, "", 0x0, _recentFiles, i ) );
   }
-  _commands.push_back ( new FX::FXMenuCommand ( parent, this->name().c_str(), NULL, _recentFiles, FXRecentFiles::ID_CLEAR ) );
+  _commands.push_back ( new FX::FXMenuCommand ( parent, this->name().c_str(), 0x0, _recentFiles, FXRecentFiles::ID_CLEAR ) );
 }
 
 

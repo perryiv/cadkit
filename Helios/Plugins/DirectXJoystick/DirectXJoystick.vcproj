@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdlld-1.4.lib osgd.lib osgGAd.lib OpenThreadsWin32d.lib dinput.lib dinput8.lib dxguid.lib"
+				AdditionalDependencies="foxdlld-1.6.lib osgd.lib osgGAd.lib OpenThreadsWin32d.lib dinput.lib dinput8.lib dxguid.lib"
 				OutputFile="../../../bin/DirectXJoystick.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -181,7 +181,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdll-1.4.lib osg.lib osgGA.lib OpenThreadsWin32.lib dinput.lib dinput8.lib dxguid.lib"
+				AdditionalDependencies="foxdll-1.6.lib osg.lib osgGA.lib OpenThreadsWin32.lib dinput.lib dinput8.lib dxguid.lib"
 				OutputFile="../../../bin/DirectXJoystick.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

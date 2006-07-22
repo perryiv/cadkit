@@ -27,6 +27,8 @@ namespace OsgTools
       const std::string AXES                        = "axes";
       const std::string LIGHT                       = "light";
       const std::string STAGE                       = "stage";
+
+
     };
   }
 }

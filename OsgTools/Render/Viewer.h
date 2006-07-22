@@ -374,6 +374,10 @@ public:
   void                  lighting ( bool on );
   bool                  lighting () const;
 
+  // Set/get the scatter scale.
+  double                scatterScale() const;
+  void                  scatterScale ( double );
+
   // Update the cursor based on the internal mode.
   void                  updateCursor();
 
@@ -628,12 +632,12 @@ protected:
   virtual bool                  writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
 
   /// Usul::Interfaces::ICenterOrRotation
-  virtual void showCenterOfRotation ( bool b );
-  virtual bool showCenterOfRotation ( ) const;
+  virtual void                  showCenterOfRotation ( bool b );
+  virtual bool                  showCenterOfRotation ( ) const;
 
   /// Usul::Interfaces::IScreenCapture
-  virtual osg::Image* screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
-  virtual osg::Image* screenCapture ( unsigned int height, unsigned int width ) const;
+  virtual osg::Image*           screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
+  virtual osg::Image*           screenCapture ( unsigned int height, unsigned int width ) const;
 
 private:
 

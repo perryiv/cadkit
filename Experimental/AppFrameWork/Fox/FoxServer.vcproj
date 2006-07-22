@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdlld-1.4.lib"
+				AdditionalDependencies="foxdlld-1.6.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxGuiServer.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -117,7 +117,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdll-1.4.lib"
+				AdditionalDependencies="foxdll-1.6.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxGuiServer.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

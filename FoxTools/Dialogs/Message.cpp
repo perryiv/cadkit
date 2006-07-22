@@ -685,7 +685,7 @@ std::string Message::run ( FX::FXObject *object, unsigned int placement )
     SET_COLOR ( parent, 0, 255, 255 );
 
     // Make a label that contains the icon.
-    new FX::FXLabel ( parent, 0x0, this->icon().first, FX::ICON_BEFORE_TEXT | FX::LAYOUT_TOP | FX::LAYOUT_LEFT | FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y );
+    new FX::FXLabel ( parent, "", this->icon().first, FX::ICON_BEFORE_TEXT | FX::LAYOUT_TOP | FX::LAYOUT_LEFT | FX::LAYOUT_FILL_X | FX::LAYOUT_FILL_Y );
   }
 
   // If there are cells...

@@ -79,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgUtild.lib foxdlld-1.4.lib"
+				AdditionalDependencies="osgd.lib osgUtild.lib foxdlld-1.6.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Animate.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgUtil.lib foxdll-1.4.lib"
+				AdditionalDependencies="osg.lib osgUtil.lib foxdll-1.6.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Animate.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

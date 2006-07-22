@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdlld-1.4.lib comdlg32.lib User32.lib shell32.lib"
+				AdditionalDependencies="foxdlld-1.6.lib comdlg32.lib User32.lib shell32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxToolsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foxdll-1.4.lib comdlg32.lib User32.lib shell32.lib"
+				AdditionalDependencies="foxdll-1.6.lib comdlg32.lib User32.lib shell32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/FoxTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

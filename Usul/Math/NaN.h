@@ -53,6 +53,8 @@ extern "C"
 {
 #ifdef _MSC_VER
   _CRTIMP int __cdecl _isnan ( double );
+#elif __GNUC__
+  int __isnan ( double );
 #else
   int isnan ( double ) _USUL_THROW;
 #endif
@@ -81,9 +83,11 @@ namespace Math {
 inline bool nan ( long double v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 != ::_isnan  ( USUL_UNSAFE_CAST ( double, v ) ) );
+#elif __GNUC__
+  return ( 0 != ::__isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
 #else
-  return ( 0 !=  ::isnan ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 !=  ::isnan  ( USUL_UNSAFE_CAST ( double, v ) ) );
 #endif
 }
 

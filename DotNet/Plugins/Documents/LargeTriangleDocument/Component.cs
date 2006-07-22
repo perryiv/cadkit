@@ -40,7 +40,7 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// <summary>
     /// Create a new document.
     /// </summary>
-    object CadKit.Interfaces.IDocumentNew.createNewDocument(object caller)
+    object CadKit.Interfaces.IDocumentNew.create(object caller)
     {
       lock (_mutex)
       {
@@ -51,12 +51,12 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// <summary>
     /// Open a document.
     /// </summary>
-    object CadKit.Interfaces.IDocumentOpen.openDocument(string file, object caller)
+    object CadKit.Interfaces.IDocumentOpen.open(string file, object caller)
     {
       lock (_mutex)
       {
         CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
-        CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.createNewDocument(caller));
+        CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.create(caller));
         reader.read(file, caller);
         return reader;
       }
@@ -67,7 +67,7 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      get { lock (_mutex) { return "Large Triangle Document"; } }
+      get { lock (_mutex) { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; } }
     }
 
     /// <summary>

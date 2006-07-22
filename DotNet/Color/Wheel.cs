@@ -29,7 +29,7 @@ namespace CadKit
 
         // Initialize color.
         if ( null != _persistentName )
-          _color = CadKit.Persistence.Registry.instance().getColor( this._persistentName, "Color", _color );
+          _color = CadKit.Persistence.Registry.Instance.getColor( this._persistentName, "Color", _color );
 
         // Makes a redraw cause a paint.
         this.SetStyle( System.Windows.Forms.ControlStyles.ResizeRedraw, true );
@@ -242,7 +242,7 @@ namespace CadKit
         {
           _color = value;
           if ( null != this._persistentName )
-            CadKit.Persistence.Registry.instance().setColor( this._persistentName, "Color", value );
+            CadKit.Persistence.Registry.Instance.setColor( this._persistentName, "Color", value );
           if ( null != this.ColorChanged )
             this.ColorChanged( this, new CadKit.Color.ColorChangedEventArgs( value ) );
         }

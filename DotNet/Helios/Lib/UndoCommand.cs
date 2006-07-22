@@ -18,18 +18,24 @@ namespace CadKit.Helios.Commands
     {
       _caller = caller;
       _text = "&Undo";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.directory() + "/icons/undo_command.png");
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/undo_command.png");
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z;
     }
 
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public override void execute()
+    protected override void _execute()
     {
       lock (_mutex)
       {
-        CadKit.Commands.History.Instance.undo();
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
+        CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
+        if (null != commands && true == commands.CanUndo)
+        {
+          commands.undo();
+        }
       }
     }
 
@@ -40,7 +46,10 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
-        return CadKit.Commands.History.Instance.CanUndo;
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
+        CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
+        return (null == commands) ? false : commands.CanUndo;
       }
     }
   }

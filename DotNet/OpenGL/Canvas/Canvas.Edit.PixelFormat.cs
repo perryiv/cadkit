@@ -29,7 +29,7 @@ namespace CadKit
           {
             _pixelFormatEditor = new CadKit.OpenGL.DataGridForm( this );
             _pixelFormatEditor.PersistentName = "CanvasPixelFormatEditor";
-            CadKit.Tools.ToolWindow.configure( _pixelFormatEditor, this.FindForm(), "Edit Pixel Format" );
+            CadKit.Tools.ToolWindow.configure( _pixelFormatEditor, this.FindForm(), "Edit Pixel Format", true );
             _pixelFormatEditor.FormClosed += this._pixelFormatEditorClosed;
             _pixelFormatEditor.Show();
           }

@@ -78,7 +78,7 @@ namespace CadKit.Tools
         sw.AutoFlush = true;
         System.Console.SetOut(sw);
 
-        CadKit.Tools.RedirectOutput.SetStdHandle(CadKit.Tools.RedirectOutput.STD_OUTPUT_HANDLE, _stream.SafeFileHandle.DangerousGetHandle());
+        //CadKit.Tools.RedirectOutput.SetStdHandle(CadKit.Tools.RedirectOutput.STD_OUTPUT_HANDLE, _stream.SafeFileHandle.DangerousGetHandle());
 
         _watcher = new System.IO.FileSystemWatcher();
         _watcher.Path = info.DirectoryName;

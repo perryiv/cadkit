@@ -12,13 +12,18 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
   public class Delegate : CadKit.Interfaces.IGuiDelegate
   {
     /// <summary>
+    /// Constants
+    /// </summary>
+    public const string TypeName = "Large Triangle Delegate";
+
+    /// <summary>
     /// Data members.
     /// </summary>
     CadKit.Interfaces.IDocument _document = null;
     private object _mutex = new object();
 
     /// <summary>
-    /// Construct a document.
+    /// Construct a delegate.
     /// </summary>
     public Delegate()
     {
@@ -27,21 +32,44 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
     /// <summary>
     /// Set the document.
     /// </summary>
-    void CadKit.Interfaces.IGuiDelegate.setDocument(CadKit.Interfaces.IDocument doc)
+    object CadKit.Interfaces.IGuiDelegate.Document
     {
-      lock (_mutex)
-      {
-        _document = doc;
-      }
+      get { lock (_mutex) { return _document; } }
+      set { lock (_mutex) { _document = value as CadKit.Interfaces.IDocument; } }
     }
 
     /// <summary>
     /// Create the default gui.
     /// </summary>
-    void CadKit.Interfaces.IGuiDelegate.createDefaultGui(object caller)
+    void CadKit.Interfaces.IGuiDelegate.create(object caller)
     {
       lock (_mutex)
       {
+        Viewer view = new Viewer();
+        System.Windows.Forms.Form parent = caller as System.Windows.Forms.Form;
+        if (null != parent && parent.IsMdiContainer)
+        {
+          view.MdiParent = caller as System.Windows.Forms.Form;
+        }
+        else
+        {
+          view.Owner = parent;
+          view.ShowInTaskbar = false;
+        }
+        view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
+        view.Text = _document.Name;
+        view.Show();
+      }
+    }
+
+    /// <summary>
+    /// Returns true if the document type is handled.
+    /// </summary>
+    bool CadKit.Interfaces.IGuiDelegate.doesHandle ( string type )
+    {
+      lock (_mutex)
+      {
+        return (type == "Large Triangle Document");
       }
     }
   }

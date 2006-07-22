@@ -9,7 +9,9 @@
 
 namespace CadKit.Documents
 {
-  abstract public class Document : CadKit.Interfaces.IDocument
+  abstract public class Document : 
+    CadKit.Interfaces.IDocument,
+    CadKit.Interfaces.IGuiCreate
   {
     /// <summary>
     /// Data members.
@@ -18,6 +20,8 @@ namespace CadKit.Documents
     protected object _mutex = new object();
     private string _name = "Untitled" + CadKit.Documents.Manager.Instance.NumDocuments.ToString();
     private bool _hasDefaultName = true;
+    private CadKit.Interfaces.ICommandHistory _commands = null;
+    private CadKit.Interfaces.IGuiDelegate _gui = null;
 
     /// <summary>
     /// Constructor
@@ -27,13 +31,30 @@ namespace CadKit.Documents
     }
 
     /// <summary>
+    /// Set/get the command history.
+    /// </summary>
+    public CadKit.Interfaces.ICommandHistory CommandHistory
+    {
+      get { lock (_mutex) { return _commands; } }
+      set { lock (_mutex) { _commands = value; } }
+    }
+
+    /// <summary>
+    /// Get/set the gui-delegate.
+    /// </summary>
+    object CadKit.Interfaces.IDocument.GuiDelegate
+    {
+      get { lock (_mutex) { return _gui; } }
+      set { lock (_mutex) { _gui = value as CadKit.Interfaces.IGuiDelegate; } }
+    }
+
+    /// <summary>
     /// Return true if this document has been modified 
     /// after the last time it was saved.
     /// </summary>
     bool CadKit.Interfaces.IDocument.Modified
     {
       get { lock (_mutex) { return _modified; } }
-      set { lock (_mutex) { _modified = value; } }
     }
 
     /// <summary>
@@ -52,6 +73,30 @@ namespace CadKit.Documents
     bool CadKit.Interfaces.IDocument.HasDefaultName
     {
       get { lock (_mutex) { return _hasDefaultName; } }
+    }
+
+    /// <summary>
+    /// Return the short name of this type.
+    /// </summary>
+    string CadKit.Interfaces.IDocument.TypeName
+    {
+      get { lock (_mutex) { return this._typeName(); } }
+    }
+
+    /// <summary>
+    /// Return the short name of this type.
+    /// </summary>
+    protected abstract string _typeName();
+
+    /// <summary>
+    /// Create new gui.
+    /// </summary>
+    void CadKit.Interfaces.IGuiCreate.create(object caller)
+    {
+      if (null != _gui)
+      {
+        _gui.create(caller);
+      }
     }
   }
 }

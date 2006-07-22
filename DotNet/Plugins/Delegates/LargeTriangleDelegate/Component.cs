@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
-  public class Component : CadKit.Interfaces.IPlugin
+  public class Component : 
+    CadKit.Interfaces.IPlugin,
+    CadKit.Interfaces.IGuiDelegateCreate
   {
     /// <summary>
     /// Construct a component.
@@ -47,6 +49,14 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
     string CadKit.Interfaces.IPlugin.Description
     {
       get { lock (_mutex) { return "User-Interface for Large Triangle Document."; } }
+    }
+
+    /// <summary>
+    /// Create new gui-delegate.
+    /// </summary>
+    object CadKit.Interfaces.IGuiDelegateCreate.create ( object caller )
+    {
+      return new CadKit.Plugins.Delegates.LargeTriangleDelegate.Delegate();
     }
   }
 }

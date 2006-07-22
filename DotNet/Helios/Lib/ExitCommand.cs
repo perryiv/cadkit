@@ -23,7 +23,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public override void execute()
+    protected override void _execute()
     {
       lock (_mutex)
       {

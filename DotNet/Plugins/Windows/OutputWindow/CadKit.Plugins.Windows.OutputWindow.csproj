@@ -42,6 +42,10 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Helios\Lib\CadKit.Helios.Lib.csproj">
+      <Project>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</Project>
+      <Name>CadKit.Helios.Lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>

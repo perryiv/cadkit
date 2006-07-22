@@ -29,6 +29,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="IClassFactory.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandHistory.cs" />
+    <Compile Include="ICommandManager.cs" />
     <Compile Include="IDocument.cs" />
     <Compile Include="IDocumentNew.cs" />
     <Compile Include="IDocumentOpen.cs" />
@@ -46,6 +49,11 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IGuiCreate.cs" />
+    <Compile Include="IGuiDelegateCreate.cs" />
+    <Compile Include="IOptionsPageAdd.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

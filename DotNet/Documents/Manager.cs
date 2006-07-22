@@ -63,7 +63,7 @@ namespace CadKit.Documents
         }
 
         // Open the document. This may throw.
-        document = opener.openDocument(name, caller) as CadKit.Interfaces.IDocument;
+        document = opener.open(name, caller) as CadKit.Interfaces.IDocument;
 
         // If we get to here then add the new document.
         _documents.Add(document);
@@ -171,6 +171,36 @@ namespace CadKit.Documents
     }
 
     /// <summary>
+    /// Set/get the active document.
+    /// </summary>
+    public CadKit.Interfaces.IDocument Active
+    {
+      get { lock (_mutex) { return _active; } }
+      set { lock (_mutex) { _active = value; } }
+    }
+
+    /// <summary>
+    /// Hook up document with appropriate delegate.
+    /// </summary>
+    public void setGuiDelegate(CadKit.Interfaces.IDocument doc, object caller)
+    {
+      if (null != doc)
+      {
+        // Look for delegate.
+        CadKit.Interfaces.IGuiDelegateCreate[] creators = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IGuiDelegateCreate>();
+        foreach (CadKit.Interfaces.IGuiDelegateCreate creator in creators)
+        {
+          CadKit.Interfaces.IGuiDelegate gui = ((null != creator) ? (creator.create(caller) as CadKit.Interfaces.IGuiDelegate) : null);
+          if (null != gui && true == gui.doesHandle(doc.TypeName))
+          {
+            doc.GuiDelegate = gui;
+            gui.Document = doc;
+          }
+        }
+      }
+    }
+
+    /// <summary>
     /// Local types.
     /// </summary>
     class Documents : System.Collections.Generic.List<CadKit.Interfaces.IDocument> { }
@@ -182,5 +212,6 @@ namespace CadKit.Documents
     private static Manager _instance = null;
     private object _mutex = new object();
     private Documents _documents = new Documents();
+    private static CadKit.Interfaces.IDocument _active = null;
   }
 }

@@ -42,7 +42,7 @@ namespace CadKit
             _colorEditorForm = new CadKit.Persistence.Form();
             _colorEditorForm.PersistentName = persistentName;
             _colorEditorForm.Controls.Add( wheel );
-            CadKit.Tools.ToolWindow.configure( _colorEditorForm, this.FindForm(), "Edit Background" );
+            CadKit.Tools.ToolWindow.configure( _colorEditorForm, this.FindForm(), "Edit Background", true );
             _colorEditorForm.FormClosed += this._colorEditorClosed;
             _colorEditorForm.Show();
           }

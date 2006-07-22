@@ -69,7 +69,7 @@ TARGET_STATIC_SUFFIX = .a
 INSTALL = ${HOME}/src/lib
 
 
-flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) -Wall
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) -Wall -Wno-non-virtual-dtor
 	
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)

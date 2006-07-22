@@ -26,6 +26,8 @@ namespace CadKit.Helios
     {
       this.PersistentName = persistentName;
       this.InitializeComponent();
+      this.IsMdiContainer = CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_mdi_child_windows", false);
+      this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
       this.Load += this._formLoad;
     }
@@ -101,7 +103,7 @@ namespace CadKit.Helios
       {
         lock (_mutex)
         {
-          string dir = CadKit.Helios.Application.Instance.directory();
+          string dir = CadKit.Helios.Application.Instance.Directory;
           string name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
           string path = dir + '/' + name + ".xml";
           CadKit.Plugins.Manager.Instance.load(path, caller);
@@ -162,9 +164,12 @@ namespace CadKit.Helios
           System.DateTime start = System.DateTime.Now;
           System.TimeSpan duration = new System.TimeSpan(0, 0, 1);
           splash = this._buildSplashScreen();
-          splash.Show();
-          splash.Update();
-          del(splash);
+          if (null != splash)
+          {
+            splash.Show();
+            splash.Update();
+          }
+          del((null != splash) ? (object)splash : (object)this);
           this._safeSleep(duration - (System.DateTime.Now - start));
         }
         finally
@@ -182,12 +187,20 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
-        CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
-        string file = CadKit.Helios.Application.Instance.directory() + "/icons/splash_screen.jpg";
-        splash.Image = CadKit.Images.Image.load(file);
-        splash.Label.Text = "Hi Perry";
-        splash.Text = CadKit.Helios.Application.Instance.Name;
-        return splash;
+        try
+        {
+          CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
+          string file = CadKit.Helios.Application.Instance.IconDir + "/splash_screen.jpg";
+          splash.Image = CadKit.Images.Image.load(file);
+          splash.Text = CadKit.Helios.Application.Instance.Name + " Startup";
+          splash.Label.Text = splash.Text;
+          return splash;
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 3966419022: {0}", e.Message);
+          return null;
+        }
       }
     }
 
@@ -212,6 +225,11 @@ namespace CadKit.Helios
           this.MainMenuStrip.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.UndoCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.RedoCommand(this));
+        }
+        {
+          System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Tools");
+          this.MainMenuStrip.Items.Add(menu);
+          this._addMenuButton(menu, new CadKit.Helios.Commands.OptionsCommand(this));
         }
       }
     }

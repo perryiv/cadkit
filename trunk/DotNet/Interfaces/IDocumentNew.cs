@@ -11,6 +11,6 @@ namespace CadKit.Interfaces
 {
   public interface IDocumentNew
   {
-    object createNewDocument ( object caller );
+    object create ( object caller );
   }
 }

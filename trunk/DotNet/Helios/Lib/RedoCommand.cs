@@ -18,18 +18,24 @@ namespace CadKit.Helios.Commands
     {
       _caller = caller;
       _text = "&Redo";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.directory() + "/icons/redo_command.png");
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/redo_command.png");
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y;
     }
 
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public override void execute()
+    protected override void _execute()
     {
       lock (_mutex)
       {
-        CadKit.Commands.History.Instance.redo();
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
+        CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
+        if (null != commands && true == commands.CanRedo)
+        {
+          commands.redo();
+        }
       }
     }
 
@@ -40,7 +46,10 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
-        return CadKit.Commands.History.Instance.CanRedo;
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
+        CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
+        return (null == commands) ? false : commands.CanRedo;
       }
     }
   }

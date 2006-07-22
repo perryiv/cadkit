@@ -23,14 +23,14 @@ namespace CadKit.Helios.Commands
     {
       _caller = caller;
       _text = "&Open...";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.directory() + "/icons/open_document.png");
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/open_document.png");
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
     }
 
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public override void execute()
+    protected override void _execute()
     {
       lock (_mutex)
       {
@@ -42,7 +42,28 @@ namespace CadKit.Helios.Commands
           try
           {
             // Open the document.
-            CadKit.Documents.Manager.Instance.open(name, null, _caller);
+            CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.open(name, null, _caller);
+
+            // This is now the active document.
+            CadKit.Documents.Manager.Instance.Active = idoc;
+
+            // Give the document a command history. Assigning this avoids a dependency.
+            CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
+            if (null != doc)
+            {
+              doc.CommandHistory = new CadKit.Commands.History();
+              doc.CommandHistory.add(this);
+            }
+
+            // Set the delegate.
+            CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, _caller);
+
+            // Create the default user-interface.
+            CadKit.Interfaces.IGuiCreate gui = idoc as CadKit.Interfaces.IGuiCreate;
+            if ( null != gui )
+            {
+              gui.create(_caller);
+            }
           }
           catch (System.Exception e)
           {
@@ -73,7 +94,7 @@ namespace CadKit.Helios.Commands
 
       // Get initial directory.
       string initialDirectoryKey = "initial_directory";
-      dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, initialDirectoryKey, CadKit.Helios.Application.Instance.directory());
+      dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistentName, initialDirectoryKey, CadKit.Helios.Application.Instance.Directory);
 
       // Show dialog and get names.
       dialog.ShowDialog();

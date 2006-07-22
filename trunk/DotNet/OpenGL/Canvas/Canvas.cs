@@ -21,7 +21,7 @@ namespace CadKit
         this.InitializeComponent();
         this.SizeChanged += this.OnResize;
         this.ContextMenuStrip = this.buildContextMenu();
-        base.BackColor = CadKit.Persistence.Registry.instance().getColor( this.GetType().ToString(), "BackgroundColor", base.BackColor );
+        base.BackColor = CadKit.Persistence.Registry.Instance.getColor( this.GetType().ToString(), "BackgroundColor", base.BackColor );
       }
 
       /// <summary>

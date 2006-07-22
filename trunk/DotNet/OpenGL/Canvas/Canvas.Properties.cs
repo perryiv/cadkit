@@ -22,7 +22,7 @@ namespace CadKit
         set
         {
           base.BackColor = value;
-          CadKit.Persistence.Registry.instance().setColor( this.GetType().ToString(), "BackgroundColor", value );
+          CadKit.Persistence.Registry.Instance.setColor( this.GetType().ToString(), "BackgroundColor", value );
         }
       }
 

@@ -3,4 +3,5 @@
   <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug"/>
   <plugin file="CadKit.Plugins.Windows.OutputWindow.plug"/>
   <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug"/>
+  <plugin file="CadKit.Plugins.Options.General.plug"/>
 </plugins>

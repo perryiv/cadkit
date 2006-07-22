@@ -66,7 +66,10 @@ namespace CadKit.Helios
         lock (_mutex)
         {
           _label.Image = value;
-          _label.Size = value.Size;
+          if (null != value)
+          {
+            _label.Size = value.Size;
+          }
         }
       }
     }

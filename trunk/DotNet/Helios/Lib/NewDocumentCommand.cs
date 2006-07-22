@@ -18,14 +18,14 @@ namespace CadKit.Helios.Commands
     {
       _caller = caller;
       _text = "&New...";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.directory() + "/icons/new_document.png");
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
     }
 
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public override void execute()
+    protected override void _execute()
     {
       lock (_mutex)
       {

@@ -55,38 +55,45 @@ namespace CadKit.Helios
     /// <summary>
     /// Get the directory where this assembly resides.
     /// </summary>
-    public string directory()
+    public string Directory
     {
-      lock (_mutex)
+      get
       {
-        string path = System.Windows.Forms.Application.ExecutablePath;
-        string dir = System.IO.Path.GetDirectoryName(path);
-        return dir;
+        lock (_mutex)
+        {
+          string path = System.Windows.Forms.Application.ExecutablePath;
+          string dir = System.IO.Path.GetDirectoryName(path);
+          return dir;
+        }
       }
     }
 
     /// <summary>
     /// Get the assembly file name.
     /// </summary>
-    public string file()
+    public string FileName
     {
-      lock (_mutex)
+      get
       {
-        return System.Reflection.Assembly.GetEntryAssembly().GetName().Name + ".exe";
+        lock (_mutex)
+        {
+          return System.Reflection.Assembly.GetEntryAssembly().GetName().Name + ".exe";
+        }
       }
     }
 
     /// <summary>
     /// Get the icons directory.
     /// </summary>
-    public string iconDir()
+    public string IconDir
     {
-      lock (_mutex)
+      get
       {
-        string dir = this.directory();
-        dir = dir.Replace("\\bin\\Debug", "");
-        dir = dir.Replace("\\bin\\Release", "");
-        return dir;
+        lock (_mutex)
+        {
+          string dir = this.Directory + "/icons";
+          return dir;
+        }
       }
     }
 

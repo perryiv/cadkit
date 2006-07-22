@@ -28,7 +28,6 @@ namespace CadKit.Plugins.Windows.OutputWindow
         this.Controls.Add(_text);
         _text.Dock = System.Windows.Forms.DockStyle.Fill;
         _text.Multiline = true;
-        _text.Text = "Perry\r\n";
         CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
         this.FormClosing += this._formClosing;
       }

@@ -9,17 +9,16 @@
 
 namespace CadKit.Commands
 {
-  public class History
+  public class History : CadKit.Interfaces.ICommandHistory
   {
     /// <summary>
     /// Local types.
     /// </summary>
-    class Stack : System.Collections.Generic.Stack<CadKit.Commands.Command> { }
+    class Stack : System.Collections.Generic.Stack<CadKit.Interfaces.ICommand> { }
 
     /// <summary>
     /// Data members.
     /// </summary>
-    private static History _instance = null;
     private object _mutex = new object();
     Stack _done = new Stack();
     Stack _undone = new Stack();
@@ -27,53 +26,41 @@ namespace CadKit.Commands
     /// <summary>
     /// Constructor.
     /// </summary>
-    private History()
+    public History()
     {
-    }
-
-    /// <summary>
-    /// Get the instance.
-    /// </summary>
-    public static History Instance
-    {
-      get
-      {
-        lock ("CadKit.Commands.History.instance")
-        {
-          if (null == _instance)
-            _instance = new History();
-          return _instance;
-        }
-      }
     }
 
     /// <summary>
     /// Add the recently executed command.
     /// </summary>
-    public void add(CadKit.Commands.Command command)
+    void CadKit.Interfaces.ICommandHistory.add(object command)
     {
       lock (_mutex)
       {
-        _done.Push(command);
-        _undone.Clear();
+        CadKit.Interfaces.ICommand cmd = command as CadKit.Interfaces.ICommand;
+        if (null != cmd)
+        {
+          _done.Push(cmd);
+          _undone.Clear();
+        }
       }
     }
 
     /// <summary>
     /// Undo the last command.
     /// </summary>
-    public void undo()
+    void CadKit.Interfaces.ICommandHistory.undo()
     {
       lock (_mutex)
       {
         if (true == this.CanUndo)
         {
           // Move the command over to the "undone" stack before we execute.
-          CadKit.Commands.Command command = _done.Pop();
+          CadKit.Interfaces.ICommand command = _done.Pop();
           _undone.Push(command);
 
-          // Execute the command. This may throw.
-          command.execute();
+          // Undo the command. This may throw.
+          command.undo();
         }
       }
     }
@@ -81,14 +68,14 @@ namespace CadKit.Commands
     /// <summary>
     /// Redo the command that was last undone.
     /// </summary>
-    public void redo()
+    void CadKit.Interfaces.ICommandHistory.redo()
     {
       lock (_mutex)
       {
-        if (true == this.CanUndo)
+        if (true == this.CanRedo)
         {
           // Move the command over to the "done" stack before we execute.
-          CadKit.Commands.Command command = _undone.Pop();
+          CadKit.Interfaces.ICommand command = _undone.Pop();
           _done.Push(command);
 
           // Execute the command. This may throw.
@@ -100,15 +87,25 @@ namespace CadKit.Commands
     /// <summary>
     /// Can the command be undone?
     /// </summary>
+    bool CadKit.Interfaces.ICommandHistory.CanUndo
+    {
+      get { lock (_mutex) { return this.CanUndo; } }
+    }
+
+    /// <summary>
+    /// Can the command be redone?
+    /// </summary>
+    bool CadKit.Interfaces.ICommandHistory.CanRedo
+    {
+      get { lock (_mutex) { return this.CanRedo; } }
+    }
+
+    /// <summary>
+    /// Can the command be undone?
+    /// </summary>
     public bool CanUndo
     {
-      get
-      {
-        lock (_mutex)
-        {
-          return (((_done.Count > 0) && (null != _done.Peek())) && _done.Peek().canUndo());
-        }
-      }
+      get { lock (_mutex) { return (((_done.Count > 0) && (null != _done.Peek())) && _done.Peek().canUndo()); } }
     }
 
     /// <summary>
@@ -116,13 +113,7 @@ namespace CadKit.Commands
     /// </summary>
     public bool CanRedo
     {
-      get
-      {
-        lock (_mutex)
-        {
-          return (((_undone.Count > 0) && (null != _undone.Peek())) && _undone.Peek().canRedo());
-        }
-      }
+      get { lock (_mutex) { return (((_undone.Count > 0) && (null != _undone.Peek()))); } }
     }
   }
 }

@@ -19,13 +19,27 @@ namespace CadKit.Helios
     {
       try
       {
+        // Cache this thread's id.
         CadKit.Tools.Threading threading = CadKit.Tools.Threading.Instance;
+
+        // Redirect standard output to a file.
         CadKit.Tools.RedirectOutput redirect = CadKit.Tools.RedirectOutput.Instance;
+
+        // Setup code for the forms.
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault( false );
+
+        // Declare the application and name it.
         CadKit.Helios.Application.Instance.Name = "Helios";
+        System.Console.WriteLine(CadKit.Helios.Application.Instance.Name);
+
+        // Declare main form and pass the persistant name.
         CadKit.Helios.MainForm form = new CadKit.Helios.MainForm( "CadKit.Helios.MainForm" );
+
+        // Set the application's main form.
         CadKit.Helios.Application.Instance.MainForm = form;
+
+        // Run the application.
         System.Windows.Forms.Application.Run( form );
       }
       catch ( System.Exception e )

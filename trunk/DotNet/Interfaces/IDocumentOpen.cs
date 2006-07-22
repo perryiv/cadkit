@@ -12,6 +12,6 @@ namespace CadKit.Interfaces
   public interface IDocumentOpen
   {
     bool canOpen(string name);
-    object openDocument(string name, object caller);
+    object open(string name, object caller);
   }
 }

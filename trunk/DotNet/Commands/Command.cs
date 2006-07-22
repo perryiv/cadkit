@@ -9,7 +9,7 @@
 
 namespace CadKit.Commands
 {
-  public abstract class Command
+  public abstract class Command : CadKit.Interfaces.ICommand
   {
     /// <summary>
     /// Data members.
@@ -26,15 +26,15 @@ namespace CadKit.Commands
     /// <summary>
     /// Can the command be undone?
     /// </summary>
-    public virtual bool canUndo()
+    bool CadKit.Interfaces.ICommand.canUndo()
     {
-      return false;
+      return this._canUndo();
     }
 
     /// <summary>
-    /// Can the command be redone?
+    /// Can the command be undone?
     /// </summary>
-    public virtual bool canRedo()
+    protected virtual bool _canUndo()
     {
       return false;
     }
@@ -42,7 +42,30 @@ namespace CadKit.Commands
     /// <summary>
     /// Execute the command.
     /// </summary>
-    public abstract void execute();
+    void CadKit.Interfaces.ICommand.execute()
+    {
+      this._execute();
+    }
+
+    /// <summary>
+    /// Execute the command.
+    /// </summary>
+    protected abstract void _execute();
+
+    /// <summary>
+    /// Undo the command.
+    /// </summary>
+    void CadKit.Interfaces.ICommand.undo()
+    {
+      this._undo();
+    }
+
+    /// <summary>
+    /// Undo the command.
+    /// </summary>
+    protected void _undo()
+    {
+    }
 
     /// <summary>
     /// Determine of the button should be enabled.
@@ -121,8 +144,7 @@ namespace CadKit.Commands
       {
         lock (_mutex)
         {
-          this.execute();
-          CadKit.Commands.History.Instance.add(this);
+          this._execute();
         }
       }
       catch (System.Exception e)

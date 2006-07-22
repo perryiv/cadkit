@@ -11,7 +11,19 @@ namespace CadKit.Interfaces
 {
   public interface IGuiDelegate
   {
-    void setDocument(CadKit.Interfaces.IDocument doc);
-    void createDefaultGui(object caller);
+    /// <summary>
+    /// Set/get the document.
+    /// </summary>
+    object Document { get; set; }
+
+    /// <summary>
+    /// Create the default gui.
+    /// </summary>
+    void create(object caller);
+
+    /// <summary>
+    /// Returns true if the document type is handled.
+    /// </summary>
+    bool doesHandle(string type);
   }
 }

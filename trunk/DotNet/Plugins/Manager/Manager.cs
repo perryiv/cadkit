@@ -213,9 +213,28 @@ namespace CadKit.Plugins
         lock (_mutex)
         {
           System.Reflection.Assembly assembly = this._findOrLoadAssembly(file);
+          if (null == assembly)
+          {
+            System.Console.WriteLine("Error 7948918190: Failed to load assembly file: {0}", file);
+            return;
+          }
+
           CadKit.Interfaces.IClassFactory factory = (CadKit.Interfaces.IClassFactory)assembly.CreateInstance("CadKit.Plugins.Factory");
+          if (null == factory)
+          {
+            System.Console.WriteLine("Error 7218841160: Assembly file '{0}' does not have a class factory", file);
+            return;
+          }
+
           CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
+          if (null == factory)
+          {
+            System.Console.WriteLine("Error 9585018640: Failed to create plugin instance in assembly file: {0}", file);
+            return;
+          }
+
           plugin.startupNotify(caller);
+
           if (false == _plugins.Contains(plugin))
             _plugins.Add(plugin);
         }

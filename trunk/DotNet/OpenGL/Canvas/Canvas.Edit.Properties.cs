@@ -41,7 +41,7 @@ namespace CadKit
             _propertyGridForm = new CadKit.Persistence.Form();
             _propertyGridForm.PersistentName = persistentName;
             _propertyGridForm.Controls.Add( grid );
-            CadKit.Tools.ToolWindow.configure( _propertyGridForm, this.FindForm(), "Edit OpenGL Canvas" );
+            CadKit.Tools.ToolWindow.configure( _propertyGridForm, this.FindForm(), "Edit OpenGL Canvas", true );
             _propertyGridForm.FormClosed += this._propertyGridClosed;
             _propertyGridForm.Show();
           }

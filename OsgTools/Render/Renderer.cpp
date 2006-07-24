@@ -655,8 +655,6 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsi
         throw std::runtime_error ( "Error 2573216328: Inconsistant image sizes" );
     }
 
-
-
     // Read each row.
     for ( unsigned int r = 0; r < height; ++r )
     {

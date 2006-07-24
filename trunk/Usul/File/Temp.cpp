@@ -36,64 +36,12 @@ using namespace Usul::File;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Work-around for Win32's tmpnam() implementation. It does not consider if 
-//  the directory is write-protected.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct TempName
-  {
-    static std::string get()
-    {
-      // Initialize the last error.
-      typedef Usul::System::LastError LastError;
-      LastError::init();
-
-      #ifdef _MSC_VER // Visual C++
-
-      // Compile-time sanity check.
-      const unsigned int bufSize ( 16383 ); // 2^14 - 1
-      USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
-
-      // Get the directory where temporary files can be created.
-      char directory[bufSize + 1];
-      DWORD result ( ::GetTempPath ( bufSize, directory ) );
-
-      // Check for errors.
-      if ( 0 == result || bufSize < result )
-        throw std::runtime_error ( std::string ( "Error 3143231617: failed get path for temporary files. " ) + LastError::message() );
-
-      // Get the file name.
-      char pathname[bufSize + 1];
-      result = ::GetTempFileName ( directory, "temp_", 0, pathname );
-
-      // Check for errors.
-      if ( 0 == result )
-        throw std::runtime_error ( std::string ( "Error 2499845465: failed to create temporary file. " ) + LastError::message() );
-
-      // Return the name.
-      return std::string ( pathname );
-
-      #else
-
-      return ::tmpnam ( 0x0 );
-
-      #endif
-    }
-  };
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Temp::Temp ( Format f ) : 
-  _name ( Detail::TempName::get() ),
+_name ( Temp::file() ),
   _stream ( 0x0 ),
   _remove ( true )
 {
@@ -147,7 +95,7 @@ Temp::~Temp()
       const int result ( ::remove ( _name.c_str() ) );
       if ( result != 0 )
       {
-        Usul::Errors::Stack::instance().push ( "Failed to remove temporary file: " + _name );
+        Usul::Errors::Stack::instance().push ( "Error 2034122402: Failed to remove temporary file: " + _name );
       }
     }
   }
@@ -162,6 +110,52 @@ Temp::~Temp()
   {
     Usul::Errors::Stack::instance().push ( "Error 2036890444: Unknown exception caught while removing temporary file: " + _name );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Work-around for Win32's tmpnam() implementation. It does not consider if 
+//  the directory is write-protected.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Temp::file()
+{
+  // Initialize the last error.
+  typedef Usul::System::LastError LastError;
+  LastError::init();
+
+  #ifdef _MSC_VER // Visual C++
+
+  // Compile-time sanity check.
+  const unsigned int bufSize ( 16383 ); // 2^14 - 1
+  USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
+
+  // Get the directory where temporary files can be created.
+  char directory[bufSize + 1];
+  DWORD result ( ::GetTempPath ( bufSize, directory ) );
+
+  // Check for errors.
+  if ( 0 == result || bufSize < result )
+    throw std::runtime_error ( std::string ( "Error 3143231617: failed get path for temporary files. " ) + LastError::message() );
+
+  // Get the file name.
+  char pathname[bufSize + 1];
+  result = ::GetTempFileName ( directory, "temp_", 0, pathname );
+
+  // Check for errors.
+  if ( 0 == result )
+    throw std::runtime_error ( std::string ( "Error 2499845465: failed to create temporary file. " ) + LastError::message() );
+
+  // Return the name.
+  return std::string ( pathname );
+
+  #else
+
+  return ::tmpnam ( 0x0 );
+
+  #endif
 }
 
 
@@ -283,4 +277,40 @@ std::string Temp::directory ( bool wantSlash )
   Temp file;
   const std::string dir ( Usul::File::directory ( file.name(), wantSlash ) );
   return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return name of directory where temporary files can be created.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Temp::remove ( const std::string &file, bool allowThrow )
+{
+  try
+  {
+    if ( false == file.empty() )
+    {
+      const int result ( ::remove ( file.c_str() ) );
+      if ( result != 0 && true == allowThrow )
+      {
+        throw std::runtime_error ( "Error 2210803015: Failed to remove file: " + file );
+      }
+    }
+  }
+  catch ( const std::exception &e )
+  {
+    if ( true == allowThrow )
+      throw e;
+    else
+      std::cout << "Error 1331448352: Failed to remove file: " << file << std::endl;
+  }
+  catch ( ... )
+  {
+    if ( true == allowThrow )
+      throw;
+    else
+      std::cout << "Error 5249566150: Failed to remove file: " << file << std::endl;
+  }
 }

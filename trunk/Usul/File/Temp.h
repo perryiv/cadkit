@@ -42,6 +42,9 @@ public:
   // Return name of directory where temporary files can be created.
   static std::string          directory ( bool wantSlash = false );
 
+  // Return a temporary file name.
+  static std::string          file();
+
   // Return name of internal temporary file.
   const std::string &         name() const;
 
@@ -52,7 +55,7 @@ public:
   void                        release();
 
   // Remove the file. Provided as a convenience.
-  static void                 remove ( const std::string &file );
+  static void                 remove ( const std::string &file, bool allowThrow = false );
 
   // Access the output stream.
   std::ostream &              stream();

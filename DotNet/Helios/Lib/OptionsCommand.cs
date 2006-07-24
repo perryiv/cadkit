@@ -82,10 +82,6 @@ namespace CadKit.Helios.Commands
         if (null == form || null == adder)
           throw new System.ArgumentNullException("Error 3336043850: invalid arguments given");
 
-        System.Windows.Forms.Control content = adder.Contents as System.Windows.Forms.Control;
-        if (null == content)
-          throw new System.Exception("Error 7244448840: null control for the page content");
-
         string name = adder.Name;
         if (null == name)
           throw new System.Exception("Error 2195698280: null name for the page");
@@ -98,15 +94,21 @@ namespace CadKit.Helios.Commands
         CadKit.Helios.OptionsPage p = null;
         if (null != file)
         {
-          p = form.add(adder.Name, file);
+          p = form.newPage(adder.Name, file);
         }
         if (null == p)
         {
-          p = form.add(adder.Name, image);
+          p = form.newPage(adder.Name, image);
         }
+
         if (null != p)
         {
-          p.Page.Controls.Add(content);
+          System.Windows.Forms.Control content = adder.contents(p) as System.Windows.Forms.Control;
+          if (null == content)
+            throw new System.Exception("Error 7244448840: null control for the page content");
+
+          form.add(p);
+          p.Contents.Controls.Add(content);
           content.Dock = System.Windows.Forms.DockStyle.Fill;
         }
       }

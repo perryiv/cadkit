@@ -23,8 +23,9 @@ namespace CadKit.Interfaces
     object Image { get; }
 
     /// <summary>
-    /// Should be a System.Windows.Forms.Control.
+    /// Should return a System.Windows.Forms.Control.
+    /// Argument is an CadKit.Helios.OptionsPage or similar.
     /// </summary>
-    object Contents { get; }
+    object contents ( object page );
   }
 }

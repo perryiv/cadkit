@@ -71,16 +71,13 @@ namespace CadKit.Plugins.Options.General
     /// <summary>
     /// Should be a System.Windows.Forms.Control.
     /// </summary>
-    object CadKit.Interfaces.IOptionsPageAdd.Contents
+    object CadKit.Interfaces.IOptionsPageAdd.contents ( object parent )
     {
-      get
+      lock (_mutex)
       {
-        lock (_mutex)
-        {
-          CadKit.Plugins.Options.General.PageContent content = new CadKit.Plugins.Options.General.PageContent();
-          //content.BackColor = CadKit.Tools.Random.color();
-          return content;
-        }
+        CadKit.Plugins.Options.General.PageContent content = new CadKit.Plugins.Options.General.PageContent();
+        //content.BackColor = CadKit.Tools.Random.color();
+        return content;
       }
     }
   }

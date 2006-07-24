@@ -19,13 +19,18 @@ namespace CadKit.Helios
   public class OptionsPage
   {
     /// <summary>
+    /// Delegate for applying settings.
+    /// </summary>
+    public delegate void ApplyDelegate(CadKit.Helios.OptionsForm form, CadKit.Helios.OptionsPage page);
+
+    /// <summary>
     /// Data members.
     /// </summary>
     private object _mutex = new object();
     private string _name = null;
     private System.Drawing.Image _image = null;
-    private System.Windows.Forms.Panel _page = new System.Windows.Forms.Panel();
-    private NotifyDelegate _apply = null;
+    private System.Windows.Forms.Panel _contents = new System.Windows.Forms.Panel();
+    private ApplyDelegate _apply = null;
 
     /// <summary>
     /// Constructor
@@ -47,16 +52,9 @@ namespace CadKit.Helios
     public System.Drawing.Image Image { get { lock (_mutex) { return _image; } } }
 
     /// <summary>
-    /// Get the page.
+    /// Get the contents.
     /// </summary>
-    public System.Windows.Forms.Control Page { get { lock (_mutex) { return _page; } } }
-
-    here down was mid-idea...
-
-    /// <summary>
-    /// Delegate for applying settings.
-    /// </summary>
-    public delegate void ApplyDelegate ( CadKit.Helios.OptionsForm form, CadKit.Helios.OptionsPage page );
+    public System.Windows.Forms.Control Contents { get { lock (_mutex) { return _contents; } } }
 
     /// <summary>
     /// Set/get the apply delegate.
@@ -70,8 +68,13 @@ namespace CadKit.Helios
     /// <summary>
     /// Apply the settings.
     /// </summary>
-    public virtual void apply()
+    public virtual void apply ( CadKit.Helios.OptionsForm form )
     {
+      lock (_mutex)
+      {
+        if (null != _apply)
+          _apply(form, this);
+      }
     }
   }
 }

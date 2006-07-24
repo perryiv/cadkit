@@ -21,8 +21,6 @@
 
 #include "osgUtil/SceneView"
 
-#include "boost/shared_ptr.hpp"
-
 #include <GL/gl.h>
 #include <vector>
 
@@ -41,6 +39,7 @@ public:
   typedef osgUtil::SceneView SceneView;
   typedef osg::ref_ptr<SceneView> SceneViewPtr;
   typedef osg::Viewport Viewport;
+  typedef std::vector < std::string > ImageList;
 
   Renderer();
 
@@ -111,9 +110,6 @@ public:
 
 protected:
 
-  typedef boost::shared_ptr < Usul::File::Temp > TempFilePtr;
-  typedef std::vector < TempFilePtr > ImageList;
-
   virtual ~Renderer();
 
   void                  _multiPassRender();
@@ -121,7 +117,7 @@ protected:
 
   void                  _cullAndDraw();
 
-  osg::Image*           _accumulate ( ImageList& images, unsigned int height, unsigned int width, GLenum pixelFormat, GLenum dataType ) const;
+  osg::Image*           _accumulate ( ImageList& images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const;
 
   // Capture the screen.
   void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );

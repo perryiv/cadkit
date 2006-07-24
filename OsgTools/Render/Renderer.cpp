@@ -1,8 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
-//  Copyright (c) 2005, Perry L. Miller IV and Adam Kubach
+//  Copyright (c) 2006, Perry L. Miller IV and Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -42,6 +41,9 @@
 #include <fstream>
 
 using namespace OsgTools::Render;
+
+
+namespace Detail { const unsigned int NUM_CHANNELS ( 3 ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -605,11 +607,127 @@ void Renderer::updateScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make a temporary file and fill it with zeros. These will be the "pixels".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  std::string makeFile ( unsigned int width, unsigned int height )
+  {
+    Usul::File::Temp file ( Usul::File::Temp::BINARY );
+
+    typedef std::vector < unsigned int > Pixels;
+    Pixels row ( width * Detail::NUM_CHANNELS, 0 );
+    const unsigned int bytesPerRow ( row.size() * sizeof ( Pixels::value_type ) );
+
+    // Write the dimensions.
+    file.stream().write ( reinterpret_cast < const char * > ( &width ), sizeof ( width ) );
+    file.stream().write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
+
+    // Fill the file with zeros, row by row.
+    for ( unsigned int i = 0; i < height; ++ i )
+      file.stream().write ( reinterpret_cast < const char * > ( &row[0] ), bytesPerRow );
+
+    // Return name.
+    file.release();
+    return file.name();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the pixels from the temp file to the answer file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void addPixels ( const std::string &answer, std::vector < unsigned char > &row, unsigned int whichRow )
+  {
+    // Vector to hold the answer.
+    std::vector < unsigned int > answerRow ( row.size(), 0 );
+
+    // Position to seek to.  Account for width and heigth at the beginning of file.
+    const unsigned int position ( row.size() * whichRow * sizeof ( unsigned int ) + 2 * sizeof ( unsigned int ) );
+    
+    {
+      // Open the file for reading.
+      std::ifstream in ( answer.c_str() );
+      if ( false == in.is_open() )
+        throw std::runtime_error ( "Error 3352298994: failed to open file: " + answer );
+
+      // Seek to the correct position.
+      in.seekg ( position );
+
+      // Read the answer row.
+      in.read ( reinterpret_cast < char * > ( &answerRow[0] ), answerRow.size() * sizeof ( unsigned int ) );
+    }
+
+    // Add the contents of row to answer row.
+    for ( unsigned int i = 0; i < row.size(); ++i )
+      answerRow[i] += row[i];
+
+    // Open the file for writting.
+    std::ofstream out ( answer.c_str() );
+    if ( false == out.is_open() )
+      throw std::runtime_error ( "Error 1070487942: failed to open file: " + answer );
+
+    // Seek to the correct position.
+    out.seekp ( position );
+
+    // Write of the contents.
+    out.write ( reinterpret_cast < const char * > ( &answerRow[0] ), answerRow.size() * sizeof ( unsigned int ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the pixels from the temp file to the answer file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void addPixels ( const std::string &image, const std::string &answer, unsigned int width, unsigned int height )
+  {
+    // Open image for reading.
+    std::ifstream in ( image.c_str() );
+    if ( false == in.is_open() )
+      throw std::runtime_error ( "Error 4068209531: failed to open file: " + image );
+
+    // Read the size.
+    unsigned int w ( 0 ), h ( 0 );
+    in.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
+    in.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
+    if ( w != width || h != height )
+      throw std::runtime_error ( "Error 2085849966: Inconsistant image sizes" );
+
+    // Pixels in temporary intermediate files are unsigned chars.
+    std::vector < unsigned char > row ( width * Detail::NUM_CHANNELS, 0 );
+
+    // Loop through the rows of the image.
+    for ( unsigned int i = 0; i < height; ++i )
+    {
+      // Read a single row from temp file.
+      in.read ( reinterpret_cast < std::ifstream::char_type * > ( &row[0] ), row.size() );
+
+      // Add this row to the answer file.
+      Detail::addPixels ( answer, row, i );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Accumulate an image list into a single image.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsigned int width, GLenum pixelFormat, GLenum dataType ) const
+osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const
 {
   // Handle empty list.
   if ( true == images.empty() )
@@ -620,72 +738,26 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsi
   Usul::Policies::TimeBased elapsed ( 1000 );
 
   // Make a temporary file and fill it with zeros. These will be the "pixels".
-  const unsigned int numChannels ( 3 );
-  const unsigned int size ( width * height * numChannels );
-  Usul::File::Temp answer ( Usul::File::Temp::BINARY );
+  const std::string answer ( Detail::makeFile ( width, height ) );
 
-  // Fill the file with zeros, row by row.
-  typedef std::vector < unsigned int > Pixels;
-  Pixels answerRow ( width * numChannels, 0 );
-  const unsigned int bytesPerRow ( answerRow.size() * sizeof ( Pixels::value_type ) );
-  for ( unsigned int i = 0; i < height; ++ i )
-    answer.stream().write ( reinterpret_cast < const char * > ( &answerRow[0] ), bytesPerRow );
-  answer.stream().flush();
-
-  // Open answer file again for reading and writing.
-  std::fstream answerIO ( answer.name().c_str(), std::ios::binary | std::ios::in | std::ios::out );
-
-  const unsigned int total ( height * images.size() );
+  const unsigned int total ( images.size() );
   unsigned int count ( 0 );
 
   // Loop through the image files.
   for ( ImageList::iterator iter = images.begin(); iter != images.end(); ++iter )
   {
-    // Open the file.
-    std::ifstream in ( (*iter)->name().c_str(), std::ios::binary );
-    if ( false == in.is_open() )
-      throw std::runtime_error ( "Error 3674333031: Failed to open temporary image file: " + (*iter)->name() );
+    // Add the pixels from the temp file.
+    Detail::addPixels ( *iter, answer, width, height );
 
-    // Read the image size.
+    // Feedback
+    if ( elapsed() )
     {
-      unsigned int w ( 0 ), h ( 0 );
-      in.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
-      in.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
-      if ( w != width || h != height )
-        throw std::runtime_error ( "Error 2573216328: Inconsistant image sizes" );
+      progress ( count, total );
+      std::ostringstream out;
+      out << "Accumulating image " << std::distance ( images.begin(), iter ) + 1 << " of " << images.size();
+      status ( out.str(), true );
     }
-
-    // Read each row.
-    for ( unsigned int r = 0; r < height; ++r )
-    {
-      // Pixels in temporary intermediate files are unsigned chars.
-      typedef std::vector < unsigned char > TempPixels;
-      TempPixels tempRow   ( answerRow.size(), 0 );
-
-      // Read a single row from temp file.
-      in.read ( reinterpret_cast < std::ifstream::char_type * > ( &tempRow[0] ), tempRow.size() * sizeof ( TempPixels::value_type ) );
-
-      // Read corresponding row from answer file.
-      answerIO.read ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
-
-      // Accumulate answer.
-      for ( unsigned int c = 0; c < answerRow.size(); ++c )
-        answerRow[c] += tempRow[c];
-
-      // Write answer back into file.
-      answerIO.seekg ( answerIO.tellg() - static_cast < std::fstream::pos_type > ( bytesPerRow ), std::ios_base::beg );
-      answerIO.write ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
-
-      // Feedback
-      if ( elapsed() )
-      {
-        progress ( count, total );
-        std::ostringstream out;
-        out << "Accumulating row " << r << " of " << height << " in image " << std::distance ( images.begin(), iter ) + 1 << " of " << images.size();
-        status ( out.str(), true );
-      }
-      ++count;
-    }
+    ++count;
   }
 
   // Allocate the image.
@@ -693,12 +765,16 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsi
   image->allocateImage ( width, height, 1, pixelFormat, dataType );
 
   // Start at the beginning.
-  answerIO.seekg ( 0, std::ios_base::beg );
+  std::ifstream answerIO ( answer.c_str() );
+  if ( false == answerIO.is_open() )
+    throw std::runtime_error ( "Error 1250373094: failed to open file: " + answer );
 
   // Used to average.
   const float mult ( 1.0f / (float) images.size() );
 
-  //unsigned char *buffer = image->data ( );
+  // Used in the loop.
+  std::vector < unsigned int > answerRow ( width * Detail::NUM_CHANNELS, 0 );
+  const unsigned int bytesPerRow ( answerRow.size() * sizeof ( unsigned int ) );
 
   // Read each row.
   for ( unsigned int r = 0; r < height; ++r )
@@ -711,14 +787,70 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int height, unsi
     for ( unsigned int c = 0; c < answerRow.size(); ++c )
     {
       buffer[c] = static_cast < unsigned char > ( static_cast < float > ( answerRow[c] ) * mult );
-      /*unsigned char value ( static_cast < unsigned char > ( static_cast < float > ( answerRow[c] ) * mult ) );
-      *buffer = value;
-      ++buffer;*/
     }
   }
 
   // All done.
   return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Small class to remove files in destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct RemoveFiles
+  {
+    RemoveFiles ( Renderer::ImageList &files ) : _files ( files )
+    {
+    }
+    ~RemoveFiles()
+    {
+      for ( Renderer::ImageList::iterator i = _files.begin(); i != _files.end(); ++i )
+      {
+        const std::string &file ( *i );
+        try
+        {
+          Usul::File::Temp::remove ( file, true );
+        }
+        catch ( const std::exception & )
+        {
+          std::cout << "Error 2377855880: Failed to remove file '" << file << std::endl;
+        }
+        catch ( ... )
+        {
+          std::cout << "Error 2276766138: Failed to remove file '" << file << std::endl;
+        }
+      }
+    }
+    Renderer::ImageList &_files;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the image to file as raw data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void writeImage ( const osg::Image &image, const std::string &file )
+  {
+    std::ofstream out ( file.c_str() );
+    if ( false == out.is_open() )
+      throw std::runtime_error ( "Error 2581366847: Failed to open file for writing: " + file );
+    const int width  ( image.s() );
+    const int height ( image.t() );
+    out.write ( reinterpret_cast < const char * > ( &width ),  sizeof ( width  ) );
+    out.write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
+    out.write ( reinterpret_cast < const char * > ( image.data() ), image.getImageSizeInBytes() );
+  }
 }
 
 
@@ -739,6 +871,8 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
   Usul::Interfaces::ICancelButton::ShowHide cancel ( Usul::Resources::cancelButton() );
 
+  //this->numRenderPasses ( 3 );
+
   try
   {
     _sceneView->setViewMatrix ( matrix );
@@ -757,6 +891,9 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
       ImageList images;
       images.reserve ( this->numRenderPasses() );
 
+      // For cleaning up temporary files.
+      Detail::RemoveFiles removeFiles ( images );
+
       // Loop through the passes...
       for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
       {
@@ -771,32 +908,8 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
         this->_screenCapture ( *tempImage, pMatrix, width, height );
 
         // Write the image to file.
-        images.push_back ( TempFilePtr ( new Usul::File::Temp ( Usul::File::Temp::BINARY ) ) );
-        images.back()->stream().write ( reinterpret_cast < const char * > ( &width ), sizeof ( width ) );
-        images.back()->stream().write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
-        images.back()->stream().write ( reinterpret_cast < const char * > ( tempImage->data() ), tempImage->getImageSizeInBytes() );
-        images.back()->stream().flush();
-
-        // Read images back in and write to BMP.
-        #ifdef _DEBUG
-        {
-          // Open the file.
-          std::ifstream fin ( images.back()->name().c_str(), std::ios::binary );
-          USUL_ASSERT ( true == fin.is_open() );
-
-          // Read the image size.
-          {
-            unsigned int w ( 0 ), h ( 0 );
-            fin.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
-            fin.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
-            USUL_ASSERT ( w == width || h == height );
-            osg::ref_ptr<osg::Image> ti ( new osg::Image );
-            ti->allocateImage ( w, h, 1, GL_RGB, GL_UNSIGNED_BYTE );
-            fin.read ( reinterpret_cast < char * > ( ti->data() ), ti->getImageSizeInBytes() );
-            osgDB::writeImageFile ( *ti, images.back()->name() + ".bmp" );
-          }
-        }
-        #endif
+        images.push_back ( Usul::File::Temp::file() );
+        Detail::writeImage ( *tempImage, images.back() );
 
         // Feedback
         {
@@ -807,14 +920,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
         }
       }
 
-      answer = this->_accumulate ( images, height, width, GL_RGB, GL_UNSIGNED_BYTE );
-
-      #ifdef _DEBUG
-      {
-        for ( ImageList::iterator ii = images.begin(); ii != images.end(); ++ii )
-          (*ii)->release();
-      }
-      #endif
+      answer = this->_accumulate ( images, width, height, GL_RGB, GL_UNSIGNED_BYTE );
     }
     else
     {
@@ -831,6 +937,8 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   }
 
   _sceneView->setViewMatrix( oldViewMatrix );
+
+  //this->numRenderPasses ( 1 );
 
   return answer.release();
 }

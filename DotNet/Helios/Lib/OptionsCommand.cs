@@ -100,16 +100,23 @@ namespace CadKit.Helios.Commands
         {
           p = form.newPage(adder.Name, image);
         }
-
         if (null != p)
         {
           System.Windows.Forms.Control content = adder.contents(p) as System.Windows.Forms.Control;
           if (null == content)
             throw new System.Exception("Error 7244448840: null control for the page content");
 
-          form.add(p);
-          p.Contents.Controls.Add(content);
-          content.Dock = System.Windows.Forms.DockStyle.Fill;
+          CadKit.Interfaces.IOptionsPage ipage = p as CadKit.Interfaces.IOptionsPage;
+          if (null != ipage)
+          {
+            System.Windows.Forms.Control contents = ipage.Contents as System.Windows.Forms.Control;
+            if ( null != contents )
+            {
+              form.add(ipage);
+              contents.Controls.Add(content);
+              content.Dock = System.Windows.Forms.DockStyle.Fill;
+            }
+          }
         }
       }
     }

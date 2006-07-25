@@ -16,7 +16,7 @@
 
 namespace CadKit.Helios
 {
-  public class OptionsPage
+  public class OptionsPage : CadKit.Interfaces.IOptionsPage
   {
     /// <summary>
     /// Delegate for applying settings.
@@ -44,17 +44,17 @@ namespace CadKit.Helios
     /// <summary>
     /// Get the name.
     /// </summary>
-    public string Name { get { lock (_mutex) { return _name; } } }
+    string CadKit.Interfaces.IOptionsPage.Name { get { lock (_mutex) { return _name; } } }
 
     /// <summary>
     /// Get the image.
     /// </summary>
-    public System.Drawing.Image Image { get { lock (_mutex) { return _image; } } }
+    object CadKit.Interfaces.IOptionsPage.Image { get { lock (_mutex) { return _image; } } }
 
     /// <summary>
     /// Get the contents.
     /// </summary>
-    public System.Windows.Forms.Control Contents { get { lock (_mutex) { return _contents; } } }
+    object CadKit.Interfaces.IOptionsPage.Contents { get { lock (_mutex) { return _contents; } } }
 
     /// <summary>
     /// Set/get the apply delegate.

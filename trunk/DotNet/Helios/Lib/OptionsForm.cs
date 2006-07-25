@@ -21,7 +21,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Local types.
     /// </summary>
-    class Pages : System.Collections.Generic.List<CadKit.Helios.OptionsPage> { }
+    class Pages : System.Collections.Generic.List<CadKit.Interfaces.IOptionsPage> { }
 
     /// <summary>
     /// Data members.
@@ -235,14 +235,23 @@ namespace CadKit.Helios
     /// <summary>
     /// Add a page.
     /// </summary>
-    public void add(CadKit.Helios.OptionsPage page)
+    public void add(CadKit.Interfaces.IOptionsPage pageObject)
     {
+      CadKit.Interfaces.IOptionsPage page = pageObject as CadKit.Interfaces.IOptionsPage;
       try
       {
         lock (_mutex)
         {
-          if (null == page || null == page.Contents || null == page.Name || null == page.Image)
-            throw new System.ArgumentNullException("Error 7852244530: null page or page property given");
+          if (null == page || null == page.Name)
+            throw new System.ArgumentNullException("Error 7852244530: null page or page name given");
+
+          System.Drawing.Image image = page.Image as System.Drawing.Image;
+          if (null == image)
+            throw new System.ArgumentNullException("Error 7728100400: null page image given");
+
+          System.Windows.Forms.Control contents = page.Contents as System.Windows.Forms.Control;
+          if (null == contents)
+            throw new System.ArgumentNullException("Error 2314909524: null page contents given");
 
           _pages.Add(page);
 
@@ -252,9 +261,9 @@ namespace CadKit.Helios
           }
 
           System.Drawing.Size size = _listView.LargeImageList.ImageSize;
-          _listView.LargeImageList.ImageSize = new System.Drawing.Size(System.Math.Max(size.Width, page.Image.Width), System.Math.Max(size.Height, page.Image.Height));
+          _listView.LargeImageList.ImageSize = new System.Drawing.Size(System.Math.Max(size.Width, image.Width), System.Math.Max(size.Height, image.Height));
           _listView.Items.Add(page.Name, _listView.LargeImageList.Images.Count);
-          _listView.LargeImageList.Images.Add(page.Image);
+          _listView.LargeImageList.Images.Add(image);
         }
       }
       catch (System.Exception e)
@@ -304,13 +313,17 @@ namespace CadKit.Helios
             return;
 
           int index = lv.SelectedItems[0].Index;
-          CadKit.Helios.OptionsPage page = ((index >= 0 && index < _pages.Count) ? _pages[index] : null);
-          if (null != page && null != page.Contents)
+          CadKit.Interfaces.IOptionsPage page = ((index >= 0 && index < _pages.Count) ? _pages[index] : null);
+          if (null != page)
           {
-            _contentPanel.Controls.Clear();
-            _contentPanel.Controls.Add(page.Contents);
-            page.Contents.Dock = System.Windows.Forms.DockStyle.Fill;
-            page.Contents.Show();
+            System.Windows.Forms.Control contents = page.Contents as System.Windows.Forms.Control;
+            if (null != contents)
+            {
+              _contentPanel.Controls.Clear();
+              _contentPanel.Controls.Add(contents);
+              contents.Dock = System.Windows.Forms.DockStyle.Fill;
+              contents.Show();
+            }
           }
         }
         catch (System.Exception e)

@@ -34,7 +34,8 @@ namespace CadKit.Helios.Commands
           form.Icon = CadKit.Helios.Application.Instance.MainForm.Icon;
           form.Text = CadKit.Helios.Application.Instance.Name + " - Options";
           this._addPages(form);
-          form.ShowDialog();
+          if ( form.NumPages > 0 )
+            form.ShowDialog();
         }
         catch (System.Exception e)
         {
@@ -46,7 +47,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// All all the pages.
     /// </summary>
-    private void _addPages(CadKit.Helios.OptionsForm form)
+    private void _addPages(CadKit.Interfaces.IOptionsForm form)
     {
       lock (_mutex)
       {
@@ -75,7 +76,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// All the page.
     /// </summary>
-    private void _addPage(CadKit.Helios.OptionsForm form, CadKit.Interfaces.IOptionsPageAdd adder)
+    private void _addPage(CadKit.Interfaces.IOptionsForm form, CadKit.Interfaces.IOptionsPageAdd adder)
     {
       lock (_mutex)
       {
@@ -91,33 +92,27 @@ namespace CadKit.Helios.Commands
         if (null == file && null == image)
           throw new System.Exception("Error 9877185980: no image for page");
 
-        CadKit.Helios.OptionsPage p = null;
+        CadKit.Interfaces.IOptionsPage ipage = null;
         if (null != file)
-        {
-          p = form.newPage(adder.Name, file);
-        }
-        if (null == p)
-        {
-          p = form.newPage(adder.Name, image);
-        }
-        if (null != p)
-        {
-          System.Windows.Forms.Control content = adder.contents(p) as System.Windows.Forms.Control;
-          if (null == content)
-            throw new System.Exception("Error 7244448840: null control for the page content");
+          ipage = form.newPage(adder.Name, file);
 
-          CadKit.Interfaces.IOptionsPage ipage = p as CadKit.Interfaces.IOptionsPage;
-          if (null != ipage)
-          {
-            System.Windows.Forms.Control contents = ipage.Contents as System.Windows.Forms.Control;
-            if ( null != contents )
-            {
-              form.add(ipage);
-              contents.Controls.Add(content);
-              content.Dock = System.Windows.Forms.DockStyle.Fill;
-            }
-          }
-        }
+        if (null == ipage)
+          ipage = form.newPage(adder.Name, image);
+
+        if (null == ipage)
+          throw new System.Exception("Error 2999750716: failed to make new options page");
+
+        System.Windows.Forms.Control content = adder.contents(ipage) as System.Windows.Forms.Control;
+        if (null == content)
+          throw new System.Exception("Error 7244448840: null control for the page content");
+
+        System.Windows.Forms.Control contents = ipage.Contents as System.Windows.Forms.Control;
+        if (null == contents)
+          throw new System.Exception("Error 3796372180: options page content area is not a recognized type");
+
+        form.add(ipage);
+        contents.Controls.Add(content);
+        content.Dock = System.Windows.Forms.DockStyle.Fill;
       }
     }
 
@@ -126,7 +121,8 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      return true;
+      CadKit.Interfaces.IOptionsPageAdd[] pages = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IOptionsPageAdd>();
+      return ( pages.Length > 0 );
     }
   }
 }

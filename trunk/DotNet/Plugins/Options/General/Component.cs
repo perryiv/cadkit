@@ -75,8 +75,7 @@ namespace CadKit.Plugins.Options.General
     {
       lock (_mutex)
       {
-        CadKit.Plugins.Options.General.PageContent content = new CadKit.Plugins.Options.General.PageContent();
-        //content.BackColor = CadKit.Tools.Random.color();
+        CadKit.Plugins.Options.General.PageContent content = new CadKit.Plugins.Options.General.PageContent(parent as CadKit.Interfaces.IOptionsPage);
         return content;
       }
     }

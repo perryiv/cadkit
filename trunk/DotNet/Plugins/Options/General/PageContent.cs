@@ -14,12 +14,13 @@ namespace CadKit.Plugins.Options.General
     /// <summary>
     /// Data members.
     /// </summary>
+    private object _mutex = new object();
     private System.ComponentModel.IContainer _components = null;
     private System.Windows.Forms.TableLayoutPanel _tableLayoutPanel = null;
     private System.Windows.Forms.GroupBox _groupBox = null;
     private System.Windows.Forms.RadioButton _standAloneRadioButton = null;
     private System.Windows.Forms.RadioButton _mdiRadioButton = null;
-    private object _mutex = new object();
+    private CadKit.Interfaces.IOptionsPage _page;
 
     /// <summary>
     /// Constants
@@ -31,10 +32,15 @@ namespace CadKit.Plugins.Options.General
     /// <summary>
     /// Constructor
     /// </summary>
-    public PageContent() : base()
+    public PageContent ( CadKit.Interfaces.IOptionsPage page ) : base()
     {
       InitializeComponent();
       this.Load += this._load;
+
+      _page = page;
+      if ( null != _page )
+        _page.Apply += this._apply;
+
       _standAloneRadioButton.Checked = CadKit.Persistence.Registry.Instance.getBool(REGISTRY_SECTION, USE_STAND_ALONE_WINDOWS, true);
       _mdiRadioButton.Checked = CadKit.Persistence.Registry.Instance.getBool(REGISTRY_SECTION, USE_MDI_CHILD_WINDOWS, false);
     }
@@ -45,11 +51,14 @@ namespace CadKit.Plugins.Options.General
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
-      if (disposing && (_components != null))
+      lock (_mutex)
       {
-        _components.Dispose();
+        if (disposing && (_components != null))
+        {
+          _components.Dispose();
+        }
+        base.Dispose(disposing);
       }
-      base.Dispose(disposing);
     }
 
     #region Component Designer generated code
@@ -137,9 +146,12 @@ namespace CadKit.Plugins.Options.General
     /// </summary>
     void _load(object sender, System.EventArgs e)
     {
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null != parent)
-        parent.FormClosing += this._formClosing;
+      lock (_mutex)
+      {
+        System.Windows.Forms.Form parent = this.FindForm();
+        if (null != parent)
+          parent.FormClosing += this._formClosing;
+      }
     }
 
     /// <summary>
@@ -147,11 +159,38 @@ namespace CadKit.Plugins.Options.General
     /// </summary>
     private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
     {
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null != parent)
-        parent.FormClosing -= this._formClosing;
-      CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, USE_STAND_ALONE_WINDOWS, _standAloneRadioButton.Checked);
-      CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, USE_MDI_CHILD_WINDOWS, _mdiRadioButton.Checked);
+      lock (_mutex)
+      {
+        System.Windows.Forms.Form parent = this.FindForm();
+        if (null != parent)
+          parent.FormClosing -= this._formClosing;
+
+        if (null != _page)
+          _page.Apply -= this._apply;
+      }
+    }
+
+    /// <summary>
+    /// Save the state in the registry.
+    /// </summary>
+    private void _saveState()
+    {
+      lock (_mutex)
+      {
+        CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, USE_STAND_ALONE_WINDOWS, _standAloneRadioButton.Checked);
+        CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, USE_MDI_CHILD_WINDOWS, _mdiRadioButton.Checked);
+      }
+    }
+
+    /// <summary>
+    /// Called when the apply (or ok) button is pressed.
+    /// </summary>
+    private void _apply(CadKit.Interfaces.IOptionsForm form, CadKit.Interfaces.IOptionsPage page)
+    {
+      lock (_mutex)
+      {
+        this._saveState();
+      }
     }
   }
 }

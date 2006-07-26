@@ -16,7 +16,9 @@
 
 namespace CadKit.Helios
 {
-  public class OptionsForm : CadKit.Persistence.Form
+  public class OptionsForm :
+    CadKit.Persistence.Form,
+    CadKit.Interfaces.IOptionsForm
   {
     /// <summary>
     /// Local types.
@@ -218,7 +220,7 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
-        foreach (OptionsPage page in _pages)
+        foreach (CadKit.Interfaces.IOptionsPage page in _pages)
         {
           try
           {
@@ -235,7 +237,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Add a page.
     /// </summary>
-    public void add(CadKit.Interfaces.IOptionsPage pageObject)
+    void CadKit.Interfaces.IOptionsForm.add(CadKit.Interfaces.IOptionsPage pageObject)
     {
       CadKit.Interfaces.IOptionsPage page = pageObject as CadKit.Interfaces.IOptionsPage;
       try
@@ -276,7 +278,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Make a page.
     /// </summary>
-    public CadKit.Helios.OptionsPage newPage(string name, System.Drawing.Image image)
+    private CadKit.Interfaces.IOptionsPage _newPage(string name, System.Drawing.Image image)
     {
       lock (_mutex)
       {
@@ -286,16 +288,27 @@ namespace CadKit.Helios
     }
 
     /// <summary>
+    /// Make a page.
+    /// </summary>
+    CadKit.Interfaces.IOptionsPage CadKit.Interfaces.IOptionsForm.newPage(string name, object image)
+    {
+      lock (_mutex)
+      {
+        return this._newPage(name, image as System.Drawing.Image);
+      }
+    }
+
+    /// <summary>
     /// Add a page.
     /// </summary>
-    public CadKit.Helios.OptionsPage newPage(string name, string iconFile)
+    CadKit.Interfaces.IOptionsPage CadKit.Interfaces.IOptionsForm.newPage(string name, string iconFile)
     {
       lock (_mutex)
       {
         System.IO.FileInfo info = new System.IO.FileInfo(iconFile);
         string path = (true == info.Exists) ? iconFile : (CadKit.Helios.Application.Instance.IconDir + "/" + iconFile);
         System.Drawing.Image image = CadKit.Images.Image.load(path);
-        return this.newPage(name, image);
+        return this._newPage(name, image as System.Drawing.Image);
       }
     }
 
@@ -314,17 +327,17 @@ namespace CadKit.Helios
 
           int index = lv.SelectedItems[0].Index;
           CadKit.Interfaces.IOptionsPage page = ((index >= 0 && index < _pages.Count) ? _pages[index] : null);
-          if (null != page)
-          {
-            System.Windows.Forms.Control contents = page.Contents as System.Windows.Forms.Control;
-            if (null != contents)
-            {
-              _contentPanel.Controls.Clear();
-              _contentPanel.Controls.Add(contents);
-              contents.Dock = System.Windows.Forms.DockStyle.Fill;
-              contents.Show();
-            }
-          }
+          if (null == page)
+            return;
+
+          System.Windows.Forms.Control contents = page.Contents as System.Windows.Forms.Control;
+          if (null == contents)
+            return;
+
+          _contentPanel.Controls.Clear();
+          _contentPanel.Controls.Add(contents);
+          contents.Dock = System.Windows.Forms.DockStyle.Fill;
+          contents.Show();
         }
         catch (System.Exception e)
         {
@@ -351,6 +364,34 @@ namespace CadKit.Helios
         catch (System.Exception e)
         {
           System.Console.WriteLine("Error 1840228368: {0}", e.Message);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Get the number of pages.
+    /// </summary>
+    int CadKit.Interfaces.IOptionsForm.NumPages
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          return this.NumPages;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Get the number of pages.
+    /// </summary>
+    public int NumPages
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          return _pages.Count;
         }
       }
     }

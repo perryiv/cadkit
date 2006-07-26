@@ -19,18 +19,13 @@ namespace CadKit.Helios
   public class OptionsPage : CadKit.Interfaces.IOptionsPage
   {
     /// <summary>
-    /// Delegate for applying settings.
-    /// </summary>
-    public delegate void ApplyDelegate(CadKit.Helios.OptionsForm form, CadKit.Helios.OptionsPage page);
-
-    /// <summary>
     /// Data members.
     /// </summary>
     private object _mutex = new object();
     private string _name = null;
     private System.Drawing.Image _image = null;
     private System.Windows.Forms.Panel _contents = new System.Windows.Forms.Panel();
-    private ApplyDelegate _apply = null;
+    private CadKit.Interfaces.OptionsPageDelegates.ApplyDelegate _apply = null;
 
     /// <summary>
     /// Constructor
@@ -59,7 +54,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Set/get the apply delegate.
     /// </summary>
-    public ApplyDelegate Apply
+    CadKit.Interfaces.OptionsPageDelegates.ApplyDelegate CadKit.Interfaces.IOptionsPage.Apply
     {
       get { lock (_mutex) { return _apply; } }
       set { lock (_mutex) { _apply = value; } }
@@ -68,7 +63,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Apply the settings.
     /// </summary>
-    public virtual void apply ( CadKit.Helios.OptionsForm form )
+    void CadKit.Interfaces.IOptionsPage.apply ( CadKit.Interfaces.IOptionsForm form )
     {
       lock (_mutex)
       {

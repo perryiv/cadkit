@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="IGuiCreate.cs" />
     <Compile Include="IGuiDelegateCreate.cs" />
+    <Compile Include="IOptionsForm.cs" />
     <Compile Include="IOptionsPage.cs" />
     <Compile Include="IOptionsPageAdd.cs" />
   </ItemGroup>

@@ -32,7 +32,8 @@ namespace CadKit
             string persistentName = "CanvasColorWheel";
 
             // Make the color editor.
-            CadKit.Color.Wheel wheel = new CadKit.Color.Wheel( persistentName );
+            CadKit.Color.Wheel wheel = new CadKit.Color.Wheel();
+            wheel.PersistentName = persistentName; 
             wheel.Dock = System.Windows.Forms.DockStyle.Fill;
             wheel.Color = this.BackColor;
             wheel.ColorChanged += this._colorChanged;

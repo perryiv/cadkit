@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IImageList.h"
 #include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IImage.h"
+#include "Usul/Interfaces/GUI/IMenuEntry.h"
 
 #include "FoxTools/Functions/MainWindow.h"
 #include "FoxTools/Headers/DialogBox.h"

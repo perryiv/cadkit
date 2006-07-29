@@ -24,13 +24,13 @@
   [self setCocoaProgressBar:progPtr.get()];
   
   const std::string fn ( [[self fileName] cString] );
-  _tDoc = new SceneDocument();
-  _tDoc.get()->read(fn, 0x0);
-  if ( _tDoc ) {
-    [_osgView setDocument: (Usul::Documents::Document*)_tDoc  ];
+  _sceneDoc = new SceneDocument();
+  _sceneDoc.get()->read(fn, 0x0);
+  if ( _sceneDoc ) {
+    [_osgView setDocument: (Usul::Documents::Document*)_sceneDoc  ];
     BOOL success = [_osgView initializeOSG];
     if ( NO == success ) {
-      _tDoc = 0x0;
+      _sceneDoc = 0x0;
       return NO;
     }
   } else {

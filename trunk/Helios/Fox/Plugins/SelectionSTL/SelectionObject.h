@@ -21,7 +21,7 @@
 #include "FoxTools/Headers/Object.h"
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/IMenuEntry.h"
+#include "Usul/Interfaces/GUI/IMenuEntry.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFoxEvent.h"
 #include "Usul/Interfaces/IFoxToolbar.h"

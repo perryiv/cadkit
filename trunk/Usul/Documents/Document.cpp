@@ -889,6 +889,8 @@ void Document:: modified ( bool m )
 
   for ( ModifiedObservers::iterator iter = _modifiedObservers.begin(); iter != _modifiedObservers.end(); ++iter )
   {
-    (*iter)->subjectModified( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+    // Need to make gcc happy.
+    Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
+    temp->subjectModified( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
 }

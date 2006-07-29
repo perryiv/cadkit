@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDiskStorageCreate.cs" />
+    <Compile Include="IDiskStorage.cs" />
     <Compile Include="IGuiCreate.cs" />
     <Compile Include="IGuiDelegateCreate.cs" />
     <Compile Include="IOptionsForm.cs" />

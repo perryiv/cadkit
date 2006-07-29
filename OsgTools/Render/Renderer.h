@@ -21,7 +21,7 @@
 
 #include "osgUtil/SceneView"
 
-#include <GL/gl.h>
+#include "Usul/Headers/OpenGL.h"
 #include <vector>
 
 namespace OsgTools {

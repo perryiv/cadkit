@@ -205,14 +205,15 @@ void Viewer::create()
     // Make this context current.
     _context->makeCurrent();
 
-    _renderer->init();
 
-    // Set default stereo modes.
+    _renderer->init();
+   // Set default stereo modes.
     this->stereoEyeDistance( 0.01f );
     GLboolean hasStereo ( GL_FALSE );
     ::glGetBooleanv ( GL_STEREO, &hasStereo );
     if( GL_TRUE == hasStereo )
       this->stereoMode( osg::DisplaySettings::QUAD_BUFFER );
+
   }
 
   // Counter for display-list id. OSG will handle using the correct display 
@@ -312,12 +313,13 @@ void Viewer::render()
   // Handle no viewer or scene.
   if ( !this->viewer() || !this->viewer()->getSceneData() || !_context.valid() )
     return;
+  
+  // Make this context current.
+  _context->makeCurrent();
 
   // Initialize the error.
   ::glGetError();
 
-  // Make this context current.
-  _context->makeCurrent();
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
@@ -1886,6 +1888,9 @@ void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 
 void Viewer::numRenderPasses ( unsigned int num )
 {
+#if __APPLE__
+#warning This may not work correctly...
+#endif
   _renderer->numRenderPasses( num );
 }
 

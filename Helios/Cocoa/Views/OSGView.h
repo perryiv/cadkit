@@ -93,6 +93,8 @@
 - (IBAction) fitModel:(id)sender;
 - (IBAction) resetView:(id)sender;
 
+//--Save the Current Screen as an Image
+- (IBAction) saveSceneAsImage:(id)sender;
 
   // Add/Remove clipping plane
 //TODO:: Implement this

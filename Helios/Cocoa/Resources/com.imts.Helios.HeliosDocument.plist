@@ -18,6 +18,7 @@
     <string>Axis</string>
     <string>BoundBox</string>
     <string>BoundSphere</string>
+    <string>FrameDump</string>
     <string>NSToolbarFlexibleSpaceItemIdentifier</string>
     <string>FitModel</string>
     <string>ResetView</string>
@@ -36,7 +37,15 @@
 			<key>ToolTip</key>
 			<string>Fit Model to current window size</string>
 		</dict>
-
+   <key>FrameDump</key>
+		<dict>
+			<key>Action</key>
+			<string>saveSceneAsImage:</string>
+			<key>Label</key>
+			<string>Frame Dump</string>
+			<key>ToolTip</key>
+			<string>Save Current Scene as Image</string>
+		</dict>
       <key>ResetView</key>
 		<dict>
 			<key>Action</key>

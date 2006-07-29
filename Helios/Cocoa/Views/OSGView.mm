@@ -37,15 +37,14 @@
   NSLog(@"OSGView initWithFrame:(NSRect)frame");
   NSOpenGLPixelFormatAttribute attribs[] =
 	{
-		NSOpenGLPFANoRecovery,
 		NSOpenGLPFAAccelerated,
 		NSOpenGLPFADoubleBuffer,
 		NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute) 24,
 		NSOpenGLPFAAlphaSize, (NSOpenGLPixelFormatAttribute) 8,
 		NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute) 24,
 		NSOpenGLPFAStencilSize, (NSOpenGLPixelFormatAttribute) 0,
-		NSOpenGLPFAAccumSize, (NSOpenGLPixelFormatAttribute) 0,
 		NSOpenGLPFAWindow, (NSOpenGLPixelFormatAttribute) 0,
+    (NSOpenGLPixelFormatAttribute)nil
 	};
   
   NSOpenGLPixelFormat *pixFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
@@ -109,20 +108,23 @@
   
   _viewer = new OsgTools::Render::Viewer( _iDocument.get(), context , _bridge->queryInterface(Usul::Interfaces::IUnknown::IID) );
   _viewer->create();
-  _viewer->setDisplayLists(true);
+  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, true );
+  _viewer->setDisplayLists();
 
   
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( Usul::Documents::Document::Options(), 0x0 ) );
-  
+    
   if ( _viewer.get() ) {
     _osgInitialized = YES;
+   // glEnable (GL_MULTISAMPLE_ARB);
+   // glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+    _viewer->axes( false );
     return YES;
   } else {
     _osgInitialized = NO;
     return NO;
   }
-  
 }
 
 
@@ -489,8 +491,7 @@
       // See if it was the s key...
     case Usul::Devices::KEY_s:
       _viewer->stereo ( !_viewer->stereo() );
-      //viewer->render();
-      [self setNeedsDisplay:YES];
+          [self setNeedsDisplay:YES];
       break;
       
       // See if it was the h key...
@@ -499,8 +500,7 @@
         _viewer->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
       else
         _viewer->polygonMode( Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
-      //viewer->render();
-      [self setNeedsDisplay:YES];
+          [self setNeedsDisplay:YES];
       break;
       
       // See if it was the w key...
@@ -509,8 +509,7 @@
         _viewer->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
       else
         _viewer->polygonMode( Usul::Interfaces::IPolygonMode::WIRE_FRAME );
-      //viewer->render();
-      [self setNeedsDisplay:YES];
+          [self setNeedsDisplay:YES];
       break;
   }
 }
@@ -539,6 +538,47 @@
     }
       break;
   }
+}
+
+- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
+  if ([menuItem action] == @selector(toggleLights:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(enableSurfaceRender:)) {
+    return YES;
+  } else  if ([menuItem action] == @selector(enableWireframeRender:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(enableHiddenLines:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleHiddenLines:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleShadeModel:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(enablePerFacetLighting:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(enablePerVertexLighting:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleAxis:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleLOD:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleBoundingBox:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleBoundingSphere:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleTwoSidedLighting:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleDisplayLists:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(updateBackgroundColor:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(toggleModelSpin:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(fitModel:)) {
+    return YES;
+  } else if ([menuItem action] == @selector(resetView:)) {
+    return YES;
+  } 
+  return NO;
 }
 
 
@@ -576,7 +616,6 @@
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   
   _viewer->scene ( buildScene->buildScene ( options, 0x0 ) );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -596,7 +635,6 @@
   _viewer->setShadeModel ( osg::ShadeModel::SMOOTH );
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( options, 0x0 ) );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -616,7 +654,6 @@
   _viewer->setShadeModel ( osg::ShadeModel::FLAT );
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( options, 0x0 ) );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -631,7 +668,6 @@
   else
     _viewer->polygonMode( Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
   
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -641,7 +677,6 @@
 - (IBAction) enableSurfaceRender:(id)sender
 {
   _viewer->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -651,7 +686,6 @@
 - (IBAction) enableHiddenLines:(id)sender
 {
   _viewer->polygonMode( Usul::Interfaces::IPolygonMode::HIDDEN_LINES );   
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -661,7 +695,6 @@
 - (IBAction) enableWireframeRender:(id)sender
 {
   _viewer->polygonMode( Usul::Interfaces::IPolygonMode::WIRE_FRAME );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -671,17 +704,22 @@
 - (IBAction) toggleLights:(id)sender
 {
   _viewer->lighting( !_viewer->lighting() );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
+#define TOGGLE_AXIS_ON @"Axis On"
+#define TOGGLE_AXIS_OFF @"Axis Off"
 // -----------------------------------------------------------------------------
 //  Turn on/off the axis in the scene
 // -----------------------------------------------------------------------------
 - (IBAction) toggleAxis:(id)sender
 {
+  if (_viewer->axes()) {
+    [sender setTitle:TOGGLE_AXIS_ON];
+  } else {
+    [sender setTitle:TOGGLE_AXIS_OFF];
+  }
   _viewer->axes( !_viewer->axes() );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -691,7 +729,6 @@
 - (IBAction) toggleBoundingBox:(id)sender
 {
   _viewer->boundingBox( !_viewer->boundingBox() );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -701,7 +738,6 @@
 - (IBAction) toggleBoundingSphere:(id)sender
 {
   _viewer->boundingSphere( !_viewer->boundingSphere() );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -711,7 +747,6 @@
 - (IBAction) toggleTwoSidedLighting:(id)sender
 {
   _viewer->twoSidedLighting( !_viewer->twoSidedLighting() );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -720,7 +755,10 @@
 // -----------------------------------------------------------------------------
 - (IBAction) toggleDisplayLists:(id)sender
 {
-  _viewer->setDisplayLists( !_viewer->displayLists() );
+  typedef Usul::Shared::Preferences Prefs;
+  bool displayList = Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS );
+  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, !displayList );
+  _viewer->setDisplayLists( );
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( Usul::Documents::Document::Options(), 0x0 ) );
 }
@@ -735,7 +773,6 @@
   const osg::Vec4 c  ( [color redComponent], [color greenComponent], 
                         [color blueComponent], 1.0 );
   _viewer->backgroundColor( c );
-  //viewer->render();
   [self setNeedsDisplay:YES];
 }
 
@@ -786,8 +823,33 @@
 - (IBAction) resetView:(id)sender
 {
    _viewer->camera ( OsgTools::Render::Viewer::RESET );
-  //viewer->render();
   [self setNeedsDisplay:YES];
+}
+
+- (IBAction) saveSceneAsImage:(id)sender  {
+  void* contextInfo;
+  NSSavePanel* aPanel = [NSSavePanel savePanel];
+  [aPanel beginSheetForDirectory:NULL
+                            file:NULL
+                  modalForWindow:_window
+                   modalDelegate:self
+                  didEndSelector:@selector(outputSavePanelDidEnd:returnCode:contextInfo:)
+                     contextInfo:contextInfo];
+}
+
+// -----------------------------------------------------------------------------
+//  Called when the SavePanel ends for saving the Scene as an Image File
+// -----------------------------------------------------------------------------
+- (void)outputSavePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+  if( returnCode == NSFileHandlingPanelOKButton ){
+   // _viewer->numRenderPasses(8);
+    [self display];
+    std::string filename ( [[sheet filename] cString] );
+    _viewer->writeImageFile(filename);
+   // _viewer->numRenderPasses(1);
+    [self setNeedsDisplay:YES];
+  }
 }
 
 

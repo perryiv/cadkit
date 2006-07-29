@@ -13,7 +13,7 @@
 @interface IVEDocument : HeliosDocument {
 
   
-  SceneDocument::RefPtr _tDoc;
+  SceneDocument::RefPtr _sceneDoc;
 }
 
 @end

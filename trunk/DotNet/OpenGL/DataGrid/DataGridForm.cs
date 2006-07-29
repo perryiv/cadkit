@@ -18,7 +18,7 @@ namespace CadKit
       public DataGridForm( CadKit.OpenGL.Canvas canvas ) : base()
       {
         if ( null == canvas )
-          throw new System.ArgumentNullException( "Error 1443852070: Canvas is null" );
+          throw new System.ArgumentNullException("Error 1443852070: Canvas is null", null as System.Exception);
         _canvas = canvas;
         InitializeComponent();
         this._fillGrid();

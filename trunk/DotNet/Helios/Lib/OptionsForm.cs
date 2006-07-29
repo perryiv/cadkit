@@ -245,15 +245,15 @@ namespace CadKit.Helios
         lock (_mutex)
         {
           if (null == page || null == page.Name)
-            throw new System.ArgumentNullException("Error 7852244530: null page or page name given");
+            throw new System.ArgumentNullException("Error 7852244530: null page or page name given", null as System.Exception);
 
           System.Drawing.Image image = page.Image as System.Drawing.Image;
           if (null == image)
-            throw new System.ArgumentNullException("Error 7728100400: null page image given");
+            throw new System.ArgumentNullException("Error 7728100400: null page image given", null as System.Exception);
 
           System.Windows.Forms.Control contents = page.Contents as System.Windows.Forms.Control;
           if (null == contents)
-            throw new System.ArgumentNullException("Error 2314909524: null page contents given");
+            throw new System.ArgumentNullException("Error 2314909524: null page contents given", null as System.Exception);
 
           _pages.Add(page);
 

@@ -81,7 +81,7 @@ namespace CadKit.Helios.Commands
       lock (_mutex)
       {
         if (null == form || null == adder)
-          throw new System.ArgumentNullException("Error 3336043850: invalid arguments given");
+          throw new System.ArgumentNullException("Error 3336043850: invalid arguments given", null as System.Exception);
 
         string name = adder.Name;
         if (null == name)

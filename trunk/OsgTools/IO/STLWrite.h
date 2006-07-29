@@ -107,7 +107,7 @@ struct WriteSTLFile
         ( "Normals size is ", normals.size(), ".  Expecting size ", vertices.size() / 3, "\n" );
     }
 
-    // Throw if the number of normals is wrong.
+    // Throw if the number of Vertices is wrong.
     if( vertices.size() % 3 != 0 )
     {
       Usul::Exceptions::Thrower< std::runtime_error >

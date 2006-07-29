@@ -54,7 +54,7 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
   // Make sure the vertices are not the same.
   if ( v0 == v1 || v0 == v2 || v1 == v2 )
     Usul::Exceptions::Thrower<std::invalid_argument>
-      ( "Error 1437076236: Triangle vertices are not equal" );
+      ( "Error 1437076236: Triangle vertices are equal" );
 
   // Reference the vertices.
   Usul::Pointers::reference ( _v0 );

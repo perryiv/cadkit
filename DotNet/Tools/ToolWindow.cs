@@ -19,7 +19,7 @@ namespace CadKit.Tools
       lock ("CadKit.Tools.ToolWindow.configure")
       {
         if (null == toolWindow)
-          throw new System.ArgumentNullException("Error 3898181007: null tool window given");
+          throw new System.ArgumentNullException("Error 3898181007: null tool window given", null as System.Exception);
 
         // Does not appear in the taskbar or the ALT+TAB window. Need both.
         toolWindow.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;

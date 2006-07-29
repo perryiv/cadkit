@@ -394,6 +394,7 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
     // Make the cache big enough.
     Detail::cache.resize ( size );
     
+    int total = 0;
     //Walk through all the polygons
     for( typename Polygons::iterator iter = polygons.begin(); iter != polygons.end(); ++iter )
     {    
@@ -423,6 +424,14 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
             Detail::findEdge( adjacentPolygons, iter->get() );
             (*iter)->onEdge( true );
         }
+#if 1      
+#warning Remove this code
+        if( adjacentPolygons.size() != vertsPerPoly + 1 )
+        {
+          std::cout << "Not Enough Neighbors " << (*iter)->index() << std::endl;
+          total++;
+        }
+#endif   
         
         Detail::cache.at( (*iter)->index() ) = adjacentPolygons.size();
         
@@ -440,6 +449,7 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
         //updater ( current, size );
     }
     
+    std::cout << "Total Bad Triangles: " << total << std::endl;
     //Sort for binary search
     uncapped.sort( std::less<unsigned int>() );
     size = uncapped.size();

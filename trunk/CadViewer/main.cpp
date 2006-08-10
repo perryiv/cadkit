@@ -19,10 +19,20 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Components/Object.h"
 
+#include "Threads/OpenThreads/Mutex.h"
+
 #include <iostream>
 #include <string>
 #include <algorithm>
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set for multi-threaded. This is global because the sooner we set this, 
+//  the better. Setting in main() may be too late.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,9 +43,6 @@
 
 void runApplication ( int argc, char **argv )
 {
-  // Set for single-threaded.
-  Usul::Threads::Mutex::createFunction ( &Usul::Threads::newMutex );
-
   // Instantiate the registry. The sooner the better.
   CV::Registry::instance();
 #if 0

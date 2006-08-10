@@ -1,119 +1,184 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="lib: MenuKit"
 	ProjectGUID="{8B99160D-5504-4A93-89DC-F4AE949501A4}"
-	Keyword="Win32Proj">
+	RootNamespace="lib: MenuKit"
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="3"/>
+				WarnAsError="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../bin/MenuKitd.dll"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MenuKitd.pdb"
 				SubSystem="2"
 				ImportLibrary="../bin/MenuKitd.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../;&quot;$(BOOST_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT"
 				RuntimeLibrary="0"
-				RuntimeTypeInfo="TRUE"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="0"/>
+				WarnAsError="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../bin/MenuKit.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/MenuKit.pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				ImportLibrary="../bin/MenuKit.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -122,163 +187,211 @@
 		<Filter
 			Name="Source"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<Filter
 				Name="Visitors"
-				Filter="">
+				>
 				<File
-					RelativePath=".\CloseVisitor.cpp">
+					RelativePath=".\CloseVisitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\CloseVisitor.h">
+					RelativePath=".\CloseVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\FlagsVisitor.cpp">
+					RelativePath=".\FlagsVisitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\FlagsVisitor.h">
+					RelativePath=".\FlagsVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\MessageVisitor.cpp">
+					RelativePath=".\MessageVisitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\MessageVisitor.h">
+					RelativePath=".\MessageVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\StreamVisitor.cpp">
+					RelativePath=".\StreamVisitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\StreamVisitor.h">
+					RelativePath=".\StreamVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Visitor.cpp">
+					RelativePath=".\Visitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Visitor.h">
+					RelativePath=".\Visitor.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Items"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Button.cpp">
+					RelativePath=".\Button.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Button.h">
+					RelativePath=".\Button.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Item.cpp">
+					RelativePath=".\Item.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Item.h">
+					RelativePath=".\Item.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Menu.cpp">
+					RelativePath=".\Menu.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Menu.h">
+					RelativePath=".\Menu.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Misc"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Algorithms.h">
+					RelativePath=".\Algorithms.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Behavior.cpp">
+					RelativePath=".\Behavior.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Behavior.h">
+					RelativePath=".\Behavior.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Bits.h">
+					RelativePath=".\Bits.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Box.h">
+					RelativePath=".\Box.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Callback.cpp">
+					RelativePath=".\Callback.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Callback.h">
+					RelativePath=".\Callback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Errors.cpp">
+					RelativePath=".\Errors.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Errors.h">
+					RelativePath=".\Errors.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Export.h">
+					RelativePath=".\Export.h"
+					>
 				</File>
 				<File
-					RelativePath=".\MemFunCallback.h">
+					RelativePath=".\MemFunCallback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Messages.h">
+					RelativePath=".\Messages.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Referenced.cpp">
+					RelativePath=".\Referenced.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Referenced.h">
+					RelativePath=".\Referenced.h"
+					>
 				</File>
 				<File
-					RelativePath=".\SampleMenu.cpp">
+					RelativePath=".\SampleMenu.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\SampleMenu.h">
+					RelativePath=".\SampleMenu.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Stack.h">
+					RelativePath=".\Stack.h"
+					>
 				</File>
 				<File
-					RelativePath=".\WidestItemFinder.h">
+					RelativePath=".\WidestItemFinder.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="OSG"
-			Filter="">
+			>
 			<File
-				RelativePath=".\Osg\Arrow.h">
+				RelativePath=".\Osg\Arrow.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\Border.h">
+				RelativePath=".\Osg\Border.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\ColorTheme.h">
+				RelativePath=".\Osg\ColorTheme.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\Disk.h">
+				RelativePath=".\Osg\Disk.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\DrawableFunctor.h">
+				RelativePath=".\Osg\DrawableFunctor.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\FlatBox.h">
+				RelativePath=".\Osg\FlatBox.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeSkin.h">
+				RelativePath=".\Osg\ThemeSkin.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeSkinTile.h">
+				RelativePath=".\Osg\ThemeSkinTile.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeTile.h">
+				RelativePath=".\Osg\ThemeTile.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\TileFunctor.h">
+				RelativePath=".\Osg\TileFunctor.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\TileMason.h">
+				RelativePath=".\Osg\TileMason.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\VisualThemeSkin.h">
+				RelativePath=".\Osg\VisualThemeSkin.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Osg\Word.h">
+				RelativePath=".\Osg\Word.h"
+				>
 			</File>
 		</Filter>
 	</Files>

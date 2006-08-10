@@ -1,129 +1,194 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="app: CadViewer"
 	ProjectGUID="{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}"
-	Keyword="Win32Proj">
+	RootNamespace="app: CadViewer"
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
+				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include;$(OPENTHREADS_INC_DIR);$(BOOST_ROOT_DIR);$(GMTL_ROOT)/include;$(CADKIT_ROOT_DIR)/CadViewer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="FALSE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
+				DisableLanguageExtensions="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="Precompiled.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="3"/>
+				WarnAsError="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Juggler.lib Juggler_ogl.lib gadget.lib jccl.lib vpr.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib"
+				AdditionalDependencies="opengl32.lib vrj_d.lib vrj_ogl_d.lib gadget_d.lib jccl_d.lib vpr_d.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib osgFXd.lib cppdom_d.lib"
 				OutputFile="../bin/CadViewerd.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib,$(OSG_LIB_DIR)"
-				GenerateDebugInformation="TRUE"
+				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib,$(OSG_LIB_DIR);$(CPPDOM_ROOT)/lib"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CadViewer.pdb"
 				SubSystem="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include"
+				OmitFramePointers="true"
+				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include;$(OPENTHREADS_INC_DIR);$(BOOST_ROOT_DIR);$(GMTL_ROOT)/include;$(CADKIT_ROOT_DIR)/CadViewer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="Precompiled.h"
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="0"/>
+				WarnAsError="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib Juggler.lib Juggler_ogl.lib gadget.lib jccl.lib vpr.lib osg.lib osgDB.lib osgText.lib osgUtil.lib"
 				OutputFile="../bin/CadViewer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib,$(OSG_LIB_DIR)"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -131,304 +196,390 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="CadViewer"
-				Filter="">
+				>
 				<File
-					RelativePath=".\AppCallbacks.cpp">
+					RelativePath=".\AppCallbacks.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Application.cpp">
+					RelativePath="Application.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Application.h">
+					RelativePath="Application.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ConfigFiles.cpp">
+					RelativePath=".\ConfigFiles.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\ConfigFiles.h">
+					RelativePath=".\ConfigFiles.h"
+					>
 				</File>
 				<File
-					RelativePath="Constants.h">
+					RelativePath="Constants.h"
+					>
 				</File>
 				<File
-					RelativePath="Declarations.h">
+					RelativePath="Declarations.h"
+					>
 				</File>
 				<File
-					RelativePath="Defines.h">
+					RelativePath="Defines.h"
+					>
 				</File>
 				<File
-					RelativePath="ErrorChecker.h">
+					RelativePath="ErrorChecker.h"
+					>
 				</File>
 				<File
-					RelativePath="Exceptions.h">
+					RelativePath="Exceptions.h"
+					>
 				</File>
 				<File
-					RelativePath="JugglerFunctors.h">
+					RelativePath="JugglerFunctors.h"
+					>
 				</File>
 				<File
-					RelativePath="main.cpp">
+					RelativePath="main.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\NavCallback.h">
+					RelativePath=".\NavCallback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\NavFactory.h">
+					RelativePath=".\NavFactory.h"
+					>
 				</File>
 				<File
-					RelativePath="Precompiled.h">
+					RelativePath="Precompiled.h"
+					>
 				</File>
 				<File
-					RelativePath="Registry.cpp">
+					RelativePath="Registry.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Registry.h">
+					RelativePath="Registry.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Signals.h">
+					RelativePath=".\Signals.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ToolCallback.h">
+					RelativePath=".\ToolCallback.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ToolFactory.h">
+					RelativePath=".\ToolFactory.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Functors"
-				Filter="">
+				>
 				<File
-					RelativePath="Functors\BaseFunctor.cpp">
+					RelativePath="Functors\BaseFunctor.cpp"
+					>
 				</File>
 				<File
-					RelativePath="Functors\BaseFunctor.h">
+					RelativePath="Functors\BaseFunctor.h"
+					>
 				</File>
 				<Filter
 					Name="Navigate"
-					Filter="">
+					>
 					<File
-						RelativePath="Functors\Rotate.cpp">
+						RelativePath="Functors\Rotate.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Rotate.h">
+						RelativePath="Functors\Rotate.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Transform.cpp">
+						RelativePath="Functors\Transform.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Transform.h">
+						RelativePath="Functors\Transform.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\TransformPair.cpp">
+						RelativePath="Functors\TransformPair.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\TransformPair.h">
+						RelativePath="Functors\TransformPair.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Translate.cpp">
+						RelativePath="Functors\Translate.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Translate.h">
+						RelativePath="Functors\Translate.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Pick"
-					Filter="">
+					>
 					<File
-						RelativePath="Pick\Intersect.cpp">
+						RelativePath="Pick\Intersect.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Pick\Intersect.h">
+						RelativePath="Pick\Intersect.h"
+						>
 					</File>
 					<File
-						RelativePath="Pick\Seek.cpp">
+						RelativePath="Pick\Seek.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Pick\Seek.h">
+						RelativePath="Pick\Seek.h"
+						>
 					</File>
 					<File
-						RelativePath="Pick\Select.cpp">
+						RelativePath="Pick\Select.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Pick\Select.h">
+						RelativePath="Pick\Select.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Misc Functors"
-					Filter="">
+					>
 					<File
-						RelativePath="Functors\AnalogInput.cpp">
+						RelativePath="Functors\AnalogInput.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\AnalogInput.h">
+						RelativePath="Functors\AnalogInput.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Direction.cpp">
+						RelativePath="Functors\Direction.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\Direction.h">
+						RelativePath="Functors\Direction.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\JoystickHorizontal.cpp">
+						RelativePath="Functors\JoystickHorizontal.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\JoystickHorizontal.h">
+						RelativePath="Functors\JoystickHorizontal.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\JoystickVertical.cpp">
+						RelativePath="Functors\JoystickVertical.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\JoystickVertical.h">
+						RelativePath="Functors\JoystickVertical.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Matrix Functors"
-					Filter="">
+					>
 					<File
-						RelativePath="Functors\IdentityMatrix.cpp">
+						RelativePath="Functors\IdentityMatrix.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\IdentityMatrix.h">
+						RelativePath="Functors\IdentityMatrix.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\InverseMatrix.cpp">
+						RelativePath="Functors\InverseMatrix.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\InverseMatrix.h">
+						RelativePath="Functors\InverseMatrix.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\MatrixFunctor.cpp">
+						RelativePath="Functors\MatrixFunctor.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\MatrixFunctor.h">
+						RelativePath="Functors\MatrixFunctor.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\MatrixPair.cpp">
+						RelativePath="Functors\MatrixPair.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\MatrixPair.h">
+						RelativePath="Functors\MatrixPair.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandMatrix.cpp">
+						RelativePath="Functors\WandMatrix.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandMatrix.h">
+						RelativePath="Functors\WandMatrix.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandPosition.cpp">
+						RelativePath="Functors\WandPosition.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandPosition.h">
+						RelativePath="Functors\WandPosition.h"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandRotation.cpp">
+						RelativePath="Functors\WandRotation.cpp"
+						>
 					</File>
 					<File
-						RelativePath="Functors\WandRotation.h">
+						RelativePath="Functors\WandRotation.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Tool"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Functors\MoveTool.cpp">
+						RelativePath=".\Functors\MoveTool.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\MoveTool.h">
+						RelativePath=".\Functors\MoveTool.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\ScaleTool.cpp">
+						RelativePath=".\Functors\ScaleTool.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\ScaleTool.h">
+						RelativePath=".\Functors\ScaleTool.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\Tool.cpp">
+						RelativePath=".\Functors\Tool.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\Tool.h">
+						RelativePath=".\Functors\Tool.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\ToolPair.cpp">
+						RelativePath=".\Functors\ToolPair.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Functors\ToolPair.h">
+						RelativePath=".\Functors\ToolPair.h"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="OSG Scene Tools"
-				Filter="">
+				>
 				<File
-					RelativePath="SceneFunctors.h">
+					RelativePath="SceneFunctors.h"
+					>
 				</File>
 				<File
-					RelativePath="ScenePredicates.h">
+					RelativePath="ScenePredicates.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Interfaces"
-				Filter="">
+				>
 				<File
-					RelativePath="Interfaces\IApplication.h">
+					RelativePath="Interfaces\IApplication.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IAuxiliaryScene.h">
+					RelativePath="Interfaces\IAuxiliaryScene.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IClippingDistance.h">
+					RelativePath=".\Interfaces\IClippingDistance.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IFrameInfo.h">
+					RelativePath="Interfaces\IFrameInfo.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IJoystick.h">
+					RelativePath="Interfaces\IJoystick.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IMaterialStack.h">
+					RelativePath="Interfaces\IMaterialStack.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IMatrixMultiply.h">
+					RelativePath="Interfaces\IMatrixMultiply.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IModelsScene.h">
+					RelativePath="Interfaces\IModelsScene.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\INavigationScene.h">
+					RelativePath="Interfaces\INavigationScene.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IPostModelLoad.h">
+					RelativePath="Interfaces\IPostModelLoad.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IRotationCenter.h">
+					RelativePath="Interfaces\IRotationCenter.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\ISelection.h">
+					RelativePath="Interfaces\ISelection.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IVisibility.h">
+					RelativePath="Interfaces\IVisibility.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IWandState.h">
+					RelativePath="Interfaces\IWandState.h"
+					>
 				</File>
 				<File
-					RelativePath="Interfaces\IWorldInfo.h">
+					RelativePath="Interfaces\IWorldInfo.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Config"
-			Filter="">
+			>
 			<File
-				RelativePath=".\menu.xml">
+				RelativePath=".\menu.xml"
+				>
 			</File>
 			<File
-				RelativePath=".\preferences.xml">
+				RelativePath=".\preferences.xml"
+				>
 			</File>
 			<File
-				RelativePath=".\registry.xml">
+				RelativePath=".\registry.xml"
+				>
 			</File>
 		</Filter>
 	</Files>

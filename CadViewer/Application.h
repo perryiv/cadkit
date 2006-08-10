@@ -42,6 +42,7 @@
 #include "Collision/Interfaces/ICollider.h"
 
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/CommandLine/Parser.h"
 
 #include "osgVRJ/Application.h"
 
@@ -294,6 +295,10 @@ public:
 
 protected:
 
+  // Typedefs needed below.
+  typedef Usul::CommandLine::Parser                     Parser;
+  typedef Parser::Args                                  ParserArgs;
+
   // Joystick callbacks.
   struct JoystickCB : public vrjGA::Callback
   {
@@ -369,7 +374,7 @@ protected:
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
   void                          _loadRestartFile ( const std::string &filename );
-  void                          _loadConfigFiles ( const std::list<std::string> &configs );
+  void                          _loadConfigFiles ( const ParserArgs &configs );
   void                          _loadSimConfigs  ( std::string dir );
   void                          _loadSimConfigs();
 
@@ -547,7 +552,6 @@ protected:
 
   // For readability.
   typedef unsigned long                                 ThreadId;
-  typedef Usul::CommandLine::Parser                     Parser;
   typedef std::auto_ptr<Parser>                         ParserPtr;
   typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
   typedef osg::ref_ptr<osg::Group>                      GroupPtr;

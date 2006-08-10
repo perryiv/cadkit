@@ -42,7 +42,6 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/CommandLine/Parser.h"
 #include "Usul/Components/Object.h"
 #include "Usul/Print/Vector.h"
 #include "Usul/Print/Matrix.h"
@@ -65,6 +64,7 @@
 #include "osg/LightSource"
 #include "osg/Projection"
 #include "osg/Version"
+#include "osg/AnimationPath"
 #include "osgFX/Scribe"
 
 #include "osgDB/ReadFile"
@@ -83,7 +83,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -396,9 +396,9 @@ Application::Application ( Args &args ) :
 
 Application::~Application()
 {
-  int i;
+  unsigned int i;
   
-  for(i=0; i<_gridFunctors.size(); ++i){
+  for( i=0; i<_gridFunctors.size(); ++i){
     delete _gridFunctors[i];
   }
   _gridFunctors.clear();
@@ -703,7 +703,7 @@ void Application::_initGrid ( osg::Node *node )
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
   // Clean up any old grids
-  for(i=0; i<_gridFunctors.size(); ++i){
+  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
     delete _gridFunctors[i];
   }
   _gridFunctors.clear();
@@ -740,7 +740,7 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  for(int i=0; i<_gridFunctors.size(); ++i){
+  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
     _gridBranch->addChild ( (*(_gridFunctors[i]))() );
   }
 }
@@ -3610,7 +3610,7 @@ bool Application::_recursiveMatchNodeName ( const std::string &name, osg::Node *
   g = model->asGroup();
   if ( g )
   {
-    for ( int i=0; i<g->getNumChildren(); ++i )
+    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
     {
       if ( _recursiveMatchNodeName ( name, g->getChild(i), match ) )
       {
@@ -3645,7 +3645,7 @@ void Application::_deleteScene()
   // is deleted
   while ( _models->getNumChildren() > 0 )
   {
-    for(int k=0; k<_models->getNumChildren(); k++){
+    for( unsigned int k=0; k<_models->getNumChildren(); k++){
       _models->removeChild(k);
     }
   }
@@ -3653,7 +3653,7 @@ void Application::_deleteScene()
   // Also delete all scribe effects
   while ( _scribeBranch->getNumChildren() > 0 )
   {
-    for(int k=0; k<_scribeBranch->getNumChildren(); k++){
+    for(unsigned int k=0; k<_scribeBranch->getNumChildren(); k++){
       _scribeBranch->removeChild(k);
     }
   }
@@ -3668,6 +3668,20 @@ void Application::_deleteScene()
 
 void Application::_initTmpDir()
 {
+#ifdef _MSC_VER
+  // Compile-time sanity check.
+  const unsigned int bufSize ( 16383 ); // 2^14 - 1
+  USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
+
+  char directory[bufSize + 1];
+  DWORD result ( ::GetTempPath ( bufSize, directory ) );
+
+  std::string d ( result + "/CadViewer" );
+
+  ::_mkdir ( d.c_str() );
+
+  _tmpDirName = d;
+#else
   // If directory name is empty, generate it
   if ( _tmpDirName.size() == 0 )
   {
@@ -3692,6 +3706,7 @@ void Application::_initTmpDir()
   cmd = "mkdir ";
   cmd += _tmpDirName;
   system ( cmd.c_str() );
+#endif
 }
 
 #if defined (USE_SINTERPOINT)
@@ -3793,7 +3808,7 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
   osg::Group *g;
   osg::NodeCallback *nc;
   osg::AnimationPathCallback *apc;
-  osg::AnimationPath *ap;
+  //osg::AnimationPath *ap;
 
   // Check to see if we have an animation path
   nc = model->getUpdateCallback();
@@ -3809,7 +3824,7 @@ void Application::_animationsOnOff ( bool onOff, osg::Node *model )
   // If model is a group, it may contain more nodes, so search
   g = model->asGroup();
   if ( g ) {
-    for ( int i=0; i<g->getNumChildren(); ++i )
+    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
     {
       _animationsOnOff ( onOff, g->getChild(i) );
     }

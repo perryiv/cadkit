@@ -40,7 +40,7 @@ SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToRese
   _flags     ( flags ),
   _ref       ( 0 )
 {
-  USUL_STATIC_ASSERT (  4 == sizeof ( _index        ) );
+  /*USUL_STATIC_ASSERT (  4 == sizeof ( _index        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _flags        ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref          ) );
 
@@ -58,7 +58,7 @@ SharedVertex::SharedVertex ( unsigned int index, unsigned int numTrianglesToRese
 #else
   USUL_STATIC_ASSERT ( 12 == sizeof ( _triangles    ) );
   USUL_STATIC_ASSERT ( 20 == sizeof ( SharedVertex  ) ); // Why?
-#endif
+  #endif*/
 
   // Reserve triangles.
   if ( numTrianglesToReserve > 0 )

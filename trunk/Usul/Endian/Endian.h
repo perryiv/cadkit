@@ -33,12 +33,24 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Compile-time detection of byte order. See boost/detail/limits.hpp and 
+//  Compile-time detection of byte order. See boost/detail/endian.hpp and 
 //  http://www.unixpapa.com/incnote/byteorder.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if   defined ( __sparc     ) || \
+// GNU libc offers the helpful header <endian.h> which defines
+// __BYTE_ORDER
+
+#if defined (__GLIBC__)
+# include <endian.h>
+# if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#  define USUL_LITTLE_ENDIAN
+# elif (__BYTE_ORDER == __BIG_ENDIAN)
+#  define USUL_BIG_ENDIAN
+# else
+#  error Unknown machine endianness detected.
+# endif
+#elif defined ( __sparc     ) || \
       defined ( __sparc__   ) || \
       defined ( __powerpc__ ) || \
       defined ( __ppc__     ) || \

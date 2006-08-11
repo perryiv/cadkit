@@ -43,13 +43,13 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
   _flags ( flags ),
   _ref   ( 0 )
 {
-  USUL_STATIC_ASSERT (  4 == sizeof ( _v0       ) );
+  /*USUL_STATIC_ASSERT (  4 == sizeof ( _v0       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _v1       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _v2       ) );
   USUL_STATIC_ASSERT (  4 == sizeof ( _index    ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _flags    ) );
   USUL_STATIC_ASSERT (  1 == sizeof ( _ref      ) );
-  USUL_STATIC_ASSERT ( 20 == sizeof ( Triangle  ) ); // Why?
+  USUL_STATIC_ASSERT ( 20 == sizeof ( Triangle  ) ); // Why?*/
 
   // Make sure the vertices are not the same.
   if ( v0 == v1 || v0 == v2 || v1 == v2 )

@@ -145,7 +145,8 @@ namespace OsgTools
       geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,
 						    0,vertices->size()) );
 
-      _cp( geometry.get() );
+      // Needed to make gcc 4.1.1 happy
+      this->color_policy()( geometry.get() );
 
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->setName("OsgTools_Box_geode");

@@ -22,46 +22,48 @@ CACHE PATH
 FIND_PACKAGE(OpenGL)
 
 # ------------ Find Usul Library ----------------------
-FIND_LIBRARY (USUL_LIBRARY Usul
-	${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-	/usr/local/lib
-)
+#FIND_LIBRARY (USUL_LIBRARY Usul
+#	${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
+#	/usr/local/lib
+#)
 
 # ------------ Find OpenThreads Library ----------------------
-FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
+#	/usr/local/lib
+#	/usr/lib
+#)
 # ------------ Find osg Library ----------------------
-FIND_LIBRARY(OSG_LIB osg
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OSG_LIB osg
+#	/usr/local/lib
+#	/usr/lib
+#)
 # ------------ Find osgDB Library ----------------------
-FIND_LIBRARY(OSG_DB_LIB osgDB
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OSG_DB_LIB osgDB
+#	/usr/local/lib
+#	/usr/lib
+#)
 # ------------ Find osgGA Library ----------------------
-FIND_LIBRARY(OSG_GA_LIB osgGA
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OSG_GA_LIB osgGA
+#	/usr/local/lib
+#	/usr/lib
+#)
 # ------------ Find osgText Library ----------------------
-FIND_LIBRARY(OSG_TEXT_LIB osgText
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OSG_TEXT_LIB osgText
+#	/usr/local/lib
+#	/usr/lib
+#)
 # ------------ Find osgUtil Library ----------------------
-FIND_LIBRARY(OSG_UTIL_LIB osgUtil
-	/usr/local/lib
-	/usr/lib
-)
+#FIND_LIBRARY(OSG_UTIL_LIB osgUtil
+#	/usr/local/lib
+#	/usr/lib
+#)
 
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" "$ENV{OSG_INC_DIR}" "$ENV{OPENTHREADS_INC_DIR}" )
+
+LINK_DIRECTORIES( ${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE} "$ENV{OSG_LIB_DIR}" "$ENV{OPENTHREADS_LIB_DIR}" )
 
 #List the Sources
 SET (SOURCES
@@ -145,13 +147,13 @@ ADD_LIBRARY(OsgTools SHARED ${SOURCES} )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES(OsgTools 
-	${USUL_LIBRARY} 
-	${OPENTHREADS_LIB}
-	${OSG_LIB}
-	${OSG_DB_LIB}
-	${OSG_GA_LIB}
-	${OSG_TEXT_LIB}
-	${OSG_UTIL_LIB}
+	Usul
+	OpenThreads
+	osg
+	osgDB
+	osgGA
+	osgText
+	osgUtil
 	${OPENGL_LIBRARIES}
 	)
 

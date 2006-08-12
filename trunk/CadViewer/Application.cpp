@@ -634,7 +634,8 @@ void Application::_initText()
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   ErrorChecker ( 1071452071, mt.valid() );
-  mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
+  //mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
+  mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.
@@ -3042,9 +3043,9 @@ void Application::_loadSimConfigs ( std::string dir )
   CV::Detail::LoadConfigFile loader;
 
   // Load the config files.
-  loader ( dir + "sim.base.config" );
-  loader ( dir + "sim.wand.mixin.config" );
-  loader ( dir + "sim.analog.mixin.config" );
+  loader ( dir + "sim.base.jconf" );
+  loader ( dir + "sim.wand.mixin.jconf" );
+  loader ( dir + "sim.analog.mixin.jconf" );
 }
 
 

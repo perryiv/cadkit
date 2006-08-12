@@ -634,8 +634,13 @@ void Application::_initText()
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   ErrorChecker ( 1071452071, mt.valid() );
-  //mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
+
+#ifdef _MSC_VER
   mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+#else
+  mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
+#endif
+ 
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.

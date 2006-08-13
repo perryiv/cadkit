@@ -644,41 +644,14 @@ namespace Detail
 
 namespace Detail
 {
-  void addPixels ( const std::string &answer, std::vector < unsigned char > &row, unsigned int whichRow )
+  template < class InputIterator, class OutputIterator >
+  void addPixels ( InputIterator begin, InputIterator end, OutputIterator out )
   {
-    // Vector to hold the answer.
-    std::vector < unsigned int > answerRow ( row.size(), 0 );
-
-    // Position to seek to.  Account for width and heigth at the beginning of file.
-    const unsigned int position ( row.size() * whichRow * sizeof ( unsigned int ) + 2 * sizeof ( unsigned int ) );
-    
+    for ( InputIterator iter = begin; iter != end; ++iter )
     {
-      // Open the file for reading.
-      std::ifstream in ( answer.c_str() );
-      if ( false == in.is_open() )
-        throw std::runtime_error ( "Error 3352298994: failed to open file: " + answer );
-
-      // Seek to the correct position.
-      in.seekg ( position );
-
-      // Read the answer row.
-      in.read ( reinterpret_cast < char * > ( &answerRow[0] ), answerRow.size() * sizeof ( unsigned int ) );
+      *out += *iter;
+      out++;
     }
-
-    // Add the contents of row to answer row.
-    for ( unsigned int i = 0; i < row.size(); ++i )
-      answerRow[i] += row[i];
-
-    // Open the file for writting.
-    std::ofstream out ( answer.c_str() );
-    if ( false == out.is_open() )
-      throw std::runtime_error ( "Error 1070487942: failed to open file: " + answer );
-
-    // Seek to the correct position.
-    out.seekp ( position );
-
-    // Write of the contents.
-    out.write ( reinterpret_cast < const char * > ( &answerRow[0] ), answerRow.size() * sizeof ( unsigned int ) );
   }
 }
 
@@ -691,10 +664,11 @@ namespace Detail
 
 namespace Detail
 {
-  void addPixels ( const std::string &image, const std::string &answer, unsigned int width, unsigned int height )
+  template < class OutputContainer >
+  void addPixels ( const std::string &image, OutputContainer& out, unsigned int width, unsigned int height )
   {
     // Open image for reading.
-    std::ifstream in ( image.c_str() );
+    std::ifstream in ( image.c_str(), std::ios::binary );
     if ( false == in.is_open() )
       throw std::runtime_error ( "Error 4068209531: failed to open file: " + image );
 
@@ -708,14 +682,20 @@ namespace Detail
     // Pixels in temporary intermediate files are unsigned chars.
     std::vector < unsigned char > row ( width * Detail::NUM_CHANNELS, 0 );
 
+    typedef typename OutputContainer::iterator OutputIterator;
+    typedef typename OutputIterator::value_type PixelComponent;
+
     // Loop through the rows of the image.
     for ( unsigned int i = 0; i < height; ++i )
     {
       // Read a single row from temp file.
       in.read ( reinterpret_cast < std::ifstream::char_type * > ( &row[0] ), row.size() );
 
+      // Position to seek to.
+      const unsigned int position ( i * width * Detail::NUM_CHANNELS );
+
       // Add this row to the answer file.
-      Detail::addPixels ( answer, row, i );
+      Detail::addPixels ( row.begin(), row.end(), out.begin() + position );
     }
   }
 }
@@ -737,11 +717,11 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsig
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
   Usul::Policies::TimeBased elapsed ( 1000 );
 
-  // Make a temporary file and fill it with zeros. These will be the "pixels".
-  const std::string answer ( Detail::makeFile ( width, height ) );
-
   const unsigned int total ( images.size() );
   unsigned int count ( 0 );
+
+  // Make a temporary vector and fill it with zeros. These will be the "pixels".
+  std::vector < unsigned int > answer ( width * height * Detail::NUM_CHANNELS, 0 );
 
   // Loop through the image files.
   for ( ImageList::iterator iter = images.begin(); iter != images.end(); ++iter )
@@ -764,30 +744,16 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsig
   osg::ref_ptr < osg::Image > image ( new osg::Image );
   image->allocateImage ( width, height, 1, pixelFormat, dataType );
 
-  // Start at the beginning.
-  std::ifstream answerIO ( answer.c_str() );
-  if ( false == answerIO.is_open() )
-    throw std::runtime_error ( "Error 1250373094: failed to open file: " + answer );
-
   // Used to average.
   const float mult ( 1.0f / (float) images.size() );
 
-  // Used in the loop.
-  std::vector < unsigned int > answerRow ( width * Detail::NUM_CHANNELS, 0 );
-  const unsigned int bytesPerRow ( answerRow.size() * sizeof ( unsigned int ) );
+  // Image buffer
+  unsigned char *buffer = image->data ( );
 
   // Read each row.
-  for ( unsigned int r = 0; r < height; ++r )
+  for ( unsigned int r = 0; r < answer.size(); ++r )
   {
-    // Read corresponding row from answer file.
-    answerIO.read ( reinterpret_cast < std::ifstream::char_type * > ( &answerRow[0] ), bytesPerRow );
-
-    // Loop through the columns.
-    unsigned char *buffer = image->data ( 0, r );
-    for ( unsigned int c = 0; c < answerRow.size(); ++c )
-    {
-      buffer[c] = static_cast < unsigned char > ( static_cast < float > ( answerRow[c] ) * mult );
-    }
+    buffer[r] = static_cast < unsigned char > ( static_cast < float > ( answer[r] ) * mult );
   }
 
   // All done.
@@ -842,11 +808,15 @@ namespace Detail
 {
   void writeImage ( const osg::Image &image, const std::string &file )
   {
-    std::ofstream out ( file.c_str() );
+    std::ofstream out ( file.c_str(), std::ios::binary );
     if ( false == out.is_open() )
       throw std::runtime_error ( "Error 2581366847: Failed to open file for writing: " + file );
-    const int width  ( image.s() );
-    const int height ( image.t() );
+    if( image.s() < 0 )
+      throw std::runtime_error ( "Error 1241366246: width is less than zero." );
+    if( image.t() < 0 )
+      throw std::runtime_error ( "Error 3243622229: height is less than zero." );
+    const unsigned int width  ( static_cast < unsigned int > ( image.s() ) );
+    const unsigned int height ( static_cast < unsigned int > ( image.t() ) );
     out.write ( reinterpret_cast < const char * > ( &width ),  sizeof ( width  ) );
     out.write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
     out.write ( reinterpret_cast < const char * > ( image.data() ), image.getImageSizeInBytes() );
@@ -870,8 +840,6 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
   Usul::Interfaces::ICancelButton::ShowHide cancel ( Usul::Resources::cancelButton() );
-
-  //this->numRenderPasses ( 3 );
 
   try
   {
@@ -937,8 +905,6 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   }
 
   _sceneView->setViewMatrix( oldViewMatrix );
-
-  //this->numRenderPasses ( 1 );
 
   return answer.release();
 }

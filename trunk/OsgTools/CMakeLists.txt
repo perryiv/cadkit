@@ -18,14 +18,15 @@ CACHE PATH
 "SINGLE Directory for all Executables."
 )
 
-# ------------ Find OpenGL Library ----------------------
-FIND_PACKAGE(OpenGL)
 
 # ------------ Find Usul Library ----------------------
 FIND_LIBRARY (USUL_LIBRARY Usul
 	${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
 	/usr/local/lib
 )
+
+# ------------ Find OpenGL Library ----------------------
+FIND_PACKAGE(OpenGL)
 
 # ------------ Find OpenThreads Library ----------------------
 FIND_LIBRARY(OPENTHREADS_LIB OpenThreads

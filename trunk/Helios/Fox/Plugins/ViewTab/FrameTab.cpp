@@ -187,14 +187,14 @@ void FrameTab::initialize( Usul::Interfaces::IUnknown *caller )
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXLabel  ( frame,  "Width:", 0x0, FX::LAYOUT_LEFT  );
     FX::FXSpinner *widthSpinner ( new FX::FXSpinner ( frame, 5, this, ID_WIDTH_CHANGED ) );
-    widthSpinner->setRange( 1, 4096 );
+    widthSpinner->setRange( 1, 131072 );
     widthSpinner->setIncrement( 10 );
     widthSpinner->setValue ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::WIDTH, 800 ) );
 
     frame = new FX::FXHorizontalFrame ( imageGroup, LAYOUT_FILL_X );
     new FX::FXLabel  ( frame,  "Height:", 0x0, FX::LAYOUT_LEFT  );
     FX::FXSpinner *heightSpinner ( new FX::FXSpinner ( frame, 5, this, ID_HEIGHT_CHANGED ) );
-    heightSpinner->setRange( 1, 4096 );
+    heightSpinner->setRange( 1, 131072 );
     heightSpinner->setIncrement( 10 );
     heightSpinner->setValue ( FoxTools::Registry::read ( Usul::Registry::Sections::IMAGE_EXPORT_SIZE, Usul::Registry::Keys::HEIGHT, 600 ) );
 

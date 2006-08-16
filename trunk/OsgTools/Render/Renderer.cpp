@@ -31,6 +31,7 @@
 #include "Usul/System/Clock.h"
 
 #include "osg/Texture2D"
+#include "osg/Version"
 
 #include "osgUtil/UpdateVisitor"
 
@@ -721,7 +722,7 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsig
   unsigned int count ( 0 );
 
   // Make a temporary vector and fill it with zeros. These will be the "pixels".
-  std::vector < unsigned int > answer ( width * height * Detail::NUM_CHANNELS, 0 );
+  std::vector < unsigned short > answer ( width * height * Detail::NUM_CHANNELS, 0 );
 
   // Loop through the image files.
   for ( ImageList::iterator iter = images.begin(); iter != images.end(); ++iter )
@@ -938,7 +939,13 @@ void Renderer::_screenCapture ( osg::Image& image, unsigned int width, unsigned 
 void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
 {
   // Should we use frame buffer objects?
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 1
   bool useFBO ( osg::FBOExtensions::instance( _contextId, true )->isSupported() && height <= 4096 && width <= 4096 );
+#elif OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
+  bool useFBO ( osg::FBOExtensions::instance( _contextId )->isSupported() && height <= 4096 && width <= 4096 );
+#else
+  bool useFBO ( false );
+#endif
 
   // Make enough space
   image.allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );

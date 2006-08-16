@@ -424,14 +424,6 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
             Detail::findEdge( adjacentPolygons, iter->get() );
             (*iter)->onEdge( true );
         }
-#if 1      
-#warning Remove this code
-        if( adjacentPolygons.size() != vertsPerPoly + 1 )
-        {
-          std::cout << "Not Enough Neighbors " << (*iter)->index() << std::endl;
-          total++;
-        }
-#endif   
         
         Detail::cache.at( (*iter)->index() ) = adjacentPolygons.size();
         

@@ -75,14 +75,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: VRV Preferences", "..\
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Usul", "..\Usul\Usul_vs8.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Usul", "..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OsgTools", "..\OsgTools\OsgTools_vs8.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OsgTools", "..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\Threads\OpenThreads\OpenThreadsEx_vs8.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

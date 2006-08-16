@@ -28,35 +28,47 @@ FIND_LIBRARY (USUL_LIBRARY Usul
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
+# Pick up if the user has set an environment variable to point to the 
+# OpenThreads and OpenSceneGraph Library Directory. If these are not set
+# then they will simply be ignored.
+set(OSG_LIB_DIR "$ENV{OSG_LIB_DIR}")
+set(OT_LIB_DIR "$ENV{OPENTHREADS_LIB_DIR}")
+
 # ------------ Find OpenThreads Library ----------------------
 FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
 	/usr/local/lib
 	/usr/lib
+	${OT_LIB_DIR}
 )
 # ------------ Find osg Library ----------------------
 FIND_LIBRARY(OSG_LIB osg
 	/usr/local/lib
 	/usr/lib
+	${OSG_LIB_DIR}
 )
 # ------------ Find osgDB Library ----------------------
 FIND_LIBRARY(OSG_DB_LIB osgDB
 	/usr/local/lib
 	/usr/lib
+  ${OSG_LIB_DIR}
 )
 # ------------ Find osgGA Library ----------------------
 FIND_LIBRARY(OSG_GA_LIB osgGA
 	/usr/local/lib
 	/usr/lib
+	${OSG_LIB_DIR}
 )
 # ------------ Find osgText Library ----------------------
 FIND_LIBRARY(OSG_TEXT_LIB osgText
 	/usr/local/lib
 	/usr/lib
+	${OSG_LIB_DIR}
 )
 # ------------ Find osgUtil Library ----------------------
 FIND_LIBRARY(OSG_UTIL_LIB osgUtil
 	/usr/local/lib
 	/usr/lib
+	${OSG_LIB_DIR}
 )
 
 

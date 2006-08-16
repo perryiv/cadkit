@@ -35,9 +35,9 @@ public:
 
   bool operator < (const Hit& hit) const
   {
-    if (_originalFrustum<hit._originalFrustum) return true;
-    if (_originalFrustum>hit._originalFrustum) return false;
-    return _ratio<hit._ratio;
+    if (_originalFrustum.get() < hit._originalFrustum.get()) return true;
+    if (_originalFrustum.get() > hit._originalFrustum.get()) return false; 
+    return _ratio < hit._ratio;
   }
 
   const osg::Vec3& getLocalIntersectPoint() const { return _intersectPoint; }

@@ -41,6 +41,28 @@ class Options
   // Get the value for the option.
   std::string value ( const std::string& ) const;
 
+/**
+ * @brief Returns the given option as a string value
+ * @param option A named Option
+ * @return The value of the option as a string
+ */
+ std::string Options::stringValue ( const std::string& option ) const;
+
+/**
+ * @brief Returns the given option as a integer value
+ * @param option A named Option
+ * @return The value of the option as a integer
+ */
+unsigned long int Options::intValue (const std::string& option) const;
+ 
+ /**
+ * @brief Returns the given option as a float value
+ * @param option A named Option
+ * @return The value of the option as a float
+ */
+float Options::floatValue(const std::string& option) const;
+
+
   iterator begin() { return _options.begin(); }
   iterator end() { return _options.end(); }
 

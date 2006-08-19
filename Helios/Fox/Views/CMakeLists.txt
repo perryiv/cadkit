@@ -5,7 +5,7 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_FOX_VIEWS")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" "${FOX_INCLUDE}" ${OSG_INC_DIR} ${OT_INC_DIR} )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" "${FOXTOOLKIT_INCLUDE}" ${OSG_INC_DIR} ${OT_INC_DIR} )
 
 #List the Sources
 SET (SOURCES

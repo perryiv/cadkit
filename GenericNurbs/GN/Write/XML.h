@@ -173,7 +173,7 @@ template < class SplineType > struct XML
         for ( SizeType j = 0; j < numKnots; ++j )
         {
           out << indent4 << "<knot i=\"" << j << "\">";
-          GN_FORMAT_STRING_1 ( buffer, bufSize, format.first.c_str(), s.knot(i,j) );
+          snprintf ( buffer, bufSize, format.first.c_str(), s.knot(i,j) );
           out << buffer;
           out << "</knot>\n";
         }
@@ -196,7 +196,7 @@ template < class SplineType > struct XML
         for ( SizeType i = 0; i < numDepVars; ++i )
         {
           // Note: Linux and Cygwin cannot print long double.
-          GN_FORMAT_STRING_1 ( buffer, bufSize, format.second.c_str(), s.controlPoint(i,j) );
+          snprintf ( buffer, bufSize, format.second.c_str(), s.controlPoint(i,j) );
           out << buffer;
         }
 

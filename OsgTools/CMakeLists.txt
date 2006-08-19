@@ -1,82 +1,10 @@
 
 PROJECT(OsgTools)
 
-SET (CMAKE_BUILD_TYPE Debug)
-SET (CMAKE_SKIP_RPATH OFF)
-
-#Setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-CACHE PATH
-"Single Directory for all Libraries"
-)
-
-#Setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-CACHE PATH
-"SINGLE Directory for all Executables."
-)
-
-
-# ------------ Find Usul Library ----------------------
-FIND_LIBRARY (USUL_LIBRARY Usul
-	${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-	/usr/local/lib
-)
-
-# ------------ Find OpenGL Library ----------------------
-FIND_PACKAGE(OpenGL)
-
-# Pick up if the user has set an environment variable to point to the 
-# OpenThreads and OpenSceneGraph Library Directory. If these are not set
-# then they will simply be ignored.
-set(OSG_LIB_DIR "$ENV{OSG_LIB_DIR}")
-set(OT_LIB_DIR "$ENV{OPENTHREADS_LIB_DIR}")
-
-# ------------ Find OpenThreads Library ----------------------
-FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
-	/usr/local/lib
-	/usr/lib
-	${OT_LIB_DIR}
-)
-# ------------ Find osg Library ----------------------
-FIND_LIBRARY(OSG_LIB osg
-	/usr/local/lib
-	/usr/lib
-	${OSG_LIB_DIR}
-)
-# ------------ Find osgDB Library ----------------------
-FIND_LIBRARY(OSG_DB_LIB osgDB
-	/usr/local/lib
-	/usr/lib
-  ${OSG_LIB_DIR}
-)
-# ------------ Find osgGA Library ----------------------
-FIND_LIBRARY(OSG_GA_LIB osgGA
-	/usr/local/lib
-	/usr/lib
-	${OSG_LIB_DIR}
-)
-# ------------ Find osgText Library ----------------------
-FIND_LIBRARY(OSG_TEXT_LIB osgText
-	/usr/local/lib
-	/usr/lib
-	${OSG_LIB_DIR}
-)
-# ------------ Find osgUtil Library ----------------------
-FIND_LIBRARY(OSG_UTIL_LIB osgUtil
-	/usr/local/lib
-	/usr/lib
-	${OSG_LIB_DIR}
-)
-
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" "$ENV{OSG_INC_DIR}" "$ENV{OPENTHREADS_INC_DIR}" )
-
-LINK_DIRECTORIES( ${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE} "$ENV{OSG_LIB_DIR}" "$ENV{OPENTHREADS_LIB_DIR}" )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${OT_INC_DIR} )
 
 #List the Sources
 SET (SOURCES
@@ -159,15 +87,15 @@ SET (SOURCES
 ADD_LIBRARY(OsgTools SHARED ${SOURCES} )
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(OsgTools 
-	Usul
-	OpenThreads
-	osg
-	osgDB
-	osgGA
-	osgText
-	osgUtil
+TARGET_LINK_LIBRARIES(OsgTools
+  Usul
 	${OPENGL_LIBRARIES}
+	${OPENTHREADS_LIB}
+	${OSG_LIB}
+	${OSG_DB_LIB}
+	${OSG_GA_LIB}
+	${OSG_TEXT_LIB}
+	${OSG_UTIL_LIB}
 	)
 
     

@@ -1,6 +1,7 @@
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -12,12 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __PHASEFIELDDELEGATE_COMPILE_GUARD_H__
-#define __PHASEFIELDDELEGATE_COMPILE_GUARD_H__
+#ifndef _IMAGE_MODEL_COMPILE_GUARD_H_
+#define _IMAGE_MODEL_COMPILE_GUARD_H_
 
-#ifndef _COMPILING_PHASEFIELDDELEGATE
+#ifndef _COMPILING_IMAGE_MODEL
 # error "This header file is only used for compiling the library."
 # error "It should not be included in client code."
 #endif
 
-#endif /* __PHASEFIELDDELEGATE_COMPILE_GUARD_H__ */
+#endif // _IMAGE_MODEL_COMPILE_GUARD_H_

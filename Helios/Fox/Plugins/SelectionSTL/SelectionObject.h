@@ -23,9 +23,9 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/GUI/IMenuEntry.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/IFoxEvent.h"
-#include "Usul/Interfaces/IFoxToolbar.h"
-#include "Usul/Interfaces/ISetCursor.h"
+//#include "Usul/Interfaces/Fox/IFoxEvent.h"
+#include "Usul/Interfaces/Fox/IFoxToolbar.h"
+//#include "Usul/Interfaces/ISetCursor.h"
 #include "Usul/Interfaces/ICleanUp.h"
 #include "Usul/Interfaces/IPlugin.h"
 
@@ -45,9 +45,9 @@ namespace STL {
 class SelectionObject : public Usul::Base::Referenced,
                         public Usul::Interfaces::IMenuEntry,
                         public Usul::Interfaces::ICommand,
-                        public Usul::Interfaces::IFoxEvent,
+                      //  public Usul::Interfaces::IFoxEvent,
                         public Usul::Interfaces::IFoxToolbar,
-                        public Usul::Interfaces::ISetCursor,
+                      //  public Usul::Interfaces::ISetCursor,
                         public Usul::Interfaces::ICleanUp,
                         public Usul::Interfaces::IPlugin,
                         public FX::FXObject
@@ -116,7 +116,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual bool execute( Unknown* caller, const FX::FXEvent &event);
+  virtual bool execute( Usul::Interfaces::IUnknown* caller, const FX::FXEvent &event);
 
   /////////////////////////////////////////////////////////////////////////////
   //

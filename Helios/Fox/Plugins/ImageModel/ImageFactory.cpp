@@ -1,6 +1,7 @@
-///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -8,17 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  ImageFactory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "PhaseFieldDelegateFactory.h"
+#include "ImageFactory.h"
+#include "ImageComponent.h"
+
 #include "Usul/Components/Create.h"
-#include "PhaseFieldDelegateComponent.h"
 
-
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PhaseFieldDelegateFactory, PhaseFieldDelegateFactory::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageFactory, ImageFactory::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ extern "C" bool usul_is_debug_build()
 
 extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
 {
-  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new PhaseFieldDelegateFactory() );
+  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new ImageFactory() );
   return factory.release();
 }
 
@@ -56,7 +56,7 @@ extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PhaseFieldDelegateFactory::PhaseFieldDelegateFactory() : BaseClass()
+ImageFactory::ImageFactory() : BaseClass()
 {
 }
 
@@ -67,7 +67,7 @@ PhaseFieldDelegateFactory::PhaseFieldDelegateFactory() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PhaseFieldDelegateFactory::~PhaseFieldDelegateFactory()
+ImageFactory::~ImageFactory()
 {
 }
 
@@ -78,7 +78,7 @@ PhaseFieldDelegateFactory::~PhaseFieldDelegateFactory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *PhaseFieldDelegateFactory::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown *ImageFactory::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
@@ -99,10 +99,10 @@ Usul::Interfaces::IUnknown *PhaseFieldDelegateFactory::queryInterface ( unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *PhaseFieldDelegateFactory::createInstance ( unsigned long iid )
+Usul::Interfaces::IUnknown *ImageFactory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  PhaseFieldDelegateComponent::ValidAccessRefPtr component ( new PhaseFieldDelegateComponent() );
+  ImageComponent::ValidAccessRefPtr component ( new ImageComponent() );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );
@@ -115,5 +115,4 @@ Usul::Interfaces::IUnknown *PhaseFieldDelegateFactory::createInstance ( unsigned
   // Return the released pointer to the component.
   // Reference count should go from 1 -> 0, but it should not delete.
   return unknown.release();
-}	
-	
+}

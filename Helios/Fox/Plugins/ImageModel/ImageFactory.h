@@ -1,6 +1,7 @@
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Adam Kubach
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -8,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  ImageFactory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __PHASEFIELDDELEGATEFACTORY_H__
-#define __PHASEFIELDDELEGATEFACTORY_H__
+#ifndef _IMAGE_MODEL_FACTORY_CLASS_H_
+#define _IMAGE_MODEL_FACTORY_CLASS_H_
 
 #include "CompileGuard.h"
 
@@ -21,8 +22,8 @@
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-class PhaseFieldDelegateFactory : public Usul::Base::Referenced,
-                                  public Usul::Interfaces::IClassFactory
+class ImageFactory : public Usul::Base::Referenced,
+                     public Usul::Interfaces::IClassFactory
 {
 public:
 
@@ -31,18 +32,18 @@ public:
   typedef Usul::Base::Referenced BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( PhaseFieldDelegateFactory );
+  USUL_DECLARE_QUERY_POINTERS ( ImageFactory );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Default construction.
-  PhaseFieldDelegateFactory();
+  ImageFactory();
 
 protected:
 
   /// Use reference counting.
-  virtual ~PhaseFieldDelegateFactory();
+  virtual ~ImageFactory();
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -56,5 +57,4 @@ protected:
 };
 
 
-#endif /* __PHASEFIELDDELEGATEFACTORY_H__  */		
-	
+#endif // _IMAGE_MODEL_FACTORY_CLASS_H_

@@ -59,3 +59,30 @@ std::string Options::value ( const std::string& option ) const
     return iter->second;
   return "";
 }
+
+
+// -----------------------------------------------------------------------------
+// The value as a string
+// -----------------------------------------------------------------------------
+std::string Options::stringValue ( const std::string& option ) const
+{
+  Map::const_iterator iter = _options.find( option );
+  if( iter != _options.end() )
+    return iter->second;
+  return "";
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// The value as an integer
+///////////////////////////////////////////////////////////////////////////////
+ unsigned long int Options::intValue (const std::string& option) const {
+  return atoi( this->stringValue(option).c_str() );
+ }
+
+///////////////////////////////////////////////////////////////////////////////
+// Returns a float value from the Options
+///////////////////////////////////////////////////////////////////////////////
+float Options::floatValue(const std::string& option) const {
+  return (float) atof(this->stringValue(option).c_str() );
+}
+

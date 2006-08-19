@@ -40,8 +40,8 @@ struct IBackground : public Usul::Interfaces::IUnknown
 }; // class IBackground
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_BACKGROUND_H_

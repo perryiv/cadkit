@@ -11,7 +11,7 @@
 #define __CHART_VIEW_H__
 
 #include "Export.h"
-#include "FoxCanvas.h"
+#include "Helios/Fox/Views/FoxCanvas.h"
 
 #include <vector>
 
@@ -25,8 +25,7 @@ namespace Helios {
 namespace Views {
 
 
-class OSG_FOX_VIEWS_EXPORT ChartView : public FoxCanvas,
-                                       public Usul::Interfaces::IBackground
+class OSG_FOX_VIEWS_EXPORT ChartView : public Helios::Views::FoxCanvas, public Usul::Interfaces::IBackground
 {
 public:
 
@@ -34,7 +33,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Useful typedefs.
-  typedef FoxCanvas BaseClass;
+  typedef Helios::Views::FoxCanvas BaseClass;
 
   typedef Usul::Math::Vec2d             Point;
   typedef std::vector< Point >          Plot;

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Plugins/SelectionSTL/Factory.h"
-#include "OsgFox/Plugins/SelectionSTL/SelectionObject.h"
+#include "Helios/Fox/Plugins/SelectionSTL/Factory.h"
+#include "Helios/Fox/Plugins/SelectionSTL/SelectionObject.h"
 
 #include "Usul/Components/Create.h"
 

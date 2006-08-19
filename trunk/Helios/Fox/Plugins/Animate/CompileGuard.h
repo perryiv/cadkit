@@ -21,4 +21,4 @@
 # error "It should not be included in client code."
 #endif
 
-#endif // _REPAIR_STL_COMPILE_GUARD_H_
+#endif // _ANIMATE_COMPILE_GUARD_H_

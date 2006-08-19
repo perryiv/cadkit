@@ -13,9 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgFox/Plugins/SelectionSTL/SelectionObject.h"
+#include "Helios/Fox/Plugins/SelectionSTL/SelectionObject.h"
 
-#include "OsgFox/Views/Canvas.h"
+#include "Helios/Fox/Views/Canvas.h"
 
 #include "FoxTools/Icons/Factory.h"
 #include "FoxTools/Cursors/Factory.h"
@@ -98,10 +98,10 @@ Usul::Interfaces::IUnknown *SelectionObject::queryInterface ( unsigned long iid 
   case Usul::Interfaces::IUnknown::IID:
   case ICommand::IID:
     return static_cast<ICommand*>(this);
-  case Usul::Interfaces::IFoxEvent::IID:
-    return static_cast<Usul::Interfaces::IFoxEvent*>(this);
-  case Usul::Interfaces::ISetCursor::IID:
-    return static_cast<Usul::Interfaces::ISetCursor*>(this);
+ // case Usul::Interfaces::IFoxEvent::IID:
+ //   return static_cast<Usul::Interfaces::IFoxEvent*>(this);
+ // case Usul::Interfaces::ISetCursor::IID:
+ //   return static_cast<Usul::Interfaces::ISetCursor*>(this);
   case Usul::Interfaces::IFoxToolbar::IID:
     return static_cast<Usul::Interfaces::IFoxToolbar*>(this);
   case Usul::Interfaces::IMenuEntry::IID:
@@ -185,7 +185,7 @@ bool SelectionObject::execute( Usul::Interfaces::IUnknown* caller, const FX::FXE
     _cornerTwo[0] = event.last_x;
     _cornerTwo[1] = getHeight->getHeightInt() - event.last_y;
 
-    if ( OsgFox::Views::View *view = dynamic_cast< OsgFox::Views::View* > ( caller ) )
+    if ( Helios::Views::View *view = dynamic_cast< Helios::Views::View* > ( caller ) )
     {
       osg::Matrix M ( view->viewer()->getViewMatrix() );
       osg::Matrix P ( view->viewer()->getProjectionMatrix() );

@@ -30,8 +30,9 @@
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/TextWindow.h"
-#include "Usul/Interfaces/IStatusBar.h"
-#include "Usul/Interfaces/IProgressBar.h"
+
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include <iostream>
 

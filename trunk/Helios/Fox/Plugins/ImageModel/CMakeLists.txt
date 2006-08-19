@@ -5,7 +5,7 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../"  "${FOX_INCLUDE}" )
+INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../"  "${FOXTOOLKIT_INCLUDE}" )
 
 set (SOURCES
 	ImageFactory.cpp

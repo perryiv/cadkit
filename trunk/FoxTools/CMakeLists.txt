@@ -1,9 +1,11 @@
 
 PROJECT(FoxTools)
 
+INCLUDE(${PROJECT_SOURCE_DIR}/../Helios/FindFoxToolkit.cmake)
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" "${FOX_INCLUDE}" )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" "${FOXTOOLKIT_INCLUDE}" )
 
 #List the Sources
 SET (SOURCES

@@ -1,23 +1,6 @@
 
 PROJECT(Usul)
 
-SET (CMAKE_BUILD_TYPE Debug)
-SET (CMAKE_SKIP_RPATH OFF)
-
-#setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-CACHE PATH
-"Single Directory for all Libraries"
-)
-
-#setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-${PROJECT_SOURCE_DIR}/../Bin/${CMAKE_BUILD_TYPE}
-CACHE PATH
-"SINGLE Directory for all Executables."
-)
-
 
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
@@ -79,7 +62,4 @@ ADD_LIBRARY(Usul SHARED ${SOURCES} )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES(Usul)
-	
-	
-	
 	

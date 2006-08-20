@@ -30,6 +30,8 @@ TARGET_LINK_LIBRARIES(FoxThreshold
   Usul 
   FoxTools
   OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
   ${FOXTOOLKIT_LIB}
 )
 

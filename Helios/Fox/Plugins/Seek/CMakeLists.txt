@@ -30,6 +30,8 @@ TARGET_LINK_LIBRARIES(FoxSeek
   Usul 
   FoxTools
   OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
   ${FOXTOOLKIT_LIB}
 )
 

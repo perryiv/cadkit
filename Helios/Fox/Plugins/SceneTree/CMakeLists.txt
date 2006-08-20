@@ -31,6 +31,8 @@ TARGET_LINK_LIBRARIES(FoxSceneTree
   Usul 
   FoxTools
   OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
   ${FOXTOOLKIT_LIB}
 )
 

@@ -29,7 +29,9 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 TARGET_LINK_LIBRARIES(FoxSelectionSTL 
   Usul 
   FoxTools
- # OsgTools
+  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
   ${FOXTOOLKIT_LIB}
 )
 

@@ -30,6 +30,8 @@ TARGET_LINK_LIBRARIES(FoxPhaseFieldDelegate
   Usul 
   FoxTools
   OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
   FoxViews
   ${FOXTOOLKIT_LIB}
 )

@@ -30,6 +30,8 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 # Link the Library	
 TARGET_LINK_LIBRARIES(SceneModel 
   Usul
-	OsgTools
+  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

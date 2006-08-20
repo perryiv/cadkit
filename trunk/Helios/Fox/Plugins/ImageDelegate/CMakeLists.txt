@@ -31,5 +31,8 @@ TARGET_LINK_LIBRARIES(FoxImageDelegate
   FoxTools
   FoxViews
   ${FOXTOOLKIT_LIB}
+  #  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

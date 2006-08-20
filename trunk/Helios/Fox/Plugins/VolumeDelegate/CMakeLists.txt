@@ -33,5 +33,8 @@ TARGET_LINK_LIBRARIES(FoxVolumeDelegate
   FoxViews
   FoxTools
   ${FOXTOOLKIT_LIB}
+  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

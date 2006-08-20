@@ -31,5 +31,8 @@ TARGET_LINK_LIBRARIES(FoxHistogram
   FoxTools
 	FoxViews
   ${FOXTOOLKIT_LIB}
+  #OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

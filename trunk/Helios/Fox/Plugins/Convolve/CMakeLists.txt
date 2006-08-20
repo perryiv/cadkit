@@ -30,7 +30,9 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 TARGET_LINK_LIBRARIES(FoxConvolve 
   Usul 
   FoxTools
-  OsgTools
   ${FOXTOOLKIT_LIB}
+  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

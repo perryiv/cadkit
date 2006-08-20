@@ -29,7 +29,9 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 TARGET_LINK_LIBRARIES(FoxEdgeDetect 
   Usul 
   FoxTools
-  OsgTools
   ${FOXTOOLKIT_LIB}
+  OsgTools
+  ${OPENTHREADS_LIB}
+	${OSG_LIB}
 )
 

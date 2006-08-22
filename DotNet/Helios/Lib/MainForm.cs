@@ -12,12 +12,14 @@ namespace CadKit.Helios
   public partial class MainForm :
     CadKit.Persistence.Form,
     CadKit.Interfaces.IMenuBar,
-    CadKit.Interfaces.IMainForm
+    CadKit.Interfaces.IMainForm,
+    CadKit.Interfaces.IDockPanel
   {
     /// <summary>
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
+    private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
 
     /// <summary>
     /// Constructor.
@@ -26,7 +28,13 @@ namespace CadKit.Helios
     {
       this.PersistentName = persistentName;
       this.InitializeComponent();
-      this.IsMdiContainer = CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_mdi_child_windows", false);
+      this.IsMdiContainer = true;
+
+      if (CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_system_mdi_child_windows", true))
+        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi;
+      else if (CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_tabbed_mdi_child_windows", true))
+        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.DockingMdi; // DockingSdi or DockingWindow makes it assert in CadKit.Referenced.Base on exit.
+
       this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
       this.Load += this._formLoad;
@@ -56,7 +64,9 @@ namespace CadKit.Helios
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+      this._dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
       this.SuspendLayout();
       // 
       // MainForm
@@ -68,8 +78,15 @@ namespace CadKit.Helios
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
       this.Text = "MainForm";
-      this.ResumeLayout(false);
+      // 
+      // _dockPanel
+      // 
+      this._dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this._dockPanel.Name = "_dockPanel";
+      this._dockPanel.TabIndex = 0;
+      this.Controls.Add(this._dockPanel);
 
+      this.ResumeLayout(false);
     }
 
     #endregion
@@ -252,6 +269,14 @@ namespace CadKit.Helios
     object CadKit.Interfaces.IMainForm.Form
     {
       get { lock (_mutex) { return this; } }
+    }
+
+    /// <summary>
+    /// Return the parent form for child views.
+    /// </summary>
+    object CadKit.Interfaces.IDockPanel.DockPanel
+    {
+      get { lock (_mutex) { return this._dockPanel; } }
     }
 
     /// <summary>

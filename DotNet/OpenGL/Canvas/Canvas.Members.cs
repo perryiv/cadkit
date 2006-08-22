@@ -7,23 +7,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
-    {
-      /// <summary>
-      /// Data members.
-      /// </summary>
-      Flags _flags = new Flags();
-      uint _pixelFormat = 0;
-      CadKit.Glue.RenderContext _renderContext = null;
-      System.Windows.Forms.Panel _innerPanel = null;
-      CadKit.Persistence.Form _propertyGridForm = null;
-      CadKit.OpenGL.DataGridForm _pixelFormatEditor = null;
-      CadKit.Persistence.Form _colorEditorForm = null;
-      System.Data.DataTable _pixelFormats = null;
-    }
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    Flags _flags = new Flags();
+    uint _pixelFormat = 0;
+    CadKit.Glue.RenderContext _renderContext = null;
+    System.Windows.Forms.Panel _innerPanel = null;
+    CadKit.Persistence.Form _propertyGridForm = null;
+    CadKit.OpenGL.DataGridForm _pixelFormatEditor = null;
+    CadKit.Persistence.Form _colorEditorForm = null;
+    System.Data.DataTable _pixelFormats = null;
   }
 }

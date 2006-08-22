@@ -7,16 +7,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
+    class Flags
     {
-      class Flags
-      {
-        public bool hasFormClosingCallback = false;
-      }
+      public bool hasFormClosingCallback = false;
     }
   }
 }

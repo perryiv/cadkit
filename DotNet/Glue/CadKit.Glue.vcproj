@@ -188,10 +188,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
-		/>
-		<AssemblyReference
-			RelativePath="..\..\bin\CadKit.Referenced.dll"
-			AssemblyName="CadKit.Referenced, Version=1.0.0.0, processorArchitecture=MSIL"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
 		/>
 	</References>
 	<Files>

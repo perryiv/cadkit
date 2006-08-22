@@ -27,7 +27,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CadKit.Glue, Version=1.0.2397.25605, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="CadKit.Referenced, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -51,10 +50,6 @@
     <ProjectReference Include="..\..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\OpenGL\CadKit.OpenGL.csproj">
-      <Project>{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}</Project>
-      <Name>CadKit.OpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Persistence\CadKit.Persistence.csproj">
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>

@@ -7,26 +7,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
+    /// <summary>
+    /// Call to repaint.
+    /// </summary>
+    public void render()
     {
-      /// <summary>
-      /// Call to repaint.
-      /// </summary>
-      public void render()
-      {
-        // Re-initializes the OpenGL context if needed.
-        this.initRenderingContext();
+      // Re-initializes the OpenGL context if needed.
+      this.initRenderingContext();
 
-        // Resize the viewport.
-        this.resizeOpenGL();
+      // Resize the viewport.
+      this.resizeOpenGL();
 
-        // Paint the window.
-        this.paintOpenGL();
-      }
+      // Paint the window.
+      this.paintOpenGL();
     }
   }
 }

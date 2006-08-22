@@ -7,12 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Constants
   {
-    public partial class Constants
-    {
-    }
   }
 }

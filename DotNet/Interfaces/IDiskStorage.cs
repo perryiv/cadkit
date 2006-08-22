@@ -15,5 +15,11 @@ namespace CadKit.Interfaces
     /// Get the name of the disk storage.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// By default any files used to store data are deleted when the object 
+    /// gets deleted. Set to true in order to save these files.
+    /// </summary>
+    bool Persist { get; set; }
   }
 }

@@ -7,36 +7,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
+    /// <summary>
+    /// Call this to resize OpenGL.
+    /// </summary>
+    public void resizeOpenGL()
     {
-      /// <summary>
-      /// Call this to resize OpenGL.
-      /// </summary>
-      public void resizeOpenGL()
+      try
       {
-        try
+        if (null != _renderContext)
         {
-          if ( null != _renderContext )
-          {
-            this._resizeOpenGL();
-          }
-        }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 2136628702: {0}\n{1}", e.Message, e.StackTrace );
+          this._resizeOpenGL();
         }
       }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2136628702: {0}\n{1}", e.Message, e.StackTrace);
+      }
+    }
 
-      /// <summary>
-      /// Call this to resize OpenGL.
-      /// </summary>
-      private void _resizeOpenGL()
-      {
-      }
+    /// <summary>
+    /// Call this to resize OpenGL.
+    /// </summary>
+    private void _resizeOpenGL()
+    {
     }
   }
 }

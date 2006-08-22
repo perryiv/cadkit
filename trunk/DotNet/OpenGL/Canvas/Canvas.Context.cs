@@ -7,50 +7,47 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
+    /// <summary>
+    /// Call this to initialize OpenGL.
+    /// </summary>
+    public void initRenderingContext()
     {
-      /// <summary>
-      /// Call this to initialize OpenGL.
-      /// </summary>
-      public void initRenderingContext()
+      try
       {
-        try
+        if (null == _renderContext)
         {
-          if ( null == _renderContext )
+          if (null != this.FindForm())
           {
-            if ( null != this.FindForm() )
-            {
-              this._initInnerPanel();
+            this._initInnerPanel();
 
-              _renderContext = new CadKit.Glue.RenderContext ( _innerPanel, _pixelFormat );
-              if ( null != _renderContext )
-              {
-                _renderContext.reference();
-                _pixelFormat = _renderContext.pixelFormat();
-              }
+            _renderContext = new CadKit.Glue.RenderContext(_innerPanel, _pixelFormat);
+            if (null != _renderContext)
+            {
+              _renderContext.reference();
+              _pixelFormat = _renderContext.pixelFormat();
             }
           }
         }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 4576493160: {0}\n{1}", e.Message, e.StackTrace );
-        }
       }
-
-      /// <summary>
-      /// Call this to delete the current rendering context.
-      /// </summary>
-      private void _deleteRenderingContext()
+      catch (System.Exception e)
       {
-        if ( null != _renderContext )
-        {
-          _renderContext.dereference();
-          _renderContext = null;
-        }
+        System.Console.WriteLine("Error 4576493160: {0}\n{1}", e.Message, e.StackTrace);
+      }
+    }
+
+    /// <summary>
+    /// Call this to delete the current rendering context.
+    /// </summary>
+    private void _deleteRenderingContext()
+    {
+      if (null != _renderContext)
+      {
+        _renderContext.dereference();
+        _renderContext = null;
       }
     }
   }

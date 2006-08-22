@@ -7,36 +7,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class Canvas : System.Windows.Forms.Panel
   {
-    public partial class Canvas : System.Windows.Forms.Panel
+    /// <summary>
+    /// Call this to paint using OpenGL.
+    /// </summary>
+    public void paintOpenGL()
     {
-      /// <summary>
-      /// Call this to paint using OpenGL.
-      /// </summary>
-      public void paintOpenGL()
+      try
       {
-        try
+        if (null != _renderContext)
         {
-          if ( null != _renderContext )
-          {
-            this._paintOpenGL();
-          }
-        }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 9052564260: {0}\n{1}", e.Message, e.StackTrace );
+          this._paintOpenGL();
         }
       }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 9052564260: {0}\n{1}", e.Message, e.StackTrace);
+      }
+    }
 
-      /// <summary>
-      /// Call this to paint using OpenGL.
-      /// </summary>
-      private void _paintOpenGL()
-      {
-      }
+    /// <summary>
+    /// Call this to paint using OpenGL.
+    /// </summary>
+    private void _paintOpenGL()
+    {
     }
   }
 }

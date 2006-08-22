@@ -7,38 +7,36 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit
+namespace CadKit.OpenGL
 {
-  namespace OpenGL
+  public partial class DataGridForm : CadKit.Persistence.Form
   {
-    public partial class DataGridForm : CadKit.Persistence.Form
+    private CadKit.OpenGL.Canvas _canvas;
+
+    public DataGridForm(CadKit.OpenGL.Canvas canvas)
+      : base()
     {
-      private CadKit.OpenGL.Canvas _canvas;
+      if (null == canvas)
+        throw new System.ArgumentNullException("Error 1443852070: Canvas is null", null as System.Exception);
+      _canvas = canvas;
+      InitializeComponent();
+      this._fillGrid();
+    }
 
-      public DataGridForm( CadKit.OpenGL.Canvas canvas ) : base()
+    void _fillGrid()
+    {
+      this.SuspendLayout();
+      try
       {
-        if ( null == canvas )
-          throw new System.ArgumentNullException("Error 1443852070: Canvas is null", null as System.Exception);
-        _canvas = canvas;
-        InitializeComponent();
-        this._fillGrid();
+        _dataGrid.DataSource = _canvas.PixelFormats;
       }
-
-      void _fillGrid()
+      catch (System.Exception e)
       {
-        this.SuspendLayout();
-        try
-        {
-          _dataGrid.DataSource = _canvas.PixelFormats;
-        }
-        catch ( System.Exception e )
-        {
-          System.Console.WriteLine( "Error 9052564260: {0}\n{1}", e.Message, e.StackTrace );
-        }
-        finally
-        {
-          this.ResumeLayout( false );
-        }
+        System.Console.WriteLine("Error 9052564260: {0}\n{1}", e.Message, e.StackTrace);
+      }
+      finally
+      {
+        this.ResumeLayout(false);
       }
     }
   }

@@ -46,19 +46,21 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
       lock (_mutex)
       {
         Viewer view = new Viewer();
-        System.Windows.Forms.Form parent = caller as System.Windows.Forms.Form;
-        if (null != parent && parent.IsMdiContainer)
+        view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
+        view.Text = _document.Name;
+
+        CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
+        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
+
+        if (null != panel && panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
         {
           view.MdiParent = caller as System.Windows.Forms.Form;
+          view.Show();
         }
         else
         {
-          view.Owner = parent;
-          view.ShowInTaskbar = false;
+          view.Show(panel);
         }
-        view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
-        view.Text = _document.Name;
-        view.Show();
       }
     }
 

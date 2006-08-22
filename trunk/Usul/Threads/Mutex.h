@@ -44,6 +44,7 @@ public:
   // Set the create-function. Return the previous one.
   // Note: this functions is not thread-safe!
   static CreateFunction * createFunction ( CreateFunction *fun );
+  static CreateFunction * createFunction();
 
   // Lock/unlock the mutex.
   virtual void            lock() = 0;
@@ -103,9 +104,11 @@ USUL_EXPORT Mutex *newSingleThreadedMutexStub();
 
 struct SetMutexFactory
 {
-  template < class FactoryFunction > SetMutexFactory ( FactoryFunction f )
+  template < class FactoryFunction > SetMutexFactory ( FactoryFunction f, bool replace = false )
   {
-    Usul::Threads::Mutex::createFunction ( f );
+    Usul::Threads::Mutex::CreateFunction *current ( Usul::Threads::Mutex::createFunction() );
+    if ( 0x0 == current || true == replace )
+      Usul::Threads::Mutex::createFunction ( f );
   }
 };
 

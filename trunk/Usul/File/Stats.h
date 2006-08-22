@@ -26,14 +26,10 @@
 #include <limits>
 
 #ifdef _WIN32
-//# define STAT_STRUCT_64   struct __stat64
 # define STAT_STRUCT      struct __stat64
-//# define STAT_FUNCTION_64 _stat64
 # define STAT_FUNCTION    _stat64
 #else
-//# define STAT_STRUCT_64   struct stat
 # define STAT_STRUCT      struct stat
-//# define STAT_FUNCTION_64 ::stat
 # define STAT_FUNCTION    ::stat
 
 #endif
@@ -58,7 +54,7 @@ namespace Detail
     typedef STAT_STRUCT StructType;
     static bool stat ( const std::string &file, StructType &s )
     {
-      return ( 0 == STAT_FUNCTION( file.c_str(), &s ) );
+      return ( 0 == STAT_FUNCTION ( file.c_str(), &s ) );
     }
   };
   

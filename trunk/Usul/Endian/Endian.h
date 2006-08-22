@@ -260,6 +260,10 @@ struct FromSystemToBig
     Usul::Endian::reverseBytes ( t );
     #endif
   }
+  template < class T > void operator () ( T &t )
+  {
+    this->convert ( t );
+  }
 };
 
 
@@ -276,6 +280,10 @@ struct FromSystemToLittle
     #ifdef USUL_BIG_ENDIAN
     Usul::Endian::reverseBytes ( t );
     #endif
+  }
+  template < class T > void operator () ( T &t )
+  {
+    this->convert ( t );
   }
 };
 
@@ -294,6 +302,10 @@ struct FromBigToSystem
     Usul::Endian::reverseBytes ( t );
     #endif
   }
+  template < class T > void operator () ( T &t )
+  {
+    this->convert ( t );
+  }
 };
 
 
@@ -310,6 +322,10 @@ struct FromLittleToSystem
     #ifdef USUL_BIG_ENDIAN
     Usul::Endian::reverseBytes ( t );
     #endif
+  }
+  template < class T > void operator () ( T &t )
+  {
+    this->convert ( t );
   }
 };
 

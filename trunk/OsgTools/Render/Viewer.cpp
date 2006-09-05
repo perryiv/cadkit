@@ -298,7 +298,7 @@ void Viewer::defaultBackground()
 
 void Viewer::updateScene()
 {
-  _renderer->updateScene();
+  _renderer->update();
 }
 
 
@@ -422,6 +422,7 @@ void Viewer::render()
 
 void Viewer::_render()
 {
+  _renderer->update();
   _renderer->render();
 }
 
@@ -447,18 +448,6 @@ Viewer::SceneView *Viewer::viewer()
 const Viewer::SceneView *Viewer::viewer() const
 {
   return _renderer->viewer();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the viewer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::viewer ( Viewer::SceneView *viewer )
-{
-  _renderer->viewer( viewer );
 }
 
 
@@ -4887,4 +4876,40 @@ void Viewer::scatterScale ( double scale )
 double Viewer::scatterScale() const
 {
   return ( _renderer.valid() ) ? _renderer->scatterScale() : 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::viewMatrix ( const osg::Matrixf& mat )
+{
+  this->viewer()->setViewMatrix ( mat );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::viewMatrix ( const osg::Matrixd& mat )
+{
+  this->viewer()->setViewMatrix ( mat );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Matrixd& Viewer::viewMatrix ( ) const
+{
+  return this->viewer()->getViewMatrix ( );
 }

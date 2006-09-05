@@ -391,6 +391,11 @@ public:
   void                  updateTimes ( bool state ) { _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES ); }
   bool                  updateTimes() const { return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES ); }
 
+  /// Set/Get the view matrix
+  void                  viewMatrix ( const osg::Matrixf& );
+  void                  viewMatrix ( const osg::Matrixd& );
+  const osg::Matrixd&   viewMatrix ( ) const;
+
   // Set/get the viewport.
   const Viewport *      viewport() const;
   Viewport *            viewport();

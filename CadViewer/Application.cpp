@@ -582,7 +582,7 @@ void Application::_init()
   //this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
 
   // Based on the scene size, set the near and far clipping plane distances.
-  this->_setNearAndFarClippingPlanes();
+  //this->_setNearAndFarClippingPlanes();
 
   // Initialize the menu.
   this->_initMenu();

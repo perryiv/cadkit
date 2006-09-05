@@ -26,7 +26,6 @@
 #include "OsgTools/State/PolygonMode.h"
 #include "OsgTools/State/ShadeModel.h"
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/Render/ClampProjection.h"
 #include "OsgTools/Render/LodCallbacks.h"
 #include "OsgTools/Render/Trackball.h"
 #include "OsgTools/Render/ActionAdapter.h"
@@ -222,18 +221,6 @@ void Viewer::create()
 
   // Set the background color.
   //this->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, Helios::Defaults::CLEAR_COLOR ) );
-
-  // This is a work-around for the fact that some geometries have a 
-  // calculated near or far distance of zero. SceneViewer::cull() does not 
-  // handle this case, and the projection matrix ends up with NANs.
-  osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
-  cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
-
-  // Related to above, and new with 0.9.8-2. osgUtil::SceneView and 
-  // osgUtil::CullVisitor both inherit from osg::CullSettings. SceneView 
-  // passes "*this" to it's cull visitor's CullSettings::inheritCullSettings, 
-  // resetting the clamp-projection callback to null.
-  cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
 
   // Set all display-list states.
   this->setDisplayLists();

@@ -269,7 +269,6 @@ Application::Application ( Args &args ) :
   _vp             ( 0, 0, 200, 200 ),
   _flags          ( 0 ),
   _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
-  _frameTime      ( 1 ), // Not zero!
   _cursorMatrix   ( 0x0 ),
   _sceneMutex     (),
   _iVisibility    ( Usul::Components::Object::create ( CV::Interfaces::IVisibility::IID,
@@ -1124,7 +1123,7 @@ void Application::_preFrame()
   BaseClass::preFrame();
   
   // Update the frame-time.
-  this->_updateFrameTime();
+  //this->_updateFrameTime();
 
   // Update these input devices.
   _buttons->update();
@@ -1613,8 +1612,11 @@ void Application::_postFrame()
   // Initialize the text if we need to. We cannot call this sooner because 
   // contextInit() has to be called first.
   if ( false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) )
-    if ( this->getFrameStamp()->getFrameNumber() > 10 )
+  {
+    osg::ref_ptr < osg::FrameStamp > framestamp ( this->getFrameStamp() );
+    if ( 0x0 != framestamp.get() && this->getFrameStamp()->getFrameNumber() > 10 )
       this->_initText();
+  }
 #endif
 
   if(_anim_steps)
@@ -2651,42 +2653,6 @@ void Application::rotationCenter ( const osg::Vec3 &rc )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the frame-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateFrameTime()
-{
-  ErrorChecker ( 1074146688, isAppThread(), CV::NOT_APP_THREAD );
-
-  // It's ok to have static variables because access to this 
-  // function only occurs in the application thread.
-  static double lastFrameTime ( 0 );
-
-  // Grab the last-time until it is non-zero.
-  if ( 0 == lastFrameTime )
-  {
-    lastFrameTime = this->_getElapsedTime();
-    return;
-  }
-  // Get the current frame-time.
-  double currentFrameTime ( this->_getElapsedTime() );
-    
-  // Set the time interval.
-  _frameTime = currentFrameTime - lastFrameTime;
-    
-#if 0
-  // Make sure it is not zero.
-  WarningChecker ( 1074200431u, _frameTime > 0, "Frame-time is zero" );
-#endif
-
-  // Save the current time.
-  lastFrameTime = currentFrameTime;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Update the frame-rate text.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2770,22 +2736,6 @@ void Application::_readUserPreferences()
   WarningChecker ( 2816534029u,
                    !_prefs->fileWriterMachineName().empty(), 
                    "No machine specified as the file-writer in user-preferences." );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Application::_getFrameTime() const
-{
-  ErrorChecker   ( 1074147408u, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
-  WarningChecker ( 1076367925u, _frameTime > 0, "Frame-time is corrupt" );
-#endif
-  return _frameTime;
 }
 
 
@@ -3051,27 +3001,6 @@ void Application::_loadSimConfigs ( std::string dir )
   loader ( dir + "sim.base.jconf" );
   loader ( dir + "sim.wand.mixin.jconf" );
   loader ( dir + "sim.analog.mixin.jconf" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elapsed time since the program started (in seconds).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Application::_getElapsedTime()
-{
-  ErrorChecker ( 1074354783, isAppThread(), CV::NOT_APP_THREAD );
-#if 0 // Lousy on linux.
-  static clock_t start ( ::clock() );
-  static double  CYCLES_TO_SECONDS ( 1.0 / double ( CLOCKS_PER_SEC ) );
-  clock_t current ( ::clock() );
-  double  elapsed ( double ( current - start ) * CYCLES_TO_SECONDS );
-  ::printf ( "%f %d %f %d\n", CYCLES_TO_SECONDS, start, elapsed, current );
-  return ( elapsed );
-#endif
-  return this->getFrameStamp()->getReferenceTime();
 }
 
 

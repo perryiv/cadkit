@@ -63,6 +63,7 @@ protected:
   void                  _setLightPosition  ( const std::string & );
   void                  _setBackground     ( const std::string & );
   void                  _setWriter         ( const std::string & );
+  void                  _setHeadNode       ( const std::string & );
   void                  _setNormGlobal     ( const std::string & );
   void                  _setNormModels     ( const std::string & );
   void                  _translateMenu     ( const std::string & );

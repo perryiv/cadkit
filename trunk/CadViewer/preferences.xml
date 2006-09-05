@@ -14,6 +14,7 @@
         the same file at te same time.
       </comment>
       <writer>ptah-4</writer>
+      <head>viz0</head>
     </machine>
     <grid>
 	  <add_grid>1</add_grid>

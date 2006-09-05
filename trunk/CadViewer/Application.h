@@ -331,6 +331,9 @@ protected:
   void _syncInvrNav();
 #endif
 
+  // Is this the head node?
+  bool                          _isHeadNode() const;
+
   // Calculate the frame-rate.
   double                        _calculateFrameRate() const;
 

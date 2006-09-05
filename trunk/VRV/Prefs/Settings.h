@@ -117,6 +117,11 @@ public:
   const std::string &   fileWriterMachineName() const { return _writer; }
   void                  fileWriterMachineName ( const std::string &writer ) { _writer = writer; }
 
+  // Set/get the machine that is the head node.
+  const std::string &   headNodeMachineName() const { return _headNode; }
+  void                  headNodeMachineName ( const std::string &head ) { _headNode = head; }
+  
+
   // Set/get the global-normalization flag.
   bool                  normalizeVertexNormalsGlobal() const { return _normGlobal; }
   void                  normalizeVertexNormalsGlobal ( bool state ) { _normGlobal = state; }
@@ -255,6 +260,7 @@ private:
   Vec4f _lightPos;
   Color _background;
   std::string _writer;
+  std::string _headNode;
   bool _normGlobal;
   bool _normModels;
   Matrix _menuMatrix;

@@ -630,16 +630,14 @@ void Application::_initText()
   ErrorChecker ( 1071556909, false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) );
   ErrorChecker ( 1071558814, 0 == _textBranch->getNumChildren() );
 
+  if( !this->_isHeadNode() )
+    return;
+
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   ErrorChecker ( 1071452071, mt.valid() );
 
-#ifdef _MSC_VER
   mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
-#else
-  mt->setReferenceFrame ( osg::Transform::RELATIVE_RF );
-#endif
- 
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.
@@ -4927,3 +4925,19 @@ void Application::_sinterProcessCollabData()
 }
 
 #endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this machine the head node?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_isHeadNode() const
+{
+#ifdef _MSC_VER
+  return true;
+#else
+  return Usul::System::Hode::name() == _prefs->headNodeMachineName();
+#endif
+}

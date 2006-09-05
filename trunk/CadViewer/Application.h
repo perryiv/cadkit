@@ -340,12 +340,6 @@ protected:
   // get the color that corresponds to the string
   const osg::Vec4&              _getColor ( const std::string& s ) const;
 
-  // Get the elapsed time since the program started (in seconds).
-  double                        _getElapsedTime();
-
-  // Get the duration of the last frame in seconds.
-  double                        _getFrameTime() const;
-
   // Initialize.
   void                          _initGrid ( osg::Node *node );
   void                          _initLight();
@@ -449,7 +443,6 @@ protected:
   void                          _update ( OsgTools::Text &, const std::string & );
 
   // Update.
-  void                          _updateFrameTime();
   void                          _updateFrameRateDisplay();
   void                          _updateAnalogText();
   void                          _updateCursor();
@@ -617,7 +610,6 @@ protected:
   Usul::Math::Vec4i _vp;
   unsigned int      _flags;
   Usul::Math::Vec3f _wandOffset;
-  double            _frameTime;
   MatrixFunctorPtr  _cursorMatrix;
   vpr::Mutex        _sceneMutex;
   IVisibilityPtr    _iVisibility;

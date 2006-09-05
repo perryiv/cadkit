@@ -21,14 +21,13 @@
 
 #include "osgUtil/SceneView"
 
-#include "Usul/Headers/OpenGL.h"
 #include <vector>
 
 namespace OsgTools {
 namespace Render {
 
 
-class Renderer : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Renderer : public Usul::Base::Referenced
 {
 public:
   /// Smart-pointer definitions.
@@ -53,8 +52,12 @@ public:
   // Initialize.  Assumes the context is already current.
   void                  init();
 
-  // Set the view frustum.
+  // Set the projection matrix as a frustum
   void                  frustum ( float left, float right, float bottom, float top, float near, float far );
+
+  // Get the frame stamp.
+  osg::FrameStamp*       framestamp();
+  const osg::FrameStamp* framestamp() const;
 
   // Is there an accumulation buffer?
   bool                  hasAccumBuffer() const;
@@ -87,15 +90,15 @@ public:
   void                  timeStart   ( const std::string &name );
   void                  timeStop    ( const std::string &name );
 
-  // Set a unique ID for the viewer
+  // Set a unique ID for the viewer.
   void                  uniqueID ( unsigned int id );
 
   // Update the scene.
-  void                  updateScene();
+  void                  update();
 
   // Set/Get the view matrix.
   void                  viewMatrix ( const osg::Matrixf& matrix );
-  const osg::Matrixf&   viewMatrix ( ) const;
+  const osg::Matrixf    viewMatrix ( ) const;
 
   // Set/get the viewport.
   const Viewport *      viewport() const;
@@ -103,10 +106,9 @@ public:
   void                  viewport ( Viewport *vp );
   void                  viewport ( int x, int y, unsigned int w, unsigned int h );
 
-  // Set/get the viewer.
+  // Get the viewer.
   const SceneView *     viewer() const;
   SceneView *           viewer();
-  void                  viewer ( SceneView * );
 
 protected:
 
@@ -136,6 +138,7 @@ private:
   typedef std::map < std::string, TimeHistory > TimeHistories;
 
   SceneViewPtr _sceneView;
+  osg::ref_ptr<osg::FrameStamp> _framestamp;
 
   TimeHistories _times;
 

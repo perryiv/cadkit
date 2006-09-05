@@ -29,6 +29,7 @@
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
+#include "Usul/Headers/OpenGL.h"
 
 #include "osg/Texture2D"
 #include "osg/Version"
@@ -55,11 +56,14 @@ namespace Detail { const unsigned int NUM_CHANNELS ( 3 ); }
 
 Renderer::Renderer() : BaseClass(),
 _sceneView ( new osgUtil::SceneView ),
+_framestamp ( new osg::FrameStamp ),
 _times(),
 _numPasses ( 1 ),
 _contextId ( 0 ),
 _hasAccumulationBuffer ( false )
 {
+  _sceneView->setFrameStamp ( _framestamp.get() );
+
   // Set the update-visitor.
   _sceneView->setUpdateVisitor ( new osgUtil::UpdateVisitor );
 
@@ -176,12 +180,6 @@ void Renderer::render()
     ::glClear ( _sceneView->getRenderStage()->getClearMask() );
   }
 
-  // Handle particles and osg-animations.
-  osg::ref_ptr<osg::FrameStamp> fs ( new osg::FrameStamp );
-  fs->setFrameNumber ( fs->getFrameNumber() + 1 );
-  fs->setReferenceTime ( ::time ( 0x0 )  );
-  _sceneView->setFrameStamp ( fs.get() );
-
   // Draw
   // See if we are supposed to use multiple passes.
   if ( this->numRenderPasses() > 1 )
@@ -207,6 +205,9 @@ void Renderer::_singlePassRender()
   // Handle no viewer.
   if ( !_sceneView.valid() )
     return;
+
+  // Update
+  this->update();
 
   // Cull and draw.
   this->_cullAndDraw();  
@@ -400,18 +401,6 @@ const Renderer::SceneView *Renderer::viewer() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the viewer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::viewer ( SceneView *viewer )
-{
-  _sceneView = viewer;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Handle the cull and draw.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -592,10 +581,11 @@ osg::Node * Renderer::scene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::updateScene()
+void Renderer::update()
 {
-  if( !_sceneView.valid() )
-    return;
+  // Handle particles and osg-animations.
+  _framestamp->setFrameNumber ( _framestamp->getFrameNumber() + 1 );
+  _framestamp->setReferenceTime ( ::time ( 0x0 ) );
 
   typedef RecordTime< Renderer > RecordTime;
 
@@ -741,12 +731,12 @@ osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsig
     ++count;
   }
 
+  // Used to average.
+  const float mult ( 1.0f / (float) images.size() );
+
   // Allocate the image.
   osg::ref_ptr < osg::Image > image ( new osg::Image );
   image->allocateImage ( width, height, 1, pixelFormat, dataType );
-
-  // Used to average.
-  const float mult ( 1.0f / (float) images.size() );
 
   // Image buffer
   unsigned char *buffer = image->data ( );
@@ -1157,4 +1147,64 @@ void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& proje
     this->viewport ( ovp.get() );
     this->viewer()->setProjectionMatrix( opm );
     //this->resize ( ovp->width(), ovp->height() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the projection matrix as a frustum.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::frustum ( float left, float right, float bottom, float top, float n, float f )
+{
+  _sceneView->setProjectionMatrixAsFrustum ( left, right, bottom, top, n, f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::viewMatrix ( const osg::Matrixf& matrix )
+{
+  _sceneView->setViewMatrix ( matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Matrixf Renderer::viewMatrix ( ) const
+{
+  return _sceneView->getViewMatrix();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::FrameStamp* Renderer::framestamp()
+{
+  return _framestamp.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::FrameStamp* Renderer::framestamp() const
+{
+  return _framestamp.get();
 }

@@ -133,6 +133,7 @@ void Parser::_read ( const std::string &filename )
   MemFun setLightPosition  ( this, &Parser::_setLightPosition  );
   MemFun setBackground     ( this, &Parser::_setBackground     );
   MemFun setWriter         ( this, &Parser::_setWriter         );
+  MemFun setHeadNode       ( this, &Parser::_setHeadNode       );
   MemFun setNormGlobal     ( this, &Parser::_setNormGlobal     );
   MemFun setNormModels     ( this, &Parser::_setNormModels     );
   MemFun translateMenu     ( this, &Parser::_translateMenu     );
@@ -188,6 +189,7 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "light/position",           setLightPosition  );
   Helper::add ( reader, start, "background/color",         setBackground     );
   Helper::add ( reader, start, "machine/writer",           setWriter         );
+  Helper::add ( reader, start, "machine/head",             setHeadNode       );
   Helper::add ( reader, start, "normals/normalize/global", setNormGlobal     );
   Helper::add ( reader, start, "normals/normalize/models", setNormModels     );
   Helper::add ( reader, start, "menu/translate",           translateMenu     );
@@ -520,6 +522,19 @@ void Parser::_setWriter ( const std::string &s )
 {
   ErrorChecker ( 3769331235u, !s.empty() );
   _settings->fileWriterMachineName ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the machine that is the head node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setHeadNode ( const std::string &s )
+{
+  ErrorChecker ( 2612572960u, !s.empty() );
+  _settings->headNodeMachineName ( s );
 }
 
 

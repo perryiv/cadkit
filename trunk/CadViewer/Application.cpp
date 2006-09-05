@@ -4938,6 +4938,6 @@ bool Application::_isHeadNode() const
 #ifdef _MSC_VER
   return true;
 #else
-  return Usul::System::Hode::name() == _prefs->headNodeMachineName();
+  return Usul::System::Host::name() == _prefs->headNodeMachineName();
 #endif
 }

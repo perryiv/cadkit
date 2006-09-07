@@ -53,7 +53,8 @@ public:
   void                  init();
 
   // Set the projection matrix as a frustum
-  void                  frustum ( float left, float right, float bottom, float top, float near, float far );
+  void                  setFrustum ( double left, double right, double bottom, double top, double near, double far );
+  bool                  getFrustum ( double &left, double &right, double &bottom, double &top, double &near, double& far ) const;
 
   // Get the frame stamp.
   osg::FrameStamp*       framestamp();
@@ -97,7 +98,7 @@ public:
   void                  update();
 
   // Set/Get the view matrix.
-  void                  viewMatrix ( const osg::Matrixf& matrix );
+  void                  viewMatrix ( const osg::Matrixd& matrix );
   const osg::Matrixf    viewMatrix ( ) const;
 
   // Set/get the viewport.

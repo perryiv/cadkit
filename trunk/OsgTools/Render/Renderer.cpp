@@ -115,7 +115,6 @@ void Renderer::init()
   // passes "*this" to it's cull visitor's CullSettings::inheritCullSettings, 
   // resetting the clamp-projection callback to null.
   cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
-
 }
 
 
@@ -1170,9 +1169,20 @@ void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& proje
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::frustum ( float left, float right, float bottom, float top, float n, float f )
+void Renderer::setFrustum ( double left, double right, double bottom, double top, double n, double f )
 {
   _sceneView->setProjectionMatrixAsFrustum ( left, right, bottom, top, n, f );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the projection matrix as a frustum.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Renderer::getFrustum ( double &left, double &right, double &bottom, double &top, double &n, double& f ) const
+{
+  return _sceneView->getProjectionMatrixAsFrustum( left, right, bottom, top, n, f );
 }
 
 
@@ -1182,7 +1192,7 @@ void Renderer::frustum ( float left, float right, float bottom, float top, float
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::viewMatrix ( const osg::Matrixf& matrix )
+void Renderer::viewMatrix ( const osg::Matrixd& matrix )
 {
   _sceneView->setViewMatrix ( matrix );
 }

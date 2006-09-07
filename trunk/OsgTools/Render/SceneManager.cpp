@@ -9,6 +9,10 @@
 
 #include "SceneManager.h"
 
+#include "OsgTools/Font.h"
+#include "OsgTools/Render/Constants.h"
+
+#include "osg/Geode"
 
 using namespace OsgTools::Render;
 
@@ -25,7 +29,8 @@ SceneManager::SceneManager (  ) :
   _clipNode        ( new osg::ClipNode ),
   _projectionNode  ( new osg::Projection ),
   _groupMap        (),
-  _projectionMap   ()
+  _projectionMap   (),
+  _textMap         ()
 {
   _scene->addChild( _clipNode.get() );
  
@@ -253,4 +258,84 @@ osg::Projection* SceneManager::projection()
 osg::ClipNode* SceneManager::clipNode()
 {
   return _clipNode.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get text at the (x,y) on the screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
+{
+  // Find the xy pair if it exists
+  TextMap::iterator i = _textMap.find( TextMap::key_type ( x, y ) );
+  if( i == _textMap.end() )
+  {
+    osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+    text->setPosition( osg::Vec3 ( x, y, 0 ) );
+    text->setFont ( OsgTools::Font::defaultFont() );
+    text->setColor( osg::Vec4 ( 0.0f,0.0f,0.0f,1.0f ) );
+    text->setCharacterSize( 24.0f );
+
+    _textMap.insert( TextMap::value_type( TextMap::key_type ( x, y ), text ) );
+
+    osg::ref_ptr<osg::Group> group ( this->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    geode->addDrawable( text.get() );
+
+    group->addChild( geode.get() );
+
+    return text.get();
+  }
+
+  return i->second.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set text value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text )
+{
+  this->getText(x,y)->setText( text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::removeText( unsigned int x, unsigned int y )
+{
+  // Find the xy pair if it exists
+  TextMap::iterator i = _textMap.find( TextMap::key_type ( x, y ) );
+  if( i != _textMap.end() )
+  {
+    // Remove the text.
+    osg::ref_ptr< osgText::Text > text ( i->second );
+
+    // Get the parent.
+    osg::ref_ptr < osg::Node > parent ( text->getParent( 0 ) );
+
+    // Get the group
+    osg::ref_ptr<osg::Group> group ( this->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+
+    if ( osg::Geode *geode = dynamic_cast < osg::Geode* > ( parent.get() ) )
+    {
+      geode->removeDrawable( text.get() );
+    }
+
+    // Remove the parent of the text from the group.
+    group->removeChild( parent.get() );
+    
+    // Remove the text from the map.
+    _textMap.erase( i );
+  }
 }

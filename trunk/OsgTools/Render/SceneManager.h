@@ -19,6 +19,7 @@
 #include "osg/Group"
 #include "osg/ClipNode"
 #include "osg/Projection"
+#include "osgText/Text"
 
 namespace OsgTools {
 namespace Render {
@@ -61,6 +62,17 @@ public:
 
   /// Get the clip node
   osg::ClipNode*        clipNode();
+
+  /// Get text at the (x,y) on the screen.
+  osgText::Text*        getText( unsigned int x, unsigned int y );
+
+  /// Set text value.
+  void                  setText( unsigned int x, unsigned int y, const std::string& text );
+
+  /// Remove text
+  void                  removeText( unsigned int x, unsigned int y );
+
+
 protected:
 
   /// Use reference counting.
@@ -71,6 +83,9 @@ private:
   typedef osg::ref_ptr<Group> GroupPtr;
   typedef osg::ref_ptr < osg::ClipNode > ClipNodePtr;
   typedef osg::ref_ptr < osg::Projection > ProjectionPtr;
+  typedef osg::ref_ptr < osgText::Text > TextPtr;
+  typedef std::pair < unsigned int, unsigned int > XYPair;
+  typedef std::map < XYPair, TextPtr > TextMap;
 
   typedef std::map < std::string, GroupPtr > GroupMap;
 
@@ -80,6 +95,8 @@ private:
 
   GroupMap _groupMap;
   GroupMap _projectionMap;
+
+  TextMap _textMap;
 };
 
 

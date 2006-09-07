@@ -20,6 +20,8 @@
 
 #include <string>
 
+namespace osgText { class Text; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -32,15 +34,20 @@ struct ITextMatrix : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1758536334u };
 
-  virtual void setText      ( float x, float y, unsigned int row, unsigned int col, const std::string& text ) = 0;
-  virtual void createMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth ) = 0;
-  virtual void removeMatrix ( float x, float y ) = 0;
+  /// Get text at the (x,y) on the screen.
+  virtual osgText::Text*        getText    ( unsigned int x, unsigned int y ) = 0;
+
+  /// Set text value.
+  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text ) = 0;
+
+  /// Remove text
+  virtual void                  removeText ( unsigned int x, unsigned int y ) = 0;
 
 }; // class ITextMatrix
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_TEXT_MATRIX_H_

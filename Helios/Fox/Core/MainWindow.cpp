@@ -690,7 +690,7 @@ void MainWindow::_initViewMenu()
     stereo->append ( stereoModes );
     stereo->append ( eyeDistance );
     view->append ( stereo );
-    view->append ( new MenuCheck ( "&Full Screeen",       "", "Toggle Full Screen Mode.",                  this, MainWindow::ID_FULL_SCREEN        ) );
+    view->append ( new MenuCheck ( "&Full Screen",       "", "Toggle Full Screen Mode.",                  this, MainWindow::ID_FULL_SCREEN        ) );
     view->append ( new MenuCheck ( "&Two Sided Lighting", "", "Turn on/off two sided lighting.",           this, MainWindow::ID_TWO_SIDED_LIGHTING ) );
     view->append ( new MenuCheck ( "Allow &Spin",         "", "Turn on/off spinning geometry.",            this, MainWindow::ID_ALLOW_SPINNING     ) );
     view->append ( new MenuCheck ( "&Use Low Lods",       "", "Turn on/off low levels of detail.",         this, MainWindow::ID_LOW_LODS           ) );

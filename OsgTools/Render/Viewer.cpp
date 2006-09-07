@@ -130,7 +130,6 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _lods            (),
   _document        ( doc ),
   _frameDump       (),
-  _textMap         (),
   _refCount        ( 0 ),
   _flags           ( _UPDATE_TIMES | _SHOW_AXES ),
   _animation       (),
@@ -1606,156 +1605,6 @@ void Viewer::boundingSphere ( bool state )
 bool Viewer::boundingSphere() const
 {
   return _sceneManager->groupHas( OsgTools::Render::Constants::BOUNDING_SPHERE );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add text to the given matrix in the row and column
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::text ( float x, float y, unsigned int row, unsigned int col, const std::string& string )
-{
-  // Get xPos and yPos of upper left most point of the matrix
-  int xPos ( x ); //(int)(this->width()  * x) );
-  int yPos ( y ); //(int)(this->height() * y) );
-
-  XYPair key ( x, y );
-
-  // Find the xy pair if it exists
-  TextMap::iterator i = _textMap.find( key );
-  if( i == _textMap.end() )
-  {
-    this->textCreateMatrix ( x, y, 5, 5, 20, 20 );
-  }
-
-  // Get the matrix and geode
-  TextMatrix &matrix = i->second.first.first;
-  GeodePtr   geode   ( i->second.first.second  );
-  int rowHeight      ( i->second.second.first  );
-  int columnWidth    ( i->second.second.second );
-
-  // Do we have enough rows?  if not resize
-  if ( matrix.size() <= row )
-    matrix.resize( row + 1);
-
-  // Do we have enough columns? if not resize
-  if( matrix.at( row ).size() <= col )
-    matrix.at( row ).resize( col + 1);
-
-  // Get the osgText from matrix
-  TextPtr &text = matrix[row][col];
-
-  // If text is not valid, create a new one
-  if( !text.valid() )
-  {
-    text = new osgText::Text;
-
-    text->setFont ( OsgTools::Font::defaultFont() );
-
-    osg::Vec4 layoutColor(0.0f,0.0f,0.0f,1.0f);
-    float layoutCharacterSize = 24.0f;
-
-    text->setColor(layoutColor);
-    text->setCharacterSize(layoutCharacterSize);
-
-    float x ( xPos + ( col * columnWidth ) );
-    float y ( yPos - ( row * rowHeight ) );
-    text->setPosition ( osg::Vec3( x, y, 0.0 ) );
-
-    // Add text to geode
-    geode->addDrawable( text.get() );
-  }
-
-  // Set the text string
-  text->setText( string );
-
-  text->update();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a text matrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::textCreateMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth )
-{
-  if ( ! _sceneManager->projectionGroupHas( OsgTools::Render::Constants::TEXT_MATRIX ) )
-  {
-    osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
-
-   // osg::ref_ptr< osg::Projection > projection = new osg::Projection;
-   // projection->setMatrix( osg::Matrix::ortho2D( 0, this->width() ,0, this->height() ) );
-
-   // // Make sure it's drawn last ( on top )
-   // osg::ref_ptr<osg::StateSet> ss ( projection->getOrCreateStateSet() );
-   // ss->setRenderBinDetails ( 100, "RenderBin" );
-	  //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-
-    osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
-    modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-    modelview_abs->setMatrix(osg::Matrix::identity());
-
-   //projection->addChild ( modelview_abs );
-
-    group->addChild( modelview_abs );
-  }
-
-  osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
-
-  // This is the matrix transform under the projection matrix
-  osg::ref_ptr< osg::Group > node = group->getChild( 0 )->asGroup();
-
-  XYPair key ( x, y );
-
-  // Find the xy pair if it exists
-  TextMap::iterator i = _textMap.find( key );
-  if( i == _textMap.end() )
-  {
-    // Create a new matrix and geode to hold osgText
-    TextMatrix matrix;
-    
-    // Set matrix requested size
-    {
-      matrix.resize( numRows );
-      for( unsigned int i = 0; i < numRows; ++i )
-        matrix.at( i ).resize( numCols );
-    }
-
-    _textMap[key] = MatrixData ( MatrixPair ( matrix, new osg::Geode ), MatrixProperties ( rowHeight, columnWidth ) );
-    i = _textMap.find( key );
-
-    // Add the geode to the text group
-    if ( node.valid() )
-      node->addChild( i->second.first.second.get() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove a text matrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::textRemoveMatrix ( float x, float y )
-{
-  if ( _sceneManager->projectionGroupHas ( OsgTools::Render::Constants::TEXT_MATRIX ) )
-  {
-    XYPair key ( x, y );
-  
-    TextMap::iterator i = _textMap.find ( key );
-    if ( i != _textMap.end() )
-    {
-      GeodePtr geode ( i->second.first.second );
-      GroupPtr group ( geode->getParent ( 0 ) );
-
-      group->removeChild ( geode.get() );
-    }
-  }
 }
 
 
@@ -4026,43 +3875,6 @@ void Viewer::_editLight ( osgUtil::Hit &hit )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the text in column and row of the matrix located at x, y.
-//  Usul::Interfaces::ITextMatrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::setText( float x, float y, unsigned int row, unsigned int col, const std::string& text )
-{
-  return this->text( x, y, row, col, text );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a matrix at location x,y.
-//  Usul::Interfaces::ITextMatrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::createMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth )
-{
-  return this->textCreateMatrix( x, y, numRows, numCols, rowHeight, columnWidth );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the matrix at location x,y.
-//  Usul::Interfaces::ITextMatrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::removeMatrix ( float x, float y )
-{
-  return this->textRemoveMatrix( x, y );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add default clipping plane.
 //  Usul::Interfaces::IClippingPlanes
 //
@@ -4900,3 +4712,41 @@ const osg::Matrixd& Viewer::viewMatrix ( ) const
 {
   return this->viewer()->getViewMatrix ( );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get text at the (x,y) on the screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text* Viewer::getText ( unsigned int x, unsigned int y )
+{
+  return _sceneManager->getText( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set text value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text )
+{
+  _sceneManager->setText( x, y, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeText  ( unsigned int x, unsigned int y )
+{
+  _sceneManager->removeText( x, y );
+}
+
+

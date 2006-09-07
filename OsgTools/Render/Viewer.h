@@ -351,10 +351,15 @@ public:
   // Start/stop the spin.
   void                  spin ( bool );
 
-  // Set text on canvas
-  void                  text             ( float x, float y, unsigned int row, unsigned int col, const std::string& text );
-  void                  textCreateMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth );
-  void                  textRemoveMatrix ( float x, float y );
+  ///  Usul::Interfaces::ITextMatrix
+  /// Get text at the (x,y) on the screen.
+  osgText::Text*        getText     ( unsigned int x, unsigned int y );
+
+  /// Set text value.
+  void                  setText     ( unsigned int x, unsigned int y, const std::string& text );
+
+  /// Remove text
+  void                  removeText  ( unsigned int x, unsigned int y );
 
   // Get the time.
   double                timeAverage ( const std::string &name ) const;
@@ -545,11 +550,6 @@ protected:
   /// Get the filenames that were written out.
   virtual const Filenames&   filenames () const;
 
-  ///  Usul::Interfaces::ITextMatrix
-  virtual void               setText      ( float x, float y, unsigned int row, unsigned int col, const std::string& text );
-  virtual void               createMatrix ( float x, float y, unsigned int numRows, unsigned int numCols, int rowHeight, int columnWidth );
-  virtual void               removeMatrix ( float x, float y );
-
   ///  Usul::Interfaces::IGetDocument
   virtual IUnknown*          getDocument();
 
@@ -678,12 +678,6 @@ private:
   typedef osg::ref_ptr < osgText::Text > TextPtr;
   typedef std::pair < bool,osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
-  typedef std::pair < float, float > XYPair;
-  typedef std::pair < int, int > MatrixProperties;
-  typedef std::vector < std::vector< TextPtr > > TextMatrix;
-  typedef std::pair < TextMatrix, GeodePtr > MatrixPair;
-  typedef std::pair < MatrixPair, MatrixProperties > MatrixData;
-  typedef std::map < XYPair, MatrixData > TextMap;
   typedef std::map< osg::Geode *, osg::Light * > LightEditors;
   typedef std::vector<LodPtr> LodList;
   typedef std::pair<bool,LodList> Lods;
@@ -699,7 +693,6 @@ private:
   Lods _lods;
   DocumentPtr _document;
   FrameDump _frameDump;
-  TextMap _textMap;
   unsigned int _refCount;
   unsigned int _flags;
   OsgTools::Render::Animation _animation;

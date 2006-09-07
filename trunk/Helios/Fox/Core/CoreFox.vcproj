@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCored.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCored.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(FOX_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;"
@@ -177,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCore.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"

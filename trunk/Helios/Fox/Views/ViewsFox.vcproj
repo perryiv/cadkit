@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: Helios Fox Views"
 	ProjectGUID="{276F7F09-5F65-477E-88E0-E8C819CF72CC}"
+	RootNamespace="lib: Helios Fox Views"
 	>
 	<Platforms>
 		<Platform
@@ -77,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib osgd.lib osgUtild.lib osgGAd.lib osgDBd.lib osgTextd.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxViewsd.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosViewsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(FOX_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;"
@@ -176,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib osg.lib osgUtil.lib osgGA.lib osgDB.lib osgText.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxViews.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosViews.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"

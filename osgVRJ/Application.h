@@ -86,6 +86,9 @@ namespace osgVRJ
     void quit();
     void run();
 
+    osg::Viewport*          viewport()       { return _viewport.get(); }
+    const osg::Viewport*    viewport() const { return _viewport.get(); }
+
   protected:
 
     virtual void draw();
@@ -110,6 +113,7 @@ namespace osgVRJ
     osg::ref_ptr<osg::StateSet>        _global_stateset;
     osg::ref_ptr<osg::Group>           _scene_decorator;
     osg::ref_ptr<osg::FrameStamp>      _framestamp;
+    osg::ref_ptr<osg::Viewport>        _viewport;
 
     osg::Vec4                          _background_color;
 

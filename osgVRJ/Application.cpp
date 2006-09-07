@@ -26,6 +26,7 @@ using namespace osgVRJ;
   _global_stateset(new osg::StateSet),\
   _scene_decorator(0x0),\
   _framestamp( 0x0 ),\
+  _viewport ( 0x0 ),\
   _background_color(0,0,0,1),\
   _context_in_sync(false),\
   _initial_time(0.0),\
@@ -168,13 +169,16 @@ void Application::contextInit()
   // Keep handle to framestamp.
   _framestamp = renderer->framestamp();
 
+  // Keep handle to viewport.
+  _viewport = renderer->viewport();
+
   (*_renderer) = renderer.get();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Not sure when this is called...
+//  Called after the context is made current, but before the frame draws.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -263,12 +267,12 @@ void Application::draw()
   vrj::Projection* projection = userData->getProjection();
   vrj::Frustum frustum = projection->getFrustum();
   
-  renderer->frustum ( frustum[vrj::Frustum::VJ_LEFT],
-				              frustum[vrj::Frustum::VJ_RIGHT],
-				              frustum[vrj::Frustum::VJ_BOTTOM],
-				              frustum[vrj::Frustum::VJ_TOP],
-				              frustum[vrj::Frustum::VJ_NEAR],
-				              frustum[vrj::Frustum::VJ_FAR]);
+  renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
+				                 frustum[vrj::Frustum::VJ_RIGHT],
+				                 frustum[vrj::Frustum::VJ_BOTTOM],
+				                 frustum[vrj::Frustum::VJ_TOP],
+				                 frustum[vrj::Frustum::VJ_NEAR],
+				                 frustum[vrj::Frustum::VJ_FAR]);
 
   // constantly update the view matrix
   gmtl::Matrix44f proj_mat = projection->getViewMatrix();
@@ -279,6 +283,22 @@ void Application::draw()
   renderer->viewMatrix(*osg_proj_xform_mat);
 
   renderer->render();
+
+  /*double left, right, bottom, top, zNear, zFar;
+  renderer->getFrustum ( left, right, bottom, top, zNear, zFar );
+
+  if( left != frustum[vrj::Frustum::VJ_LEFT] )
+    std::cerr << "The left value of the projection matrix changed." << std::endl;
+	if ( right != frustum[vrj::Frustum::VJ_RIGHT] )
+    std::cerr << "The right value of the projection matrix changed." << std::endl;
+	if ( bottom != frustum[vrj::Frustum::VJ_BOTTOM] )
+    std::cerr << "The bottom value of the projection matrix changed." << std::endl;
+  if ( top != frustum[vrj::Frustum::VJ_TOP] )
+    std::cerr << "The top value of the projection matrix changed." << std::endl;
+  if ( zNear != frustum[vrj::Frustum::VJ_NEAR] )
+    std::cerr << "The near value of the projection matrix changed." << std::endl;
+	if ( zFar != frustum[vrj::Frustum::VJ_FAR] )
+    std::cerr << "The far value of the projection matrix changed." << std::endl;*/
 }
 
 
@@ -473,7 +493,6 @@ void Application::setUpSceneViewWithData( Renderer* renderer )
   // take care of background color
   renderer->backgroundColor( _background_color );
 
-
   renderer->viewer()->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
   renderer->viewer()->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 }
@@ -584,37 +603,3 @@ double Application::_getFrameTime() const
   return _frameTime;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the frame-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//void Application::_updateFrameTime()
-//{
-//  ErrorChecker ( 1074146688, isAppThread(), CV::NOT_APP_THREAD );
-//
-//  // It's ok to have static variables because access to this 
-//  // function only occurs in the application thread.
-//  static double lastFrameTime ( 0 );
-//
-//  // Grab the last-time until it is non-zero.
-//  if ( 0 == lastFrameTime )
-//  {
-//    lastFrameTime = this->_getElapsedTime();
-//    return;
-//  }
-//  // Get the current frame-time.
-//  double currentFrameTime ( this->_getElapsedTime() );
-//    
-//  // Set the time interval.
-//  _frameTime = currentFrameTime - lastFrameTime;
-//    
-//#if 0
-//  // Make sure it is not zero.
-//  WarningChecker ( 1074200431u, _frameTime > 0, "Frame-time is zero" );
-//#endif
-//
-//  // Save the current time.
-//  lastFrameTime = currentFrameTime;
-//}

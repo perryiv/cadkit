@@ -1,6 +1,35 @@
 
 PROJECT(Usul)
 
+# If the user has defined USUL_BIN_DIR as an environment variable
+#  then use that directory as the output directory. Otherwise set the output
+#  directory to be inside the current build directory.
+# First check to see if it was defined in another project
+IF ( NOT USUL_BIN_DIR ) 
+set(USUL_BIN_DIR "$ENV{USUL_BIN_DIR}")
+ENDIF ( NOT USUL_BIN_DIR )
+# This will be true if the user has NOT defined an environment variable
+IF ( NOT USUL_BIN_DIR )
+set(USUL_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
+ENDIF ( NOT USUL_BIN_DIR )
+
+
+
+#setup output Directories
+SET (LIBRARY_OUTPUT_PATH
+	${USUL_BIN_DIR}
+	CACHE PATH
+	"Single Directory for all Libraries"
+	FORCE
+)
+
+#setup the Executable output Directory
+SET (EXECUTABLE_OUTPUT_PATH
+	${USUL_BIN_DIR}
+	CACHE PATH
+	"Single Directory for all Executables."
+	FORCE
+)
 
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )

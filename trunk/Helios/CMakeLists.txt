@@ -7,7 +7,7 @@ INCLUDE(${PROJECT_SOURCE_DIR}/FindOSG.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/FindFoxToolkit.cmake)
 
 # Pick up if the user has set an environment variable to point to the 
-# FoxToolkit Lib and includes. If these are not set
+# Helios Lib and includes. If these are not set
 # then they will simply be ignored.
 set(HELIOS_BIN_DIR "$ENV{HELIOS_BIN_DIR}")
 IF ( NOT HELIOS_BIN_DIR )
@@ -18,20 +18,25 @@ set (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
 set (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
 
+#Set the Usul Bin Directory to the same as Helios
+SET (USUL_BIN_DIR ${HELIOS_BIN_DIR})
+#Set the OsgTools Bin Directory to the same as Helios
+SET (OSGTOOLS_BIN_DIR ${HELIOS_BIN_DIR})
+
 #setup output Directories
 SET (LIBRARY_OUTPUT_PATH
-${HELIOS_BIN_DIR}
-CACHE PATH
-"Single Directory for all Libraries"
-FORCE
+	${HELIOS_BIN_DIR}
+	CACHE PATH
+	"Single Directory for all Libraries"
+	FORCE
 )
 
 #setup the Executable output Directory
 SET (EXECUTABLE_OUTPUT_PATH
-${HELIOS_BIN_DIR}
-CACHE PATH
-"SINGLE Directory for all Executables."
-FORCE
+	${HELIOS_BIN_DIR}
+	CACHE PATH
+	"SINGLE Directory for all Executables."
+	FORCE
 )
 
 
@@ -99,5 +104,8 @@ ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 #  ${PROJECT_SOURCE_DIR}/Plugins/Triangulate
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 #  ${PROJECT_SOURCE_DIR}/Plugins/VoxelModel
+# ---------- Dislocation Plugins---------------
+${PROJECT_SOURCE_DIR}/../DislocationModel
+${PROJECT_SOURCE_DIR}/../DislocationDelegate
 )
 

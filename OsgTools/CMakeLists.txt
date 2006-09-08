@@ -36,9 +36,21 @@ SET (EXECUTABLE_OUTPUT_PATH
 	FORCE
 )
 
+# ------------ Find the Usul Library -----------------------------
+if (NOT USUL_BIN_DIR)
+  set(USUL_BIN_DIR "$ENV{USUL_BIN_DIR}")
+  if (NOT USUL_BIN_DIR)  
+    SET (USUL_BIN_DIR ${LIBRARY_OUTPUT_PATH} )
+    endif (NOT USUL_BIN_DIR)
+endif( NOT USUL_BIN_DIR )
+
+LINK_DIRECTORIES( ${USUL_BIN_DIR} )
+
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${OT_INC_DIR} )
+
 
 #List the Sources
 SET (SOURCES
@@ -130,7 +142,7 @@ TARGET_LINK_LIBRARIES(OsgTools
 	${OSG_GA_LIB}
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
-	)
+)
 
     
     

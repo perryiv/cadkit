@@ -60,6 +60,10 @@ public:
   osg::FrameStamp*       framestamp();
   const osg::FrameStamp* framestamp() const;
 
+  // Get the global state set.
+  osg::StateSet*        getGlobalStateSet();
+  const osg::StateSet*  getGlobalStateSet() const;
+
   // Is there an accumulation buffer?
   bool                  hasAccumBuffer() const;
 

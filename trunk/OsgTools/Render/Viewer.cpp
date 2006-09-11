@@ -839,14 +839,8 @@ bool Viewer::hasPolygonMode() const
 
 bool Viewer::hasShadeModel ( osg::ShadeModel::Mode mode ) const
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return false;
-
   // Get the state set.
-  const osg::StateSet *ss = this->viewer()->getGlobalStateSet();
-  if ( !ss )
-    return false;
+  const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
   // Get the shade-model attribute, if any.
   const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::SHADEMODEL );
@@ -886,14 +880,8 @@ bool Viewer::hasShadeModel() const
 
 void Viewer::removePolygonMode()
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return;
-
   // Get the state set.
-  osg::StateSet *ss = this->viewer()->getGlobalStateSet();
-  if ( !ss )
-    return;
+  osg::StateSet *ss = _renderer->getGlobalStateSet();
 
   // Have the state-set inherit the attribute. This will delete any 
   // existing attribute in the state-set.
@@ -909,14 +897,8 @@ void Viewer::removePolygonMode()
 
 void Viewer::removeShadeModel()
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return;
-
   // Get the state set.
-  osg::StateSet *ss = this->viewer()->getGlobalStateSet();
-  if ( !ss )
-    return;
+  osg::StateSet *ss = _renderer->getGlobalStateSet();
 
   // Have the state-set inherit the attribute. This will delete any 
   // existing attribute in the state-set.
@@ -932,14 +914,8 @@ void Viewer::removeShadeModel()
 
 void Viewer::twoSidedLighting ( bool twoSided )
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return;
-
   // Get the state set, or make one.
-  osg::ref_ptr<osg::StateSet> ss ( this->viewer()->getGlobalStateSet() );
-  if ( !ss.valid() )
-    return;
+  osg::ref_ptr<osg::StateSet> ss ( _renderer->getGlobalStateSet() );
 
   // Make a light-model.
   osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
@@ -959,14 +935,8 @@ void Viewer::twoSidedLighting ( bool twoSided )
 
 bool Viewer::twoSidedLighting() const
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return false;
-
   // Get the state set.
-  const osg::StateSet *ss = this->viewer()->getGlobalStateSet();
-  if ( !ss )
-    return false;
+  const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
   // Get the shade-model attribute, if any.
   const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LIGHTMODEL );
@@ -991,14 +961,8 @@ bool Viewer::twoSidedLighting() const
 
 void Viewer::lighting ( bool on )
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return;
-
   // Get the state set, or make one.
-  osg::ref_ptr<osg::StateSet> ss ( this->viewer()->getGlobalStateSet() );
-  if ( !ss.valid() )
-    return;
+  osg::ref_ptr<osg::StateSet> ss ( _renderer->getGlobalStateSet() );
 
   if( on )
     ss->setMode ( GL_LIGHTING, osg::StateAttribute::ON );
@@ -1015,14 +979,8 @@ void Viewer::lighting ( bool on )
 
 bool Viewer::lighting() const
 {
-  // Handle no scene.
-  if ( !this->scene() )
-    return false;
-
   // Get the state set.
-  const osg::StateSet *ss = this->viewer()->getGlobalStateSet();
-  if ( !ss )
-    return false;
+  const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
   return Usul::Bits::has ( ss->getMode( GL_LIGHTING ), osg::StateAttribute::ON );
 }

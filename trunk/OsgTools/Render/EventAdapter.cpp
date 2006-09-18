@@ -17,7 +17,7 @@
 
 using namespace OsgTools::Render;
 
-#if 1
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

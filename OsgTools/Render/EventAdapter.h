@@ -39,7 +39,7 @@ public:
   // Constructor.
   EventAdapter();
 
-#if 1
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
   // Get the properties.
   virtual EventType       getEventType()  const { return _type; }
   virtual int             getKey()        const { return _key; }
@@ -69,7 +69,7 @@ protected:
   // Use reference counting.
   virtual ~EventAdapter();
 
-#if 1
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
   EventType _type;
   int _key;
   int _button;

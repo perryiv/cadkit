@@ -182,7 +182,7 @@ osg::Geode *Blocks::buildScene ( const Options &options, TriangleSet *ts )
     throw std::invalid_argument ( "Error 1098244047: null triangle-set given" );
 
   // Remove all existing drawables.
-  _geode->removeDrawable ( 0, _geode->getNumDrawables() );
+  _geode->removeDrawables ( 0, _geode->getNumDrawables() );
 
   // Loop through the blocks and add the geometry.
   const unsigned int numBlocks ( _sequence.size() );

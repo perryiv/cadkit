@@ -527,6 +527,9 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
             break;
           }
         }
+
+        // Dirty the display list.
+        geometry->dirtyDisplayList();
       }
     }
   }

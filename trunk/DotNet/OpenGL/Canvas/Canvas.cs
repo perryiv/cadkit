@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Default constructor.
@@ -21,6 +21,7 @@ namespace CadKit.OpenGL
       this.ContextMenuStrip = this.buildContextMenu();
       base.BackColor = CadKit.Persistence.Registry.Instance.getColor(this.GetType().ToString(), "BackgroundColor", base.BackColor);
     }
+
 
     /// <summary>
     /// Initialize the inner panel.
@@ -51,7 +52,15 @@ namespace CadKit.OpenGL
       _innerPanel = new System.Windows.Forms.Panel();
       this.Controls.Add(_innerPanel);
       _innerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+
+      // Add the event handlers.
+      _innerPanel.MouseMove  += new System.Windows.Forms.MouseEventHandler(OnMouseMove);
+      _innerPanel.MouseUp    += new System.Windows.Forms.MouseEventHandler(OnMouseUp);
+      _innerPanel.MouseDown  += new System.Windows.Forms.MouseEventHandler(OnMouseDown);
+      _innerPanel.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
+      _innerPanel.KeyPress   += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
     }
+
 
     /// <summary>
     /// Build the context menu.

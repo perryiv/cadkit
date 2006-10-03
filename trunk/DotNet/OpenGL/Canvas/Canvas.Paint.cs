@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Call this to paint using OpenGL.
@@ -18,9 +18,16 @@ namespace CadKit.OpenGL
     {
       try
       {
-        if (null != _renderContext)
+        if (null != _renderContext && _renderContext.valid())
         {
+          // Make the context current.
+          this._renderContext.makeCurrent();
+
+          // Do the drawing.
           this._paintOpenGL();
+
+          // Swap the buffers.
+          this._renderContext.swapBuffers();
         }
       }
       catch (System.Exception e)
@@ -32,7 +39,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Call this to paint using OpenGL.
     /// </summary>
-    private void _paintOpenGL()
+    protected virtual void _paintOpenGL()
     {
     }
   }

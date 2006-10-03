@@ -22,6 +22,8 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/UMath.h"
 
+#include "osg/Version"
+
 #include <algorithm>
 #include <functional>
 
@@ -182,7 +184,11 @@ osg::Geode *Blocks::buildScene ( const Options &options, TriangleSet *ts )
     throw std::invalid_argument ( "Error 1098244047: null triangle-set given" );
 
   // Remove all existing drawables.
-  _geode->removeDrawables ( 0, _geode->getNumDrawables() );
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
+  _geode->removeDrawables( 0, _geode->getNumDrawables() );
+#else
+  _geode->removeDrawable( 0, _geode->getNumDrawables() );
+#endif
 
   // Loop through the blocks and add the geometry.
   const unsigned int numBlocks ( _sequence.size() );

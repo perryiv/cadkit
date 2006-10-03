@@ -26,36 +26,39 @@
 
 namespace CadKit
 {
-  namespace Glue
+  namespace OpenGL
   {
-    public ref class RenderContext : CadKit::Referenced::Base
+    namespace Glue
     {
-    public:
+      public ref class RenderContext : CadKit::Referenced::Base
+      {
+      public:
 
-      typedef CadKit::Referenced::Base BaseClass;
+        typedef CadKit::Referenced::Base BaseClass;
 
-      RenderContext ( System::Windows::Forms::Control ^control, unsigned int pixelFormat );
+        RenderContext ( System::Windows::Forms::Control ^control, unsigned int pixelFormat );
 
-      DeviceContext ^     deviceContext();
-      void                makeCurrent();
-      unsigned int        pixelFormat();
-      void                swapBuffers();
-      bool                valid();
+        DeviceContext ^     deviceContext();
+        void                makeCurrent();
+        unsigned int        pixelFormat();
+        void                swapBuffers();
+        bool                valid();
 
-    protected:
+      protected:
 
-      virtual void        _cleanup() override;
-      void                _create();
-      void                _delete();
+        virtual void        _cleanup() override;
+        void                _create();
+        void                _delete();
 
-    private:
+      private:
 
-      virtual ~RenderContext();
+        virtual ~RenderContext();
 
-      System::Windows::Forms::Control ^_control;
-      DeviceContext ^_dc;
-      HGLRC _rc;
-      unsigned int _pixelFormat;
-    };
+        System::Windows::Forms::Control ^_control;
+        DeviceContext ^_dc;
+        HGLRC _rc;
+        unsigned int _pixelFormat;
+      };
+    }
   }
 }

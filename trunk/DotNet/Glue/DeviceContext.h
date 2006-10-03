@@ -22,28 +22,31 @@
 
 namespace CadKit
 {
-  namespace Glue
+  namespace OpenGL
   {
-    public ref class DeviceContext : CadKit::Referenced::Base
+    namespace Glue
     {
-    public:
+      public ref class DeviceContext : CadKit::Referenced::Base
+      {
+      public:
 
-      typedef CadKit::Referenced::Base BaseClass;
+        typedef CadKit::Referenced::Base BaseClass;
 
-      DeviceContext ( System::Windows::Forms::Control ^ );
+        DeviceContext ( System::Windows::Forms::Control ^ );
 
-      HDC                 hdc();
+        HDC                 hdc();
 
-    protected:
+      protected:
 
-      virtual void        _cleanup() override;
+        virtual void        _cleanup() override;
 
-    private:
+      private:
 
-      virtual ~DeviceContext();
+        virtual ~DeviceContext();
 
-      HWND _window;
-      HDC _hdc;
-    };
+        HWND _window;
+        HDC _hdc;
+      };
+    }
   }
 }

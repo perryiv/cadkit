@@ -35,49 +35,49 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Canvas\Canvas.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Designer.cs">
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
     <Compile Include="Canvas\Canvas.Edit.Background.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Edit.PixelFormat.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Flags.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Edit.Properties.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Events.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Context.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Members.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Paint.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Pixel.Formats.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Properties.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Proxy.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Render.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Canvas\Canvas.Resize.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="DataGrid\DataGridForm.cs">
@@ -110,7 +110,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Glue\CadKit.Glue.vcproj">
       <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
-      <Name>CadKit.Glue</Name>
+      <Name>CadKit.OpenGL.Glue</Name>
     </ProjectReference>
     <ProjectReference Include="..\Referenced\CadKit.Referenced.csproj">
       <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>

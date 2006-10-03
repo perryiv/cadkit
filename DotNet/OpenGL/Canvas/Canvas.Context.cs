@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Call this to initialize OpenGL.
@@ -24,7 +24,7 @@ namespace CadKit.OpenGL
           {
             this._initInnerPanel();
 
-            _renderContext = new CadKit.Glue.RenderContext(_innerPanel, _pixelFormat);
+            _renderContext = new CadKit.OpenGL.Glue.RenderContext(_innerPanel, _pixelFormat);
             if (null != _renderContext)
             {
               _renderContext.reference();
@@ -49,6 +49,24 @@ namespace CadKit.OpenGL
         _renderContext.dereference();
         _renderContext = null;
       }
+    }
+
+
+    /// <summary>
+    /// Make the context current.
+    /// </summary>
+    protected void _makeCurrent()
+    {
+      _renderContext.makeCurrent();
+    }
+
+
+    /// <summary>
+    /// Swap buffers.
+    /// </summary>
+    protected void _swapBuffers()
+    {
+      _renderContext.swapBuffers();
     }
   }
 }

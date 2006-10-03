@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Call this to resize OpenGL.
@@ -32,7 +32,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Call this to resize OpenGL.
     /// </summary>
-    private void _resizeOpenGL()
+    protected virtual void _resizeOpenGL()
     {
     }
   }

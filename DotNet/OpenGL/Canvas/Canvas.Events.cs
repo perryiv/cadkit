@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Paint the background. We override this to prevent flicker.
@@ -69,6 +69,61 @@ namespace CadKit.OpenGL
     {
       this._deleteRenderingContext();
       _flags.hasFormClosingCallback = false;
+    }
+
+
+    /// <summary>
+    /// A key was pressed.  Delegate.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnKeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+    {
+      this.OnKeyPress(e);
+    }
+
+
+    /// <summary>
+    /// The mouse wheel moved.  Delegate.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+      this.OnMouseWheel(e);
+    }
+
+
+    /// <summary>
+    /// A mouse button was pressed.  Delegate.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+      this.OnMouseDown(e);
+    }
+
+
+    /// <summary>
+    /// A mouse button was released.  Delegate.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+      this.OnMouseUp(e);
+    }
+
+
+    /// <summary>
+    /// The mouse has moved.  Delegate.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+      this.OnMouseMove(e);
     }
   }
 }

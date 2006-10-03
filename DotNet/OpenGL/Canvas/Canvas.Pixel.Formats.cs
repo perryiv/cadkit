@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.Panel
+  public partial class Canvas : System.Windows.Forms.UserControl
   {
     // Local type used below.
     public class EmptyColumns : System.Collections.Generic.LinkedList<System.Data.DataColumn> { }
@@ -23,7 +23,7 @@ namespace CadKit.OpenGL
       {
         if (null != _renderContext)
         {
-          return CadKit.Glue.PixelFormat.query(_renderContext.deviceContext());
+          return CadKit.OpenGL.Glue.PixelFormat.query(_renderContext.deviceContext());
         }
       }
       catch (System.Exception e)

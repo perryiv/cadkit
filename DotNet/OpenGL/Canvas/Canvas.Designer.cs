@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  partial class Canvas
+  partial class Canvas : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Clean up any resources being used.

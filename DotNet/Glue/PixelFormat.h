@@ -27,40 +27,43 @@
 
 namespace CadKit
 {
-  namespace Glue
+  namespace OpenGL
   {
-    public ref class PixelFormat : CadKit::Referenced::Base
+    namespace Glue
     {
-    public:
+      public ref class PixelFormat : CadKit::Referenced::Base
+      {
+      public:
 
-      typedef CadKit::Referenced::Base BaseClass;
-      typedef PIXELFORMATDESCRIPTOR Descriptor;
-      typedef std::vector<std::string> Row;
-      typedef std::vector<Row> Table;
-      typedef System::Data::DataTable DataTable;
+        typedef CadKit::Referenced::Base BaseClass;
+        typedef PIXELFORMATDESCRIPTOR Descriptor;
+        typedef std::vector<std::string> Row;
+        typedef std::vector<Row> Table;
+        typedef System::Data::DataTable DataTable;
 
-      PixelFormat ( DeviceContext ^dc, unsigned int index );
+        PixelFormat ( DeviceContext ^dc, unsigned int index );
 
-      const Descriptor &    descriptor();
-      unsigned int          index();
-      static void           query ( DeviceContext ^dc, Table & );
-      static DataTable ^    query ( DeviceContext ^dc );
+        const Descriptor &    descriptor();
+        unsigned int          index();
+        static void           query ( DeviceContext ^dc, Table & );
+        static DataTable ^    query ( DeviceContext ^dc );
 
-    protected:
+      protected:
 
-      virtual void          _cleanup() override;
-      int                   _default();
-      void                  _init();
-      int                   _lastIndex();
-      void                  _set();
+        virtual void          _cleanup() override;
+        int                   _default();
+        void                  _init();
+        int                   _lastIndex();
+        void                  _set();
 
-    private:
+      private:
 
-      virtual ~PixelFormat();
+        virtual ~PixelFormat();
 
-      Descriptor *_pfd;
-      int _index;
-      DeviceContext ^_dc;
-    };
+        Descriptor *_pfd;
+        int _index;
+        DeviceContext ^_dc;
+      };
+    }
   }
 }

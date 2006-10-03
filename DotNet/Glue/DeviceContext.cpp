@@ -17,7 +17,7 @@
 
 #include "Usul/Cast/Cast.h"
 
-using namespace CadKit::Glue;
+using namespace CadKit::OpenGL::Glue;
 
 
 ///////////////////////////////////////////////////////////////////////////////

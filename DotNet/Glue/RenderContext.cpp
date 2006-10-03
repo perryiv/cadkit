@@ -21,7 +21,7 @@
 
 #include <sstream>
 
-using namespace CadKit::Glue;
+using namespace CadKit::OpenGL::Glue;
 
 
 ///////////////////////////////////////////////////////////////////////////////

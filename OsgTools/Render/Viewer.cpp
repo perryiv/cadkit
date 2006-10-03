@@ -202,17 +202,15 @@ void Viewer::create()
   {
     // Make this context current.
     _context->makeCurrent();
-
-
-    _renderer->init();
-   // Set default stereo modes.
-    this->stereoEyeDistance( 0.01f );
-    GLboolean hasStereo ( GL_FALSE );
-    ::glGetBooleanv ( GL_STEREO, &hasStereo );
-    if( GL_TRUE == hasStereo )
-      this->stereoMode( osg::DisplaySettings::QUAD_BUFFER );
-
   }
+
+  _renderer->init();
+  // Set default stereo modes.
+  this->stereoEyeDistance( 0.01f );
+  GLboolean hasStereo ( GL_FALSE );
+  ::glGetBooleanv ( GL_STEREO, &hasStereo );
+  if( GL_TRUE == hasStereo )
+    this->stereoMode( osg::DisplaySettings::QUAD_BUFFER );
 
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
@@ -253,8 +251,9 @@ void Viewer::clear()
   if ( _context.valid() )
   {
     _context->makeCurrent();
-    _renderer->clear();
   }
+
+  _renderer->clear();
 
   _context = 0x0;
   _setCursor = static_cast < Usul::Interfaces::ISetCursorType* > ( 0x0 );
@@ -297,11 +296,11 @@ void Viewer::updateScene()
 void Viewer::render()
 {
   // Handle no viewer or scene.
-  if ( !this->viewer() || !this->viewer()->getSceneData() || !_context.valid() )
+  if ( !this->viewer() || !this->viewer()->getSceneData() )
     return;
   
   // Make this context current.
-  _context->makeCurrent();
+  if( _context.valid() ) { _context->makeCurrent(); }
 
   // Initialize the error.
   ::glGetError();
@@ -382,7 +381,7 @@ void Viewer::render()
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 
   // Swap the buffers.
-  _context->swapBuffers();
+  if( _context.valid() ) { _context->swapBuffers(); }
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
@@ -1939,7 +1938,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height,
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
   // Make this context current.
-  me->_context->makeCurrent();
+  if( _context.valid() ) { me->_context->makeCurrent(); }
 
   // Capture image.
   image = me->_renderer->screenCapture( this->getViewMatrix(), width, height );
@@ -4575,7 +4574,7 @@ osg::Image* Viewer::screenCapture ( const osg::Vec3f& center, float distance, co
                   osg::Matrixd::translate(center) );
 
   // Make this context current.
-  me->_context->makeCurrent();
+  if( _context.valid() ) { me->_context->makeCurrent(); }
 
   return me->_renderer->screenCapture ( m.inverse( m ), width, height );
 }
@@ -4593,7 +4592,7 @@ osg::Image* Viewer::screenCapture ( unsigned int height, unsigned int width ) co
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
   // Make this context current.
-  me->_context->makeCurrent();
+  if( _context.valid() ) { me->_context->makeCurrent(); }
 
   return me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
 }

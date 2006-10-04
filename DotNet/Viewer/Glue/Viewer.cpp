@@ -24,24 +24,9 @@ using namespace CadKit::Viewer::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer() : BaseClass(),
-_viewer( new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 ) )
+Viewer::Viewer() : _viewer( new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 ) )
 {
   Usul::Pointers::reference( _viewer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clean up.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_cleanup()
-{
-  Usul::Pointers::unreference( _viewer );
-  _viewer = 0x0;
-  BaseClass::_cleanup();
 }
 
 

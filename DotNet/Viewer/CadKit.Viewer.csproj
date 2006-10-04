@@ -44,7 +44,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cadkit.Viewer.Glue\Cadkit.Viewer.Glue.vcproj">
+    <ProjectReference Include="Glue\Cadkit.Viewer.Glue.vcproj">
       <Project>{74E03074-1991-4E02-B5F2-B9D98FAD14D0}</Project>
       <Name>CadKit.Viewer.Glue</Name>
     </ProjectReference>

@@ -180,10 +180,6 @@
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
-			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
-		/>
 	</References>
 	<Files>
 		<Filter

@@ -19,7 +19,6 @@ namespace CadKit.Viewer
     /// </summary>
     public Panel()
     {
-      _viewer.reference();
     }
 
     /// <summary>
@@ -37,7 +36,6 @@ namespace CadKit.Viewer
     public void clear()
     {
       _viewer.clear();
-      _viewer.dereference();
       _viewer = null;
     }
 

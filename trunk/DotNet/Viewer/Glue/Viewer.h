@@ -44,10 +44,9 @@ namespace CadKit
       };
 
       /// Class to wrap Helios Viewer.
-      public ref class Viewer : CadKit::Referenced::Base
+      public ref class Viewer
       {
       public:
-        typedef CadKit::Referenced::Base BaseClass;
 
         Viewer();
 
@@ -70,11 +69,7 @@ namespace CadKit
 
         OsgTools::Render::Viewer*  viewer();
 
-        unsigned int viewerPtr();
-
-      protected:
-
-        virtual void        _cleanup() override;
+        unsigned int viewerPtr();      
 
       private:
         OsgTools::Render::Viewer* _viewer;

@@ -17,9 +17,13 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
     public Viewer() : base()
     {
       //this.PersistentName = this.GetType().ToString();
-      CadKit.OpenGL.Canvas canvas = new CadKit.OpenGL.Canvas();
-      this.Controls.Add(canvas);
-      canvas.Dock = System.Windows.Forms.DockStyle.Fill;
+      CadKit.Viewer.Viewer viewer = new CadKit.Viewer.Viewer();
+      viewer.init();
+      this.Controls.Add(viewer);
+      viewer.Dock = System.Windows.Forms.DockStyle.Fill;
+      //CadKit.OpenGL.Canvas canvas = new CadKit.OpenGL.Canvas();
+      //this.Controls.Add(canvas);
+      //canvas.Dock = System.Windows.Forms.DockStyle.Fill;
     }
   }
 }

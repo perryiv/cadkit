@@ -4,17 +4,17 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E335C7FD-3AFA-487E-909C-5928F0EAE194}</ProjectGuid>
+    <ProjectGuid>{C79FE51F-7D75-4A3D-87CF-8B6182D90E56}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cadkit.Viewer</RootNamespace>
-    <AssemblyName>Cadkit.Viewer</AssemblyName>
+    <RootNamespace>CadKit.Plugins.Documents.SceneDocument</RootNamespace>
+    <AssemblyName>CadKit.Plugins.Documents.SceneDocument</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,43 +30,26 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\sdk\DockPanel_Bin_1_0_0_0_VS2005\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Panel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Component.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="Factory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Viewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Interfaces\CadKit.Interfaces.csproj">
+    <ProjectReference Include="..\..\..\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OSG\Glue\Glue.vcproj">
+    <ProjectReference Include="..\..\..\OSG\Glue\Glue.vcproj">
       <Project>{6F8548C1-32FA-44C9-8BDA-C7221B555065}</Project>
       <Name>CadKit.OSG.Glue</Name>
-    </ProjectReference>
-    <ProjectReference Include="Glue\Cadkit.Viewer.Glue.vcproj">
-      <Project>{74E03074-1991-4E02-B5F2-B9D98FAD14D0}</Project>
-      <Name>CadKit.Viewer.Glue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OpenGL\CadKit.OpenGL.csproj">
-      <Project>{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}</Project>
-      <Name>CadKit.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Referenced\CadKit.Referenced.csproj">
-      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
-      <Name>CadKit.Referenced</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -77,4 +60,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>move /Y $(TargetDir)\$(TargetName).dll $(TargetDir)\$(TargetName).plug</PostBuildEvent>
+  </PropertyGroup>
 </Project>

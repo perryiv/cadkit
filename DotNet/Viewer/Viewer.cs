@@ -9,7 +9,9 @@
 
 namespace CadKit.Viewer
 {
-  public class Viewer : System.Windows.Forms.Form
+  public class Viewer : 
+    WeifenLuo.WinFormsUI.DockContent,
+    CadKit.Interfaces.IViewer
   {
     CadKit.Viewer.Panel _panel = new Panel();
 
@@ -21,6 +23,7 @@ namespace CadKit.Viewer
       this.Controls.Add(_panel);
       _panel.Dock = System.Windows.Forms.DockStyle.Fill;
 
+      this.BackColorChanged += new System.EventHandler(_panel.OnBackColorChanged);
       this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(OnFormClosed);
     }
 
@@ -52,8 +55,51 @@ namespace CadKit.Viewer
     public void init()
     {
       _panel.init();
+    }
 
-      this.BackColorChanged += new System.EventHandler(_panel.OnBackColorChanged);      
+    /// <summary>
+    /// Get the viewer.
+    /// </summary>
+    public CadKit.Viewer.Glue.Viewer HeliosViewer
+    {
+      get
+      {
+        return _panel.Viewer;
+      }
+    }
+
+    /// <summary>
+    /// Get/Set the scene.
+    /// </summary>
+    public object Scene
+    {
+      get
+      {
+        return _panel.Viewer.Scene;
+      }
+      set
+      {
+        _panel.Viewer.Scene = value as CadKit.OSG.Glue.Node;
+      }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="interval"></param>
+    public void startRenderTimer(int interval)
+    {
+      _panel.startRenderTimer(interval);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void endRenderTimer()
+    {
+      _panel.endRenderTimer();
     }
   }
 }

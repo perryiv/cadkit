@@ -19,6 +19,8 @@ namespace CadKit.Viewer
     /// </summary>
     public Panel()
     {
+      _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
+      this.ContextMenuStrip = null;
     }
 
     /// <summary>
@@ -90,9 +92,39 @@ namespace CadKit.Viewer
     /// A key was pressed.
     /// </summary>
     /// <param name="e"></param>
-    protected override void OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+    protected override void OnKeyDown(System.Windows.Forms.KeyEventArgs e)
     {
-      base.OnKeyPress(e);
+      this._makeCurrent();
+
+      // RESET
+      if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
+      {
+        // Move the camera.
+        _viewer.camera(CadKit.Viewer.Glue.Viewer.CameraOption.RESET);
+      }
+
+      // FIT
+      else if (e.KeyCode == System.Windows.Forms.Keys.F)
+      {
+        // Move the camera.
+        _viewer.camera(CadKit.Viewer.Glue.Viewer.CameraOption.FIT);
+      }
+
+      // Change mode to navigation
+      else if (e.KeyCode == System.Windows.Forms.Keys.N)
+      {
+        _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
+        this.ContextMenuStrip = null;
+      }
+
+      // Change mode to pick
+      else if (e.KeyCode == System.Windows.Forms.Keys.P)
+      {
+        _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.PICK);
+        this.ContextMenuStrip = this.buildContextMenu();
+      }
+
+      this._swapBuffers();
     }
 
 
@@ -107,11 +139,11 @@ namespace CadKit.Viewer
       bool right = (e.Button == System.Windows.Forms.MouseButtons.Right);
 
       float x = e.Location.X;
-      float y = e.Location.Y;
+      float y = this.Size.Height - e.Location.Y;
 
       bool mouse = left || middle || right;
 
-      int type = CadKit.Viewer.Glue.Type.type(mouse);
+      CadKit.Viewer.Glue.Viewer.Type type = mouse ? CadKit.Viewer.Glue.Viewer.Type.DRAG : CadKit.Viewer.Glue.Viewer.Type.MOVE;
 
       this._makeCurrent();
 
@@ -142,7 +174,7 @@ namespace CadKit.Viewer
       bool right = (e.Button == System.Windows.Forms.MouseButtons.Right);
 
       float x = e.Location.X;
-      float y = e.Location.Y;
+      float y = this.Size.Height - e.Location.Y;
 
       this._makeCurrent();
 
@@ -163,7 +195,7 @@ namespace CadKit.Viewer
       bool right = (e.Button == System.Windows.Forms.MouseButtons.Right);
 
       float x = e.Location.X;
-      float y = e.Location.Y;
+      float y = this.Size.Height - e.Location.Y;
 
       this._makeCurrent();
 

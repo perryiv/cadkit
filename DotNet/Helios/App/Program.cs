@@ -19,6 +19,9 @@ namespace CadKit.Helios
     {
       try
       {
+        /// Initialize unmanaged side.
+        CadKit.Init.Glue.Init init = new CadKit.Init.Glue.Init();
+
         // Cache this thread's id.
         CadKit.Tools.Threading threading = CadKit.Tools.Threading.Instance;
 

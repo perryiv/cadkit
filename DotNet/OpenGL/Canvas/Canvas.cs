@@ -59,6 +59,7 @@ namespace CadKit.OpenGL
       _innerPanel.MouseDown  += new System.Windows.Forms.MouseEventHandler(OnMouseDown);
       _innerPanel.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
       _innerPanel.KeyPress   += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
+      _innerPanel.KeyDown    += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
     }
 
 

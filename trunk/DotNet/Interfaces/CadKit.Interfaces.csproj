@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IBuildScene.cs" />
     <Compile Include="IDiskStorageCreate.cs" />
     <Compile Include="IDiskStorage.cs" />
     <Compile Include="IGuiCreate.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="IOptionsPage.cs" />
     <Compile Include="IOptionsPageAdd.cs" />
     <Compile Include="IDockPanel.cs" />
+    <Compile Include="IViewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

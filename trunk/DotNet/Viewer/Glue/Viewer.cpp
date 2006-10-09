@@ -129,7 +129,7 @@ void Viewer::create()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool right, int type )
+void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type )
 {
   if( _viewer )
     _viewer->handleNavigation ( x, y, left, middle, right, static_cast < osgGA::GUIEventAdapter::EventType > ( type ) );
@@ -157,4 +157,22 @@ OsgTools::Render::Viewer*  Viewer::viewer()
 unsigned int Viewer::viewerPtr()
 {
   return reinterpret_cast < unsigned int > ( _viewer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Move the camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::camera ( CameraOption option )
+{
+  _viewer->camera( static_cast < OsgTools::Render::Viewer::CameraOption > ( option ) );
+}
+
+
+void Viewer::setMode ( ViewMode mode )
+{
+  _viewer->setMode( static_cast < OsgTools::Render::Viewer::ViewMode > ( mode ) );
 }

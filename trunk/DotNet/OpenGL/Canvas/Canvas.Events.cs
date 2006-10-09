@@ -82,6 +82,16 @@ namespace CadKit.OpenGL
       this.OnKeyPress(e);
     }
 
+    /// <summary>
+    /// Key is down.  Delegate
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+    {
+      this.OnKeyDown(e);
+    }
+
 
     /// <summary>
     /// The mouse wheel moved.  Delegate.

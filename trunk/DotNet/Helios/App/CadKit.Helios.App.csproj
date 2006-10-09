@@ -36,6 +36,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Init\Cadkit.Init.Glue.vcproj">
+      <Project>{51E8E425-CEF2-4B84-BC7E-E8B187D8A524}</Project>
+      <Name>CadKit.Init.Glue</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>

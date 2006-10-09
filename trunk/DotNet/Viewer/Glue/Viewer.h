@@ -22,26 +22,8 @@ namespace CadKit
 {
   namespace Viewer 
   {
-    namespace Glue 
+    namespace Glue
     {
-      const int NONE = 0;
-      const int DRAG = 4;
-      const int MOVE = 5;
-
-      /// Helper class to get osg::GUIEventAdapter type.
-      public ref class Type
-      {
-      public: 
-        static int type( bool mouse )
-        {
-          if( mouse )
-            return DRAG;
-          else
-            return MOVE;
-
-          return NONE;
-        }
-      };
 
       /// Class to wrap Helios Viewer.
       public ref class Viewer
@@ -49,6 +31,21 @@ namespace CadKit
       public:
 
         Viewer();
+
+        enum class Type 
+        { 
+          NONE = 0,
+          DRAG = 4,
+          MOVE = 5
+        };
+
+        enum class CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM };
+
+        enum class ViewMode
+        {
+          NAVIGATION,
+          PICK
+        };
 
         void backgroundColor ( float r, float g, float b);
 
@@ -61,15 +58,33 @@ namespace CadKit
         // Create.
         void                  create();
 
-        // Handle Navigation.
-        void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, int type );
+        void                  camera ( CameraOption );
 
-        void render();
-        void resize( int w, int h );
+        // Handle Navigation.
+        void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );
+
+        void                  render();
+        void                  resize( int w, int h );
+
+        void                  setMode ( ViewMode mode );
 
         OsgTools::Render::Viewer*  viewer();
 
-        unsigned int viewerPtr();      
+        unsigned int viewerPtr();
+
+        property CadKit::OSG::Glue::Node ^ Scene
+        {
+          CadKit::OSG::Glue::Node^ get()
+          {
+            CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
+            node->nodePtr ( reinterpret_cast < unsigned int > ( _viewer->scene() ) );
+            return node;
+          }
+          void set ( CadKit::OSG::Glue::Node ^node )
+          {
+            _viewer->scene ( reinterpret_cast < osg::Node* > ( node->nodePtr() ) );
+          }
+        };
 
       private:
         OsgTools::Render::Viewer* _viewer;

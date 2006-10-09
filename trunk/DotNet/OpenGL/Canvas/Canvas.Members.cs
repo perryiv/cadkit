@@ -22,5 +22,6 @@ namespace CadKit.OpenGL
     CadKit.OpenGL.DataGridForm _pixelFormatEditor = null;
     CadKit.Persistence.Form _colorEditorForm = null;
     System.Data.DataTable _pixelFormats = null;
+    System.Windows.Forms.Timer _timer = null;
   }
 }

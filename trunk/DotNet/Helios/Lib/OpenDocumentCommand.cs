@@ -58,6 +58,13 @@ namespace CadKit.Helios.Commands
             // Set the delegate.
             CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, _caller);
 
+            // Read the document
+            CadKit.Interfaces.IRead read = idoc as CadKit.Interfaces.IRead;
+            if( null != read ) 
+            {
+              read.read(name, this);
+            }
+
             // Create the default user-interface.
             CadKit.Interfaces.IGuiCreate gui = idoc as CadKit.Interfaces.IGuiCreate;
             if ( null != gui )

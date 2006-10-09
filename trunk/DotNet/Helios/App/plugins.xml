@@ -5,4 +5,6 @@
   <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug"/>
   <plugin file="CadKit.Plugins.Options.General.plug"/>
   <plugin file="CadKit.Plugins.Database.Storage.plug"/>
+  <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug"/>
+  <plugin file="CadKit.Plugins.Documents.SceneDocument.plug"/>
 </plugins>

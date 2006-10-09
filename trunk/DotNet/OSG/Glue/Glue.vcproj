@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="CadKit.Viewer.Glue"
-	ProjectGUID="{74E03074-1991-4E02-B5F2-B9D98FAD14D0}"
-	RootNamespace="CadkitViewerGlue"
+	Name="CadKit.OSG.Glue"
+	ProjectGUID="{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
+	RootNamespace="Glue"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDB.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -180,10 +180,6 @@
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
-			RelativePathToProject="..\OSG\Glue\Glue.vcproj"
-		/>
 	</References>
 	<Files>
 		<Filter
@@ -196,25 +192,29 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Viewer.cpp"
+				RelativePath=".\Factory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Viewer.h"
+				RelativePath=".\Factory.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath=".\Node.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Node.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ReadFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ReadFile.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

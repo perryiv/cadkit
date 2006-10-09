@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Helios.App", "App\CadKit.Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
@@ -72,7 +71,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\..
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OSG.Glue", "..\OSG\Glue\Glue.vcproj", "{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OSG.Glue", "..\OSG\Glue\CadKit.OSG.Glue.vcproj", "{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

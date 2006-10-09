@@ -15,6 +15,9 @@
 
 #include "Viewer.h"
 
+#include "Threads/OpenThreads/Mutex.h"
+#include "Usul/Threads/Mutex.h"
+
 using namespace CadKit::Viewer::Glue;
 
 
@@ -24,8 +27,10 @@ using namespace CadKit::Viewer::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer() : _viewer( new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 ) )
+Viewer::Viewer() : _viewer( 0x0 )
 {
+  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+  _viewer = new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 );
   Usul::Pointers::reference( _viewer );
 }
 

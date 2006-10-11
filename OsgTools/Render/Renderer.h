@@ -18,6 +18,7 @@
 #include "Usul/Pointers/Pointers.h"
 
 #include "osg/ref_ptr"
+#include "osg/Timer"
 
 #include "osgUtil/SceneView"
 
@@ -144,6 +145,9 @@ private:
 
   SceneViewPtr _sceneView;
   osg::ref_ptr<osg::FrameStamp> _framestamp;
+
+  osg::Timer _timer;
+  osg::Timer_t _start_tick;
 
   TimeHistories _times;
 

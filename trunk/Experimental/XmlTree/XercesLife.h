@@ -16,11 +16,12 @@
 #ifndef _XML_TREE_XERCES_LIFE_H_
 #define _XML_TREE_XERCES_LIFE_H_
 
+#include "XmlTree/Export.h"
 
 namespace XmlTree {
 
 
-struct XercesLife
+struct XML_TREE_EXPORT XercesLife
 {
   // Constructor calls initialize().
   XercesLife();

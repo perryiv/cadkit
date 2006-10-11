@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: XmlTree"
 	ProjectGUID="{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+	RootNamespace="lib: XmlTree"
 	>
 	<Platforms>
 		<Platform
@@ -256,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ReplaceIllegalCharacters.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Writer.cpp"
 				>
 			</File>
@@ -264,11 +269,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XercesErrorHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\XercesLife.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\XercesLife.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XercesString.h"
 				>
 			</File>
 		</Filter>

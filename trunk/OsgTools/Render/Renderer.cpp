@@ -59,10 +59,15 @@ Renderer::Renderer() : BaseClass(),
 _sceneView ( new osgUtil::SceneView ),
 _framestamp ( new osg::FrameStamp ),
 _times(),
+_timer(),
+_start_tick ( 0 ),
 _numPasses ( 1 ),
 _contextId ( 0 ),
 _hasAccumulationBuffer ( false )
 {
+  // Set the start tick.
+  _start_tick = _timer.tick();
+
   _sceneView->setFrameStamp ( _framestamp.get() );
 
   // Set the update-visitor.
@@ -115,6 +120,10 @@ void Renderer::init()
   // passes "*this" to it's cull visitor's CullSettings::inheritCullSettings, 
   // resetting the clamp-projection callback to null.
   cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+
+  cv->setCullingMode ( Usul::Bits::remove ( cv->getCullingMode(), osg::CullingSet::SMALL_FEATURE_CULLING ) );
+
+  this->viewer()->setCullingMode ( cv->getCullingMode() );
 }
 
 
@@ -598,7 +607,7 @@ void Renderer::update()
 {
   // Handle particles and osg-animations.
   _framestamp->setFrameNumber ( _framestamp->getFrameNumber() + 1 );
-  _framestamp->setReferenceTime ( ::time ( 0x0 ) );
+  _framestamp->setReferenceTime ( _timer.delta_s( _start_tick, _timer.tick() ) );
 
   typedef RecordTime< Renderer > RecordTime;
 

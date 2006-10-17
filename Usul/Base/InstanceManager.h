@@ -16,6 +16,8 @@
 #ifndef _USUL_REFERENCED_INSTANCE_MANAGER_CLASS_H_
 #define _USUL_REFERENCED_INSTANCE_MANAGER_CLASS_H_
 
+#include "Usul/Threads/Mutex.h"
+
 #include <map>
 #include <string>
 
@@ -41,11 +43,14 @@ public:
 
 protected:
 
+  Usul::Threads::Mutex&   _mutex();
+
   InstanceManager ( const InstanceManager &r );
   InstanceManager &operator = ( const InstanceManager &r );
 
 private:
 
+  Usul::Threads::Mutex *_imMutex;
   ObjectMap _objects;
 };
 

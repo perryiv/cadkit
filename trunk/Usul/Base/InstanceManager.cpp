@@ -16,6 +16,7 @@
 #include "Usul/Base/InstanceManager.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Threads/Guard.h"
 
 #ifdef _MSC_VER
 #include "windows.h"
@@ -30,11 +31,29 @@ using namespace Usul::Base;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Local typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{
+  namespace Base
+  {
+    typedef Usul::Threads::Mutex Mutex;
+    typedef Usul::Threads::Guard<Mutex> Guard;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-InstanceManager::InstanceManager() : _objects()
+InstanceManager::InstanceManager() : 
+_imMutex( 0x0 ),
+_objects()
 {
 }
 
@@ -47,6 +66,10 @@ InstanceManager::InstanceManager() : _objects()
 
 InstanceManager::~InstanceManager()
 {
+  // Delete the mutex.
+  if( 0x0 != _imMutex )
+    delete _imMutex;
+
   // Need this declared up here.
   std::ostringstream out;
 
@@ -86,6 +109,15 @@ InstanceManager::~InstanceManager()
 }
 
 
+Usul::Threads::Mutex& InstanceManager::_mutex()
+{
+  if( 0x0 == _imMutex )
+    _imMutex = Mutex::create();
+
+  return *_imMutex;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add a new object. Should not be in there already.
@@ -94,6 +126,8 @@ InstanceManager::~InstanceManager()
 
 void InstanceManager::add ( const Referenced *object )
 {
+  Guard guard ( this->_mutex() );
+
   USUL_ASSERT ( 0x0 != object );
   if ( object )
   {
@@ -112,6 +146,8 @@ void InstanceManager::add ( const Referenced *object )
 
 void InstanceManager::remove ( const Referenced *object )
 {
+  Guard guard ( this->_mutex() );
+
   USUL_ASSERT ( 0x0 != object );
   USUL_ASSERT ( 1 == _objects.erase ( object ) );
 }

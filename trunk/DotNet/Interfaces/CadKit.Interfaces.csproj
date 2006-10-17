@@ -48,6 +48,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,7 @@
     <Compile Include="IOptionsPage.cs" />
     <Compile Include="IOptionsPageAdd.cs" />
     <Compile Include="IDockPanel.cs" />
+    <Compile Include="IRegisterPersistantForm.cs" />
     <Compile Include="IViewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

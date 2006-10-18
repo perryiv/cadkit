@@ -705,6 +705,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ISceneUpdate.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISelectionBox.h"
 						>
 					</File>

@@ -228,11 +228,8 @@ void Renderer::_singlePassRender()
   if ( !_sceneView.valid() )
     return;
 
-  // Update
-  this->update();
-
   // Cull and draw.
-  this->_cullAndDraw();  
+  this->_cullAndDraw();
 }
 
 
@@ -609,10 +606,11 @@ void Renderer::update()
   _framestamp->setFrameNumber ( _framestamp->getFrameNumber() + 1 );
   _framestamp->setReferenceTime ( _timer.delta_s( _start_tick, _timer.tick() ) );
 
-  typedef RecordTime< Renderer > RecordTime;
+  _sceneView->getUpdateVisitor()->setTraversalNumber(_framestamp->getFrameNumber());
 
+  typedef RecordTime< Renderer > RecordTime;
   {
-    RecordTime ut ( *this, "update" );
+    RecordTime ut ( *this, "update" );  
     _sceneView->update();
   }
 }

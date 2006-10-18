@@ -124,6 +124,7 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _context         ( context ),
   _renderer        ( new Renderer ),
   _sceneManager    ( new SceneManager ),
+  _sceneUpdate     (),
   _setCursor       ( caller ),
   _timeoutSpin     ( caller ),
   _caller          ( caller ),
@@ -299,6 +300,10 @@ void Viewer::render()
   if ( !this->viewer() || !this->viewer()->getSceneData() )
     return;
   
+  // Update the scene.
+  if( _sceneUpdate.valid() )
+    _sceneUpdate->sceneUpdate();
+
   // Make this context current.
   if( _context.valid() ) { _context->makeCurrent(); }
 
@@ -407,7 +412,10 @@ void Viewer::render()
 
 void Viewer::_render()
 {
+  // Update.
   _renderer->update();
+
+  // Draw.
   _renderer->render();
 }
 
@@ -4706,4 +4714,27 @@ void Viewer::removeText  ( unsigned int x, unsigned int y )
   _sceneManager->removeText( x, y );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get interface for scene updater.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ISceneUpdate* Viewer::sceneUpdate()
+{
+  return _sceneUpdate.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set interface for scene updater.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::sceneUpdate( Usul::Interfaces::ISceneUpdate* sceneUpdate )
+{
+  _sceneUpdate = sceneUpdate;
+}
 

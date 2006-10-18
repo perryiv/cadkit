@@ -48,6 +48,7 @@ namespace CadKit.Persistence
 
         // Get dimensions of screen.
         System.Drawing.Rectangle rect = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
+
         int sw = rect.Width;
         int sh = rect.Height;
 
@@ -70,18 +71,17 @@ namespace CadKit.Persistence
         w = CadKit.Persistence.Registry.Instance.getInt(persistentName, "width", w);
         h = CadKit.Persistence.Registry.Instance.getInt(persistentName, "height", h);
 
-        // Make sure it fits.
-        bool xFits = ((x > 0) && (x < (sw - w)));
-        bool yFits = ((y > 10) && (y < (sh - h)));
-        bool wFits = (w < sw);
-        bool hFits = (h < sh);
-        bool fits = (xFits && yFits && wFits && hFits);
-
-        // Set origin and size if it fits.
-        if (fits)
+        // Loop through each screen and see if the values fit.
+        foreach (System.Windows.Forms.Screen screen in System.Windows.Forms.Screen.AllScreens)
         {
-          form.DesktopBounds = new System.Drawing.Rectangle
+          // Make sure it fits.
+          if (_fitsScreen(screen, x, y, w, h))
+          {
+            form.DesktopBounds = new System.Drawing.Rectangle
             (new System.Drawing.Point(x, y), new System.Drawing.Size(w, h));
+            break;
+          }
+
         }
 
         // Is it maximized?
@@ -89,6 +89,37 @@ namespace CadKit.Persistence
           form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
       }
     }
+
+
+    /// <summary>
+    /// Checks to see if the values fit on the given screen.
+    /// </summary>
+    /// <param name="screen"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="w"></param>
+    /// <param name="h"></param>
+    /// <returns></returns>
+    protected static bool _fitsScreen(System.Windows.Forms.Screen screen, int x, int y, int w, int h)
+    {
+      System.Drawing.Rectangle rect = screen.WorkingArea;
+
+      // Get the screen width and height.
+      int sx = rect.X;
+      int sy = rect.Y;
+      int sw = rect.Width;
+      int sh = rect.Height;
+
+      // Make sure it fits.
+      bool xFits = ((x > sx) && (x < ((sw + sx) - w)));
+      bool yFits = ((y > 10) && (y < (sh - h)));
+      bool wFits = (w < sw);
+      bool hFits = (h < sh);
+      bool fits = (xFits && yFits && wFits && hFits);
+
+      return fits;
+    }
+
 
     /// <summary>
     /// Write the rectangle.

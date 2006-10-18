@@ -9,11 +9,10 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas
   {
     class Flags
     {
-      public bool hasFormClosingCallback = false;
     }
   }
 }

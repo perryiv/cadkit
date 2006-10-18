@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas
   {
     private delegate void RenderDelegate();
 
@@ -18,18 +18,25 @@ namespace CadKit.OpenGL
     /// </summary>
     public void render()
     {
-      if (this.InvokeRequired)
-        this.BeginInvoke(new RenderDelegate(render));
-      else
+      try
       {
-        // Re-initializes the OpenGL context if needed.
-        this.initRenderingContext();
+        if (this.InvokeRequired)
+          this.BeginInvoke(new RenderDelegate(render));
+        else
+        {
+          // Re-initializes the OpenGL context if needed.
+          this.initRenderingContext();
 
-        // Resize the viewport.
-        this.resizeOpenGL();
+          // Resize the viewport.
+          this.resizeOpenGL();
 
-        // Paint the window.
-        this.paintOpenGL();
+          // Paint the window.
+          this.paintOpenGL();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4054174740: {0}\n{1}", e.Message, e.StackTrace);
       }
     }
 
@@ -52,6 +59,7 @@ namespace CadKit.OpenGL
       _timer.Enabled = false;
       _timer.Stop();
       _timer = null;
+
     }
   }
 }

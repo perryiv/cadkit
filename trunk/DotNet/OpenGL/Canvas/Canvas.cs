@@ -28,11 +28,6 @@ namespace CadKit.OpenGL
     /// </summary>
     private void _initInnerPanel()
     {
-      // Find parent form.
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null == parent)
-        throw new System.Exception("Error 1547542956: No parent form found when initializing the inner panel");
-
       // Delete (sort of) the existing one.
       if (null != _innerPanel)
       {
@@ -42,11 +37,6 @@ namespace CadKit.OpenGL
         _innerPanel = null;
         System.GC.Collect();
       }
-
-      // Make sure our callback is connected.
-      if (false == _flags.hasFormClosingCallback)
-        parent.FormClosing += this.OnFormClosing;
-      _flags.hasFormClosingCallback = true;
 
       // Make the inner panel.
       _innerPanel = new System.Windows.Forms.Panel();

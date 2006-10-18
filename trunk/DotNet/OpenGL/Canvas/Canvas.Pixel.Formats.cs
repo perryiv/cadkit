@@ -9,11 +9,8 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas
   {
-    // Local type used below.
-    public class EmptyColumns : System.Collections.Generic.LinkedList<System.Data.DataColumn> { }
-
     /// <summary>
     /// Call this to get the pixel formats.
     /// </summary>

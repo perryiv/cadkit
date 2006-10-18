@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas
   {
     /// <summary>
     /// Paint the background. We override this to prevent flicker.
@@ -68,7 +68,6 @@ namespace CadKit.OpenGL
     public virtual void OnFormClosing(object sender, System.EventArgs e)
     {
       this._deleteRenderingContext();
-      _flags.hasFormClosingCallback = false;
     }
 
 
@@ -135,5 +134,5 @@ namespace CadKit.OpenGL
     {
       this.OnMouseMove(e);
     }
-  }
+ }
 }

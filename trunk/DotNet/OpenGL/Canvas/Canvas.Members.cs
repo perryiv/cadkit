@@ -9,7 +9,7 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas
   {
     /// <summary>
     /// Data members.

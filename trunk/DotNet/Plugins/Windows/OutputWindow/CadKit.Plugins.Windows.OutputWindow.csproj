@@ -37,11 +37,15 @@
     <Compile Include="Component.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Form.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ScopedDocumentStyle.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
+      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
+      <Name>WinFormsUI2005</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Helios\Lib\CadKit.Helios.Lib.csproj">
       <Project>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</Project>
       <Name>CadKit.Helios.Lib</Name>

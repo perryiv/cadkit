@@ -45,13 +45,27 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// <summary>
     /// Called when parent form is shown.
     /// </summary>
-    private void _parentShown(object sender, System.EventArgs e)
+    private void _parentShown(object sender, System.EventArgs args)
     {
-      CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(form, parent, "Output Window", false);
-      form.Show();
-      parent.Activate();
+      try
+      {
+        CadKit.Interfaces.IDockPanel getPanel = sender as CadKit.Interfaces.IDockPanel;
+        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
+
+        if (null != panel)
+        {
+          CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
+          form.Text = "Output Window";
+          panel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.DockingWindow;
+          form.DockState = WeifenLuo.WinFormsUI.DockState.Unknown;
+          form.VisibleState = WeifenLuo.WinFormsUI.DockState.Unknown;
+          form.Show(panel);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4206815434: {0}", e.Message);
+      }
     }
 
     /// <summary>

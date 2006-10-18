@@ -17,11 +17,25 @@ namespace CadKit.OpenGL
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
-      if (disposing && (components != null))
+      try
       {
-        components.Dispose();
+        // This function is always called, or so it seems. 
+        // Therefore, deleting the rendering context here.
+        this._deleteRenderingContext();
+
+        // Dispose components.
+        if ((true == disposing) && (null != components))
+        {
+          components.Dispose();
+        }
+
+        // Call base class's function.
+        base.Dispose(disposing);
       }
-      base.Dispose(disposing);
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1587966600: {0}\n{1}", e.Message, e.StackTrace);
+      }
     }
 
     #region Component Designer generated code

@@ -9,11 +9,12 @@
 
 namespace CadKit.Plugins.Windows.OutputWindow
 {
-  public class Form : CadKit.Persistence.Form
+  public class Form : WeifenLuo.WinFormsUI.DockContent
   {
     /// <summary>
     /// Data members.
     /// </summary>
+    object _mutex = new object();
     System.Windows.Forms.RichTextBox _text = null;
 
     /// <summary>

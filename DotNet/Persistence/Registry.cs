@@ -140,20 +140,26 @@ namespace CadKit.Persistence
     /// <summary>
     /// Get the string.
     /// </summary>
-    public string getString( string section, string key, string defaultValue )
+    public string getString(string section, string key, string defaultValue)
     {
       lock (_mutex)
       {
-        Section hash = this.getSectionHash(section);
+        string value = null;
         try
         {
-          return hash[key];
+          Section hash = this.getSectionHash(section);
+          hash.TryGetValue(key, out value);
+          if (null == value)
+          {
+            value = defaultValue;
+            hash.Add(key, value);
+          }
         }
-        catch (System.Collections.Generic.KeyNotFoundException)
+        catch (System.Exception e)
         {
-          hash[key] = defaultValue;
-          return defaultValue;
+          System.Console.WriteLine("Error 3906905305: {0}", e.Message);
         }
+        return value;
       }
     }
 
@@ -284,16 +290,16 @@ namespace CadKit.Persistence
         Section hash = null;
         try
         {
-          hash = _sections[section];
+          _sections.TryGetValue(section, out hash);
+          if (null == hash)
+          {
+            hash = new Section();
+            _sections.Add(section, hash);
+          }
         }
-        catch (System.Collections.Generic.KeyNotFoundException)
+        catch (System.Exception e)
         {
-          hash = null;
-        }
-        if (null == hash)
-        {
-          hash = new Section();
-          _sections[section] = hash;
+          System.Console.WriteLine("Error 1540093077: {0}", e.Message);
         }
         return hash;
       }

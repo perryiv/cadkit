@@ -32,10 +32,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\sdk\DockPanel_Bin_1_0_0_0_VS2005\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
@@ -59,6 +55,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
+      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
+      <Name>WinFormsUI2005</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Commands\CadKit.Commands.csproj">
       <Project>{4255A478-49D3-4250-B06A-AB16AEF9579E}</Project>
       <Name>CadKit.Commands</Name>

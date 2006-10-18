@@ -48,19 +48,8 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
         Viewer view = new Viewer();
         view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
         view.Text = _document.Name;
-
-        CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
-        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
-
-        if (null != panel && panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
-        {
-          view.MdiParent = caller as System.Windows.Forms.Form;
-          view.Show();
-        }
-        else
-        {
-          view.Show(panel);
-        }
+        view.MdiParent = caller as System.Windows.Forms.Form;
+        view.Show();
       }
     }
 

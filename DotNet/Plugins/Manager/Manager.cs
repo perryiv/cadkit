@@ -252,16 +252,24 @@ namespace CadKit.Plugins
     {
       lock (_mutex)
       {
+        System.Reflection.Assembly assembly = null;
         try
         {
-          return _assemblies[file];
+          _assemblies.TryGetValue(file, out assembly);
+          if (null == assembly)
+          {
+            // This may raise a LoadFromContext exception (or debugger warning). 
+            // However, LoadFrom() is the right function to call. 
+            // See http://www.gotdotnet.com/team/clr/LoadFromIsolation.aspx
+            assembly = System.Reflection.Assembly.LoadFrom(file);
+            _assemblies.Add(file, assembly);
+          }
         }
-        catch (System.Collections.Generic.KeyNotFoundException)
+        catch (System.Exception e)
         {
-          System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFrom(file);
-          _assemblies[file] = assembly;
-          return assembly;
+          System.Console.WriteLine("Error 4035049426: {0}", e.Message);
         }
+        return assembly;
       }
     }
 

@@ -9,21 +9,22 @@
 
 namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
-  class Viewer : WeifenLuo.WinFormsUI.DockContent
+  class Viewer : System.Windows.Forms.Form
   {
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    private object _mutex = new object();
+
     /// <summary>
     /// Construct a view.
     /// </summary>
     public Viewer() : base()
     {
-      //this.PersistentName = this.GetType().ToString();
       CadKit.Viewer.Viewer viewer = new CadKit.Viewer.Viewer();
       viewer.init();
       this.Controls.Add(viewer);
       viewer.Dock = System.Windows.Forms.DockStyle.Fill;
-      //CadKit.OpenGL.Canvas canvas = new CadKit.OpenGL.Canvas();
-      //this.Controls.Add(canvas);
-      //canvas.Dock = System.Windows.Forms.DockStyle.Fill;
     }
   }
 }

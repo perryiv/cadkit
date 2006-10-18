@@ -12,8 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VOLUMETOTRIANGLESFACTORY_H__
-#define __VOLUMETOTRIANGLESFACTORY_H__
+#ifndef __VOLUME_TO_TRIANGLES_FACTORY_H__
+#define __VOLUME_TO_TRIANGLES_FACTORY_H__
 
 #include "CompileGuard.h"
 
@@ -56,5 +56,5 @@ protected:
 };
 
 
-#endif /* __VOLUMETOTRIANGLESFACTORY_H__  */		
+#endif /* __VOLUME_TO_TRIANGLES_FACTORY_H__  */		
 	

@@ -12,8 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VOLUMETOTRIANGLESCOMPONENT_H__
-#define __VOLUMETOTRIANGLESCOMPONENT_H__
+#ifndef __VOLUME_TO_TRIANGLES_COMPONENT_H__
+#define __VOLUME_TO_TRIANGLES_COMPONENT_H__
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -57,5 +57,5 @@ protected:
   virtual void            execute ( Usul::Interfaces::IUnknown *caller );
 };
 
-#endif /* __VOLUMETOTRIANGLESCOMPONENT_H__  */		
+#endif /* __VOLUME_TO_TRIANGLES_COMPONENT_H__  */		
 	

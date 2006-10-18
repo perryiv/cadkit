@@ -13,12 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VOLUMETOTRIANGLES_COMPILE_GUARD_H__
-#define __VOLUMETOTRIANGLES_COMPILE_GUARD_H__
+#ifndef __VOLUME_TO_TRIANGLES_COMPILE_GUARD_H__
+#define __VOLUME_TO_TRIANGLES_COMPILE_GUARD_H__
 
-#ifndef _COMPILING__COMPILING_VOLUMETOTRIANGLES
+#ifndef _COMPILING_VOLUME_TO_TRIANGLES
 # error "This header file is only used for compiling the library."
 # error "It should not be included in client code."
 #endif
 
-#endif /* __VOLUMETOTRIANGLES_COMPILE_GUARD_H__ */
+#endif /* __VOLUME_TO_TRIANGLES_COMPILE_GUARD_H__ */

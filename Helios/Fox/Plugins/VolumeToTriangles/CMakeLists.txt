@@ -2,7 +2,7 @@ project (FoxVolumeToTriangles)
 
 # This project Depends on the VTKTools Project in the Experimental Branch
 
-set(COMPILE_GUARD "_COMPILING__COMPILING_VOLUMETOTRIANGLES")
+set(COMPILE_GUARD "_COMPILING_VOLUME_TO_TRIANGLES")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------

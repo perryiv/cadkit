@@ -7,10 +7,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Blade.Test
+namespace CadKit.Threads.Test
 {
   public partial class Form : CadKit.Persistence.Form
   {
+    private uint _count = 0;
+
     public Form()
     {
       InitializeComponent();
@@ -21,6 +23,7 @@ namespace CadKit.Blade.Test
       CadKit.Threads.Jobs.Job job = new CadKit.Threads.Jobs.Job();
       job.Start += this._threadStart;
       job.Finish += this._threadFinish;
+      job.Name = System.String.Format("Job {0}", _count++);
       CadKit.Threads.Jobs.Manager.Instance.add(job);
     }
 
@@ -31,13 +34,22 @@ namespace CadKit.Blade.Test
 
     private void _threadStart(CadKit.Threads.Jobs.Job job)
     {
-      int total = 10000000;
-      job.Progress.Minimum = 0;
-      job.Progress.Maximum = total;
-      for (int i = 0; i < total; ++i)
+      System.TimeSpan rate = job.Progress.UpdateRate;
+      try
       {
-        job.Progress.Value = i;
-        //System.Threading.Thread.Sleep(10);
+        int total = 10000000;
+        job.Progress.Minimum = 0;
+        job.Progress.Maximum = total;
+        for (int i = 0; i < total; ++i)
+        {
+          job.Progress.Value = i;
+        }
+        job.Progress.UpdateRate = new System.TimeSpan(0);
+        job.Progress.Value = total;
+      }
+      finally
+      {
+        job.Progress.UpdateRate = rate;
       }
     }
 

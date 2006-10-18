@@ -1,4 +1,13 @@
-namespace CadKit.Blade.Test
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CadKit.Threads.Test
 {
   partial class Form
   {

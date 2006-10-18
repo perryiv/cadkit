@@ -36,6 +36,8 @@ namespace CadKit.Threads.GUI
       _job.Start += this._jobStart;
       _job.Finish += this._jobFinish;
       _job.Progress.Notify += this._progressNotify;
+
+      _label.Text = _job.Name;
     }
 
     /// <summary>
@@ -84,18 +86,16 @@ namespace CadKit.Threads.GUI
 
       try
       {
-        // Should be true.
-        System.Diagnostics.Debug.Assert(job == _job);
+        lock (this.Mutex)
+        {
+          // Should be true.
+          System.Diagnostics.Debug.Assert(job == _job);
 
-        // Move the progress bar.
-        _progressBar.Minimum = _job.Progress.Minimum;
-        _progressBar.Maximum = _job.Progress.Maximum;
-        _progressBar.Value = _job.Progress.Value;
-
-        // Some combination of these lines causes a stack overflow exception.
-        //_progressBar.Invalidate(true);
-        //_progressBar.Update();
-        //System.Windows.Forms.Application.DoEvents();
+          // Move the progress bar.
+          _progressBar.Minimum = _job.Progress.Minimum;
+          _progressBar.Maximum = _job.Progress.Maximum;
+          _progressBar.Value = _job.Progress.Value;
+        }
       }
       catch (System.Exception e)
       {
@@ -109,6 +109,61 @@ namespace CadKit.Threads.GUI
     private object Mutex
     {
       get { return _mutex; }
+    }
+
+    /// <summary>
+    /// Called when the button is clicked.
+    /// </summary>
+    private void _buttonRunClick(object sender, System.EventArgs args)
+    {
+      try
+      {
+        lock (this.Mutex)
+        {
+          System.Diagnostics.Debug.Assert(false == this.InvokeRequired);
+
+          if (null == _job)
+          {
+            return;
+          }
+          if (true == _job.Suspended)
+          {
+            _job.resume();
+            this._buttonRun.Image = global::CadKit.Threads.GUI.Properties.Resources.run;
+          }
+          else if (true == _job.Running)
+          {
+            _job.pause();
+            this._buttonRun.Image = global::CadKit.Threads.GUI.Properties.Resources.pause;
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2504082161: {0}", e.Message);
+      }
+    }
+
+    /// <summary>
+    /// Called when the button is clicked.
+    /// </summary>
+    private void _buttonRemoveClick(object sender, System.EventArgs args)
+    {
+      try
+      {
+        lock (this.Mutex)
+        {
+          System.Diagnostics.Debug.Assert(false == this.InvokeRequired);
+          if (null != _job)
+          {
+            CadKit.Threads.Jobs.Manager.Instance.remove(_job);
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2134894630: {0}", e.Message);
+      }
     }
   }
 }

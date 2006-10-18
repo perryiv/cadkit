@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Blade.Test
+namespace CadKit.Threads.Test
 {
   static class Program
   {
@@ -27,7 +27,7 @@ namespace CadKit.Blade.Test
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
         // Run the application.
-        System.Windows.Forms.Application.Run(new CadKit.Blade.Test.Form());
+        System.Windows.Forms.Application.Run(new CadKit.Threads.Test.Form());
       }
       catch (System.Exception e)
       {

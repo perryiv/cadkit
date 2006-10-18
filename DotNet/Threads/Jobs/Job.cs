@@ -120,13 +120,13 @@ namespace CadKit.Threads.Jobs
       }
 
       // If the caller canceled...
-      catch (Cancel c)
+      catch (Cancel)
       {
         this._setCanceled(true);
       }
 
       // If the caller canceled...
-      catch (System.Threading.ThreadAbortException e)
+      catch (System.Threading.ThreadAbortException)
       {
         this._setCanceled(true);
       }
@@ -181,7 +181,7 @@ namespace CadKit.Threads.Jobs
         {
           return false;
         }
-        else if (this.Thread.ThreadState == state)
+        if ((this.Thread.ThreadState & state) == state)
         {
           return true;
         }
@@ -197,7 +197,24 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool Running
     {
-      get { lock (this.Mutex) { return this._hasState(System.Threading.ThreadState.Running); } }
+      get
+      {
+        lock (this.Mutex)
+        {
+          if (true == this._hasState(System.Threading.ThreadState.Running))
+          {
+            return true;
+          }
+          else if (true == this._hasState(System.Threading.ThreadState.Background))
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      }
     }
 
     /// <summary>
@@ -281,7 +298,13 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public CadKit.Threads.Jobs.Progress Progress
     {
-      get { lock (this.Mutex) { return _progress; } }
+      get
+      {
+        lock (this.Mutex)
+        {
+          return _progress;
+        }
+      }
     }
 
     /// <summary>
@@ -307,6 +330,53 @@ namespace CadKit.Threads.Jobs
     private object Mutex
     {
       get { return _mutex; }
+    }
+
+    /// <summary>
+    /// Resume the thread if it is suspended.
+    /// </summary>
+    public void resume()
+    {
+      lock (this.Mutex)
+      {
+        try
+        {
+          if (null == this.Thread)
+            return;
+
+          if (true == this.Suspended)
+            this.Thread.Resume();
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 2158168122: {0}", e.Message);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Pause the thread if it is running.
+    /// </summary>
+    public void pause()
+    {
+      lock (this.Mutex)
+      {
+        try
+        {
+          if (null == this.Thread)
+            return;
+
+          if (true == this.Running)
+          {
+            // The trouble with pausing and resuming is that when you call this function, the worker thread may suspend right in the middle of having one or more mutexes locked. When the GUI tries to do something with the same mutex (like resume) it blocks... forever. What you need is a way to 1) block here until the worker thread is actually suspended and 2) ensure that the worker thread does not suspend when it has a mutex locked.
+            this.Thread.Suspend();
+          }
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 1266022253: {0}", e.Message);
+        }
+      }
     }
   }
 }

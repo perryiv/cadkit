@@ -44,13 +44,19 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private void _notify()
     {
-      System.DateTime now = System.DateTime.Now;
-      if (now > this.LastTime + this.UpdateRate)
+      lock (this.Mutex)
       {
-        this.LastTime = now;
+        System.DateTime now = System.DateTime.Now;
+        if (now > this.LastTime + this.UpdateRate)
+        {
+          this.LastTime = now;
 
-        if (null != _notifyDelegate)
-          _notifyDelegate(_job);
+          if (null != _notifyDelegate)
+            _notifyDelegate(_job);
+
+          System.Diagnostics.Debug.Assert ( _job.ThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId );
+          System.Console.WriteLine(System.String.Format("{0}: Thread = {1}, Progress = {2}", _job.Name, _job.ThreadId, (uint) this.Percent));
+        }
       }
     }
 
@@ -93,6 +99,37 @@ namespace CadKit.Threads.Jobs
         {
           _value = value;
           this._notify();
+        }
+      }
+    }
+
+    /// <summary>
+    /// Get the fraction completed in the range [0.0,1.0].
+    /// </summary>
+    public float Fraction
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          float min = this.Minimum;
+          float max = this.Maximum;
+          float value = this.Value;
+          return ((value - min) / (max - min));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Get the percentage completed in the range [0.0,100.0].
+    /// </summary>
+    public float Percent
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          return (100.0f * this.Fraction);
         }
       }
     }

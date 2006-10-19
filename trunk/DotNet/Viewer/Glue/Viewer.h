@@ -31,6 +31,8 @@ namespace CadKit
       public:
 
         Viewer();
+        ~Viewer();
+        !Viewer();
 
         enum class Type 
         { 

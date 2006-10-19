@@ -78,10 +78,9 @@ namespace CadKit.Persistence
           if (_fitsScreen(screen, x, y, w, h))
           {
             form.DesktopBounds = new System.Drawing.Rectangle
-            (new System.Drawing.Point(x, y), new System.Drawing.Size(w, h));
+              (new System.Drawing.Point(x, y), new System.Drawing.Size(w, h));
             break;
           }
-
         }
 
         // Is it maximized?
@@ -94,12 +93,6 @@ namespace CadKit.Persistence
     /// <summary>
     /// Checks to see if the values fit on the given screen.
     /// </summary>
-    /// <param name="screen"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="w"></param>
-    /// <param name="h"></param>
-    /// <returns></returns>
     protected static bool _fitsScreen(System.Windows.Forms.Screen screen, int x, int y, int w, int h)
     {
       System.Drawing.Rectangle rect = screen.WorkingArea;

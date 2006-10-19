@@ -32,6 +32,33 @@ Viewer::Viewer() : _viewer( 0x0 )
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _viewer = new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 );
   Usul::Pointers::reference( _viewer );
+  _viewer->axes( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::~Viewer()
+{
+  Usul::Pointers::unreference( _viewer );
+  _viewer = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Finalizer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::!Viewer()
+{
+  Usul::Pointers::unreference( _viewer );
+  _viewer = 0x0;
 }
 
 
@@ -176,6 +203,12 @@ void Viewer::camera ( CameraOption option )
   _viewer->camera( static_cast < OsgTools::Render::Viewer::CameraOption > ( option ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the mode.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::setMode ( ViewMode mode )
 {

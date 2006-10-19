@@ -47,25 +47,34 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// </summary>
     private void _parentShown(object sender, System.EventArgs args)
     {
-      try
-      {
-        CadKit.Interfaces.IDockPanel getPanel = sender as CadKit.Interfaces.IDockPanel;
-        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
+      CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
+      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
+      CadKit.Tools.ToolWindow.configure(form, parent, "Output Window", false);
 
+      CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
+      if (null != dockPanel)
+      {
+        WeifenLuo.WinFormsUI.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel;
         if (null != panel)
         {
-          CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
-          form.Text = "Output Window";
-          panel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.DockingWindow;
-          form.DockState = WeifenLuo.WinFormsUI.DockState.Unknown;
-          form.VisibleState = WeifenLuo.WinFormsUI.DockState.Unknown;
+
+          CadKit.Interfaces.IRegisterPersistantForm register = sender as CadKit.Interfaces.IRegisterPersistantForm;
+
+          if( null != register )
+            register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.OutputWindow.Form).ToString(), form);
           form.Show(panel);
         }
+        else
+        {
+          form.Show();
+        }
       }
-      catch (System.Exception e)
+      else
       {
-        System.Console.WriteLine("Error 4206815434: {0}", e.Message);
+        form.Show();
       }
+
+      parent.Activate();
     }
 
     /// <summary>

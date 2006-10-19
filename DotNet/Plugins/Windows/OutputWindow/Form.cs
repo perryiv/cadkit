@@ -16,6 +16,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// </summary>
     object _mutex = new object();
     System.Windows.Forms.RichTextBox _text = null;
+    object _mutex = new object();
 
     /// <summary>
     /// Constructor
@@ -24,12 +25,25 @@ namespace CadKit.Plugins.Windows.OutputWindow
     {
       try
       {
+        this.DockableAreas =
+            WeifenLuo.WinFormsUI.DockAreas.DockBottom |
+            WeifenLuo.WinFormsUI.DockAreas.DockTop |
+            WeifenLuo.WinFormsUI.DockAreas.DockLeft |
+            WeifenLuo.WinFormsUI.DockAreas.DockRight |
+            WeifenLuo.WinFormsUI.DockAreas.Float;
+        //this.ShowHint = WeifenLuo.WinFormsUI.DockState.Float;
+        this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+
         _text = new System.Windows.Forms.RichTextBox();
         _text.Parent = this;
         this.Controls.Add(_text);
         _text.Dock = System.Windows.Forms.DockStyle.Fill;
         _text.Multiline = true;
+
+        // Get the current text.
+        _text.Text = CadKit.Tools.RedirectOutput.Instance.Text;
         CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
+
         this.FormClosing += this._formClosing;
       }
       catch (System.Exception e)
@@ -39,6 +53,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
         this.Controls.Clear();
       }
     }
+
 
     /// <summary>
     /// Called when the forms is about to close.

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -44,6 +44,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Glue\CadKit.Glue.vcproj">
+      <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
+      <Name>CadKit.OpenGL.Glue</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
       <Name>WinFormsUI2005</Name>
@@ -52,6 +56,10 @@
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OpenGL\CadKit.OpenGL.csproj">
+      <Project>{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}</Project>
+      <Name>CadKit.OpenGL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSG\Glue\CadKit.OSG.Glue.vcproj">
       <Project>{6F8548C1-32FA-44C9-8BDA-C7221B555065}</Project>
       <Name>CadKit.OSG.Glue</Name>
@@ -59,10 +67,6 @@
     <ProjectReference Include="Glue\Cadkit.Viewer.Glue.vcproj">
       <Project>{74E03074-1991-4E02-B5F2-B9D98FAD14D0}</Project>
       <Name>CadKit.Viewer.Glue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OpenGL\CadKit.OpenGL.csproj">
-      <Project>{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}</Project>
-      <Name>CadKit.OpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Referenced\CadKit.Referenced.csproj">
       <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>

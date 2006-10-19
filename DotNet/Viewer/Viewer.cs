@@ -23,6 +23,9 @@ namespace CadKit.Viewer
       this.Controls.Add(_panel);
       _panel.Dock = System.Windows.Forms.DockStyle.Fill;
 
+      this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document | WeifenLuo.WinFormsUI.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.DockState.Float;
+
       this.BackColorChanged += new System.EventHandler(_panel.OnBackColorChanged);
       this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(OnFormClosed);
     }
@@ -100,6 +103,15 @@ namespace CadKit.Viewer
     public void endRenderTimer()
     {
       _panel.endRenderTimer();
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void render()
+    {
+      _panel.render();
     }
   }
 }

@@ -13,19 +13,25 @@ namespace CadKit.Helios
     CadKit.Persistence.Form,
     CadKit.Interfaces.IMenuBar,
     CadKit.Interfaces.IMainForm,
-    CadKit.Interfaces.IDockPanel
+    CadKit.Interfaces.IDockPanel,
+    CadKit.Interfaces.IRegisterPersistantForm
   {
     /// <summary>
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
     private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
+    private WeifenLuo.WinFormsUI.DeserializeDockContent _deserializeDockContent;
+    private System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> _persistantForms = 
+      new System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form>();
 
     /// <summary>
     /// Constructor.
     /// </summary>
     public MainForm(string persistentName)
     {
+      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(GetContentFromPersistString);
+
       this.PersistentName = persistentName;
       this.InitializeComponent();
       this.IsMdiContainer = true;
@@ -38,6 +44,39 @@ namespace CadKit.Helios
       this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
       this.Load += this._formLoad;
+      this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(MainForm_FormClosed);
+    }
+
+
+    private WeifenLuo.WinFormsUI.IDockContent GetContentFromPersistString(string persistString)
+    {
+      if (_persistantForms.ContainsKey(persistString))
+        return _persistantForms[persistString] as WeifenLuo.WinFormsUI.IDockContent;
+
+      return null;
+    }
+
+
+    /// <summary>
+    /// The form is closed.  Deserialize dock content.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void MainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    {
+      _dockPanel.SaveAsXml(this.DockSettingsFile);
+    }
+
+    /// <summary>
+    /// Get the file where dock settings reside.
+    /// </summary>
+    private string DockSettingsFile
+    {
+      get
+      {
+        string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
+        return System.Windows.Forms.Application.UserAppDataPath + "\\" + program + "_dock.xml";
+      }
     }
 
     /// <summary>
@@ -148,6 +187,8 @@ namespace CadKit.Helios
         {
           this._showSplashScreen(this._loadPlugins);
           this._reportPluginInfo();
+
+          this.Shown += new System.EventHandler(MainForm_Shown);
         }
       }
       catch (System.Exception e)
@@ -155,6 +196,21 @@ namespace CadKit.Helios
         System.Console.WriteLine("Error 1031380962: {0}", e.Message);
       }
     }
+
+
+    /// <summary>
+    /// The form is shown.  Load any serialized dock content.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void MainForm_Shown(object sender, System.EventArgs e)
+    {
+      //string configFile = this.DockSettingsFile;
+
+      //if (System.IO.File.Exists(configFile))
+      //  _dockPanel.LoadFromXml(configFile, _deserializeDockContent);
+    }
+
 
     /// <summary>
     /// Sleep for the duration as long as it is positive.
@@ -300,5 +356,14 @@ namespace CadKit.Helios
         }
       }
     }
+
+    #region IRegisterPersistantForm Members
+
+    void CadKit.Interfaces.IRegisterPersistantForm.registerPersistanceForm(string name, System.Windows.Forms.Form form)
+    {
+      _persistantForms.Add(name, form);
+    }
+
+    #endregion
   }
 }

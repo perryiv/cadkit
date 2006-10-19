@@ -152,6 +152,29 @@ namespace CadKit.Tools
       get { lock (_mutex) { return _file; } }
     }
 
+
+    /// <summary>
+    /// Get all the text of the file.
+    /// </summary>
+    public string Text
+    {
+      get
+      {
+        lock (_mutex)
+        {
+          long original = _stream.Position;
+          _stream.Position = 0;
+
+          System.IO.StreamReader reader = new System.IO.StreamReader(_stream);
+          string text = reader.ReadToEnd();
+
+          _stream.Position = original;
+
+          return text;
+        }
+      }
+    }
+
     /// <summary>
     /// Get/set the synchronizing object. If you do not set this then the 
     /// callbacks happen in a thread other than the main one.

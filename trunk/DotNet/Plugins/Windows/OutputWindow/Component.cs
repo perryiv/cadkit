@@ -58,11 +58,14 @@ namespace CadKit.Plugins.Windows.OutputWindow
         if (null != panel)
         {
 
-          CadKit.Interfaces.IRegisterPersistantForm register = sender as CadKit.Interfaces.IRegisterPersistantForm;
+          CadKit.Interfaces.PersistantFormData register = sender as CadKit.Interfaces.PersistantFormData;
 
           if( null != register )
             register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.OutputWindow.Form).ToString(), form);
-          form.Show(panel);
+
+          // Show the form if we don't have persistant data.  If there is persistant data, it will be shown elsewhere.
+          if(false == register.hasPersistantFormData())
+            form.Show(panel);
         }
         else
         {

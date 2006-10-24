@@ -14,7 +14,7 @@ namespace CadKit.Helios
     CadKit.Interfaces.IMenuBar,
     CadKit.Interfaces.IMainForm,
     CadKit.Interfaces.IDockPanel,
-    CadKit.Interfaces.PersistantFormData
+    CadKit.Interfaces.IPersistantFormData
   {
     /// <summary>
     /// Data members.
@@ -30,7 +30,7 @@ namespace CadKit.Helios
     /// </summary>
     public MainForm(string persistentName)
     {
-      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(GetContentFromPersistString);
+      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(_getContentFromPersistString);
 
       this.PersistentName = persistentName;
       this.InitializeComponent();
@@ -48,7 +48,12 @@ namespace CadKit.Helios
     }
 
 
-    private WeifenLuo.WinFormsUI.IDockContent GetContentFromPersistString(string persistString)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="persistString"></param>
+    /// <returns></returns>
+    private WeifenLuo.WinFormsUI.IDockContent _getContentFromPersistString(string persistString)
     {
       if (_persistantForms.ContainsKey(persistString))
         return _persistantForms[persistString] as WeifenLuo.WinFormsUI.IDockContent;
@@ -359,12 +364,12 @@ namespace CadKit.Helios
 
     #region IRegisterPersistantForm Members
 
-    void CadKit.Interfaces.PersistantFormData.registerPersistanceForm(string name, System.Windows.Forms.Form form)
+    void CadKit.Interfaces.IPersistantFormData.registerPersistanceForm(string name, System.Windows.Forms.Form form)
     {
       _persistantForms.Add(name, form);
     }
 
-    bool CadKit.Interfaces.PersistantFormData.hasPersistantFormData()
+    bool CadKit.Interfaces.IPersistantFormData.hasPersistantFormData()
     {
       return System.IO.File.Exists(this.DockSettingsFile);
     }

@@ -28,6 +28,13 @@ namespace CadKit.Viewer
 
       this.BackColorChanged += new System.EventHandler(_panel.OnBackColorChanged);
       this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(OnFormClosed);
+      this.Shown += new System.EventHandler(Viewer_Shown);
+    }
+
+
+    void Viewer_Shown(object sender, System.EventArgs e)
+    {
+      this.init();
     }
 
 

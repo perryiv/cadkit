@@ -58,7 +58,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
         if (null != panel)
         {
 
-          CadKit.Interfaces.PersistantFormData register = sender as CadKit.Interfaces.PersistantFormData;
+          CadKit.Interfaces.IPersistantFormData register = sender as CadKit.Interfaces.IPersistantFormData;
 
           if( null != register )
             register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.OutputWindow.Form).ToString(), form);

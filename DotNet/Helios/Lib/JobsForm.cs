@@ -14,6 +14,7 @@ namespace CadKit.Helios.Lib
         WeifenLuo.WinFormsUI.DockAreas.DockTop | 
         WeifenLuo.WinFormsUI.DockAreas.Float;
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+      this.HideOnClose = true;
 
       CadKit.Threads.GUI.Jobs jobs = new CadKit.Threads.GUI.Jobs();
       jobs.Dock = System.Windows.Forms.DockStyle.Fill;

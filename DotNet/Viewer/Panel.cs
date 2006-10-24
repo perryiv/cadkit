@@ -20,8 +20,9 @@ namespace CadKit.Viewer
     public Panel()
     {
       _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
-      this.ContextMenuStrip = null;
+      this.ContextMenuStrip = null;      
     }
+
 
     /// <summary>
     /// Destructor.

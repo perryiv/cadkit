@@ -14,7 +14,7 @@ namespace CadKit.Helios
     CadKit.Interfaces.IMenuBar,
     CadKit.Interfaces.IMainForm,
     CadKit.Interfaces.IDockPanel,
-    CadKit.Interfaces.IRegisterPersistantForm
+    CadKit.Interfaces.PersistantFormData
   {
     /// <summary>
     /// Data members.
@@ -205,10 +205,10 @@ namespace CadKit.Helios
     /// <param name="e"></param>
     void MainForm_Shown(object sender, System.EventArgs e)
     {
-      //string configFile = this.DockSettingsFile;
+      string configFile = this.DockSettingsFile;
 
-      //if (System.IO.File.Exists(configFile))
-      //  _dockPanel.LoadFromXml(configFile, _deserializeDockContent);
+      if (System.IO.File.Exists(configFile))
+        _dockPanel.LoadFromXml(configFile, _deserializeDockContent);
     }
 
 
@@ -359,9 +359,14 @@ namespace CadKit.Helios
 
     #region IRegisterPersistantForm Members
 
-    void CadKit.Interfaces.IRegisterPersistantForm.registerPersistanceForm(string name, System.Windows.Forms.Form form)
+    void CadKit.Interfaces.PersistantFormData.registerPersistanceForm(string name, System.Windows.Forms.Form form)
     {
       _persistantForms.Add(name, form);
+    }
+
+    bool CadKit.Interfaces.PersistantFormData.hasPersistantFormData()
+    {
+      return System.IO.File.Exists(this.DockSettingsFile);
     }
 
     #endregion

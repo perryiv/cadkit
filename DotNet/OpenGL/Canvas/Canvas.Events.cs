@@ -18,13 +18,17 @@ namespace CadKit.OpenGL
     {
     }
 
+
     /// <summary>
     /// Called when the control needs to be painted.
     /// </summary>
     protected override void OnPaint(System.Windows.Forms.PaintEventArgs a)
     {
+      this._makeCurrent();
       this.render();
+      this._swapBuffers();
     }
+
 
     /// <summary>
     /// Called when the control is resized.

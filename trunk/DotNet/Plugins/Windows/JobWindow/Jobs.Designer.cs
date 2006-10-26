@@ -1,6 +1,6 @@
-namespace CadKit.Helios.Lib
+namespace CadKit.Plugins.Windows.JobWindow
 {
-  partial class JobsForm
+  partial class Jobs
   {
     /// <summary>
     /// Required designer variable.

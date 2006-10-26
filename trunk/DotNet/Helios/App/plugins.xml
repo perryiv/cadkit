@@ -2,6 +2,7 @@
 <plugins>
   <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug"/>
   <plugin file="CadKit.Plugins.Windows.OutputWindow.plug"/>
+  <plugin file="CadKit.Plugins.Windows.JobWindow.plug"/>
   <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug"/>
   <plugin file="CadKit.Plugins.Options.General.plug"/>
   <plugin file="CadKit.Plugins.Database.Storage.plug"/>

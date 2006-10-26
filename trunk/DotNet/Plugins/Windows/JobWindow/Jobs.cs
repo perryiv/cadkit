@@ -1,9 +1,17 @@
 
-namespace CadKit.Helios.Lib
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CadKit.Plugins.Windows.JobWindow
 {
-  public partial class JobsForm : WeifenLuo.WinFormsUI.DockContent
+  public partial class Jobs : WeifenLuo.WinFormsUI.DockContent
   {
-    public JobsForm()
+    public Jobs()
     {
       InitializeComponent();
 

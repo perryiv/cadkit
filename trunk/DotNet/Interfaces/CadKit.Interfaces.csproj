@@ -63,6 +63,7 @@
     <Compile Include="IDockPanel.cs" />
     <Compile Include="IRegisterPersistantForm.cs" />
     <Compile Include="IViewer.cs" />
+    <Compile Include="IWindowMenu.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

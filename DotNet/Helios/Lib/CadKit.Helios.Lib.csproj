@@ -35,12 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="JobsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="JobsForm.Designer.cs">
-      <DependentUpon>JobsForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="OptionsPage.cs">
     </Compile>
     <Compile Include="OptionsForm.cs">

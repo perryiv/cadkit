@@ -180,6 +180,15 @@ namespace CadKit.Documents
     }
 
     /// <summary>
+    /// Set/Get the active view.
+    /// </summary>
+    public object ActiveView
+    {
+      get { lock (_mutex) { return Manager._activeView;  } }
+      set { lock (_mutex) { Manager._activeView = value; } }
+    }
+
+    /// <summary>
     /// Hook up document with appropriate delegate.
     /// </summary>
     public void setGuiDelegate(CadKit.Interfaces.IDocument doc, object caller)
@@ -213,5 +222,6 @@ namespace CadKit.Documents
     private object _mutex = new object();
     private Documents _documents = new Documents();
     private static CadKit.Interfaces.IDocument _active = null;
+    private static object _activeView = null;
   }
 }

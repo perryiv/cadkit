@@ -46,7 +46,8 @@ namespace CadKit
         enum class ViewMode
         {
           NAVIGATION,
-          PICK
+          PICK,
+          SEEK
         };
 
         void backgroundColor ( float r, float g, float b);
@@ -64,11 +65,13 @@ namespace CadKit
 
         // Handle Navigation.
         void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );
+        void                  handleSeek ( float x, float y, bool left );
 
         void                  render();
         void                  resize( int w, int h );
 
         void                  setMode ( ViewMode mode );
+        ViewMode              getMode ();
 
         OsgTools::Render::Viewer*  viewer();
 

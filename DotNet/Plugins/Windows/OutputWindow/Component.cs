@@ -51,6 +51,19 @@ namespace CadKit.Plugins.Windows.OutputWindow
       System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
       CadKit.Tools.ToolWindow.configure(form, parent, "Output Window", false);
 
+      _configureDockWindow(sender, form);
+
+      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+      if (null != windowMenu)
+      {
+        windowMenu.addFormWindowMenu("Output", form);
+      }
+
+      parent.Activate();
+    }
+
+    private static void _configureDockWindow(object sender, CadKit.Plugins.Windows.OutputWindow.Form form)
+    {
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
       {
@@ -60,11 +73,11 @@ namespace CadKit.Plugins.Windows.OutputWindow
 
           CadKit.Interfaces.IPersistantFormData register = sender as CadKit.Interfaces.IPersistantFormData;
 
-          if( null != register )
+          if (null != register)
             register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.OutputWindow.Form).ToString(), form);
 
           // Show the form if we don't have persistant data.  If there is persistant data, it will be shown elsewhere.
-          if(false == register.hasPersistantFormData())
+          if (false == register.hasPersistantFormData())
             form.Show(panel);
         }
         else
@@ -76,9 +89,8 @@ namespace CadKit.Plugins.Windows.OutputWindow
       {
         form.Show();
       }
-
-      parent.Activate();
     }
+
 
     /// <summary>
     /// Get the name of this plugin.

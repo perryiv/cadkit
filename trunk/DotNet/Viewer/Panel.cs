@@ -9,7 +9,9 @@
 
 namespace CadKit.Viewer
 {
-  class Panel : CadKit.OpenGL.Canvas
+  class Panel : 
+    CadKit.OpenGL.Canvas,
+    CadKit.Interfaces.IViewerMode
   {
     CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
 
@@ -114,15 +116,13 @@ namespace CadKit.Viewer
       // Change mode to navigation
       else if (e.KeyCode == System.Windows.Forms.Keys.N)
       {
-        _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
-        this.ContextMenuStrip = null;
+        this.Mode = CadKit.Interfaces.ViewMode.NAVIGATE;
       }
 
       // Change mode to pick
       else if (e.KeyCode == System.Windows.Forms.Keys.P)
       {
-        _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.PICK);
-        this.ContextMenuStrip = this.buildContextMenu();
+        this.Mode = CadKit.Interfaces.ViewMode.PICK;
       }
 
       this._swapBuffers();
@@ -201,6 +201,7 @@ namespace CadKit.Viewer
       this._makeCurrent();
 
       _viewer.buttonPress(x, y, left, middle, right);
+      _viewer.handleSeek(x, y, left);
 
       this._swapBuffers();
     }
@@ -221,6 +222,31 @@ namespace CadKit.Viewer
     protected override void _resizeOpenGL()
     {
       _viewer.resize(this.Size.Width, this.Size.Height);
+    }
+
+
+    /// <summary>
+    /// Get/Set the mode.
+    /// </summary>
+    public CadKit.Interfaces.ViewMode Mode
+    {
+      get
+      {
+        CadKit.Viewer.Glue.Viewer.ViewMode mode = this.Viewer.getMode();
+        return (CadKit.Interfaces.ViewMode)mode;
+      }
+      set
+      {
+        this.Viewer.setMode((CadKit.Viewer.Glue.Viewer.ViewMode)value);
+        if(value == CadKit.Interfaces.ViewMode.PICK)
+        {
+          this.ContextMenuStrip = this.buildContextMenu();
+        }
+        else
+        {
+          this.ContextMenuStrip = null;
+        }
+      }
     }
   }
 }

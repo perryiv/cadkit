@@ -51,6 +51,23 @@ namespace CadKit.Plugins.Windows.JobWindow
       System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
       CadKit.Tools.ToolWindow.configure(form, parent, "Job Window", false);
 
+      _configureDockWindow(sender, form);
+
+      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+      if (null != windowMenu)
+      {
+        windowMenu.addFormWindowMenu("Jobs", form);
+      }
+
+      parent.Activate();
+    }
+
+
+    /// <summary>
+    /// Show the dock window in the proper way.
+    /// </summary>
+    private static void _configureDockWindow(object sender, CadKit.Plugins.Windows.JobWindow.Jobs form)
+    {
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
       {
@@ -60,11 +77,11 @@ namespace CadKit.Plugins.Windows.JobWindow
 
           CadKit.Interfaces.IPersistantFormData register = sender as CadKit.Interfaces.IPersistantFormData;
 
-          if( null != register )
+          if (null != register)
             register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.JobWindow.Jobs).ToString(), form);
 
           // Show the form if we don't have persistant data.  If there is persistant data, it will be shown elsewhere.
-          if(false == register.hasPersistantFormData())
+          if (false == register.hasPersistantFormData())
             form.Show(panel);
         }
         else
@@ -76,9 +93,8 @@ namespace CadKit.Plugins.Windows.JobWindow
       {
         form.Show();
       }
-
-      parent.Activate();
     }
+
 
     /// <summary>
     /// Get the name of this plugin.

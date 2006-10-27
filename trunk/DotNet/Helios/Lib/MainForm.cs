@@ -30,7 +30,7 @@ namespace CadKit.Helios
     /// </summary>
     public MainForm(string persistentName)
     {
-      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(_getContentFromPersistString);
+      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(this._getContentFromPersistString);
 
       this.PersistentName = persistentName;
       this.InitializeComponent();

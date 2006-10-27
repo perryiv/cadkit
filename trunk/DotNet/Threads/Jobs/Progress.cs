@@ -55,7 +55,7 @@ namespace CadKit.Threads.Jobs
             _notifyDelegate(_job);
 
           System.Diagnostics.Debug.Assert ( _job.ThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId );
-          System.Console.WriteLine(System.String.Format("{0}: Thread = {1}, Progress = {2}", _job.Name, _job.ThreadId, (uint) this.Percent));
+          //System.Console.WriteLine(System.String.Format("{0}: Thread = {1}, Progress = {2}", _job.Name, _job.ThreadId, (uint) this.Percent));
         }
       }
     }

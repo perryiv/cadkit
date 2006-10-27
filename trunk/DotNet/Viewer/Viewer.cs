@@ -11,7 +11,8 @@ namespace CadKit.Viewer
 {
   public class Viewer : 
     WeifenLuo.WinFormsUI.DockContent,
-    CadKit.Interfaces.IViewer
+    CadKit.Interfaces.IViewer,
+    CadKit.Interfaces.IViewerMode
   {
     CadKit.Viewer.Panel _panel = new Panel();
 
@@ -90,6 +91,22 @@ namespace CadKit.Viewer
       set
       {
         _panel.Viewer.Scene = value as CadKit.OSG.Glue.Node;
+      }
+    }
+
+
+    /// <summary>
+    /// Get/Set view mode.
+    /// </summary>
+    public CadKit.Interfaces.ViewMode Mode
+    {
+      get
+      {
+        return _panel.Mode;
+      }
+      set
+      {
+        _panel.Mode = value;
       }
     }
 

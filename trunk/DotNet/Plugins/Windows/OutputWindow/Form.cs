@@ -30,8 +30,8 @@ namespace CadKit.Plugins.Windows.OutputWindow
             WeifenLuo.WinFormsUI.DockAreas.DockLeft |
             WeifenLuo.WinFormsUI.DockAreas.DockRight |
             WeifenLuo.WinFormsUI.DockAreas.Float;
-        //this.ShowHint = WeifenLuo.WinFormsUI.DockState.Float;
         this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+        this.HideOnClose = true;
 
         _text = new System.Windows.Forms.RichTextBox();
         _text.Parent = this;

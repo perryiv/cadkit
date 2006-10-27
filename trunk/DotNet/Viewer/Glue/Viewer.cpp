@@ -170,6 +170,18 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Handle Seek.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::handleSeek ( float x, float y, bool left )
+{
+  if( _viewer )
+    _viewer->handleSeek ( x, y, left );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the viewer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,4 +225,10 @@ void Viewer::camera ( CameraOption option )
 void Viewer::setMode ( ViewMode mode )
 {
   _viewer->setMode( static_cast < OsgTools::Render::Viewer::ViewMode > ( mode ) );
+}
+
+
+Viewer::ViewMode Viewer::getMode ()
+{
+  return static_cast < CadKit::Viewer::Glue::Viewer::ViewMode > ( _viewer->getMode() );
 }

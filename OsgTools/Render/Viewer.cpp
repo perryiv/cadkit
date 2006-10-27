@@ -60,6 +60,7 @@
 #include "Usul/Interfaces/ICleanUp.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IHandleMessage.h"
+#include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
@@ -3602,9 +3603,68 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Handle seek event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::handleSeek ( float x, float y, bool left )
+{
+  // Retrun now if we aren't in seek mode.
+  if( _currentMode != SEEK || false == left )
+    return;
+
+  //Find interface to animate, if one exists
+  Usul::Interfaces::IAnimate::QueryPtr animate ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimate::IID ) );
+
+  osgUtil::Hit hit;
+
+  //Return if the click didn't intersect the scene
+  if ( !this->intersect ( x, y, hit ) )
+    return;
+
+  //Make copy of trackball's current rotation
+  const osg::Quat rot ( this->getRotation() );
+  const osg::Vec3 center ( this->getCenter() );
+  const float distance ( this->getDistance() );
+
+  osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
+                osg::Matrixd::rotate(rot)*
+                osg::Matrixd::translate(center) );
+
+  osg::Vec3 eye, c, up;
+
+  // Get the eye position.
+  m.inverse( m ).getLookAt ( eye, c, up );
+
+  // Get the new center and distance.
+  const osg::Vec3 c2 ( hit.getWorldIntersectPoint() );
+
+  osg::Vec3 axis2 ( c2 - eye );
+
+  const float d2 ( axis2.length() );
+
+  //Use the animation interface if we found a valid one
+  if( animate.valid() )
+  {
+    animate->animate ( c2, d2, rot );
+  }
+
+  //If no animation interface exists, just set the trackball
+  else
+  {
+    this->setTrackball( c2, d2, rot, true, true );
+
+    this->render();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Start/stop the spin.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Viewer::spin ( bool state )
 {
   if( !_timeoutSpin.valid() )

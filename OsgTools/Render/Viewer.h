@@ -158,7 +158,8 @@ public:
   enum ViewMode
   {
     NAVIGATION,
-    PICK
+    PICK,
+    SEEK
   };
 
   // Construction/destruction.
@@ -237,6 +238,7 @@ public:
   void                  handleMenu       ( float x, float y );
   void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
   virtual void          handlePicking    ( float x, float y, bool left, unsigned int numClicks );
+  void                  handleSeek       ( float x, float y, bool left );
   void                  handleTool       ( bool left, bool middle, bool right, bool motion, float x, float y, float z );
 
   // Is there an accumulation buffer?

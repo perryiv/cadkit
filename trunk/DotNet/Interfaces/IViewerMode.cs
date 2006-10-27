@@ -9,8 +9,15 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IWindowMenu
+  public enum ViewMode
   {
-    void addFormWindowMenu(string name, System.Windows.Forms.Form form);
+    NAVIGATE = 0,
+    PICK,
+    SEEK
+  };
+
+  public interface IViewerMode
+  {
+    ViewMode Mode { get; set; }
   }
 }

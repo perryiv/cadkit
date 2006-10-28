@@ -257,7 +257,7 @@ void Viewer::clear()
 
   _renderer->clear();
 
-  _context = 0x0;
+  _context = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
   _setCursor = static_cast < Usul::Interfaces::ISetCursorType* > ( 0x0 );
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
@@ -4798,3 +4798,14 @@ void Viewer::sceneUpdate( Usul::Interfaces::ISceneUpdate* sceneUpdate )
   _sceneUpdate = sceneUpdate;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set interface for the OpenGL context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::context ( Usul::Interfaces::IUnknown* context )
+{
+  _context = context;
+}

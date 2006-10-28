@@ -210,6 +210,9 @@ public:
   virtual void          pasteCamera();
   bool                  canPasteCamera() const;
 
+  /// Set the context.
+  void                  context ( Usul::Interfaces::IUnknown* context );
+
   // Create.
   void                  create();
 
@@ -691,7 +694,7 @@ private:
 
   static CameraBuffer _cameraCopyBuffer;
   static MatrixManipPtr _navManipCopyBuffer;
-  IContext::RefPtr _context;
+  IContext::QueryPtr _context;
   Renderer::ValidRefPtr _renderer;
   SceneManager::ValidRefPtr _sceneManager;
   Usul::Interfaces::ISceneUpdate::QueryPtr _sceneUpdate;

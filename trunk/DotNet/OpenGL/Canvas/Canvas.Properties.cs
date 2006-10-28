@@ -80,5 +80,16 @@ namespace CadKit.OpenGL
         }
       }
     }
+
+    /// <summary>
+    /// Get the render context.
+    /// </summary>
+    protected CadKit.OpenGL.Glue.RenderContext RenderContext
+    {
+      get
+      {
+        return _renderContext;
+      }
+    }
   }
 }

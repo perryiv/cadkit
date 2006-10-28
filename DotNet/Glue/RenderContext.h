@@ -16,6 +16,7 @@
 #pragma once
 
 #include "DotNet/Glue/DeviceContext.h"
+#include "DotNet/Glue/UnmanagedRenderContext.h"
 
 #include "Usul/Headers/OpenGL.h"
 
@@ -30,6 +31,8 @@ namespace CadKit
   {
     namespace Glue
     {
+      public delegate void CallbackDelegate();
+
       public ref class RenderContext : CadKit::Referenced::Base
       {
       public:
@@ -43,6 +46,8 @@ namespace CadKit
         unsigned int        pixelFormat();
         void                swapBuffers();
         bool                valid();
+
+        System::IntPtr      unmanagedRenderContext();
 
       protected:
 
@@ -58,6 +63,14 @@ namespace CadKit
         DeviceContext ^_dc;
         HGLRC _rc;
         unsigned int _pixelFormat;
+
+        CallbackDelegate ^_makeCurrentDelegate;
+        CallbackDelegate ^_swapBuffersDelegate;
+
+        System::Runtime::InteropServices::GCHandle _makeCurrentDelegateHandle;
+        System::Runtime::InteropServices::GCHandle _swapBuffersDelegateHandle;
+
+        UnmanagedRenderContext *_unmanagedRenderContext;
       };
     }
   }

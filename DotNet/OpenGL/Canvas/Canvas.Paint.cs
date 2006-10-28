@@ -21,13 +21,13 @@ namespace CadKit.OpenGL
         if (null != _renderContext && _renderContext.valid())
         {
           // Make the context current.
-          this._renderContext.makeCurrent();
+          //this._renderContext.makeCurrent();
 
           // Do the drawing.
           this._paintOpenGL();
 
           // Swap the buffers.
-          this._renderContext.swapBuffers();
+          //this._renderContext.swapBuffers();
         }
       }
       catch (System.Exception e)

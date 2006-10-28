@@ -52,7 +52,10 @@ namespace CadKit.Viewer
     {
       this.initRenderingContext();
 
-      this._makeCurrent();
+      // Set the render context.
+      _viewer.RenderContext = this.RenderContext;
+
+      //this._makeCurrent();
 
       _viewer.create();
 
@@ -97,7 +100,7 @@ namespace CadKit.Viewer
     /// <param name="e"></param>
     protected override void OnKeyDown(System.Windows.Forms.KeyEventArgs e)
     {
-      this._makeCurrent();
+      //this._makeCurrent();
 
       // RESET
       if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
@@ -125,7 +128,7 @@ namespace CadKit.Viewer
         this.Mode = CadKit.Interfaces.ViewMode.PICK;
       }
 
-      this._swapBuffers();
+      //this._swapBuffers();
     }
 
 
@@ -146,11 +149,11 @@ namespace CadKit.Viewer
 
       CadKit.Viewer.Glue.Viewer.Type type = mouse ? CadKit.Viewer.Glue.Viewer.Type.DRAG : CadKit.Viewer.Glue.Viewer.Type.MOVE;
 
-      this._makeCurrent();
+      //this._makeCurrent();
 
       _viewer.handleNavigation(x, y, left, middle, right, type);
 
-      this._swapBuffers();
+      //this._swapBuffers();
     }
 
 
@@ -177,11 +180,11 @@ namespace CadKit.Viewer
       float x = e.Location.X;
       float y = this.Size.Height - e.Location.Y;
 
-      this._makeCurrent();
+      //this._makeCurrent();
 
       _viewer.buttonRelease(x, y, left, middle, right);
 
-      this._swapBuffers();
+      //this._swapBuffers();
     }
 
 
@@ -198,12 +201,12 @@ namespace CadKit.Viewer
       float x = e.Location.X;
       float y = this.Size.Height - e.Location.Y;
 
-      this._makeCurrent();
+      //this._makeCurrent();
 
       _viewer.buttonPress(x, y, left, middle, right);
       _viewer.handleSeek(x, y, left);
 
-      this._swapBuffers();
+      //this._swapBuffers();
     }
 
 

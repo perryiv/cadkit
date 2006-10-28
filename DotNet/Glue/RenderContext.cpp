@@ -19,6 +19,9 @@
 #include "Usul/System/LastError.h"
 #include "Usul/Errors/Assert.h"
 
+#include "Threads/OpenThreads/Mutex.h"
+#include "Usul/Threads/Mutex.h"
+
 #include <sstream>
 
 using namespace CadKit::OpenGL::Glue;
@@ -34,7 +37,12 @@ RenderContext::RenderContext ( System::Windows::Forms::Control ^control, unsigne
   _control     ( control ),
   _dc          ( gcnew DeviceContext ( control ) ),
   _rc          ( 0x0 ),
-  _pixelFormat ( pixelFormat )
+  _pixelFormat ( pixelFormat ),
+  _makeCurrentDelegate ( nullptr ),
+  _swapBuffersDelegate ( nullptr ),
+  _makeCurrentDelegateHandle (),
+  _swapBuffersDelegateHandle (),
+  _unmanagedRenderContext ( 0x0 )
 {
   if ( nullptr == control )
     throw gcnew System::ArgumentException ( "Error 3004475898: Invalid control handle given" );
@@ -118,6 +126,14 @@ void RenderContext::_cleanup()
 
 void RenderContext::_delete()
 {
+  // Clean up the unmanaged render context
+  Usul::Pointers::unreference(_unmanagedRenderContext);
+  _unmanagedRenderContext = 0x0;
+
+  // Unpin the pointers so they will be cleaned up by the GC.
+  _makeCurrentDelegateHandle.Free();
+  _swapBuffersDelegateHandle.Free();
+
   _control = nullptr;
   _pixelFormat = 0;
 
@@ -182,6 +198,29 @@ void RenderContext::_create()
       }
       throw gcnew System::Exception ( gcnew System::String ( out.str().c_str() ) );
     }
+
+    // Before we create the UnmanagedRenderContext, make sure the Usul mutex factory is set.
+    Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+
+    // Create the unmanaged context class to redirect to this class.
+    _unmanagedRenderContext = new UnmanagedRenderContext();
+    Usul::Pointers::reference(_unmanagedRenderContext);
+
+    // Create the delegates.
+    _makeCurrentDelegate = gcnew CallbackDelegate(this, &RenderContext::makeCurrent);
+    _swapBuffersDelegate = gcnew CallbackDelegate(this, &RenderContext::swapBuffers);
+
+    // Pin the pointers so they don't get moved on us by the GC.
+    _makeCurrentDelegateHandle = System::Runtime::InteropServices::GCHandle::Alloc(_makeCurrentDelegate);
+    _swapBuffersDelegateHandle = System::Runtime::InteropServices::GCHandle::Alloc(_swapBuffersDelegate);
+  
+    // Get and set function pointer for makeCurrent.
+    System::IntPtr ptr1 = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(_makeCurrentDelegate);
+    _unmanagedRenderContext->makeCurrentCallback( (managedCallback) ptr1.ToPointer() );
+
+    // Get and set function pointer for swapBuffers.
+    System::IntPtr ptr2 = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(_swapBuffersDelegate);
+    _unmanagedRenderContext->swapBuffersCallback( (managedCallback) ptr2.ToPointer() );
   }
 
   finally
@@ -261,4 +300,16 @@ void RenderContext::swapBuffers()
 
   if ( FALSE == ::SwapBuffers ( _dc->hdc() ) )
     throw gcnew System::Exception ( "Error 3542185368: Failed to swap buffers" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return an int pointer to the UnmanagedRenderContext.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::IntPtr RenderContext::unmanagedRenderContext()
+{
+  return System::IntPtr ( _unmanagedRenderContext->queryInterface( Usul::Interfaces::IUnknown::IID) );
 }

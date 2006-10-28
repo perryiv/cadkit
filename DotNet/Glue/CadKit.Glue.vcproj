@@ -225,6 +225,14 @@
 				RelativePath=".\RenderContext.h"
 				>
 			</File>
+			<File
+				RelativePath=".\UnmanagedRenderContext.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UnmanagedRenderContext.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

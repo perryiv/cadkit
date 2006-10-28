@@ -20,6 +20,9 @@ namespace CadKit.OpenGL
       this.SizeChanged += this.OnResize;
       this.ContextMenuStrip = this.buildContextMenu();
       base.BackColor = CadKit.Persistence.Registry.Instance.getColor(this.GetType().ToString(), "BackgroundColor", base.BackColor);
+
+      // Don't know if this does anything...
+      this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint | System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer | System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
     }
 
 
@@ -50,6 +53,7 @@ namespace CadKit.OpenGL
       _innerPanel.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
       _innerPanel.KeyPress   += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
       _innerPanel.KeyDown    += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
+      _innerPanel.Paint += new System.Windows.Forms.PaintEventHandler(OnPaint);
     }
 
 

@@ -73,10 +73,23 @@ namespace CadKit
         void                  setMode ( ViewMode mode );
         ViewMode              getMode ();
 
-        OsgTools::Render::Viewer*  viewer();
+        /// Set the render context.
+        property CadKit::OpenGL::Glue::RenderContext^ RenderContext
+        {
+          void set( CadKit::OpenGL::Glue::RenderContext^ context )
+          {
+            if( _viewer )
+            {
+              System::IntPtr contextImpl = context->unmanagedRenderContext();
+              _viewer->context( reinterpret_cast < Usul::Interfaces::IUnknown* > ( contextImpl.ToPointer() ) );
+            }
+          }
+        };
 
-        unsigned int viewerPtr();
+        /// Get the viewer.
+        System::IntPtr viewer();
 
+        /// Get/Set the scene.
         property CadKit::OSG::Glue::Node ^ Scene
         {
           CadKit::OSG::Glue::Node^ get()

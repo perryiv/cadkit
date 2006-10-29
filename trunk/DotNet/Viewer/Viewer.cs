@@ -68,6 +68,7 @@ namespace CadKit.Viewer
       _panel.init();
     }
 
+
     /// <summary>
     /// Get the viewer.
     /// </summary>
@@ -78,6 +79,7 @@ namespace CadKit.Viewer
         return _panel.Viewer;
       }
     }
+
 
     /// <summary>
     /// Get/Set the scene.

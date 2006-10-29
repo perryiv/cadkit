@@ -9,22 +9,34 @@
 
 namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
-  class Viewer : System.Windows.Forms.Form
+  class Viewer : CadKit.Viewer.Viewer
   {
     /// <summary>
     /// Data members.
     /// </summary>
     private object _mutex = new object();
+    private CadKit.Interfaces.IDocument _document = null;
 
     /// <summary>
     /// Construct a view.
     /// </summary>
-    public Viewer() : base()
+    public Viewer(object caller, CadKit.Interfaces.IDocument document) : base()
     {
-      CadKit.Viewer.Viewer viewer = new CadKit.Viewer.Viewer();
-      viewer.init();
-      this.Controls.Add(viewer);
-      viewer.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
+      this.MdiParent = caller as System.Windows.Forms.Form;
+
+      _document = document;
+      this.Text = (null == _document) ? this.ToString() : _document.Name;
+
+      this.Load += this._load;
+    }
+
+    /// <summary>
+    /// Called when the form is loaded.
+    /// </summary>
+    private void _load(object sender, System.EventArgs e)
+    {
+      this.init();      
     }
   }
 }

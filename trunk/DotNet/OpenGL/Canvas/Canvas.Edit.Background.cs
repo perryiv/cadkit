@@ -18,7 +18,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        if ( null != _colorEditorForm )
+        if (null != _colorEditorForm)
         {
           _colorEditorForm.Show();
           _colorEditorForm.Activate();
@@ -31,7 +31,7 @@ namespace CadKit.OpenGL
 
           // Make the color editor.
           CadKit.Color.Wheel wheel = new CadKit.Color.Wheel();
-          wheel.PersistentName = persistentName; 
+          wheel.PersistentName = persistentName;
           wheel.Dock = System.Windows.Forms.DockStyle.Fill;
           wheel.Color = this.BackColor;
           wheel.ColorChanged += this._colorChanged;
@@ -40,22 +40,22 @@ namespace CadKit.OpenGL
           // Make new container form.
           _colorEditorForm = new CadKit.Persistence.Form();
           _colorEditorForm.PersistentName = persistentName;
-          _colorEditorForm.Controls.Add( wheel );
-          CadKit.Tools.ToolWindow.configure( _colorEditorForm, this.FindForm(), "Edit Background", true );
+          _colorEditorForm.Controls.Add(wheel);
+          CadKit.Tools.ToolWindow.configure(_colorEditorForm, this.FindForm(), "Edit Background", true);
           _colorEditorForm.FormClosed += this._colorEditorClosed;
           _colorEditorForm.Show();
         }
       }
-      catch ( System.Exception e )
+      catch (System.Exception e)
       {
-        System.Console.WriteLine( "Error 6369872130: {0}\n{1}", e.Message, e.StackTrace );
+        System.Console.WriteLine("Error 6369872130: {0}\n{1}", e.Message, e.StackTrace);
       }
-  }
+    }
 
     /// <summary>
     /// Called when the color is done changing.
     /// </summary>
-    void _colorDoneChanging( object sender, System.Windows.Forms.MouseEventArgs e )
+    void _colorDoneChanging(object sender, System.Windows.Forms.MouseEventArgs e)
     {
       this._updatePropertyGrid();
     }
@@ -63,7 +63,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Called when the color changes.
     /// </summary>
-    private void _colorChanged( object sender, CadKit.Color.ColorChangedEventArgs e )
+    private void _colorChanged(object sender, CadKit.Color.ColorChangedEventArgs e)
     {
       this.BackColor = e.Color;
       this.Invalidate();
@@ -72,7 +72,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// This is called when the color editor is closed.
     /// </summary>
-    private void _colorEditorClosed( object sender, System.EventArgs e )
+    private void _colorEditorClosed(object sender, System.EventArgs e)
     {
       _colorEditorForm = null;
       this.Invalidate();
@@ -83,12 +83,12 @@ namespace CadKit.OpenGL
     /// </summary>
     private void _updateColorEditor()
     {
-      if ( null != _colorEditorForm )
+      if (null != _colorEditorForm)
       {
-        foreach ( System.Windows.Forms.Control control in _colorEditorForm.Controls )
+        foreach (System.Windows.Forms.Control control in _colorEditorForm.Controls)
         {
           CadKit.Color.Wheel wheel = control as CadKit.Color.Wheel;
-          if ( null != wheel )
+          if (null != wheel)
           {
             wheel.Color = this.BackColor;
             wheel.Invalidate();

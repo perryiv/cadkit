@@ -51,6 +51,12 @@ namespace CadKit.Plugins.Documents.SceneDocument
       {
         idoc.Name = name;
       }
+
+      CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+      if (null != recent)
+      {
+        recent.add(name);
+      }
     }
 
 

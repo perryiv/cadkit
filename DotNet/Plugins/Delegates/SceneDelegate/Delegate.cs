@@ -51,7 +51,7 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
 
         CadKit.Interfaces.IBuildScene buildScene = _document as CadKit.Interfaces.IBuildScene;
 
-        if( null != buildScene )
+        if (null != buildScene)
         {
           view.Scene = buildScene.Scene;
         }
@@ -59,17 +59,18 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
         CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
         WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
 
-        if (null != panel && panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
+        if (null != panel)
         {
-          view.MdiParent = caller as System.Windows.Forms.Form;
-          view.Show();
+          if (panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
+          {
+            view.MdiParent = caller as System.Windows.Forms.Form;
+            view.Show();
+          }
+          else
+          {
+            view.Show(panel);
+          }
         }
-        else
-        {
-          view.Show(panel);
-        }
-
-        view.init();
       }
     }
 

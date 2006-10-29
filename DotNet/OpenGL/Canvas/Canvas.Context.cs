@@ -18,20 +18,20 @@ namespace CadKit.OpenGL
     {
       try
       {
-        if (null == _renderContext)
-        {
-          if (null != this.FindForm())
-          {
-            this._initInnerPanel();
+        if (null != _renderContext)
+          return;
 
-            _renderContext = new CadKit.OpenGL.Glue.RenderContext(_innerPanel, _pixelFormat);
-            if (null != _renderContext)
-            {
-              _renderContext.reference();
-              _pixelFormat = _renderContext.pixelFormat();
-            }
-          }
-        }
+        if (null == this.FindForm())
+          return;
+
+        this._initInnerPanel();
+
+        _renderContext = new CadKit.OpenGL.Glue.RenderContext(_innerPanel, _pixelFormat);
+        if (null == _renderContext)
+          return;
+
+        _renderContext.reference();
+        _pixelFormat = _renderContext.pixelFormat();
       }
       catch (System.Exception e)
       {

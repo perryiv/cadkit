@@ -14,16 +14,22 @@ namespace CadKit.Helios
     CadKit.Interfaces.IMenuBar,
     CadKit.Interfaces.IMainForm,
     CadKit.Interfaces.IDockPanel,
-    CadKit.Interfaces.IPersistantFormData
+    CadKit.Interfaces.IPersistantFormData,
+    CadKit.Interfaces.IRecentFileList
   {
+    /// <summary>
+    /// Local types.
+    /// </summary>
+    private class PersistantForms : System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> { }
+
     /// <summary>
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
     private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
     private WeifenLuo.WinFormsUI.DeserializeDockContent _deserializeDockContent;
-    private System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> _persistantForms = 
-      new System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form>();
+    private PersistantForms _persistantForms = new PersistantForms();
+    private CadKit.Helios.RecentFiles _recentFiles = new CadKit.Helios.RecentFiles();
 
     /// <summary>
     /// Constructor.
@@ -44,15 +50,13 @@ namespace CadKit.Helios
       this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
       this.Load += this._formLoad;
-      this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(MainForm_FormClosed);
+      this.FormClosed += this._formClosed;
     }
 
 
     /// <summary>
-    /// 
+    /// Return the docking content associated with the string.
     /// </summary>
-    /// <param name="persistString"></param>
-    /// <returns></returns>
     private WeifenLuo.WinFormsUI.IDockContent _getContentFromPersistString(string persistString)
     {
       if (_persistantForms.ContainsKey(persistString))
@@ -67,7 +71,7 @@ namespace CadKit.Helios
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void MainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
     {
       _dockPanel.SaveAsXml(this.DockSettingsFile);
     }
@@ -193,7 +197,7 @@ namespace CadKit.Helios
           this._showSplashScreen(this._loadPlugins);
           this._reportPluginInfo();
 
-          this.Shown += new System.EventHandler(MainForm_Shown);
+          this.Shown += this._formShown;
         }
       }
       catch (System.Exception e)
@@ -208,12 +212,21 @@ namespace CadKit.Helios
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void MainForm_Shown(object sender, System.EventArgs e)
+    void _formShown(object sender, System.EventArgs args)
     {
-      string configFile = this.DockSettingsFile;
-
-      if (System.IO.File.Exists(configFile))
-        _dockPanel.LoadFromXml(configFile, _deserializeDockContent);
+      lock (_mutex)
+      {
+        try
+        {
+          string configFile = this.DockSettingsFile;
+          if (System.IO.File.Exists(configFile))
+            _dockPanel.LoadFromXml(configFile, _deserializeDockContent);
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 1948208679: {0}", e.Message);
+        }
+      }
     }
 
 
@@ -296,6 +309,8 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+          menu.DropDownItems.Add(_recentFiles.Menu);
+          menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));
         }
         {
@@ -362,18 +377,47 @@ namespace CadKit.Helios
       }
     }
 
-    #region IRegisterPersistantForm Members
-
+    /// <summary>
+    /// Register a peristant form.
+    /// </summary>
     void CadKit.Interfaces.IPersistantFormData.registerPersistanceForm(string name, System.Windows.Forms.Form form)
     {
       _persistantForms.Add(name, form);
     }
 
+    /// <summary>
+    /// See if there is peristant form data.
+    /// </summary>
     bool CadKit.Interfaces.IPersistantFormData.hasPersistantFormData()
     {
       return System.IO.File.Exists(this.DockSettingsFile);
     }
 
-    #endregion
+    /// <summary>
+    /// Add the name.
+    /// </summary>
+    void CadKit.Interfaces.IRecentFileList.add(string name)
+    {
+      if (null != _recentFiles)
+        _recentFiles.add(name);
+    }
+
+    /// <summary>
+    /// Remove the name.
+    /// </summary>
+    void CadKit.Interfaces.IRecentFileList.remove(string name)
+    {
+      if (null != _recentFiles)
+        _recentFiles.remove(name);
+    }
+
+    /// <summary>
+    /// Clear the list.
+    /// </summary>
+    void CadKit.Interfaces.IRecentFileList.clear()
+    {
+      if (null != _recentFiles)
+        _recentFiles.clear();
+    }
   }
 }

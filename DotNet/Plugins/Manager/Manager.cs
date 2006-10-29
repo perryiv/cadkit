@@ -227,7 +227,7 @@ namespace CadKit.Plugins
           }
 
           CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
-          if (null == factory)
+          if (null == plugin)
           {
             System.Console.WriteLine("Error 9585018640: Failed to create plugin instance in assembly file: {0}", file);
             return;

@@ -55,10 +55,7 @@ namespace CadKit.Viewer
       // Set the render context.
       _viewer.RenderContext = this.RenderContext;
 
-      //this._makeCurrent();
-
       _viewer.create();
-
       this.BackColorChanged += new System.EventHandler(OnBackColorChanged);
     }
 
@@ -146,6 +143,8 @@ namespace CadKit.Viewer
       float y = this.Size.Height - e.Location.Y;
 
       bool mouse = left || middle || right;
+      if (false == mouse)
+        return;
 
       CadKit.Viewer.Glue.Viewer.Type type = mouse ? CadKit.Viewer.Glue.Viewer.Type.DRAG : CadKit.Viewer.Glue.Viewer.Type.MOVE;
 

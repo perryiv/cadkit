@@ -45,10 +45,7 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
     {
       lock (_mutex)
       {
-        Viewer view = new Viewer();
-        view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
-        view.Text = _document.Name;
-        view.MdiParent = caller as System.Windows.Forms.Form;
+        Viewer view = new Viewer ( caller, _document );
         view.Show();
       }
     }

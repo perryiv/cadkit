@@ -14,8 +14,8 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// <summary>
     /// Data members.
     /// </summary>
-    object _mutex = new object();
-    System.Windows.Forms.RichTextBox _text = null;
+    private object _mutex = new object();
+    private System.Windows.Forms.RichTextBox _text = null;
 
     /// <summary>
     /// Constructor

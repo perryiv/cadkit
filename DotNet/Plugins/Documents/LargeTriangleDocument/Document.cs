@@ -38,6 +38,20 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     void CadKit.Interfaces.IRead.read ( string name, object caller )
     {
+      lock ( _mutex )
+      {
+        CadKit.Interfaces.IProgressBar progress = caller as CadKit.Interfaces.IProgressBar;
+        if (null != progress)
+        {
+          int total = progress.Range;
+          for (int i = 0; i < total; ++i)
+          {
+            progress.Value = i;
+            System.Threading.Thread.Sleep(1000);
+          }
+          progress.Value = total;
+        }
+      }
     }
   }
 }

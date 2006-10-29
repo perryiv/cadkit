@@ -4,10 +4,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{233305C0-C997-440A-9AA2-BAFEF0D15156}</ProjectGuid>
+    <ProjectGuid>{36F713E4-7E7C-4EB3-B3FE-414C5B7397C3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CadKit.Interfaces</RootNamespace>
-    <AssemblyName>CadKit.Interfaces</AssemblyName>
+    <RootNamespace>CadKit.Direct3D</RootNamespace>
+    <AssemblyName>CadKit.Direct3D</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,45 +27,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="IClassFactory.cs" />
-    <Compile Include="ICommand.cs" />
-    <Compile Include="ICommandHistory.cs" />
-    <Compile Include="ICommandManager.cs" />
-    <Compile Include="IDocument.cs" />
-    <Compile Include="IDocumentNew.cs" />
-    <Compile Include="IDocumentOpen.cs" />
-    <Compile Include="IFiltersOpen.cs" />
-    <Compile Include="IMainForm.cs" />
-    <Compile Include="IWindowsForward.cs" />
-    <Compile Include="IRead.cs" />
-    <Compile Include="IGuiDelegate.cs" />
-    <Compile Include="IMenuBar.cs" />
-    <Compile Include="IProgressBar.cs" />
-    <Compile Include="IPlugin.cs" />
-    <Compile Include="IUpdateDisplay.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBuildScene.cs" />
-    <Compile Include="IDiskStorageCreate.cs" />
-    <Compile Include="IDiskStorage.cs" />
-    <Compile Include="IGuiCreate.cs" />
-    <Compile Include="IGuiDelegateCreate.cs" />
-    <Compile Include="IOptionsForm.cs" />
-    <Compile Include="IOptionsPage.cs" />
-    <Compile Include="IOptionsPageAdd.cs" />
-    <Compile Include="IDockPanel.cs" />
-    <Compile Include="IPersistantFormData.cs" />
-    <Compile Include="IRecentFileList.cs" />
-    <Compile Include="IViewer.cs" />
-    <Compile Include="IViewerMode.cs" />
-    <Compile Include="IWindowMenu.cs" />
+    <Compile Include="Canvas.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Persistence\CadKit.Persistence.csproj">
+      <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
+      <Name>CadKit.Persistence</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,7 +29,7 @@ using namespace CadKit::Viewer::Glue;
 
 Viewer::Viewer() : _viewer( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+  //Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _viewer = new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 );
   Usul::Pointers::reference( _viewer );
   _viewer->axes( false );

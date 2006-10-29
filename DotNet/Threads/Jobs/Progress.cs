@@ -9,7 +9,7 @@
 
 namespace CadKit.Threads.Jobs
 {
-  public class Progress
+  public class Progress : CadKit.Interfaces.IProgressBar
   {
     /// <summary>
     /// Local types.
@@ -23,6 +23,7 @@ namespace CadKit.Threads.Jobs
     private int _min = 0;
     private int _max = 100;
     private int _value = 0;
+    private string _text = null;
     private System.DateTime _lastTime = System.DateTime.Now;
     private System.TimeSpan _updateRate = new System.TimeSpan(0, 0, 0, 1, 0);
     private CadKit.Threads.Jobs.Job _job = null;
@@ -158,6 +159,32 @@ namespace CadKit.Threads.Jobs
     private object Mutex
     {
       get { return _mutex; }
+    }
+
+    /// <summary>
+    /// Get/set the text.
+    /// </summary>
+    string CadKit.Interfaces.IProgressBar.Text
+    {
+      get { lock (_mutex) { return _text; } }
+      set { lock ( _mutex ) { _text = value; } }
+    }
+
+    /// <summary>
+    /// Get the renge.
+    /// </summary>
+    int CadKit.Interfaces.IProgressBar.Range
+    {
+      get { lock (_mutex) { return (this.Maximum - this.Minimum); } }
+    }
+
+    /// <summary>
+    /// Get/set the value.
+    /// </summary>
+    int CadKit.Interfaces.IProgressBar.Value
+    {
+      get { return this.Value; }
+      set { this.Value = value; }
     }
   }
 }

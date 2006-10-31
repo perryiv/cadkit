@@ -187,7 +187,7 @@ void Viewer::handleSeek ( float x, float y, bool left )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::camera ( CameraOption option )
+void Viewer::camera ( CadKit::Interfaces::CameraOption option )
 {
   _viewer->camera( static_cast < OsgTools::Render::Viewer::CameraOption > ( option ) );
 }

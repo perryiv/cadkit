@@ -11,7 +11,8 @@ namespace CadKit.Viewer
 {
   class Panel : 
     CadKit.OpenGL.Canvas,
-    CadKit.Interfaces.IViewerMode
+    CadKit.Interfaces.IViewerMode,
+    CadKit.Interfaces.ICamera
   {
     CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
 
@@ -103,14 +104,14 @@ namespace CadKit.Viewer
       if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
       {
         // Move the camera.
-        _viewer.camera(CadKit.Viewer.Glue.Viewer.CameraOption.RESET);
+        _viewer.camera(CadKit.Interfaces.CameraOption.RESET);
       }
 
       // FIT
       else if (e.KeyCode == System.Windows.Forms.Keys.F)
       {
         // Move the camera.
-        _viewer.camera(CadKit.Viewer.Glue.Viewer.CameraOption.FIT);
+        _viewer.camera(CadKit.Interfaces.CameraOption.FIT);
       }
 
       // Change mode to navigation
@@ -249,6 +250,15 @@ namespace CadKit.Viewer
           this.ContextMenuStrip = null;
         }
       }
+    }
+
+
+    /// <summary>
+    /// Set the camera.
+    /// </summary>
+    public void camera(CadKit.Interfaces.CameraOption option)
+    {
+      _viewer.camera(option);
     }
   }
 }

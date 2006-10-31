@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IBuildScene.cs" />
+    <Compile Include="ICamera.cs" />
     <Compile Include="IDiskStorageCreate.cs" />
     <Compile Include="IDiskStorage.cs" />
     <Compile Include="IGuiCreate.cs" />

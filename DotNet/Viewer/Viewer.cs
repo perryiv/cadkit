@@ -12,7 +12,8 @@ namespace CadKit.Viewer
   public class Viewer : 
     WeifenLuo.WinFormsUI.DockContent,
     CadKit.Interfaces.IViewer,
-    CadKit.Interfaces.IViewerMode
+    CadKit.Interfaces.IViewerMode,
+    CadKit.Interfaces.ICamera
   {
     CadKit.Viewer.Panel _panel = new Panel();
 
@@ -138,6 +139,15 @@ namespace CadKit.Viewer
     public void render()
     {
       _panel.render();
+    }
+
+
+    /// <summary>
+    /// Set the camera.
+    /// </summary>
+    public void camera(CadKit.Interfaces.CameraOption option)
+    {
+      _panel.camera(option);
     }
   }
 }

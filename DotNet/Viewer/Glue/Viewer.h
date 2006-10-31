@@ -41,8 +41,6 @@ namespace CadKit
           MOVE = 5
         };
 
-        enum class CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM };
-
         enum class ViewMode
         {
           NAVIGATION,
@@ -61,7 +59,7 @@ namespace CadKit
         // Create.
         void                  create();
 
-        void                  camera ( CameraOption );
+        void                  camera ( CadKit::Interfaces::CameraOption option );
 
         // Handle Navigation.
         void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );

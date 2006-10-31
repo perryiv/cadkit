@@ -66,7 +66,6 @@ namespace CadKit.Tools
       {
         string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
         _file = System.Windows.Forms.Application.UserAppDataPath + "\\" + program + ".out";
-        System.IO.FileInfo info = new System.IO.FileInfo(_file);
 
         System.IO.FileMode mode = System.IO.FileMode.Create;
         System.IO.FileAccess access = System.IO.FileAccess.ReadWrite;
@@ -79,29 +78,46 @@ namespace CadKit.Tools
         System.Console.SetOut(sw);
 
         //CadKit.Tools.RedirectOutput.SetStdHandle(CadKit.Tools.RedirectOutput.STD_OUTPUT_HANDLE, _stream.SafeFileHandle.DangerousGetHandle());
-
-        _watcher = new System.IO.FileSystemWatcher();
-        _watcher.Path = info.DirectoryName;
-        _watcher.Filter = info.Name;
-        _watcher.NotifyFilter = System.IO.NotifyFilters.Size | System.IO.NotifyFilters.Attributes;
-        _watcher.Changed += this._fileChanged;
-        _watcher.EnableRaisingEvents = true;
       }
       catch (System.Exception e)
       {
-        // Reset members.
-        _file = null;
-        _stream = null;
-        _watcher = null;
-
-        // Reset console to print to standard output stream.
-        System.IO.StreamWriter stream = new System.IO.StreamWriter(System.Console.OpenStandardOutput());
-        stream.AutoFlush = true;
-        System.Console.SetOut(stream);
+        this._clear();
 
         // Write to standard output stream.
         System.Console.WriteLine("Error 3149241310: {0}", e.Message);
       }
+    }
+
+
+    /// <summary>
+    /// Clear data members and reset standard output.
+    /// </summary>
+    private void _clear()
+    {
+      // Reset members.
+      _file = null;
+      _stream = null;
+      _watcher = null;
+
+      // Reset console to print to standard output stream.
+      System.IO.StreamWriter stream = new System.IO.StreamWriter(System.Console.OpenStandardOutput());
+      stream.AutoFlush = true;
+      System.Console.SetOut(stream);
+    }
+
+
+    /// <summary>
+    /// Start the file watcher.
+    /// </summary>
+    private void _startFileWatcher()
+    {
+      System.IO.FileInfo info = new System.IO.FileInfo(_file);
+      _watcher = new System.IO.FileSystemWatcher();
+      _watcher.Path = info.DirectoryName;
+      _watcher.Filter = info.Name;
+      _watcher.NotifyFilter = System.IO.NotifyFilters.Size | System.IO.NotifyFilters.Attributes;
+      _watcher.Changed += this._fileChanged;
+      _watcher.EnableRaisingEvents = true;
     }
 
     /// <summary>
@@ -156,7 +172,7 @@ namespace CadKit.Tools
     /// <summary>
     /// Get all the text of the file.
     /// </summary>
-    public string Text
+    private string Text
     {
       get
       {
@@ -211,7 +227,30 @@ namespace CadKit.Tools
     public NotifyDelegate Notify
     {
       get { lock (_mutex) { return _notify; } }
-      set { lock (_mutex) { _notify = value; } }
+      set 
+      { 
+        lock (_mutex) 
+        { 
+          _notify = value;
+
+          /// Start the file watcher if we haven't already.
+          try
+          {
+            if (null == _watcher && null != _notify)
+            {
+              this._startFileWatcher();
+              _notify(this.Text);
+            }
+          }
+          catch (System.Exception e)
+          {
+            this._clear();
+
+            // Write to standard output stream.
+            System.Console.WriteLine("Error 1767897052: {0}", e.Message);
+          }
+        } 
+      }
     }
   }
 }

@@ -38,11 +38,8 @@ namespace CadKit.Plugins.Windows.OutputWindow
         this.Controls.Add(_text);
         _text.Dock = System.Windows.Forms.DockStyle.Fill;
         _text.Multiline = true;
-
-        // Get the current text.
-        _text.Text = CadKit.Tools.RedirectOutput.Instance.Text;
-        CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
-
+        
+        this.Shown += new System.EventHandler(_formShown);
         this.FormClosing += this._formClosing;
       }
       catch (System.Exception e)
@@ -51,6 +48,16 @@ namespace CadKit.Plugins.Windows.OutputWindow
         _text = null;
         this.Controls.Clear();
       }
+    }
+
+
+    /// <summary>
+    /// Called when the form is shown.
+    /// </summary>
+    void _formShown(object sender, System.EventArgs e)
+    {
+      // The form is shown.  Add the notify delegate.
+      CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
     }
 
 

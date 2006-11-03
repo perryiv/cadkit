@@ -34,16 +34,14 @@ namespace CadKit.Plugins
       }
     }
 
+
     /// <summary>
     /// Get the file names from the XML file.
     /// </summary>
-    private Names _getPluginFileNames(string file)
+    private void _getPluginFileNames(string file)
     {
       lock (_mutex)
       {
-        // Initialize the names.
-        Names names = new Names();
-
         // Open the configuration file.
         try
         {
@@ -68,7 +66,7 @@ namespace CadKit.Plugins
                 System.Xml.XmlNode node = kids[i];
                 if ("plugin" == node.Name)
                 {
-                  this._addAttributes(names, info.DirectoryName, node);
+                  this._addAttributes(_names, info.DirectoryName, node);
                 }
               }
             }
@@ -81,9 +79,6 @@ namespace CadKit.Plugins
         {
           System.Console.WriteLine("Error 1813945695: {0}", e.Message);
         }
-
-        // Return the names we have.
-        return names;
       }
     }
 
@@ -94,10 +89,18 @@ namespace CadKit.Plugins
     {
       lock (_mutex)
       {
+        string file = "";
+        bool load = false;
         foreach (System.Xml.XmlAttribute attr in node.Attributes)
         {
-          names.Add(this._getAbsolutePathIfFile(dir, attr.Value));
+          if(attr.Name == "file")
+            file = this._getAbsolutePathIfFile(dir, attr.Value);
+          else if(attr.Name == "load")
+            load = bool.Parse(attr.Value);
         }
+
+        _names.Add(file,load);
+        
       }
     }
 
@@ -147,6 +150,7 @@ namespace CadKit.Plugins
       }
     }
 
+
     /// <summary>
     /// Get all the plugins that supports the given type.
     /// </summary>
@@ -173,6 +177,7 @@ namespace CadKit.Plugins
       }
     }
 
+
     /// <summary>
     /// Load the plugins.
     /// </summary>
@@ -184,17 +189,24 @@ namespace CadKit.Plugins
         lock (_mutex)
         {
           // Get all the names.
-          Names names = this._getPluginFileNames(file);
+          this._getPluginFileNames(file);
+
+          int number = 0;
 
           // Loop through the files.
-          for (int i = 0; i < names.Count; ++i)
+          foreach (System.Collections.Generic.KeyValuePair<string, bool> kvp in _names)
           {
-            CadKit.Tools.Progress.notify("Loading: " + names[i], i, names.Count, caller);
-            this._loadPlugin(names[i], caller);
+            if (kvp.Value)
+            {
+              CadKit.Tools.Progress.notify("Loading: " + kvp.Key, number, _names.Count, caller);
+              this._loadPlugin(kvp.Key, caller);
+            }
+
+            ++number;
           }
 
           // Done.
-          CadKit.Tools.Progress.notify("Done loading plugins", names.Count, names.Count, caller);
+          CadKit.Tools.Progress.notify("Done loading plugins", _names.Count, _names.Count, caller);
         }
       }
       catch (System.Exception e)
@@ -202,6 +214,7 @@ namespace CadKit.Plugins
         System.Console.WriteLine("Error 1132181386: {0}", e.Message);
       }
     }
+
 
     /// <summary>
     /// Data members.
@@ -245,6 +258,7 @@ namespace CadKit.Plugins
       }
     }
 
+
     /// <summary>
     /// Find or load the assembly.
     /// </summary>
@@ -273,6 +287,112 @@ namespace CadKit.Plugins
       }
     }
 
+
+    /// <summary>
+    /// Check to see if the plugin is loaded.
+    /// </summary>
+    public bool isLoaded(string file)
+    {
+      return _names[file];
+    }
+
+
+    class DummyPlugin : CadKit.Interfaces.IPlugin
+    {
+      string _name = "";
+      string _description = "";
+
+      public DummyPlugin(string name, string description)
+      {
+      }
+
+      #region IPlugin Members
+
+      public string Name
+      {
+        get { return _name; }
+      }
+
+      public string Description
+      {
+        get { return _description; }
+      }
+
+      public void startupNotify(object caller)
+      {
+        // Do nothing.
+      }
+
+      #endregion
+    }
+
+    public CadKit.Interfaces.IPlugin pluginInterface(string file)
+    {
+      System.Reflection.Assembly assembly = null;
+
+      // Check to see if we have the plugin.
+      _assemblies.TryGetValue(file, out assembly);
+
+      if (assembly == null)
+      {
+        // See: http://msdn2.microsoft.com/en-US/library/7hcs6az6.aspx
+        System.AppDomain domain = System.AppDomain.CreateDomain("CadKit.Plugins.Factory");
+        object obj = domain.CreateInstanceFrom(file, "CadKit.Plugins.Factory");
+        //domain.AssemblyResolve += new System.ResolveEventHandler(domain_AssemblyResolve);
+
+        //assembly = domain.Load(file);
+        //object obj = domain.CreateInstance(file, "CadKit.Plugins.Factory");
+
+        //CadKit.Interfaces.IPlugin plugin = _getInterface(file, assembly);
+
+        //DummyPlugin dummy = new DummyPlugin(plugin.Name, plugin.Description);
+
+        System.AppDomain.Unload(domain);
+
+        //return dummy;
+        return new DummyPlugin("", "");
+      }
+
+      return _getInterface(file, assembly);
+    }
+
+    byte[] loadFile(string file)
+    {
+      System.IO.FileStream fs = new System.IO.FileStream(file, System.IO.FileMode.Open);
+      byte[] buffer = new byte[(int)fs.Length];
+      fs.Read(buffer, 0, buffer.Length);
+      fs.Close();
+
+      return buffer;
+    }
+
+    System.Reflection.Assembly domain_AssemblyResolve(object sender, System.ResolveEventArgs args)
+    {
+      System.AppDomain domain = (System.AppDomain)sender;
+
+      byte[] rawAssembly = loadFile(args.Name);
+      //byte[] rawSymbolStore = loadFile("temp.pdb");
+      //Assembly assembly = domain.Load(rawAssembly, rawSymbolStore);
+      return domain.Load(rawAssembly);
+    }
+
+    private static CadKit.Interfaces.IPlugin _getInterface(string file, System.Reflection.Assembly assembly)
+    {
+      CadKit.Interfaces.IClassFactory factory = (CadKit.Interfaces.IClassFactory)assembly.CreateInstance("CadKit.Plugins.Factory");
+      if (null == factory)
+      {
+        throw new System.Exception("Error 1407956654: Assembly file " + file + " does not have a class factory");
+      }
+
+      CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
+      if (null == plugin)
+      {
+        throw new System.Exception("Error 1689831654: Failed to create plugin instance in assembly file: " + file);
+      }
+      return plugin;
+    }
+
+
     /// <summary>
     /// Return the number of plugins.
     /// </summary>
@@ -280,6 +400,7 @@ namespace CadKit.Plugins
     {
       get { lock (_mutex) { return _plugins.Count; } }
     }
+
 
     /// <summary>
     /// Return the plugin names.
@@ -307,12 +428,32 @@ namespace CadKit.Plugins
       }
     }
 
+
+    /// <summary>
+    /// Get the names.
+    /// </summary>
+    public string[] FileNames
+    {
+      get
+      {
+        System.Collections.Generic.List<string> names = new System.Collections.Generic.List<string>();
+        foreach (System.Collections.Generic.KeyValuePair<string, bool> kvp in _names)
+        {
+          names.Add(kvp.Key);
+        }
+
+        return names.ToArray();
+      }
+    }
+
+
     /// <summary>
     /// Local types.
     /// </summary>
     class Assemblies : System.Collections.Generic.Dictionary<string, System.Reflection.Assembly> { }
-    class Names : System.Collections.Generic.List<string> { }
+    class Names : System.Collections.Generic.Dictionary<string, bool> { }
     class Plugins : System.Collections.Generic.List<CadKit.Interfaces.IPlugin> { }
+
 
     /// <summary>
     /// Data members.
@@ -320,6 +461,7 @@ namespace CadKit.Plugins
     private static Manager _instance = null;
     private object _mutex = new object();
     private Assemblies _assemblies = new Assemblies();
+    private Names _names = new Names();
     private Plugins _plugins = new Plugins();
   }
 }

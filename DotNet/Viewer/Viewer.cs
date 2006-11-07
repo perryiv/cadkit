@@ -13,7 +13,9 @@ namespace CadKit.Viewer
     WeifenLuo.WinFormsUI.DockContent,
     CadKit.Interfaces.IViewer,
     CadKit.Interfaces.IViewerMode,
-    CadKit.Interfaces.ICamera
+    CadKit.Interfaces.ICamera,
+    CadKit.Interfaces.IExportImage,
+    CadKit.Interfaces.IExportScene
   {
     CadKit.Viewer.Panel _panel = new Panel();
 
@@ -148,6 +150,52 @@ namespace CadKit.Viewer
     public void camera(CadKit.Interfaces.CameraOption option)
     {
       _panel.camera(option);
+    }
+
+    CadKit.Interfaces.Filters CadKit.Interfaces.IExportImage.Filters
+    {
+      get 
+      { 
+        CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+        if(null != export)
+          return export.Filters;
+        return new CadKit.Interfaces.Filters();
+      }
+    }
+
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename)
+    {
+      CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+      if (null != export)
+        return export.exportImage(filename);
+      return false;
+    }
+
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
+    {
+      CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+      if (null != export)
+        return export.exportImage(filename, width, height);
+      return false;
+    }
+
+    CadKit.Interfaces.Filters CadKit.Interfaces.IExportScene.Filters
+    {
+      get 
+      {
+        CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
+        if (null != export)
+          return export.Filters;
+        return new CadKit.Interfaces.Filters(); 
+      }
+    }
+
+    bool CadKit.Interfaces.IExportScene.exportScene(string filename)
+    {
+      CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
+      if (null != export)
+        return export.exportScene(filename);
+      return false;
     }
   }
 }

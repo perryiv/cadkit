@@ -12,7 +12,9 @@ namespace CadKit.Viewer
   class Panel : 
     CadKit.OpenGL.Canvas,
     CadKit.Interfaces.IViewerMode,
-    CadKit.Interfaces.ICamera
+    CadKit.Interfaces.ICamera,
+    CadKit.Interfaces.IExportImage,
+    CadKit.Interfaces.IExportScene
   {
     CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
 
@@ -259,6 +261,45 @@ namespace CadKit.Viewer
     public void camera(CadKit.Interfaces.CameraOption option)
     {
       _viewer.camera(option);
+    }
+
+    CadKit.Interfaces.Filters CadKit.Interfaces.IExportImage.Filters
+    {
+      get 
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
+        filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
+        filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
+        filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
+        return filters;
+      }
+    }
+
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename)
+    {
+      return _viewer.writeImageFile(filename);
+    }
+
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
+    {
+      return _viewer.writeImageFile(filename, width, height);
+    }
+
+    CadKit.Interfaces.Filters CadKit.Interfaces.IExportScene.Filters
+    {
+      get 
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
+        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
+        return filters;
+      }
+    }
+
+    bool CadKit.Interfaces.IExportScene.exportScene(string filename)
+    {
+      return _viewer.writeSceneFile(filename);
     }
   }
 }

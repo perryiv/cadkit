@@ -424,6 +424,7 @@ public:
 
   // Write the current frame to an image file.
   bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const;
+  virtual bool          writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
 
   // Write the current scene to file.
   bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const;
@@ -644,7 +645,6 @@ protected:
   virtual Filters               filtersExport() const;
   virtual Filters               filtersWriteImage() const;
   virtual bool                  exportFile ( const std::string& filename );
-  virtual bool                  writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
 
   /// Usul::Interfaces::ICenterOrRotation
   virtual void                  showCenterOfRotation ( bool b );

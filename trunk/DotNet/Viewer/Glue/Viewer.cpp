@@ -21,6 +21,21 @@
 using namespace CadKit::Viewer::Glue;
 
 
+namespace Detail
+{
+  std::string toString( System::String^ source )
+  {
+    System::IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
+    char* s = (char*)(void*) ptr;
+    
+    std::string string ( s );
+    
+    System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
+
+    return string;
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -226,4 +241,22 @@ Viewer::ViewMode Viewer::getMode ()
 System::IntPtr Viewer::viewer()
 {
   return System::IntPtr ( _viewer );
+}
+
+
+// Write the current frame to an image file.
+bool Viewer::writeImageFile ( System::String^ filename )
+{
+  return _viewer->writeImageFile( Detail::toString( filename ) );
+}
+
+bool Viewer::writeImageFile ( System::String^ filename, int width, int height )
+{
+  return _viewer->writeImageFile( Detail::toString( filename ), height, width );
+}
+
+// Write the current scene to file.
+bool Viewer::writeSceneFile ( System::String^ filename )
+{
+  return _viewer->writeSceneFile( Detail::toString( filename ) );
 }

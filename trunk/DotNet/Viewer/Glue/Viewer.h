@@ -102,6 +102,13 @@ namespace CadKit
           }
         };
 
+        // Write the current frame to an image file.
+        bool          writeImageFile ( System::String^ filename );
+        bool          writeImageFile ( System::String^ filename, int width, int height );
+
+        // Write the current scene to file.
+        bool          writeSceneFile ( System::String^ filename );
+
       private:
         OsgTools::Render::Viewer* _viewer;
       };

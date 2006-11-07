@@ -4,10 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{233305C0-C997-440A-9AA2-BAFEF0D15156}</ProjectGuid>
+    <ProjectGuid>{305DD8CA-A729-489F-A6E7-DA4A1DF88F9A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CadKit.Interfaces</RootNamespace>
-    <AssemblyName>CadKit.Interfaces</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CadKit.Graph</RootNamespace>
+    <AssemblyName>CadKit.Graph</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,48 +28,33 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="IClassFactory.cs" />
-    <Compile Include="ICommand.cs" />
-    <Compile Include="ICommandHistory.cs" />
-    <Compile Include="ICommandManager.cs" />
-    <Compile Include="IDocument.cs" />
-    <Compile Include="IDocumentNew.cs" />
-    <Compile Include="IDocumentOpen.cs" />
-    <Compile Include="IFiltersOpen.cs" />
-    <Compile Include="IMainForm.cs" />
-    <Compile Include="IWindowsForward.cs" />
-    <Compile Include="IRead.cs" />
-    <Compile Include="IGuiDelegate.cs" />
-    <Compile Include="IMenuBar.cs" />
-    <Compile Include="IProgressBar.cs" />
-    <Compile Include="IPlugin.cs" />
-    <Compile Include="IUpdateDisplay.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBuildScene.cs" />
-    <Compile Include="ICamera.cs" />
-    <Compile Include="IDiskStorageCreate.cs" />
-    <Compile Include="IDiskStorage.cs" />
-    <Compile Include="IExportImage.cs" />
-    <Compile Include="IExportScene.cs" />
-    <Compile Include="IGuiCreate.cs" />
-    <Compile Include="IGuiDelegateCreate.cs" />
-    <Compile Include="IOptionsForm.cs" />
-    <Compile Include="IOptionsPage.cs" />
-    <Compile Include="IOptionsPageAdd.cs" />
-    <Compile Include="IDockPanel.cs" />
-    <Compile Include="IPersistantFormData.cs" />
-    <Compile Include="IRecentFileList.cs" />
-    <Compile Include="IViewer.cs" />
-    <Compile Include="IViewerMode.cs" />
-    <Compile Include="IWindowMenu.cs" />
+    <Compile Include="Graph.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Graph.Designer.cs">
+      <DependentUpon>Graph.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Panel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Panel.Designer.cs">
+      <DependentUpon>Panel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plot.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Graph.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Graph.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

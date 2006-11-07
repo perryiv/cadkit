@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <plugins>
-  <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug"/>
-  <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug"/>
-  <plugin file="CadKit.Plugins.Documents.SceneDocument.plug"/>
-  <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug"/>
-  <plugin file="CadKit.Plugins.Options.General.plug"/>
-  <plugin file="CadKit.Plugins.Windows.OutputWindow.plug"/>
-  <plugin file="CadKit.Plugins.Windows.JobWindow.plug"/>
-  <plugin file="CadKit.Plugins.Database.Storage.plug"/>
+  <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Documents.SceneDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Options.General.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.OutputWindow.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Database.Storage.plug" load="true"/>
 </plugins>

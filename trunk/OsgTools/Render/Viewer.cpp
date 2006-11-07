@@ -302,15 +302,15 @@ void Viewer::render()
     return;
   
   // Update the scene.
-  if( _sceneUpdate.valid() )
+  if ( _sceneUpdate.valid() )
     _sceneUpdate->sceneUpdate();
 
   // Make this context current.
-  if( _context.valid() ) { _context->makeCurrent(); }
+  if ( _context.valid() )
+    _context->makeCurrent();
 
   // Initialize the error.
   ::glGetError();
-
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
@@ -387,7 +387,8 @@ void Viewer::render()
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 
   // Swap the buffers.
-  if( _context.valid() ) { _context->swapBuffers(); }
+  if ( _context.valid() )
+    _context->swapBuffers();
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );

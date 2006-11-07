@@ -14,33 +14,18 @@ namespace CadKit.Helios
     /// <summary>
     /// Local types.
     /// </summary>
-    private class Entry
-    {
-      private static int _count = 0;
-      private int _num = _count++;
-      private string _name = null;
-      public Entry(string name) { _name = name; }
-      public string Name { get { return _name; } }
-      public int Num { get { return _num; } }
-    }
-    private class CompareTime : System.Collections.Generic.IComparer<Entry>
-    {
-      public int Compare(Entry left, Entry right)
-      {
-        return (left.Num - right.Num);
-      }
-    }
-    private class Entries : System.Collections.Generic.List<Entry> { }
+    private class Names : System.Collections.Generic.Queue<string> { }
 
     /// <summary>
     /// Data members.
     /// </summary>
     private object _mutex = new object();
-    private Entries _entries = new Entries();
+    private Names _names = new Names();
     private uint _maxCount = 10;
     private System.Windows.Forms.ToolStripMenuItem _menu = new System.Windows.Forms.ToolStripMenuItem();
     private string _section = "RecentFiles";
-    private string _key = "Entries";
+    private string _entriesKey = "Entries";
+    private string _maxCountKey = "MaxCount";
     private char _delimeter = ';';
 
     /// <summary>
@@ -48,19 +33,58 @@ namespace CadKit.Helios
     /// </summary>
     public RecentFiles()
     {
-      string temp = CadKit.Persistence.Registry.Instance.getString(_section, _key, "");
-      if (temp.Length > 0)
-      {
-        string[] names = temp.Split(new char[] { _delimeter });
-        foreach (string name in names)
-        {
-          this.add(name);
-        }
-      }
+      // Set the max count.
+      this.MaxCount = CadKit.Persistence.Registry.Instance.getUint(_section, _maxCountKey, this.MaxCount);
 
+      // Add names from the registry.
+      string[] names = this._getNamesFromRegistry();
+      this._add(names);
+
+      // Set menu properties and build it.
       _menu.Text = "Recent &Files";
       _menu.DropDownOpening += this._menuDropDownOpening;
       this._buildMenu();
+    }
+
+    /// <summary>
+    /// Descructor.
+    /// </summary>
+    ~RecentFiles()
+    {
+      this.store();
+    }
+
+    /// <summary>
+    /// Return names from the registry.
+    /// </summary>
+    private string[] _getNamesFromRegistry()
+    {
+      System.Collections.Generic.List<string> answer = new System.Collections.Generic.List<string>();
+      try
+      {
+        lock (_mutex)
+        {
+          // Get all the files as a single string.
+          string temp = CadKit.Persistence.Registry.Instance.getString(_section, _entriesKey, "");
+          if (temp.Length > 0)
+          {
+            string[] names = temp.Split(new char[] { _delimeter });
+            foreach (string name in names)
+            {
+              // Add only if it exists.
+              if (true == System.IO.File.Exists(name))
+              {
+                answer.Add(name);
+              }
+            }
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2600544858: {0}", e.Message);
+      }
+      return answer.ToArray();
     }
 
     /// <summary>
@@ -68,7 +92,7 @@ namespace CadKit.Helios
     /// </summary>
     private void _menuDropDownOpening(object sender, System.EventArgs args)
     {
-      this._buildMenu();
+      lock (_mutex) { this._buildMenu(); }
     }
 
     /// <summary>
@@ -78,20 +102,24 @@ namespace CadKit.Helios
     {
       try
       {
-        _menu.DropDownItems.Clear();
-        for (int i = 0; i < _entries.Count; ++i)
+        lock (_mutex)
         {
-          CadKit.Helios.Commands.RecentDocumentCommand recent = new CadKit.Helios.Commands.RecentDocumentCommand(_entries[i].Name, (uint)i + 1, CadKit.Helios.Application.Instance.MainForm);
-          _menu.DropDownItems.Add(recent.MenuButton);
+          _menu.DropDownItems.Clear();
+          uint count = 1;
+          foreach (string name in _names)
+          {
+            CadKit.Helios.Commands.RecentDocumentCommand recent = new CadKit.Helios.Commands.RecentDocumentCommand(name, count++, CadKit.Helios.Application.Instance.MainForm);
+            _menu.DropDownItems.Add(recent.MenuButton);
+          }
+
+          CadKit.Tools.Menu.appendSeparatorIfNeeded(_menu);
+
+          System.Windows.Forms.ToolStripMenuItem clearButton = new System.Windows.Forms.ToolStripMenuItem();
+          clearButton.Text = "&Clear";
+          clearButton.Click += this._clearButtonClicked;
+          _menu.DropDownItems.Add(clearButton);
+          clearButton.Enabled = (_names.Count > 0);
         }
-
-        CadKit.Tools.Menu.appendSeparatorIfNeeded(_menu);
-
-        System.Windows.Forms.ToolStripMenuItem clearButton = new System.Windows.Forms.ToolStripMenuItem();
-        clearButton.Text = "&Clear";
-        clearButton.Click += this._clearButtonClicked;
-        _menu.DropDownItems.Add(clearButton);
-        clearButton.Enabled = (_entries.Count > 0);
       }
       catch (System.Exception e)
       {
@@ -118,6 +146,20 @@ namespace CadKit.Helios
     }
 
     /// <summary>
+    /// Add all the name.
+    /// </summary>
+    private void _add(string[] names)
+    {
+      lock (_mutex)
+      {
+        foreach (string name in names)
+        {
+          this.add(name);
+        }
+      }
+    }
+
+    /// <summary>
     /// Add the name.
     /// </summary>
     void CadKit.Interfaces.IRecentFileList.add(string name)
@@ -135,18 +177,35 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
-        if (null != name && name.Length > 0)
+        if (null == name || 0 == name.Length)
+          return;
+
+        // Add only if it exists.
+        if (false == System.IO.File.Exists(name))
+          return;
+
+        // Add only if it isn't in the queue already.
+        if (true == _names.Contains(name))
+          return;
+
+        // Add the name.
+        _names.Enqueue(name);
+
+        // Trim extra.
+        this._trim();
+      }
+    }
+
+    /// <summary>
+    /// Trim extra members.
+    /// </summary>
+    private void _trim()
+    {
+      lock (_mutex)
+      {
+        while (_names.Count > this.MaxCount)
         {
-          _entries.Add(new Entry(name));
-          _entries.Sort(new CompareTime());
-
-          // Trim extra.
-          if ((uint)_entries.Count > this.MaxCount)
-          {
-            _entries.RemoveRange((int)this.MaxCount, _entries.Count - (int)this.MaxCount);
-          }
-
-          this._store();
+          _names.Dequeue();
         }
       }
     }
@@ -156,28 +215,30 @@ namespace CadKit.Helios
     /// </summary>
     void CadKit.Interfaces.IRecentFileList.remove(string name)
     {
-      lock (_mutex)
-      {
-        this.remove(name);
-      }
+      lock (_mutex) { this.remove(name); }
     }
 
     /// <summary>
     /// Remove the name.
     /// </summary>
-    public void remove(string name)
+    public void remove(string file)
     {
       lock (_mutex)
       {
-        foreach (Entry entry in _entries)
+        // Make a new queue.
+        Names names = new Names();
+
+        // Add all current names except given one.
+        foreach (string entry in _names)
         {
-          if (entry.Name == name)
+          if (entry != file)
           {
-            _entries.Remove(entry);
-            this._store();
-            return;
+            names.Enqueue(entry);
           }
         }
+
+        // Set member.
+        _names = names;
       }
     }
 
@@ -186,10 +247,7 @@ namespace CadKit.Helios
     /// </summary>
     void CadKit.Interfaces.IRecentFileList.clear()
     {
-      lock (_mutex)
-      {
-        this.clear();
-      }
+      lock (_mutex) { this.clear(); }
     }
 
     /// <summary>
@@ -197,11 +255,7 @@ namespace CadKit.Helios
     /// </summary>
     public void clear()
     {
-      lock (_mutex)
-      {
-        _entries.Clear();
-        this._store();
-      }
+      lock (_mutex) { _names.Clear(); }
     }
 
     /// <summary>
@@ -224,23 +278,35 @@ namespace CadKit.Helios
     /// <summary>
     /// Store the entries.
     /// </summary>
-    private void _store()
+    public void store()
     {
       lock (_mutex)
       {
+        string[] names = _names.ToArray();
+        this._store(names);
+      }
+    }
+
+    /// <summary>
+    /// Store the entries.
+    /// </summary>
+    private void _store ( string[] names )
+    {
+      lock (_mutex)
+      {
+        CadKit.Persistence.Registry.Instance.setUint(_section, _maxCountKey, this.MaxCount);
+
         string total = "";
-        foreach (Entry entry in _entries)
+        foreach (string name in names)
         {
-          total += System.String.Format("{0}{1}", entry.Name, _delimeter);
+          total += System.String.Format("{0}{1}", name, _delimeter);
         }
         total = total.TrimEnd(new char[] { _delimeter });
         if (total.Length > 0)
         {
-          CadKit.Persistence.Registry.Instance.setString(_section, _key, total);
+          CadKit.Persistence.Registry.Instance.setString(_section, _entriesKey, total);
         }
       }
     }
   }
 }
-
-//Need a queue instead of a sorted list.

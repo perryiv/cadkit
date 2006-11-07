@@ -86,10 +86,15 @@ namespace CadKit.OpenGL
     /// </summary>
     protected CadKit.OpenGL.Glue.RenderContext RenderContext
     {
-      get
-      {
-        return _renderContext;
-      }
+      get { return _renderContext; }
+    }
+
+    /// <summary>
+    /// Get the mutex.
+    /// </summary>
+    protected object Mutex
+    {
+      get { return _mutex; }
     }
   }
 }

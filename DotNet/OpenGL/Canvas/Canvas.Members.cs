@@ -14,6 +14,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Data members.
     /// </summary>
+    object _mutex = new object();
     Flags _flags = new Flags();
     uint _pixelFormat = 0;
     CadKit.OpenGL.Glue.RenderContext _renderContext = null;

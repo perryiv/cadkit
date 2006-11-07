@@ -62,6 +62,9 @@ namespace CadKit.Helios.Commands
         // Should be true.
         System.Diagnostics.Debug.Assert(false == CadKit.Helios.Application.Instance.MainForm.InvokeRequired);
 
+        // Feedback.
+        System.Console.WriteLine(System.String.Format("Opening file: {0}", name));
+
         // Open the document.
         CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.open(name, null, _caller);
 

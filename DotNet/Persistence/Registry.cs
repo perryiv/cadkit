@@ -19,6 +19,9 @@ namespace CadKit.Persistence
       this.read();
     }
 
+    /// <summary>
+    /// Destructor for registry class.
+    /// </summary>
     ~Registry()
     {
       this.write();
@@ -178,7 +181,29 @@ namespace CadKit.Persistence
     /// <summary>
     /// Get the value.
     /// </summary>
-    public int getInt( string section, string key, int defaultValue )
+    public uint getUint(string section, string key, uint defaultValue)
+    {
+      lock (_mutex)
+      {
+        return System.Convert.ToUInt32(this.getString(section, key, defaultValue.ToString()));
+      }
+    }
+
+    /// <summary>
+    /// Set the value.
+    /// </summary>
+    public void setUint(string section, string key, uint value)
+    {
+      lock (_mutex)
+      {
+        this.getSectionHash(section)[key] = value.ToString();
+      }
+    }
+
+    /// <summary>
+    /// Get the value.
+    /// </summary>
+    public int getInt(string section, string key, int defaultValue)
     {
       lock (_mutex)
       {

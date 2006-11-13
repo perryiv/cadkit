@@ -170,28 +170,6 @@ namespace CadKit.Tools
 
 
     /// <summary>
-    /// Get all the text of the file.
-    /// </summary>
-    private string Text
-    {
-      get
-      {
-        lock (_mutex)
-        {
-          long original = _stream.Position;
-          _stream.Position = 0;
-
-          System.IO.StreamReader reader = new System.IO.StreamReader(_stream);
-          string text = reader.ReadToEnd();
-
-          _stream.Position = original;
-
-          return text;
-        }
-      }
-    }
-
-    /// <summary>
     /// Get/set the synchronizing object. If you do not set this then the 
     /// callbacks happen in a thread other than the main one.
     /// </summary>
@@ -239,7 +217,7 @@ namespace CadKit.Tools
             if (null == _watcher && null != _notify)
             {
               this._startFileWatcher();
-              _notify(this.Text);
+              this._fileChanged(this, null);
             }
           }
           catch (System.Exception e)

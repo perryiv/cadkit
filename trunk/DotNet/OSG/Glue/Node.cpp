@@ -9,46 +9,53 @@
 
 #include "Node.h"
 
-#include "Factory.h"
-
 using namespace CadKit::OSG::Glue;
 
-Node::Node() : _key ( 0 )
+Node::Node() : _node( 0x0 )
 {
-  long l = System::DateTime::Now.Ticks;
-  _key = (unsigned int)(l & 0xFFFFFFFF);
-
-  Factory::instance().create( _key );
 }
 
 Node::~Node()
 {
-  Factory::instance().remove( _key );
+  this->_unreference();
 }
 
 Node::!Node()
 {
-  Factory::instance().remove( _key );
+  this->_unreference();
 }
 
 
 osg::Node* Node::node()
 {
-  return Factory::instance().node( _key );
+  return _node;
 }
 
 void Node::node( osg::Node* node )
 {
-  Factory::instance().node( _key, node );
+  this->_unreference();
+
+  _node = node;
+  _node->ref();
 }
 
-unsigned int Node::nodePtr()
+void Node::_unreference()
 {
-  return reinterpret_cast < unsigned int > ( Factory::instance().node( _key ) );
+  if( 0x0 != _node )
+  {
+    _node->unref();
+    _node = 0x0;
+  }
 }
 
-void Node::nodePtr ( unsigned int ptr )
+
+System::IntPtr Node::nodePtr()
 {
-  Factory::instance().node ( _key, reinterpret_cast < osg::Node* > ( ptr ) );
+  return System::IntPtr ( _node );
+}
+
+void Node::nodePtr ( System::IntPtr ptr )
+{
+  this->node( reinterpret_cast< osg::Node* > ( ptr.ToPointer() ) );
 }
 

@@ -28,13 +28,15 @@ namespace CadKit
         ~Node();
         !Node();
 
-        osg::Node*    node();
-        void          node( osg::Node* );
-        unsigned int  nodePtr();
-        void          nodePtr ( unsigned int );
+        osg::Node*      node();
+        void            node( osg::Node* );
+        System::IntPtr  nodePtr();
+        void            nodePtr ( System::IntPtr );
 
+      protected:
+        void            _unreference();
       private:
-        unsigned int _key;
+        osg::Node *_node;
 	    };
     }
   }

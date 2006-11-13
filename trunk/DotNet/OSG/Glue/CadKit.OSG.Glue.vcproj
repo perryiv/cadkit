@@ -192,14 +192,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Factory.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Factory.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Node.cpp"
 				>
 			</File>

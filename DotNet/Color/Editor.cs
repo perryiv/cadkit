@@ -3,6 +3,10 @@ namespace CadKit.Color
 {
   public partial class Editor : System.Windows.Forms.UserControl
   {
+
+    /// <summary>
+    /// Class to edit a color using HAV cone.
+    /// </summary>
     public Editor()
     {
       InitializeComponent();
@@ -17,10 +21,8 @@ namespace CadKit.Color
 
 
     /// <summary>
-    /// 
+    /// Editing is done.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void _onMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
     {
       if (null != this.ColorEditDone)
@@ -29,10 +31,8 @@ namespace CadKit.Color
 
 
     /// <summary>
-    /// 
+    /// The value slider has changed.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void _value_ValueChanged(object sender, System.EventArgs e)
     {
       _wheel.ColorChanged -= new Wheel.ColorChangedEventHandler(_wheel_ColorChanged);
@@ -47,10 +47,8 @@ namespace CadKit.Color
 
 
     /// <summary>
-    /// 
+    /// The color wheel as changed.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void _wheel_ColorChanged(object sender, ColorChangedEventArgs e)
     {
       _value.ValueChanged -= new System.EventHandler(_value_ValueChanged);
@@ -65,7 +63,7 @@ namespace CadKit.Color
 
 
     /// <summary>
-    /// 
+    /// Get/Set the color.
     /// </summary>
     public System.Drawing.Color Color
     {
@@ -85,7 +83,7 @@ namespace CadKit.Color
 
 
     /// <summary>
-    /// 
+    /// Get/Set the persistent name.
     /// </summary>
     public string PersistentName
     {

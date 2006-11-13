@@ -93,12 +93,12 @@ namespace CadKit
           CadKit::OSG::Glue::Node^ get()
           {
             CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
-            node->nodePtr ( reinterpret_cast < unsigned int > ( _viewer->scene() ) );
+            node->nodePtr ( System::IntPtr ( _viewer->scene() ) );
             return node;
           }
           void set ( CadKit::OSG::Glue::Node ^node )
           {
-            _viewer->scene ( reinterpret_cast < osg::Node* > ( node->nodePtr() ) );
+            _viewer->scene ( reinterpret_cast < osg::Node* > ( node->nodePtr().ToPointer() ) );
           }
         };
 

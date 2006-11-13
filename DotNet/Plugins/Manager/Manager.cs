@@ -90,7 +90,7 @@ namespace CadKit.Plugins
       lock (_mutex)
       {
         string file = "";
-        bool load = false;
+        bool load = true;
         foreach (System.Xml.XmlAttribute attr in node.Attributes)
         {
           if(attr.Name == "file")

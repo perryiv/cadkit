@@ -9,7 +9,7 @@
 
 namespace CadKit.Color
 {
-  public partial class Wheel : System.Windows.Forms.Panel
+  public class Wheel : System.Windows.Forms.Panel
   {
     /// <summary>
     /// Constants
@@ -82,14 +82,14 @@ namespace CadKit.Color
     /// <summary>
     /// Generate colors along the circumference.
     /// </summary>
-    private static System.Drawing.Color[] _makeColors(int num)
+    private static System.Drawing.Color[] _makeColors(int num, int value)
     {
       System.Drawing.Color[] colors = new System.Drawing.Color[num];
       for (int i = 0; i < num; ++i)
       {
         float u = ((float)i) / (num - 1);
         float hue = u * 255;
-        CadKit.Color.HSV hsv = new CadKit.Color.HSV((int)hue, 255, 255);
+        CadKit.Color.HSV hsv = new CadKit.Color.HSV((int)hue, 255, value);
         CadKit.Color.RGB rgb = new CadKit.Color.RGB(hsv);
         colors[i] = System.Drawing.Color.FromArgb(rgb.r, rgb.g, rgb.b);
       }
@@ -149,7 +149,8 @@ namespace CadKit.Color
       {
         brush.CenterColor = System.Drawing.Color.White;
         brush.CenterPoint = this.CenterF;
-        brush.SurroundColors = CadKit.Color.Wheel._makeColors(num);
+        CadKit.Color.HSV currentHSV = new HSV(this.Color);
+        brush.SurroundColors = CadKit.Color.Wheel._makeColors(num, currentHSV.v);
 
         // Make new bitmap.
         float diameter = radius * 2;
@@ -240,6 +241,7 @@ namespace CadKit.Color
           CadKit.Persistence.Registry.Instance.setColor(this._persistentName, "Color", value);
         if (null != this.ColorChanged)
           this.ColorChanged(this, new CadKit.Color.ColorChangedEventArgs(value));
+        this._bitmap = null;
       }
     }
 

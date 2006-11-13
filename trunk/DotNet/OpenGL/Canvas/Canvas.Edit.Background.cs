@@ -30,17 +30,17 @@ namespace CadKit.OpenGL
           string persistentName = "CanvasColorWheel";
 
           // Make the color editor.
-          CadKit.Color.Wheel wheel = new CadKit.Color.Wheel();
-          wheel.PersistentName = persistentName;
-          wheel.Dock = System.Windows.Forms.DockStyle.Fill;
-          wheel.Color = this.BackColor;
-          wheel.ColorChanged += this._colorChanged;
-          wheel.MouseUp += this._colorDoneChanging;
+          CadKit.Color.Editor editor = new CadKit.Color.Editor();
+          editor.PersistentName = persistentName;
+          editor.Dock = System.Windows.Forms.DockStyle.Fill;
+          editor.Color = this.BackColor;
+          editor.ColorChanged += this._colorChanged;
+          editor.ColorEditDone += this._colorDoneChanging;
 
           // Make new container form.
           _colorEditorForm = new CadKit.Persistence.Form();
           _colorEditorForm.PersistentName = persistentName;
-          _colorEditorForm.Controls.Add(wheel);
+          _colorEditorForm.Controls.Add(editor);
           CadKit.Tools.ToolWindow.configure(_colorEditorForm, this.FindForm(), "Edit Background", true);
           _colorEditorForm.FormClosed += this._colorEditorClosed;
           _colorEditorForm.Show();
@@ -55,7 +55,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Called when the color is done changing.
     /// </summary>
-    void _colorDoneChanging(object sender, System.Windows.Forms.MouseEventArgs e)
+    void _colorDoneChanging(object sender, CadKit.Color.ColorChangedEventArgs e)
     {
       this._updatePropertyGrid();
     }
@@ -87,11 +87,11 @@ namespace CadKit.OpenGL
       {
         foreach (System.Windows.Forms.Control control in _colorEditorForm.Controls)
         {
-          CadKit.Color.Wheel wheel = control as CadKit.Color.Wheel;
-          if (null != wheel)
+          CadKit.Color.Editor editor = control as CadKit.Color.Editor;
+          if (null != editor)
           {
-            wheel.Color = this.BackColor;
-            wheel.Invalidate();
+            editor.Color = this.BackColor;
+            editor.Invalidate();
           }
         }
       }

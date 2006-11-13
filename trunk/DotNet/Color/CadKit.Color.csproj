@@ -36,6 +36,12 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ColorChangedEventArgs.cs" />
+    <Compile Include="Editor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editor.Designer.cs">
+      <DependentUpon>Editor.cs</DependentUpon>
+    </Compile>
     <Compile Include="HSV.cs" />
     <Compile Include="RGB.cs" />
     <Compile Include="Wheel.cs">
@@ -47,6 +53,12 @@
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Editor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Editor.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

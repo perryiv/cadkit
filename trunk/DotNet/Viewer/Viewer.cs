@@ -15,7 +15,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IViewerMode,
     CadKit.Interfaces.ICamera,
     CadKit.Interfaces.IExportImage,
-    CadKit.Interfaces.IExportScene
+    CadKit.Interfaces.IExportScene,
+    CadKit.Interfaces.IFrameDump
   {
     CadKit.Viewer.Panel _panel = new Panel();
 
@@ -195,6 +196,54 @@ namespace CadKit.Viewer
       if (null != export)
         return export.exportScene(filename);
       return false;
+    }
+
+    public string Directory
+    {
+      get
+      {
+        return _panel.Directory;
+      }
+      set
+      {
+        _panel.Directory = value;
+      }
+    }
+
+    public string Filename
+    {
+      get
+      {
+        return _panel.Filename;
+      }
+      set
+      {
+        _panel.Filename = value;
+      }
+    }
+
+    public string Extension
+    {
+      get
+      {
+        return _panel.Extension;
+      }
+      set
+      {
+        _panel.Extension = value;
+      }
+    }
+
+    public bool DumpFrames
+    {
+      get
+      {
+        return _panel.DumpFrames;
+      }
+      set
+      {
+        _panel.DumpFrames = value;
+      }
     }
   }
 }

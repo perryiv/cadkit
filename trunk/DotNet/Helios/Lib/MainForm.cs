@@ -15,12 +15,13 @@ namespace CadKit.Helios
     CadKit.Interfaces.IMainForm,
     CadKit.Interfaces.IDockPanel,
     CadKit.Interfaces.IPersistantFormData,
-    CadKit.Interfaces.IRecentFileList
+    CadKit.Interfaces.IRecentFileList,
+    CadKit.Interfaces.IWindowMenu
   {
     /// <summary>
     /// Local types.
     /// </summary>
-    private class PersistantForms : System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> { }
+    private class FormsMap : System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> { }
 
     /// <summary>
     /// Data members.
@@ -28,7 +29,9 @@ namespace CadKit.Helios
     private System.ComponentModel.IContainer components = null;
     private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
     private WeifenLuo.WinFormsUI.DeserializeDockContent _deserializeDockContent;
-    private PersistantForms _persistantForms = new PersistantForms();
+    private FormsMap _persistantForms = new FormsMap();
+    private FormsMap _windowForms = new FormsMap();
+    private System.Windows.Forms.ToolStripMenuItem _windowMenu = null;
     private CadKit.Helios.RecentFiles _recentFiles = new CadKit.Helios.RecentFiles();
 
     /// <summary>
@@ -324,6 +327,10 @@ namespace CadKit.Helios
           this.MainMenuStrip.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.OptionsCommand(this));
         }
+        {
+          _windowMenu = CadKit.Tools.Menu.makeMenu("&Windows");
+          this.MainMenuStrip.Items.Add(_windowMenu);
+        }
       }
     }
 
@@ -418,6 +425,61 @@ namespace CadKit.Helios
     {
       if (null != _recentFiles)
         _recentFiles.clear();
+    }
+
+
+    /// <summary>
+    /// Add a form with a string for a key.
+    /// </summary>
+    public void addFormWindowMenu(string name, System.Windows.Forms.Form form)
+    {
+      try
+      {
+        _windowForms[name] = form;
+
+        if (null != _windowMenu)
+        {
+          System.Windows.Forms.ToolStripMenuItem item = new System.Windows.Forms.ToolStripMenuItem(name);
+          item.Click += new System.EventHandler(_onWindowItemClick);
+          _windowMenu.DropDownItems.Add(item);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3038971820: Exception caught while trying to add to Window menu.");
+        System.Console.WriteLine("Message: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Show a window.
+    /// </summary>
+    void _onWindowItemClick(object sender, System.EventArgs e)
+    {
+      try
+      {
+        System.Windows.Forms.ToolStripMenuItem item = sender as System.Windows.Forms.ToolStripMenuItem;
+
+        if (null != item)
+        {
+          System.Windows.Forms.Form form = _windowForms[item.Text];
+          WeifenLuo.WinFormsUI.DockContent dock = form as WeifenLuo.WinFormsUI.DockContent;
+          if (null != dock)
+          {
+            dock.Show(_dockPanel);
+          }
+          else
+          {
+            form.Show();
+          }
+        }
+      }
+      catch (System.Exception exception)
+      {
+        System.Console.WriteLine("Error 3223971820: Exception caught while trying to show window.");
+        System.Console.WriteLine("Message: {0}", exception.Message);
+      }
     }
   }
 }

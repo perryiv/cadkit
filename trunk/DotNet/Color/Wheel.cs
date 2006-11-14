@@ -147,9 +147,10 @@ namespace CadKit.Color
       // Make the circle.
       using (System.Drawing.Drawing2D.PathGradientBrush brush = new System.Drawing.Drawing2D.PathGradientBrush(points))
       {
-        brush.CenterColor = System.Drawing.Color.White;
-        brush.CenterPoint = this.CenterF;
         CadKit.Color.HSV currentHSV = new HSV(this.Color);
+        RGB grayscale = new RGB(new HSV(0, 0, currentHSV.v));
+        brush.CenterColor = System.Drawing.Color.FromArgb(255, grayscale.r, grayscale.g, grayscale.b);
+        brush.CenterPoint = this.CenterF;
         brush.SurroundColors = CadKit.Color.Wheel._makeColors(num, currentHSV.v);
 
         // Make new bitmap.

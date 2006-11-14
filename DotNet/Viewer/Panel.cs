@@ -14,7 +14,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IViewerMode,
     CadKit.Interfaces.ICamera,
     CadKit.Interfaces.IExportImage,
-    CadKit.Interfaces.IExportScene
+    CadKit.Interfaces.IExportScene,
+    CadKit.Interfaces.IFrameDump
   {
     CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
 
@@ -379,6 +380,54 @@ namespace CadKit.Viewer
     bool CadKit.Interfaces.IExportScene.exportScene(string filename)
     {
       return _viewer.writeSceneFile(filename);
+    }
+
+    public string Directory
+    {
+      get
+      {
+        return _viewer.Directory;
+      }
+      set
+      {
+        _viewer.Directory = value;
+      }
+    }
+
+    public string Filename
+    {
+      get
+      {
+        return _viewer.Filename;
+      }
+      set
+      {
+        _viewer.Filename = value;
+      }
+    }
+
+    public string Extension
+    {
+      get
+      {
+        return _viewer.Extension;
+      }
+      set
+      {
+        _viewer.Extension = value;
+      }
+    }
+
+    public bool DumpFrames
+    {
+      get
+      {
+        return _viewer.DumpFrames;
+      }
+      set
+      {
+        _viewer.DumpFrames = value;
+      }
     }
   }
 }

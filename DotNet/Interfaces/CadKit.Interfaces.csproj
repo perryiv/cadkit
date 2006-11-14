@@ -58,6 +58,7 @@
     <Compile Include="IDiskStorage.cs" />
     <Compile Include="IExportImage.cs" />
     <Compile Include="IExportScene.cs" />
+    <Compile Include="IFrameDump.cs" />
     <Compile Include="IGuiCreate.cs" />
     <Compile Include="IGuiDelegateCreate.cs" />
     <Compile Include="IOptionsForm.cs" />

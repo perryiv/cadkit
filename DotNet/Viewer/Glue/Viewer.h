@@ -109,6 +109,70 @@ namespace CadKit
         // Write the current scene to file.
         bool          writeSceneFile ( System::String^ filename );
 
+        property System::String^ Directory
+        {
+          System::String^ get()
+          {
+            return gcnew System::String ( _viewer->frameDump().dir().c_str() );
+          }
+          void set ( System::String^ string )
+          {
+            _viewer->frameDump().dir ( this->toString( string ) );
+          }
+        }
+
+        property System::String^ Filename
+        {
+          System::String^ get()
+          {
+            return gcnew System::String ( _viewer->frameDump().base().c_str() );
+          }
+          void set ( System::String^ string )
+          {
+            _viewer->frameDump().base ( this->toString( string ) );
+          }
+        };
+
+        property System::String^ Extension
+        {
+          System::String^ get()
+          {
+            return gcnew System::String ( _viewer->frameDump().ext().c_str() );
+          }
+          void set ( System::String^ string )
+          {
+            _viewer->frameDump().ext ( this->toString( string ) );
+          }
+        };
+
+        property bool DumpFrames
+        {
+          bool get()
+          {
+            return _viewer->frameDump().dump();
+          }
+          void set ( bool b )
+          {
+            _viewer->frameDump().digits( 10 );
+            _viewer->frameDump().start( 0 );
+            _viewer->frameDump().dump ( b );
+          }
+        };
+
+      protected:
+
+        std::string toString( System::String^ source )
+        {
+          System::IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
+          char* s = (char*)(void*) ptr;
+          
+          std::string string ( s );
+          
+          System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
+
+          return string;
+        }
+
       private:
         OsgTools::Render::Viewer* _viewer;
       };

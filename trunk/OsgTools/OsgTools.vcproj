@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: OsgTools"
 	ProjectGUID="{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	RootNamespace="lib: OsgTools"
 	>
 	<Platforms>
 		<Platform
@@ -1010,6 +1011,76 @@
 				</File>
 				<File
 					RelativePath=".\Widgets\ClipPlane.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Legend"
+				>
+				<File
+					RelativePath=".\Legend\GradientIcon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\GradientIcon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Icon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Icon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Legend.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Legend.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\LegendObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\LegendObject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\SolidIcon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\SolidIcon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Text.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Legend\Text.h"
 					>
 				</File>
 			</Filter>

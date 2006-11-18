@@ -30,54 +30,120 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Called when the inner panel needs painting.
     /// </summary>
-    void OnPaint(object sender, System.Windows.Forms.PaintEventArgs e)
+    private void _paint(object sender, System.Windows.Forms.PaintEventArgs args)
     {
-      this.render();
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.render();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2296032136: {0}", e.Message);
+      }
     }
 
 
     /// <summary>
     /// Called when the control is resized.
     /// </summary>
-    public virtual void OnResize(object sender, System.EventArgs e)
+    public virtual void OnResize(object sender, System.EventArgs args)
     {
-      // Sizing a form before it is shown will generate a resize event. 
-      // That is too soon to render.
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null != parent && true == parent.Visible && true == parent.IsHandleCreated)
-        this.render();
+      try
+      {
+        lock (this.Mutex)
+        {
+          // Sizing a form before it is shown will generate a resize event. 
+          // That is too soon to render.
+          System.Windows.Forms.Form parent = this.FindForm();
+          if (null != parent && true == parent.Visible && true == parent.IsHandleCreated)
+          {
+            this.render();
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1921802922: {0}", e.Message);
+      }
     }
+
 
     /// <summary>
     /// Called when the context menu button is selected.
     /// </summary>
-    public virtual void OnEditProperties(object sender, System.EventArgs e)
+    public virtual void OnEditProperties(object sender, System.EventArgs args)
     {
-      this.editProperties();
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.editProperties();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3043831848: {0}", e.Message);
+      }
     }
+
 
     /// <summary>
     /// Called when the context menu button is selected.
     /// </summary>
-    public virtual void OnEditBackgroundColor(object sender, System.EventArgs e)
+    public virtual void OnEditBackgroundColor(object sender, System.EventArgs args)
     {
-      this.editBackgroundColor();
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.editBackgroundColor();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1478840786: {0}", e.Message);
+      }
     }
+
 
     /// <summary>
     /// Called when the context menu button is selected.
     /// </summary>
-    public virtual void OnEditPixelFormat(object sender, System.EventArgs e)
+    public virtual void OnEditPixelFormat(object sender, System.EventArgs args)
     {
-      this.editPixelFormat();
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.editPixelFormat();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1718323897: {0}", e.Message);
+      }
     }
+
 
     /// <summary>
     /// Called before the parent form closes.
     /// </summary>
-    public virtual void OnFormClosing(object sender, System.EventArgs e)
+    public virtual void OnFormClosing(object sender, System.EventArgs args)
     {
-      this._deleteRenderingContext();
+      try
+      {
+        lock (this.Mutex)
+        {
+          this._deleteRenderingContext();
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3582908140: {0}", e.Message);
+      }
     }
 
 
@@ -86,9 +152,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnKeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+    private void OnKeyPress(object sender, System.Windows.Forms.KeyPressEventArgs args)
     {
-      this.OnKeyPress(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnKeyPress(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3405793112: {0}", e.Message);
+      }
     }
 
     /// <summary>
@@ -96,9 +172,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+    private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs args)
     {
-      this.OnKeyDown(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnKeyDown(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2771064075: {0}", e.Message);
+      }
     }
 
 
@@ -107,9 +193,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+    private void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs args)
     {
-      this.OnMouseWheel(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnMouseWheel(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4147551851: {0}", e.Message);
+      }
     }
 
 
@@ -118,9 +214,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+    private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs args)
     {
-      this.OnMouseDown(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnMouseDown(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4190868247: {0}", e.Message);
+      }
     }
 
 
@@ -129,9 +235,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+    private void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs args)
     {
-      this.OnMouseUp(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnMouseUp(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3572890167: {0}", e.Message);
+      }
     }
 
 
@@ -140,9 +256,19 @@ namespace CadKit.OpenGL
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+    private void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs args)
     {
-      this.OnMouseMove(e);
+      try
+      {
+        lock (this.Mutex)
+        {
+          this.OnMouseMove(args);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2544964694: {0}", e.Message);
+      }
     }
- }
+  }
 }

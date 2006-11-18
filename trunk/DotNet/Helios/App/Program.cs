@@ -49,7 +49,7 @@ namespace CadKit.Helios
       {
         if ( null != e.Message && e.Message.Length > 0 )
         {
-          System.Windows.Forms.MessageBox.Show( e.Message );
+          System.Windows.Forms.MessageBox.Show( e.Message, "Error" );
           System.Console.WriteLine( e.Message );
         }
       }

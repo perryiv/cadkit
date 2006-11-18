@@ -52,6 +52,7 @@ namespace CadKit.Helios
 
       this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
+      this._buildToolBar();
       this.Load += this._formLoad;
       this.FormClosed += this._formClosed;
     }
@@ -146,6 +147,14 @@ namespace CadKit.Helios
     /// Get the menu bar.
     /// </summary>
     object CadKit.Interfaces.IMenuBar.MenuBar
+    {
+      get { lock (_mutex) { return this.MenuBar; } }
+    }
+
+    /// <summary>
+    /// Get the menu bar.
+    /// </summary>
+    public System.Windows.Forms.MenuStrip MenuBar
     {
       get
       {
@@ -305,10 +314,9 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
-        object temp = (this as CadKit.Interfaces.IMenuBar).MenuBar;
         {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&File");
-          this.MainMenuStrip.Items.Add(menu);
+          this.MenuBar.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
@@ -318,19 +326,44 @@ namespace CadKit.Helios
         }
         {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Edit");
-          this.MainMenuStrip.Items.Add(menu);
+          this.MenuBar.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.UndoCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.RedoCommand(this));
         }
         {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Tools");
-          this.MainMenuStrip.Items.Add(menu);
+          this.MenuBar.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.OptionsCommand(this));
         }
         {
           _windowMenu = CadKit.Tools.Menu.makeMenu("&Windows");
-          this.MainMenuStrip.Items.Add(_windowMenu);
+          this.MenuBar.Items.Add(_windowMenu);
         }
+      }
+    }
+
+    /// <summary>
+    /// Build the tool bar.
+    /// </summary>
+    private void _buildToolBar()
+    {
+      lock (_mutex)
+      {
+        System.Windows.Forms.ToolStrip toolStrip = new System.Windows.Forms.ToolStrip();
+        toolStrip.Dock = System.Windows.Forms.DockStyle.Top;
+        {
+          System.Windows.Forms.ToolStripButton button = new System.Windows.Forms.ToolStripButton();
+          button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+          button.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_all_command.gif");
+          button.ImageTransparentColor = System.Drawing.Color.Magenta;
+          button.Name = "button";
+          button.Size = new System.Drawing.Size(23, 22);
+          button.Text = "View All";
+          button.ToolTipText = "Front";
+          //button.Click += new System.EventHandler(this._frontButton_Click);
+          toolStrip.Items.Add(button);
+        }
+        this.Controls.Add(toolStrip);
       }
     }
 

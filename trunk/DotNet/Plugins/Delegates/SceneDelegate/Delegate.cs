@@ -9,18 +9,14 @@
 
 namespace CadKit.Plugins.Delegates.SceneDelegate
 {
-  public class Delegate : CadKit.Interfaces.IGuiDelegate
+  public class Delegate : 
+    CadKit.Delegates.Delegate,
+    CadKit.Interfaces.IGuiDelegate
   {
     /// <summary>
     /// Constants
     /// </summary>
     public const string TypeName = "Scene Delegate";
-
-    /// <summary>
-    /// Data members.
-    /// </summary>
-    CadKit.Interfaces.IDocument _document = null;
-    private object _mutex = new object();
 
     /// <summary>
     /// Construct a delegate.
@@ -34,8 +30,8 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
     /// </summary>
     object CadKit.Interfaces.IGuiDelegate.Document
     {
-      get { lock (_mutex) { return _document; } }
-      set { lock (_mutex) { _document = value as CadKit.Interfaces.IDocument; } }
+      get { lock (this.Mutex) { return this.Document; } }
+      set { lock (this.Mutex) { this.Document = value as CadKit.Interfaces.IDocument; } }
     }
 
     /// <summary>
@@ -43,14 +39,17 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
     /// </summary>
     void CadKit.Interfaces.IGuiDelegate.create(object caller)
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
+        if (null == this.Document)
+          return;
+
         CadKit.Viewer.Viewer view = new CadKit.Viewer.Viewer();
         view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
-        view.Text = _document.Name;
+        view.Text = this.Document.Name;
+        //view.FormClosed += this._viewClosed;
 
-        CadKit.Interfaces.IBuildScene buildScene = _document as CadKit.Interfaces.IBuildScene;
-
+        CadKit.Interfaces.IBuildScene buildScene = this.Document as CadKit.Interfaces.IBuildScene;
         if (null != buildScene)
         {
           view.Scene = buildScene.Scene;
@@ -64,6 +63,7 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
           if (panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
           {
             view.MdiParent = caller as System.Windows.Forms.Form;
+            CadKit.Tools.Size.mdiChild(panel.DocumentRectangle.Size,view);
             view.Show();
           }
           else
@@ -79,7 +79,7 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
     /// </summary>
     bool CadKit.Interfaces.IGuiDelegate.doesHandle ( string type )
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         return (type == "Scene Document");
       }

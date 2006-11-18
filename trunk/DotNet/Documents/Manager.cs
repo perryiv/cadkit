@@ -37,29 +37,29 @@ namespace CadKit.Documents
     /// <summary>
     /// Delegate to choose which opener to use.
     /// </summary>
-    public delegate int ChooseBestOpener(CadKit.Interfaces.IDocumentOpen[] openers, object caller); 
+    public delegate int ChooseBestOpener(CadKit.Interfaces.IDocumentOpen[] openers, object caller);
 
     /// <summary>
     /// Open the document. Either returns a document or throws.
     /// </summary>
-    public CadKit.Interfaces.IDocument open ( string name, ChooseBestOpener del, object caller )
+    public CadKit.Interfaces.IDocument open(string name, ChooseBestOpener del, object caller)
     {
       lock (_mutex)
       {
         // Look for existing document with this name.
-        CadKit.Interfaces.IDocument document = this._findDocument ( name );
-        if ( null != document )
+        CadKit.Interfaces.IDocument document = this.findDocument(name);
+        if (null != document)
         {
-          this.windowsForward(document);
+          this.windowsForward(document, caller);
           return document;
         }
 
         // Determine the opener that handles this extension.
-        CadKit.Interfaces.IDocumentOpen opener = this._findBestOpener ( name, del, caller );
-        if ( null == opener )
+        CadKit.Interfaces.IDocumentOpen opener = this._findBestOpener(name, del, caller);
+        if (null == opener)
         {
-          System.IO.FileInfo info = new System.IO.FileInfo ( name );
-          throw new System.Exception ( "Error 4027629339: Failed to find plugin that opens files with extension '" + info.Extension + "'" );
+          System.IO.FileInfo info = new System.IO.FileInfo(name);
+          throw new System.Exception("Error 4027629339: Failed to find plugin that opens files with extension '" + info.Extension + "'");
         }
 
         // Open the document. This may throw.
@@ -76,14 +76,14 @@ namespace CadKit.Documents
     /// <summary>
     /// Bring this document's windows to the front.
     /// </summary>
-    public void windowsForward(CadKit.Interfaces.IDocument doc)
+    public void windowsForward(CadKit.Interfaces.IDocument doc, object caller)
     {
       lock (_mutex)
       {
         CadKit.Interfaces.IWindowsForward forward = doc as CadKit.Interfaces.IWindowsForward;
         if (null != forward)
         {
-          forward.windowsForward();
+          forward.windowsForward(caller);
         }
       }
     }
@@ -91,15 +91,15 @@ namespace CadKit.Documents
     /// <summary>
     /// Find the document given the name.
     /// </summary>
-    protected CadKit.Interfaces.IDocument _findDocument(string name)
+    public CadKit.Interfaces.IDocument findDocument(string name)
     {
       lock (_mutex)
       {
         try
         {
-          foreach ( CadKit.Interfaces.IDocument doc in _documents )
+          foreach (CadKit.Interfaces.IDocument doc in _documents)
           {
-            if ( null != doc && doc.Name == name )
+            if (null != doc && doc.Name == name)
             {
               return doc;
             }
@@ -116,7 +116,7 @@ namespace CadKit.Documents
     /// <summary>
     /// Find all plugins that open files with this extension.
     /// </summary>
-    protected CadKit.Interfaces.IDocumentOpen[] _findOpeners ( string name )
+    protected CadKit.Interfaces.IDocumentOpen[] _findOpeners(string name)
     {
       lock (_mutex)
       {
@@ -151,14 +151,14 @@ namespace CadKit.Documents
     /// <summary>
     /// Determine appropriate opener. Pass null for the delegate to get first one.
     /// </summary>
-    protected CadKit.Interfaces.IDocumentOpen _findBestOpener ( string name, ChooseBestOpener del, object caller )
+    protected CadKit.Interfaces.IDocumentOpen _findBestOpener(string name, ChooseBestOpener del, object caller)
     {
       lock (_mutex)
       {
         CadKit.Interfaces.IDocumentOpen[] openers = this._findOpeners(name);
-        if ( null == openers || 0 == openers.Length )
+        if (null == openers || 0 == openers.Length)
           return null;
-        return ( null != del ) ? openers[del ( openers, caller )] : openers[0];
+        return (null != del) ? openers[del(openers, caller)] : openers[0];
       }
     }
 
@@ -184,7 +184,7 @@ namespace CadKit.Documents
     /// </summary>
     public object ActiveView
     {
-      get { lock (_mutex) { return Manager._activeView;  } }
+      get { lock (_mutex) { return Manager._activeView; } }
       set { lock (_mutex) { Manager._activeView = value; } }
     }
 

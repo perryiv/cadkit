@@ -9,16 +9,23 @@
 
 namespace CadKit.Viewer
 {
-  class Panel :
+  public partial class Panel :
     CadKit.OpenGL.Canvas,
+    System.IDisposable,
     CadKit.Interfaces.IViewerMode,
     CadKit.Interfaces.ICamera,
     CadKit.Interfaces.IExportImage,
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump
   {
-    CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
-
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    private CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
+    private string REGISTRY_SECTION = "CadKit.Viewer.Panel";
+    private string FRAME_DUMP_DIRECTORY_KEY = "FrameDumpDirectory";
+    private string FRAME_DUMP_FILENAME_KEY = "FrameDumpFilename";
+    private string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
 
     /// <summary>
     /// Contructor.
@@ -27,6 +34,9 @@ namespace CadKit.Viewer
     {
       _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
       this.ContextMenuStrip = null;
+      this.Directory = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, this.Directory);
+      this.Filename = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, this.Filename);
+      this.Extension = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, this.Extension);
     }
 
 
@@ -35,6 +45,7 @@ namespace CadKit.Viewer
     /// </summary>
     ~Panel()
     {
+      this.Dispose();
       _viewer = null;
     }
 
@@ -137,14 +148,14 @@ namespace CadKit.Viewer
           if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
           {
             // Move the camera.
-            _viewer.camera(CadKit.Interfaces.CameraOption.RESET);
+            this.camera(CadKit.Interfaces.CameraOption.RESET);
           }
 
           // FIT
           else if (e.KeyCode == System.Windows.Forms.Keys.F)
           {
             // Move the camera.
-            _viewer.camera(CadKit.Interfaces.CameraOption.FIT);
+            this.camera(CadKit.Interfaces.CameraOption.FIT);
           }
 
           // Change mode to navigation
@@ -168,7 +179,7 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// The mosue has moved.
+    /// The mouse has moved.
     /// </summary>
     /// <param name="e"></param>
     protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
@@ -337,97 +348,209 @@ namespace CadKit.Viewer
     /// </summary>
     public void camera(CadKit.Interfaces.CameraOption option)
     {
-      lock (this.Mutex)
-      {
-        _viewer.camera(option);
-      }
+      lock (this.Mutex) { _viewer.camera(option); }
     }
 
+
+    /// <summary>
+    /// Return the appropriate filters.
+    /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IExportImage.Filters
     {
-      get 
+      get
       {
-        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-        filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
-        filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
-        filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
-        filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
-        return filters;
+        lock (this.Mutex)
+        {
+          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+          filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
+          filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
+          filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
+          filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
+          return filters;
+        }
       }
     }
 
-    bool CadKit.Interfaces.IExportImage.exportImage(string filename)
-    {
-      return _viewer.writeImageFile(filename);
-    }
 
-    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
-    {
-      return _viewer.writeImageFile(filename, width, height);
-    }
-
+    /// <summary>
+    /// Return appropriate filters.
+    /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IExportScene.Filters
     {
-      get 
+      get
       {
-        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
-        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
-        return filters;
+        lock (this.Mutex)
+        {
+          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+          filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
+          filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
+          return filters;
+        }
       }
     }
 
+
+    /// <summary>
+    /// Export the image.
+    /// </summary>
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename)
+    {
+      lock (this.Mutex)
+      {
+        return _viewer.writeImageFile(filename);
+      }
+    }
+
+
+    /// <summary>
+    /// Export the image.
+    /// </summary>
+    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
+    {
+      lock (this.Mutex)
+      {
+        return _viewer.writeImageFile(filename, width, height);
+      }
+    }
+
+
+    /// <summary>
+    /// Export the scene.
+    /// </summary>
     bool CadKit.Interfaces.IExportScene.exportScene(string filename)
     {
-      return _viewer.writeSceneFile(filename);
+      lock (this.Mutex)
+      {
+        return _viewer.writeSceneFile(filename);
+      }
     }
 
+
+    /// <summary>
+    /// Return the appropriate object for the property grid.
+    /// </summary>
+    public override object PropertyGridObject
+    {
+      get { lock (this.Mutex) { return new CadKit.Viewer.Panel.PropertyProxy(this); } }
+    }
+
+
+    /// <summary>
+    /// Number of rendering passes property.
+    /// </summary>
+    public uint RenderingPasses
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          return ((null == _viewer) ? 0 : _viewer.numRenderPasses());
+        }
+      }
+      set
+      {
+        lock (this.Mutex)
+        {
+          if (null != _viewer)
+          {
+            _viewer.numRenderPasses(value);
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Scatter scale.
+    /// </summary>
+    public double ScatterScale
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          return ((null == _viewer) ? 0 : _viewer.scatterScale());
+        }
+      }
+      set
+      {
+        lock (this.Mutex)
+        {
+          if (null != _viewer)
+          {
+            _viewer.scatterScale(value);
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Get/set the directory where screen-dumps are written.
+    /// </summary>
     public string Directory
     {
-      get
-      {
-        return _viewer.Directory;
-      }
+      get { lock (this.Mutex) { return _viewer.Directory; } }
       set
       {
-        _viewer.Directory = value;
+        lock (this.Mutex)
+        {
+          _viewer.Directory = value;
+          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, value);
+        }
       }
     }
 
+
+    /// <summary>
+    /// Get/set the filename used when making screen-dumps.
+    /// </summary>
     public string Filename
     {
-      get
-      {
-        return _viewer.Filename;
-      }
+      get { lock (this.Mutex) { return _viewer.Filename; } }
       set
       {
-        _viewer.Filename = value;
+        lock (this.Mutex)
+        {
+          _viewer.Filename = value;
+          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, value);
+        }
       }
     }
 
+
+    /// <summary>
+    /// Get/set the file extension used when making screen-dumps.
+    /// </summary>
     public string Extension
     {
-      get
-      {
-        return _viewer.Extension;
-      }
+      get { lock (this.Mutex) { return _viewer.Extension; } }
       set
       {
-        _viewer.Extension = value;
+        lock (this.Mutex)
+        {
+          _viewer.Extension = value;
+          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, value);
+        }
       }
     }
 
+
+    /// <summary>
+    /// Get/set the flag that says whether or not to dump frames.
+    /// </summary>
     public bool DumpFrames
     {
-      get
-      {
-        return _viewer.DumpFrames;
-      }
-      set
-      {
-        _viewer.DumpFrames = value;
-      }
+      get { lock (this.Mutex) { return _viewer.DumpFrames; } }
+      set { lock (this.Mutex) { _viewer.DumpFrames = value; } }
+    }
+
+
+    /// <summary>
+    /// Called by the system when this object is about to be destroyed.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
     }
   }
 }

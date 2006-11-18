@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPropertyGridObject.cs" />
+    <Compile Include="IDocumentView.cs" />
+    <Compile Include="INotifyChanged.cs" />
     <Compile Include="IBuildScene.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IDiskStorageCreate.cs" />

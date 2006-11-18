@@ -11,6 +11,6 @@ namespace CadKit.Interfaces
 {
   public interface IWindowsForward
   {
-    void windowsForward();
+    void windowsForward(object caller);
   }
 }

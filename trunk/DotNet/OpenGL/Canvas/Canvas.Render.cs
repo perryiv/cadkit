@@ -21,7 +21,9 @@ namespace CadKit.OpenGL
       try
       {
         if (this.InvokeRequired)
+        {
           this.BeginInvoke(new RenderDelegate(render));
+        }
         else
         {
           // Re-initializes the OpenGL context if needed.
@@ -49,7 +51,7 @@ namespace CadKit.OpenGL
       _timer.Start();
     }
 
-    void OnTick(object sender, System.EventArgs e)
+    private void OnTick(object sender, System.EventArgs e)
     {
       this.render();
     }

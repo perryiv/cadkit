@@ -24,6 +24,7 @@ namespace CadKit.OpenGL
       }
     }
 
+
     /// <summary>
     /// Pixel format property.
     /// </summary>
@@ -42,6 +43,7 @@ namespace CadKit.OpenGL
       }
     }
 
+
     /// <summary>
     /// Pixel format property.
     /// </summary>
@@ -59,6 +61,7 @@ namespace CadKit.OpenGL
         return _pixelFormats;
       }
     }
+
 
     /// <summary>
     /// Size of the control.
@@ -81,6 +84,7 @@ namespace CadKit.OpenGL
       }
     }
 
+
     /// <summary>
     /// Get the render context.
     /// </summary>
@@ -89,12 +93,31 @@ namespace CadKit.OpenGL
       get { return _renderContext; }
     }
 
+
     /// <summary>
     /// Get the mutex.
     /// </summary>
     protected object Mutex
     {
       get { return _mutex; }
+    }
+
+
+    /// <summary>
+    /// Return the appropriate object for the property grid.
+    /// </summary>
+    object CadKit.Interfaces.IPropertyGridObject.PropertyGridObject
+    {
+      get { lock (this.Mutex) { return this.PropertyGridObject; } }
+    }
+
+
+    /// <summary>
+    /// Return the appropriate object for the property grid.
+    /// </summary>
+    public virtual object PropertyGridObject
+    {
+      get { lock (this.Mutex) { return new CadKit.OpenGL.Canvas.PropertyProxy(this); } }
     }
   }
 }

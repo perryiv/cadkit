@@ -24,6 +24,10 @@ namespace CadKit.OpenGL
         if (null == this.FindForm())
           return;
 
+        #if no
+        System.Console.WriteLine(System.String.Format("{0}.initRenderingContext()", this.GetType().ToString()));
+        #endif
+
         this._initInnerPanel();
 
         _renderContext = new CadKit.OpenGL.Glue.RenderContext(_innerPanel, _pixelFormat);

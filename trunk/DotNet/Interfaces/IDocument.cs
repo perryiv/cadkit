@@ -14,13 +14,13 @@ namespace CadKit.Interfaces
     /// <summary>
     /// Set/get the gui-delegate.
     /// </summary>
-    object GuiDelegate { get; set; }
+    CadKit.Interfaces.IGuiDelegate GuiDelegate { get; set; }
 
     /// <summary>
-    /// Return true if this document has been modified 
+    /// Set/get the flag that says if this document has been modified 
     /// after the last time it was saved.
     /// </summary>
-    bool Modified { get; }
+    bool Modified { get; set; }
 
     /// <summary>
     /// Get/set the name of this document. This may be the default 
@@ -34,8 +34,28 @@ namespace CadKit.Interfaces
     string TypeName { get; }
 
     /// <summary>
-    /// True if a name has not been assigned (e.g., "Untitled1".
+    /// True if a name has not been assigned (e.g., "Untitled1").
     /// </summary>
     bool HasDefaultName { get; }
+
+    /// <summary>
+    /// Add a view.
+    /// </summary>
+    void add(CadKit.Interfaces.IDocumentView view);
+
+    /// <summary>
+    /// Remove a view.
+    /// </summary>
+    void remove(CadKit.Interfaces.IDocumentView view);
+
+    /// <summary>
+    /// Does the document contain the view?
+    /// </summary>
+    bool contains(CadKit.Interfaces.IDocumentView view);
+
+    /// <summary>
+    /// Get the array of views.
+    /// </summary>
+    CadKit.Interfaces.IDocumentView[] Views { get; }
   }
 }

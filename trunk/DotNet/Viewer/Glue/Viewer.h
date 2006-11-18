@@ -65,9 +65,21 @@ namespace CadKit
         void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );
         void                  handleSeek ( float x, float y, bool left );
 
+        // Number of render passes.
+        unsigned int          numRenderPasses();
+        void                  numRenderPasses ( unsigned int );
+
+        // Render the scene.
         void                  render();
+
+        // Resize the viewport.
         void                  resize( int w, int h );
 
+        // Set/get the scatter scale.
+        double                scatterScale();
+        void                  scatterScale ( double );
+
+        // Set/get the mode.
         void                  setMode ( ViewMode mode );
         ViewMode              getMode ();
 
@@ -163,14 +175,19 @@ namespace CadKit
 
         std::string toString( System::String^ source )
         {
-          System::IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
-          char* s = (char*)(void*) ptr;
-          
-          std::string string ( s );
-          
-          System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
-
-          return string;
+          std::string answer;
+          System::IntPtr ptr ( 0 );
+          try
+          {
+            ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
+            char* s = (char*)(void*) ptr;
+            answer.assign ( s );
+          }
+          finally
+          {
+            System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
+          }
+          return answer;
         }
 
       private:

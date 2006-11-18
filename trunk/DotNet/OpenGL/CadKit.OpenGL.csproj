@@ -112,6 +112,10 @@
       <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
       <Name>CadKit.OpenGL.Glue</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Referenced\CadKit.Referenced.csproj">
       <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
       <Name>CadKit.Referenced</Name>

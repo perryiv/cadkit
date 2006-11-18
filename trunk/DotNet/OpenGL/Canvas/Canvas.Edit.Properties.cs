@@ -32,7 +32,7 @@ namespace CadKit.OpenGL
           // Make the property grid.
           System.Windows.Forms.PropertyGrid grid = new System.Windows.Forms.PropertyGrid();
           grid.Dock = System.Windows.Forms.DockStyle.Fill;
-          grid.SelectedObject = new CadKit.OpenGL.Canvas.PropertyProxy(this);
+          grid.SelectedObject = this.PropertyGridObject;
           grid.PropertyValueChanged += this._propertyValueChanged;
 
           // Make new container form, add property grid, and show it.
@@ -50,6 +50,7 @@ namespace CadKit.OpenGL
       }
     }
 
+
     /// <summary>
     /// Called when a property is changed.
     /// </summary>
@@ -57,6 +58,7 @@ namespace CadKit.OpenGL
     {
       this._updateColorEditor();
     }
+
 
     /// <summary>
     /// This is called when the property grid is closed.
@@ -66,6 +68,7 @@ namespace CadKit.OpenGL
       _propertyGridForm = null;
       this.Invalidate();
     }
+
 
     /// <summary>
     /// Called to update the property grid, if it is visible.

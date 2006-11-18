@@ -68,6 +68,10 @@ public:
   // Is there an accumulation buffer?
   bool                  hasAccumBuffer() const;
 
+  // Get the light.
+  osg::Light *          light();
+  const osg::Light *    light() const;
+
   // Get the clipping plane distances.
   void                  nearFar ( double &n, double &f ) const;
 

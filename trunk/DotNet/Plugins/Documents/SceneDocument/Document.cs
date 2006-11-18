@@ -36,7 +36,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     protected override string _typeName()
     {
-      lock (_mutex) { return CadKit.Plugins.Documents.SceneDocument.Document.TypeName; }
+      lock (this.Mutex) { return CadKit.Plugins.Documents.SceneDocument.Document.TypeName; }
     }
 
     /// <summary>

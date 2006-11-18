@@ -51,7 +51,9 @@ namespace CadKit.Helios
     /// </summary>
     ~RecentFiles()
     {
-      this.store();
+      // Calling store() in here is too late because Registry's destructor 
+      // has already been called. (Isn't non-deterministic destruction 
+      // cool?) Keeping this here as a reminder.
     }
 
     /// <summary>
@@ -193,6 +195,9 @@ namespace CadKit.Helios
 
         // Trim extra.
         this._trim();
+
+        // Store in registry.
+        this.store();
       }
     }
 
@@ -239,6 +244,9 @@ namespace CadKit.Helios
 
         // Set member.
         _names = names;
+
+        // Store in registry.
+        this.store();
       }
     }
 
@@ -255,7 +263,14 @@ namespace CadKit.Helios
     /// </summary>
     public void clear()
     {
-      lock (_mutex) { _names.Clear(); }
+      lock (_mutex)
+      {
+        // Clear the names.
+        _names.Clear();
+
+        // Store in registry.
+        this.store();
+      }
     }
 
     /// <summary>
@@ -302,10 +317,7 @@ namespace CadKit.Helios
           total += System.String.Format("{0}{1}", name, _delimeter);
         }
         total = total.TrimEnd(new char[] { _delimeter });
-        if (total.Length > 0)
-        {
-          CadKit.Persistence.Registry.Instance.setString(_section, _entriesKey, total);
-        }
+        CadKit.Persistence.Registry.Instance.setString(_section, _entriesKey, total);
       }
     }
   }

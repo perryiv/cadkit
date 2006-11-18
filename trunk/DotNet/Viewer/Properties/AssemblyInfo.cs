@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Cadkit.Viewer")]
+[assembly: AssemblyTitle("CadKit.Viewer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Decision Theater at Arizona State University")]
-[assembly: AssemblyProduct("Cadkit.Viewer")]
+[assembly: AssemblyProduct("CadKit.Viewer")]
 [assembly: AssemblyCopyright("Copyright © Decision Theater at Arizona State University 2006")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

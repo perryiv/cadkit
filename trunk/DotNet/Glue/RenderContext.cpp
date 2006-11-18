@@ -280,8 +280,11 @@ DeviceContext ^RenderContext::deviceContext()
 
 void RenderContext::makeCurrent()
 {
-  System::Diagnostics::Debug::Assert ( nullptr != _dc );
-  System::Diagnostics::Debug::Assert ( 0x0 != _rc );
+  if ( nullptr == _dc )
+    throw gcnew System::Exception ( "Error 3311349892: Invalid device context" );
+
+  if ( 0x0 == _rc )
+    throw gcnew System::Exception ( "Error 1404803216: Invalid render context" );
 
   if ( FALSE == ::wglMakeCurrent ( _dc->hdc(), _rc ) )
     throw gcnew System::Exception ( "Error 1975756094: Failed to make OpenGL rendering context current" );

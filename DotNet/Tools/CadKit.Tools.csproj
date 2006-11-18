@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Control.cs" />
+    <Compile Include="Size.cs" />
     <Compile Include="Random.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Parent.cs" />

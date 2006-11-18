@@ -385,6 +385,10 @@ public:
   void                  twoSidedLighting ( bool twoSided );
   bool                  twoSidedLighting () const;
 
+  // Get the light.
+  osg::Light *          light();
+  const osg::Light *    light() const;
+
   // Set/Get lighting
   void                  lighting ( bool on );
   bool                  lighting () const;

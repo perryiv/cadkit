@@ -62,11 +62,19 @@ namespace CadKit.Helios.Commands
         // Should be true.
         System.Diagnostics.Debug.Assert(false == CadKit.Helios.Application.Instance.MainForm.InvokeRequired);
 
+        // If it exists then bring it forward.
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.findDocument(name);
+        if ( null != idoc )
+        {
+          CadKit.Documents.Manager.Instance.windowsForward(idoc, _caller);
+          return;
+        }
+
         // Feedback.
         System.Console.WriteLine(System.String.Format("Opening file: {0}", name));
 
         // Open the document.
-        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.open(name, null, _caller);
+        idoc = CadKit.Documents.Manager.Instance.open(name, null, _caller);
 
         // Give the document a command history. Assigning this avoids a dependency.
         CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;

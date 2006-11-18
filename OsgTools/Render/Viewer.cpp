@@ -207,12 +207,13 @@ void Viewer::create()
   }
 
   _renderer->init();
+
   // Set default stereo modes.
   this->stereoEyeDistance( 0.01f );
   GLboolean hasStereo ( GL_FALSE );
   ::glGetBooleanv ( GL_STEREO, &hasStereo );
-  if( GL_TRUE == hasStereo )
-    this->stereoMode( osg::DisplaySettings::QUAD_BUFFER );
+  if ( GL_TRUE == hasStereo )
+    this->stereoMode ( osg::DisplaySettings::QUAD_BUFFER );
 
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
@@ -354,16 +355,14 @@ void Viewer::render()
       // Set the state-sets for the branches.
       OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
 
-      /*osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
-
-      model->accept( *v );*/
+      //osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
+      //model->accept( *v );
 
       // Draw.
       this->_render();
 
-      /*osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
-
-      model->accept( *unset );*/
+      //osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
+      //model->accept( *unset );
     }
 
     // Catch all exceptions.
@@ -4809,4 +4808,28 @@ void Viewer::sceneUpdate( Usul::Interfaces::ISceneUpdate* sceneUpdate )
 void Viewer::context ( Usul::Interfaces::IUnknown* context )
 {
   _context = context;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the light.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Light *Viewer::light()
+{
+  return ( 0x0 == _renderer ) ? 0x0 : _renderer->light();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the light.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Light *Viewer::light() const
+{
+  return ( 0x0 == _renderer ) ? 0x0 : _renderer->light();
 }

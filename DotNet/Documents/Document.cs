@@ -9,19 +9,29 @@
 
 namespace CadKit.Documents
 {
-  abstract public class Document : 
+  abstract public class Document :
+    System.IDisposable,
     CadKit.Interfaces.IDocument,
-    CadKit.Interfaces.IGuiCreate
+    CadKit.Interfaces.IGuiCreate,
+    CadKit.Interfaces.IWindowsForward
   {
+    /// <summary>
+    /// Local types.
+    /// </summary>
+    class DocViews : System.Collections.Generic.List<CadKit.Interfaces.IDocumentView> { }
+
+
     /// <summary>
     /// Data members.
     /// </summary>
     private bool _modified = false;
-    protected object _mutex = new object();
+    private object _mutex = new object();
     private string _name = "Untitled" + CadKit.Documents.Manager.Instance.NumDocuments.ToString();
     private bool _hasDefaultName = true;
     private CadKit.Interfaces.ICommandHistory _commands = null;
     private CadKit.Interfaces.IGuiDelegate _gui = null;
+    private DocViews _views = new DocViews();
+
 
     /// <summary>
     /// Constructor
@@ -30,23 +40,175 @@ namespace CadKit.Documents
     {
     }
 
+
+    /// <summary>
+    /// Called when the system is about to dispose this instance.
+    /// </summary>
+    public void Dispose()
+    {
+      try
+      {
+        this.closeAllViews();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3201769786: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Close all the views.
+    /// </summary>
+    public void closeAllViews()
+    {
+      try
+      {
+        lock (this.Mutex)
+        {
+          if (null != _views)
+          {
+            // Make a copy of the views because, as each one closes, 
+            // it removes itself from the list.
+            CadKit.Interfaces.IDocumentView[] views = this.Views;
+
+            // Loop through the views.
+            foreach (CadKit.Interfaces.IDocumentView view in views)
+            {
+              try
+              {
+                view.close();
+              }
+              catch (System.Exception e1)
+              {
+                System.Console.WriteLine("Error 1770634745: {0}", e1.Message);
+              }
+            }
+          }
+        }
+      }
+      catch (System.Exception e2)
+      {
+        System.Console.WriteLine("Error 4443490050: {0}", e2.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Add the view.
+    /// </summary>
+    void CadKit.Interfaces.IDocument.add(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        this.add(view);
+      }
+    }
+
+
+    /// <summary>
+    /// Add the view.
+    /// </summary>
+    void add(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        if (null != view && false == this.contains(view))
+        {
+          _views.Add(view);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Remove the view.
+    /// </summary>
+    void CadKit.Interfaces.IDocument.remove(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        this.remove(view);
+      }
+    }
+
+
+    /// <summary>
+    /// Remove the view.
+    /// </summary>
+    public void remove(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        while (true == this.contains(view))
+        {
+          _views.Remove(view);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Does the document contain the view?
+    /// </summary>
+    bool CadKit.Interfaces.IDocument.contains(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        return this.contains(view);
+      }
+    }
+
+
+    /// <summary>
+    /// Does the document contain the view?
+    /// </summary>
+    public bool contains(CadKit.Interfaces.IDocumentView view)
+    {
+      lock (this.Mutex)
+      {
+        return _views.Contains(view);
+      }
+    }
+
+
+    /// <summary>
+    /// Get the array of views.
+    /// </summary>
+    CadKit.Interfaces.IDocumentView[] CadKit.Interfaces.IDocument.Views
+    {
+      get { lock (this.Mutex) { return this.Views; } }
+    }
+
+
+    /// <summary>
+    /// Get the array of views.
+    /// </summary>
+    public CadKit.Interfaces.IDocumentView[] Views
+    {
+      get { lock (this.Mutex) { return _views.ToArray(); } }
+    }
+    
+
     /// <summary>
     /// Set/get the command history.
     /// </summary>
     public CadKit.Interfaces.ICommandHistory CommandHistory
     {
-      get { lock (_mutex) { return _commands; } }
-      set { lock (_mutex) { _commands = value; } }
+      get { lock (this.Mutex) { return _commands; } }
+      set { lock (this.Mutex) { _commands = value; } }
     }
+
 
     /// <summary>
     /// Get/set the gui-delegate.
     /// </summary>
-    object CadKit.Interfaces.IDocument.GuiDelegate
+    CadKit.Interfaces.IGuiDelegate CadKit.Interfaces.IDocument.GuiDelegate
     {
-      get { lock (_mutex) { return _gui; } }
-      set { lock (_mutex) { _gui = value as CadKit.Interfaces.IGuiDelegate; } }
+      get { lock (this.Mutex) { return _gui; } }
+      set { lock (this.Mutex) { _gui = value; } }
     }
+
 
     /// <summary>
     /// Return true if this document has been modified 
@@ -54,8 +216,16 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.Modified
     {
-      get { lock (_mutex) { return _modified; } }
+      get { lock (this.Mutex) { return _modified; } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          _modified = value;
+        }
+      }
     }
+
 
     /// <summary>
     /// Get/set the name of this document. This may be the default 
@@ -63,40 +233,72 @@ namespace CadKit.Documents
     /// </summary>
     string CadKit.Interfaces.IDocument.Name
     {
-      get { lock (_mutex) { return _name; } }
-      set { lock (_mutex) { _name = value; } }
+      get { lock (this.Mutex) { return _name; } }
+      set { lock (this.Mutex) { _name = value; } }
     }
 
+
     /// <summary>
-    /// True if a name has not been assigned (e.g., "Untitled1".
+    /// True if a name has not been assigned (e.g., "Untitled1").
     /// </summary>
     bool CadKit.Interfaces.IDocument.HasDefaultName
     {
-      get { lock (_mutex) { return _hasDefaultName; } }
+      get { lock (this.Mutex) { return _hasDefaultName; } }
     }
+
 
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
     string CadKit.Interfaces.IDocument.TypeName
     {
-      get { lock (_mutex) { return this._typeName(); } }
+      get { lock (this.Mutex) { return this._typeName(); } }
     }
+
 
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
     protected abstract string _typeName();
 
+
     /// <summary>
     /// Create new gui.
     /// </summary>
     void CadKit.Interfaces.IGuiCreate.create(object caller)
     {
-      if (null != _gui)
+      lock (this.Mutex)
       {
-        _gui.create(caller);
+        if (null != _gui)
+        {
+          _gui.create(caller);
+        }
       }
+    }
+
+
+    /// <summary>
+    /// Bring the windows forward.
+    /// </summary>
+    void CadKit.Interfaces.IWindowsForward.windowsForward(object caller)
+    {
+      lock (this.Mutex)
+      {
+        CadKit.Interfaces.IWindowsForward forward = _gui as CadKit.Interfaces.IWindowsForward;
+        if (null != forward)
+        {
+          forward.windowsForward(caller);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Get the mutex.
+    /// </summary>
+    public object Mutex
+    {
+      get { return _mutex; }
     }
   }
 }

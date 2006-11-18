@@ -45,9 +45,21 @@
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
       <Name>WinFormsUI2005</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Delegates\CadKit.Delegates.csproj">
+      <Project>{486271AE-53BE-4DF0-816C-E5A234DB4613}</Project>
+      <Name>CadKit.Delegates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\CadKit.Tools.csproj">
+      <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
+      <Name>CadKit.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Viewer\CadKit.Viewer.csproj">
       <Project>{E335C7FD-3AFA-487E-909C-5928F0EAE194}</Project>

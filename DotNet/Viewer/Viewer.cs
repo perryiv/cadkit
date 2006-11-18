@@ -9,7 +9,7 @@
 
 namespace CadKit.Viewer
 {
-  public class Viewer : 
+  public class Viewer :
     WeifenLuo.WinFormsUI.DockContent,
     CadKit.Interfaces.IViewer,
     CadKit.Interfaces.IViewerMode,
@@ -18,7 +18,12 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump
   {
-    CadKit.Viewer.Panel _panel = new Panel();
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    private object _mutex = new object();
+    private CadKit.Viewer.Panel _panel = new CadKit.Viewer.Panel();
+    private CadKit.Interfaces.IDocument _document = null;
 
     /// <summary>
     /// Constructor.
@@ -31,26 +36,8 @@ namespace CadKit.Viewer
       this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document | WeifenLuo.WinFormsUI.DockAreas.Float;
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.Float;
 
-      this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(OnFormClosed);
-      this.Shown += new System.EventHandler(Viewer_Shown);
-    }
-
-
-    void Viewer_Shown(object sender, System.EventArgs e)
-    {
-      this.init();
-    }
-
-
-    /// <summary>
-    /// The form is closed.  Clean up.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    void OnFormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-    {
-      _panel.clear();
-      _panel = null;
+      this.FormClosed += this._formClosed;
+      this.Shown += this._viewerShown;
     }
 
 
@@ -68,7 +55,35 @@ namespace CadKit.Viewer
     /// </summary>
     public void init()
     {
-      _panel.init();
+      lock (this.Mutex) { _panel.init(); }
+    }
+
+
+    /// <summary>
+    /// Called when the viewer is shown.
+    /// </summary>
+    private void _viewerShown(object sender, System.EventArgs e)
+    {
+      lock (this.Mutex)
+      {
+        this.init();
+        this.camera(CadKit.Interfaces.CameraOption.FIT);
+      }
+    }
+
+
+    /// <summary>
+    /// The form is closed.  Clean up.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    {
+      lock (this.Mutex)
+      {
+        _panel.clear();
+        _panel = null;
+      }
     }
 
 
@@ -77,10 +92,7 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Viewer.Glue.Viewer HeliosViewer
     {
-      get
-      {
-        return _panel.Viewer;
-      }
+      get { lock (this.Mutex) { return _panel.Viewer; } }
     }
 
 
@@ -89,14 +101,8 @@ namespace CadKit.Viewer
     /// </summary>
     public object Scene
     {
-      get
-      {
-        return _panel.Viewer.Scene;
-      }
-      set
-      {
-        _panel.Viewer.Scene = value as CadKit.OSG.Glue.Node;
-      }
+      get { lock (this.Mutex) { return _panel.Viewer.Scene; } }
+      set { lock (this.Mutex) { _panel.Viewer.Scene = value as CadKit.OSG.Glue.Node; } }
     }
 
 
@@ -105,42 +111,36 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.ViewMode Mode
     {
-      get
-      {
-        return _panel.Mode;
-      }
-      set
-      {
-        _panel.Mode = value;
-      }
+      get { lock (this.Mutex) { return _panel.Mode; } }
+      set { lock (this.Mutex) { _panel.Mode = value; } }
     }
 
 
     /// <summary>
-    /// 
+    /// Start the render timer.
     /// </summary>
     /// <param name="interval"></param>
     public void startRenderTimer(int interval)
     {
-      _panel.startRenderTimer(interval);
+      lock (this.Mutex) { _panel.startRenderTimer(interval); }
     }
 
 
     /// <summary>
-    /// 
+    /// End the render timer.
     /// </summary>
     public void endRenderTimer()
     {
-      _panel.endRenderTimer();
+      lock (this.Mutex) { _panel.endRenderTimer(); }
     }
 
 
     /// <summary>
-    /// 
+    /// Render the scene.
     /// </summary>
     public void render()
     {
-      _panel.render();
+      lock (this.Mutex) { _panel.render(); }
     }
 
 
@@ -149,53 +149,164 @@ namespace CadKit.Viewer
     /// </summary>
     public void camera(CadKit.Interfaces.CameraOption option)
     {
-      _panel.camera(option);
+      lock (this.Mutex) { _panel.camera(option); }
     }
 
+
+    /// <summary>
+    /// Return the export filters.
+    /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IExportImage.Filters
     {
-      get 
-      { 
-        CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
-        if(null != export)
-          return export.Filters;
-        return new CadKit.Interfaces.Filters();
+      get
+      {
+        lock (this.Mutex)
+        {
+          CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+          if (null != export)
+            return export.Filters;
+          return new CadKit.Interfaces.Filters();
+        }
       }
     }
 
+
+    /// <summary>
+    /// Export the image.
+    /// </summary>
     bool CadKit.Interfaces.IExportImage.exportImage(string filename)
     {
-      CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
-      if (null != export)
-        return export.exportImage(filename);
-      return false;
+      lock (this.Mutex)
+      {
+        CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+        if (null != export)
+          return export.exportImage(filename);
+        return false;
+      }
     }
 
+
+    /// <summary>
+    /// Export the image.
+    /// </summary>
     bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
     {
-      CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
-      if (null != export)
-        return export.exportImage(filename, width, height);
-      return false;
+      lock (this.Mutex)
+      {
+        CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
+        if (null != export)
+          return export.exportImage(filename, width, height);
+        return false;
+      }
     }
 
+
+    /// <summary>
+    /// Return the export filters.
+    /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IExportScene.Filters
     {
-      get 
+      get
+      {
+        lock (this.Mutex)
+        {
+          CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
+          if (null != export)
+            return export.Filters;
+          return new CadKit.Interfaces.Filters();
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Exposr the scene.
+    /// </summary>
+    bool CadKit.Interfaces.IExportScene.exportScene(string filename)
+    {
+      lock (this.Mutex)
       {
         CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
         if (null != export)
-          return export.Filters;
-        return new CadKit.Interfaces.Filters(); 
+          return export.exportScene(filename);
+        return false;
       }
     }
 
-    bool CadKit.Interfaces.IExportScene.exportScene(string filename)
+
+    /// <summary>
+    /// Get the mutex.
+    /// </summary>
+    public object Mutex
     {
-      CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
-      if (null != export)
-        return export.exportScene(filename);
-      return false;
+      get { return _mutex; }
+    }
+
+
+    /// <summary>
+    /// Get/set the document.
+    /// </summary>
+    public CadKit.Interfaces.IDocument Document
+    {
+      get { lock (this.Mutex) { return _document; } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this._removeDocumentDelegates();
+          _document = value;
+          this._addDocumentDelegates();
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Add new document delegates.
+    /// </summary>
+    private void _addDocumentDelegates()
+    {
+      lock (this.Mutex)
+      {
+        if (null != _document)
+        {
+          CadKit.Interfaces.INotifyChanged changed = _document as CadKit.Interfaces.INotifyChanged;
+          if (null != changed)
+          {
+            changed.NotifyChanged += this._documentChanged;
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Remove existing document delegates.
+    /// </summary>
+    private void _removeDocumentDelegates()
+    {
+      lock (this.Mutex)
+      {
+        if (null != _document)
+        {
+          CadKit.Interfaces.INotifyChanged changed = _document as CadKit.Interfaces.INotifyChanged;
+          if (null != changed)
+          {
+            changed.NotifyChanged -= this._documentChanged;
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Called when the document changed.
+    /// </summary>
+    private void _documentChanged(object changed, object caller)
+    {
+      lock (this.Mutex)
+      {
+      }
     }
 
     public string Directory

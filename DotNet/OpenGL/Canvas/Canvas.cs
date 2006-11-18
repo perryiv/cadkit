@@ -9,7 +9,9 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : System.Windows.Forms.UserControl
+  public partial class Canvas : 
+    System.Windows.Forms.UserControl,
+    CadKit.Interfaces.IPropertyGridObject
   {
     /// <summary>
     /// Default constructor.
@@ -53,14 +55,14 @@ namespace CadKit.OpenGL
       _innerPanel.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
       _innerPanel.KeyPress   += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
       _innerPanel.KeyDown    += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
-      _innerPanel.Paint += new System.Windows.Forms.PaintEventHandler(OnPaint);
+      _innerPanel.Paint      += this._paint;
     }
 
 
     /// <summary>
     /// Build the context menu.
     /// </summary>
-    public System.Windows.Forms.ContextMenuStrip buildContextMenu()
+    public virtual System.Windows.Forms.ContextMenuStrip buildContextMenu()
     {
       System.Windows.Forms.ContextMenuStrip menu = new System.Windows.Forms.ContextMenuStrip();
       menu.ShowImageMargin = false;

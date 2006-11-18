@@ -30,7 +30,7 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     protected override string _typeName()
     {
-      lock (_mutex) { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; }
+      lock (this.Mutex) { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; }
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     void CadKit.Interfaces.IRead.read ( string name, object caller )
     {
-      lock ( _mutex )
+      lock (this.Mutex)
       {
         CadKit.Interfaces.IProgressBar progress = caller as CadKit.Interfaces.IProgressBar;
         if (null != progress)

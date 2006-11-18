@@ -7,10 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #pragma once
-
-using namespace System;
 
 #include "osg/Node"
 
@@ -20,7 +17,6 @@ namespace CadKit
   { 
     namespace Glue 
     {
-
 	    public ref class Node
 	    {
       public:

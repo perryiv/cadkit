@@ -48,9 +48,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Viewer", "..\Viewer\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.Viewer.Glue", "..\Viewer\Glue\Cadkit.Viewer.Glue.vcproj", "{74E03074-1991-4E02-B5F2-B9D98FAD14D0}"
 	ProjectSection(ProjectDependencies) = postProject
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OsgTools", "..\..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
@@ -64,8 +64,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Delegates.Sc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.Init.Glue", "..\Init\Cadkit.Init.Glue.vcproj", "{51E8E425-CEF2-4B84-BC7E-E8B187D8A524}"
 	ProjectSection(ProjectDependencies) = postProject
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
@@ -82,6 +82,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.Jobs", "..\Threads\Jobs\CadKit.Threads.Jobs.csproj", "{A27CF288-D89D-4184-A413-011D6E4AD9F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.JobWindow", "..\Plugins\Windows\JobWindow\CadKit.Plugins.Windows.JobWindow.csproj", "{8D68A27D-FB48-40F4-8094-E9B1F2CA4C8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Delegates", "..\Delegates\CadKit.Delegates.csproj", "{486271AE-53BE-4DF0-816C-E5A234DB4613}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -413,6 +415,16 @@ Global
 		{8D68A27D-FB48-40F4-8094-E9B1F2CA4C8B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8D68A27D-FB48-40F4-8094-E9B1F2CA4C8B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8D68A27D-FB48-40F4-8094-E9B1F2CA4C8B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

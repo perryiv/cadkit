@@ -44,6 +44,9 @@ FrameDump::FrameDump() :
   _ext     ( Pref::instance().getString   ( "FrameDump Extension" ) ), 
   _start   ( Pref::instance().getUint     ( "FrameDump Start"     ) ), 
   _digits  ( Pref::instance().getUint     ( "FrameDump Digits"    ) ), 
+  _width   ( Pref::instance().getUint     ( "FrameDump Width"     ) ), 
+  _height  ( Pref::instance().getUint     ( "FrameDump Height"    ) ), 
+  _useSize ( false ),
   _current ( _start ),
   _saveFilenames ( false ),
   _filenames ()
@@ -62,13 +65,18 @@ FrameDump::FrameDump ( bool dump,
                        const std::string &base, 
                        const std::string &ext, 
                        unsigned int start, 
-                       unsigned int digits ) :
+                       unsigned int digits, 
+                       unsigned int width, 
+                       unsigned int height ) :
   _dump    ( dump ), 
   _dir     ( dir ), 
   _base    ( base ), 
   _ext     ( ext ), 
   _start   ( start ), 
   _digits  ( digits ), 
+  _width   ( width ),
+  _height  ( height ),
+  _useSize ( false ),
   _current ( start ),
   _saveFilenames ( false ),
   _filenames ()
@@ -89,6 +97,9 @@ FrameDump::FrameDump ( const FrameDump &f ) :
   _ext     ( f._ext ), 
   _start   ( f._start ), 
   _digits  ( f._digits ), 
+  _width   ( f._width ), 
+  _height  ( f._height ), 
+  _useSize ( f._useSize ),
   _current ( f._current ),
   _saveFilenames ( f._saveFilenames ),
   _filenames ( f._filenames )
@@ -109,6 +120,8 @@ FrameDump::~FrameDump()
   Pref::instance().setString ( "FrameDump Extension", _ext    );
   Pref::instance().setUint   ( "FrameDump Start",     _start  );
   Pref::instance().setUint   ( "FrameDump Digits",    _digits );
+  Pref::instance().setUint   ( "FrameDump Width",     _width  );
+  Pref::instance().setUint   ( "FrameDump Height",    _height );
 }
 
 
@@ -126,6 +139,9 @@ FrameDump &FrameDump::operator = ( const FrameDump &f )
   _ext     = f._ext;
   _start   = f._start;
   _digits  = f._digits;
+  _width   = f._width;
+  _height  = f._height;
+  _useSize = f._useSize;
   _current = f._current;
   _saveFilenames = f._saveFilenames;
   _filenames = f._filenames;

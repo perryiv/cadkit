@@ -26,6 +26,8 @@ namespace CadKit.Viewer
     private string FRAME_DUMP_DIRECTORY_KEY = "FrameDumpDirectory";
     private string FRAME_DUMP_FILENAME_KEY = "FrameDumpFilename";
     private string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
+    private string FRAME_DUMP_SIZE_KEY = "FrameDumpSize";
+    private string FRAME_DUMP_USE_FRAME_SIZE_KEY = "FrameDumpFramePanelSize";
 
     /// <summary>
     /// Contructor.
@@ -37,8 +39,9 @@ namespace CadKit.Viewer
       this.Directory = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, this.Directory);
       this.Filename = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, this.Filename);
       this.Extension = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, this.Extension);
+      this.FrameSize = CadKit.Persistence.Registry.Instance.getSize(REGISTRY_SECTION, this.FRAME_DUMP_SIZE_KEY, this.FrameSize);
+      this.UseFrameSize = CadKit.Persistence.Registry.Instance.getBool(REGISTRY_SECTION, this.FRAME_DUMP_USE_FRAME_SIZE_KEY, this.UseFrameSize);
     }
-
 
     /// <summary>
     /// Destructor.
@@ -403,14 +406,22 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Export the image.
+    /// Image export width.
     /// </summary>
-    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
+    uint CadKit.Interfaces.IExportImage.Width
     {
-      lock (this.Mutex)
-      {
-        return _viewer.writeImageFile(filename, width, height);
-      }
+      get { lock (this.Mutex) { return (uint)System.Math.Abs(this.FrameSize.Width); } }
+      set { lock (this.Mutex) { this.FrameSize = new System.Drawing.Size((int)value, this.FrameSize.Height); } }
+    }
+
+
+    /// <summary>
+    /// Image export height.
+    /// </summary>
+    uint CadKit.Interfaces.IExportImage.Height
+    {
+      get { lock (this.Mutex) { return (uint)System.Math.Abs(this.FrameSize.Height); } }
+      set { lock (this.Mutex) { this.FrameSize = new System.Drawing.Size(this.FrameSize.Width, (int)value); } }
     }
 
 
@@ -543,6 +554,47 @@ namespace CadKit.Viewer
     {
       get { lock (this.Mutex) { return _viewer.DumpFrames; } }
       set { lock (this.Mutex) { _viewer.DumpFrames = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the size to dump frames.
+    /// </summary>
+    public System.Drawing.Size FrameSize
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          return new System.Drawing.Size ( (int) _viewer.frameDumpWidth(), (int) _viewer.frameDumpHeight() );
+        }
+      }
+      set
+      {
+        lock (this.Mutex)
+        {
+          _viewer.frameDumpSize((uint)System.Math.Abs(value.Width), (uint)System.Math.Abs(value.Height));
+          CadKit.Persistence.Registry.Instance.setSize(REGISTRY_SECTION, this.FRAME_DUMP_SIZE_KEY, value);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Get/set the flag that says whether or not to use this 
+    /// panel's size when dumping frames.
+    /// </summary>
+    public bool UseFrameSize
+    {
+      get { lock (this.Mutex) { return _viewer.frameDumpUseFrameSize(); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          _viewer.frameDumpUseFrameSize(value);
+          CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, this.FRAME_DUMP_USE_FRAME_SIZE_KEY, value);
+        }
+      }
     }
 
 

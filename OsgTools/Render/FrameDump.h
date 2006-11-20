@@ -34,7 +34,7 @@ public:
   typedef std::vector< Filename > Filenames;
 
   FrameDump();
-  FrameDump ( bool dump, const std::string &dir, const std::string &base, const std::string &ext, unsigned int start = 0, unsigned int digits = 10 );
+  FrameDump ( bool dump, const std::string &dir, const std::string &base, const std::string &ext, unsigned int start = 0, unsigned int digits = 10, unsigned int width = 600, unsigned int height = 400 );
   FrameDump ( const FrameDump &f );
   ~FrameDump();
 
@@ -58,15 +58,24 @@ public:
 
   const Filenames&          filenames() const;
 
-  void                      filenamesSave( bool );
+  void                      filenamesSave ( bool );
 
   const std::string &       ext() const { return _ext; }
   void                      ext ( const std::string &e ) { _ext = e; }
+
+  unsigned int              height() const { return _height; }
+  void                      height ( unsigned int h ) { _height = h; }
 
   void                      reset() { _current = _start; }
 
   unsigned int              start() const { return _start; }
   void                      start ( unsigned int s ) { _start = s; }
+
+  bool                      useMySize() const { return _useSize; }
+  void                      useMySize ( bool b ) { _useSize = b; }
+
+  unsigned int              width() const { return _width; }
+  void                      width ( unsigned int w ) { _width = w; }
 
 private:
 
@@ -76,6 +85,9 @@ private:
   std::string _ext;
   unsigned int _start;
   unsigned int _digits;
+  unsigned int _width;
+  unsigned int _height;
+  bool _useSize;
   mutable unsigned int _current;
   bool _saveFilenames;
   mutable Filenames _filenames;

@@ -163,6 +163,7 @@ namespace CadKit.Helios
           if (null == this.MainMenuStrip)
           {
             System.Windows.Forms.MenuStrip menu = new System.Windows.Forms.MenuStrip();
+            menu.Dock = System.Windows.Forms.DockStyle.Top;
             this.Controls.Add(menu);
             this.MainMenuStrip = menu;
           }
@@ -420,9 +421,13 @@ namespace CadKit.Helios
     /// <summary>
     /// Register a peristant form.
     /// </summary>
-    void CadKit.Interfaces.IPersistantFormData.registerPersistanceForm(string name, System.Windows.Forms.Form form)
+    void CadKit.Interfaces.IPersistantFormData.registerPersistanceForm(string name, object obj)
     {
-      _persistantForms.Add(name, form);
+      System.Windows.Forms.Form form = obj as System.Windows.Forms.Form;
+      if (null != form)
+      {
+        _persistantForms.Add(name, form);
+      }
     }
 
     /// <summary>
@@ -464,17 +469,21 @@ namespace CadKit.Helios
     /// <summary>
     /// Add a form with a string for a key.
     /// </summary>
-    public void addFormWindowMenu(string name, System.Windows.Forms.Form form)
+    public void addFormWindowMenu(string name, object obj)
     {
       try
       {
-        _windowForms[name] = form;
-
-        if (null != _windowMenu)
+        System.Windows.Forms.Form form = obj as System.Windows.Forms.Form;
+        if (null != form)
         {
-          System.Windows.Forms.ToolStripMenuItem item = new System.Windows.Forms.ToolStripMenuItem(name);
-          item.Click += new System.EventHandler(_onWindowItemClick);
-          _windowMenu.DropDownItems.Add(item);
+          _windowForms[name] = form;
+
+          if (null != _windowMenu)
+          {
+            System.Windows.Forms.ToolStripMenuItem item = new System.Windows.Forms.ToolStripMenuItem(name);
+            item.Click += new System.EventHandler(_onWindowItemClick);
+            _windowMenu.DropDownItems.Add(item);
+          }
         }
       }
       catch (System.Exception e)

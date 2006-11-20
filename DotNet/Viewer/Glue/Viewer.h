@@ -48,7 +48,7 @@ namespace CadKit
           SEEK
         };
 
-        void backgroundColor ( float r, float g, float b);
+        void                  backgroundColor ( float r, float g, float b);
 
         // Button Press/Release
         void                  buttonPress      ( float x, float y, bool left, bool middle, bool right );
@@ -116,7 +116,6 @@ namespace CadKit
 
         // Write the current frame to an image file.
         bool          writeImageFile ( System::String^ filename );
-        bool          writeImageFile ( System::String^ filename, int width, int height );
 
         // Write the current scene to file.
         bool          writeSceneFile ( System::String^ filename );
@@ -170,6 +169,13 @@ namespace CadKit
             _viewer->frameDump().dump ( b );
           }
         };
+
+        unsigned int            frameDumpWidth();
+        unsigned int            frameDumpHeight();
+        void                    frameDumpSize ( unsigned int width, unsigned int height );
+
+        bool                    frameDumpUseFrameSize();
+        void                    frameDumpUseFrameSize ( bool );
 
       protected:
 

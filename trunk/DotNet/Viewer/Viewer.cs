@@ -187,17 +187,22 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Export the image.
+    /// Image export width.
     /// </summary>
-    bool CadKit.Interfaces.IExportImage.exportImage(string filename, int width, int height)
+    uint CadKit.Interfaces.IExportImage.Width
     {
-      lock (this.Mutex)
-      {
-        CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
-        if (null != export)
-          return export.exportImage(filename, width, height);
-        return false;
-      }
+      get { lock (this.Mutex) { return (uint)System.Math.Abs(_panel.FrameSize.Width); } }
+      set { lock (this.Mutex) { _panel.FrameSize = new System.Drawing.Size((int)value, _panel.FrameSize.Height); } }
+    }
+
+
+    /// <summary>
+    /// Image export height.
+    /// </summary>
+    uint CadKit.Interfaces.IExportImage.Height
+    {
+      get { lock (this.Mutex) { return (uint)System.Math.Abs(_panel.FrameSize.Height); } }
+      set { lock (this.Mutex) { _panel.FrameSize = new System.Drawing.Size(_panel.FrameSize.Width, (int)value); } }
     }
 
 

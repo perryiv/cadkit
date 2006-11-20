@@ -13,6 +13,7 @@ namespace CadKit.Interfaces
   {
     Filters Filters { get; }
     bool exportImage(string filename);
-    bool exportImage(string filename, int width, int height);
+    uint Height { get; set; }
+    uint Width { get; set; }
   }
 }

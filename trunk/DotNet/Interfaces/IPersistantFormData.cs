@@ -11,7 +11,7 @@ namespace CadKit.Interfaces
 {
   public interface IPersistantFormData
   {
-    void registerPersistanceForm(string name, System.Windows.Forms.Form form);
+    void registerPersistanceForm(string name, object form);
     bool hasPersistantFormData();
   }
 }

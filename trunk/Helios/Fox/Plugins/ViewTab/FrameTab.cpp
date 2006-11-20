@@ -821,12 +821,8 @@ long FrameTab::onCommandExportImage ( FX::FXObject *, FX::FXSelector, void * )
 long FrameTab::onUpdateExportImage  ( FX::FXObject *object, FX::FXSelector, void * )
 {
   Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
-
   Usul::Interfaces::IExport::QueryPtr exportFile ( activeView.valid() ? activeView->getActiveView() : 0x0 );
-
   Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( _caller );
-
   FoxTools::Functions::enable( exportFile.valid() && saveDialog.valid(), object );
-
   return 1;
 }

@@ -253,40 +253,80 @@ namespace CadKit.Persistence
       {
         System.Drawing.Color color = new System.Drawing.Color();
         color = defaultValue;
-        string temp = this.getString(section, key, defaultValue.Name);
-        if (null != temp)
+        try
         {
-          System.Drawing.Color named = System.Drawing.Color.FromName(temp);
-          if (0 == named.A && 0 == named.R && 0 == named.G && 0 == named.B)
+          string temp = this.getString(section, key, defaultValue.Name);
+          if (null != temp)
           {
-            int a = color.A;
-            int r = color.R;
-            int g = color.G;
-            int b = color.B;
-
-            string[] parts = temp.Split(new char[] { ' ' });
-            if (4 == parts.Length)
+            System.Drawing.Color named = System.Drawing.Color.FromName(temp);
+            if (0 == named.A && 0 == named.R && 0 == named.G && 0 == named.B)
             {
-              a = System.Convert.ToByte(parts[0]);
-              r = System.Convert.ToByte(parts[1]);
-              g = System.Convert.ToByte(parts[2]);
-              b = System.Convert.ToByte(parts[3]);
+              int a = color.A;
+              int r = color.R;
+              int g = color.G;
+              int b = color.B;
+
+              string[] parts = temp.Split(new char[] { ' ' });
+              if (4 == parts.Length)
+              {
+                a = System.Convert.ToInt32(parts[0]);
+                r = System.Convert.ToInt32(parts[1]);
+                g = System.Convert.ToInt32(parts[2]);
+                b = System.Convert.ToInt32(parts[3]);
+              }
+              color = System.Drawing.Color.FromArgb(a, r, g, b);
             }
-            color = System.Drawing.Color.FromArgb(a, r, g, b);
+            else
+            {
+              color = named;
+            }
           }
-          else
-          {
-            color = named;
-          }
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 9635575900: {0}", e.Message);
         }
         return color;
       }
     }
 
     /// <summary>
+    /// Get the value.
+    /// </summary>
+    public System.Drawing.Size getSize(string section, string key, System.Drawing.Size defaultSize)
+    {
+      lock (_mutex)
+      {
+        System.Drawing.Size size = new System.Drawing.Size(defaultSize.Width, defaultSize.Height);
+        try
+        {
+          string temp = this.getString(section, key, "");
+          if (temp.Length > 0)
+          {
+            int w = size.Width;
+            int h = size.Height;
+
+            string[] parts = temp.Split(new char[] { ' ' });
+            if (2 == parts.Length)
+            {
+              w = System.Convert.ToInt32(parts[0]);
+              h = System.Convert.ToInt32(parts[1]);
+            }
+            size = new System.Drawing.Size(w, h);
+          }
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 1087451378: {0}", e.Message);
+        }
+        return size;
+      }
+    }
+
+    /// <summary>
     /// Set the value.
     /// </summary>
-    public void setColor( string section, string key, System.Drawing.Color value )
+    public void setColor(string section, string key, System.Drawing.Color value)
     {
       lock (_mutex)
       {
@@ -301,6 +341,21 @@ namespace CadKit.Persistence
             string temp = System.String.Format("{0} {1} {2} {3}", value.A, value.R, value.G, value.B);
             this.getSectionHash(section)[key] = temp;
           }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Set the value.
+    /// </summary>
+    public void setSize(string section, string key, System.Drawing.Size value)
+    {
+      lock (_mutex)
+      {
+        if (null != value)
+        {
+          string temp = System.String.Format("{0} {1}", value.Width, value.Height);
+          this.getSectionHash(section)[key] = temp;
         }
       }
     }

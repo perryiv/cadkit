@@ -309,14 +309,14 @@ public:
   void                  addClipBox  ( const osg::BoundingBox& bb );
   void                  removePlane ( unsigned int );
   void                  removePlane ( osg::ClipPlane * );
-  void                  removePlanes ();
+  void                  removePlanes();
 
   // Set all the display-lists to on/off according to the global setting.
   bool                  displayLists() const;
   void                  setDisplayLists();
 
   // Get the number of clipping planes in the scene
-  unsigned int          planes ();
+  unsigned int          planes() const;
 
   /// Usul::Interfaces::IPolygonMode
   // Get/Set the polygon mode.
@@ -428,7 +428,7 @@ public:
 
   // Write the current frame to an image file.
   bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const;
-  virtual bool          writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
+  virtual bool          writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
 
   // Write the current scene to file.
   bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const;
@@ -496,8 +496,7 @@ protected:
 
   // Write the current frame to an image file.
   bool                  _writeImageFile ( const std::string &filename ) const;
-  bool                  _writeImageFile ( const std::string &filename, double percent ) const;
-  bool                  _writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const;
+  bool                  _writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
 
   // Add/Remove scene stage.
   void                  _addSceneStage();
@@ -579,10 +578,10 @@ protected:
   virtual void               addClippingPlane ( const osg::Plane& plane );
   virtual void               addClippingBox   ( const osg::BoundingBox& bb );
   virtual void               removeClippingPlane ( unsigned int index );
-  virtual void               removeClippingPlanes (  );
+  virtual void               removeClippingPlanes();
 
   // Get the number of clipping planes in the scene
-  virtual unsigned int       numClippingPlanes () { return this->planes(); }
+  virtual unsigned int       numClippingPlanes() { return this->planes(); }
 
   /// Usul::Interfaces::IViewer
   //virtual void            render(); //Render defined above.
@@ -629,20 +628,20 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void               redraw();
-  virtual void               setStatsDisplay ( bool b );
+  virtual void                  redraw();
+  virtual void                  setStatsDisplay ( bool b );
 
   /// Usul::Interfaces::IHeliosView
   virtual OsgTools::Render::Viewer*            HeliosView()       { return this; }
   virtual const OsgTools::Render::Viewer*      HeliosView() const { return this; }
 
   /// Usul::Interfaces::ILights
-  virtual void               setLights ( bool );
-  virtual bool               hasLights ( ) const;
+  virtual void                  setLights ( bool );
+  virtual bool                  hasLights ( ) const;
 
   /// Usul::Interfaces::ISceneStage
-  virtual bool sceneStage() const;
-  virtual void sceneStage( bool b );
+  virtual bool                  sceneStage() const;
+  virtual void                  sceneStage( bool b );
 
   /// Usul::Interfaces::IExport
   virtual bool                  canExport ( const std::string &filename );

@@ -61,6 +61,7 @@ public:
   osg::Projection*      projection();
 
   /// Get the clip node
+  const osg::ClipNode*  clipNode() const;
   osg::ClipNode*        clipNode();
 
   /// Get text at the (x,y) on the screen.

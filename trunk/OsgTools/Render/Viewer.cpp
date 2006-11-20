@@ -1377,11 +1377,7 @@ double Viewer::_animationTime()
 void Viewer::_dumpFrame()
 {
   if ( _frameDump.dump() )
-  {
-    // Save and restore default options.
-    OsgTools::ScopedOptions scoped ( "" );
-    this->_writeImageFile ( _frameDump.filename() );
-  }
+    this->writeImageFile ( _frameDump.filename() );
 }
 
 
@@ -1400,8 +1396,106 @@ bool Viewer::writeImageFile ( const std::string &filename, const std::string &op
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
 
+  // Use frame-dump object's size?
+  if ( true == this->frameDump().useMySize() )
+  {
+    // Write the image to file.
+    return this->_writeImageFile ( filename, this->frameDump().width(), this->frameDump().height() );
+  }
+
+  // Otherwise...
+  else
+  {
+    // Write the image to file.
+    return this->_writeImageFile ( filename );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the current frame to an image file.
+//  TODO: This supports legacy code. Depreciated.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
+{
+  bool useSize ( this->frameDump().useMySize() );
+  const unsigned int sw ( this->frameDump().width()  );
+  const unsigned int sh ( this->frameDump().height() );
+  bool result ( false );
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+  FrameDump &fd ( me->frameDump() );
+
+  try
+  {
+    fd.useMySize ( true );
+    fd.width ( width );
+    fd.height ( height );
+    result = this->writeImageFile ( filename );
+    fd.useMySize ( useSize );
+    fd.width  ( sw );
+    fd.height ( sh );
+  }
+
+  catch ( ... )
+  {
+    fd.useMySize ( useSize );
+    fd.width  ( sw );
+    fd.height ( sh );
+    throw;
+  }
+
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the current frame to the file.  No tile rendering.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_writeImageFile ( const std::string &filename ) const
+{
+  // Make the image
+  osg::ref_ptr<osg::Image> image ( new osg::Image );
+
+  // Read the screen buffer.
+  image->readPixels ( this->x(), this->y(), this->width(), this->height(), GL_RGB, GL_UNSIGNED_BYTE );
+
+  // Write the image.
+  return osgDB::writeImageFile ( *image, filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the current frame to the file.  
+//  Size will be the specified height and width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
+{
+  // Make the image
+  osg::ref_ptr<osg::Image> image ( new osg::Image );
+
+  // Make enough space
+  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  // Make this context current.
+  if( _context.valid() ) { me->_context->makeCurrent(); }
+
+  // Capture image.
+  image = me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
+
   // Write the image to file.
-  return this->_writeImageFile ( filename, 1.0 );
+  return osgDB::writeImageFile ( *image, filename );
 }
 
 
@@ -1858,7 +1952,7 @@ void Viewer::removePlane ( osg::ClipPlane *plane )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::removePlanes ()
+void Viewer::removePlanes()
 {
   typedef osg::ClipNode::ClipPlaneList ClipPlaneList;
   ClipPlaneList cliplist ( _sceneManager->clipNode()->getClipPlaneList() );
@@ -1880,80 +1974,9 @@ void Viewer::removePlanes ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::planes ()
+unsigned int Viewer::planes() const
 {
   return _sceneManager->clipNode()->getNumClipPlanes();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the current frame to the file.  No tile rendering.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::_writeImageFile ( const std::string &filename ) const
-{
-  // Make the image
-  osg::ref_ptr<osg::Image> image ( new osg::Image );
-
-  // Read the screen buffer.
-  image->readPixels ( this->x(), this->y(), this->width(), this->height(), GL_RGB, GL_UNSIGNED_BYTE );
-
-  // Write the image.
-  return osgDB::writeImageFile ( *image, filename );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the current frame to the file.  
-//  Size will be a percentage of the viewport.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::_writeImageFile ( const std::string &filename, double percent ) const
-{
-  const int h ( this->height() );
-  const int w ( this->width() );
-
-  const unsigned int height ( (unsigned int)(h * percent) );
-  const unsigned int width  ( (unsigned int)(w * percent) );
-
-  // Hack until I get tiled rendering working
-  if( percent == 1.0 )
-    return _writeImageFile( filename );
-
-  return _writeImageFile( filename, height, width );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the current frame to the file.  
-//  Size will be the specified height and width
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::_writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const
-{
-  // Make the image
-  osg::ref_ptr<osg::Image> image ( new osg::Image );
-
-  // Make enough space
-  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-
-  // Make this context current.
-  if( _context.valid() ) { me->_context->makeCurrent(); }
-
-  // Capture image.
-  image = me->_renderer->screenCapture( this->getViewMatrix(), width, height );
-
-  // Write the image to file.
-  return osgDB::writeImageFile ( *image, filename );
 }
 
 
@@ -4497,6 +4520,8 @@ Viewer::Filters Viewer::filtersExport() const
 //
 //  Write the file.
 //
+//  TODO: This should search the export-filter's extensions.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Viewer::exportFile ( const std::string& filename )
@@ -4518,18 +4543,6 @@ bool Viewer::exportFile ( const std::string& filename )
   }
 
   return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the image to the file with given height and width.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::writeImageFile ( const std::string &filename, unsigned int height, unsigned int width ) const
-{
-  return this->_writeImageFile( filename, height, width );
 }
 
 

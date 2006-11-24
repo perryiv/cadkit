@@ -9,17 +9,19 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class NewDocumentCommand : CadKit.Commands.Command
+  public class CameraViewCommand : CadKit.Commands.Command
   {
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    protected CadKit.Interfaces.CameraOption _option = 0;
+
     /// <summary>
     /// Constructor.
     /// </summary>
-    public NewDocumentCommand ( object caller )
+    public CameraViewCommand(object caller)
     {
       _caller = caller;
-      _text = "&New...";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
-      _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
     }
 
     /// <summary>
@@ -29,6 +31,11 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
+        CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
+        if (null != camera)
+        {
+          camera.camera(_option);
+        }
       }
     }
 
@@ -39,7 +46,8 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
-        return CadKit.Plugins.Manager.Instance.has<CadKit.Interfaces.IDocumentNew>();
+        CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
+        return (null != camera);
       }
     }
   }

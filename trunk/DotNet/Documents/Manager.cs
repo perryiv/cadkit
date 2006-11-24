@@ -171,12 +171,11 @@ namespace CadKit.Documents
     }
 
     /// <summary>
-    /// Set/get the active document.
+    /// Get the active document.
     /// </summary>
-    public CadKit.Interfaces.IDocument Active
+    public CadKit.Interfaces.IDocument ActiveDocument
     {
-      get { lock (_mutex) { return _active; } }
-      set { lock (_mutex) { _active = value; } }
+      get { lock (_mutex) { return _activeDoc; } }
     }
 
     /// <summary>
@@ -184,8 +183,19 @@ namespace CadKit.Documents
     /// </summary>
     public object ActiveView
     {
-      get { lock (_mutex) { return Manager._activeView; } }
-      set { lock (_mutex) { Manager._activeView = value; } }
+      get { lock (_mutex) { return _activeView; } }
+      set
+      {
+        lock (_mutex)
+        {
+          _activeView = value;
+          CadKit.Interfaces.IDocumentView view = _activeView as CadKit.Interfaces.IDocumentView;
+          if (null != view)
+          {
+            _activeDoc = view.Document;
+          }
+        }
+      }
     }
 
     /// <summary>
@@ -221,7 +231,7 @@ namespace CadKit.Documents
     private static Manager _instance = null;
     private object _mutex = new object();
     private Documents _documents = new Documents();
-    private static CadKit.Interfaces.IDocument _active = null;
+    private static CadKit.Interfaces.IDocument _activeDoc = null;
     private static object _activeView = null;
   }
 }

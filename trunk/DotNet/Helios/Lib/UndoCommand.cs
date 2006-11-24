@@ -29,7 +29,7 @@ namespace CadKit.Helios.Commands
     {
       lock (_mutex)
       {
-        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.ActiveDocument;
         CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
         CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
         if (null != commands && true == commands.CanUndo)
@@ -40,13 +40,13 @@ namespace CadKit.Helios.Commands
     }
 
     /// <summary>
-    /// Determine of the button should be enabled.
+    /// Determine if the button should be enabled.
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
       lock (_mutex)
       {
-        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.Active;
+        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.ActiveDocument;
         CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
         CadKit.Interfaces.ICommandHistory commands = (null == doc) ? null : doc.CommandHistory;
         return (null == commands) ? false : commands.CanUndo;

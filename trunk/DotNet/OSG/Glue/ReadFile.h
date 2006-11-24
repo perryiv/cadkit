@@ -19,10 +19,26 @@ namespace CadKit
     {
       public ref class ReadFile
       {
-      public:
-        ReadFile ()  { }
+        delegate void CallbackDelegate();
+        typedef void (*NativeProgressCallback)();
 
-        static CadKit::OSG::Glue::Node^ readNodeFile ( System::String^ filename );
+        CadKit::Interfaces::IProgressBar^ _progress;
+        CallbackDelegate^ _delegate;
+        System::Runtime::InteropServices::GCHandle _pin;
+
+        ~ReadFile();
+
+        NativeProgressCallback    _makeProgressCallback();
+
+        void                      _progressNotify();
+
+      public:
+
+        ReadFile();
+
+        void                      clear();
+
+        CadKit::OSG::Glue::Node^  readNodeFile ( System::String^ filename, System::Object^ caller );
       };
     }
   }

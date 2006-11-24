@@ -27,11 +27,14 @@ namespace CadKit.Helios
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
-    private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
     private WeifenLuo.WinFormsUI.DeserializeDockContent _deserializeDockContent;
     private FormsMap _persistantForms = new FormsMap();
     private FormsMap _windowForms = new FormsMap();
     private System.Windows.Forms.ToolStripMenuItem _windowMenu = null;
+    private System.Windows.Forms.MenuStrip _menuStrip;
+    private System.Windows.Forms.StatusStrip _statusStrip;
+    private System.Windows.Forms.ToolStrip _toolStrip;
+    private WeifenLuo.WinFormsUI.DockPanel _dockPanel;
     private CadKit.Helios.RecentFiles _recentFiles = new CadKit.Helios.RecentFiles();
 
     /// <summary>
@@ -116,29 +119,65 @@ namespace CadKit.Helios
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+      this._menuStrip = new System.Windows.Forms.MenuStrip();
+      this._statusStrip = new System.Windows.Forms.StatusStrip();
+      this._toolStrip = new System.Windows.Forms.ToolStrip();
       this._dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
       this.SuspendLayout();
       // 
-      // MainForm
+      // _menuStrip
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(757, 367);
-      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-      this.Name = "MainForm";
-      this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-      this.Text = "MainForm";
+      this._menuStrip.Location = new System.Drawing.Point(0, 0);
+      this._menuStrip.Name = "_menuStrip";
+      this._menuStrip.Size = new System.Drawing.Size(568, 24);
+      this._menuStrip.TabIndex = 0;
+      this._menuStrip.Text = "_menuStrip";
+      // 
+      // _statusStrip
+      // 
+      this._statusStrip.Location = new System.Drawing.Point(0, 276);
+      this._statusStrip.Name = "_statusStrip";
+      this._statusStrip.Size = new System.Drawing.Size(568, 22);
+      this._statusStrip.TabIndex = 3;
+      this._statusStrip.Text = "_statusStrip";
+      // 
+      // _toolStrip
+      // 
+      this._toolStrip.Location = new System.Drawing.Point(0, 24);
+      this._toolStrip.Name = "_toolStrip";
+      this._toolStrip.Size = new System.Drawing.Size(568, 25);
+      this._toolStrip.TabIndex = 4;
+      this._toolStrip.Text = "_toolStrip";
       // 
       // _dockPanel
       // 
+      this._dockPanel.ActiveAutoHideContent = null;
       this._dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this._dockPanel.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World);
+      this._dockPanel.Location = new System.Drawing.Point(0, 49);
       this._dockPanel.Name = "_dockPanel";
-      this._dockPanel.TabIndex = 0;
+      this._dockPanel.Size = new System.Drawing.Size(568, 227);
+      this._dockPanel.TabIndex = 5;
+      // 
+      // MainForm
+      // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.ClientSize = new System.Drawing.Size(568, 298);
       this.Controls.Add(this._dockPanel);
-
+      this.Controls.Add(this._toolStrip);
+      this.Controls.Add(this._menuStrip);
+      this.Controls.Add(this._statusStrip);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.MainMenuStrip = this._menuStrip;
+      this.Margin = new System.Windows.Forms.Padding(2);
+      this.Name = "MainForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+      this.Text = "MainForm";
       this.ResumeLayout(false);
+      this.PerformLayout();
+
     }
 
     #endregion
@@ -350,26 +389,25 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
-        System.Windows.Forms.ToolStrip toolStrip = new System.Windows.Forms.ToolStrip();
-        toolStrip.Dock = System.Windows.Forms.DockStyle.Top;
-        {
-          System.Windows.Forms.ToolStripButton button = new System.Windows.Forms.ToolStripButton();
-          button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-          button.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_all_command.gif");
-          button.ImageTransparentColor = System.Drawing.Color.Magenta;
-          button.Name = "button";
-          button.Size = new System.Drawing.Size(23, 22);
-          button.Text = "View All";
-          button.ToolTipText = "Front";
-          //button.Click += new System.EventHandler(this._frontButton_Click);
-          toolStrip.Items.Add(button);
-        }
-        this.Controls.Add(toolStrip);
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewAllCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewHomeCommand(this));
       }
     }
 
     /// <summary>
-    /// Build the menu.
+    /// Add the tool-bar button.
+    /// </summary>
+    private void _addToolbarButton(System.Windows.Forms.ToolStrip strip, CadKit.Commands.Command command)
+    {
+      lock (_mutex)
+      {
+        if (null != strip && null != command)
+          strip.Items.Add(command.ToolButton);
+      }
+    }
+
+    /// <summary>
+    /// Add the menu button.
     /// </summary>
     private void _addMenuButton(System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command)
     {
@@ -469,7 +507,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Add a form with a string for a key.
     /// </summary>
-    public void addFormWindowMenu(string name, object obj)
+    void CadKit.Interfaces.IWindowMenu.addFormWindowMenu(string name, object obj)
     {
       try
       {

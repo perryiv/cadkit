@@ -44,6 +44,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Glue\CadKit.Glue.vcproj">
       <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
       <Name>CadKit.OpenGL.Glue</Name>

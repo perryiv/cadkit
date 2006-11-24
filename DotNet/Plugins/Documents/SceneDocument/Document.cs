@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Documents.SceneDocument
 {
-  public class Document : 
+  public class Document :
     CadKit.Documents.Document,
     CadKit.Interfaces.IRead,
     CadKit.Interfaces.IBuildScene
@@ -42,20 +42,32 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// <summary>
     /// Read the file.
     /// </summary>
-    void CadKit.Interfaces.IRead.read ( string name, object caller )
+    void CadKit.Interfaces.IRead.read(string name, object caller)
     {
-      _root = CadKit.OSG.Glue.ReadFile.readNodeFile(name);
-
-      CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
-      if (null != idoc)
+      CadKit.OSG.Glue.ReadFile reader = null;
+      try
       {
-        idoc.Name = name;
+        reader = new CadKit.OSG.Glue.ReadFile();
+        _root = reader.readNodeFile(name, caller);
+
+        CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
+        if (null != idoc)
+        {
+          idoc.Name = name;
+        }
+
+        CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+        if (null != recent)
+        {
+          recent.add(name);
+        }
       }
-
-      CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
-      if (null != recent)
+      finally
       {
-        recent.add(name);
+        if (null != reader)
+        {
+          reader.clear();
+        }
       }
     }
 

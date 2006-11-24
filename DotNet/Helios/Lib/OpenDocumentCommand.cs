@@ -190,7 +190,7 @@ namespace CadKit.Helios.Commands
     }
 
     /// <summary>
-    /// Determine of the button should be enabled.
+    /// Determine if the button should be enabled.
     /// </summary>
     protected override bool _shouldBeEnabled()
     {

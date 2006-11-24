@@ -35,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="CameraViewCommand.cs" />
+    <Compile Include="ViewHomeCommand.cs" />
+    <Compile Include="ViewAllCommand.cs" />
     <Compile Include="OptionsPage.cs">
     </Compile>
     <Compile Include="OptionsForm.cs">
@@ -103,6 +106,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

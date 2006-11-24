@@ -68,7 +68,7 @@ namespace CadKit.Commands
     }
 
     /// <summary>
-    /// Determine of the button should be enabled.
+    /// Determine if the button should be enabled.
     /// </summary>
     protected virtual bool _shouldBeEnabled()
     {

@@ -16,7 +16,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.ICamera,
     CadKit.Interfaces.IExportImage,
     CadKit.Interfaces.IExportScene,
-    CadKit.Interfaces.IFrameDump
+    CadKit.Interfaces.IFrameDump,
+    CadKit.Interfaces.IDocumentView
   {
     /// <summary>
     /// Data members.
@@ -24,6 +25,7 @@ namespace CadKit.Viewer
     private object _mutex = new object();
     private CadKit.Viewer.Panel _panel = new CadKit.Viewer.Panel();
     private CadKit.Interfaces.IDocument _document = null;
+
 
     /// <summary>
     /// Constructor.
@@ -38,6 +40,7 @@ namespace CadKit.Viewer
 
       this.FormClosed += this._formClosed;
       this.Shown += this._viewerShown;
+      this.Activated += this._viewerActivated;
     }
 
 
@@ -62,12 +65,19 @@ namespace CadKit.Viewer
     /// <summary>
     /// Called when the viewer is shown.
     /// </summary>
-    private void _viewerShown(object sender, System.EventArgs e)
+    private void _viewerShown(object sender, System.EventArgs args)
     {
-      lock (this.Mutex)
+      try
       {
-        this.init();
-        this.camera(CadKit.Interfaces.CameraOption.FIT);
+        lock (this.Mutex)
+        {
+          this.init();
+          this.camera(CadKit.Interfaces.CameraOption.FIT);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4168059452: {0}", e.Message);
       }
     }
 
@@ -75,14 +85,38 @@ namespace CadKit.Viewer
     /// <summary>
     /// The form is closed.  Clean up.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    private void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs args)
     {
-      lock (this.Mutex)
+      try
       {
-        _panel.clear();
-        _panel = null;
+        lock (this.Mutex)
+        {
+          _panel.clear();
+          _panel = null;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 6554359560: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// The form is activated.
+    /// </summary>
+    void _viewerActivated(object sender, System.EventArgs args)
+    {
+      try
+      {
+        lock (this.Mutex)
+        {
+          CadKit.Documents.Manager.Instance.ActiveView = this;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3677938968: {0}", e.Message);
       }
     }
 
@@ -262,6 +296,32 @@ namespace CadKit.Viewer
           _document = value;
           this._addDocumentDelegates();
         }
+      }
+    }
+
+
+    /// <summary>
+    /// Get/set the document.
+    /// </summary>
+    CadKit.Interfaces.IDocument CadKit.Interfaces.IDocumentView.Document
+    {
+      get { lock (this.Mutex) { return this.Document; } }
+      set { lock (this.Mutex) { this.Document = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the document.
+    /// </summary>
+    void CadKit.Interfaces.IDocumentView.close()
+    {
+      try
+      {
+        this.Close();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3636387781: {0}", e.Message);
       }
     }
 

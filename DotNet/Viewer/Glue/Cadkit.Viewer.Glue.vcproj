@@ -188,17 +188,17 @@
 			ReferencedProjectIdentifier="{E32C5CEE-B56E-411F-B071-561AA05E55D9}"
 			RelativePathToProject=".\CadKit.Glue.vcproj"
 		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
-			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
+		<AssemblyReference
+			RelativePath="System.Drawing.dll"
+			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
 			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
 		/>
-		<AssemblyReference
-			RelativePath="System.Drawing.dll"
-			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+		<ProjectReference
+			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
 		/>
 	</References>
 	<Files>

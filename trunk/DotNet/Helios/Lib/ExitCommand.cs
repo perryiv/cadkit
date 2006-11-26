@@ -25,7 +25,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
         if (null != form)

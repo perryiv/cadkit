@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="CameraViewCommand.cs" />
+    <Compile Include="OpenDocumentTask.cs" />
     <Compile Include="ViewHomeCommand.cs" />
     <Compile Include="ViewAllCommand.cs" />
     <Compile Include="OptionsPage.cs">
@@ -87,6 +88,14 @@
     <ProjectReference Include="..\..\Plugins\Manager\CadKit.Plugins.csproj">
       <Project>{38E6CB43-88D0-4549-B27D-0F23F50CC395}</Project>
       <Name>CadKit.Plugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Threads\Jobs\CadKit.Threads.Jobs.csproj">
+      <Project>{A27CF288-D89D-4184-A413-011D6E4AD9F6}</Project>
+      <Name>CadKit.Threads.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Threads\Tools\CadKit.Threads.Tools.csproj">
+      <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>
+      <Name>CadKit.Threads.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Tools\CadKit.Tools.csproj">
       <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>

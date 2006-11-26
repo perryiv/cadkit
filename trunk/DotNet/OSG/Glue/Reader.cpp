@@ -125,10 +125,10 @@ void Reader::_read ( Usul::File::StreamBuffer::BaseClass &buf, osgDB::ReaderWrit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Reader::_notifyProgress()
+void Reader::_notifyProgress ( unsigned long bytes )
 {
   if ( 0x0 != _progress )
-    _progress();
+    _progress ( bytes );
 }
 
 

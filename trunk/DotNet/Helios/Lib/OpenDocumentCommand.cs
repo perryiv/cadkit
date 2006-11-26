@@ -13,11 +13,6 @@ namespace CadKit.Helios.Commands
     CadKit.Commands.Command
   {
     /// <summary>
-    /// Local types.
-    /// </summary>
-    private delegate void CreateDefaultGuiDelegate(CadKit.Interfaces.IDocument idoc);
-
-    /// <summary>
     /// Constructor.
     /// </summary>
     public OpenDocumentCommand ( object caller )
@@ -33,7 +28,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         string[] names = this._askForFileNames();
 
@@ -57,58 +52,13 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected void _open(string name)
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         // Should be true.
         System.Diagnostics.Debug.Assert(false == CadKit.Helios.Application.Instance.MainForm.InvokeRequired);
 
-        // If it exists then bring it forward.
-        CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.findDocument(name);
-        if ( null != idoc )
-        {
-          CadKit.Documents.Manager.Instance.windowsForward(idoc, _caller);
-          return;
-        }
-
-        // Feedback.
-        System.Console.WriteLine(System.String.Format("Opening file: {0}", name));
-
-        // Open the document.
-        idoc = CadKit.Documents.Manager.Instance.open(name, null, _caller);
-
-        // Give the document a command history. Assigning this avoids a dependency.
-        CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
-        if (null != doc)
-        {
-          doc.CommandHistory = new CadKit.Commands.History();
-          doc.CommandHistory.add(this);
-        }
-
-        // Set the delegate.
-        CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, _caller);
-
-        // Create the default user-interface.
-        this._createDefaultGui(idoc);
-      }
-    }
-
-    /// <summary>
-    /// Create the default user-interface.
-    /// </summary>
-    private void _createDefaultGui(CadKit.Interfaces.IDocument idoc)
-    {
-      System.Windows.Forms.Form form = CadKit.Helios.Application.Instance.MainForm;
-      if (true == form.InvokeRequired)
-      {
-        form.BeginInvoke(new CreateDefaultGuiDelegate(this._createDefaultGui), new object[] { idoc });
-      }
-      else
-      {
-        CadKit.Interfaces.IGuiCreate gui = idoc as CadKit.Interfaces.IGuiCreate;
-        if (null != gui)
-        {
-          gui.create(_caller);
-        }
+        // This will start a separate thread and immediately return.
+        OpenDocumentTask task = new OpenDocumentTask(name, _caller);
       }
     }
 
@@ -117,7 +67,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private string[] _askForFileNames()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
         dialog.AddExtension = true;
@@ -159,7 +109,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private void _setFilterString(string persistentName, string key, System.Windows.Forms.OpenFileDialog dialog)
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         string finalFilter = "";
         CadKit.Interfaces.IFiltersOpen[] filtersOpen = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IFiltersOpen>();
@@ -194,7 +144,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         return CadKit.Plugins.Manager.Instance.has<CadKit.Interfaces.IDocumentOpen>();
       }

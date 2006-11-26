@@ -19,8 +19,8 @@ namespace CadKit
     {
       public ref class ReadFile
       {
-        delegate void CallbackDelegate();
-        typedef void (*NativeProgressCallback)();
+        delegate void CallbackDelegate ( unsigned long bytes );
+        typedef void (*NativeProgressCallback) ( unsigned long bytes );
 
         CadKit::Interfaces::IProgressBar^ _progress;
         CallbackDelegate^ _delegate;
@@ -30,7 +30,7 @@ namespace CadKit
 
         NativeProgressCallback    _makeProgressCallback();
 
-        void                      _progressNotify();
+        void                      _progressNotify ( unsigned long bytes );
 
       public:
 

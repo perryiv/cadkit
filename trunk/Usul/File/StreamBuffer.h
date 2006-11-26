@@ -31,18 +31,18 @@ public:
   typedef std::basic_filebuf < char, CharTraits > BaseClass;
   typedef BaseClass::int_type IntType;
 
-  explicit StreamBuffer ( const std::string &file ) : BaseClass(), _size ( 0 ), _callback ( 0x0 )
+  explicit StreamBuffer ( const std::string &file ) : BaseClass(), _size ( 0 ), _count ( 0 ), _callback ( 0x0 )
   {
     if ( 0x0 == this->open ( file.c_str(), std::ios_base::in | std::ios_base::binary ) )
       throw std::runtime_error ( std::string ( "Error 2836857267: Could not open file: " ) + file );
 
-    _size = static_cast < IntType > ( this->pubseekoff ( 0, std::ios_base::end, std::ios_base::in ) );
+    _size = static_cast < unsigned long > ( this->pubseekoff ( 0, std::ios_base::end, std::ios_base::in ) );
     this->pubseekoff ( 0, std::ios_base::beg, std::ios_base::in );
   }
 
   struct Callback
   {
-    virtual void operator () () = 0;
+    virtual void operator () ( unsigned long bytes ) = 0;
   };
 
   void callback ( Callback *cb )
@@ -55,15 +55,16 @@ protected:
   virtual IntType uflow()
   {
     IntType v = BaseClass::uflow();
-    IntType count = this->egptr() - this->gptr();
+    _count += ( this->egptr() - this->gptr() );
     if ( 0x0 != _callback )
-      (*_callback)();
+      (*_callback) ( _count );
     return v;
   }
 
 private:
 
-  IntType _size;
+  unsigned long _size;
+  unsigned long _count;
   Callback *_callback;
 };
 

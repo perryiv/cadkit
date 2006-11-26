@@ -85,6 +85,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.JobW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Delegates", "..\Delegates\CadKit.Delegates.csproj", "{486271AE-53BE-4DF0-816C-E5A234DB4613}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.Tools", "..\Threads\Tools\CadKit.Threads.Tools.csproj", "{EF977229-371D-4FB1-90C5-237DEE74D069}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -425,6 +427,16 @@ Global
 		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{486271AE-53BE-4DF0-816C-E5A234DB4613}.Release|Win32.ActiveCfg = Release|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EF977229-371D-4FB1-90C5-237DEE74D069}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

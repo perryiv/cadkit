@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Documents.LargeTriangleDocument
 {
-  public class Document : 
+  public class Document :
     CadKit.Documents.Document,
     CadKit.Interfaces.IRead
   {
@@ -30,15 +30,15 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     protected override string _typeName()
     {
-      lock (this.Mutex) { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; }
+      return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName;
     }
 
     /// <summary>
     /// Read the file.
     /// </summary>
-    void CadKit.Interfaces.IRead.read ( string name, object caller )
+    void CadKit.Interfaces.IRead.read(string name, object caller)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         CadKit.Interfaces.IProgressBar progress = caller as CadKit.Interfaces.IProgressBar;
         if (null != progress)

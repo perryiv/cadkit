@@ -25,7 +25,7 @@ namespace CadKit.Documents
     /// Data members.
     /// </summary>
     private bool _modified = false;
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private string _name = "Untitled" + CadKit.Documents.Manager.Instance.NumDocuments.ToString();
     private bool _hasDefaultName = true;
     private CadKit.Interfaces.ICommandHistory _commands = null;
@@ -64,7 +64,7 @@ namespace CadKit.Documents
     {
       try
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           if (null != _views)
           {
@@ -99,7 +99,7 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IDocument.add(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         this.add(view);
       }
@@ -111,7 +111,7 @@ namespace CadKit.Documents
     /// </summary>
     void add(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         if (null != view && false == this.contains(view))
         {
@@ -126,7 +126,7 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IDocument.remove(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         this.remove(view);
       }
@@ -138,7 +138,7 @@ namespace CadKit.Documents
     /// </summary>
     public void remove(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         while (true == this.contains(view))
         {
@@ -153,7 +153,7 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.contains(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         return this.contains(view);
       }
@@ -165,7 +165,7 @@ namespace CadKit.Documents
     /// </summary>
     public bool contains(CadKit.Interfaces.IDocumentView view)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         return _views.Contains(view);
       }
@@ -177,7 +177,7 @@ namespace CadKit.Documents
     /// </summary>
     CadKit.Interfaces.IDocumentView[] CadKit.Interfaces.IDocument.Views
     {
-      get { lock (this.Mutex) { return this.Views; } }
+      get { return this.Views; }
     }
 
 
@@ -186,17 +186,17 @@ namespace CadKit.Documents
     /// </summary>
     public CadKit.Interfaces.IDocumentView[] Views
     {
-      get { lock (this.Mutex) { return _views.ToArray(); } }
+      get { using (this.Lock.read()) { return _views.ToArray(); } }
     }
-    
+
 
     /// <summary>
     /// Set/get the command history.
     /// </summary>
     public CadKit.Interfaces.ICommandHistory CommandHistory
     {
-      get { lock (this.Mutex) { return _commands; } }
-      set { lock (this.Mutex) { _commands = value; } }
+      get { using (this.Lock.read()) { return _commands; } }
+      set { using (this.Lock.write()) { _commands = value; } }
     }
 
 
@@ -205,8 +205,8 @@ namespace CadKit.Documents
     /// </summary>
     CadKit.Interfaces.IGuiDelegate CadKit.Interfaces.IDocument.GuiDelegate
     {
-      get { lock (this.Mutex) { return _gui; } }
-      set { lock (this.Mutex) { _gui = value; } }
+      get { using (this.Lock.read()) { return _gui; } }
+      set { using (this.Lock.write()) { _gui = value; } }
     }
 
 
@@ -216,14 +216,8 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.Modified
     {
-      get { lock (this.Mutex) { return _modified; } }
-      set
-      {
-        lock (this.Mutex)
-        {
-          _modified = value;
-        }
-      }
+      get { using (this.Lock.read()) { return _modified; } }
+      set { using (this.Lock.write()) { _modified = value; } }
     }
 
 
@@ -233,8 +227,9 @@ namespace CadKit.Documents
     /// </summary>
     string CadKit.Interfaces.IDocument.Name
     {
-      get { lock (this.Mutex) { return _name; } }
-      set { lock (this.Mutex) { _name = value; } }
+      // Was causing deadlock when opening many files at once.
+      get { using (this.Lock.read()) { return _name; } }
+      set { using (this.Lock.write()) { _name = value; } }
     }
 
 
@@ -243,7 +238,7 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.HasDefaultName
     {
-      get { lock (this.Mutex) { return _hasDefaultName; } }
+      get { using (this.Lock.read()) { return _hasDefaultName; } }
     }
 
 
@@ -252,7 +247,7 @@ namespace CadKit.Documents
     /// </summary>
     string CadKit.Interfaces.IDocument.TypeName
     {
-      get { lock (this.Mutex) { return this._typeName(); } }
+      get { return this._typeName(); }
     }
 
 
@@ -267,10 +262,12 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IGuiCreate.create(object caller)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         if (null != _gui)
         {
+          // Potential deadlock if this calls BeginInvoke and
+          // tries to write to this instance.
           _gui.create(caller);
         }
       }
@@ -282,7 +279,7 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IWindowsForward.windowsForward(object caller)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         CadKit.Interfaces.IWindowsForward forward = _gui as CadKit.Interfaces.IWindowsForward;
         if (null != forward)
@@ -294,11 +291,11 @@ namespace CadKit.Documents
 
 
     /// <summary>
-    /// Get the mutex.
+    /// Get the lock.
     /// </summary>
-    public object Mutex
+    public CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get { return _lock; }
     }
   }
 }

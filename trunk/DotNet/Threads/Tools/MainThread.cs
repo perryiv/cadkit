@@ -12,7 +12,7 @@ namespace CadKit.Threads.Tools
   public class MainThread
   {
     private static MainThread _instance = null;
-    private System.Threading.Thread _thread = System.Threading.Thread.CurrentThread;
+    private int _id = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
     private MainThread()
     {
@@ -33,7 +33,8 @@ namespace CadKit.Threads.Tools
 
     public bool IsMainThread
     {
-      get { return (null == _thread) ? false : (System.Threading.Thread.CurrentThread.ManagedThreadId == _thread.ManagedThreadId); }
+      // No need to lock a mutex here.
+      get { return (System.Threading.Thread.CurrentThread.ManagedThreadId == _id); }
     }
   }
 }

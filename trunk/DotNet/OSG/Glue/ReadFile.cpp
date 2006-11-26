@@ -10,12 +10,13 @@
 #include "ReadFile.h"
 #include "Reader.h"
 
+#include "Usul/Math/MinMax.h"
 #include "Usul/Strings/ManagedToNative.h"
 
+#include <limits>
 
-namespace CadKit {
-namespace OSG {
-namespace Glue {
+
+using namespace CadKit::OSG::Glue;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,13 +129,14 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile( System::String ^name, System::O
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadFile::_progressNotify()
+void ReadFile::_progressNotify ( unsigned long bytes )
 {
   if ( nullptr != _progress )
-    _progress->Value = 10;
-}
-
-
-}
-}
+  {
+    const unsigned long maxInt ( static_cast<unsigned long> ( std::numeric_limits<int>::max() ) );
+    const unsigned long longValue ( Usul::Math::minimum ( bytes, maxInt ) );
+    const int intValue ( static_cast<int> ( longValue ) );
+    _progress->Text = System::String::Format ( "Bytes Read: {0} of {1}", intValue.ToString ( "N0" ), _progress->Range.ToString ( "N0" ) );
+    _progress->Value = intValue;
+  }
 }

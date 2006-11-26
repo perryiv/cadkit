@@ -27,7 +27,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
       }
     }
@@ -37,7 +37,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         return CadKit.Plugins.Manager.Instance.has<CadKit.Interfaces.IDocumentNew>();
       }

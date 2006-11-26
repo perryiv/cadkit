@@ -29,7 +29,7 @@ class Reader
 {
 public:
 
-  typedef void (*ProgressCallback)();
+  typedef void (*ProgressCallback) ( unsigned long );
 
   Reader();
   ~Reader();
@@ -45,9 +45,9 @@ protected:
   struct Callback : public Usul::File::StreamBuffer::Callback
   {
     Callback ( Reader &reader ) : _reader ( reader ){}
-    virtual void operator () ()
+    virtual void operator () ( unsigned long bytes )
     {
-      _reader._notifyProgress();
+      _reader._notifyProgress ( bytes );
     }
   private:
     Reader &_reader;
@@ -56,7 +56,7 @@ protected:
 
   osgDB::ReaderWriter   *_findReader ( const std::string &file );
 
-  void                  _notifyProgress();
+  void                  _notifyProgress ( unsigned long bytes );
 
   void                  _read ( const std::string &file, osgDB::ReaderWriter &reader );
   void                  _read ( Usul::File::StreamBuffer::BaseClass &buf, osgDB::ReaderWriter &reader );

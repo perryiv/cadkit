@@ -36,7 +36,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     protected override string _typeName()
     {
-      lock (this.Mutex) { return CadKit.Plugins.Documents.SceneDocument.Document.TypeName; }
+      return CadKit.Plugins.Documents.SceneDocument.Document.TypeName;
     }
 
     /// <summary>
@@ -44,29 +44,32 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     void CadKit.Interfaces.IRead.read(string name, object caller)
     {
-      CadKit.OSG.Glue.ReadFile reader = null;
-      try
+      using (this.Lock.write())
       {
-        reader = new CadKit.OSG.Glue.ReadFile();
-        _root = reader.readNodeFile(name, caller);
+        CadKit.OSG.Glue.ReadFile reader = null;
+        try
+        {
+          reader = new CadKit.OSG.Glue.ReadFile();
+          _root = reader.readNodeFile(name, caller);
 
-        CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
-        if (null != idoc)
-        {
-          idoc.Name = name;
-        }
+          CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
+          if (null != idoc)
+          {
+            idoc.Name = name;
+          }
 
-        CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
-        if (null != recent)
-        {
-          recent.add(name);
+          CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+          if (null != recent)
+          {
+            recent.add(name);
+          }
         }
-      }
-      finally
-      {
-        if (null != reader)
+        finally
         {
-          reader.clear();
+          if (null != reader)
+          {
+            reader.clear();
+          }
         }
       }
     }
@@ -77,7 +80,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     object CadKit.Interfaces.IBuildScene.Scene
     {
-      get { return _root; }
+      get { using (this.Lock.read()) { return _root; } }
     }
   }
 }

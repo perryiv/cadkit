@@ -42,10 +42,8 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     object CadKit.Interfaces.IDocumentNew.create(object caller)
     {
-      lock (_mutex)
-      {
-        return new CadKit.Plugins.Documents.LargeTriangleDocument.Document();
-      }
+      // Re-entrant! Do not lock the mutex!
+      return new CadKit.Plugins.Documents.LargeTriangleDocument.Document();
     }
 
     /// <summary>
@@ -67,7 +65,8 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      get { lock (_mutex) { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; } }
+      // Re-entrant! Do not lock the mutex!
+      get { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; }
     }
 
     /// <summary>
@@ -75,7 +74,8 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      get { lock (_mutex) { return "Document type for working with triangle document that are larger than system RAM"; } }
+      // Re-entrant! Do not lock the mutex!
+      get { return "Document type for working with triangle document that are larger than system RAM"; }
     }
 
     /// <summary>
@@ -83,12 +83,10 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     bool CadKit.Interfaces.IDocumentOpen.canOpen(string name)
     {
-      lock (_mutex)
-      {
-        System.IO.FileInfo info = new System.IO.FileInfo(name);
-        string ext = info.Extension.ToLower();
-        return (".tdf" == ext || ".stl" == ext || ".r3d" == ext);
-      }
+      // Re-entrant! Do not lock the mutex!
+      System.IO.FileInfo info = new System.IO.FileInfo(name);
+      string ext = info.Extension.ToLower();
+      return (".tdf" == ext || ".stl" == ext || ".r3d" == ext);
     }
 
     /// <summary>
@@ -96,17 +94,15 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
     {
+      // Re-entrant! Do not lock the mutex!
       get
       {
-        lock (_mutex)
-        {
-          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-          filters.Add(new CadKit.Interfaces.Filter("All Triangle Files (*.tdf *.stl *.r3d)", "*.tdf;*.stl;*.r3d"));
-          filters.Add(new CadKit.Interfaces.Filter("Triangle Document Format (*.tdf)", "*.tdf"));
-          filters.Add(new CadKit.Interfaces.Filter("Stereolithography (*.stl)", "*.stl"));
-          filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
-          return filters;
-        }
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("All Triangle Files (*.tdf *.stl *.r3d)", "*.tdf;*.stl;*.r3d"));
+        filters.Add(new CadKit.Interfaces.Filter("Triangle Document Format (*.tdf)", "*.tdf"));
+        filters.Add(new CadKit.Interfaces.Filter("Stereolithography (*.stl)", "*.stl"));
+        filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
+        return filters;
       }
     }
   }

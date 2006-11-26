@@ -11,6 +11,19 @@
 
 using namespace CadKit::OSG::Glue;
 
+
+namespace Detail
+{
+  struct InitOSG
+  {
+    InitOSG()
+    {
+      osg::Referenced::setThreadSafeReferenceCounting ( true );
+    }
+  } _init_osg;
+}
+
+
 Node::Node() : _node( 0x0 )
 {
 }

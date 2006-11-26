@@ -23,7 +23,7 @@ namespace CadKit.Helios
         CadKit.Init.Glue.Init init = new CadKit.Init.Glue.Init();
 
         // Cache this thread's id.
-        CadKit.Tools.Threading threading = CadKit.Tools.Threading.Instance;
+        CadKit.Threads.Tools.MainThread mainThread = CadKit.Threads.Tools.MainThread.Instance;
 
         // Redirect standard output to a file.
         CadKit.Tools.RedirectOutput redirect = CadKit.Tools.RedirectOutput.Instance;

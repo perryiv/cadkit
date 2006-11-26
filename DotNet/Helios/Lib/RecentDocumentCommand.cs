@@ -36,7 +36,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         try
         {

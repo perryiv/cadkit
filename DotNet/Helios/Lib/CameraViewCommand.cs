@@ -29,7 +29,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
         if (null != camera)
@@ -44,7 +44,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
         return (null != camera);

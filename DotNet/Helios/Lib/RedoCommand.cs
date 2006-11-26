@@ -27,7 +27,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.ActiveDocument;
         CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;
@@ -44,7 +44,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.ActiveDocument;
         CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;

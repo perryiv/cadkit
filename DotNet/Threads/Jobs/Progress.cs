@@ -166,8 +166,17 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     string CadKit.Interfaces.IProgressBar.Text
     {
-      get { lock (_mutex) { return _text; } }
-      set { lock ( _mutex ) { _text = value; } }
+      get { lock (this.Mutex) { return this.Text; } }
+      set { lock (this.Mutex) { this.Text = value; } }
+    }
+
+    /// <summary>
+    /// Get/set the text.
+    /// </summary>
+    public string Text
+    {
+      get { lock (this.Mutex) { return _text; } }
+      set { lock (this.Mutex) { _text = value; } }
     }
 
     /// <summary>
@@ -175,7 +184,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     int CadKit.Interfaces.IProgressBar.Range
     {
-      get { lock (_mutex) { return (this.Maximum - this.Minimum); } }
+      get { lock (this.Mutex) { return (this.Maximum - this.Minimum); } }
     }
 
     /// <summary>

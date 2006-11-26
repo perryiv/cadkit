@@ -42,7 +42,6 @@
     <Compile Include="Progress.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="RedirectOutput.cs" />
-    <Compile Include="Threading.cs" />
     <Compile Include="ToolStripPanel.cs" />
     <Compile Include="ToolWindow.cs" />
   </ItemGroup>

@@ -31,7 +31,6 @@ namespace CadKit.Threads.GUI
       this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
       this._label = new System.Windows.Forms.Label();
       this._progressBar = new System.Windows.Forms.ProgressBar();
-      this._buttonRun = new System.Windows.Forms.Button();
       this._buttonRemove = new System.Windows.Forms.Button();
       this._tableLayout.SuspendLayout();
       this.SuspendLayout();
@@ -39,15 +38,13 @@ namespace CadKit.Threads.GUI
       // _tableLayout
       // 
       this._tableLayout.BackColor = System.Drawing.SystemColors.Control;
-      this._tableLayout.ColumnCount = 4;
+      this._tableLayout.ColumnCount = 3;
       this._tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
       this._tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
       this._tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-      this._tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
       this._tableLayout.Controls.Add(this._label, 0, 0);
       this._tableLayout.Controls.Add(this._progressBar, 1, 0);
-      this._tableLayout.Controls.Add(this._buttonRun, 2, 0);
-      this._tableLayout.Controls.Add(this._buttonRemove, 3, 0);
+      this._tableLayout.Controls.Add(this._buttonRemove, 2, 0);
       this._tableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
       this._tableLayout.Location = new System.Drawing.Point(2, 2);
       this._tableLayout.Name = "_tableLayout";
@@ -71,21 +68,8 @@ namespace CadKit.Threads.GUI
       this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
       this._progressBar.Location = new System.Drawing.Point(123, 6);
       this._progressBar.Name = "_progressBar";
-      this._progressBar.Size = new System.Drawing.Size(198, 23);
+      this._progressBar.Size = new System.Drawing.Size(234, 23);
       this._progressBar.TabIndex = 0;
-      // 
-      // _buttonRun
-      // 
-      this._buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-      this._buttonRun.FlatAppearance.BorderSize = 0;
-      this._buttonRun.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this._buttonRun.Image = global::CadKit.Threads.GUI.Properties.Resources.run;
-      this._buttonRun.Location = new System.Drawing.Point(327, 6);
-      this._buttonRun.Name = "_buttonRun";
-      this._buttonRun.Size = new System.Drawing.Size(30, 23);
-      this._buttonRun.TabIndex = 1;
-      this._buttonRun.UseVisualStyleBackColor = false;
-      this._buttonRun.Click += new System.EventHandler(this._buttonRunClick);
       // 
       // _buttonRemove
       // 
@@ -120,7 +104,6 @@ namespace CadKit.Threads.GUI
     private System.Windows.Forms.TableLayoutPanel _tableLayout;
     private System.Windows.Forms.Label _label;
     private System.Windows.Forms.ProgressBar _progressBar;
-    private System.Windows.Forms.Button _buttonRun;
     private System.Windows.Forms.Button _buttonRemove;
   }
 }

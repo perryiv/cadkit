@@ -46,6 +46,10 @@
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Threads\Tools\CadKit.Threads.Tools.csproj">
+      <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>
+      <Name>CadKit.Threads.Tools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

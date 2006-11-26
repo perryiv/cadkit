@@ -25,7 +25,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         try
         {
@@ -49,7 +49,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private void _addPages(CadKit.Interfaces.IOptionsForm form)
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         try
         {
@@ -78,7 +78,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private void _addPage(CadKit.Interfaces.IOptionsForm form, CadKit.Interfaces.IOptionsPageAdd adder)
     {
-      lock (_mutex)
+      lock (this.Mutex)
       {
         if (null == form || null == adder)
           throw new System.ArgumentNullException("Error 3336043850: invalid arguments given", null as System.Exception);

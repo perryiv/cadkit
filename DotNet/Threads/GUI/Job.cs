@@ -95,6 +95,11 @@ namespace CadKit.Threads.GUI
           _progressBar.Minimum = _job.Progress.Minimum;
           _progressBar.Maximum = _job.Progress.Maximum;
           _progressBar.Value = _job.Progress.Value;
+          _label.Text = _job.Progress.Text;
+          _label.Width = _label.PreferredWidth;
+          _tableLayout.ColumnStyles[0].Width = _label.PreferredWidth + 20;
+          _tableLayout.ColumnStyles[1].Width = _tableLayout.Width - (_tableLayout.ColumnStyles[0].Width + _tableLayout.ColumnStyles[2].Width);
+          _tableLayout.Invalidate();
         }
       }
       catch (System.Exception e)
@@ -109,39 +114,6 @@ namespace CadKit.Threads.GUI
     private object Mutex
     {
       get { return _mutex; }
-    }
-
-    /// <summary>
-    /// Called when the button is clicked.
-    /// </summary>
-    private void _buttonRunClick(object sender, System.EventArgs args)
-    {
-      try
-      {
-        lock (this.Mutex)
-        {
-          System.Diagnostics.Debug.Assert(false == this.InvokeRequired);
-
-          if (null == _job)
-          {
-            return;
-          }
-          if (true == _job.Suspended)
-          {
-            _job.resume();
-            this._buttonRun.Image = global::CadKit.Threads.GUI.Properties.Resources.run;
-          }
-          else if (true == _job.Running)
-          {
-            _job.pause();
-            this._buttonRun.Image = global::CadKit.Threads.GUI.Properties.Resources.pause;
-          }
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 2504082161: {0}", e.Message);
-      }
     }
 
     /// <summary>

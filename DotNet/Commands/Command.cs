@@ -14,7 +14,7 @@ namespace CadKit.Commands
     /// <summary>
     /// Data members.
     /// </summary>
-    protected object _mutex = new object();
+    private object _mutex = new object();
     protected object _caller = null;
     protected System.Windows.Forms.ToolStripMenuItem _menuButton = null;
     protected System.Windows.Forms.ToolStripButton _toolButton = null;
@@ -82,7 +82,7 @@ namespace CadKit.Commands
     {
       get
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           if (null == _menuButton)
           {
@@ -99,7 +99,7 @@ namespace CadKit.Commands
       }
       set
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           _menuButton = value;
         }
@@ -113,7 +113,7 @@ namespace CadKit.Commands
     {
       get
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           if (null == _toolButton)
           {
@@ -128,7 +128,7 @@ namespace CadKit.Commands
       }
       set
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           _toolButton = value;
         }
@@ -142,7 +142,7 @@ namespace CadKit.Commands
     {
       try
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           this._execute();
         }
@@ -160,7 +160,7 @@ namespace CadKit.Commands
     {
       try
       {
-        lock (_mutex)
+        lock (this.Mutex)
         {
           System.Windows.Forms.ToolStripItem item = sender as System.Windows.Forms.ToolStripItem;
           if (null != item)
@@ -171,6 +171,14 @@ namespace CadKit.Commands
       {
         System.Console.WriteLine("Error 2046322558: {0}", e.Message);
       }
+    }
+
+    /// <summary>
+    /// Get the mutex.
+    /// </summary>
+    protected object Mutex
+    {
+      get { return _mutex; }
     }
   }
 }

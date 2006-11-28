@@ -22,6 +22,7 @@
 #include "Usul/Math/Vector2.h"
 
 #include "osgGA/GUIEventAdapter"
+#include "osg/Version"
 #include "osg/ref_ptr"
 
 namespace OsgTools {

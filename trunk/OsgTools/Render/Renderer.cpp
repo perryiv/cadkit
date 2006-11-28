@@ -1273,7 +1273,7 @@ const osg::StateSet*  Renderer::getGlobalStateSet() const
 
 osg::Light *Renderer::light()
 {
-  return ( 0x0 == _sceneView ) ? 0x0 : _sceneView->getLight();
+  return ( 0x0 == _sceneView.get() ) ? 0x0 : _sceneView->getLight();
 }
 
 
@@ -1285,5 +1285,5 @@ osg::Light *Renderer::light()
 
 const osg::Light *Renderer::light() const
 {
-  return ( 0x0 == _sceneView ) ? 0x0 : _sceneView->getLight();
+  return ( 0x0 == _sceneView.get() ) ? 0x0 : _sceneView->getLight();
 }

@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\ExportImageCommand.cs" />
+    <Compile Include="Commands\ExportSceneCommand.cs" />
     <Compile Include="Commands\ViewerPickCommand.cs" />
     <Compile Include="Commands\ViewerNavigateCommand.cs" />
     <Compile Include="Commands\ViewerSeekCommand.cs" />

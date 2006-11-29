@@ -368,7 +368,6 @@ namespace CadKit.Viewer
           filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
           filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
           filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
-          filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
           return filters;
         }
       }

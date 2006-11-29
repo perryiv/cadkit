@@ -360,6 +360,9 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+          this._addMenuButton(menu, new CadKit.Helios.Commands.ExportSceneCommand(this));
+          this._addMenuButton(menu, new CadKit.Helios.Commands.ExportImageCommand(this));
+          menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           menu.DropDownItems.Add(_recentFiles.Menu);
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           this._addMenuButton(menu, new CadKit.Helios.Commands.ExitCommand(this));

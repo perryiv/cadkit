@@ -9,7 +9,7 @@
 
 namespace CadKit.Helios.Commands
 {
-  class ExitCommand : CadKit.Commands.Command
+  public class ExitCommand : CadKit.Commands.Command
   {
     /// <summary>
     /// Constructor.

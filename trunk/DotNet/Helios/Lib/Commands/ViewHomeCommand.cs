@@ -18,6 +18,7 @@ namespace CadKit.Helios.Commands
       : base(caller)
     {
       _text = "View &Home";
+      _toolTipText = "View Home";
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_home_command.gif");
       _toolIcon = _menuIcon;
       _option = CadKit.Interfaces.CameraOption.RESET;

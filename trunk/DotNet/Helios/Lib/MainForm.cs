@@ -398,6 +398,13 @@ namespace CadKit.Helios
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewAllCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewHomeCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewFrontCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewBackCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewTopCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewBottomCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewRightCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewLeftCommand(this));
+        _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerNavigateCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerPickCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerSeekCommand(this));

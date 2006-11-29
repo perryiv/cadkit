@@ -18,6 +18,7 @@ namespace CadKit.Helios.Commands
       : base(caller)
     {
       _text = "Seek";
+      _toolTipText = _text;
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/viewer_seek_command.gif");
       _toolIcon = _menuIcon;
       _mode = CadKit.Interfaces.ViewMode.SEEK;

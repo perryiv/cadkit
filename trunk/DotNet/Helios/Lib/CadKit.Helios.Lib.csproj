@@ -36,6 +36,12 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\ViewBottomCommand.cs" />
+    <Compile Include="Commands\ViewTopCommand.cs" />
+    <Compile Include="Commands\ViewRightCommand.cs" />
+    <Compile Include="Commands\ViewLeftCommand.cs" />
+    <Compile Include="Commands\ViewBackCommand.cs" />
+    <Compile Include="Commands\ViewFrontCommand.cs" />
     <Compile Include="Commands\ExportImageCommand.cs" />
     <Compile Include="Commands\ExportSceneCommand.cs" />
     <Compile Include="Commands\ViewerPickCommand.cs" />

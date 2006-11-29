@@ -30,7 +30,7 @@ namespace CadKit.OpenGL
 
         this._initInnerPanel();
 
-        _renderContext = new CadKit.OpenGL.Glue.RenderContext(_innerPanel, _pixelFormat);
+        _renderContext = new CadKit.OpenGL.Glue.RenderContext(this.InnerControl, _pixelFormat);
         if (null == _renderContext)
           return;
 

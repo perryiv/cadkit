@@ -34,7 +34,10 @@ namespace CadKit.Threads.Tools
         }
         try
         {
-          // See http://msdn.microsoft.com/msdnmag/issues/05/08/Concurrency/
+          if (true == _lock.IsReaderLockHeld)
+          {
+            throw new System.Exception("Error 3637580726: Reader-lock is already held");
+          }
           _lock.AcquireWriterLock(timeout);
         }
         catch (System.ApplicationException e)
@@ -52,9 +55,13 @@ namespace CadKit.Threads.Tools
       {
         if (null != _lock)
         {
-          if (true == _lock.IsWriterLockHeld)
+          if (true == _lock.IsReaderLockHeld)
           {
-            // See http://msdn.microsoft.com/msdnmag/issues/05/08/Concurrency/
+            System.Console.WriteLine("Error 3785322707: Reader-lock is held");
+            return;
+          }
+          else if (true == _lock.IsWriterLockHeld)
+          {
             _lock.ReleaseWriterLock();
           }
         }

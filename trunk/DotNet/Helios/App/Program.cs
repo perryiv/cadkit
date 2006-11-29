@@ -49,8 +49,9 @@ namespace CadKit.Helios
       {
         if ( null != e.Message && e.Message.Length > 0 )
         {
-          System.Windows.Forms.MessageBox.Show( e.Message, "Error" );
-          System.Console.WriteLine( e.Message );
+          string message = System.String.Format("Error 1659684102: {0}", e.Message);
+          System.Windows.Forms.MessageBox.Show(message, "Error");
+          System.Console.WriteLine( message );
         }
       }
     }

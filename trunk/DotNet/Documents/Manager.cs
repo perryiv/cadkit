@@ -12,9 +12,11 @@ namespace CadKit.Documents
   public class Manager
   {
     /// <summary>
-    /// Delegate to choose which opener to use.
+    /// Delegate.
     /// </summary>
-    public delegate int ChooseBestOpener(CadKit.Interfaces.IDocumentOpen[] openers, object caller);
+    public delegate int ChooseBestOpenerDelegate(CadKit.Interfaces.IDocumentOpen[] openers, object caller);
+    public delegate void ActiveDocumentChangedDelegate(CadKit.Interfaces.IDocument oldDoc, CadKit.Interfaces.IDocument newDoc);
+    public delegate void ActiveViewChangedDelegate(CadKit.Interfaces.IDocumentView oldView, CadKit.Interfaces.IDocumentView newView);
 
 
     /// <summary>
@@ -31,7 +33,9 @@ namespace CadKit.Documents
     private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private Documents _documents = new Documents();
     private CadKit.Interfaces.IDocument _activeDoc = null;
-    private object _activeView = null;
+    private CadKit.Interfaces.IDocumentView _activeView = null;
+    private ActiveDocumentChangedDelegate _activeDocumentChanged = null;
+    private ActiveViewChangedDelegate _activeViewChanged = null;
 
 
     /// <summary>
@@ -62,7 +66,7 @@ namespace CadKit.Documents
     /// <summary>
     /// Open the document. Either returns a document or throws.
     /// </summary>
-    public CadKit.Interfaces.IDocument open(string name, ChooseBestOpener del, object caller)
+    public CadKit.Interfaces.IDocument open(string name, ChooseBestOpenerDelegate del, object caller)
     {
       // Re-entrant! Do not lock the mutex!
 
@@ -98,9 +102,9 @@ namespace CadKit.Documents
     /// </summary>
     private void _addDocument(CadKit.Interfaces.IDocument document)
     {
-      using (this.Lock.write())
+      if (null != document)
       {
-        if (null != document)
+        using (this.Lock.write())
         {
           _documents.Add(document);
         }
@@ -188,7 +192,7 @@ namespace CadKit.Documents
     /// <summary>
     /// Determine appropriate opener. Pass null for the delegate to get first one.
     /// </summary>
-    private CadKit.Interfaces.IDocumentOpen _findBestOpener(string name, ChooseBestOpener del, object caller)
+    private CadKit.Interfaces.IDocumentOpen _findBestOpener(string name, ChooseBestOpenerDelegate del, object caller)
     {
       // Re-entrant! Do not lock the mutex! When opening plugins they may 
       // call back to this class and try to lock the mutex.
@@ -221,21 +225,74 @@ namespace CadKit.Documents
     /// <summary>
     /// Set/Get the active view.
     /// </summary>
-    public object ActiveView
+    public CadKit.Interfaces.IDocumentView ActiveView
     {
       get { using (this.Lock.read()) { return _activeView; } }
-      set
+      set { this._setActiveView(value); }
+    }
+
+
+    /// <summary>
+    /// Set the active view.
+    /// </summary>
+    private void _setActiveView(CadKit.Interfaces.IDocumentView value)
+    {
+      CadKit.Interfaces.IDocumentView oldView = this.ActiveView;
+
+      using (this.Lock.write())
       {
+        _activeView = value;
+      }
+
+      this._setActiveDocument();
+
+      if (null != this.ActiveViewChanged)
+      {
+        this.ActiveViewChanged(oldView, this.ActiveView);
+      }
+    }
+
+
+    /// <summary>
+    /// Set the active document.
+    /// </summary>
+    private void _setActiveDocument()
+    {
+      CadKit.Interfaces.IDocumentView activeView = this.ActiveView;
+      if (null != activeView)
+      {
+        CadKit.Interfaces.IDocument oldDoc = this.ActiveDocument;
+
         using (this.Lock.write())
         {
-          _activeView = value;
-          CadKit.Interfaces.IDocumentView view = _activeView as CadKit.Interfaces.IDocumentView;
-          if (null != view)
-          {
-            _activeDoc = view.Document;
-          }
+          _activeDoc = activeView.Document;
+        }
+
+        if (null != this.ActiveDocumentChanged)
+        {
+          this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
         }
       }
+    }
+
+
+    /// <summary>
+    /// Get the active document changed delegate.
+    /// </summary>
+    public ActiveDocumentChangedDelegate ActiveDocumentChanged
+    {
+      get { using (this.Lock.read()) { return _activeDocumentChanged; } }
+      set { using (this.Lock.write()) { _activeDocumentChanged = value; } }
+    }
+
+
+    /// <summary>
+    /// Get the active view changed delegate.
+    /// </summary>
+    public ActiveViewChangedDelegate ActiveViewChanged
+    {
+      get { using (this.Lock.read()) { return _activeViewChanged; } }
+      set { using (this.Lock.write()) { _activeViewChanged = value; } }
     }
 
 
@@ -277,12 +334,12 @@ namespace CadKit.Documents
     {
       get
       {
+        Documents docs = new Documents();
         using (this.Lock.read())
         {
-          Documents docs = new Documents();
           docs.AddRange(_documents);
-          return docs;
         }
+        return docs;
       }
     }
   }

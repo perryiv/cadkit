@@ -20,7 +20,7 @@ namespace CadKit.Threads.Jobs
     /// <summary>
     /// Data members.
     /// </summary>
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private string _name = null;
     private System.Threading.Thread _thread = null;
     private NotifyDelegate _notifyStart = null;
@@ -43,21 +43,18 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void queue()
     {
-      lock (this.Mutex)
-      {
-        // Return if already queued.
-        if (true == this.Queued)
-          return;
+      // Return if already queued.
+      if (true == this.Queued)
+        return;
 
-        // Should be true.
-        System.Diagnostics.Debug.Assert(null == this.Thread);
+      // Should be true.
+      System.Diagnostics.Debug.Assert(null == this.Thread);
 
-        // Queue the thread.
-        System.Threading.ThreadPool.QueueUserWorkItem(this._executeThread);
+      // Set the flag first.
+      this._setQueued(true);
 
-        // Set flag.
-        this._setQueued(true);
-      }
+      // Queue the thread.
+      System.Threading.ThreadPool.QueueUserWorkItem(this._executeThread);
     }
 
     /// <summary>
@@ -65,28 +62,25 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void cancel()
     {
-      lock (this.Mutex)
-      {
-        // Set flag here in case it didn't start yet.
-        this._setCanceled(true);
+      // Set flag here in case it didn't start yet.
+      this._setCanceled(true);
 
-        // If it's not queued then just return.
-        if (false == this.Queued)
-          return;
+      // If it's not queued then just return.
+      if (false == this.Queued)
+        return;
 
-        // If there is no thread then it didn't start yet, so just return.
-        if (null == this.Thread)
-          return;
+      // If there is no thread then it didn't start yet, so just return.
+      System.Threading.Thread thread = this.Thread;
+      if (null == thread)
+        return;
 
-        // If the current thread is this job's thread.
-        if (System.Threading.Thread.CurrentThread == this.Thread)
-          throw new Cancel();
+      // If the current thread is this job's thread.
+      if (System.Threading.Thread.CurrentThread == thread)
+        throw new Cancel();
 
-        // If we get to here then there is a currently running thread.
-        System.Threading.Thread thread = this.Thread;
-        this.Thread = null;
-        thread.Abort();
-      }
+      // If we get to here then there is a currently running thread.
+      this.Thread = null;
+      thread.Abort();
     }
 
     /// <summary>
@@ -151,7 +145,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private void _setException(System.Exception e)
     {
-      lock (this.Mutex) { _exception = e; }
+      using (this.Lock.write()) { _exception = e; }
     }
 
     /// <summary>
@@ -159,7 +153,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private void _setQueued(bool state)
     {
-      lock (this.Mutex) { _queued = state; }
+      using (this.Lock.write()) { _queued = state; }
     }
 
     /// <summary>
@@ -167,7 +161,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private void _setCanceled(bool state)
     {
-      lock (this.Mutex) { _canceled = state; }
+      using (this.Lock.write()) { _canceled = state; }
     }
 
     /// <summary>
@@ -175,13 +169,33 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool _hasState(System.Threading.ThreadState state)
     {
-      lock (this.Mutex)
+      System.Threading.Thread thread = this.Thread;
+      if (null == thread)
       {
-        if (null == this.Thread)
+        return false;
+      }
+      if ((thread.ThreadState & state) == state)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Is the thread running?
+    /// </summary>
+    public bool Running
+    {
+      get
+      {
+        if (true == this._hasState(System.Threading.ThreadState.Running))
         {
-          return false;
+          return true;
         }
-        if ((this.Thread.ThreadState & state) == state)
+        else if (true == this._hasState(System.Threading.ThreadState.Background))
         {
           return true;
         }
@@ -193,36 +207,11 @@ namespace CadKit.Threads.Jobs
     }
 
     /// <summary>
-    /// Is the thread running?
-    /// </summary>
-    public bool Running
-    {
-      get
-      {
-        lock (this.Mutex)
-        {
-          if (true == this._hasState(System.Threading.ThreadState.Running))
-          {
-            return true;
-          }
-          else if (true == this._hasState(System.Threading.ThreadState.Background))
-          {
-            return true;
-          }
-          else
-          {
-            return false;
-          }
-        }
-      }
-    }
-
-    /// <summary>
     /// Is the thread suspended?
     /// </summary>
     public bool Suspended
     {
-      get { lock (this.Mutex) { return this._hasState(System.Threading.ThreadState.Suspended); } }
+      get { return this._hasState(System.Threading.ThreadState.Suspended); }
     }
 
     /// <summary>
@@ -230,7 +219,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool Queued
     {
-      get { lock (this.Mutex) { return _queued; } }
+      get { using (this.Lock.read()) { return _queued; } }
     }
 
     /// <summary>
@@ -238,7 +227,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool Canceled
     {
-      get { lock (this.Mutex) { return _canceled; } }
+      get { using (this.Lock.read()) { return _canceled; } }
     }
 
     /// <summary>
@@ -246,7 +235,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public System.Exception Exception
     {
-      get { lock (this.Mutex) { return _exception; } }
+      get { using (this.Lock.read()) { return _exception; } }
     }
 
     /// <summary>
@@ -254,7 +243,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool Success
     {
-      get { lock (this.Mutex) { return (null == this.Exception); } }
+      get { return (null == this.Exception); }
     }
 
     /// <summary>
@@ -262,8 +251,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public string Name
     {
-      get { lock (this.Mutex) { return _name; } }
-      set { lock (this.Mutex) { _name = value; } }
+      get { using (this.Lock.read()) { return _name; } }
+      set { using (this.Lock.write()) { _name = value; } }
     }
 
     /// <summary>
@@ -271,8 +260,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public NotifyDelegate Start
     {
-      get { lock (this.Mutex) { return _notifyStart; } }
-      set { lock (this.Mutex) { _notifyStart = value; } }
+      get { using (this.Lock.read()) { return _notifyStart; } }
+      set { using (this.Lock.write()) { _notifyStart = value; } }
     }
 
     /// <summary>
@@ -280,8 +269,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public NotifyDelegate Finish
     {
-      get { lock (this.Mutex) { return _notifyFinish; } }
-      set { lock (this.Mutex) { _notifyFinish = value; } }
+      get { using (this.Lock.read()) { return _notifyFinish; } }
+      set { using (this.Lock.write()) { _notifyFinish = value; } }
     }
 
     /// <summary>
@@ -289,8 +278,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private System.Threading.Thread Thread
     {
-      get { lock (this.Mutex) { return _thread; } }
-      set { lock (this.Mutex) { _thread = value; } }
+      get { using (this.Lock.read()) { return _thread; } }
+      set { using (this.Lock.write()) { _thread = value; } }
     }
 
     /// <summary>
@@ -298,13 +287,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public CadKit.Threads.Jobs.Progress Progress
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          return _progress;
-        }
-      }
+      get { using (this.Lock.read()) { return _progress; } }
     }
 
     /// <summary>
@@ -314,22 +297,17 @@ namespace CadKit.Threads.Jobs
     {
       get
       {
-        lock (this.Mutex)
-        {
-          if (null == this.Thread)
-            return 0;
-          else
-            return this.Thread.ManagedThreadId;
-        }
+        System.Threading.Thread thread = this.Thread;
+        return (null == thread) ? 0 : thread.ManagedThreadId;
       }
     }
 
     /// <summary>
     /// Get the mutex.
     /// </summary>
-    private object Mutex
+    private CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get { return _lock; }
     }
   }
 }

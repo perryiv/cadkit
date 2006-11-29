@@ -389,8 +389,15 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.NewDocumentCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.OpenDocumentCommand(this));
+        _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewAllCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewHomeCommand(this));
+        _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerNavigateCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerPickCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerSeekCommand(this));
       }
     }
 
@@ -402,7 +409,9 @@ namespace CadKit.Helios
       lock (_mutex)
       {
         if (null != strip && null != command)
+        {
           strip.Items.Add(command.ToolButton);
+        }
       }
     }
 
@@ -414,7 +423,9 @@ namespace CadKit.Helios
       lock (_mutex)
       {
         if (null != menu && null != command)
+        {
           menu.DropDownItems.Add(command.MenuButton);
+        }
       }
     }
 

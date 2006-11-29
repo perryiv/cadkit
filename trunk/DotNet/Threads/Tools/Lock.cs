@@ -9,6 +9,9 @@
 
 namespace CadKit.Threads.Tools
 {
+  ///
+  /// See http://msdn.microsoft.com/msdnmag/issues/05/08/Concurrency/
+  ///
   public partial class Lock
   {
     /// <summary>

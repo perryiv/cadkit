@@ -45,7 +45,7 @@
     <Compile Include="HSV.cs" />
     <Compile Include="RGB.cs" />
     <Compile Include="Wheel.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

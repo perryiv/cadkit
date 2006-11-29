@@ -35,27 +35,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="CameraViewCommand.cs" />
+    <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\ViewerPickCommand.cs" />
+    <Compile Include="Commands\ViewerNavigateCommand.cs" />
+    <Compile Include="Commands\ViewerSeekCommand.cs" />
+    <Compile Include="Commands\ViewerModeCommand.cs" />
     <Compile Include="OpenDocumentTask.cs" />
-    <Compile Include="ViewHomeCommand.cs" />
-    <Compile Include="ViewAllCommand.cs" />
+    <Compile Include="Commands\ViewHomeCommand.cs" />
+    <Compile Include="Commands\ViewAllCommand.cs" />
     <Compile Include="OptionsPage.cs">
     </Compile>
     <Compile Include="OptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionsCommand.cs" />
-    <Compile Include="RecentDocumentCommand.cs" />
+    <Compile Include="Commands\OptionsCommand.cs" />
+    <Compile Include="Commands\RecentDocumentCommand.cs" />
     <Compile Include="RecentFiles.cs" />
-    <Compile Include="RedoCommand.cs" />
-    <Compile Include="UndoCommand.cs" />
-    <Compile Include="ExitCommand.cs" />
+    <Compile Include="Commands\RedoCommand.cs" />
+    <Compile Include="Commands\UndoCommand.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="NewDocumentCommand.cs" />
-    <Compile Include="OpenDocumentCommand.cs" />
+    <Compile Include="Commands\NewDocumentCommand.cs" />
+    <Compile Include="Commands\OpenDocumentCommand.cs" />
     <Compile Include="SplashScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,9 +119,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

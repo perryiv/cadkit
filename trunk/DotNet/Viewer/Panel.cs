@@ -88,16 +88,16 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Background color
+    /// Clear color
     /// </summary>
-    public override System.Drawing.Color BackColor
+    public override System.Drawing.Color ClearColor
     {
-      get { lock (this.Mutex) { return base.BackColor; } }
+      get { lock (this.Mutex) { return base.ClearColor; } }
       set
       {
         lock (this.Mutex)
         {
-          base.BackColor = value;
+          base.ClearColor = value;
           this._updateViewerBackground();
         }
       }
@@ -111,7 +111,7 @@ namespace CadKit.Viewer
     {
       lock (this.Mutex)
       {
-        System.Drawing.Color color = this.BackColor;
+        System.Drawing.Color color = this.ClearColor;
         if (null == color || null == _viewer)
           return;
 

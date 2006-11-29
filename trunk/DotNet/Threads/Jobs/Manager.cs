@@ -21,7 +21,7 @@ namespace CadKit.Threads.Jobs
     /// Data members.
     /// </summary>
     private static Manager _instance = null;
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private JobList _jobs = new JobList();
     private CollectionChangedDelegate _notifyAdd = null;
     private CollectionChangedDelegate _notifyRemove = null;
@@ -55,8 +55,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public CollectionChangedDelegate JobAdded
     {
-      get { lock (this.Mutex) { return _notifyAdd; } }
-      set { lock (this.Mutex) { _notifyAdd = value; } }
+      get { using (this.Lock.read()) { return _notifyAdd; } }
+      set { using (this.Lock.write()) { _notifyAdd = value; } }
     }
 
     /// <summary>
@@ -64,8 +64,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public CollectionChangedDelegate JobRemoved
     {
-      get { lock (this.Mutex) { return _notifyRemove; } }
-      set { lock (this.Mutex) { _notifyRemove = value; } }
+      get { using (this.Lock.read()) { return _notifyRemove; } }
+      set { using (this.Lock.write()) { _notifyRemove = value; } }
     }
 
     /// <summary>
@@ -73,8 +73,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public CollectionChangedDelegate JobFinished
     {
-      get { lock (this.Mutex) { return _notifyFinish; } }
-      set { lock (this.Mutex) { _notifyFinish = value; } }
+      get { using (this.Lock.read()) { return _notifyFinish; } }
+      set { using (this.Lock.write()) { _notifyFinish = value; } }
     }
 
     /// <summary>
@@ -82,19 +82,22 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void add(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
+      if (null == job)
+        return;
+
+      if (true == this.Contains(job))
+        return;
+
+      using (this.Lock.write())
       {
-        if (null == job)
-          return;
-
-        if (true == _jobs.Contains(job))
-          return;
-
         _jobs.Add(job);
-        job.queue();
+      }
 
-        if (null != _notifyAdd)
-          _notifyAdd(job);
+      job.queue();
+
+      if (null != this.JobAdded)
+      {
+        this.JobAdded(job);
       }
     }
 
@@ -103,19 +106,22 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void remove(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
+      if (null == job)
+        return;
+
+      if (false == this.Contains(job))
+        return;
+
+      using (this.Lock.write())
       {
-        if (null == job)
-          return;
-
-        if (false == this.Contains(job))
-          return;
-
         _jobs.Remove(job);
-        job.cancel();
+      }
 
-        if (null != _notifyRemove)
-          _notifyRemove(job);
+      job.cancel();
+
+      if (null != this.JobRemoved)
+      {
+        this.JobRemoved(job);
       }
     }
 
@@ -124,12 +130,13 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void done(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         _jobs.Remove(job);
-
-        if (null != _notifyFinish)
-          _notifyFinish(job);
+      }
+      if (null != this.JobFinished)
+      {
+        this.JobFinished(job);
       }
     }
 
@@ -138,13 +145,14 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public void clear()
     {
-      lock (this.Mutex)
+      while (this.NumJobs > 0)
       {
-        while (this.NumJobs > 0)
+        CadKit.Threads.Jobs.Job job = null;
+        using (this.Lock.read())
         {
-          CadKit.Threads.Jobs.Job job = _jobs[_jobs.Count - 1];
-          this.remove(job);
+          job = _jobs[_jobs.Count - 1];
         }
+        this.remove(job);
       }
     }
 
@@ -153,7 +161,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public bool Contains(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         return _jobs.Contains(job);
       }
@@ -166,16 +174,16 @@ namespace CadKit.Threads.Jobs
     {
       get
       {
-        lock (this.Mutex)
+        uint running = 0;
+        JobList jobs = this.JobsCopy;
+        foreach (Job job in jobs)
         {
-          uint running = 0;
-          foreach (Job job in _jobs)
+          if (true == job.Running)
           {
-            if (true == job.Running)
-              ++running;
+            ++running;
           }
-          return running;
         }
+        return running;
       }
     }
 
@@ -184,30 +192,31 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public uint NumJobs
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          System.Diagnostics.Debug.Assert(_jobs.Count >= 0);
-          return (uint)_jobs.Count;
-        }
-      }
+      get { using (this.Lock.read()) { return (uint)_jobs.Count; } }
     }
 
     /// <summary>
     /// Get the mutex.
     /// </summary>
-    public object Mutex
+    public CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get { return _lock; }
     }
 
     /// <summary>
-    /// Get the job list.
+    /// Get a copy of the job list.
     /// </summary>
-    public JobList Jobs
+    public JobList JobsCopy
     {
-      get { return _jobs; }
+      get
+      {
+        JobList jobs = new JobList();
+        using (this.Lock.read())
+        {
+          _jobs.AddRange(jobs);
+        }
+        return jobs;
+      }
     }
   }
 }

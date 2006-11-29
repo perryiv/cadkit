@@ -19,9 +19,11 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Constructor.
     /// </summary>
-    public CameraViewCommand(object caller)
+    protected CameraViewCommand(object caller)
+      : base()
     {
       _caller = caller;
+      CadKit.Documents.Manager.Instance.ActiveViewChanged += this._onActiveViewChanged;
     }
 
     /// <summary>
@@ -29,13 +31,10 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override void _execute()
     {
-      lock (this.Mutex)
+      CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
+      if (null != camera)
       {
-        CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
-        if (null != camera)
-        {
-          camera.camera(_option);
-        }
+        camera.camera(this.Option);
       }
     }
 
@@ -44,11 +43,17 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      lock (this.Mutex)
-      {
-        CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
-        return (null != camera);
-      }
+      CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
+      return (null != camera);
+    }
+
+
+    /// <summary>
+    /// Return viewer mode.
+    /// </summary>
+    private CadKit.Interfaces.CameraOption Option
+    {
+      get { using (this.Lock.read()) { return _option; } }
     }
   }
 }

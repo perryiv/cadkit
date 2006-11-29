@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IClearColor.cs" />
     <Compile Include="IPropertyGridObject.cs" />
     <Compile Include="IDocumentView.cs" />
     <Compile Include="INotifyChanged.cs" />

@@ -25,6 +25,7 @@ namespace CadKit.Commands
     protected System.Windows.Forms.ToolStripMenuItem _menuButton = null;
     protected System.Windows.Forms.ToolStripButton _toolButton = null;
     protected string _text = "Default Text";
+    protected string _toolTipText = "";
     protected System.Drawing.Image _menuIcon = null;
     protected System.Drawing.Image _toolIcon = null;
     protected System.Windows.Forms.Keys _keys = 0;
@@ -235,6 +236,7 @@ namespace CadKit.Commands
       _toolButton.Paint += this._onToolButtonPaint;
       _toolButton.Image = _toolIcon;
       _toolButton.Enabled = false;
+      _toolButton.ToolTipText = this._toolTipText;
       this.ToolButton = _toolButton;
     }
 

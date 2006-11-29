@@ -17,7 +17,8 @@ namespace CadKit.Helios.Commands
     public ViewerPickCommand(object caller)
       : base(caller)
     {
-      _text = "Seek";
+      _text = "Pick";
+      _toolTipText = _text;
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/viewer_pick_command.gif");
       _toolIcon = _menuIcon;
       _mode = CadKit.Interfaces.ViewMode.PICK;

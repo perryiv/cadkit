@@ -17,7 +17,8 @@ namespace CadKit.Helios.Commands
     public ViewerNavigateCommand(object caller)
       : base(caller)
     {
-      _text = "Seek";
+      _text = "Navigate";
+      _toolTipText = _text;
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/viewer_navigate_command.gif");
       _toolIcon = _menuIcon;
       _mode = CadKit.Interfaces.ViewMode.NAVIGATE;

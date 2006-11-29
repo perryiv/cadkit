@@ -9,19 +9,19 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class ViewAllCommand : CameraViewCommand
+  public class ViewRightCommand : CameraViewCommand
   {
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ViewAllCommand(object caller)
+    public ViewRightCommand(object caller)
       : base(caller)
     {
-      _text = "View &All";
-      _toolTipText = "View All";
-      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_all_command.gif");
+      _text = "View &Right";
+      _toolTipText = "View Right";
+      _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_right_command.gif");
       _toolIcon = _menuIcon;
-      _option = CadKit.Interfaces.CameraOption.FIT;
+      _option = CadKit.Interfaces.CameraOption.RIGHT;
     }
   }
 }

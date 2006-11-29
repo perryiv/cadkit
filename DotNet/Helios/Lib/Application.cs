@@ -97,11 +97,22 @@ namespace CadKit.Helios
       }
     }
 
+
+    /// <summary>
+    /// Get/Set the splash screen image.
+    /// </summary>
+    public string SplashImage
+    {
+      get { lock (_mutex) { return _splashImage; } }
+      set { lock (_mutex) { _splashImage = value; } }
+    }
+
     /// <summary>
     /// Data members.
     /// </summary>
     private static Application _instance = null;
     private string _name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost";
+    private string _splashImage = null;
     private CadKit.Helios.MainForm _mainForm = null;
     private object _mutex = new object();
   }

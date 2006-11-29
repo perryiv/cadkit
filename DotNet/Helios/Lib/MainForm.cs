@@ -211,6 +211,11 @@ namespace CadKit.Helios
       }
     }
 
+    public System.Windows.Forms.ToolStrip ToolStrip
+    {
+      get { lock (_mutex) { return _toolStrip; } }
+    }
+
     /// <summary>
     /// Load all appropriate plugins.
     /// </summary>
@@ -333,10 +338,11 @@ namespace CadKit.Helios
         try
         {
           CadKit.Helios.SplashScreen splash = new CadKit.Helios.SplashScreen(this);
-          string file = CadKit.Helios.Application.Instance.IconDir + "/splash_screen.jpg";
+          string file = CadKit.Helios.Application.Instance.SplashImage;
           splash.Image = CadKit.Images.Image.load(file);
           splash.Text = CadKit.Helios.Application.Instance.Name + " Startup";
           splash.Label.Text = splash.Text;
+          splash.Icon = this.Icon;
           return splash;
         }
         catch (System.Exception e)
@@ -350,7 +356,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Build the menu.
     /// </summary>
-    private void _buildMenu()
+    protected virtual void _buildMenu()
     {
       lock (_mutex)
       {
@@ -388,7 +394,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Build the tool bar.
     /// </summary>
-    private void _buildToolBar()
+    protected virtual void _buildToolBar()
     {
       lock (_mutex)
       {
@@ -416,7 +422,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Add the tool-bar button.
     /// </summary>
-    private void _addToolbarButton(System.Windows.Forms.ToolStrip strip, CadKit.Commands.Command command)
+    protected void _addToolbarButton(System.Windows.Forms.ToolStrip strip, CadKit.Commands.Command command)
     {
       lock (_mutex)
       {
@@ -430,7 +436,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Add the menu button.
     /// </summary>
-    private void _addMenuButton(System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command)
+    protected void _addMenuButton(System.Windows.Forms.ToolStripMenuItem menu, CadKit.Commands.Command command)
     {
       lock (_mutex)
       {
@@ -453,6 +459,11 @@ namespace CadKit.Helios
     /// Return the parent form for child views.
     /// </summary>
     object CadKit.Interfaces.IDockPanel.DockPanel
+    {
+      get { lock (_mutex) { return this._dockPanel; } }
+    }
+
+    protected WeifenLuo.WinFormsUI.DockPanel DockPanel
     {
       get { lock (_mutex) { return this._dockPanel; } }
     }
@@ -583,6 +594,13 @@ namespace CadKit.Helios
         System.Console.WriteLine("Error 3223971820: Exception caught while trying to show window.");
         System.Console.WriteLine("Message: {0}", exception.Message);
       }
+    }
+
+    // Get/Set the window menu.
+    public System.Windows.Forms.ToolStripMenuItem WindowMenu
+    {
+      get { lock (_mutex) { return _windowMenu; } }
+      set { lock (_mutex) { _windowMenu = value; } }
     }
   }
 }

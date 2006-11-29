@@ -36,6 +36,9 @@ namespace CadKit.Helios
         CadKit.Helios.Application.Instance.Name = "Helios";
         System.Console.WriteLine(CadKit.Helios.Application.Instance.Name);
 
+        // Set the splash screen image.
+        CadKit.Helios.Application.Instance.SplashImage = CadKit.Helios.Application.Instance.IconDir + "/splash_screen.jpg";
+
         // Declare main form and pass the persistant name.
         CadKit.Helios.MainForm form = new CadKit.Helios.MainForm( "CadKit.Helios.MainForm" );
 

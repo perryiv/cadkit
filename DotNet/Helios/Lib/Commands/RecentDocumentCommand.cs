@@ -16,6 +16,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private string _name = null;
 
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -31,22 +32,29 @@ namespace CadKit.Helios.Commands
       _keys = 0;
     }
 
+
     /// <summary>
     /// Execute the command.
     /// </summary>
     protected override void _execute()
     {
-      lock (this.Mutex)
+      try
       {
-        try
-        {
-          this._open(_name);
-        }
-        catch (System.Exception e)
-        {
-          System.Console.WriteLine("Error 1980234199: {0}", e.Message);
-        }
+        this._open(this.Name);
       }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1980234199: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Return the name.
+    /// </summary>
+    public string Name
+    {
+      get { using (this.Lock.read()) { return _name; } }
     }
   }
 }

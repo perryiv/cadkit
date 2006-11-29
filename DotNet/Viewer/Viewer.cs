@@ -17,7 +17,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IExportImage,
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump,
-    CadKit.Interfaces.IDocumentView
+    CadKit.Interfaces.IDocumentView,
+    CadKit.Interfaces.IClearColor
   {
     /// <summary>
     /// Data members.
@@ -111,7 +112,7 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          CadKit.Documents.Manager.Instance.ActiveView = this;
+          CadKit.Documents.Manager.Instance.ActiveView = this as CadKit.Interfaces.IDocumentView;
         }
       }
       catch (System.Exception e)
@@ -374,52 +375,73 @@ namespace CadKit.Viewer
       }
     }
 
+
+    /// <summary>
+    /// Get/set the directory where frames are dumped.
+    /// </summary>
     public string Directory
     {
-      get
-      {
-        return _panel.Directory;
-      }
-      set
-      {
-        _panel.Directory = value;
-      }
+      get { lock (this.Mutex) { return _panel.Directory; } }
+      set { lock (this.Mutex) { _panel.Directory = value; } }
     }
 
+
+    /// <summary>
+    /// Get/set the base filename for frame dumping.
+    /// </summary>
     public string Filename
     {
-      get
-      {
-        return _panel.Filename;
-      }
-      set
-      {
-        _panel.Filename = value;
-      }
+      get { lock (this.Mutex) { return _panel.Filename; } }
+      set { lock (this.Mutex) { _panel.Filename = value; } }
     }
 
+
+    /// <summary>
+    /// Get/set the extension for frame-dumped files.
+    /// </summary>
     public string Extension
     {
-      get
-      {
-        return _panel.Extension;
-      }
+      get { lock (this.Mutex) { return _panel.Extension; } }
+      set { lock (this.Mutex) { _panel.Extension = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the flag for dumping frames.
+    /// </summary>
+    public bool DumpFrames
+    {
+      get { lock (this.Mutex) { return _panel.DumpFrames; } }
+      set { lock (this.Mutex) { _panel.DumpFrames = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the background color.
+    /// </summary>
+    object CadKit.Interfaces.IClearColor.ClearColor
+    {
+      get { return this.ClearColor; }
       set
       {
-        _panel.Extension = value;
+        try
+        {
+          this.ClearColor = (System.Drawing.Color)value;
+        }
+        catch (System.InvalidCastException)
+        {
+        }
       }
     }
 
-    public bool DumpFrames
+
+    /// <summary>
+    /// Get/set the clear color.
+    /// </summary>
+    public System.Drawing.Color ClearColor
     {
-      get
-      {
-        return _panel.DumpFrames;
-      }
-      set
-      {
-        _panel.DumpFrames = value;
-      }
+      get { lock (this.Mutex) { return _panel.ClearColor; } }
+      set { lock (this.Mutex) { _panel.ClearColor = value; } }
     }
   }
 }

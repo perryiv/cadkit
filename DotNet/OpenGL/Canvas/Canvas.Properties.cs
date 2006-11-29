@@ -12,15 +12,15 @@ namespace CadKit.OpenGL
   public partial class Canvas
   {
     /// <summary>
-    /// Background color
+    /// Clear color
     /// </summary>
-    public override System.Drawing.Color BackColor
+    public virtual System.Drawing.Color ClearColor
     {
-      get { return base.BackColor; }
+      get { return _clearColor; }
       set
       {
-        base.BackColor = value;
-        CadKit.Persistence.Registry.Instance.setColor(this.GetType().ToString(), "BackgroundColor", value);
+        _clearColor = value;
+        CadKit.Persistence.Registry.Instance.setColor(this.GetType().ToString(), "ClearColor", value);
       }
     }
 
@@ -118,6 +118,16 @@ namespace CadKit.OpenGL
     public virtual object PropertyGridObject
     {
       get { lock (this.Mutex) { return new CadKit.OpenGL.Canvas.PropertyProxy(this); } }
+    }
+
+
+    /// <summary>
+    /// Return inner panel.
+    /// </summary>
+    private InnerPanel InnerControl
+    {
+      get { lock (this.Mutex) { return _innerPanel; } }
+      set { lock (this.Mutex) { _innerPanel = value; } }
     }
   }
 }

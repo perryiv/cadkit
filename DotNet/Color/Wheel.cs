@@ -9,7 +9,7 @@
 
 namespace CadKit.Color
 {
-  public class Wheel : System.Windows.Forms.Panel
+  public class Wheel : System.Windows.Forms.UserControl
   {
     /// <summary>
     /// Constants
@@ -139,6 +139,9 @@ namespace CadKit.Color
 
       // The number of points we use is a function of radius.
       int num = (360 * this.Radius) / 100;
+
+      // Never go below this many points.
+      num = System.Math.Max(num, 10);
 
       // Make the points around the perimeter.
       float radius = this.RadiusF;

@@ -92,12 +92,10 @@ namespace CadKit.Threads.GUI
         lock (this.Mutex)
         {
           _layout.Controls.Clear();
-          lock (CadKit.Threads.Jobs.Manager.Instance.Mutex)
+          CadKit.Threads.Jobs.Manager.JobList jobs = CadKit.Threads.Jobs.Manager.Instance.JobsCopy;
+          foreach (CadKit.Threads.Jobs.Job job in jobs)
           {
-            foreach (CadKit.Threads.Jobs.Job job in CadKit.Threads.Jobs.Manager.Instance.Jobs)
-            {
-              this._add(job);
-            }
+            this._add(job);
           }
         }
       }

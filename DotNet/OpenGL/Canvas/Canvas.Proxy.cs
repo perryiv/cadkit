@@ -33,15 +33,15 @@ namespace CadKit.OpenGL
       /// </summary>
       [
       System.ComponentModel.Category("OpenGL"),
-      System.ComponentModel.Description("Background color"),
+      System.ComponentModel.Description("Clear color"),
       System.ComponentModel.Browsable(true),
       ]
-      public System.Drawing.Color BackColor
+      public System.Drawing.Color ClearColor
       {
-        get { return this._canvas.BackColor; }
+        get { return this._canvas.ClearColor; }
         set
         {
-          this._canvas.BackColor = value;
+          this._canvas.ClearColor = value;
           this._canvas.Invalidate();
           this._canvas.Update();
         }

@@ -21,10 +21,12 @@ namespace CadKit.OpenGL
       this.InitializeComponent();
       this.SizeChanged += this.OnResize;
       this.ContextMenuStrip = this.buildContextMenu();
-      base.BackColor = CadKit.Persistence.Registry.Instance.getColor(this.GetType().ToString(), "BackgroundColor", base.BackColor);
+      this.ClearColor = CadKit.Persistence.Registry.Instance.getColor(this.GetType().ToString(), "ClearColor", this.ClearColor);
 
       // Don't know if this does anything...
-      this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint | System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer | System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
+      this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
+      this.SetStyle(System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true);
+      this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
     }
 
 
@@ -34,28 +36,28 @@ namespace CadKit.OpenGL
     private void _initInnerPanel()
     {
       // Delete (sort of) the existing one.
-      if (null != _innerPanel)
+      if (null != this.InnerControl)
       {
-        if (this.Controls.Contains(_innerPanel))
-          this.Controls.Remove(_innerPanel);
-        _innerPanel.Dispose();
-        _innerPanel = null;
+        if (this.Controls.Contains(this.InnerControl))
+          this.Controls.Remove(this.InnerControl);
+        this.InnerControl.Dispose();
+        this.InnerControl = null;
         System.GC.Collect();
       }
 
       // Make the inner panel.
-      _innerPanel = new System.Windows.Forms.Panel();
-      this.Controls.Add(_innerPanel);
-      _innerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.InnerControl = new InnerPanel();
+      this.Controls.Add(this.InnerControl);
+      this.InnerControl.Dock = System.Windows.Forms.DockStyle.Fill;
 
       // Add the event handlers.
-      _innerPanel.MouseMove  += new System.Windows.Forms.MouseEventHandler(OnMouseMove);
-      _innerPanel.MouseUp    += new System.Windows.Forms.MouseEventHandler(OnMouseUp);
-      _innerPanel.MouseDown  += new System.Windows.Forms.MouseEventHandler(OnMouseDown);
-      _innerPanel.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
-      _innerPanel.KeyPress   += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
-      _innerPanel.KeyDown    += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
-      _innerPanel.Paint      += this._paint;
+      this.InnerControl.MouseMove += new System.Windows.Forms.MouseEventHandler(OnMouseMove);
+      this.InnerControl.MouseUp += new System.Windows.Forms.MouseEventHandler(OnMouseUp);
+      this.InnerControl.MouseDown += new System.Windows.Forms.MouseEventHandler(OnMouseDown);
+      this.InnerControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(OnMouseWheel);
+      this.InnerControl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
+      this.InnerControl.KeyDown += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
+      this.InnerControl.Paint += this._paint;
     }
 
 

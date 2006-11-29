@@ -22,7 +22,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Called when the control needs to be painted.  Override this because painting done in inner panel.
     /// </summary>
-    protected override void OnPaint(System.Windows.Forms.PaintEventArgs a)
+    protected override void OnPaint(System.Windows.Forms.PaintEventArgs args)
     {
     }
 

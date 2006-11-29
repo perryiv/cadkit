@@ -19,7 +19,7 @@ namespace CadKit.Threads.Jobs
     /// <summary>
     /// Data members.
     /// </summary>
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private int _min = 0;
     private int _max = 100;
     private int _value = 0;
@@ -32,10 +32,10 @@ namespace CadKit.Threads.Jobs
     /// <summary>
     /// Constructor
     /// </summary>
-    public Progress ( CadKit.Threads.Jobs.Job job )
+    public Progress(CadKit.Threads.Jobs.Job job)
     {
       if (null == job)
-        throw new System.ArgumentNullException("Error 3494865470: Null job given", (System.Exception) null);
+        throw new System.ArgumentNullException("Error 3494865470: Null job given", (System.Exception)null);
 
       _job = job;
     }
@@ -45,19 +45,21 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private void _notify()
     {
-      lock (this.Mutex)
+      System.DateTime now = System.DateTime.Now;
+      System.DateTime last = this.LastTime;
+      System.TimeSpan rate = this.UpdateRate;
+
+      if (now > last + rate)
       {
-        System.DateTime now = System.DateTime.Now;
-        if (now > this.LastTime + this.UpdateRate)
+        this.LastTime = now;
+
+        if (null != this.Notify)
         {
-          this.LastTime = now;
-
-          if (null != _notifyDelegate)
-            _notifyDelegate(_job);
-
-          System.Diagnostics.Debug.Assert ( _job.ThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId );
-          //System.Console.WriteLine(System.String.Format("{0}: Thread = {1}, Progress = {2}", _job.Name, _job.ThreadId, (uint) this.Percent));
+          this.Notify(_job);
         }
+
+        System.Diagnostics.Debug.Assert(_job.ThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId);
+        //System.Console.WriteLine(System.String.Format("{0}: Thread = {1}, Progress = {2}", _job.Name, _job.ThreadId, (uint) this.Percent));
       }
     }
 
@@ -66,8 +68,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public NotifyDelegate Notify
     {
-      get { lock (this.Mutex) { return _notifyDelegate; } }
-      set { lock (this.Mutex) { _notifyDelegate = value; } }
+      get { using (this.Lock.read()) { return _notifyDelegate; } }
+      set { using (this.Lock.write()) { _notifyDelegate = value; } }
     }
 
     /// <summary>
@@ -75,8 +77,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public int Minimum
     {
-      get { lock (this.Mutex) { return _min; } }
-      set { lock (this.Mutex) { _min = value; } }
+      get { using (this.Lock.read()) { return _min; } }
+      set { using (this.Lock.write()) { _min = value; } }
     }
 
     /// <summary>
@@ -84,8 +86,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public int Maximum
     {
-      get { lock (this.Mutex) { return _max; } }
-      set { lock (this.Mutex) { _max = value; } }
+      get { using (this.Lock.read()) { return _max; } }
+      set { using (this.Lock.write()) { _max = value; } }
     }
 
     /// <summary>
@@ -93,14 +95,14 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public int Value
     {
-      get { lock (this.Mutex) { return _value; } }
+      get { using (this.Lock.read()) { return _value; } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           _value = value;
-          this._notify();
         }
+        this._notify();
       }
     }
 
@@ -111,13 +113,10 @@ namespace CadKit.Threads.Jobs
     {
       get
       {
-        lock (this.Mutex)
-        {
-          float min = this.Minimum;
-          float max = this.Maximum;
-          float value = this.Value;
-          return ((value - min) / (max - min));
-        }
+        float min = this.Minimum;
+        float max = this.Maximum;
+        float value = this.Value;
+        return ((value - min) / (max - min));
       }
     }
 
@@ -126,13 +125,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public float Percent
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          return (100.0f * this.Fraction);
-        }
-      }
+      get { return (100.0f * this.Fraction); }
     }
 
     /// <summary>
@@ -140,8 +133,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public System.DateTime LastTime
     {
-      get { lock (this.Mutex) { return _lastTime; } }
-      set { lock (this.Mutex) { _lastTime = value; } }
+      get { using (this.Lock.read()) { return _lastTime; } }
+      set { using (this.Lock.write()) { _lastTime = value; } }
     }
 
     /// <summary>
@@ -149,16 +142,16 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public System.TimeSpan UpdateRate
     {
-      get { lock (this.Mutex) { return _updateRate; } }
-      set { lock (this.Mutex) { _updateRate = value; } }
+      get { using (this.Lock.read()) { return _updateRate; } }
+      set { using (this.Lock.write()) { _updateRate = value; } }
     }
 
     /// <summary>
     /// Get the mutex.
     /// </summary>
-    private object Mutex
+    private CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get { return _lock; }
     }
 
     /// <summary>
@@ -166,8 +159,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     string CadKit.Interfaces.IProgressBar.Text
     {
-      get { lock (this.Mutex) { return this.Text; } }
-      set { lock (this.Mutex) { this.Text = value; } }
+      get { return this.Text; }
+      set { this.Text = value; }
     }
 
     /// <summary>
@@ -175,8 +168,8 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     public string Text
     {
-      get { lock (this.Mutex) { return _text; } }
-      set { lock (this.Mutex) { _text = value; } }
+      get { using (this.Lock.read()) { return _text; } }
+      set { using (this.Lock.write()) { _text = value; } }
     }
 
     /// <summary>
@@ -184,7 +177,7 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     int CadKit.Interfaces.IProgressBar.Range
     {
-      get { lock (this.Mutex) { return (this.Maximum - this.Minimum); } }
+      get { return (this.Maximum - this.Minimum); }
     }
 
     /// <summary>

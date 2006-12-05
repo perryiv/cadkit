@@ -1,13 +1,4 @@
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copyright (c) 2006, Adam Kubach
-//  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace CadKit.Plugins.Windows.ColorEditor
+namespace CadKit.Plugins.Windows.Properties
 {
   partial class Editor
   {
@@ -39,14 +30,14 @@ namespace CadKit.Plugins.Windows.ColorEditor
     {
       this.SuspendLayout();
       // 
-      // ColorWheel
+      // Editor
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(292, 266);
-      this.Name = "ColorEditor";
-      this.TabText = "Color Editor";
-      this.Text = "Color Editor";
+      this.Name = "PropertyEditor";
+      this.TabText = "Property Editor";
+      this.Text = "Property Editor";
       this.ResumeLayout(false);
 
     }

@@ -56,7 +56,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
       CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
       if (null != windowMenu)
       {
-        windowMenu.addFormWindowMenu("Output", form);
+        windowMenu.addFormWindowMenu(form.Text, form);
       }
 
       parent.Activate();

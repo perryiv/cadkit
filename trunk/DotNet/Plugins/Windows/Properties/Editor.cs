@@ -1,20 +1,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Adam Kubach
+//  Copyright (c) 2006, Perry L Miller
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Plugins.Windows.ColorEditor
+namespace CadKit.Plugins.Windows.Properties
 {
   public partial class Editor : WeifenLuo.WinFormsUI.DockContent
   {
     /// <summary>
     /// Data members.
     /// </summary>
-    CadKit.Color.Editor _editor = new CadKit.Color.Editor();
+    System.Windows.Forms.PropertyGrid _grid = new System.Windows.Forms.PropertyGrid();
 
 
     /// <summary>
@@ -35,42 +35,16 @@ namespace CadKit.Plugins.Windows.ColorEditor
         this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
         this.HideOnClose = true;
 
-        _editor.Dock = System.Windows.Forms.DockStyle.Fill;
-        _editor.ColorChanged += this._editorColorChanged;
-        this.Controls.Add(_editor);
+        _grid.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.Controls.Add(_grid);
 
         // Listen for active view.
         CadKit.Documents.Manager.Instance.ActiveViewChanged += this._onActiveViewChanged;
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 1138863175: {0}", e.Message);
+        System.Console.WriteLine("Error 6126340020: {0}", e.Message);
         this.Controls.Clear();
-      }
-    }
-
-
-    /// <summary>
-    /// Called when the color changed.
-    /// </summary>
-    void _editorColorChanged(object sender, CadKit.Color.ColorChangedEventArgs args)
-    {
-      try
-      {
-        CadKit.Interfaces.IClearColor color = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IClearColor;
-        if (null != color)
-        {
-          color.ClearColor = args.Color;
-          System.Windows.Forms.Control control = color as System.Windows.Forms.Control;
-          if (null != control)
-          {
-            control.Invalidate(true);
-          }
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 3571950654: {0}", e.Message);
       }
     }
 
@@ -82,21 +56,18 @@ namespace CadKit.Plugins.Windows.ColorEditor
     {
       try
       {
-        CadKit.Interfaces.IClearColor color = newView as CadKit.Interfaces.IClearColor;
-        if (null != color)
+        try
         {
-          try
-          {
-            _editor.Color = (System.Drawing.Color)color.ClearColor;
-          }
-          catch (System.InvalidCastException)
-          {
-          }
+          CadKit.Interfaces.IPropertyGridObject property = newView as CadKit.Interfaces.IPropertyGridObject;
+          _grid.SelectedObject = (null == property) ? null : property.PropertyGridObject;
+        }
+        catch (System.InvalidCastException)
+        {
         }
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 6361619200: {0}", e.Message);
+        System.Console.WriteLine("Error 2589487393: {0}", e.Message);
       }
     }
   }

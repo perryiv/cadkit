@@ -35,10 +35,10 @@ struct IViewer : public Usul::Interfaces::IUnknown
   virtual void clearScene() = 0;
 
   // TODO Move these to a IViewport interface
-  virtual int x() = 0;
-  virtual int y() = 0;
-  virtual int height() = 0;
-  virtual int width() = 0;
+  virtual int x() const = 0;
+  virtual int y() const = 0;
+  virtual unsigned int height() const = 0;
+  virtual unsigned int width() const = 0;
 
   virtual void handleMessage ( unsigned short message ) = 0;
 

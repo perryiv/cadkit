@@ -56,11 +56,12 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
   /// Get the current file number
   virtual unsigned int currentFile() const = 0;
 
-  /// Should the filenames that have been writed be saved?
-  virtual void filenamesSave( bool ) = 0;
+  /// Should the filenames that have been written be saved?
+  virtual void saveNames ( bool ) = 0;
+  virtual bool saveNames() const = 0;
 
   /// Get the filenames that were written out.
-  virtual const Filenames& filenames () const = 0;
+  virtual Filenames filenames() const = 0;
 
   /// Small struct to turn on/off frame-dumping.
   struct ScopedDump

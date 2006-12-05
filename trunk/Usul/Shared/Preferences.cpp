@@ -147,9 +147,18 @@ Usul::Types::Uint64 Preferences::getUint64 ( const std::string &key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Preferences::getFloat ( const std::string &key )
+float Preferences::getFloat ( const std::string &key, float defaultValue )
 {
-  return _floats[key];
+  Floats::iterator i ( _floats.find ( key ) );
+  if ( _floats.end() == i )
+  {
+    _floats.insert ( Floats::value_type ( key, defaultValue ) );
+    return defaultValue;
+  }
+  else
+  {
+    return i->second;
+  }
 }
 
 

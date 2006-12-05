@@ -247,6 +247,44 @@ namespace CadKit.Persistence
     /// <summary>
     /// Get the value.
     /// </summary>
+    public double getDouble(string section, string key, double defaultValue)
+    {
+      lock (_mutex)
+      {
+        return System.Convert.ToDouble(this.getString(section, key, defaultValue.ToString()));
+      }
+    }
+
+    /// <summary>
+    /// Set the value.
+    /// </summary>
+    public void setDouble(string section, string key, double value)
+    {
+      lock (_mutex)
+      {
+        this.getSectionHash(section)[key] = value.ToString();
+      }
+    }
+
+    /// <summary>
+    /// Get the value.
+    /// </summary>
+    public float getFloat(string section, string key, float defaultValue)
+    {
+      return (float)this.getDouble(section, key, (double)defaultValue);
+    }
+
+    /// <summary>
+    /// Set the value.
+    /// </summary>
+    public void setFloat(string section, string key, float value)
+    {
+      this.setDouble(section, key, (double)value);
+    }
+
+    /// <summary>
+    /// Get the value.
+    /// </summary>
     public System.Drawing.Color getColor( string section, string key, System.Drawing.Color defaultValue )
     {
       lock (_mutex)

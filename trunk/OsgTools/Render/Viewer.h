@@ -153,7 +153,8 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IOpenGLContext IContext;
   typedef Usul::Interfaces::ISetCursorType ISetCursorType;
-  typedef Usul::Interfaces::ITimeoutSpin   ITimeoutSpin;
+  typedef Usul::Interfaces::ITimeoutSpin ITimeoutSpin;
+  typedef FrameDump::Names Filenames;
 
   enum ViewMode
   {
@@ -169,11 +170,7 @@ public:
   // Add a chore.
   void                  addChoreRedraw();
 
-  // Add a chore to reset the camera.
-  // void                  addChoreCameraFit();
-  // void                  addChoreCameraReset();
-
-    // Edit the background color.
+  // Edit the background color.
   void                  editBackground();
 
   // Edit the background color.
@@ -558,11 +555,12 @@ protected:
   /// Get the current file number
   virtual unsigned int       currentFile() const;
 
-    /// Should the filenames that have been writed be saved?
-  virtual void               filenamesSave ( bool );
+  /// Should the filenames that have been writed be saved?
+  virtual void               saveNames ( bool );
+  virtual bool               saveNames() const;
 
   /// Get the filenames that were written out.
-  virtual const Filenames&   filenames () const;
+  virtual Filenames          filenames() const;
 
   ///  Usul::Interfaces::IGetDocument
   virtual IUnknown*          getDocument();
@@ -584,18 +582,12 @@ protected:
   virtual unsigned int       numClippingPlanes() { return this->planes(); }
 
   /// Usul::Interfaces::IViewer
-  //virtual void            render(); //Render defined above.
   virtual void               clearScene();
-  virtual int                x();
-  virtual int                y();
-  virtual int                height();
-  virtual int                width();
+  virtual int                x() const;
+  virtual int                y() const;
+  virtual unsigned int       height() const;
+  virtual unsigned int       width() const;
   virtual void               handleMessage ( unsigned short message );
-
-  int                        x() const;
-  int                        y() const;
-  int                        height() const;
-  int                        width() const;
 
   /// Usul::Interfaces::IGetBoundingBox
   virtual osg::BoundingBox   getBoundingBox() const;

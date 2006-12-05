@@ -36,7 +36,7 @@ namespace CadKit.Viewer
       /// </summary>
       [
       System.ComponentModel.Category("Rendering"),
-      System.ComponentModel.Description("Rendering Passes"),
+      System.ComponentModel.Description("Number of rendering passes"),
       System.ComponentModel.Browsable(true),
       ]
       public uint RenderingPasses
@@ -55,7 +55,7 @@ namespace CadKit.Viewer
       /// </summary>
       [
       System.ComponentModel.Category("Rendering"),
-      System.ComponentModel.Description("Scatter Scale"),
+      System.ComponentModel.Description("Scale for pixel-scatter pattern when using multiple rendering passes"),
       System.ComponentModel.Browsable(true),
       ]
       public double ScatterScale
@@ -74,7 +74,7 @@ namespace CadKit.Viewer
       /// </summary>
       [
       System.ComponentModel.Category("Rendering"),
-      System.ComponentModel.Description("Mode"),
+      System.ComponentModel.Description("Viewer's mode"),
       System.ComponentModel.Browsable(true),
       ]
       public CadKit.Interfaces.ViewMode Mode
@@ -107,10 +107,10 @@ namespace CadKit.Viewer
       System.ComponentModel.Description("Base file name for frame dumps"),
       System.ComponentModel.Browsable(true),
       ]
-      public string Filename
+      public string BaseFilename
       {
-        get { return _panel.Filename; }
-        set { _panel.Filename = value; }
+        get { return _panel.BaseFilename; }
+        set { _panel.BaseFilename = value; }
       }
 
 
@@ -145,32 +145,17 @@ namespace CadKit.Viewer
 
 
       /// <summary>
-      /// Get/set the frame dump size.
+      /// Get/set the frame dump scale.
       /// </summary>
       [
       System.ComponentModel.Category("Frame Dump"),
-      System.ComponentModel.Description("Frame dump image size"),
+      System.ComponentModel.Description("Frame dump image scale"),
       System.ComponentModel.Browsable(true),
       ]
-      public System.Drawing.Size FrameSize
+      public float FrameScale
       {
-        get { return _panel.FrameSize; }
-        set { _panel.FrameSize = value; }
-      }
-
-
-      /// <summary>
-      /// Get/set the flag for using the frame size.
-      /// </summary>
-      [
-      System.ComponentModel.Category("Frame Dump"),
-      System.ComponentModel.Description("Use window size when dumping frames"),
-      System.ComponentModel.Browsable(true),
-      ]
-      public bool UseFrameSize
-      {
-        get { return _panel.UseFrameSize; }
-        set { _panel.UseFrameSize = value; }
+        get { return _panel.FrameScale; }
+        set { _panel.FrameScale = value; }
       }
     }
   }

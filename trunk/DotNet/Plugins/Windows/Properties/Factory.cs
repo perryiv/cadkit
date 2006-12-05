@@ -23,7 +23,7 @@ namespace CadKit.Plugins
     /// </summary>
     public Factory()
     {
-      this._addType("CadKit.Interfaces.IPlugin", "CadKit.Plugins.Windows.ColorEditor.Component");
+      this._addType("CadKit.Interfaces.IPlugin", "CadKit.Plugins.Windows.Properties.Component");
     }
 
     /// <summary>

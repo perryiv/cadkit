@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Plugins.Windows.ColorEditor
+namespace CadKit.Plugins.Windows.Properties
 {
   public class Component : CadKit.Interfaces.IPlugin
   {
@@ -42,7 +42,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
     {
       try
       {
-        CadKit.Plugins.Windows.ColorEditor.Editor editor = new CadKit.Plugins.Windows.ColorEditor.Editor();
+        CadKit.Plugins.Windows.Properties.Editor editor = new CadKit.Plugins.Windows.Properties.Editor();
         System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
 
         Component._configureDockWindow(sender, editor);
@@ -57,7 +57,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 1779918398: {0}", e.Message);
+        System.Console.WriteLine("Error 3209302884: {0}", e.Message);
       }
     }
 
@@ -65,7 +65,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
     /// <summary>
     /// Show the dock window in the proper way.
     /// </summary>
-    private static void _configureDockWindow(object sender, CadKit.Plugins.Windows.ColorEditor.Editor form)
+    private static void _configureDockWindow(object sender, CadKit.Plugins.Windows.Properties.Editor form)
     {
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
@@ -77,7 +77,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
           CadKit.Interfaces.IPersistantFormData register = sender as CadKit.Interfaces.IPersistantFormData;
 
           if (null != register)
-            register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.ColorEditor.Editor).ToString(), form);
+            register.registerPersistanceForm(typeof(CadKit.Plugins.Windows.Properties.Editor).ToString(), form);
 
           // Show the form if we don't have persistant data.  If there is persistant data, it will be shown elsewhere.
           if (false == register.hasPersistantFormData())
@@ -100,7 +100,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      get { return "Color Editor Window"; }
+      get { return "Property Window"; }
     }
 
 
@@ -109,7 +109,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      get { return "Window that contains a color editor."; }
+      get { return "Window that shows properties."; }
     }
   }
 }

@@ -58,7 +58,7 @@ namespace CadKit.Plugins.Windows.JobWindow
         CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
         if (null != windowMenu)
         {
-          windowMenu.addFormWindowMenu("Jobs", form);
+          windowMenu.addFormWindowMenu(form.Text, form);
         }
 
         parent.Activate();

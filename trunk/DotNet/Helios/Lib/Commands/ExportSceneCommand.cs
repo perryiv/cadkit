@@ -42,7 +42,7 @@ namespace CadKit.Helios.Commands
           dialog.Filter = finalFilter;
           dialog.ShowDialog();
           string filename = dialog.FileName;
-          export.exportScene(filename);
+          export.export(filename);
         }
       }
       catch (System.Exception exception)

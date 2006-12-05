@@ -1377,7 +1377,7 @@ double Viewer::_animationTime()
 void Viewer::_dumpFrame()
 {
   if ( _frameDump.dump() )
-    this->writeImageFile ( _frameDump.filename() );
+    this->writeImageFile ( _frameDump.file() );
 }
 
 
@@ -1396,11 +1396,18 @@ bool Viewer::writeImageFile ( const std::string &filename, const std::string &op
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
 
-  // Use frame-dump object's size?
-  if ( true == this->frameDump().useMySize() )
+  // Get scale of window size.
+  const float scale ( this->frameDump().scale() );
+
+  // Is the size of the image the same as the window?
+  if ( 1.0f != scale )
   {
+    // Calculate size.
+    const unsigned int width  ( static_cast<unsigned int> ( scale * static_cast<float> ( this->width()  ) ) );
+    const unsigned int height ( static_cast<unsigned int> ( scale * static_cast<float> ( this->height() ) ) );
+
     // Write the image to file.
-    return this->_writeImageFile ( filename, this->frameDump().width(), this->frameDump().height() );
+    return this->_writeImageFile ( filename, width, height );
   }
 
   // Otherwise...
@@ -1421,29 +1428,21 @@ bool Viewer::writeImageFile ( const std::string &filename, const std::string &op
 
 bool Viewer::writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
 {
-  bool useSize ( this->frameDump().useMySize() );
-  const unsigned int sw ( this->frameDump().width()  );
-  const unsigned int sh ( this->frameDump().height() );
+  const float scale ( this->frameDump().scale() );
   bool result ( false );
   Viewer *me ( const_cast < Viewer * > ( this ) );
   FrameDump &fd ( me->frameDump() );
 
   try
   {
-    fd.useMySize ( true );
-    fd.width ( width );
-    fd.height ( height );
+    fd.scale ( static_cast<float> ( width ) / static_cast<float> ( this->width() ) );
     result = this->writeImageFile ( filename );
-    fd.useMySize ( useSize );
-    fd.width  ( sw );
-    fd.height ( sh );
+    fd.scale ( scale );
   }
 
   catch ( ... )
   {
-    fd.useMySize ( useSize );
-    fd.width  ( sw );
-    fd.height ( sh );
+    fd.scale ( scale );
     throw;
   }
 
@@ -1463,7 +1462,7 @@ bool Viewer::_writeImageFile ( const std::string &filename ) const
   osg::ref_ptr<osg::Image> image ( new osg::Image );
 
   // Read the screen buffer.
-  image->readPixels ( this->x(), this->y(), this->width(), this->height(), GL_RGB, GL_UNSIGNED_BYTE );
+  image->readPixels ( this->x(), this->y(), static_cast<int> ( this->width() ), static_cast<int> ( this->height() ), GL_RGB, GL_UNSIGNED_BYTE );
 
   // Write the image.
   return osgDB::writeImageFile ( *image, filename );
@@ -2609,21 +2608,45 @@ unsigned int Viewer::currentFile() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Viewer::Filenames& Viewer::filenames() const
+Viewer::Filenames Viewer::filenames() const
 {
-  return this->frameDump().filenames();
+  Filenames names;
+  if ( 0x0 != this->frameDump().collection() )
+    names = this->frameDump().collection()->value();
+  return names;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Should the filenames be saved.
+//  Should the filenames be saved?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::filenamesSave ( bool b )
+bool Viewer::saveNames() const
 {
-  this->frameDump().filenamesSave( b );
+  return ( 0x0 != this->frameDump().collection() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the filenames be saved?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::saveNames ( bool state )
+{
+  if ( true == state )
+  {
+    FrameDump::Collection::RefPtr collection ( this->frameDump().collection() );
+    if ( false == collection.valid() )
+      this->frameDump().collection ( new FrameDump::Collection() );
+  }
+  else
+  {
+    this->frameDump().collection ( 0x0 );
+  }
 }
 
 
@@ -2704,55 +2727,7 @@ void Viewer::clearScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get X
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Viewer::x()
-{
-  return this->viewer()->getViewport()->x();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get Y
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Viewer::y()
-{
-  return this->viewer()->getViewport()->y();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get Height
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Viewer::height()
-{
-  return this->viewer()->getViewport()->height();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get width
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Viewer::width()
-{
-  return this->viewer()->getViewport()->width();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get X
+//  Get the location of the viewport.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2764,7 +2739,7 @@ int Viewer::x() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get Y
+//  Get the location of the viewport.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2776,25 +2751,25 @@ int Viewer::y() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get Height
+//  Get height
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Viewer::height() const
+unsigned int Viewer::height() const
 {
-  return this->viewer()->getViewport()->height();
+  return static_cast < unsigned int > ( Usul::Math::absolute ( this->viewer()->getViewport()->height() ) );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get Width
+//  Get width
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Viewer::width() const
+unsigned int Viewer::width() const
 {
-  return this->viewer()->getViewport()->width();
+  return static_cast < unsigned int > ( Usul::Math::absolute ( this->viewer()->getViewport()->width() ) );
 }
 
 

@@ -18,7 +18,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump,
     CadKit.Interfaces.IDocumentView,
-    CadKit.Interfaces.IClearColor
+    CadKit.Interfaces.IClearColor,
+    CadKit.Interfaces.IPropertyGridObject
   {
     /// <summary>
     /// Data members.
@@ -209,14 +210,16 @@ namespace CadKit.Viewer
     /// <summary>
     /// Export the image.
     /// </summary>
-    bool CadKit.Interfaces.IExportImage.exportImage(string filename)
+    void CadKit.Interfaces.IExportImage.export(string filename)
     {
       lock (this.Mutex)
       {
         CadKit.Interfaces.IExportImage export = _panel as CadKit.Interfaces.IExportImage;
-        if (null != export)
-          return export.exportImage(filename);
-        return false;
+        if (null == export)
+        {
+          throw new System.Exception(System.String.Format("Error 1078988943: Failed to export image file '{0}', feature not supported", filename));
+        }
+        export.export(filename);
       }
     }
 
@@ -224,20 +227,10 @@ namespace CadKit.Viewer
     /// <summary>
     /// Image export width.
     /// </summary>
-    uint CadKit.Interfaces.IExportImage.Width
+    float CadKit.Interfaces.IExportImage.Scale
     {
-      get { lock (this.Mutex) { return (uint)System.Math.Abs(_panel.FrameSize.Width); } }
-      set { lock (this.Mutex) { _panel.FrameSize = new System.Drawing.Size((int)value, _panel.FrameSize.Height); } }
-    }
-
-
-    /// <summary>
-    /// Image export height.
-    /// </summary>
-    uint CadKit.Interfaces.IExportImage.Height
-    {
-      get { lock (this.Mutex) { return (uint)System.Math.Abs(_panel.FrameSize.Height); } }
-      set { lock (this.Mutex) { _panel.FrameSize = new System.Drawing.Size(_panel.FrameSize.Width, (int)value); } }
+      get { lock (this.Mutex) { return _panel.FrameScale; } }
+      set { lock (this.Mutex) { _panel.FrameScale = value; } }
     }
 
 
@@ -262,14 +255,16 @@ namespace CadKit.Viewer
     /// <summary>
     /// Exposr the scene.
     /// </summary>
-    bool CadKit.Interfaces.IExportScene.exportScene(string filename)
+    void CadKit.Interfaces.IExportScene.export(string filename)
     {
       lock (this.Mutex)
       {
         CadKit.Interfaces.IExportScene export = _panel as CadKit.Interfaces.IExportScene;
-        if (null != export)
-          return export.exportScene(filename);
-        return false;
+        if (null == export)
+        {
+          throw new System.Exception(System.String.Format("Error 1824824745: Failed to export scene file '{0}', feature not supported", filename));
+        }
+        export.export(filename);
       }
     }
 
@@ -389,10 +384,10 @@ namespace CadKit.Viewer
     /// <summary>
     /// Get/set the base filename for frame dumping.
     /// </summary>
-    public string Filename
+    public string BaseFilename
     {
-      get { lock (this.Mutex) { return _panel.Filename; } }
-      set { lock (this.Mutex) { _panel.Filename = value; } }
+      get { lock (this.Mutex) { return _panel.BaseFilename; } }
+      set { lock (this.Mutex) { _panel.BaseFilename = value; } }
     }
 
 
@@ -442,6 +437,15 @@ namespace CadKit.Viewer
     {
       get { lock (this.Mutex) { return _panel.ClearColor; } }
       set { lock (this.Mutex) { _panel.ClearColor = value; } }
+    }
+
+
+    /// <summary>
+    /// Return object appropriate for property grid.
+    /// </summary>
+    public object PropertyGridObject
+    {
+      get { lock (this.Mutex) { return _panel.PropertyGridObject; } }
     }
   }
 }

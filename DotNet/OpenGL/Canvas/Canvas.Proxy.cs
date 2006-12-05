@@ -32,8 +32,8 @@ namespace CadKit.OpenGL
       /// OpenGL clear color property.
       /// </summary>
       [
-      System.ComponentModel.Category("OpenGL"),
-      System.ComponentModel.Description("Clear color"),
+      System.ComponentModel.Category("Graphics"),
+      System.ComponentModel.Description("Background color of the window"),
       System.ComponentModel.Browsable(true),
       ]
       public System.Drawing.Color ClearColor
@@ -51,7 +51,7 @@ namespace CadKit.OpenGL
       /// Pixel format property.
       /// </summary>
       [
-      System.ComponentModel.Category("OpenGL"),
+      System.ComponentModel.Category("Graphics"),
       System.ComponentModel.Description("Pixel format description"),
       System.ComponentModel.Browsable(true)
       ]
@@ -69,8 +69,8 @@ namespace CadKit.OpenGL
       /// Size of the control.
       /// </summary>
       [
-      System.ComponentModel.Category("OpenGL"),
-      System.ComponentModel.Description("Size of the OpenGL viewport"),
+      System.ComponentModel.Category("Graphics"),
+      System.ComponentModel.Description("Size of the window"),
       System.ComponentModel.Browsable(true)
       ]
       public System.Drawing.Size Size

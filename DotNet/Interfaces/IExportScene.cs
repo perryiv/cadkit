@@ -12,6 +12,6 @@ namespace CadKit.Interfaces
   public interface IExportScene
   {
     Filters Filters { get; }
-    bool exportScene(string filename);
+    void export(string filename);
   }
 }

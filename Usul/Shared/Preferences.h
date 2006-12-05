@@ -46,7 +46,7 @@ public:
   int                   getInt    ( const std::string &key );
   unsigned int          getUint   ( const std::string &key );
   Usul::Types::Uint64   getUint64 ( const std::string &key );
-  float                 getFloat  ( const std::string &key );
+  float                 getFloat  ( const std::string &key, float defaultValue = 0.0f );
   double                getDouble ( const std::string &key );
 
   // Return the single instance.

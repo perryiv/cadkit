@@ -12,7 +12,7 @@ namespace CadKit.Interfaces
   public interface IFrameDump
   {
     string Directory { get; set; }
-    string Filename { get; set; }
+    string BaseFilename { get; set; }
     string Extension { get; set; }
     bool DumpFrames { get; set; }
   }

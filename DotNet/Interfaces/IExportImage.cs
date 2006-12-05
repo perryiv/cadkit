@@ -12,8 +12,7 @@ namespace CadKit.Interfaces
   public interface IExportImage
   {
     Filters Filters { get; }
-    bool exportImage(string filename);
-    uint Height { get; set; }
-    uint Width { get; set; }
+    void export(string filename);
+    float Scale { get; set; }
   }
 }

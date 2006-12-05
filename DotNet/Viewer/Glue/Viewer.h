@@ -128,7 +128,7 @@ namespace CadKit
           }
           void set ( System::String^ string )
           {
-            _viewer->frameDump().dir ( this->toString( string ) );
+            _viewer->frameDump().dir ( this->_toString( string ) );
           }
         }
 
@@ -140,7 +140,7 @@ namespace CadKit
           }
           void set ( System::String^ string )
           {
-            _viewer->frameDump().base ( this->toString( string ) );
+            _viewer->frameDump().base ( this->_toString( string ) );
           }
         };
 
@@ -152,7 +152,7 @@ namespace CadKit
           }
           void set ( System::String^ string )
           {
-            _viewer->frameDump().ext ( this->toString( string ) );
+            _viewer->frameDump().ext ( this->_toString( string ) );
           }
         };
 
@@ -170,33 +170,15 @@ namespace CadKit
           }
         };
 
-        unsigned int            frameDumpWidth();
-        unsigned int            frameDumpHeight();
-        void                    frameDumpSize ( unsigned int width, unsigned int height );
-
-        bool                    frameDumpUseFrameSize();
-        void                    frameDumpUseFrameSize ( bool );
+        float                   frameDumpScale();
+        void                    frameDumpScale ( float scale );
 
       protected:
 
-        std::string toString( System::String^ source )
-        {
-          std::string answer;
-          System::IntPtr ptr ( 0 );
-          try
-          {
-            ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
-            char* s = (char*)(void*) ptr;
-            answer.assign ( s );
-          }
-          finally
-          {
-            System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
-          }
-          return answer;
-        }
+        std::string _toString( System::String^ source );
 
       private:
+
         OsgTools::Render::Viewer* _viewer;
       };
     }

@@ -39,17 +39,14 @@ typedef Usul::Shared::Preferences Pref;
 
 FrameDump::FrameDump() : 
   _dump    ( false ), 
-  _dir     ( Pref::instance().getString   ( "FrameDump Directory" ) ), 
-  _base    ( Pref::instance().getString   ( "FrameDump Base"      ) ), 
-  _ext     ( Pref::instance().getString   ( "FrameDump Extension" ) ), 
-  _start   ( Pref::instance().getUint     ( "FrameDump Start"     ) ), 
-  _digits  ( Pref::instance().getUint     ( "FrameDump Digits"    ) ), 
-  _width   ( Pref::instance().getUint     ( "FrameDump Width"     ) ), 
-  _height  ( Pref::instance().getUint     ( "FrameDump Height"    ) ), 
-  _useSize ( false ),
+  _dir     ( Pref::instance().getString   ( "FrameDump Directory"   ) ), 
+  _base    ( Pref::instance().getString   ( "FrameDump Base"        ) ), 
+  _ext     ( Pref::instance().getString   ( "FrameDump Extension"   ) ), 
+  _start   ( Pref::instance().getUint     ( "FrameDump Start"       ) ), 
+  _digits  ( Pref::instance().getUint     ( "FrameDump Digits"      ) ), 
+  _scale   ( Pref::instance().getFloat    ( "FrameDump Scale", 1.0f ) ), 
   _current ( _start ),
-  _saveFilenames ( false ),
-  _filenames ()
+  _names   ( 0x0 )
 {
 }
 
@@ -66,20 +63,16 @@ FrameDump::FrameDump ( bool dump,
                        const std::string &ext, 
                        unsigned int start, 
                        unsigned int digits, 
-                       unsigned int width, 
-                       unsigned int height ) :
+                       float scale ) :
   _dump    ( dump ), 
   _dir     ( dir ), 
   _base    ( base ), 
   _ext     ( ext ), 
   _start   ( start ), 
   _digits  ( digits ), 
-  _width   ( width ),
-  _height  ( height ),
-  _useSize ( false ),
+  _scale   ( scale ),
   _current ( start ),
-  _saveFilenames ( false ),
-  _filenames ()
+  _names   ( 0x0 )
 {
 }
 
@@ -97,12 +90,9 @@ FrameDump::FrameDump ( const FrameDump &f ) :
   _ext     ( f._ext ), 
   _start   ( f._start ), 
   _digits  ( f._digits ), 
-  _width   ( f._width ), 
-  _height  ( f._height ), 
-  _useSize ( f._useSize ),
+  _scale   ( f._scale ), 
   _current ( f._current ),
-  _saveFilenames ( f._saveFilenames ),
-  _filenames ( f._filenames )
+  _names   ( f._names )
 {
 }
 
@@ -115,13 +105,12 @@ FrameDump::FrameDump ( const FrameDump &f ) :
 
 FrameDump::~FrameDump()
 {
-  Pref::instance().setString ( "FrameDump Directory", _dir    );
-  Pref::instance().setString ( "FrameDump Base",      _base   );
-  Pref::instance().setString ( "FrameDump Extension", _ext    );
-  Pref::instance().setUint   ( "FrameDump Start",     _start  );
-  Pref::instance().setUint   ( "FrameDump Digits",    _digits );
-  Pref::instance().setUint   ( "FrameDump Width",     _width  );
-  Pref::instance().setUint   ( "FrameDump Height",    _height );
+  Pref::instance().setString ( "FrameDump Directory", _dir     );
+  Pref::instance().setString ( "FrameDump Base",      _base    );
+  Pref::instance().setString ( "FrameDump Extension", _ext     );
+  Pref::instance().setUint   ( "FrameDump Start",     _start   );
+  Pref::instance().setUint   ( "FrameDump Digits",    _digits  );
+  Pref::instance().setFloat  ( "FrameDump Scale",     _scale   );
 }
 
 
@@ -139,12 +128,9 @@ FrameDump &FrameDump::operator = ( const FrameDump &f )
   _ext     = f._ext;
   _start   = f._start;
   _digits  = f._digits;
-  _width   = f._width;
-  _height  = f._height;
-  _useSize = f._useSize;
+  _scale   = f._scale;
   _current = f._current;
-  _saveFilenames = f._saveFilenames;
-  _filenames = f._filenames;
+  _names   = f._names;
   return *this;
 }
 
@@ -155,7 +141,7 @@ FrameDump &FrameDump::operator = ( const FrameDump &f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string FrameDump::filename() const
+std::string FrameDump::file() const
 {
   // Make the file name.
   std::ostringstream fn;
@@ -166,8 +152,8 @@ std::string FrameDump::filename() const
   // Increment the counter.
   ++_current;
 
-  if ( _saveFilenames )
-    _filenames.push_back( name );
+  if ( _names.valid() )
+    _names->value().push_back ( name );
 
   // Return the file name.
   return name;
@@ -176,28 +162,24 @@ std::string FrameDump::filename() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the filenames that were written out.
+//  Return the current filename.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const FrameDump::Filenames& FrameDump::filenames() const
+void FrameDump::collection ( FrameDump::Collection *n )
 {
-  return _filenames;
+  _names = n;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Should the filenames be saved.
+//  Set the scale.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FrameDump::filenamesSave( bool b )
+void FrameDump::scale ( float p )
 {
-  _saveFilenames = b;
-
-  // Not sure what if filenames should be reserved.
-  // Picking 1000 for now since we rarely create more than 1000 frames.
-  if ( b )
-    _filenames.reserve( 1000 );
+  if ( p > 0.0f )
+    _scale = p;
 }

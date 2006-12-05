@@ -45,7 +45,7 @@ namespace CadKit.Helios.Commands
           {
             frameDump.Directory = frameDumpDialog.Directory;
             frameDump.Extension = frameDumpDialog.Extension;
-            frameDump.Filename = frameDumpDialog.Filename;
+            frameDump.BaseFilename = frameDumpDialog.Filename;
             frameDump.DumpFrames = true;
           }
         }

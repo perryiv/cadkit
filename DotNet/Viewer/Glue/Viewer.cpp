@@ -239,7 +239,7 @@ System::IntPtr Viewer::viewer()
 
 bool Viewer::writeImageFile ( System::String^ filename )
 {
-  return _viewer->writeImageFile( this->toString( filename ) );
+  return _viewer->writeImageFile ( this->_toString ( filename ) );
 }
 
 
@@ -251,7 +251,7 @@ bool Viewer::writeImageFile ( System::String^ filename )
 
 bool Viewer::writeSceneFile ( System::String^ filename )
 {
-  return _viewer->writeSceneFile( this->toString( filename ) );
+  return _viewer->writeSceneFile ( this->_toString ( filename ) );
 }
 
 
@@ -311,16 +311,15 @@ void Viewer::scatterScale ( double scale )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the frame-dump size.
+//  Set the frame-dump scale.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::frameDumpSize ( unsigned int width, unsigned int height )
+void Viewer::frameDumpScale ( float scale )
 {
   if ( 0x0 != _viewer )
   {
-    _viewer->frameDump().width  ( width  );
-    _viewer->frameDump().height ( height );
+    _viewer->frameDump().scale ( scale );
   }
 }
 
@@ -331,46 +330,31 @@ void Viewer::frameDumpSize ( unsigned int width, unsigned int height )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::frameDumpWidth()
+float Viewer::frameDumpScale()
 {
-  return ( 0x0 != _viewer ) ? _viewer->frameDump().width() : 0;
+  return ( 0x0 != _viewer ) ? _viewer->frameDump().scale() : 1.0f;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the frame-dump size.
+//  Convert managed string to namtive.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::frameDumpHeight()
+std::string Viewer::_toString( System::String^ source )
 {
-  return ( 0x0 != _viewer ) ? _viewer->frameDump().height() : 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Use the panel's size when dumping frames?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::frameDumpUseFrameSize()
-{
-  return ( ( 0x0 != _viewer ) ? _viewer->frameDump().useMySize() : false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Use the panel's size when dumping frames?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::frameDumpUseFrameSize ( bool state )
-{
-  if ( 0x0 != _viewer )
+  std::string answer;
+  System::IntPtr ptr ( 0 );
+  try
   {
-    _viewer->frameDump().useMySize ( state );
+    ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
+    char* s = (char*)(void*) ptr;
+    answer.assign ( s );
   }
+  finally
+  {
+    System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
+  }
+  return answer;
 }

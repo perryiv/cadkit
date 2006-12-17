@@ -65,6 +65,7 @@
 #include "OsgTools/Render/SceneManager.h"
 
 #include "OsgTools/Draggers/Dragger.h"
+#include "OsgTools/Builders/GradientBackground.h"
 
 #include "osgUtil/SceneView"
 
@@ -155,6 +156,8 @@ public:
   typedef Usul::Interfaces::ISetCursorType ISetCursorType;
   typedef Usul::Interfaces::ITimeoutSpin ITimeoutSpin;
   typedef FrameDump::Names Filenames;
+  typedef OsgTools::Builders::GradientBackground GradientBackground;
+  typedef GradientBackground::Corners Corners;
 
   enum ViewMode
   {
@@ -174,7 +177,7 @@ public:
   void                  editBackground();
 
   // Edit the background color.
-  void                  setBackground ( const osg::Vec4 &);
+  void                  setBackground ( const osg::Vec4 & );
 
   // Get/Set show axes state.
   void                  axes( bool );
@@ -182,7 +185,11 @@ public:
 
   // Set/get the background color. Throws if getting color from a null viewer.
   void                  backgroundColor ( const osg::Vec4 &color );
-  const osg::Vec4 &     backgroundColor() const;
+  osg::Vec4             backgroundColor() const;
+
+  // Set/get the background corners.
+  void                  backgroundCorners ( unsigned int corners );
+  unsigned int          backgroundCorners() const;
 
   // Set/get the bounding-box state.
   void                  boundingBox ( bool show );
@@ -261,8 +268,8 @@ public:
   unsigned int          numRenderPasses() const;
 
   // Get the model
-  const osg::Node *     model () const;
-  osg::Node *           model ();
+  const osg::Node *     model() const;
+  osg::Node *           model();
 
   // Get the mode
   bool                  navigating() const { return NAVIGATION == _currentMode; }
@@ -427,7 +434,8 @@ public:
   bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const;
   virtual bool          writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
 
-  // Write the current scene to file.
+  // Write the current model or scene to file.
+  bool                  writeModelFile ( const std::string &filename, const std::string &options = std::string() ) const;
   bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const;
 
   // Zoom by given amount
@@ -708,6 +716,8 @@ private:
   ViewMode _currentMode;
   LightEditors _lightEditors;
   unsigned int _contextId;
+  GradientBackground _gradient;
+  unsigned int _corners;
 };
 
 }

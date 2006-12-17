@@ -16,6 +16,7 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private delegate void VoidReturnZeroArguments();
     private delegate void VoidReturnJobArgument(CadKit.Threads.Jobs.Job job);
+    private class ControlList : System.Collections.Generic.List<System.Windows.Forms.Control> { }
 
     /// <summary>
     /// Data members.
@@ -52,12 +53,10 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _resizeControls()
     {
-      lock (this.Mutex)
+      ControlList controls = this.ControlsCopy;
+      foreach (System.Windows.Forms.Control control in controls)
       {
-        foreach (System.Windows.Forms.Control control in _layout.Controls)
-        {
-          this._resizeControl(control as CadKit.Threads.GUI.Job);
-        }
+        this._resizeControl(control as CadKit.Threads.GUI.Job);
       }
     }
 
@@ -66,9 +65,9 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _resizeControl(CadKit.Threads.GUI.Job job)
     {
-      lock (this.Mutex)
+      if (null != job)
       {
-        if (null != job)
+        lock (this.Mutex)
         {
           // The value "26" keeps the horizontal scroll bar from 
           // showing when the vertical one shows.
@@ -82,16 +81,18 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void reset()
     {
-      if (true == this.InvokeRequired)
-      {
-        this.BeginInvoke(new VoidReturnZeroArguments(this.reset));
-        return;
-      }
       try
       {
-        lock (this.Mutex)
+        if (true == this.InvokeRequired)
         {
-          _layout.Controls.Clear();
+          this.BeginInvoke(new VoidReturnZeroArguments(this.reset));
+        }
+        else
+        {
+          lock (this.Mutex)
+          {
+            _layout.Controls.Clear();
+          }
           CadKit.Threads.Jobs.Manager.JobList jobs = CadKit.Threads.Jobs.Manager.Instance.JobsCopy;
           foreach (CadKit.Threads.Jobs.Job job in jobs)
           {
@@ -110,10 +111,7 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void clear()
     {
-      lock (this.Mutex)
-      {
-        CadKit.Threads.Jobs.Manager.Instance.clear();
-      }
+      CadKit.Threads.Jobs.Manager.Instance.clear();
     }
 
     /// <summary>
@@ -121,10 +119,7 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _jobAdded(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
-      {
         this._add(job);
-      }
     }
 
     /// <summary>
@@ -132,10 +127,7 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _jobRemoved(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
-      {
         this._remove(job);
-      }
     }
 
     /// <summary>
@@ -143,10 +135,7 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _jobFinished(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
-      {
         this._remove(job);
-      }
     }
 
     /// <summary>
@@ -154,18 +143,18 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _add(CadKit.Threads.Jobs.Job job)
     {
-      if (true == this.InvokeRequired)
-      {
-        this.BeginInvoke(new VoidReturnJobArgument(this._add), new object[] { job });
-        return;
-      }
       try
       {
-        lock (this.Mutex)
-        {
-          if (null == job)
-            return;
+        if (null == job)
+          return;
 
+        if (true == this.InvokeRequired)
+        {
+          this.BeginInvoke(new VoidReturnJobArgument(this._add), new object[] { job });
+        }
+
+        else
+        {
           // Should already be added to manager.
           System.Diagnostics.Debug.Assert(true == CadKit.Threads.Jobs.Manager.Instance.Contains(job));
 
@@ -173,14 +162,17 @@ namespace CadKit.Threads.GUI
           CadKit.Threads.GUI.Job row = new CadKit.Threads.GUI.Job(job);
 
           // Add it to the control.
-          _layout.Controls.Add(row);
+          lock (this.Mutex) { _layout.Controls.Add(row); }
 
           // Resize it to fit.
           this._resizeControl(row);
 
           // Repaint.
-          _layout.Invalidate(true);
-          _layout.Update();
+          lock (this.Mutex)
+          {
+            _layout.Invalidate(true);
+            _layout.Update();
+          }
         }
       }
       catch (System.Exception e)
@@ -194,18 +186,18 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _remove(CadKit.Threads.Jobs.Job job)
     {
-      if (true == this.InvokeRequired)
-      {
-        this.BeginInvoke(new VoidReturnJobArgument(this._remove), new object[] { job });
-        return;
-      }
       try
       {
-        lock (this.Mutex)
-        {
-          if (null == job)
-            return;
+        if (null == job)
+          return;
 
+        if (true == this.InvokeRequired)
+        {
+          this.BeginInvoke(new VoidReturnJobArgument(this._remove), new object[] { job });
+        }
+
+        else
+        {
           // Should already be removed from manager.
           System.Diagnostics.Debug.Assert(false == CadKit.Threads.Jobs.Manager.Instance.Contains(job));
 
@@ -214,10 +206,13 @@ namespace CadKit.Threads.GUI
 
           if (null != row)
           {
-            // Remove the job row.
-            _layout.Controls.Remove(row);
-            _layout.Invalidate(true);
-            _layout.Update();
+            lock (this.Mutex)
+            {
+              // Remove the job row.
+              _layout.Controls.Remove(row);
+              _layout.Invalidate(true);
+              _layout.Update();
+            }
           }
         }
       }
@@ -232,23 +227,50 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private Job _findRow(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
-      {
-        // Should be true.
-        System.Diagnostics.Debug.Assert(false == this.InvokeRequired);
+      // Should be true.
+      System.Diagnostics.Debug.Assert(false == this.InvokeRequired);
 
-        foreach (System.Windows.Forms.Control control in _layout.Controls)
+      ControlList controls = this.ControlsCopy;
+      foreach (System.Windows.Forms.Control control in controls)
+      {
+        CadKit.Threads.GUI.Job row = control as CadKit.Threads.GUI.Job;
+        if (null != row)
         {
-          CadKit.Threads.GUI.Job row = control as CadKit.Threads.GUI.Job;
-          if (null != row)
+          if (row.getJob() == job)
           {
-            if (row.getJob() == job)
-            {
-              return row;
-            }
+            return row;
           }
         }
-        return null;
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Get layout panel.
+    /// </summary>
+    private System.Windows.Forms.FlowLayoutPanel FlowLayoutPanel
+    {
+      get { lock (this.Mutex) { return _layout; } }
+    }
+
+    /// <summary>
+    /// Get a copy of the list of child controls.
+    /// </summary>
+    ControlList ControlsCopy
+    {
+      get
+      {
+        System.Windows.Forms.FlowLayoutPanel layout = this.FlowLayoutPanel;
+        ControlList newList = new ControlList();
+        System.Windows.Forms.Control.ControlCollection currentList = layout.Controls;
+        lock (this.Mutex)
+        {
+          foreach (System.Windows.Forms.Control control in currentList)
+          {
+            newList.Add(control);
+          }
+        }
+        return newList;
       }
     }
 

@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Adam Kubach
+//  Copyright (c) 2006, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,18 +9,10 @@
 
 namespace CadKit.Interfaces
 {
-  public class SceneExport
+  public interface IJitterAntialias
   {
-    public enum Option
-    {
-      ENTIRE_SCENE,
-      MODEL_ONLY
-    }
-  }
-
-  public interface IExportScene
-  {
-    Filters Filters { get; }
-    void export(string filename, SceneExport.Option option);
+    System.UInt32[] AvailableRenderingPasses { get; }
+    double ScatterScale { get; set; }
+    uint RenderingPasses { get; set; }
   }
 }

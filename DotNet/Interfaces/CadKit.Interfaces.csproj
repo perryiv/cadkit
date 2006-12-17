@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IJitterAntialias.cs" />
+    <Compile Include="ISnapShot.cs" />
     <Compile Include="IClearColor.cs" />
     <Compile Include="IPropertyGridObject.cs" />
     <Compile Include="IDocumentView.cs" />

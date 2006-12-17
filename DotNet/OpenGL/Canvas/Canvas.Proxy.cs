@@ -18,6 +18,7 @@ namespace CadKit.OpenGL
       /// </summary>
       private CadKit.OpenGL.Canvas _canvas = null;
 
+
       /// <summary>
       /// Constructor
       /// </summary>
@@ -28,24 +29,25 @@ namespace CadKit.OpenGL
         this._canvas = canvas;
       }
 
+
       /// <summary>
       /// OpenGL clear color property.
       /// </summary>
       [
       System.ComponentModel.Category("Graphics"),
-      System.ComponentModel.Description("Background color of the window"),
+      System.ComponentModel.Description("Background color for window"),
       System.ComponentModel.Browsable(true),
       ]
-      public System.Drawing.Color ClearColor
+      public virtual System.Drawing.Color ClearColor
       {
         get { return this._canvas.ClearColor; }
         set
         {
           this._canvas.ClearColor = value;
-          this._canvas.Invalidate();
-          this._canvas.Update();
+          this._update();
         }
       }
+
 
       /// <summary>
       /// Pixel format property.
@@ -65,6 +67,7 @@ namespace CadKit.OpenGL
         }
       }
 
+
       /// <summary>
       /// Size of the control.
       /// </summary>
@@ -79,9 +82,18 @@ namespace CadKit.OpenGL
         set
         {
           this._canvas.Size = value;
-          this._canvas.Invalidate();
-          this._canvas.Update();
+          this._update();
         }
+      }
+
+
+      /// <summary>
+      /// Update the panel.
+      /// </summary>
+      private void _update()
+      {
+        _canvas.Invalidate(true);
+        _canvas.Update();
       }
     }
   }

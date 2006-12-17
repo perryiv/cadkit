@@ -16,11 +16,17 @@ namespace CadKit.OpenGL
     /// </summary>
     public virtual System.Drawing.Color ClearColor
     {
-      get { return _clearColor; }
+      get
+      {
+        return this.BackColor;
+      }
       set
       {
-        _clearColor = value;
-        CadKit.Persistence.Registry.Instance.setColor(this.GetType().ToString(), "ClearColor", value);
+        this.BackColor = value;
+        if (null != this.InnerControl)
+        {
+          this.InnerControl.BackColor = value;
+        }
       }
     }
 

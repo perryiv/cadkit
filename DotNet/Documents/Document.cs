@@ -48,7 +48,7 @@ namespace CadKit.Documents
     {
       try
       {
-        this.closeAllViews();
+        this._closeAllViews();
       }
       catch (System.Exception e)
       {
@@ -60,29 +60,27 @@ namespace CadKit.Documents
     /// <summary>
     /// Close all the views.
     /// </summary>
-    public void closeAllViews()
+    private void _closeAllViews()
     {
       try
       {
-        using (this.Lock.write())
-        {
-          if (null != _views)
-          {
-            // Make a copy of the views because, as each one closes, 
-            // it removes itself from the list.
-            CadKit.Interfaces.IDocumentView[] views = this.Views;
+        // Make a copy of the views because, as each one closes, 
+        // it removes itself from the list.
+        CadKit.Interfaces.IDocumentView[] views = this.Views;
 
-            // Loop through the views.
-            foreach (CadKit.Interfaces.IDocumentView view in views)
+        if (null != views)
+        {
+          // Loop through the views.
+          foreach (CadKit.Interfaces.IDocumentView view in views)
+          {
+            try
             {
-              try
-              {
-                view.close();
-              }
-              catch (System.Exception e1)
-              {
-                System.Console.WriteLine("Error 1770634745: {0}", e1.Message);
-              }
+              view.close();
+              this.remove(view);
+            }
+            catch (System.Exception e1)
+            {
+              System.Console.WriteLine("Error 1770634745: {0}", e1.Message);
             }
           }
         }
@@ -99,10 +97,16 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IDocument.add(CadKit.Interfaces.IDocumentView view)
     {
-      using (this.Lock.write())
-      {
-        this.add(view);
-      }
+      this.add(view);
+    }
+
+
+    /// <summary>
+    /// Close the document.
+    /// </summary>
+    void CadKit.Interfaces.IDocument.close()
+    {
+      this._closeAllViews();
     }
 
 
@@ -111,9 +115,9 @@ namespace CadKit.Documents
     /// </summary>
     void add(CadKit.Interfaces.IDocumentView view)
     {
-      using (this.Lock.write())
+      if (null != view && false == this.contains(view))
       {
-        if (null != view && false == this.contains(view))
+        using (this.Lock.write())
         {
           _views.Add(view);
         }
@@ -126,10 +130,7 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IDocument.remove(CadKit.Interfaces.IDocumentView view)
     {
-      using (this.Lock.write())
-      {
-        this.remove(view);
-      }
+      this.remove(view);
     }
 
 
@@ -138,9 +139,9 @@ namespace CadKit.Documents
     /// </summary>
     public void remove(CadKit.Interfaces.IDocumentView view)
     {
-      using (this.Lock.write())
+      while (true == this.contains(view))
       {
-        while (true == this.contains(view))
+        using (this.Lock.write())
         {
           _views.Remove(view);
         }
@@ -153,10 +154,7 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.contains(CadKit.Interfaces.IDocumentView view)
     {
-      using (this.Lock.read())
-      {
-        return this.contains(view);
-      }
+      return this.contains(view);
     }
 
 
@@ -186,7 +184,7 @@ namespace CadKit.Documents
     /// </summary>
     public CadKit.Interfaces.IDocumentView[] Views
     {
-      get { using (this.Lock.read()) { return _views.ToArray(); } }
+      get { using (this.Lock.read()) { return ((null == _views) ? null : _views.ToArray()); } }
     }
 
 
@@ -204,6 +202,16 @@ namespace CadKit.Documents
     /// Get/set the gui-delegate.
     /// </summary>
     CadKit.Interfaces.IGuiDelegate CadKit.Interfaces.IDocument.GuiDelegate
+    {
+      get { return this.GuiDelegate; }
+      set { this.GuiDelegate = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the gui-delegate.
+    /// </summary>
+    CadKit.Interfaces.IGuiDelegate GuiDelegate
     {
       get { using (this.Lock.read()) { return _gui; } }
       set { using (this.Lock.write()) { _gui = value; } }
@@ -262,13 +270,13 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IGuiCreate.create(object caller)
     {
-      using (this.Lock.read())
+      CadKit.Interfaces.IGuiDelegate gui = this.GuiDelegate;
       {
-        if (null != _gui)
+        if (null != gui)
         {
           // Potential deadlock if this calls BeginInvoke and
           // tries to write to this instance.
-          _gui.create(caller);
+          gui.create(caller);
         }
       }
     }
@@ -279,13 +287,10 @@ namespace CadKit.Documents
     /// </summary>
     void CadKit.Interfaces.IWindowsForward.windowsForward(object caller)
     {
-      using (this.Lock.read())
+      CadKit.Interfaces.IWindowsForward forward = this.GuiDelegate as CadKit.Interfaces.IWindowsForward;
+      if (null != forward)
       {
-        CadKit.Interfaces.IWindowsForward forward = _gui as CadKit.Interfaces.IWindowsForward;
-        if (null != forward)
-        {
-          forward.windowsForward(caller);
-        }
+        forward.windowsForward(caller);
       }
     }
 

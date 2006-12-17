@@ -11,6 +11,14 @@ namespace CadKit.Helios.Commands
 {
   public class ExportSceneCommand : CadKit.Commands.Command
   {
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    protected CadKit.Interfaces.SceneExport.Option _option = CadKit.Interfaces.SceneExport.Option.ENTIRE_SCENE;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public ExportSceneCommand(object caller)
       : base()
     {
@@ -27,7 +35,7 @@ namespace CadKit.Helios.Commands
       {
         System.Windows.Forms.SaveFileDialog dialog = new System.Windows.Forms.SaveFileDialog();
         dialog.AddExtension = true;
-        dialog.Title = CadKit.Helios.Application.Instance.Name + " -- Export Scene";
+        dialog.Title = System.String.Format("{0} -- {1}", CadKit.Helios.Application.Instance.Name, _text);
 
         CadKit.Interfaces.IExportScene export = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IExportScene;
         if (null != export)
@@ -42,7 +50,7 @@ namespace CadKit.Helios.Commands
           dialog.Filter = finalFilter;
           dialog.ShowDialog();
           string filename = dialog.FileName;
-          export.export(filename);
+          export.export(filename, _option);
         }
       }
       catch (System.Exception exception)

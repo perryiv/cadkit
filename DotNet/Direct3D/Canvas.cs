@@ -241,7 +241,7 @@ namespace CadKit.Direct3D
     /// </summary>
     public System.Windows.Forms.ContextMenuStrip buildContextMenu()
     {
-      this._checkThread ( 1033805713, "CadKit.Direct3D.Canvas.buildContextMenu" );
+      this._checkThread(1033805713, "CadKit.Direct3D.Canvas.buildContextMenu");
 
       System.Windows.Forms.ContextMenuStrip menu = null;
       try

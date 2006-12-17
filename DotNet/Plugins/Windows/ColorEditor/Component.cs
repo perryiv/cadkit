@@ -21,7 +21,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
     /// <summary>
     /// Called when the plugin is loaded.
     /// </summary>
-    void CadKit.Interfaces.IPlugin.startupNotify(object caller)
+    void CadKit.Interfaces.IPlugin.start(object caller)
     {
       CadKit.Interfaces.IMainForm mw = caller as CadKit.Interfaces.IMainForm;
       if (null != mw)
@@ -33,6 +33,13 @@ namespace CadKit.Plugins.Windows.ColorEditor
           parent.Shown += this._parentShown;
         }
       }
+    }
+
+    /// <summary>
+    /// Called when use of the plugin is finished.
+    /// </summary>
+    void CadKit.Interfaces.IPlugin.finish(object caller)
+    {
     }
 
     /// <summary>

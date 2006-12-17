@@ -91,23 +91,30 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// </summary>
     private void _updateTextControl(string text)
     {
-      // This function can get called from multiple threads and can call 
-      // itself from different threads (with BeginInvoke), so we cannot 
-      // lock the _mutex. See:
-      // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnforms/html/winforms06112002.asp
+      try
+      {
+        // This function can get called from multiple threads and can call 
+        // itself from different threads (with BeginInvoke), so we cannot 
+        // lock the _mutex. See:
+        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnforms/html/winforms06112002.asp
 
-      // Make sure we set text from the proper thread.
-      if (true == _text.InvokeRequired)
-      {
-        // A breakpoint here will cause the debugger to briefly hang because 
-        // this is not the gui thread. Also, BeginInvoke() is thread-safe, 
-        // so do not lock the _mutex.
-        _text.BeginInvoke(new UpdateTextDelegate(_updateTextControl), new object[] { text });
+        // Make sure we set text from the proper thread.
+        if (true == _text.InvokeRequired)
+        {
+          // A breakpoint here will cause the debugger to briefly hang because 
+          // this is not the gui thread. Also, BeginInvoke() is thread-safe, 
+          // so do not lock the _mutex.
+          _text.BeginInvoke(new UpdateTextDelegate(_updateTextControl), new object[] { text });
+        }
+        else
+        {
+          _text.Text += text;
+          _text.Invalidate(true);
+        }
       }
-      else
+      catch (System.Exception e)
       {
-        _text.Text += text;
-        _text.Invalidate(true);
+        System.Console.WriteLine("Error 1637191745: {0}", e.Message);
       }
     }
   }

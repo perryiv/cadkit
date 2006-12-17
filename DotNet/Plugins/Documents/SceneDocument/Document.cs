@@ -47,17 +47,27 @@ namespace CadKit.Plugins.Documents.SceneDocument
       using (this.Lock.write())
       {
         CadKit.OSG.Glue.ReadFile reader = null;
+        string cwd = null;
         try
         {
+          // Make the path the current working directory. 
+          // This will increase the chances of textures loading.
+          cwd = System.IO.Directory.GetCurrentDirectory();
+          System.IO.FileInfo info = new System.IO.FileInfo(name);
+          System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
+
+          // Read the file.
           reader = new CadKit.OSG.Glue.ReadFile();
           _root = reader.readNodeFile(name, caller);
 
+          // Set document name.
           CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
           if (null != idoc)
           {
             idoc.Name = name;
           }
 
+          // Add file to recent-file list.
           CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
           if (null != recent)
           {
@@ -66,6 +76,13 @@ namespace CadKit.Plugins.Documents.SceneDocument
         }
         finally
         {
+          // Always reset the current working directory.
+          if (null != cwd && System.IO.Directory.Exists(cwd))
+          {
+            System.IO.Directory.SetCurrentDirectory(cwd);
+          }
+
+          // Always clear the reader.
           if (null != reader)
           {
             reader.clear();

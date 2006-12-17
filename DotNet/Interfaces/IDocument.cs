@@ -39,6 +39,11 @@ namespace CadKit.Interfaces
     bool HasDefaultName { get; }
 
     /// <summary>
+    /// Close the document and all it's views.
+    /// </summary>
+    void close();
+
+    /// <summary>
     /// Add a view.
     /// </summary>
     void add(CadKit.Interfaces.IDocumentView view);

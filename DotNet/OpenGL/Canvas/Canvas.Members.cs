@@ -16,14 +16,21 @@ namespace CadKit.OpenGL
     /// </summary>
     private class InnerPanel : System.Windows.Forms.Panel
     {
-      public InnerPanel() : base()
+      public InnerPanel()
+        : base()
       {
         // Getting a flicker when using the color editor...
-        //this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
-        //this.SetStyle(System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true);
-        //this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
+        // this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
+        // this.SetStyle(System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true);
+        // this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
       }
     }
+
+
+    /// <summary>
+    /// Local types for color map.
+    /// </summary>
+    class Colors : System.Collections.Generic.Dictionary<string, System.Drawing.Color> { }
 
 
     /// <summary>
@@ -39,6 +46,5 @@ namespace CadKit.OpenGL
     CadKit.Persistence.Form _colorEditorForm = null;
     System.Data.DataTable _pixelFormats = null;
     System.Windows.Forms.Timer _timer = null;
-    System.Drawing.Color _clearColor = System.Drawing.Color.FromArgb(1, 0, 0, 0);
   }
 }

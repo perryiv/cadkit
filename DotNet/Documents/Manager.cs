@@ -98,6 +98,26 @@ namespace CadKit.Documents
 
 
     /// <summary>
+    /// Remove the document.
+    /// </summary>
+    public void remove(CadKit.Interfaces.IDocument document)
+    {
+      if (null != document)
+      {
+        if (document == this.ActiveDocument)
+        {
+          // This also sets active document to null.
+          this.ActiveView = null;
+        }
+        using (this.Lock.write())
+        {
+          while (true == _documents.Remove(document)) { }
+        }
+      }
+    }
+
+
+    /// <summary>
     /// Add the document.
     /// </summary>
     private void _addDocument(CadKit.Interfaces.IDocument document)
@@ -259,19 +279,16 @@ namespace CadKit.Documents
     private void _setActiveDocument()
     {
       CadKit.Interfaces.IDocumentView activeView = this.ActiveView;
-      if (null != activeView)
+      CadKit.Interfaces.IDocument oldDoc = this.ActiveDocument;
+
+      using (this.Lock.write())
       {
-        CadKit.Interfaces.IDocument oldDoc = this.ActiveDocument;
+        _activeDoc = (null == activeView) ? null : activeView.Document;
+      }
 
-        using (this.Lock.write())
-        {
-          _activeDoc = activeView.Document;
-        }
-
-        if (null != this.ActiveDocumentChanged)
-        {
-          this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
-        }
+      if (null != this.ActiveDocumentChanged)
+      {
+        this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
       }
     }
 

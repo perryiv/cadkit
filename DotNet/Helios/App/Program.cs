@@ -30,7 +30,7 @@ namespace CadKit.Helios
 
         // Setup code for the forms.
         System.Windows.Forms.Application.EnableVisualStyles();
-        System.Windows.Forms.Application.SetCompatibleTextRenderingDefault( false );
+        System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
         // Declare the application and name it.
         CadKit.Helios.Application.Instance.Name = "Helios";
@@ -40,22 +40,28 @@ namespace CadKit.Helios
         CadKit.Helios.Application.Instance.SplashImage = CadKit.Helios.Application.Instance.IconDir + "/splash_screen.jpg";
 
         // Declare main form and pass the persistant name.
-        CadKit.Helios.MainForm form = new CadKit.Helios.MainForm( "CadKit.Helios.MainForm" );
+        CadKit.Helios.MainForm form = new CadKit.Helios.MainForm("CadKit.Helios.MainForm");
 
         // Set the application's main form.
         CadKit.Helios.Application.Instance.MainForm = form;
 
         // Run the application.
-        System.Windows.Forms.Application.Run( form );
+        System.Windows.Forms.Application.Run(form);
       }
-      catch ( System.Exception e )
+      catch (System.Exception e)
       {
-        if ( null != e.Message && e.Message.Length > 0 )
+        if (null != e.Message && e.Message.Length > 0)
         {
           string message = System.String.Format("Error 1659684102: {0}", e.Message);
           System.Windows.Forms.MessageBox.Show(message, "Error");
-          System.Console.WriteLine( message );
+          System.Console.WriteLine(message);
         }
+      }
+      finally
+      {
+        // Wait for cleanup.
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
       }
     }
   }

@@ -33,7 +33,7 @@ namespace CadKit.Tools
     /// Constants.
     /// </summary>
     private const string SYSTEM_KERNEL_DLL = "kernel32.dll";
-    private const int STD_OUTPUT_HANDLE = -11; // See "winbase.h"
+    private const int STD_OUTPUT_HANDLE = -11; // See http://msdn2.microsoft.com/en-gb/library/ms686244.aspx
 
     /// <summary>
     /// Set the standard output handle.
@@ -77,7 +77,8 @@ namespace CadKit.Tools
         sw.AutoFlush = true;
         System.Console.SetOut(sw);
 
-        //CadKit.Tools.RedirectOutput.SetStdHandle(CadKit.Tools.RedirectOutput.STD_OUTPUT_HANDLE, _stream.SafeFileHandle.DangerousGetHandle());
+        // This turns on capturing of native side. Use with caution.
+        CadKit.Tools.RedirectOutput.SetStdHandle(CadKit.Tools.RedirectOutput.STD_OUTPUT_HANDLE, _stream.SafeFileHandle.DangerousGetHandle());
       }
       catch (System.Exception e)
       {

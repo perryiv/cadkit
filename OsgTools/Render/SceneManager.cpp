@@ -23,7 +23,7 @@ using namespace OsgTools::Render;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SceneManager::SceneManager (  ) :
+SceneManager::SceneManager() :
   BaseClass(),
   _scene           ( new Group ),
   _clipNode        ( new osg::ClipNode ),
@@ -32,9 +32,8 @@ SceneManager::SceneManager (  ) :
   _projectionMap   (),
   _textMap         ()
 {
-  _scene->addChild( _clipNode.get() );
- 
   _scene->addChild ( _projectionNode.get() );
+  _scene->addChild ( _clipNode.get() );
 }
 
 
@@ -44,7 +43,7 @@ SceneManager::SceneManager (  ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SceneManager::~SceneManager (  ) 
+SceneManager::~SceneManager() 
 {
 }
 
@@ -79,7 +78,7 @@ const osg::Node * SceneManager::scene() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::model( osg::Node* node )
+void SceneManager::model ( osg::Node* node )
 {
   // Remove any thing that may be under the clip node
   _clipNode->removeChild ( 0 , _clipNode->getNumChildren() );
@@ -101,9 +100,7 @@ void SceneManager::model( osg::Node* node )
 
 osg::Node* SceneManager::model()
 {
-  if( _clipNode->getNumChildren() > 0 )
-    return _clipNode->getChild( 0 );
-  return 0x0;
+  return ( ( _clipNode->getNumChildren() > 0 ) ? _clipNode->getChild ( 0 ) : 0x0 );
 }
 
 
@@ -115,9 +112,7 @@ osg::Node* SceneManager::model()
 
 const osg::Node* SceneManager::model() const
 {
-  if( _clipNode->getNumChildren() > 0 )
-    return _clipNode->getChild( 0 );
-  return 0x0;
+  return ( ( _clipNode->getNumChildren() > 0 ) ? _clipNode->getChild ( 0 ) : 0x0 );
 }
 
 

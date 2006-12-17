@@ -30,6 +30,8 @@ namespace osg
   class Matrixf;
   class Matrixd;
   class Vec4f;
+  class MatrixTransform;
+  class Geometry;
 };
 
 namespace osgText

@@ -19,7 +19,9 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IFrameDump,
     CadKit.Interfaces.IDocumentView,
     CadKit.Interfaces.IClearColor,
-    CadKit.Interfaces.IPropertyGridObject
+    CadKit.Interfaces.IPropertyGridObject,
+    CadKit.Interfaces.ISnapShot,
+    CadKit.Interfaces.IJitterAntialias
   {
     /// <summary>
     /// Data members.
@@ -253,9 +255,9 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Exposr the scene.
+    /// Export the scene.
     /// </summary>
-    void CadKit.Interfaces.IExportScene.export(string filename)
+    void CadKit.Interfaces.IExportScene.export(string filename, CadKit.Interfaces.SceneExport.Option option)
     {
       lock (this.Mutex)
       {
@@ -264,7 +266,7 @@ namespace CadKit.Viewer
         {
           throw new System.Exception(System.String.Format("Error 1824824745: Failed to export scene file '{0}', feature not supported", filename));
         }
-        export.export(filename);
+        export.export(filename, option);
       }
     }
 
@@ -441,11 +443,112 @@ namespace CadKit.Viewer
 
 
     /// <summary>
+    /// Get/set the clear color corner.
+    /// </summary>
+    public CadKit.Viewer.Glue.Viewer.Corners Corner
+    {
+      get { lock (this.Mutex) { return _panel.Corners; } }
+      set { lock (this.Mutex) { _panel.Corners = value; } }
+    }
+
+
+    /// <summary>
     /// Return object appropriate for property grid.
     /// </summary>
-    public object PropertyGridObject
+    public virtual object PropertyGridObject
     {
       get { lock (this.Mutex) { return _panel.PropertyGridObject; } }
+    }
+
+
+    /// <summary>
+    /// Take a single picture.
+    /// </summary>
+    void CadKit.Interfaces.ISnapShot.takePicture(string file, uint numRenderPasses, float frameSizeScale, float scatterScale)
+    {
+      if (null != _panel)
+      {
+        lock (this.Mutex)
+        {
+          _panel.takePicture(file, numRenderPasses, frameSizeScale, scatterScale);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Return available rendering passes.
+    /// </summary>
+    uint[] CadKit.Interfaces.IJitterAntialias.AvailableRenderingPasses
+    {
+      get { lock (this.Mutex) { return (null == _panel) ? null : _panel.AvailableRenderingPasses; } }
+    }
+
+
+    /// <summary>
+    /// Return available rendering passes.
+    /// </summary>
+    public uint[] AvailableRenderingPasses
+    {
+      get { lock (this.Mutex) { return (null == _panel) ? null : _panel.AvailableRenderingPasses; } }
+    }
+
+
+    /// <summary>
+    /// Return jitter scatter scale.
+    /// </summary>
+    double CadKit.Interfaces.IJitterAntialias.ScatterScale
+    {
+      get { return this.ScatterScale; }
+      set { this.ScatterScale = value; }
+    }
+
+
+    /// <summary>
+    /// Return jitter scatter scale.
+    /// </summary>
+    public double ScatterScale
+    {
+      get { lock (this.Mutex) { return (null == _panel) ? 1.0f : _panel.ScatterScale; } }
+      set
+      {
+        if (null != _panel)
+        {
+          lock (this.Mutex)
+          {
+            _panel.ScatterScale = value;
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Return jitter scatter scale.
+    /// </summary>
+    uint CadKit.Interfaces.IJitterAntialias.RenderingPasses
+    {
+      get { return this.RenderingPasses; }
+      set { this.RenderingPasses = value; }
+    }
+
+
+    /// <summary>
+    /// Return jitter scatter scale.
+    /// </summary>
+    public uint RenderingPasses
+    {
+      get { lock (this.Mutex) { return (null == _panel) ? 1 : _panel.RenderingPasses; } }
+      set
+      {
+        if (null != _panel)
+        {
+          lock (this.Mutex)
+          {
+            _panel.RenderingPasses = value;
+          }
+        }
+      }
     }
   }
 }

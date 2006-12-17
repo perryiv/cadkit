@@ -16,10 +16,12 @@
 
 #include "OsgTools/Ray.h"
 
+
 namespace OsgTools {
 namespace Builders {
 
-  class OSG_TOOLS_EXPORT Arrow : public Ray
+
+class OSG_TOOLS_EXPORT Arrow : public Ray
 {
 public:
   typedef Ray BaseClass;

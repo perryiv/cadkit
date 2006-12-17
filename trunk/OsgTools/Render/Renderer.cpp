@@ -15,6 +15,7 @@
 #include "OsgTools/Render/Defaults.h"
 #include "OsgTools/Images/Matrix.h"
 #include "OsgTools/Render/ClampProjection.h"
+#include "OsgTools/Builders/GradientBackground.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Bits/Bits.h"
@@ -34,6 +35,9 @@
 
 #include "osg/Texture2D"
 #include "osg/Version"
+#include "osg/MatrixTransform"
+#include "osg/Geometry"
+#include "osg/Geode"
 
 #include "osgUtil/UpdateVisitor"
 
@@ -56,14 +60,14 @@ namespace Detail { const unsigned int NUM_CHANNELS ( 3 ); }
 ///////////////////////////////////////////////////////////////////////////////
 
 Renderer::Renderer() : BaseClass(),
-_sceneView ( new osgUtil::SceneView ),
-_framestamp ( new osg::FrameStamp ),
-_times(),
-_timer(),
-_start_tick ( 0 ),
-_numPasses ( 1 ),
-_contextId ( 0 ),
-_hasAccumulationBuffer ( false )
+  _sceneView ( new osgUtil::SceneView ),
+  _framestamp ( new osg::FrameStamp ),
+  _times(),
+  _timer(),
+  _start_tick ( 0 ),
+  _numPasses ( 1 ),
+  _contextId ( 0 ),
+  _hasAccumBuffer ( false )
 {
   // Set the start tick.
   _start_tick = _timer.tick();
@@ -107,7 +111,7 @@ void Renderer::init()
   ::glGetIntegerv ( GL_ACCUM_BLUE_BITS,  &blue  );
   ::glGetIntegerv ( GL_ACCUM_ALPHA_BITS, &alpha );
   const bool hasAccum ( red && green && blue && alpha );
-  _hasAccumulationBuffer = hasAccum;
+  _hasAccumBuffer = hasAccum;
 
   // This is a work-around for the fact that some geometries have a 
   // calculated near or far distance of zero. SceneViewer::cull() does not 
@@ -148,7 +152,7 @@ void Renderer::clear()
 
 bool Renderer::hasAccumBuffer() const
 {
-  return _hasAccumulationBuffer;
+  return _hasAccumBuffer;
 }
 
 
@@ -190,19 +194,18 @@ void Renderer::nearFar ( double &n, double &f ) const
 void Renderer::render()
 {
   // Handle no viewer.
-  if ( !_sceneView.valid() )
+  if ( false == _sceneView.valid() )
     return;
 
   // If there is no scene then clear the screen. 
   // Otherwise, weird artifacts may show up.
-  if ( !_sceneView->getSceneData() )
+  if ( 0x0 == _sceneView->getSceneData() )
   {
     const osg::Vec4 &color = this->backgroundColor();
     ::glClearColor ( color[0], color[1], color[2], color[3] );
     ::glClear ( _sceneView->getRenderStage()->getClearMask() );
   }
 
-  // Draw
   // See if we are supposed to use multiple passes.
   if ( this->numRenderPasses() > 1 )
     this->_multiPassRender();
@@ -211,7 +214,6 @@ void Renderer::render()
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
-
 }
 
 
@@ -324,8 +326,7 @@ void Renderer::_multiPassRender()
 
 void Renderer::backgroundColor ( const osg::Vec4 &color )
 {
-  // Set the color.
-  if ( this->viewer() )
+  if ( 0x0 != this->viewer() )
     this->viewer()->setClearColor ( color );
 }
 
@@ -336,11 +337,9 @@ void Renderer::backgroundColor ( const osg::Vec4 &color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4 &Renderer::backgroundColor() const
+osg::Vec4 Renderer::backgroundColor() const
 {
-  if ( !this->viewer() )
-    throw ( std::runtime_error ( "Cannot get the background color because there is no viewer" ) );
-  return this->viewer()->getClearColor();
+  return ( 0x0 == this->viewer() ) ? osg::Vec4 ( 0, 0, 0, 1 ) : this->viewer()->getClearColor();
 }
 
 
@@ -578,7 +577,7 @@ void Renderer::scene ( osg::Node *node )
 
 const osg::Node * Renderer::scene() const
 {
-  return _sceneView->getSceneData ( );
+  return _sceneView->getSceneData();
 }
 
 
@@ -590,7 +589,7 @@ const osg::Node * Renderer::scene() const
 
 osg::Node * Renderer::scene()
 {
-  return _sceneView->getSceneData ( );
+  return _sceneView->getSceneData();
 }
 
 

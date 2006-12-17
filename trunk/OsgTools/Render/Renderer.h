@@ -24,6 +24,7 @@
 
 #include <vector>
 
+
 namespace OsgTools {
 namespace Render {
 
@@ -31,6 +32,7 @@ namespace Render {
 class OSG_TOOLS_EXPORT Renderer : public Usul::Base::Referenced
 {
 public:
+
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Renderer );
 
@@ -41,11 +43,12 @@ public:
   typedef osg::Viewport Viewport;
   typedef std::vector < std::string > ImageList;
 
+  // Constructor
   Renderer();
 
-  // Set/get the background color. Throws if getting color from a null viewer.
+  // Set/get the background color.
   void                  backgroundColor ( const osg::Vec4 &color );
-  const osg::Vec4 &     backgroundColor() const;
+  osg::Vec4             backgroundColor() const;
 
   // Clear
   void                  clear();
@@ -124,16 +127,17 @@ protected:
 
   virtual ~Renderer();
 
-  void                  _multiPassRender();
-  void                  _singlePassRender();
+  osg::Image*           _accumulate ( ImageList& images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const;
 
   void                  _cullAndDraw();
 
-  osg::Image*           _accumulate ( ImageList& images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const;
+  void                  _multiPassRender();
 
   // Capture the screen.
   void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );
   void                  _screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
+
+  void                  _singlePassRender();
 
   // Use a FBO to capture the screen.
   void                  _fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
@@ -158,7 +162,7 @@ private:
   unsigned int _numPasses;  
   unsigned int _contextId;
   
-  bool _hasAccumulationBuffer;
+  bool _hasAccumBuffer;
 };
 
 }

@@ -9,14 +9,30 @@
 
 namespace CadKit.Plugins
 {
-  public class Manager
+  public partial class Manager
   {
+    /// <summary>
+    /// Local types.
+    /// </summary>
+    class Names : System.Collections.Generic.Dictionary<string, bool> { }
+    class Plugins : System.Collections.Generic.List<Plugin> { }
+
+
+    /// <summary>
+    /// Data members.
+    /// </summary>
+    private static Manager _instance = null;
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
+    private Plugins _plugins = new Plugins();
+
+
     /// <summary>
     /// Constructor
     /// </summary>
     private Manager()
     {
     }
+
 
     /// <summary>
     /// Single instance.
@@ -36,118 +52,35 @@ namespace CadKit.Plugins
 
 
     /// <summary>
-    /// Get the file names from the XML file.
-    /// </summary>
-    private void _getPluginFileNames(string file)
-    {
-      lock (_mutex)
-      {
-        // Open the configuration file.
-        try
-        {
-          // Parse the path string.
-          System.IO.FileInfo info = new System.IO.FileInfo(file);
-
-          // Read the file.
-          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-          doc.Load(file);
-
-          // Get top-level node.
-          System.Xml.XmlNode root = doc.FirstChild;
-
-          // While there is a top-level node...
-          while (null != root)
-          {
-            if ("plugins" == root.Name)
-            {
-              System.Xml.XmlNodeList kids = root.ChildNodes;
-              for (int i = 0; i < kids.Count; ++i)
-              {
-                System.Xml.XmlNode node = kids[i];
-                if ("plugin" == node.Name)
-                {
-                  this._addAttributes(_names, info.DirectoryName, node);
-                }
-              }
-            }
-
-            // Go to next top-level node.
-            root = root.NextSibling;
-          }
-        }
-        catch (System.Exception e)
-        {
-          System.Console.WriteLine("Error 1813945695: {0}", e.Message);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Add the attributes to the list.
-    /// </summary>
-    private void _addAttributes(Names names, string dir, System.Xml.XmlNode node)
-    {
-      lock (_mutex)
-      {
-        string file = "";
-        bool load = true;
-        foreach (System.Xml.XmlAttribute attr in node.Attributes)
-        {
-          if(attr.Name == "file")
-            file = this._getAbsolutePathIfFile(dir, attr.Value);
-          else if(attr.Name == "load")
-            load = bool.Parse(attr.Value);
-        }
-
-        _names.Add(file,load);
-        
-      }
-    }
-
-    /// <summary>
-    /// If the attribute string is a file then return the absolute path.
-    /// </summary>
-    private string _getAbsolutePathIfFile(string dir, string attr)
-    {
-      string path = dir + '/' + attr;
-      path = path.Replace('\\', '/');
-      path = path.Replace("//", "/");
-      System.IO.FileInfo file = new System.IO.FileInfo(path);
-      return (true == file.Exists) ? path : attr;
-    }
-
-    /// <summary>
     /// See if there is a plugin with the given interface.
     /// </summary>
     public bool has<T>()
     {
-      lock (_mutex)
-      {
-        return (null != this.getFirst<T>());
-      }
+      return (null != this.getFirst<T>());
     }
+
 
     /// <summary>
     /// Get the first plugin that supports the given type.
     /// </summary>
     public T getFirst<T>()
     {
-      lock (_mutex)
+      Plugins plugins = this._pluginsCopy();
+      foreach (Plugin plugin in plugins)
       {
-        foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+        try
         {
-          try
+          T t = plugin.get<T>();
+          if (null != t)
           {
-            T t = (T)plugin;
-            if (null != t)
-              return t;
-          }
-          catch (System.InvalidCastException)
-          {
+            return t;
           }
         }
-        return default(T);
+        catch (System.InvalidCastException)
+        {
+        }
       }
+      return default(T);
     }
 
 
@@ -156,25 +89,23 @@ namespace CadKit.Plugins
     /// </summary>
     public T[] getAll<T>()
     {
-      lock (_mutex)
+      Plugins plugins = this._pluginsCopy();
+      System.Collections.Generic.List<T> types = new System.Collections.Generic.List<T>();
+      foreach (Plugin plugin in plugins)
       {
-        System.Collections.Generic.List<T> types = new System.Collections.Generic.List<T>();
-        foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+        try
         {
-          try
+          T t = plugin.get<T>();
+          if (null != t)
           {
-            T t = (T)plugin;
-            if (null != t)
-            {
-              types.Add(t);
-            }
-          }
-          catch (System.InvalidCastException)
-          {
+            types.Add(t);
           }
         }
-        return types.ToArray();
+        catch (System.InvalidCastException)
+        {
+        }
       }
+      return types.ToArray();
     }
 
 
@@ -186,28 +117,35 @@ namespace CadKit.Plugins
       // Open the configuration file.
       try
       {
-        lock (_mutex)
+        // Get all the names.
+        Names names = new Names();
+        Manager._getPluginFileNames(file, names);
+
+        // Initialize.
+        int number = 0;
+
+        // Loop through the files.
+        foreach (System.Collections.Generic.KeyValuePair<string, bool> pair in names)
         {
-          // Get all the names.
-          this._getPluginFileNames(file);
+          // Make new plugin.
+          Plugin plugin = new Plugin(pair.Key);
 
-          int number = 0;
-
-          // Loop through the files.
-          foreach (System.Collections.Generic.KeyValuePair<string, bool> kvp in _names)
+          // Load if we should.
+          if (true == pair.Value)
           {
-            if (kvp.Value)
-            {
-              CadKit.Tools.Progress.notify("Loading: " + kvp.Key, number, _names.Count, caller);
-              this._loadPlugin(kvp.Key, caller);
-            }
-
-            ++number;
+            CadKit.Tools.Progress.notify("Loading: " + plugin.File, number, names.Count, caller);
+            plugin.load(caller);
           }
 
-          // Done.
-          CadKit.Tools.Progress.notify("Done loading plugins", _names.Count, _names.Count, caller);
+          // Increment.
+          ++number;
+
+          // Add to our list.
+          this._addPlugin(plugin);
         }
+
+        // Done.
+        CadKit.Tools.Progress.notify("Done loading plugins", names.Count, names.Count, caller);
       }
       catch (System.Exception e)
       {
@@ -217,73 +155,16 @@ namespace CadKit.Plugins
 
 
     /// <summary>
-    /// Data members.
+    /// Add the plugin to the list.
     /// </summary>
-    private void _loadPlugin(string file, object caller )
+    private void _addPlugin(Plugin plugin)
     {
-      try
+      if (null != plugin)
       {
-        lock (_mutex)
+        using (this.Lock.write())
         {
-          System.Reflection.Assembly assembly = this._findOrLoadAssembly(file);
-          if (null == assembly)
-          {
-            System.Console.WriteLine("Error 7948918190: Failed to load assembly file: {0}", file);
-            return;
-          }
-
-          CadKit.Interfaces.IClassFactory factory = (CadKit.Interfaces.IClassFactory)assembly.CreateInstance("CadKit.Plugins.Factory");
-          if (null == factory)
-          {
-            System.Console.WriteLine("Error 7218841160: Assembly file '{0}' does not have a class factory", file);
-            return;
-          }
-
-          CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
-          if (null == plugin)
-          {
-            System.Console.WriteLine("Error 9585018640: Failed to create plugin instance in assembly file: {0}", file);
-            return;
-          }
-
-          plugin.startupNotify(caller);
-
-          if (false == _plugins.Contains(plugin))
-            _plugins.Add(plugin);
+          _plugins.Add(plugin);
         }
-      }
-      catch ( System.Exception e )
-      {
-        System.Console.WriteLine( "Error 4156259049: {0}", e.Message );
-      }
-    }
-
-
-    /// <summary>
-    /// Find or load the assembly.
-    /// </summary>
-    private System.Reflection.Assembly _findOrLoadAssembly(string file)
-    {
-      lock (_mutex)
-      {
-        System.Reflection.Assembly assembly = null;
-        try
-        {
-          _assemblies.TryGetValue(file, out assembly);
-          if (null == assembly)
-          {
-            // This may raise a LoadFromContext exception (or debugger warning). 
-            // However, LoadFrom() is the right function to call. 
-            // See http://www.gotdotnet.com/team/clr/LoadFromIsolation.aspx
-            assembly = System.Reflection.Assembly.LoadFrom(file);
-            _assemblies.Add(file, assembly);
-          }
-        }
-        catch (System.Exception e)
-        {
-          System.Console.WriteLine("Error 4035049426: {0}", e.Message);
-        }
-        return assembly;
       }
     }
 
@@ -293,103 +174,18 @@ namespace CadKit.Plugins
     /// </summary>
     public bool isLoaded(string file)
     {
-      return _names[file];
-    }
-
-
-    class DummyPlugin : CadKit.Interfaces.IPlugin
-    {
-      string _name = "";
-      string _description = "";
-
-      public DummyPlugin(string name, string description)
+      Plugins plugins = this._pluginsCopy();
+      foreach (Plugin plugin in plugins)
       {
+        if (file == plugin.File)
+        {
+          if (true == plugin.IsLoaded)
+          {
+            return true;
+          }
+        }
       }
-
-      #region IPlugin Members
-
-      public string Name
-      {
-        get { return _name; }
-      }
-
-      public string Description
-      {
-        get { return _description; }
-      }
-
-      public void startupNotify(object caller)
-      {
-        // Do nothing.
-      }
-
-      #endregion
-    }
-
-    public CadKit.Interfaces.IPlugin pluginInterface(string file)
-    {
-      System.Reflection.Assembly assembly = null;
-
-      // Check to see if we have the plugin.
-      _assemblies.TryGetValue(file, out assembly);
-
-      if (assembly == null)
-      {
-        // See: http://msdn2.microsoft.com/en-US/library/7hcs6az6.aspx
-        System.AppDomain domain = System.AppDomain.CreateDomain("CadKit.Plugins.Factory");
-        object obj = domain.CreateInstanceFrom(file, "CadKit.Plugins.Factory");
-        //domain.AssemblyResolve += new System.ResolveEventHandler(domain_AssemblyResolve);
-
-        //assembly = domain.Load(file);
-        //object obj = domain.CreateInstance(file, "CadKit.Plugins.Factory");
-
-        //CadKit.Interfaces.IPlugin plugin = _getInterface(file, assembly);
-
-        //DummyPlugin dummy = new DummyPlugin(plugin.Name, plugin.Description);
-
-        System.AppDomain.Unload(domain);
-
-        //return dummy;
-        return new DummyPlugin("", "");
-      }
-
-      return _getInterface(file, assembly);
-    }
-
-    byte[] loadFile(string file)
-    {
-      System.IO.FileStream fs = new System.IO.FileStream(file, System.IO.FileMode.Open);
-      byte[] buffer = new byte[(int)fs.Length];
-      fs.Read(buffer, 0, buffer.Length);
-      fs.Close();
-
-      return buffer;
-    }
-
-    System.Reflection.Assembly domain_AssemblyResolve(object sender, System.ResolveEventArgs args)
-    {
-      System.AppDomain domain = (System.AppDomain)sender;
-
-      byte[] rawAssembly = loadFile(args.Name);
-      //byte[] rawSymbolStore = loadFile("temp.pdb");
-      //Assembly assembly = domain.Load(rawAssembly, rawSymbolStore);
-      return domain.Load(rawAssembly);
-    }
-
-    private static CadKit.Interfaces.IPlugin _getInterface(string file, System.Reflection.Assembly assembly)
-    {
-      CadKit.Interfaces.IClassFactory factory = (CadKit.Interfaces.IClassFactory)assembly.CreateInstance("CadKit.Plugins.Factory");
-      if (null == factory)
-      {
-        throw new System.Exception("Error 1407956654: Assembly file " + file + " does not have a class factory");
-      }
-
-      CadKit.Interfaces.IPlugin plugin = (CadKit.Interfaces.IPlugin)factory.createInstance("CadKit.Interfaces.IPlugin");
-      if (null == plugin)
-      {
-        throw new System.Exception("Error 1689831654: Failed to create plugin instance in assembly file: " + file);
-      }
-      return plugin;
+      return false;
     }
 
 
@@ -398,7 +194,7 @@ namespace CadKit.Plugins
     /// </summary>
     public int NumPlugins
     {
-      get { lock (_mutex) { return _plugins.Count; } }
+      get { using (this.Lock.read()) { return _plugins.Count; } }
     }
 
 
@@ -409,10 +205,11 @@ namespace CadKit.Plugins
     {
       get
       {
-        lock (_mutex)
+        Plugins plugins = this._pluginsCopy();
+        System.Collections.Generic.List<string> names = new System.Collections.Generic.List<string>();
+        foreach (Plugin plugin in plugins)
         {
-          System.Collections.Generic.List<string> names = new System.Collections.Generic.List<string>();
-          foreach (CadKit.Interfaces.IPlugin plugin in _plugins)
+          if (true == plugin.IsLoaded)
           {
             try
             {
@@ -423,8 +220,8 @@ namespace CadKit.Plugins
               System.Console.WriteLine("Error 3013611395: {0}", e.Message);
             }
           }
-          return names.ToArray();
         }
+        return names.ToArray();
       }
     }
 
@@ -436,32 +233,83 @@ namespace CadKit.Plugins
     {
       get
       {
+        Plugins plugins = this._pluginsCopy();
         System.Collections.Generic.List<string> names = new System.Collections.Generic.List<string>();
-        foreach (System.Collections.Generic.KeyValuePair<string, bool> kvp in _names)
+        foreach (Plugin plugin in plugins)
         {
-          names.Add(kvp.Key);
+          try
+          {
+            names.Add(plugin.File);
+          }
+          catch (System.Exception e)
+          {
+            System.Console.WriteLine("Error 1170924029: {0}", e.Message);
+          }
         }
-
         return names.ToArray();
       }
     }
 
 
     /// <summary>
-    /// Local types.
+    /// Release all the plugins.
     /// </summary>
-    class Assemblies : System.Collections.Generic.Dictionary<string, System.Reflection.Assembly> { }
-    class Names : System.Collections.Generic.Dictionary<string, bool> { }
-    class Plugins : System.Collections.Generic.List<CadKit.Interfaces.IPlugin> { }
+    public void release(object caller)
+    {
+      Plugins plugins = this._pluginsCopy();
+      foreach (Plugin plugin in plugins)
+      {
+        try
+        {
+          this._release(plugin, caller);
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 8071198400: {0}", e.Message);
+        }
+      }
+    }
 
 
     /// <summary>
-    /// Data members.
+    /// Release the plugins.
     /// </summary>
-    private static Manager _instance = null;
-    private object _mutex = new object();
-    private Assemblies _assemblies = new Assemblies();
-    private Names _names = new Names();
-    private Plugins _plugins = new Plugins();
+    private void _release(Plugin plugin, object caller)
+    {
+      if (null != plugin)
+      {
+        try
+        {
+          plugin.release(caller);
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 1813688115: {0}", e.Message);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Get the lock.
+    /// </summary>
+    private CadKit.Threads.Tools.Lock Lock
+    {
+      get { return _lock; }
+    }
+
+
+    /// <summary>
+    /// Return a copy of the list of plugins.
+    /// </summary>
+    private Plugins _pluginsCopy()
+    {
+      Plugins plugins = new Plugins();
+      using (this.Lock.read())
+      {
+        plugins.AddRange(_plugins);
+      }
+      return plugins;
+    }
   }
 }

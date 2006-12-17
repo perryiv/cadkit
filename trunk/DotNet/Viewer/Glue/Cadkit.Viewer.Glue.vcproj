@@ -123,6 +123,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4945"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -182,11 +183,11 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
-			RelativePathToProject="..\DotNet\OSG\Glue\CadKit.OSG.Glue.vcproj"
+			RelativePathToProject="..\OSG\Glue\CadKit.OSG.Glue.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{E32C5CEE-B56E-411F-B071-561AA05E55D9}"
-			RelativePathToProject="..\DotNet\Glue\CadKit.Glue.vcproj"
+			RelativePathToProject=".\CadKit.Glue.vcproj"
 		/>
 		<AssemblyReference
 			RelativePath="System.Drawing.dll"
@@ -194,7 +195,11 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
-			RelativePathToProject="..\DotNet\Referenced\CadKit.Referenced.csproj"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
+			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
 		/>
 	</References>
 	<Files>

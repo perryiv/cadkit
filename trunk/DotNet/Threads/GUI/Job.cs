@@ -77,29 +77,30 @@ namespace CadKit.Threads.GUI
     /// </summary>
     private void _progressNotify(CadKit.Threads.Jobs.Job job)
     {
-      // See if you need to invoke.
-      if (true == this.InvokeRequired)
-      {
-        this.BeginInvoke(new ProgessNotifyDelegate(this._progressNotify), new object[] { job });
-        return;
-      }
-
       try
       {
-        lock (this.Mutex)
+        if (true == this.InvokeRequired)
         {
-          // Should be true.
-          System.Diagnostics.Debug.Assert(job == _job);
+          this.BeginInvoke(new ProgessNotifyDelegate(this._progressNotify), new object[] { job });
+        }
 
-          // Move the progress bar.
-          _progressBar.Minimum = _job.Progress.Minimum;
-          _progressBar.Maximum = _job.Progress.Maximum;
-          _progressBar.Value = _job.Progress.Value;
-          _label.Text = _job.Progress.Text;
-          _label.Width = _label.PreferredWidth;
-          _tableLayout.ColumnStyles[0].Width = _label.PreferredWidth + 20;
-          _tableLayout.ColumnStyles[1].Width = _tableLayout.Width - (_tableLayout.ColumnStyles[0].Width + _tableLayout.ColumnStyles[2].Width);
-          _tableLayout.Invalidate();
+        else
+        {
+          lock (this.Mutex)
+          {
+            // Should be true.
+            System.Diagnostics.Debug.Assert(job == _job);
+
+            // Move the progress bar.
+            _progressBar.Minimum = _job.Progress.Minimum;
+            _progressBar.Maximum = _job.Progress.Maximum;
+            _progressBar.Value = _job.Progress.Value;
+            _label.Text = _job.Progress.Text;
+            _label.Width = _label.PreferredWidth;
+            _tableLayout.ColumnStyles[0].Width = _label.PreferredWidth + 20;
+            _tableLayout.ColumnStyles[1].Width = _tableLayout.Width - (_tableLayout.ColumnStyles[0].Width + _tableLayout.ColumnStyles[2].Width);
+            _tableLayout.Invalidate();
+          }
         }
       }
       catch (System.Exception e)

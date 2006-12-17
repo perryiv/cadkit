@@ -101,6 +101,9 @@ namespace CadKit.Helios
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
+      // Release all the plugins.
+      CadKit.Plugins.Manager.Instance.release(this);
+
       lock (_mutex)
       {
         if (disposing && (components != null))
@@ -366,8 +369,13 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
-          this._addMenuButton(menu, new CadKit.Helios.Commands.ExportSceneCommand(this));
-          this._addMenuButton(menu, new CadKit.Helios.Commands.ExportImageCommand(this));
+          {
+            System.Windows.Forms.ToolStripMenuItem export = CadKit.Tools.Menu.makeMenu("&Export");
+            menu.DropDownItems.Add(export);
+            this._addMenuButton(export, new CadKit.Helios.Commands.ExportModelCommand(this));
+            this._addMenuButton(export, new CadKit.Helios.Commands.ExportSceneCommand(this));
+            this._addMenuButton(export, new CadKit.Helios.Commands.ExportImageCommand(this));
+          }
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           menu.DropDownItems.Add(_recentFiles.Menu);
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());

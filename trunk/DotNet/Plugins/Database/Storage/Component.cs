@@ -28,7 +28,17 @@ namespace CadKit.Plugins.Database
     /// <summary>
     /// Called when the plugin is loaded.
     /// </summary>
-    void CadKit.Interfaces.IPlugin.startupNotify(object caller)
+    void CadKit.Interfaces.IPlugin.start(object caller)
+    {
+      lock (_mutex)
+      {
+      }
+    }
+
+    /// <summary>
+    /// Called when use of the plugin is finished.
+    /// </summary>
+    void CadKit.Interfaces.IPlugin.finish(object caller)
     {
       lock (_mutex)
       {
@@ -40,7 +50,7 @@ namespace CadKit.Plugins.Database
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      get { lock (_mutex) { return "Temporary Disk Storage"; } }
+      get { return "Temporary Disk Storage"; }
     }
 
     /// <summary>
@@ -48,7 +58,7 @@ namespace CadKit.Plugins.Database
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      get { lock (_mutex) { return "SQLite-based disk storage for large data sets."; } }
+      get { return "SQLite-based disk storage for large data sets."; }
     }
 
     /// <summary>

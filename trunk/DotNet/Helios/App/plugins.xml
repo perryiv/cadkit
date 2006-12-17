@@ -9,5 +9,6 @@
   <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.ColorEditor.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.Properties.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.SnapShot.plug" load="true"/>
   <plugin file="CadKit.Plugins.Database.Storage.plug" load="true"/>
 </plugins>

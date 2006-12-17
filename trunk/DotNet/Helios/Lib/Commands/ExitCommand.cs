@@ -42,17 +42,24 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected void _closeForm()
     {
-      System.Windows.Forms.Form form = this.Form;
-      if (null != form)
+      try
       {
-        if (true == form.InvokeRequired)
+        System.Windows.Forms.Form form = this.Form;
+        if (null != form)
         {
-          form.BeginInvoke(new CloseFormDelegate(this._closeForm));
+          if (true == form.InvokeRequired)
+          {
+            form.BeginInvoke(new CloseFormDelegate(this._closeForm));
+          }
+          else
+          {
+            form.Close();
+          }
         }
-        else
-        {
-          form.Close();
-        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2179235090: {0}", e.Message);
       }
     }
 

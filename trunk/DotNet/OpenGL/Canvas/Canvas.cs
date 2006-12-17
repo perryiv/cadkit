@@ -21,6 +21,7 @@ namespace CadKit.OpenGL
       this.InitializeComponent();
       this.SizeChanged += this.OnResize;
       this.ContextMenuStrip = this.buildContextMenu();
+
       this.ClearColor = CadKit.Persistence.Registry.Instance.getColor(this.GetType().ToString(), "ClearColor", this.ClearColor);
 
       // Don't know if this does anything...

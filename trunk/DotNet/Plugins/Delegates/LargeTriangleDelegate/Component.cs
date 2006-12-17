@@ -28,7 +28,17 @@ namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
     /// <summary>
     /// Called when the plugin is loaded.
     /// </summary>
-    void CadKit.Interfaces.IPlugin.startupNotify ( object caller )
+    void CadKit.Interfaces.IPlugin.start ( object caller )
+    {
+      lock (_mutex)
+      {
+      }
+    }
+
+    /// <summary>
+    /// Called when use of the plugin is finished.
+    /// </summary>
+    void CadKit.Interfaces.IPlugin.finish(object caller)
     {
       lock (_mutex)
       {

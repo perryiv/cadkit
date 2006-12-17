@@ -22,8 +22,13 @@ namespace CadKit.Interfaces
     string Description { get; }
 
     /// <summary>
-    /// Called when the plugins is loaded.
+    /// Called when the plugin is loaded.
     /// </summary>
-    void startupNotify(object caller);
+    void start(object caller);
+
+    /// <summary>
+    /// Called when use of the plugin is finished.
+    /// </summary>
+    void finish(object caller);
   }
 }

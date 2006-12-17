@@ -38,7 +38,7 @@ namespace CadKit.OpenGL
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 4054174740: {0}\n{1}", e.Message, e.StackTrace);
+        System.Console.WriteLine("Error 4054174740: {0}", e.Message);
       }
     }
 

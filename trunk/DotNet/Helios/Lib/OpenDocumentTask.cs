@@ -16,7 +16,7 @@ namespace CadKit.Helios
     /// <summary>
     /// Local types.
     /// </summary>
-    private delegate void CreateDefaultGuiDelegate(CadKit.Interfaces.IDocument idoc);
+    private delegate bool CreateDefaultGuiDelegate(CadKit.Interfaces.IDocument idoc);
 
     /// <summary>
     /// Constructor.
@@ -103,7 +103,11 @@ namespace CadKit.Helios
         CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, _caller);
 
         // Create the default user-interface.
-        this._createDefaultGui(idoc);
+        if (false == this._createDefaultGui(idoc))
+        {
+          idoc.close();
+          CadKit.Documents.Manager.Instance.remove(idoc);
+        }
       }
     }
 
@@ -112,29 +116,37 @@ namespace CadKit.Helios
     /// </summary>
     private void _finish(CadKit.Threads.Jobs.Job job)
     {
-      lock (this.Mutex)
-      {
-      }
     }
 
     /// <summary>
     /// Create the default user-interface.
     /// </summary>
-    private void _createDefaultGui(CadKit.Interfaces.IDocument idoc)
+    private bool _createDefaultGui(CadKit.Interfaces.IDocument idoc)
     {
-      System.Windows.Forms.Form form = CadKit.Helios.Application.Instance.MainForm;
-      if (true == form.InvokeRequired)
+      bool result = false;
+      try
       {
-        form.BeginInvoke(new CreateDefaultGuiDelegate(this._createDefaultGui), new object[] { idoc });
-      }
-      else
-      {
-        CadKit.Interfaces.IGuiCreate gui = idoc as CadKit.Interfaces.IGuiCreate;
-        if (null != gui)
+        System.Windows.Forms.Form form = CadKit.Helios.Application.Instance.MainForm;
+        if (true == form.InvokeRequired)
         {
-          gui.create(_caller);
+          CreateDefaultGuiDelegate function = new CreateDefaultGuiDelegate(this._createDefaultGui);
+          result = (bool) (form.Invoke(function, new object[] { idoc }));
+        }
+        else
+        {
+          CadKit.Interfaces.IGuiCreate gui = idoc as CadKit.Interfaces.IGuiCreate;
+          if (null != gui)
+          {
+            gui.create(_caller);
+            result = true;
+          }
         }
       }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2697332471: Failed to create default user interface: {0}", e.Message);
+      }
+      return result;
     }
 
     /// <summary>

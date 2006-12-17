@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-			        AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSG_TOOLS;NOMINMAX"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -251,6 +251,14 @@
 				</File>
 				<File
 					RelativePath=".\ColorPolicyFunctor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\GradientBackground.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\GradientBackground.h"
 					>
 				</File>
 				<File

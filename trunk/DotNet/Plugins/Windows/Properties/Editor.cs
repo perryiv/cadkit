@@ -36,6 +36,7 @@ namespace CadKit.Plugins.Windows.Properties
         this.HideOnClose = true;
 
         _grid.Dock = System.Windows.Forms.DockStyle.Fill;
+        _grid.PropertyValueChanged += this._propertyValueChanged;
         this.Controls.Add(_grid);
 
         // Listen for active view.
@@ -45,6 +46,19 @@ namespace CadKit.Plugins.Windows.Properties
       {
         System.Console.WriteLine("Error 6126340020: {0}", e.Message);
         this.Controls.Clear();
+      }
+    }
+
+
+    /// <summary>
+    /// Called when the property changed.
+    /// </summary>
+    void _propertyValueChanged(object s, System.Windows.Forms.PropertyValueChangedEventArgs e)
+    {
+      System.Windows.Forms.Control control = CadKit.Documents.Manager.Instance.ActiveView as System.Windows.Forms.Control;
+      if (null != control)
+      {
+        control.Invalidate(true);
       }
     }
 

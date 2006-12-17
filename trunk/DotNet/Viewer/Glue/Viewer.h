@@ -24,11 +24,13 @@ namespace CadKit
   {
     namespace Glue
     {
-
       /// Class to wrap Helios Viewer.
       public ref class Viewer
       {
       public:
+
+        ref class RenderPasses : System::Collections::Generic::List<unsigned int>{};
+        typedef System::Drawing::Color Color;
 
         Viewer();
         ~Viewer();
@@ -48,7 +50,27 @@ namespace CadKit
           SEEK
         };
 
-        void                  backgroundColor ( float r, float g, float b);
+        // These have to be the same as OsgTools::Builders::GradientBackground::Corners
+        enum class Corners
+        {
+          BOTTOM_LEFT  = 0x00000001,
+          BOTTOM_RIGHT = 0x00000002,
+          TOP_LEFT     = 0x00000004,
+          TOP_RIGHT    = 0x00000008,
+          LEFT         = BOTTOM_LEFT  | TOP_LEFT,
+          RIGHT        = BOTTOM_RIGHT | TOP_RIGHT,
+          BOTTOM       = BOTTOM_LEFT  | BOTTOM_RIGHT,
+          TOP          = TOP_LEFT     | TOP_RIGHT,
+          ALL          = BOTTOM       | TOP
+        };
+
+        // Get list of available render passes.
+        RenderPasses^         availableRenderPasses();
+
+        void                  backgroundColor ( Color^ color );
+        Color^                backgroundColor();
+        void                  backgroundCorners ( Corners corners );
+        Corners               backgroundCorners();
 
         // Button Press/Release
         void                  buttonPress      ( float x, float y, bool left, bool middle, bool right );
@@ -117,7 +139,8 @@ namespace CadKit
         // Write the current frame to an image file.
         bool          writeImageFile ( System::String^ filename );
 
-        // Write the current scene to file.
+        // Write the current model or scene to file.
+        bool          writeModelFile ( System::String^ filename );
         bool          writeSceneFile ( System::String^ filename );
 
         property System::String^ Directory

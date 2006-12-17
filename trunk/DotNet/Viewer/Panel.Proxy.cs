@@ -32,6 +32,44 @@ namespace CadKit.Viewer
 
 
       /// <summary>
+      /// Clear color
+      /// </summary>
+      [
+      System.ComponentModel.Category("Graphics"),
+      System.ComponentModel.Description("Background color for window"),
+      System.ComponentModel.Browsable(true),
+      ]
+      public override System.Drawing.Color ClearColor
+      {
+        get { return _panel.ClearColor; }
+        set
+        {
+          _panel.ClearColor = value;
+          this._update();
+        }
+      }
+
+
+      /// <summary>
+      /// Get/set the clear color corner.
+      /// </summary>
+      [
+      System.ComponentModel.Category("Graphics"),
+      System.ComponentModel.Description("Background color for window"),
+      System.ComponentModel.Browsable(true),
+      ]
+      public CadKit.Viewer.Glue.Viewer.Corners Corners
+      {
+        get { return _panel.Corners; }
+        set
+        {
+          _panel.Corners = value;
+          _panel.ClearColor = _panel.ClearColor;
+        }
+      }
+
+
+      /// <summary>
       /// Number of rendering passes property.
       /// </summary>
       [
@@ -45,7 +83,7 @@ namespace CadKit.Viewer
         set
         {
           _panel.RenderingPasses = value;
-          _panel.render();
+          this._update();
         }
       }
 
@@ -64,7 +102,7 @@ namespace CadKit.Viewer
         set
         {
           _panel.ScatterScale = value;
-          _panel.render();
+          this._update();
         }
       }
 
@@ -156,6 +194,16 @@ namespace CadKit.Viewer
       {
         get { return _panel.FrameScale; }
         set { _panel.FrameScale = value; }
+      }
+
+
+      /// <summary>
+      /// Update the panel.
+      /// </summary>
+      private void _update()
+      {
+        _panel.Invalidate(true);
+        _panel.Update();
       }
     }
   }

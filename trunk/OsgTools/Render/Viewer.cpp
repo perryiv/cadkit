@@ -140,18 +140,25 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _lastTool        (),
   _currentMode     ( NAVIGATION ),
   _lightEditors    (),
-  _contextId       ( 0 )
+  _contextId       ( 0 ),
+  _gradient        (),
+  _corners         ( Corners::ALL )
 {
   // Add this view to the document
   if( this->document() )
     this->document()->addView ( this );
 
-  // Light so that other lights don't after geometry under the projection node.
+  // Light so that other lights don't alter geometry under the projection node.
+  // Note...
+  // With the introduction of the gradient background (2006-Dec-07) this line 
+  // of code causes lighting problems in cow.osg and color_by_domain.ive.
+#if 0
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   light->setLightNum ( 1 );
   light->setDiffuse ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
   osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet () );
-  ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+  ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+#endif
 
   // Initialize the clock.
   Usul::System::Clock::milliseconds();
@@ -206,10 +213,11 @@ void Viewer::create()
     _context->makeCurrent();
   }
 
+  // Initialize renderer.
   _renderer->init();
 
   // Set default stereo modes.
-  this->stereoEyeDistance( 0.01f );
+  this->stereoEyeDistance ( 0.01f );
   GLboolean hasStereo ( GL_FALSE );
   ::glGetBooleanv ( GL_STEREO, &hasStereo );
   if ( GL_TRUE == hasStereo )
@@ -218,9 +226,6 @@ void Viewer::create()
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
   _renderer->uniqueID ( _contextId );
-
-  // Set the background color.
-  //this->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, Helios::Defaults::CLEAR_COLOR ) );
 
   // Set all display-list states.
   this->setDisplayLists();
@@ -274,7 +279,6 @@ void Viewer::clear()
 void Viewer::defaultBackground()
 {
   this->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
-  this->render();
 }
 
 
@@ -350,31 +354,25 @@ void Viewer::render()
     try
     {
       // Set the new scene.
-      this->scene ( root.get() );
+      _sceneManager->model ( root.get() );
 
       // Set the state-sets for the branches.
       OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
 
-      //osg::ref_ptr < OsgTools::Callbacks::SetHiddenCallback > v ( new OsgTools::Callbacks::SetHiddenCallback );
-      //model->accept( *v );
-
       // Draw.
       this->_render();
-
-      //osg::ref_ptr < OsgTools::Callbacks::UnSetHiddenCallback > unset ( new OsgTools::Callbacks::UnSetHiddenCallback );
-      //model->accept( *unset );
     }
 
     // Catch all exceptions.
     catch ( ... )
     {
       // Restore the scene and re-throw.
-      this->scene ( model.get() );
+      _sceneManager->model ( model.get() );
       throw;
     }
 
     // Restore the scene.
-    this->scene ( model.get() );
+    _sceneManager->model ( model.get() );
   }
   else
   {
@@ -619,27 +617,27 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   USUL_ERROR_CHECKER ( w < (unsigned int) std::numeric_limits<int>::max() );
   USUL_ERROR_CHECKER ( h < (unsigned int) std::numeric_limits<int>::max() );
 
-  // Ignore initial values sent by FOX. Makes a poor viewport.
+  // Ignore initial values sent; they make a poor viewport.
   if ( w <= 1 || h <= 1 )
     return;
 
   // Set the viewport.
   this->viewport ( 0, 0, (int) w, (int) h );
 
-  // Set the projection matrix.
+  // Set the viewer's projection matrix.
   double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
   double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
   double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
   double width ( w ), height ( h );
   double aspect ( width / height );
-
   if ( this->viewer() )
-  {
     this->viewer()->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
-    //_sceneView->setProjectionMatrixAsOrtho ( 0, w, 0, h, -10000, 10000 );
 
-    _sceneManager->projection()->setMatrix( osg::Matrix::ortho( 0, w ,0, h, -10000, 10000 ) );
-  }
+  // Update the projection node.
+  _sceneManager->projection()->setMatrix( osg::Matrix::ortho2D ( 0, w ,0, h ) );
+
+  // Update the gradient background vertices.
+  _gradient.update ( w, h );
 }
 
 
@@ -1014,7 +1012,23 @@ void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 
 void Viewer::backgroundColor ( const osg::Vec4 &color )
 {
-  _renderer->backgroundColor( color );
+  // Always remove the existing branch.
+  OsgTools::Group::removeAllOccurances ( _gradient.root(), _sceneManager->projection() );
+
+  // Always update the gradient object.
+  _gradient.color ( color, this->backgroundCorners() );
+
+  // Use regular background if all corners are the same.
+  if ( Corners::ALL == this->backgroundCorners() )
+  {
+    _renderer->backgroundColor ( color );
+  }
+
+  // Otherwise, add the branch to render the gradient.
+  else
+  {
+    _sceneManager->projection()->addChild ( _gradient.root() );
+  }
 }
 
 
@@ -1024,9 +1038,33 @@ void Viewer::backgroundColor ( const osg::Vec4 &color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4 &Viewer::backgroundColor() const
+osg::Vec4 Viewer::backgroundColor() const
 {
-  return _renderer->backgroundColor();
+  return _gradient.color ( this->backgroundCorners() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background corners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::backgroundCorners ( unsigned int corners )
+{
+  _corners = corners;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background corners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Viewer::backgroundCorners() const
+{
+  return _corners;
 }
 
 
@@ -1488,7 +1526,8 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
   // Make this context current.
-  if( _context.valid() ) { me->_context->makeCurrent(); }
+  if ( _context.valid() )
+    me->_context->makeCurrent();
 
   // Capture image.
   image = me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
@@ -1511,6 +1550,22 @@ bool Viewer::writeSceneFile ( const std::string &filename, const std::string &op
 
   // Write the scene to file.
   return osgDB::writeNodeFile ( *this->scene(), filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the current model to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::writeModelFile ( const std::string &filename, const std::string &options ) const
+{
+  // Save and restore default options.
+  OsgTools::ScopedOptions scoped ( options );
+
+  // Write the scene to file.
+  return osgDB::writeNodeFile ( *this->model(), filename );
 }
 
 
@@ -3723,13 +3778,13 @@ void Viewer::timeoutSpin ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  set the background color.  Returns old value
+//  Set the background color.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void Viewer::setBackground ( const osg::Vec4 &color)
+
+void Viewer::setBackground ( const osg::Vec4 &color )
 {
   this->backgroundColor ( color );
-  this->render();
 }
 
 

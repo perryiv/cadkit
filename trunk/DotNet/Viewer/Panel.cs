@@ -16,30 +16,42 @@ namespace CadKit.Viewer
     CadKit.Interfaces.ICamera,
     CadKit.Interfaces.IExportImage,
     CadKit.Interfaces.IExportScene,
-    CadKit.Interfaces.IFrameDump
+    CadKit.Interfaces.IFrameDump,
+    CadKit.Interfaces.ISnapShot
   {
     /// <summary>
     /// Data members.
     /// </summary>
     private CadKit.Viewer.Glue.Viewer _viewer = new CadKit.Viewer.Glue.Viewer();
-    private string REGISTRY_SECTION = "CadKit.Viewer.Panel";
-    private string FRAME_DUMP_DIRECTORY_KEY = "FrameDumpDirectory";
-    private string FRAME_DUMP_FILENAME_KEY = "FrameDumpFilename";
-    private string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
-    private string FRAME_DUMP_SCALE_KEY = "FrameDumpScale";
+    private readonly string REGISTRY_SECTION = "CadKit.Viewer.Panel";
+    private readonly string FRAME_DUMP_DIRECTORY_KEY = "FrameDumpDirectory";
+    private readonly string FRAME_DUMP_FILENAME_KEY = "FrameDumpFilename";
+    private readonly string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
+    private readonly string FRAME_DUMP_SCALE_KEY = "FrameDumpScale";
+    private readonly string COLOR_CORNERS = "ColorCorners";
+
 
     /// <summary>
     /// Contructor.
     /// </summary>
     public Panel()
     {
-      _viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
+      this.Viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
       this.ContextMenuStrip = null;
       this.Directory = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, this.Directory);
       this.BaseFilename = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, this.BaseFilename);
       this.Extension = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, this.Extension);
       this.FrameScale = CadKit.Persistence.Registry.Instance.getFloat(REGISTRY_SECTION, this.FRAME_DUMP_SCALE_KEY, this.FrameScale);
+
+      this.Corners = (CadKit.Viewer.Glue.Viewer.Corners)CadKit.Persistence.Registry.Instance.getUint(REGISTRY_SECTION, COLOR_CORNERS, (uint)this.Corners);
+      this._initClearColor(CadKit.Viewer.Glue.Viewer.Corners.TOP_LEFT);
+      this._initClearColor(CadKit.Viewer.Glue.Viewer.Corners.TOP_RIGHT);
+      this._initClearColor(CadKit.Viewer.Glue.Viewer.Corners.BOTTOM_LEFT);
+      this._initClearColor(CadKit.Viewer.Glue.Viewer.Corners.BOTTOM_RIGHT);
+
+      this.Load += this._load;
     }
+
 
     /// <summary>
     /// Destructor.
@@ -52,14 +64,56 @@ namespace CadKit.Viewer
 
 
     /// <summary>
+    /// Called when the panel is loaded.
+    /// </summary>
+    private void _load(object sender, System.EventArgs e)
+    {
+      System.Windows.Forms.Form form = this.FindForm();
+      if (null != form)
+      {
+        form.FormClosing += new System.Windows.Forms.FormClosingEventHandler(_formClosing);
+      }
+    }
+
+
+    /// <summary>
+    /// Called when the form is closing.
+    /// </summary>
+    private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+    {
+      this._saveColor(CadKit.Viewer.Glue.Viewer.Corners.TOP_LEFT);
+      this._saveColor(CadKit.Viewer.Glue.Viewer.Corners.TOP_RIGHT);
+      this._saveColor(CadKit.Viewer.Glue.Viewer.Corners.BOTTOM_LEFT);
+      this._saveColor(CadKit.Viewer.Glue.Viewer.Corners.BOTTOM_RIGHT);
+    }
+
+
+    /// <summary>
+    /// Initialize the clear color.
+    /// </summary>
+    private void _initClearColor(CadKit.Viewer.Glue.Viewer.Corners corner)
+    {
+      CadKit.Viewer.Glue.Viewer.Corners original = this.Corners;
+      try
+      {
+        this.Corners = corner;
+        this.ClearColor = CadKit.Persistence.Registry.Instance.getColor(REGISTRY_SECTION, corner.ToString(), this.ClearColor);
+      }
+      finally
+      {
+        this.Corners = original;
+      }
+    }
+
+
+    /// <summary>
     /// Clear.
     /// </summary>
     public void clear()
     {
       lock (this.Mutex)
       {
-        _viewer.clear();
-        _viewer = null;
+        this.Viewer.clear();
       }
     }
 
@@ -74,13 +128,10 @@ namespace CadKit.Viewer
         this.initRenderingContext();
 
         // Set the render context.
-        _viewer.RenderContext = this.RenderContext;
+        this.Viewer.RenderContext = this.RenderContext;
 
         // Create the viewer.
-        _viewer.create();
-
-        // Set initial background color.
-        this._updateViewerBackground();
+        this.Viewer.create();
       }
     }
 
@@ -90,38 +141,49 @@ namespace CadKit.Viewer
     /// </summary>
     public override System.Drawing.Color ClearColor
     {
-      get { lock (this.Mutex) { return base.ClearColor; } }
+      get
+      {
+        return (System.Drawing.Color)this.Viewer.backgroundColor();
+      }
       set
       {
-        lock (this.Mutex)
-        {
-          base.ClearColor = value;
-          this._updateViewerBackground();
-        }
+        base.ClearColor = value;
+        this.Viewer.backgroundColor(value);
       }
     }
 
 
     /// <summary>
-    /// Updte the viewer's background color.
+    /// Save colors to disk.
     /// </summary>
-    private void _updateViewerBackground()
+    private void _saveColor(CadKit.Viewer.Glue.Viewer.Corners corner)
     {
-      lock (this.Mutex)
+      CadKit.Viewer.Glue.Viewer.Corners original = this.Corners;
+      try
       {
-        System.Drawing.Color color = this.ClearColor;
-        if (null == color || null == _viewer)
-          return;
+        this.Corners = corner;
+        CadKit.Persistence.Registry.Instance.setColor(REGISTRY_SECTION, corner.ToString(), this.ClearColor);
+      }
+      finally
+      {
+        this.Corners = original;
+      }
+    }
 
-        byte red = color.R;
-        byte green = color.G;
-        byte blue = color.B;
 
-        float r = (float)red / 255;
-        float g = (float)green / 255;
-        float b = (float)blue / 255;
-
-        _viewer.backgroundColor(r, g, b);
+    /// <summary>
+    /// Get/set the clear color corner.
+    /// </summary>
+    public CadKit.Viewer.Glue.Viewer.Corners Corners
+    {
+      get { lock (this.Mutex) { return this.Viewer.backgroundCorners(); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this.Viewer.backgroundCorners(value);
+          CadKit.Persistence.Registry.Instance.setUint(REGISTRY_SECTION, COLOR_CORNERS, (uint)value);
+        }
       }
     }
 
@@ -202,7 +264,10 @@ namespace CadKit.Viewer
 
           CadKit.Viewer.Glue.Viewer.Type type = mouse ? CadKit.Viewer.Glue.Viewer.Type.DRAG : CadKit.Viewer.Glue.Viewer.Type.MOVE;
 
-          _viewer.handleNavigation(x, y, left, middle, right, type);
+          if (null != this.Viewer)
+          {
+            this.Viewer.handleNavigation(x, y, left, middle, right, type);
+          }
         }
       }
       catch (System.Exception ex)
@@ -249,7 +314,10 @@ namespace CadKit.Viewer
           float x = e.Location.X;
           float y = this.Size.Height - e.Location.Y;
 
-          _viewer.buttonRelease(x, y, left, middle, right);
+          if (null != this.Viewer)
+          {
+            this.Viewer.buttonRelease(x, y, left, middle, right);
+          }
         }
       }
       catch (System.Exception ex)
@@ -276,8 +344,11 @@ namespace CadKit.Viewer
           float x = e.Location.X;
           float y = this.Size.Height - e.Location.Y;
 
-          _viewer.buttonPress(x, y, left, middle, right);
-          _viewer.handleSeek(x, y, left);
+          if (null != this.Viewer)
+          {
+            this.Viewer.buttonPress(x, y, left, middle, right);
+            this.Viewer.handleSeek(x, y, left);
+          }
         }
       }
       catch (System.Exception ex)
@@ -294,8 +365,8 @@ namespace CadKit.Viewer
     {
       lock (this.Mutex)
       {
-        if (null != _viewer)
-          _viewer.render();
+        if (null != this.Viewer)
+          this.Viewer.render();
       }
     }
 
@@ -307,8 +378,8 @@ namespace CadKit.Viewer
     {
       lock (this.Mutex)
       {
-        if (null != _viewer)
-          _viewer.resize(this.Size.Width, this.Size.Height);
+        if (null != this.Viewer)
+          this.Viewer.resize(this.Size.Width, this.Size.Height);
       }
     }
 
@@ -349,7 +420,13 @@ namespace CadKit.Viewer
     /// </summary>
     public void camera(CadKit.Interfaces.CameraOption option)
     {
-      lock (this.Mutex) { _viewer.camera(option); }
+      lock (this.Mutex)
+      {
+        if (null != this.Viewer)
+        {
+          this.Viewer.camera(option);
+        }
+      }
     }
 
 
@@ -393,13 +470,22 @@ namespace CadKit.Viewer
     /// <summary>
     /// Export the image.
     /// </summary>
-    void CadKit.Interfaces.IExportImage.export(string filename)
+    void CadKit.Interfaces.IExportImage.export(string file)
+    {
+      this.writeImageFile(file);
+    }
+
+
+    /// <summary>
+    /// Export the image.
+    /// </summary>
+    public void writeImageFile(string file)
     {
       lock (this.Mutex)
       {
-        if (false == _viewer.writeImageFile(filename))
+        if (false == this.Viewer.writeImageFile(file))
         {
-          throw new System.Exception(System.String.Format("Error 3812935736: Failed to export image file: {0}", filename));
+          throw new System.Exception(System.String.Format("Error 3812935736: Failed to export image file: {0}", file));
         }
       }
     }
@@ -410,21 +496,31 @@ namespace CadKit.Viewer
     /// </summary>
     float CadKit.Interfaces.IExportImage.Scale
     {
-      get { lock (this.Mutex) { return this.FrameScale; }}
-      set { lock (this.Mutex) { this.FrameScale = value;}}
+      get { lock (this.Mutex) { return this.FrameScale; } }
+      set { lock (this.Mutex) { this.FrameScale = value; } }
     }
 
 
     /// <summary>
     /// Export the scene.
     /// </summary>
-    void CadKit.Interfaces.IExportScene.export(string filename)
+    void CadKit.Interfaces.IExportScene.export(string filename, CadKit.Interfaces.SceneExport.Option option)
     {
       lock (this.Mutex)
       {
-        if (false == _viewer.writeSceneFile(filename))
+        if (CadKit.Interfaces.SceneExport.Option.ENTIRE_SCENE == option)
         {
-          throw new System.Exception(System.String.Format("Error 1243330417: Failed to export scene file: {0}", filename));
+          if (false == this.Viewer.writeSceneFile(filename))
+          {
+            throw new System.Exception(System.String.Format("Error 1243330417: Failed to export scene file: {0}", filename));
+          }
+        }
+        else if (CadKit.Interfaces.SceneExport.Option.MODEL_ONLY == option)
+        {
+          if (false == this.Viewer.writeModelFile(filename))
+          {
+            throw new System.Exception(System.String.Format("Error 3455377944: Failed to export model file: {0}", filename));
+          }
         }
       }
     }
@@ -448,17 +544,14 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          return ((null == _viewer) ? 0 : _viewer.numRenderPasses());
+          return this.Viewer.numRenderPasses();
         }
       }
       set
       {
         lock (this.Mutex)
         {
-          if (null != _viewer)
-          {
-            _viewer.numRenderPasses(value);
-          }
+          this.Viewer.numRenderPasses(value);
         }
       }
     }
@@ -473,17 +566,30 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          return ((null == _viewer) ? 0 : _viewer.scatterScale());
+          return this.Viewer.scatterScale();
         }
       }
       set
       {
         lock (this.Mutex)
         {
-          if (null != _viewer)
-          {
-            _viewer.scatterScale(value);
-          }
+          this.Viewer.scatterScale(value);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Available rendering passes.
+    /// </summary>
+    public System.UInt32[] AvailableRenderingPasses
+    {
+      get
+      {
+        lock (this.Mutex)
+        {
+          CadKit.Viewer.Glue.Viewer.RenderPasses passes = this.Viewer.availableRenderPasses();
+          return (null == passes) ? null : passes.ToArray();
         }
       }
     }
@@ -494,12 +600,12 @@ namespace CadKit.Viewer
     /// </summary>
     public string Directory
     {
-      get { lock (this.Mutex) { return _viewer.Directory; } }
+      get { lock (this.Mutex) { return this.Viewer.Directory; } }
       set
       {
         lock (this.Mutex)
         {
-          _viewer.Directory = value;
+          this.Viewer.Directory = value;
           CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, value);
         }
       }
@@ -511,12 +617,12 @@ namespace CadKit.Viewer
     /// </summary>
     public string BaseFilename
     {
-      get { lock (this.Mutex) { return _viewer.Filename; } }
+      get { lock (this.Mutex) { return this.Viewer.Filename; } }
       set
       {
         lock (this.Mutex)
         {
-          _viewer.Filename = value;
+          this.Viewer.Filename = value;
           CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, value);
         }
       }
@@ -528,12 +634,12 @@ namespace CadKit.Viewer
     /// </summary>
     public string Extension
     {
-      get { lock (this.Mutex) { return _viewer.Extension; } }
+      get { lock (this.Mutex) { return this.Viewer.Extension; } }
       set
       {
         lock (this.Mutex)
         {
-          _viewer.Extension = value;
+          this.Viewer.Extension = value;
           CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, value);
         }
       }
@@ -545,8 +651,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool DumpFrames
     {
-      get { lock (this.Mutex) { return _viewer.DumpFrames; } }
-      set { lock (this.Mutex) { _viewer.DumpFrames = value; } }
+      get { lock (this.Mutex) { return this.Viewer.DumpFrames; } }
+      set { lock (this.Mutex) { this.Viewer.DumpFrames = value; } }
     }
 
 
@@ -559,14 +665,14 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          return _viewer.frameDumpScale();
+          return this.Viewer.frameDumpScale();
         }
       }
       set
       {
         lock (this.Mutex)
         {
-          _viewer.frameDumpScale ( value );
+          this.Viewer.frameDumpScale(value);
           CadKit.Persistence.Registry.Instance.setFloat(REGISTRY_SECTION, this.FRAME_DUMP_SCALE_KEY, value);
         }
       }
@@ -578,6 +684,43 @@ namespace CadKit.Viewer
     /// </summary>
     void System.IDisposable.Dispose()
     {
+      this.clear();
+    }
+
+
+    /// <summary>
+    /// Take a single picture.
+    /// </summary>
+    void CadKit.Interfaces.ISnapShot.takePicture(string file, uint numRenderPasses, float frameSizeScale, float scatterScale)
+    {
+      this.takePicture(file, numRenderPasses, frameSizeScale, scatterScale);
+    }
+
+
+    /// <summary>
+    /// Take a single picture.
+    /// </summary>
+    public void takePicture(string file, uint numRenderPasses, float frameSizeScale, float scatterScale)
+    {
+      lock (this.Mutex)
+      {
+        uint originalNumPasses = this.RenderingPasses;
+        float originalFrameScale = this.FrameScale;
+        double originalScatterScale = this.ScatterScale;
+        try
+        {
+          this.RenderingPasses = numRenderPasses;
+          this.FrameScale = frameSizeScale;
+          this.ScatterScale = scatterScale;
+          this.writeImageFile(file);
+        }
+        finally
+        {
+          this.RenderingPasses = originalNumPasses;
+          this.FrameScale = originalFrameScale;
+          this.ScatterScale = originalScatterScale;
+        }
+      }
     }
   }
 }

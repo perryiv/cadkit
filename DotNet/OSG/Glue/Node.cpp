@@ -28,6 +28,12 @@ Node::Node() : _node( 0x0 )
 {
 }
 
+Node::Node( System::IntPtr ptr ) : _node( 0x0 )
+{
+  this->nodePtr( ptr );
+}
+
+
 Node::~Node()
 {
   this->_unreference();

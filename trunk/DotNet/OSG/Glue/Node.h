@@ -21,6 +21,7 @@ namespace CadKit
 	    {
       public:
 		    Node();
+        Node( System::IntPtr ptr );
         ~Node();
         !Node();
 

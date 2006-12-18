@@ -65,6 +65,7 @@ osg::Node* LegendObject::buildScene()
 
   unsigned int padding ( 5 );
   unsigned int iconWidth ( _width * 0.20 );
+  unsigned int textWidth ( _width * 0.75 );
 
   if( _icon.valid() )
   {
@@ -75,6 +76,8 @@ osg::Node* LegendObject::buildScene()
 
   if( _text.valid() )
   {
+    _text->width( textWidth );
+    _text->height( _height - padding );
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
     osg::Matrix m ( osg::Matrix::translate ( iconWidth + padding, 0.0, 0.0 ) );
     mt->setMatrix( m );

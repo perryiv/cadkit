@@ -36,6 +36,14 @@ public:
   void                    text( const std::string& text );
   const std::string &     text () const;
 
+  /// Get/Set the width.
+  void                    width( unsigned int w );
+  unsigned int            width() const;
+
+  /// Get/Set the height
+  void                    height( unsigned int h );
+  unsigned int            height() const;
+
   /// Build the scene.
   osg::Node*              buildScene();
 
@@ -44,6 +52,8 @@ protected:
 
 private:
   std::string _text;
+  unsigned int _width;
+  unsigned int _height;
 };
 
 }

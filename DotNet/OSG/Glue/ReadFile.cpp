@@ -25,7 +25,11 @@ using namespace CadKit::OSG::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReadFile::ReadFile() : _progress ( nullptr ), _delegate ( nullptr ), _pin()
+ReadFile::ReadFile() : 
+  _progress ( nullptr ), 
+  _delegate ( nullptr ), 
+  _pin(),
+  _startTime ( System::DateTime::Now )
 {
 }
 
@@ -102,6 +106,7 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
 
   try
   {
+    _startTime = System::DateTime::Now;
     _progress = dynamic_cast < CadKit::Interfaces::IProgressBar ^ > ( caller );
 
     // Make native function pointer to the progress interface.
@@ -145,15 +150,22 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadFile::_progressNotify ( unsigned long bytes )
+void ReadFile::_progressNotify ( const std::string &name, unsigned long bytes, unsigned long total )
 {
   if ( nullptr != _progress )
   {
-    const unsigned long maxInt ( static_cast<unsigned long> ( std::numeric_limits<int>::max() ) );
-    const unsigned long longValue ( Usul::Math::minimum ( bytes, maxInt ) );
-    const int intValue ( static_cast<int> ( longValue ) );
-    _progress->Text = System::String::Format ( "Bytes Read: {0} of {1}", intValue.ToString ( "N0" ), _progress->Range.ToString ( "N0" ) );
-    _progress->Value = intValue;
+    System::String^ file = gcnew System::String ( name.c_str() );
+
+    const float fraction ( static_cast<float> ( bytes ) / static_cast<float> ( total ) );
+    System::String^ percent = System::String::Format ( "{0}", fraction.ToString ( "P" ) );
+
+    System::TimeSpan span ( System::DateTime::Now.Subtract ( _startTime ) );
+    System::TimeSpan remaining ( System::TimeSpan ( span.Ticks / fraction ).Subtract ( span ) );
+    array<System::Char>^ chars = { '.' };
+    array<System::String^>^ times = remaining.ToString()->Split ( chars );
+
+    _progress->Text = System::String::Format ( "Reading: {0}       {1}       Time Remaining: {2}", file, percent, times[0] );
+    _progress->Value = static_cast<int> ( bytes );
   }
 }
 

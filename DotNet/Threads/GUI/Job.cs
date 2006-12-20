@@ -97,9 +97,13 @@ namespace CadKit.Threads.GUI
             _progressBar.Value = _job.Progress.Value;
             _label.Text = _job.Progress.Text;
             _label.Width = _label.PreferredWidth;
-            _tableLayout.ColumnStyles[0].Width = _label.PreferredWidth + 20;
-            _tableLayout.ColumnStyles[1].Width = _tableLayout.Width - (_tableLayout.ColumnStyles[0].Width + _tableLayout.ColumnStyles[2].Width);
-            _tableLayout.Invalidate();
+
+            // Was for old layout...
+            //_tableLayout.ColumnStyles[0].Width = _label.PreferredWidth + 20;
+            //_tableLayout.ColumnStyles[1].Width = _tableLayout.Width - (_tableLayout.ColumnStyles[0].Width + _tableLayout.ColumnStyles[2].Width);
+
+            _tableLayout.Invalidate(true);
+            _tableLayout.Update();
           }
         }
       }

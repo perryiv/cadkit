@@ -19,19 +19,20 @@ namespace CadKit
     {
       public ref class ReadFile
       {
-        delegate void CallbackDelegate ( unsigned long bytes );
-        typedef void (*NativeProgressCallback) ( unsigned long bytes );
+        delegate void CallbackDelegate ( const std::string &, unsigned long, unsigned long );
+        typedef void (*NativeProgressCallback) ( const std::string &, unsigned long, unsigned long );
         typedef CadKit::Interfaces::Filters Filters;
 
         CadKit::Interfaces::IProgressBar^ _progress;
         CallbackDelegate^ _delegate;
         System::Runtime::InteropServices::GCHandle _pin;
+        System::DateTime _startTime;
 
         ~ReadFile();
 
         NativeProgressCallback    _makeProgressCallback();
 
-        void                      _progressNotify ( unsigned long bytes );
+        void                      _progressNotify ( const std::string &file, unsigned long bytes, unsigned long total );
 
       public:
 

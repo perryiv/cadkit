@@ -31,7 +31,7 @@ public:
   typedef std::basic_filebuf < char, CharTraits > BaseClass;
   typedef BaseClass::int_type IntType;
 
-  explicit StreamBuffer ( const std::string &file ) : BaseClass(), _size ( 0 ), _count ( 0 ), _callback ( 0x0 )
+  explicit StreamBuffer ( const std::string &file ) : BaseClass(), _file ( file ), _size ( 0 ), _count ( 0 ), _callback ( 0x0 )
   {
     if ( 0x0 == this->open ( file.c_str(), std::ios_base::in | std::ios_base::binary ) )
       throw std::runtime_error ( std::string ( "Error 2836857267: Could not open file: " ) + file );
@@ -42,7 +42,7 @@ public:
 
   struct Callback
   {
-    virtual void operator () ( unsigned long bytes ) = 0;
+    virtual void operator () ( const std::string &file, unsigned long bytes, unsigned long total ) = 0;
   };
 
   void callback ( Callback *cb )
@@ -57,12 +57,13 @@ protected:
     IntType v = BaseClass::uflow();
     _count += ( this->egptr() - this->gptr() );
     if ( 0x0 != _callback )
-      (*_callback) ( _count );
+      (*_callback) ( _file, _count, _size );
     return v;
   }
 
 private:
 
+  std::string _file;
   unsigned long _size;
   unsigned long _count;
   Callback *_callback;

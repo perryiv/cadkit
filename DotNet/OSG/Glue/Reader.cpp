@@ -195,10 +195,10 @@ void Reader::_read ( const std::string &file, osgDB::ReaderWriter &rw )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Reader::_notifyProgress ( unsigned long bytes )
+void Reader::_notifyProgress ( const std::string &file, unsigned long bytes, unsigned long total )
 {
   if ( 0x0 != _progress )
-    _progress ( bytes );
+    _progress ( file, bytes, total );
 }
 
 

@@ -142,7 +142,8 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _lightEditors    (),
   _contextId       ( 0 ),
   _gradient        (),
-  _corners         ( Corners::ALL )
+  _corners         ( Corners::ALL ),
+  _useDisplayList  ( false, true )
 {
   // Add this view to the document
   if( this->document() )
@@ -226,9 +227,6 @@ void Viewer::create()
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
   _renderer->uniqueID ( _contextId );
-
-  // Set all display-list states.
-  this->setDisplayLists();
 }
 
 
@@ -305,7 +303,7 @@ void Viewer::render()
   // Handle no viewer or scene.
   if ( !this->viewer() || !this->viewer()->getSceneData() )
     return;
-  
+
   // Update the scene.
   if ( _sceneUpdate.valid() )
     _sceneUpdate->sceneUpdate();
@@ -313,6 +311,9 @@ void Viewer::render()
   // Make this context current.
   if ( _context.valid() )
     _context->makeCurrent();
+
+  // Update display lists.
+  this->updateDisplayListUse();
 
   // Initialize the error.
   ::glGetError();
@@ -603,6 +604,9 @@ void Viewer::scene ( osg::Node *node )
 
   // The scene changed.
   this->changedScene(); 
+
+  // Display list use is dirty.
+  _useDisplayList.second = true;
 }
 
 
@@ -1764,8 +1768,12 @@ void Viewer::document( Document *document )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setDisplayLists()
+void Viewer::updateDisplayListUse()
 {
+  // Return if not dirty.
+  if ( false == _useDisplayList.second )
+    return;
+
   // Handle no viewer or model.
   if ( !this->viewer() || !this->model() )
     return;
@@ -1779,25 +1787,40 @@ void Viewer::setDisplayLists()
   this->model()->accept ( *visitor );
 
   // If we are not using display lists, and we have been created...
-  const bool use ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
-  if ( !use )
+  if ( false == _useDisplayList.first )
   {
     // Delete all display-lists associated with our context id.
     this->viewer()->releaseAllGLObjects();
     this->viewer()->flushAllDeletedGLObjects();
   }
+
+  // No longer dirty.
+  _useDisplayList.second = false;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return if DisplayLists are being used.
+//  Return if display lists are being used.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::displayLists() const
+bool Viewer::useDisplayLists() const
 {
-  return ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
+  return _useDisplayList.first;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return if display lists are being used.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::useDisplayLists ( bool state )
+{
+  _useDisplayList.first = state;
+  _useDisplayList.second = true;
 }
 
 
@@ -1809,11 +1832,10 @@ bool Viewer::displayLists() const
 
 void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 {
-  const bool use ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS ) );
   for ( unsigned int i = 0; i < geode->getNumDrawables(); ++i )
   {
     osg::Drawable *drawable = geode->getDrawable ( i );
-    drawable->setUseDisplayList ( use );
+    drawable->setUseDisplayList ( this->useDisplayLists() );
     drawable->dirtyDisplayList();
   }
 }

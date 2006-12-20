@@ -29,6 +29,7 @@ namespace CadKit.OpenGL
         #endif
 
         this._initInnerPanel();
+        System.IntPtr temp = this.InnerControl.Handle; // Make sure it's created.
 
         _renderContext = new CadKit.OpenGL.Glue.RenderContext(this.InnerControl, _pixelFormat);
         if (null == _renderContext)

@@ -315,9 +315,10 @@ public:
   void                  removePlane ( osg::ClipPlane * );
   void                  removePlanes();
 
-  // Set all the display-lists to on/off according to the global setting.
-  bool                  displayLists() const;
-  void                  setDisplayLists();
+  // Set all the display-lists to on/off.
+  bool                  useDisplayLists() const;
+  void                  useDisplayLists ( bool state );
+  void                  updateDisplayListUse();
 
   // Get the number of clipping planes in the scene
   unsigned int          planes() const;
@@ -694,6 +695,7 @@ private:
   typedef std::map< osg::Geode *, osg::Light * > LightEditors;
   typedef std::vector<LodPtr> LodList;
   typedef std::pair<bool,LodList> Lods;
+  typedef std::pair<bool,bool> UseDisplayLists;
 
   static CameraBuffer _cameraCopyBuffer;
   static MatrixManipPtr _navManipCopyBuffer;
@@ -718,6 +720,7 @@ private:
   unsigned int _contextId;
   GradientBackground _gradient;
   unsigned int _corners;
+  UseDisplayLists _useDisplayList;
 };
 
 }

@@ -35,5 +35,10 @@ namespace CadKit.Interfaces
     /// Can the command be redone?
     /// </summary>
     bool CanRedo { get; }
+
+    /// <summary>
+    /// Remove all the commands.
+    /// </summary>
+    void clear();
   }
 }

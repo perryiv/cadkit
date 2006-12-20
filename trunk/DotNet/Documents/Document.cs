@@ -42,13 +42,46 @@ namespace CadKit.Documents
 
 
     /// <summary>
+    /// Destructor
+    /// </summary>
+    ~Document()
+    {
+      this._clear();
+    }
+
+
+    /// <summary>
     /// Called when the system is about to dispose this instance.
     /// </summary>
-    public void Dispose()
+    void System.IDisposable.Dispose()
+    {
+      this._clear();
+    }
+
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    private void _clear()
     {
       try
       {
         this._closeAllViews();
+        if (null != _commands)
+        {
+          _commands.clear();
+          _commands = null;
+        }
+        if (null != _gui)
+        {
+          _gui.Document = null;
+          _gui = null;
+        }
+        if (null != _views)
+        {
+          _views.Clear();
+          _views = null;
+        }
       }
       catch (System.Exception e)
       {
@@ -66,7 +99,7 @@ namespace CadKit.Documents
       {
         // Make a copy of the views because, as each one closes, 
         // it removes itself from the list.
-        CadKit.Interfaces.IDocumentView[] views = this.Views;
+        CadKit.Interfaces.IDocumentView[] views = this.views();
 
         if (null != views)
         {
@@ -105,6 +138,15 @@ namespace CadKit.Documents
     /// Close the document.
     /// </summary>
     void CadKit.Interfaces.IDocument.close()
+    {
+      this.close();
+    }
+
+
+    /// <summary>
+    /// Close the document.
+    /// </summary>
+    public void close()
     {
       this._closeAllViews();
     }
@@ -146,6 +188,19 @@ namespace CadKit.Documents
           _views.Remove(view);
         }
       }
+      if (0 == this.NumViews)
+      {
+        CadKit.Documents.Manager.Instance.remove(this);
+      }
+    }
+
+
+    /// <summary>
+    /// Return the number of views.
+    /// </summary>
+    public uint NumViews
+    {
+      get { using (this.Lock.read()) { return (uint)_views.Count; } }
     }
 
 
@@ -173,18 +228,21 @@ namespace CadKit.Documents
     /// <summary>
     /// Get the array of views.
     /// </summary>
-    CadKit.Interfaces.IDocumentView[] CadKit.Interfaces.IDocument.Views
+    CadKit.Interfaces.IDocumentView[] CadKit.Interfaces.IDocument.views()
     {
-      get { return this.Views; }
+      return this.views();
     }
 
 
     /// <summary>
     /// Get the array of views.
     /// </summary>
-    public CadKit.Interfaces.IDocumentView[] Views
+    public CadKit.Interfaces.IDocumentView[] views()
     {
-      get { using (this.Lock.read()) { return ((null == _views) ? null : _views.ToArray()); } }
+      using (this.Lock.read())
+      {
+        return ((null == _views) ? null : _views.ToArray());
+      }
     }
 
 

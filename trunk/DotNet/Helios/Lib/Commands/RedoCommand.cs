@@ -27,7 +27,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Execute the command.
     /// </summary>
-    protected override void _execute()
+    public override void execute()
     {
       CadKit.Interfaces.IDocument idoc = CadKit.Documents.Manager.Instance.ActiveDocument;
       CadKit.Documents.Document doc = idoc as CadKit.Documents.Document;

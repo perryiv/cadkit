@@ -27,9 +27,25 @@ namespace CadKit.Helios.Commands
 
 
     /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~FrameDumpCommand()
+    {
+      try
+      {
+        CadKit.Documents.Manager.Instance.ActiveViewChanged -= this._onActiveViewChanged;
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3772175117: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
     /// Execute the command.
     /// </summary>
-    protected override void _execute()
+    public override void execute()
     {
       CadKit.Interfaces.IFrameDump frameDump = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IFrameDump;
       if (null != frameDump)

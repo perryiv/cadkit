@@ -21,6 +21,7 @@ namespace CadKit
       {
         delegate void CallbackDelegate ( unsigned long bytes );
         typedef void (*NativeProgressCallback) ( unsigned long bytes );
+        typedef CadKit::Interfaces::Filters Filters;
 
         CadKit::Interfaces::IProgressBar^ _progress;
         CallbackDelegate^ _delegate;
@@ -38,7 +39,10 @@ namespace CadKit
 
         void                      clear();
 
-        CadKit::OSG::Glue::Node^  readNodeFile ( System::String^ filename, System::Object^ caller );
+        static Filters^           filters();
+        static bool               hasReader ( System::String^ file );
+
+        CadKit::OSG::Glue::Node^  readNodeFile ( System::String^ file, System::Object^ caller );
       };
     }
   }

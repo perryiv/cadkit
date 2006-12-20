@@ -16,6 +16,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected CadKit.Interfaces.CameraOption _option = 0;
 
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -26,10 +27,27 @@ namespace CadKit.Helios.Commands
       CadKit.Documents.Manager.Instance.ActiveViewChanged += this._onActiveViewChanged;
     }
 
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~CameraViewCommand()
+    {
+      try
+      {
+        CadKit.Documents.Manager.Instance.ActiveViewChanged -= this._onActiveViewChanged;
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2302901667: {0}", e.Message);
+      }
+    }
+
+
     /// <summary>
     /// Execute the command.
     /// </summary>
-    protected override void _execute()
+    public override void execute()
     {
       CadKit.Interfaces.ICamera camera = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ICamera;
       if (null != camera)
@@ -37,6 +55,7 @@ namespace CadKit.Helios.Commands
         camera.camera(this.Option);
       }
     }
+
 
     /// <summary>
     /// Determine if the button should be enabled.

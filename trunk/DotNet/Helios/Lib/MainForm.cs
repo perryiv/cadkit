@@ -57,6 +57,7 @@ namespace CadKit.Helios
       this._buildMenu();
       this._buildToolBar();
       this.Load += this._formLoad;
+      this.FormClosing += this._formClosing;
       this.FormClosed += this._formClosed;
     }
 
@@ -74,13 +75,35 @@ namespace CadKit.Helios
 
 
     /// <summary>
-    /// The form is closed.  Deserialize dock content.
+    /// The form is closing. Close all documents and deserialize dock content.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs args)
     {
-      _dockPanel.SaveAsXml(this.DockSettingsFile);
+      try
+      {
+        _dockPanel.SaveAsXml(this.DockSettingsFile);
+        CadKit.Documents.Manager.Instance.closeAllDocuments();
+        CadKit.Plugins.Manager.Instance.release(this);
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 7161821420: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// The form is closed.
+    /// </summary>
+    void _formClosed(object sender, System.Windows.Forms.FormClosedEventArgs args)
+    {
+      try
+      {
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1370142206: {0}", e.Message);
+      }
     }
 
     /// <summary>
@@ -388,6 +411,11 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.RedoCommand(this));
         }
         {
+          System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&View");
+          this.MenuBar.Items.Add(menu);
+          this._addMenuButton(menu, new CadKit.Helios.Commands.DisplayListCommand(this));
+        }
+        {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Tools");
           this.MenuBar.Items.Add(menu);
           this._addMenuButton(menu, new CadKit.Helios.Commands.OptionsCommand(this));
@@ -424,6 +452,7 @@ namespace CadKit.Helios
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerSeekCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.FrameDumpCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.DisplayListCommand(this));
       }
     }
 

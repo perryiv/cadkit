@@ -24,17 +24,19 @@ namespace CadKit.Helios
     private object _mutex = new object();
     private object _caller = null;
     private string _file = null;
+    private CadKit.Interfaces.ICommand _command;
     private CadKit.Interfaces.IProgressBar _progress = null;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public OpenDocumentTask(string file, object caller)
+    public OpenDocumentTask(string file, object caller, CadKit.Interfaces.ICommand command)
       : base()
     {
       // Set members.
       _caller = caller;
       _file = file;
+      _command = command;
 
       // Check state.
       if (null == _file)
@@ -96,7 +98,7 @@ namespace CadKit.Helios
         if (null != doc)
         {
           doc.CommandHistory = new CadKit.Commands.History();
-          doc.CommandHistory.add(this);
+          doc.CommandHistory.add(_command);
         }
 
         // Set the delegate.
@@ -130,7 +132,7 @@ namespace CadKit.Helios
         if (true == form.InvokeRequired)
         {
           CreateDefaultGuiDelegate function = new CreateDefaultGuiDelegate(this._createDefaultGui);
-          result = (bool) (form.Invoke(function, new object[] { idoc }));
+          result = (bool)(form.Invoke(function, new object[] { idoc }));
         }
         else
         {

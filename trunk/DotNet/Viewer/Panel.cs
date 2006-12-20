@@ -17,7 +17,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IExportImage,
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump,
-    CadKit.Interfaces.ISnapShot
+    CadKit.Interfaces.ISnapShot,
+    CadKit.Interfaces.IDisplayListUse
   {
     /// <summary>
     /// Data members.
@@ -29,6 +30,7 @@ namespace CadKit.Viewer
     private readonly string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
     private readonly string FRAME_DUMP_SCALE_KEY = "FrameDumpScale";
     private readonly string COLOR_CORNERS = "ColorCorners";
+    private CadKit.Interfaces.DisplayListUseChangedDelegate _displayListUseChanged = null;
 
 
     /// <summary>
@@ -721,6 +723,57 @@ namespace CadKit.Viewer
           this.ScatterScale = originalScatterScale;
         }
       }
+    }
+
+
+    /// <summary>
+    /// Set/get the use of display lists.
+    /// </summary>
+    bool CadKit.Interfaces.IDisplayListUse.UseDisplayLists
+    {
+      get { return this.UseDisplayLists; }
+      set { this.UseDisplayLists = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the use of display lists.
+    /// </summary>
+    public bool UseDisplayLists
+    {
+      get { lock (this.Mutex) { return this.Viewer.useDisplayLists(); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          bool old = this.Viewer.useDisplayLists();
+          this.Viewer.useDisplayLists(value);
+          if (null != this.DisplayListUseChanged)
+          {
+            this.DisplayListUseChanged(this, old, value);
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Get/set the display-list-use-changed delegate.
+    /// </summary>
+    CadKit.Interfaces.DisplayListUseChangedDelegate CadKit.Interfaces.IDisplayListUse.DisplayListUseChanged
+    {
+      get { return this.DisplayListUseChanged; }
+      set { this.DisplayListUseChanged = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the display-list-use-changed delegate.
+    /// </summary>
+    public CadKit.Interfaces.DisplayListUseChangedDelegate DisplayListUseChanged
+    {
+      get { lock (this.Mutex) { return _displayListUseChanged; } }
+      set { lock (this.Mutex) { _displayListUseChanged = value; } }
     }
   }
 }

@@ -105,6 +105,11 @@ namespace CadKit
         void                  setMode ( ViewMode mode );
         ViewMode              getMode ();
 
+        // Set all the display-lists to on/off.
+        bool                  useDisplayLists();
+        void                  useDisplayLists ( bool state );
+        void                  updateDisplayListUse();
+
         /// Set the render context.
         property CadKit::OpenGL::Glue::RenderContext^ RenderContext
         {

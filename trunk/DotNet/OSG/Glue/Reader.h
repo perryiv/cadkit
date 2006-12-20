@@ -17,6 +17,8 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
+
 
 namespace osgDB { class ReaderWriter; }
 
@@ -30,17 +32,21 @@ class Reader
 public:
 
   typedef void (*ProgressCallback) ( unsigned long );
+  typedef std::pair<std::string,std::string>    Filter;
+  typedef std::vector<Filter>                   Filters;
 
   Reader();
   ~Reader();
 
-  void                  read ( const std::string &file );
+  void                  callback ( ProgressCallback cb ) { _progress = cb; }
+
+  static Filters        filters();
+
+  static bool           hasReader ( const std::string &file );
 
   osg::Node *           node() { return _node.get(); }
 
-  void                  callback ( ProgressCallback cb ) { _progress = cb; }
-
-protected:
+  void                  read ( const std::string &file );
 
   struct Callback : public Usul::File::StreamBuffer::Callback
   {
@@ -53,6 +59,8 @@ protected:
     Reader &_reader;
     friend class Reader;
   };
+
+protected:
 
   osgDB::ReaderWriter   *_findReader ( const std::string &file );
 

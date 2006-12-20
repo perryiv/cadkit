@@ -45,9 +45,9 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
           return;
 
         CadKit.Viewer.Viewer view = new CadKit.Viewer.Viewer();
+        view.Document = this.Document;
         view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
         view.Text = this.Document.Name;
-        //view.FormClosed += this._viewClosed;
 
         CadKit.Interfaces.IBuildScene buildScene = this.Document as CadKit.Interfaces.IBuildScene;
         if (null != buildScene)

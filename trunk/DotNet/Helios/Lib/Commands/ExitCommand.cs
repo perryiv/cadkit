@@ -31,7 +31,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Execute the command.
     /// </summary>
-    protected override void _execute()
+    public override void execute()
     {
       this._closeForm();
     }

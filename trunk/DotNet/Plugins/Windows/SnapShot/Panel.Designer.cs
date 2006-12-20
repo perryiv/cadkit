@@ -57,6 +57,7 @@ namespace CadKit.Plugins.Windows.SnapShot
       this._panel.Name = "_panel";
       this._panel.Size = new System.Drawing.Size(202, 177);
       this._panel.TabIndex = 0;
+      this._panel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
       // 
       // _tableLayoutPanel
       // 

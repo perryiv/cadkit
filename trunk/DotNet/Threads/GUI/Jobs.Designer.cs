@@ -39,7 +39,7 @@ namespace CadKit.Threads.GUI
       this._panel.Dock = System.Windows.Forms.DockStyle.Fill;
       this._panel.Location = new System.Drawing.Point(0, 0);
       this._panel.Name = "_panel";
-      this._panel.Size = new System.Drawing.Size(576, 253);
+      this._panel.Size = new System.Drawing.Size(572, 249);
       this._panel.TabIndex = 0;
       // 
       // _layout
@@ -49,7 +49,7 @@ namespace CadKit.Threads.GUI
       this._layout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this._layout.Location = new System.Drawing.Point(0, 0);
       this._layout.Name = "_layout";
-      this._layout.Size = new System.Drawing.Size(576, 253);
+      this._layout.Size = new System.Drawing.Size(572, 249);
       this._layout.TabIndex = 0;
       this._layout.WrapContents = false;
       // 
@@ -57,9 +57,10 @@ namespace CadKit.Threads.GUI
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
       this.Controls.Add(this._panel);
       this.Name = "Jobs";
-      this.Size = new System.Drawing.Size(576, 253);
+      this.Size = new System.Drawing.Size(572, 249);
       this._panel.ResumeLayout(false);
       this.ResumeLayout(false);
 

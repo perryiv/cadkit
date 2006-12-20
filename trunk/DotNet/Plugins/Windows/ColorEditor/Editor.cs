@@ -37,6 +37,7 @@ namespace CadKit.Plugins.Windows.ColorEditor
 
         _editor.Dock = System.Windows.Forms.DockStyle.Fill;
         _editor.ColorChanged += this._editorColorChanged;
+        _editor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
         this.Controls.Add(_editor);
 
         // Listen for active view.

@@ -225,22 +225,22 @@ osg::Vec4 GradientBackground::color ( unsigned int corners ) const
   osg::Vec4 color ( 0, 0, 0, 0 );
   unsigned int count ( 0 );
 
-  if ( true == Usul::Bits::has ( corners, Corners::BOTTOM_LEFT ) )
+  if ( true == Usul::Bits::has ( corners, static_cast < unsigned int > ( Corners::BOTTOM_LEFT ) ) )
   {
     color += this->color ( Corners::BOTTOM_LEFT );
     count += 1;
   }
-  if ( true == Usul::Bits::has ( corners, Corners::BOTTOM_RIGHT ) )
+  if ( true == Usul::Bits::has ( corners, static_cast < unsigned int > ( Corners::BOTTOM_RIGHT ) ) )
   {
     color += this->color ( Corners::BOTTOM_RIGHT );
     count += 1;
   }
-  if ( true == Usul::Bits::has ( corners, Corners::TOP_RIGHT ) )
+  if ( true == Usul::Bits::has ( corners, static_cast < unsigned int > ( Corners::TOP_RIGHT ) ) )
   {
     color += this->color ( Corners::TOP_RIGHT );
     count += 1;
   }
-  if ( true == Usul::Bits::has ( corners, Corners::TOP_LEFT ) )
+  if ( true == Usul::Bits::has ( corners, static_cast < unsigned int > ( Corners::TOP_LEFT ) ) )
   {
     color += this->color ( Corners::TOP_LEFT );
     count += 1;

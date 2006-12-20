@@ -56,6 +56,7 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${OT_INC_DIR} )
 SET (SOURCES
 	Axes.cpp
 	Builders/Arrow.cpp
+	Builders/GradientBackground.cpp
 	Callbacks/BoundingSphere.cpp
 	Callbacks/SortBackToFront.cpp
 	Circle.cpp
@@ -90,6 +91,12 @@ SET (SOURCES
 	IO/STLWriter.cpp
 	IO/WriteEPS.cpp
 	Jitter.cpp
+	Legend/GradientIcon.cpp
+	Legend/Icon.cpp
+	Legend/Legend.cpp
+	Legend/LegendObject.cpp
+	Legend/SolidIcon.cpp
+	Legend/Text.cpp
 	Lod.cpp
 	MaterialFactory.cpp
 	MaterialSetter.cpp

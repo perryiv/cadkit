@@ -53,8 +53,8 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
     const std::string path ( dir + "*." + ext );
 
     // Get the first file in the directory.
-    WIN32_FIND_DATA data;
-    handle = ::FindFirstFile ( path.c_str(), &data );
+    WIN32_FIND_DATAA data;
+    handle = ::FindFirstFileA ( path.c_str(), &data );
     if ( INVALID_HANDLE_VALUE == handle )
       return;
 
@@ -62,7 +62,7 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
     names.insert ( names.end(), dir + data.cFileName );
 
     // Push any additional files.
-    while ( ::FindNextFile ( handle, &data ) )
+    while ( ::FindNextFileA ( handle, &data ) )
       names.insert ( names.end(), dir + data.cFileName );
   }
 

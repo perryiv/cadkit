@@ -19,10 +19,12 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     private CadKit.OSG.Glue.Node _root = null;
 
+
     /// <summary>
     /// Constants
     /// </summary>
     public const string TypeName = "Scene Document";
+
 
     /// <summary>
     /// Construct a document.
@@ -31,6 +33,24 @@ namespace CadKit.Plugins.Documents.SceneDocument
     {
     }
 
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~Document()
+    {
+      this._clear();
+    }
+
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    private void _clear()
+    {
+    }
+
+
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
@@ -38,6 +58,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     {
       return CadKit.Plugins.Documents.SceneDocument.Document.TypeName;
     }
+
 
     /// <summary>
     /// Read the file.

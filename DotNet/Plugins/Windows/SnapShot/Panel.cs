@@ -50,6 +50,8 @@ namespace CadKit.Plugins.Windows.SnapShot
         this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
         this.HideOnClose = true;
         CadKit.Documents.Manager.Instance.ActiveViewChanged += this._activeViewChanged;
+        this.FormClosing += this._formClosing;
+        this.Disposed += this._disposed;
 
         _frameScaleTextBox.Text = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, FRAME_SCALE, "1.0");
         _scatterScaleTextBox.Text = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, SCATTER_SCALE, "1.0");
@@ -68,7 +70,7 @@ namespace CadKit.Plugins.Windows.SnapShot
     /// </summary>
     ~SnapShotWindow()
     {
-      this.Dispose();
+      this._deleteFiles();
     }
 
 
@@ -77,19 +79,54 @@ namespace CadKit.Plugins.Windows.SnapShot
     /// </summary>
     void System.IDisposable.Dispose()
     {
-      foreach (string file in _files)
+      this._deleteFiles();
+    }
+
+
+    /// <summary>
+    /// Called when the form is closing.
+    /// </summary>
+    void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs args)
+    {
+      this._deleteFiles();
+    }
+
+
+    /// <summary>
+    /// Called when the form is disposed.
+    /// </summary>
+    void _disposed(object sender, System.EventArgs e)
+    {
+      this._deleteFiles();
+    }
+
+
+    /// <summary>
+    /// Dispose this instance.
+    /// </summary>
+    private void _deleteFiles()
+    {
+      try
       {
-        try
+        foreach (string file in _files)
         {
-          if (true == System.IO.File.Exists(file))
+          try
           {
-            System.IO.File.Delete(file);
+            if (true == System.IO.File.Exists(file))
+            {
+              System.IO.File.Delete(file);
+            }
+          }
+          catch (System.Exception e)
+          {
+            System.Console.WriteLine("Error 4320789770: {0}", e.Message);
           }
         }
-        catch (System.Exception e)
-        {
-          System.Console.WriteLine("Error 4320789770: {0}", e.Message);
-        }
+        _files.Clear();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2007655518: {0}", e.Message);
       }
     }
 
@@ -259,7 +296,7 @@ namespace CadKit.Plugins.Windows.SnapShot
     /// <summary>
     /// Get the value from the control's text.
     /// </summary>
-    private float _getFloat(string text,System.Windows.Forms.Control control)
+    private float _getFloat(string text, System.Windows.Forms.Control control)
     {
       return (float)this._getDouble(text, control);
     }

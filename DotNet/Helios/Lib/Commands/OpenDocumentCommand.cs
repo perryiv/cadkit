@@ -28,7 +28,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Execute the command.
     /// </summary>
-    protected override void _execute()
+    public override void execute()
     {
       string[] names = this._askForFileNames();
 
@@ -56,7 +56,7 @@ namespace CadKit.Helios.Commands
       System.Diagnostics.Debug.Assert(false == CadKit.Helios.Application.Instance.MainForm.InvokeRequired);
 
       // This will start a separate thread and immediately return.
-      OpenDocumentTask task = new OpenDocumentTask(name, _caller);
+      OpenDocumentTask task = new OpenDocumentTask(name, _caller, this);
     }
 
 
@@ -105,16 +105,18 @@ namespace CadKit.Helios.Commands
     /// </summary>
     private void _setFilterString(string persistentName, string key, System.Windows.Forms.OpenFileDialog dialog)
     {
-      string finalFilter = "";
       CadKit.Interfaces.IFiltersOpen[] filtersOpen = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IFiltersOpen>();
-
+      CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
       foreach (CadKit.Interfaces.IFiltersOpen filterOpen in filtersOpen)
       {
-        CadKit.Interfaces.Filters filters = filterOpen.Filters;
-        foreach (CadKit.Interfaces.Filter filter in filters)
-        {
-          finalFilter += (filter.Text + '|' + filter.Extensions + '|');
-        }
+        filters.AddRange(filterOpen.Filters);
+      }
+      filters.Sort(this._compareFilters);
+
+      string finalFilter = "";
+      foreach (CadKit.Interfaces.Filter filter in filters)
+      {
+        finalFilter += (filter.Text + '|' + filter.Extensions + '|');
       }
 
       finalFilter = finalFilter.TrimEnd(new char[] { '|' });
@@ -130,6 +132,15 @@ namespace CadKit.Helios.Commands
 
       // Get filter index.
       dialog.FilterIndex = CadKit.Persistence.Registry.Instance.getInt(persistentName, key, 1);
+    }
+
+
+    /// <summary>
+    /// Compare two filters.
+    /// </summary>
+    private int _compareFilters(CadKit.Interfaces.Filter a, CadKit.Interfaces.Filter b)
+    {
+      return a.Text.CompareTo(b.Text);
     }
 
 

@@ -12,14 +12,17 @@ namespace CadKit.Commands
   public abstract class Command : CadKit.Interfaces.ICommand
   {
     /// <summary>
-    /// Delegates.
+    /// Local types.
     /// </summary>
-    private delegate void InvalidateToolbarDelegate();
+    private delegate void VoidReturnZeroArgumentsDelegate();
+    public class CommandList : System.Collections.Generic.List<Command> { };
 
 
     /// <summary>
     /// Data members.
     /// </summary>
+    private static CommandList _commandList = new CommandList();
+    private static CadKit.Threads.Tools.Lock _commandLock = new CadKit.Threads.Tools.Lock();
     private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     protected object _caller = null;
     protected System.Windows.Forms.ToolStripMenuItem _menuButton = null;
@@ -29,6 +32,7 @@ namespace CadKit.Commands
     protected System.Drawing.Image _menuIcon = null;
     protected System.Drawing.Image _toolIcon = null;
     protected System.Windows.Forms.Keys _keys = 0;
+    protected bool _isToggle = false;
 
 
     /// <summary>
@@ -36,6 +40,29 @@ namespace CadKit.Commands
     /// </summary>
     protected Command()
     {
+      using (_commandLock.write())
+      {
+        _commandList.Add(this);
+      }
+    }
+
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~Command()
+    {
+      try
+      {
+        using (_commandLock.write())
+        {
+          _commandList.Remove(this);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3291845313: {0}", e.Message);
+      }
     }
 
 
@@ -44,14 +71,14 @@ namespace CadKit.Commands
     /// </summary>
     bool CadKit.Interfaces.ICommand.canUndo()
     {
-      return this._canUndo();
+      return this.canUndo();
     }
 
 
     /// <summary>
     /// Can the command be undone?
     /// </summary>
-    protected virtual bool _canUndo()
+    public virtual bool canUndo()
     {
       return false;
     }
@@ -62,14 +89,14 @@ namespace CadKit.Commands
     /// </summary>
     void CadKit.Interfaces.ICommand.execute()
     {
-      this._execute();
+      this.execute();
     }
 
 
     /// <summary>
     /// Execute the command.
     /// </summary>
-    protected abstract void _execute();
+    public abstract void execute();
 
 
     /// <summary>
@@ -77,14 +104,14 @@ namespace CadKit.Commands
     /// </summary>
     void CadKit.Interfaces.ICommand.undo()
     {
-      this._undo();
+      this.undo();
     }
 
 
     /// <summary>
     /// Undo the command.
     /// </summary>
-    protected void _undo()
+    public void undo()
     {
     }
 
@@ -132,25 +159,6 @@ namespace CadKit.Commands
         using (this.Lock.read())
         {
           return (null != _toolButton);
-        }
-      }
-    }
-
-
-    /// <summary>
-    /// Get the owner of the tool button, which may be null.
-    /// </summary>
-    public System.Windows.Forms.ToolStrip ToolButtonOwner
-    {
-      get
-      {
-        if (false == this.HasToolButton)
-        {
-          return null;
-        }
-        using (this.Lock.read())
-        {
-          return _toolButton.Owner;
         }
       }
     }
@@ -229,15 +237,13 @@ namespace CadKit.Commands
     /// </summary>
     private void _createToolButton()
     {
-      _toolButton = new System.Windows.Forms.ToolStripButton();
-      _toolButton.Click += this._onButtonClicked;
-      _toolButton.Click += this._onToolButtonClicked;
-      _toolButton.Paint += this._onButtonPaint;
-      _toolButton.Paint += this._onToolButtonPaint;
-      _toolButton.Image = _toolIcon;
-      _toolButton.Enabled = false;
-      _toolButton.ToolTipText = this._toolTipText;
-      this.ToolButton = _toolButton;
+      System.Windows.Forms.ToolStripButton toolButton = new System.Windows.Forms.ToolStripButton();
+      toolButton.Click += this._onButtonClicked;
+      toolButton.Paint += this._onButtonPaint;
+      toolButton.Image = _toolIcon;
+      toolButton.Enabled = false;
+      toolButton.ToolTipText = this._toolTipText;
+      this.ToolButton = toolButton;
     }
 
 
@@ -248,32 +254,15 @@ namespace CadKit.Commands
     {
       try
       {
-        this._execute();
+        // Execute the command.
+        this.execute();
+
+        // Update all commands.
+        Command.updateAll();
       }
       catch (System.Exception e)
       {
         System.Console.WriteLine("Error 1887520459: {0}", e.Message);
-      }
-    }
-
-
-    /// <summary>
-    /// Called when the button is pressed.
-    /// </summary>
-    private void _onToolButtonClicked(object sender, System.EventArgs args)
-    {
-      try
-      {
-        System.Windows.Forms.ToolStripButton button = sender as System.Windows.Forms.ToolStripButton;
-        if ((null != button) && (null != button.Owner))
-        {
-          // Update the appearance of all toolbar buttons, including this one.
-          button.Owner.Invalidate();
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 2568530481: {0}", e.Message);
       }
     }
 
@@ -299,26 +288,6 @@ namespace CadKit.Commands
 
 
     /// <summary>
-    /// Called when the button is about to be shown.
-    /// </summary>
-    private void _onToolButtonPaint(object sender, System.Windows.Forms.PaintEventArgs args)
-    {
-      try
-      {
-        System.Windows.Forms.ToolStripButton button = sender as System.Windows.Forms.ToolStripButton;
-        if (null != button)
-        {
-          button.CheckState = (this._isChecked()) ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 3858697618: {0}", e.Message);
-      }
-    }
-
-
-    /// <summary>
     /// Get the lock.
     /// </summary>
     protected CadKit.Threads.Tools.Lock Lock
@@ -334,7 +303,7 @@ namespace CadKit.Commands
     {
       try
       {
-        this._invalidateToolButton();
+        this.update();
       }
       catch (System.Exception e)
       {
@@ -344,23 +313,27 @@ namespace CadKit.Commands
 
 
     /// <summary>
-    /// Invalidate the tool button.
+    /// Update the tool button.
     /// </summary>
-    private void _invalidateToolButton()
+    private void _updateToolButton()
     {
       try
       {
         // Do not call this.ToolButton! We do not want to make one.
         if (true == this.HasToolButton)
         {
-          if (null != this.ToolButtonOwner)
+          System.Windows.Forms.ToolStrip owner = this.ToolButton.Owner;
+          if (null != owner)
           {
-            if (true == this.ToolButtonOwner.InvokeRequired)
+            if (true == owner.InvokeRequired)
             {
-              this.ToolButtonOwner.BeginInvoke(new InvalidateToolbarDelegate(this._invalidateToolButton));
+              owner.BeginInvoke(new VoidReturnZeroArgumentsDelegate(this._updateToolButton));
             }
             else
             {
+              bool state = this._isChecked();
+              this.ToolButton.CheckState = (state) ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
+              this.ToolButton.Checked = state;
               this.ToolButton.Invalidate();
             }
           }
@@ -369,6 +342,67 @@ namespace CadKit.Commands
       catch (System.Exception e)
       {
         System.Console.WriteLine("Error 3875510231: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Update the menu button.
+    /// </summary>
+    private void _updateMenuButton()
+    {
+      try
+      {
+        // Do not call this.ToolButton! We do not want to make one.
+        if (true == this.HasMenuButton)
+        {
+          System.Windows.Forms.ToolStrip owner = this.MenuButton.Owner;
+          if (null != owner)
+          {
+            if (true == owner.InvokeRequired)
+            {
+              owner.BeginInvoke(new VoidReturnZeroArgumentsDelegate(this._updateMenuButton));
+            }
+            else
+            {
+              bool state = this._isChecked();
+              this.MenuButton.CheckState = (state) ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
+              this.MenuButton.Checked = state;
+              this.MenuButton.Invalidate();
+            }
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2674442530: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Update the buttons if they exist.
+    /// </summary>
+    public void update()
+    {
+      this._updateMenuButton();
+      this._updateToolButton();
+    }
+
+
+    /// <summary>
+    /// Update all the commands.
+    /// </summary>
+    public static void updateAll()
+    {
+      CommandList commandList = new CommandList();
+      using (_commandLock.read())
+      {
+        commandList.AddRange(_commandList);
+      }
+      foreach (Command command in commandList)
+      {
+        command.update();
       }
     }
   }

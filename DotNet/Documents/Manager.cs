@@ -156,7 +156,7 @@ namespace CadKit.Documents
       // Re-entrant! Do not lock the mutex!
       try
       {
-        Documents docs = this.DocumentsCopy;
+        Documents docs = this._documentsCopy();
         foreach (CadKit.Interfaces.IDocument doc in docs)
         {
           if (null != doc && doc.Name == name)
@@ -347,16 +347,70 @@ namespace CadKit.Documents
     /// <summary>
     /// Get a copy of the documents container.
     /// </summary>
-    private Documents DocumentsCopy
+    private Documents _documentsCopy()
     {
-      get
+      Documents docs = new Documents();
+      using (this.Lock.read())
       {
-        Documents docs = new Documents();
-        using (this.Lock.read())
+        docs.AddRange(_documents);
+      }
+      return docs;
+    }
+
+
+    /// <summary>
+    /// Close all documents.
+    /// </summary>
+    public void closeAllDocuments()
+    {
+      try
+      {
+        this._closeAllDocuments();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2814705556: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Close all documents.
+    /// </summary>
+    private void _closeAllDocuments()
+    {
+      Documents documents = this._documentsCopy();
+      foreach (Document document in documents)
+      {
+        try
         {
-          docs.AddRange(_documents);
+          this._closeDocument(document);
+          this.remove(document);
         }
-        return docs;
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 4133942660: {0}", e.Message);
+        }
+      }
+      this.ActiveView = null;
+    }
+
+
+    /// <summary>
+    /// Close the documents.
+    /// </summary>
+    private void _closeDocument(Document document)
+    {
+      if ( null != document)
+      {
+        try
+        {
+          document.close();
+        }
+        catch (System.Exception e)
+        {
+          System.Console.WriteLine("Error 4017654992: {0}", e.Message);
+        }
       }
     }
   }

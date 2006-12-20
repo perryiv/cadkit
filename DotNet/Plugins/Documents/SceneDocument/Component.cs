@@ -32,9 +32,6 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     void CadKit.Interfaces.IPlugin.start(object caller)
     {
-      lock (_mutex)
-      {
-      }
     }
 
     /// <summary>
@@ -42,9 +39,6 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     void CadKit.Interfaces.IPlugin.finish(object caller)
     {
-      lock (_mutex)
-      {
-      }
     }
 
     /// <summary>
@@ -52,7 +46,6 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     object CadKit.Interfaces.IDocumentNew.create(object caller)
     {
-      // Re-entrant! Do not lock the mutex!
       return new CadKit.Plugins.Documents.SceneDocument.Document();
     }
 
@@ -73,7 +66,6 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      // Re-entrant! Do not lock the mutex!
       get { return CadKit.Plugins.Documents.SceneDocument.Document.TypeName; }
     }
 
@@ -82,7 +74,6 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      // Re-entrant! Do not lock the mutex!
       get { return "Document type for working with a scene"; }
     }
 
@@ -91,10 +82,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     bool CadKit.Interfaces.IDocumentOpen.canOpen(string name)
     {
-      // Re-entrant! Do not lock the mutex!
-      System.IO.FileInfo info = new System.IO.FileInfo(name);
-      string ext = info.Extension.ToLower();
-      return (".osg" == ext || ".ive" == ext || ".flt" == ext);
+      return CadKit.OSG.Glue.ReadFile.hasReader(name);
     }
 
     /// <summary>
@@ -102,15 +90,18 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
     {
-      // Re-entrant! Do not lock the mutex!
       get
       {
+#if no
         CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
         filters.Add(new CadKit.Interfaces.Filter("All Scene Files (*.osg *.ive *.flt)", "*.osg;*.ive;*.flt"));
         filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
         filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
         filters.Add(new CadKit.Interfaces.Filter("OpenFlight (*.flt)", "*.flt"));
         return filters;
+#else
+        return CadKit.OSG.Glue.ReadFile.filters();
+#endif
       }
     }
   }

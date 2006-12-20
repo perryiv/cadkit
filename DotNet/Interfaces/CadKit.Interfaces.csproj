@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDisplayListUse.cs" />
     <Compile Include="IJitterAntialias.cs" />
     <Compile Include="ISnapShot.cs" />
     <Compile Include="IClearColor.cs" />

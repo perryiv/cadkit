@@ -9,21 +9,19 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class ViewerModeCommand : CadKit.Commands.Command
+  public class DisplayListCommand : CadKit.Commands.Command
   {
-    /// <summary>
-    /// Data members.
-    /// </summary>
-    protected CadKit.Interfaces.ViewMode _mode = 0;
-
-
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected ViewerModeCommand(object caller)
+    public DisplayListCommand(object caller)
       : base()
     {
       _caller = caller;
+      _text = "Display Lists";
+      _toolTipText = _text;
+      _menuIcon = null;
+      _toolIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/display_list_command.png");
       CadKit.Documents.Manager.Instance.ActiveViewChanged += this._onActiveViewChanged;
     }
 
@@ -31,7 +29,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~ViewerModeCommand()
+    ~DisplayListCommand()
     {
       try
       {
@@ -39,7 +37,7 @@ namespace CadKit.Helios.Commands
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 1408874650: {0}", e.Message);
+        System.Console.WriteLine("Error 4266305360: {0}", e.Message);
       }
     }
 
@@ -49,10 +47,10 @@ namespace CadKit.Helios.Commands
     /// </summary>
     public override void execute()
     {
-      CadKit.Interfaces.IViewerMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IViewerMode;
-      if (null != mode)
+      CadKit.Interfaces.IDisplayListUse use = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IDisplayListUse;
+      if (null != use)
       {
-        mode.Mode = this.Mode;
+        use.UseDisplayLists = !use.UseDisplayLists;
       }
     }
 
@@ -62,8 +60,8 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      CadKit.Interfaces.IViewerMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IViewerMode;
-      return (null != mode);
+      CadKit.Interfaces.IDisplayListUse use = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IDisplayListUse;
+      return (null != use);
     }
 
 
@@ -72,17 +70,8 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _isChecked()
     {
-      CadKit.Interfaces.IViewerMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IViewerMode;
-      return ((null != mode) && (mode.Mode == this.Mode));
-    }
-
-
-    /// <summary>
-    /// Return viewer mode.
-    /// </summary>
-    private CadKit.Interfaces.ViewMode Mode
-    {
-      get { using (this.Lock.read()) { return _mode; } }
+      CadKit.Interfaces.IDisplayListUse use = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IDisplayListUse;
+      return (null == use) ? false : use.UseDisplayLists;
     }
   }
 }

@@ -39,7 +39,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
         _text.Dock = System.Windows.Forms.DockStyle.Fill;
         _text.Multiline = true;
         
-        this.Shown += new System.EventHandler(_formShown);
+        this.Shown += this._formShown;
         this.FormClosing += this._formClosing;
       }
       catch (System.Exception e)
@@ -54,23 +54,42 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// <summary>
     /// Called when the form is shown.
     /// </summary>
-    void _formShown(object sender, System.EventArgs e)
+    void _formShown(object sender, System.EventArgs args)
     {
-      // The form is shown.  Add the notify delegate.
-      CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
+      try
+      {
+        lock (_mutex)
+        {
+          // The form is shown. Add the notify delegate.
+          CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1195712534: {0}", e.Message);
+      }
     }
 
 
     /// <summary>
     /// Called when the forms is about to close.
     /// </summary>
-    private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+    private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs args)
     {
-      lock (_mutex)
+      try
       {
-        CadKit.Tools.RedirectOutput.Instance.Notify -= this._notify;
+        lock (_mutex)
+        {
+          // The form is closing. Remove the notify delegate.
+          CadKit.Tools.RedirectOutput.Instance.Notify -= this._notify;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1185796360: {0}", e.Message);
       }
     }
+
 
     /// <summary>
     /// Callback for changed output text.

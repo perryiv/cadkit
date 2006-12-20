@@ -28,10 +28,10 @@ namespace CadKit.Plugins.GUI
       for (int i = 0; i < names.Length; ++i)
       {
         string filename = names[i];
-        CadKit.Interfaces.IPlugin plugin = CadKit.Plugins.Manager.Instance.pluginInterface(filename);
+        //CadKit.Interfaces.IPlugin plugin = CadKit.Plugins.Manager.Instance.pluginInterface(filename);
         System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(filename);
         item.Checked = CadKit.Plugins.Manager.Instance.isLoaded(filename);
-        item.ToolTipText = plugin.Description;
+        //item.ToolTipText = plugin.Description;
         listview.Items.Add(item);
       }
     }

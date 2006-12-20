@@ -95,34 +95,50 @@ ReadFile::NativeProgressCallback ReadFile::_makeProgressCallback()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CadKit::OSG::Glue::Node^ ReadFile::readNodeFile( System::String ^name, System::Object^ caller )
+CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::Object^ caller )
 {
-  this->clear();
-  _progress = dynamic_cast < CadKit::Interfaces::IProgressBar ^ > ( caller );
-
-  // Make native function pointer to the progress interface.
-  NativeProgressCallback progress ( ReadFile::_makeProgressCallback() );
-
-  // Get file name.
-  const std::string file ( Usul::Strings::convert ( name ) );
-
-  // Declare reader.
-  CadKit::OSG::Glue::Reader reader;
-  reader.callback ( progress );
-  reader.read ( file );
-
-  // Save the model.
-  CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
-  node->node ( reader.node() );
-
   // Clear the members.
   this->clear();
 
-  // Return the node.
-  return node;
+  try
+  {
+    _progress = dynamic_cast < CadKit::Interfaces::IProgressBar ^ > ( caller );
+
+    // Make native function pointer to the progress interface.
+    NativeProgressCallback progress ( ReadFile::_makeProgressCallback() );
+
+    // Get file name.
+    const std::string file ( Usul::Strings::convert ( name ) );
+
+    // Read the file.
+    CadKit::OSG::Glue::Reader reader;
+    reader.callback ( progress );
+    reader.read ( file );
+
+    // Save the node.
+    CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
+    node->node ( reader.node() );
+
+    // Return the node.
+    return node;
+  }
+  catch ( const std::exception &e )
+  {
+    System::String^ message = gcnew System::String ( ( e.what() ) ? e.what() : "" );
+    throw gcnew System::Exception ( System::String::Format ( "Error 1431367384: {0}", message ) );
+  }
+  catch ( ... )
+  {
+    throw gcnew System::Exception ( System::String::Format ( "Error 1041641937: Failed to read file: {0}", name ) );
+  }
+  finally
+  {
+    // Clear the members.
+    this->clear();
+  }
 }
 
-  
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Called when there is progress.
@@ -139,4 +155,46 @@ void ReadFile::_progressNotify ( unsigned long bytes )
     _progress->Text = System::String::Format ( "Bytes Read: {0} of {1}", intValue.ToString ( "N0" ), _progress->Range.ToString ( "N0" ) );
     _progress->Value = intValue;
   }
+}
+
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if there is an appropriate reader.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ReadFile::hasReader ( System::String^ name )
+{
+  const std::string file ( Usul::Strings::convert ( name ) );
+  return Reader::hasReader ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return list of filters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CadKit::Interfaces::Filters^ ReadFile::filters()
+{
+  CadKit::Interfaces::Filters^ filters = gcnew CadKit::Interfaces::Filters();
+  try
+  {
+    Reader::Filters f ( Reader::filters() );
+    for ( Reader::Filters::const_iterator i = f.begin(); i != f.end(); ++i )
+    {
+      filters->Add ( gcnew CadKit::Interfaces::Filter ( gcnew System::String ( i->first.c_str() ), gcnew System::String ( i->second.c_str() ) ) );
+    }
+  }
+  catch ( const std::exception &e )
+  {
+    System::Console::WriteLine ( System::String::Format ( "Error 4193416035: {0}", gcnew System::String ( e.what() ) ) );
+  }
+  catch ( ... )
+  {
+    System::Console::WriteLine ( "Error 3853814285: Unnown exception caught when determining filters" );
+  }
+  return filters;
 }

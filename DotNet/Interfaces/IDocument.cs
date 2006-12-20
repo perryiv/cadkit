@@ -61,6 +61,6 @@ namespace CadKit.Interfaces
     /// <summary>
     /// Get the array of views.
     /// </summary>
-    CadKit.Interfaces.IDocumentView[] Views { get; }
+    CadKit.Interfaces.IDocumentView[] views();
   }
 }

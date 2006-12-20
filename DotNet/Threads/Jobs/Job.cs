@@ -129,6 +129,7 @@ namespace CadKit.Threads.Jobs
       catch (System.Exception e)
       {
         this._setException(e);
+        System.Console.WriteLine("Error 2823933800: {0}", e.Message);
       }
 
       // Clean up.

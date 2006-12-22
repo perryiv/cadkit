@@ -19,7 +19,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IFrameDump,
     CadKit.Interfaces.ISnapShot,
     CadKit.Interfaces.IDisplayListUse,
-    CadKit.Interfaces.IPolygonMode
+    CadKit.Interfaces.IPolygonMode, 
+    CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
     /// Data members.
@@ -736,7 +737,6 @@ namespace CadKit.Viewer
       set { this.UseDisplayLists = value; }
     }
 
-
     /// <summary>
     /// Set/get the use of display lists.
     /// </summary>
@@ -757,6 +757,29 @@ namespace CadKit.Viewer
       }
     }
 
+    /// <summary>
+    /// Set/get the use of render loop.
+    /// </summary>
+    bool CadKit.Interfaces.IRenderLoop.UseRenderLoop
+    {
+      get { return this.UseRenderLoop; }
+      set { this.UseRenderLoop = value; }
+    }
+
+    /// <summary>
+    /// Set/get the use of display lists.
+    /// </summary>
+    public bool UseRenderLoop
+    {
+      get { lock (this.Mutex) { return this.RenderTimer; } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this.RenderTimer = value;          
+        }
+      }
+    }
 
     /// <summary>
     /// Get/set the display-list-use-changed delegate.

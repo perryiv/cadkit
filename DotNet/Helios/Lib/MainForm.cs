@@ -476,6 +476,7 @@ namespace CadKit.Helios
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.FrameDumpCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.DisplayListCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.RenderLoopCommand(this));
       }
     }
 

@@ -75,7 +75,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\..
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OSG.Glue", "..\OSG\Glue\CadKit.OSG.Glue.vcproj", "{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI2005", "..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj", "{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI2005", "..\..\..\SDK\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj", "{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.GUI", "..\Threads\GUI\CadKit.Threads.GUI.csproj", "{D7626B34-8931-44B1-A7B0-7ADFC3E6BEAF}"
 EndProject
@@ -92,6 +92,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.Properties", "..\Plugins\Windows\Properties\CadKit.Plugins.Windows.Properties.csproj", "{C731C436-DEE0-43E8-ADAC-BBDE3BD86A28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.SnapShot", "..\Plugins\Windows\SnapShot\CadKit.Plugins.Windows.SnapShot.csproj", "{D3A90F20-127D-4037-A4F1-333170E509F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Delegates.SimFlowDelegate", "..\Plugins\Delegates\SimFlowDelegate\CadKit.Plugins.Delegates.SimFlowDelegate.csproj", "{688D60FB-D08D-4576-88F6-FF0940FCF339}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cadkit.Plugins.Documents.SimFlowDocument", "..\Plugins\Documents\SimFlowDocument\Cadkit.Plugins.Documents.SimFlowDocument.csproj", "{874183CD-90FD-4D0A-8460-C95050F9CC82}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cadkit.Plugins.Documents.SimFlowDocument.Glue", "..\Plugins\Documents\SimFlowDocument\Glue\Glue.vcproj", "{316E1C43-89D6-4C71-90A4-01016B1BD51B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -473,6 +479,36 @@ Global
 		{D3A90F20-127D-4037-A4F1-333170E509F3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D3A90F20-127D-4037-A4F1-333170E509F3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D3A90F20-127D-4037-A4F1-333170E509F3}.Release|Win32.ActiveCfg = Release|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{688D60FB-D08D-4576-88F6-FF0940FCF339}.Release|Win32.ActiveCfg = Release|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{874183CD-90FD-4D0A-8460-C95050F9CC82}.Release|Win32.ActiveCfg = Release|Any CPU
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Debug|Win32.Build.0 = Debug|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Release|Win32.ActiveCfg = Release|Win32
+		{316E1C43-89D6-4C71-90A4-01016B1BD51B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

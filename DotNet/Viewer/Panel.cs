@@ -18,7 +18,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IExportScene,
     CadKit.Interfaces.IFrameDump,
     CadKit.Interfaces.ISnapShot,
-    CadKit.Interfaces.IDisplayListUse
+    CadKit.Interfaces.IDisplayListUse,
+    CadKit.Interfaces.IPolygonMode
   {
     /// <summary>
     /// Data members.
@@ -774,6 +775,53 @@ namespace CadKit.Viewer
     {
       get { lock (this.Mutex) { return _displayListUseChanged; } }
       set { lock (this.Mutex) { _displayListUseChanged = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode face.
+    /// </summary>
+    CadKit.Interfaces.PolygonMode.Face CadKit.Interfaces.IPolygonMode.Face
+    {
+      get { return this.PolygonFace; }
+      set { this.PolygonFace = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode mode.
+    /// </summary>
+    CadKit.Interfaces.PolygonMode.Mode CadKit.Interfaces.IPolygonMode.Mode
+    {
+      get { return this.PolygonMode; }
+      set { this.PolygonMode = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode face.
+    /// </summary>
+    public CadKit.Interfaces.PolygonMode.Face PolygonFace
+    {
+      get { return CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK; } // For now.
+      set { }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode mode.
+    /// </summary>
+    public CadKit.Interfaces.PolygonMode.Mode PolygonMode
+    {
+      get { lock (this.Mutex) { return this.Viewer.getPolygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this.Viewer.setPolygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK, value);
+          this.Invalidate(true);
+        }
+      }
     }
   }
 }

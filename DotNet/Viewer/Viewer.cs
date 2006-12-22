@@ -22,7 +22,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IPropertyGridObject,
     CadKit.Interfaces.ISnapShot,
     CadKit.Interfaces.IJitterAntialias,
-    CadKit.Interfaces.IDisplayListUse
+    CadKit.Interfaces.IDisplayListUse,
+    CadKit.Interfaces.IPolygonMode
   {
     /// <summary>
     /// Data members.
@@ -605,6 +606,46 @@ namespace CadKit.Viewer
     {
       get { lock (this.Mutex) { return _panel; } }
       set { lock (this.Mutex) { _panel = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode face.
+    /// </summary>
+    CadKit.Interfaces.PolygonMode.Face CadKit.Interfaces.IPolygonMode.Face
+    {
+      get { return this.PolygonFace; }
+      set { this.PolygonFace = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode mode.
+    /// </summary>
+    CadKit.Interfaces.PolygonMode.Mode CadKit.Interfaces.IPolygonMode.Mode
+    {
+      get { return this.PolygonMode; }
+      set { this.PolygonMode = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode face.
+    /// </summary>
+    public CadKit.Interfaces.PolygonMode.Face PolygonFace
+    {
+      get { lock (this.Mutex) { return this.Panel.PolygonFace; } }
+      set { lock (this.Mutex) { this.Panel.PolygonFace = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/set the polygon-mode mode.
+    /// </summary>
+    public CadKit.Interfaces.PolygonMode.Mode PolygonMode
+    {
+      get { lock (this.Mutex) { return this.Panel.PolygonMode; } }
+      set { lock (this.Mutex) { this.Panel.PolygonMode = value; } }
     }
   }
 }

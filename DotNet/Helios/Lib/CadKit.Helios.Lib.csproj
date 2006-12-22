@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\PolygonModeCommands.cs" />
+    <Compile Include="Commands\PolygonModeCommand.cs" />
     <Compile Include="Commands\DisplayListCommand.cs" />
     <Compile Include="Commands\ExportModelCommand.cs" />
     <Compile Include="Commands\FrameDumpCommand.cs" />
@@ -59,7 +61,7 @@
     </Compile>
     <Compile Include="OpenDocumentTask.cs" />
     <Compile Include="Commands\ViewHomeCommand.cs" />
-    <Compile Include="Commands\ViewAllCommand.cs" />
+    <Compile Include="Commands\ViewFitCommand.cs" />
     <Compile Include="OptionsPage.cs">
     </Compile>
     <Compile Include="OptionsForm.cs">

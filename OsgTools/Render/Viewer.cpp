@@ -2450,7 +2450,7 @@ void Viewer::polygonMode ( IPolygonMode::Mode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::IPolygonMode::Mode     Viewer::polygonMode() const
+Viewer::IPolygonMode::Mode Viewer::polygonMode() const
 {
   if( this->hasHiddenLines() )
     return IPolygonMode::HIDDEN_LINES;

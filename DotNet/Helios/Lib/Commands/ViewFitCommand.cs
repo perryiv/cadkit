@@ -9,15 +9,15 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class ViewAllCommand : CameraViewCommand
+  public class ViewFitCommand : CameraViewCommand
   {
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ViewAllCommand(object caller)
+    public ViewFitCommand(object caller)
       : base(caller)
     {
-      _text = "View &All";
+      _text = "View &Fit";
       _toolTipText = "View All";
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/view_all_command.gif");
       _toolIcon = _menuIcon;

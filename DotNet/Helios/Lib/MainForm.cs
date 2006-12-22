@@ -413,7 +413,26 @@ namespace CadKit.Helios
         {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&View");
           this.MenuBar.Items.Add(menu);
-          this._addMenuButton(menu, new CadKit.Helios.Commands.DisplayListCommand(this));
+          {
+            System.Windows.Forms.ToolStripMenuItem camera = CadKit.Tools.Menu.makeMenu("&Camera");
+            menu.DropDownItems.Add(camera);
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewFitCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewHomeCommand(this));
+            camera.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewFrontCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewBackCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewLeftCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewRightCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewTopCommand(this));
+            this._addMenuButton(camera, new CadKit.Helios.Commands.ViewBottomCommand(this));
+          }
+          {
+            System.Windows.Forms.ToolStripMenuItem polygons = CadKit.Tools.Menu.makeMenu("&Polygons");
+            menu.DropDownItems.Add(polygons);
+            this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsFillCommand(this));
+            this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsLineCommand(this));
+            this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsPointsCommand(this));
+          }
         }
         {
           System.Windows.Forms.ToolStripMenuItem menu = CadKit.Tools.Menu.makeMenu("&Tools");
@@ -437,7 +456,7 @@ namespace CadKit.Helios
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.NewDocumentCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.OpenDocumentCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
-        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewAllCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewFitCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewHomeCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewFrontCommand(this));
@@ -446,6 +465,10 @@ namespace CadKit.Helios
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewBottomCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewRightCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewLeftCommand(this));
+        _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsFillCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsLineCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsPointsCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerNavigateCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerPickCommand(this));

@@ -486,3 +486,155 @@ void Viewer::updateDisplayListUse()
   if ( 0x0 != _viewer )
     _viewer->updateDisplayListUse();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct Convert
+  {
+    static osg::PolygonMode::Face face ( CadKit::Interfaces::PolygonMode::Face f )
+    {
+      switch ( f )
+      {
+      case CadKit::Interfaces::PolygonMode::Face::FRONT:
+        return osg::PolygonMode::FRONT;
+      case CadKit::Interfaces::PolygonMode::Face::BACK:
+        return osg::PolygonMode::BACK;
+      default:
+        return osg::PolygonMode::FRONT_AND_BACK;
+      }
+    }
+    static CadKit::Interfaces::PolygonMode::Face face ( osg::PolygonMode::Face f )
+    {
+      switch ( f )
+      {
+      case osg::PolygonMode::FRONT:
+        return CadKit::Interfaces::PolygonMode::Face::FRONT;
+      case osg::PolygonMode::BACK:
+        return CadKit::Interfaces::PolygonMode::Face::BACK;
+      case osg::PolygonMode::FRONT_AND_BACK:
+        return CadKit::Interfaces::PolygonMode::Face::FRONT_AND_BACK;
+      default:
+        return CadKit::Interfaces::PolygonMode::Face::NONE;
+      }
+    }
+    static osg::PolygonMode::Mode mode ( CadKit::Interfaces::PolygonMode::Mode m )
+    {
+      switch ( m )
+      {
+      case CadKit::Interfaces::PolygonMode::Mode::POINT:
+        return osg::PolygonMode::POINT;
+      case CadKit::Interfaces::PolygonMode::Mode::LINE:
+        return osg::PolygonMode::LINE;
+      default:
+        return osg::PolygonMode::FILL;
+      }
+    }
+    static CadKit::Interfaces::PolygonMode::Mode mode ( osg::PolygonMode::Mode m )
+    {
+      switch ( m )
+      {
+      case osg::PolygonMode::POINT:
+        return CadKit::Interfaces::PolygonMode::Mode::POINT;
+      case osg::PolygonMode::LINE:
+        return CadKit::Interfaces::PolygonMode::Mode::LINE;
+      case osg::PolygonMode::FILL:
+        return CadKit::Interfaces::PolygonMode::Mode::FILL;
+      default:
+        return CadKit::Interfaces::PolygonMode::Mode::NONE;
+      }
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::PolygonMode::Mode Viewer::getPolygonMode ( PolygonMode::Face face )
+{
+  if ( 0x0 == _viewer )
+    return PolygonMode::Mode::NONE;
+
+  if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::FILL ) )
+    return CadKit::Interfaces::PolygonMode::Mode::FILL;
+
+  if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::LINE ) )
+    return CadKit::Interfaces::PolygonMode::Mode::LINE;
+
+  if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::POINT ) )
+    return CadKit::Interfaces::PolygonMode::Mode::POINT;
+
+  return CadKit::Interfaces::PolygonMode::Mode::NONE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setPolygonMode ( PolygonMode::Face face, PolygonMode::Mode mode )
+{
+  if ( 0x0 != _viewer )
+    _viewer->setPolygonMode ( Detail::Convert::face ( face ), Detail::Convert::mode ( mode ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have the polygon mode?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasPolygonMode ( PolygonMode::Face face, PolygonMode::Mode mode )
+{
+  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode ( Detail::Convert::face ( face ), Detail::Convert::mode ( mode ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have the polygon mode?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasPolygonMode ( PolygonMode::Face face )
+{
+  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode ( Detail::Convert::face ( face ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have the polygon mode?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasPolygonMode()
+{
+  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removePolygonMode()
+{
+  if ( 0x0 != _viewer )
+    _viewer->removePolygonMode();
+}

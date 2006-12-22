@@ -31,6 +31,7 @@ namespace CadKit
 
         ref class RenderPasses : System::Collections::Generic::List<unsigned int>{};
         typedef System::Drawing::Color Color;
+        typedef CadKit::Interfaces::PolygonMode PolygonMode;
 
         Viewer();
         ~Viewer();
@@ -90,6 +91,14 @@ namespace CadKit
         // Number of render passes.
         unsigned int          numRenderPasses();
         void                  numRenderPasses ( unsigned int );
+  
+        // Set/query/remove the polygon mode.
+        PolygonMode::Mode     getPolygonMode    ( PolygonMode::Face face );
+        void                  setPolygonMode    ( PolygonMode::Face face, PolygonMode::Mode mode );
+        bool                  hasPolygonMode    ( PolygonMode::Face face, PolygonMode::Mode mode );
+        bool                  hasPolygonMode    ( PolygonMode::Face face );
+        bool                  hasPolygonMode();
+        void                  removePolygonMode();
 
         // Render the scene.
         void                  render();

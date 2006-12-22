@@ -13,7 +13,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
     CadKit.Documents.Document,
     CadKit.Interfaces.IRead,
     CadKit.Interfaces.IBuildScene,
-    CadKit.Interfaces.IUpateScene
+    CadKit.Interfaces.IUpdateScene
   {
     /// <summary>
     /// Root for the scene.

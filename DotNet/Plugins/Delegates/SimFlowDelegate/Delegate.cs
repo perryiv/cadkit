@@ -51,7 +51,7 @@ namespace CadKit.Plugins.Delegates.SimFlowDelegate
         _view.Text = this.Document.Name;
         _view.KeyDown += new System.Windows.Forms.KeyEventHandler(_view_KeyDown);
 
-        CadKit.Interfaces.IUpateScene update = this.Document as CadKit.Interfaces.IUpateScene;
+        CadKit.Interfaces.IUpdateScene update = this.Document as CadKit.Interfaces.IUpdateScene;
 
         if (null != update)
           _view.Panel.BeginPaintEvent += update.updateScene;

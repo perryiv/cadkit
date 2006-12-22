@@ -74,9 +74,11 @@
     <Compile Include="IDockPanel.cs" />
     <Compile Include="IPersistantFormData.cs" />
     <Compile Include="IRecentFileList.cs" />
+    <Compile Include="IUpateScene.cs" />
     <Compile Include="IViewer.cs" />
     <Compile Include="IViewerMode.cs" />
     <Compile Include="IWindowMenu.cs" />
+    <Compile Include="IRenderLoop.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

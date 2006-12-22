@@ -63,5 +63,17 @@ namespace CadKit.OpenGL
       _timer = null;
 
     }
+
+    public bool RenderTimer
+    {
+      get { lock (this.Mutex) { return _timer != null && _timer.Enabled; } }
+      set
+      {
+        if (value)
+          this.startRenderTimer(15);
+        else
+          this.endRenderTimer();
+      }
+    }
   }
 }

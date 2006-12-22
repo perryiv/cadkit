@@ -23,7 +23,8 @@ namespace CadKit.Viewer
     CadKit.Interfaces.ISnapShot,
     CadKit.Interfaces.IJitterAntialias,
     CadKit.Interfaces.IDisplayListUse,
-    CadKit.Interfaces.IPolygonMode
+    CadKit.Interfaces.IPolygonMode, 
+    CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
     /// Data members.
@@ -578,6 +579,24 @@ namespace CadKit.Viewer
       set { lock (this.Mutex) { this.Panel.UseDisplayLists = value; } }
     }
 
+    /// <summary>
+    /// Set/get the use of render loop. 
+    /// </summary>
+    bool CadKit.Interfaces.IRenderLoop.UseRenderLoop
+    {
+      get { return this.UseRenderLoop; }
+      set { this.UseRenderLoop = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the use of display lists.
+    /// </summary>
+    public bool UseRenderLoop
+    {
+      get { lock (this.Mutex) { return this.Panel.UseRenderLoop; } }
+      set { lock (this.Mutex) { this.Panel.UseRenderLoop = value; } }
+    }
 
     /// <summary>
     /// Get/set the display-list-use-changed delegate.
@@ -602,7 +621,7 @@ namespace CadKit.Viewer
     /// <summary>
     /// Get/set the panel.
     /// </summary>
-    private CadKit.Viewer.Panel Panel
+    public CadKit.Viewer.Panel Panel
     {
       get { lock (this.Mutex) { return _panel; } }
       set { lock (this.Mutex) { _panel = value; } }

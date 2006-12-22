@@ -121,6 +121,27 @@ namespace CadKit.Viewer
         set { _panel.Mode = value; }
       }
 
+      
+      /// <summary>
+      /// Get/Set the mode.
+      /// </summary>
+      [
+      System.ComponentModel.Category("Rendering"),
+      System.ComponentModel.Description("Render in a loop"),
+      System.ComponentModel.Browsable(true),
+      ]
+      public bool RenderLoop
+      {
+        get { return _panel.RenderTimer; }
+        set 
+        { 
+          if ( value )
+            _panel.startRenderTimer(15);
+          else
+            _panel.endRenderTimer(); 
+        }
+      }
+
 
       /// <summary>
       /// Get/set the directory where screen-dumps are written.

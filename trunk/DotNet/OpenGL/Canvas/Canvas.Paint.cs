@@ -20,8 +20,14 @@ namespace CadKit.OpenGL
       {
         if (null != _renderContext && _renderContext.valid())
         {
+          if (null != this.BeginPaintEvent)
+            this.BeginPaintEvent();
+
           // Do the drawing.
           this._paintOpenGL();
+
+          if (null != this.EndPaintEvent)
+            this.EndPaintEvent();
         }
       }
       catch (System.Exception e)
@@ -36,5 +42,11 @@ namespace CadKit.OpenGL
     protected virtual void _paintOpenGL()
     {
     }
+
+    public delegate void BeginPaintDelegate();
+    public delegate void EndPaintDelegate();
+
+    public event BeginPaintDelegate BeginPaintEvent;
+    public event EndPaintDelegate EndPaintEvent;
   }
 }

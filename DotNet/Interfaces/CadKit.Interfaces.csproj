@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -74,7 +74,7 @@
     <Compile Include="IDockPanel.cs" />
     <Compile Include="IPersistantFormData.cs" />
     <Compile Include="IRecentFileList.cs" />
-    <Compile Include="IUpateScene.cs" />
+    <Compile Include="IUpdateScene.cs" />
     <Compile Include="IViewer.cs" />
     <Compile Include="IViewerMode.cs" />
     <Compile Include="IWindowMenu.cs" />

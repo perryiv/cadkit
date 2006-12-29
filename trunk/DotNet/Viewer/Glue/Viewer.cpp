@@ -263,7 +263,7 @@ void Viewer::camera ( CadKit::Interfaces::CameraOption option )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setMode ( ViewMode mode )
+void Viewer::mode ( ViewMode mode )
 {
   _viewer->setMode( static_cast < OsgTools::Render::Viewer::ViewMode > ( mode ) );
 }
@@ -275,7 +275,7 @@ void Viewer::setMode ( ViewMode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::ViewMode Viewer::getMode ()
+Viewer::ViewMode Viewer::mode()
 {
   return static_cast < CadKit::Viewer::Glue::Viewer::ViewMode > ( _viewer->getMode() );
 }
@@ -502,52 +502,52 @@ namespace Detail
     {
       switch ( f )
       {
-      case CadKit::Interfaces::PolygonMode::Face::FRONT:
-        return osg::PolygonMode::FRONT;
-      case CadKit::Interfaces::PolygonMode::Face::BACK:
-        return osg::PolygonMode::BACK;
-      default:
-        return osg::PolygonMode::FRONT_AND_BACK;
+        case CadKit::Interfaces::PolygonMode::Face::FRONT:
+          return osg::PolygonMode::FRONT;
+        case CadKit::Interfaces::PolygonMode::Face::BACK:
+          return osg::PolygonMode::BACK;
+        default:
+          return osg::PolygonMode::FRONT_AND_BACK;
       }
     }
     static CadKit::Interfaces::PolygonMode::Face face ( osg::PolygonMode::Face f )
     {
       switch ( f )
       {
-      case osg::PolygonMode::FRONT:
-        return CadKit::Interfaces::PolygonMode::Face::FRONT;
-      case osg::PolygonMode::BACK:
-        return CadKit::Interfaces::PolygonMode::Face::BACK;
-      case osg::PolygonMode::FRONT_AND_BACK:
-        return CadKit::Interfaces::PolygonMode::Face::FRONT_AND_BACK;
-      default:
-        return CadKit::Interfaces::PolygonMode::Face::NONE;
+        case osg::PolygonMode::FRONT:
+          return CadKit::Interfaces::PolygonMode::Face::FRONT;
+        case osg::PolygonMode::BACK:
+          return CadKit::Interfaces::PolygonMode::Face::BACK;
+        case osg::PolygonMode::FRONT_AND_BACK:
+          return CadKit::Interfaces::PolygonMode::Face::FRONT_AND_BACK;
+        default:
+          return CadKit::Interfaces::PolygonMode::Face::NONE;
       }
     }
     static osg::PolygonMode::Mode mode ( CadKit::Interfaces::PolygonMode::Mode m )
     {
       switch ( m )
       {
-      case CadKit::Interfaces::PolygonMode::Mode::POINT:
-        return osg::PolygonMode::POINT;
-      case CadKit::Interfaces::PolygonMode::Mode::LINE:
-        return osg::PolygonMode::LINE;
-      default:
-        return osg::PolygonMode::FILL;
+        case CadKit::Interfaces::PolygonMode::Mode::POINTS:
+          return osg::PolygonMode::POINT;
+        case CadKit::Interfaces::PolygonMode::Mode::WIRE_FRAME:
+          return osg::PolygonMode::LINE;
+        default:
+          return osg::PolygonMode::FILL;
       }
     }
     static CadKit::Interfaces::PolygonMode::Mode mode ( osg::PolygonMode::Mode m )
     {
       switch ( m )
       {
-      case osg::PolygonMode::POINT:
-        return CadKit::Interfaces::PolygonMode::Mode::POINT;
-      case osg::PolygonMode::LINE:
-        return CadKit::Interfaces::PolygonMode::Mode::LINE;
-      case osg::PolygonMode::FILL:
-        return CadKit::Interfaces::PolygonMode::Mode::FILL;
-      default:
-        return CadKit::Interfaces::PolygonMode::Mode::NONE;
+        case osg::PolygonMode::POINT:
+          return CadKit::Interfaces::PolygonMode::Mode::POINTS;
+        case osg::PolygonMode::LINE:
+          return CadKit::Interfaces::PolygonMode::Mode::WIRE_FRAME;
+        case osg::PolygonMode::FILL:
+          return CadKit::Interfaces::PolygonMode::Mode::FILLED;
+        default:
+          return CadKit::Interfaces::PolygonMode::Mode::NONE;
       }
     }
   };
@@ -560,19 +560,22 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::PolygonMode::Mode Viewer::getPolygonMode ( PolygonMode::Face face )
+Viewer::PolygonMode::Mode Viewer::polygonMode ( PolygonMode::Face face )
 {
   if ( 0x0 == _viewer )
     return PolygonMode::Mode::NONE;
 
+  if ( _viewer->hasHiddenLines() )
+    return CadKit::Interfaces::PolygonMode::Mode::HIDDEN_LINES;
+
   if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::FILL ) )
-    return CadKit::Interfaces::PolygonMode::Mode::FILL;
+    return CadKit::Interfaces::PolygonMode::Mode::FILLED;
 
   if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::LINE ) )
-    return CadKit::Interfaces::PolygonMode::Mode::LINE;
+    return CadKit::Interfaces::PolygonMode::Mode::WIRE_FRAME;
 
   if ( _viewer->hasPolygonMode ( Detail::Convert::face ( face ), osg::PolygonMode::POINT ) )
-    return CadKit::Interfaces::PolygonMode::Mode::POINT;
+    return CadKit::Interfaces::PolygonMode::Mode::POINTS;
 
   return CadKit::Interfaces::PolygonMode::Mode::NONE;
 }
@@ -584,57 +587,149 @@ Viewer::PolygonMode::Mode Viewer::getPolygonMode ( PolygonMode::Face face )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setPolygonMode ( PolygonMode::Face face, PolygonMode::Mode mode )
+void Viewer::polygonMode ( PolygonMode::Mode mode )
 {
-  if ( 0x0 != _viewer )
+  this->polygonMode ( mode, PolygonMode::Face::FRONT );
+  this->polygonMode ( mode, PolygonMode::Face::BACK );
+  this->polygonMode ( mode, PolygonMode::Face::FRONT_AND_BACK );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::polygonMode ( PolygonMode::Mode mode, PolygonMode::Face face )
+{
+  if ( 0x0 == _viewer )
+    return;
+
+  // Do this every time.
+  _viewer->removePolygonMode();
+  _viewer->removeHiddenLines();
+
+  // Hidden-lines is a separate path...
+  if ( CadKit::Interfaces::PolygonMode::Mode::HIDDEN_LINES == mode )
+  {
+    _viewer->setHiddenLines();
+    return;
+  }
+
+  // Set the mode if it's not "none".
+  else if ( CadKit::Interfaces::PolygonMode::Mode::NONE != mode )
+  {
     _viewer->setPolygonMode ( Detail::Convert::face ( face ), Detail::Convert::mode ( mode ) );
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Do we have the polygon mode?
+//  Get the shading model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::hasPolygonMode ( PolygonMode::Face face, PolygonMode::Mode mode )
+Viewer::ShadeModel::Model Viewer::shadeModel()
 {
-  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode ( Detail::Convert::face ( face ), Detail::Convert::mode ( mode ) );
+  if ( 0x0 == _viewer )
+    return ShadeModel::Model::NONE;
+
+  if ( _viewer->hasShadeModel ( osg::ShadeModel::FLAT ) )
+    return ShadeModel::Model::FLAT;
+
+  if ( _viewer->hasShadeModel ( osg::ShadeModel::SMOOTH ) )
+    return ShadeModel::Model::SMOOTH;
+
+  return ShadeModel::Model::NONE;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Do we have the polygon mode?
+//  Set the shading model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::hasPolygonMode ( PolygonMode::Face face )
+void Viewer::shadeModel ( ShadeModel::Model model )
 {
-  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode ( Detail::Convert::face ( face ) );
+  if ( 0x0 == _viewer )
+    return;
+
+  // Do this every time.
+  _viewer->removeShadeModel();
+
+  // Set appropriate model.
+  if ( ShadeModel::Model::FLAT == model )
+    _viewer->setShadeModel ( osg::ShadeModel::FLAT );
+
+  if ( ShadeModel::Model::SMOOTH == model )
+    _viewer->setShadeModel ( osg::ShadeModel::SMOOTH );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Do we have the polygon mode?
+//  Get the texture environment.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::hasPolygonMode()
+Viewer::TexEnv::Mode Viewer::textureEnvironment()
 {
-  return ( 0x0 == _viewer ) ? false : _viewer->hasPolygonMode();
+  if ( 0x0 == _viewer )
+    return TexEnv::Mode::NONE;
+
+  if ( _viewer->hasTextureEnvironment ( osg::TexEnv::DECAL ) )
+    return TexEnv::Mode::DECAL;
+
+  if ( _viewer->hasTextureEnvironment ( osg::TexEnv::MODULATE ) )
+    return TexEnv::Mode::MODULATE;
+
+  if ( _viewer->hasTextureEnvironment ( osg::TexEnv::BLEND ) )
+    return TexEnv::Mode::BLEND;
+
+  if ( _viewer->hasTextureEnvironment ( osg::TexEnv::REPLACE ) )
+    return TexEnv::Mode::REPLACE;
+
+  if ( _viewer->hasTextureEnvironment ( osg::TexEnv::ADD ) )
+    return TexEnv::Mode::ADD;
+
+  return TexEnv::Mode::NONE;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove the polygon mode.
+//  Set the texture environment.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::removePolygonMode()
+void Viewer::textureEnvironment ( TexEnv::Mode mode )
 {
-  if ( 0x0 != _viewer )
-    _viewer->removePolygonMode();
+  if ( 0x0 == _viewer )
+    return;
+
+  // Do this every time.
+  _viewer->removeTextureEnvironment();
+
+  // Set appropriate environment.
+  switch ( mode )
+  {
+  case TexEnv::Mode::ADD:
+    _viewer->setTextureEnvironment ( osg::TexEnv::ADD );
+    break;
+  case TexEnv::Mode::BLEND:
+    _viewer->setTextureEnvironment ( osg::TexEnv::BLEND );
+    break;
+  case TexEnv::Mode::DECAL:
+    _viewer->setTextureEnvironment ( osg::TexEnv::DECAL );
+    break;
+  case TexEnv::Mode::MODULATE:
+    _viewer->setTextureEnvironment ( osg::TexEnv::MODULATE );
+    break;
+  case TexEnv::Mode::REPLACE:
+    _viewer->setTextureEnvironment ( osg::TexEnv::REPLACE );
+    break;
+  }
 }

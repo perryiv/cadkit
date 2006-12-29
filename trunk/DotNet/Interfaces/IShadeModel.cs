@@ -9,22 +9,16 @@
 
 namespace CadKit.Interfaces
 {
-  public class PolygonMode
+  public class ShadeModel
   {
-    public enum Mode { NONE, POINTS, WIRE_FRAME, FILLED, HIDDEN_LINES };
-    public enum Face { NONE, FRONT, BACK, FRONT_AND_BACK };
+    public enum Model { NONE, FLAT, SMOOTH };
   }
 
-  public interface IPolygonMode
+  public interface IShadeModel
   {
     /// <summary>
-    /// Set/get the polygon face.
+    /// Set/get the shade model.
     /// </summary>
-    PolygonMode.Face Face { get; set; }
-
-    /// <summary>
-    /// Set/get the polygon mode.
-    /// </summary>
-    PolygonMode.Mode Mode { get; set; }
+    ShadeModel.Model Model { get; set; }
   }
 }

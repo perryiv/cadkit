@@ -36,23 +36,20 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\TextureEnvironmentCommands.cs" />
+    <Compile Include="Commands\TextureEnvironmentCommand.cs" />
+    <Compile Include="Commands\ShadeModelCommands.cs" />
+    <Compile Include="Commands\ShadeModelCommand.cs" />
     <Compile Include="Commands\RenderLoopCommand.cs" />
     <Compile Include="Commands\PolygonModeCommands.cs" />
     <Compile Include="Commands\PolygonModeCommand.cs" />
     <Compile Include="Commands\DisplayListCommand.cs" />
     <Compile Include="Commands\ExportModelCommand.cs" />
     <Compile Include="Commands\FrameDumpCommand.cs" />
-    <Compile Include="Commands\ViewBottomCommand.cs" />
-    <Compile Include="Commands\ViewTopCommand.cs" />
-    <Compile Include="Commands\ViewRightCommand.cs" />
-    <Compile Include="Commands\ViewLeftCommand.cs" />
-    <Compile Include="Commands\ViewBackCommand.cs" />
-    <Compile Include="Commands\ViewFrontCommand.cs" />
+    <Compile Include="Commands\CameraViewCommands.cs" />
     <Compile Include="Commands\ExportImageCommand.cs" />
     <Compile Include="Commands\ExportSceneCommand.cs" />
-    <Compile Include="Commands\ViewerPickCommand.cs" />
-    <Compile Include="Commands\ViewerNavigateCommand.cs" />
-    <Compile Include="Commands\ViewerSeekCommand.cs" />
+    <Compile Include="Commands\ViewerModeCommands.cs" />
     <Compile Include="Commands\ViewerModeCommand.cs" />
     <Compile Include="FrameDump.cs">
       <SubType>Form</SubType>
@@ -61,8 +58,6 @@
       <DependentUpon>FrameDump.cs</DependentUpon>
     </Compile>
     <Compile Include="OpenDocumentTask.cs" />
-    <Compile Include="Commands\ViewHomeCommand.cs" />
-    <Compile Include="Commands\ViewFitCommand.cs" />
     <Compile Include="OptionsPage.cs">
     </Compile>
     <Compile Include="OptionsForm.cs">
@@ -85,7 +80,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
+    <ProjectReference Include="..\..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
       <Name>WinFormsUI2005</Name>
     </ProjectReference>

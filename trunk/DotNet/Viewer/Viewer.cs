@@ -23,7 +23,9 @@ namespace CadKit.Viewer
     CadKit.Interfaces.ISnapShot,
     CadKit.Interfaces.IJitterAntialias,
     CadKit.Interfaces.IDisplayListUse,
-    CadKit.Interfaces.IPolygonMode, 
+    CadKit.Interfaces.IPolygonMode,
+    CadKit.Interfaces.IShadeModel,
+    CadKit.Interfaces.ITextureEnvironment,
     CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
@@ -665,6 +667,46 @@ namespace CadKit.Viewer
     {
       get { lock (this.Mutex) { return this.Panel.PolygonMode; } }
       set { lock (this.Mutex) { this.Panel.PolygonMode = value; } }
+    }
+
+
+    /// <summary>
+    /// Set/get the shade model.
+    /// </summary>
+    CadKit.Interfaces.ShadeModel.Model CadKit.Interfaces.IShadeModel.Model
+    {
+      get { return this.ShadeModel; }
+      set { this.ShadeModel = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the shade model.
+    /// </summary>
+    public CadKit.Interfaces.ShadeModel.Model ShadeModel
+    {
+      get { lock (this.Mutex) { return this.Panel.ShadeModel; } }
+      set { lock (this.Mutex) { this.Panel.ShadeModel = value; } }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture environment.
+    /// </summary>
+    CadKit.Interfaces.TextureEnvironment.Mode CadKit.Interfaces.ITextureEnvironment.Mode
+    {
+      get { return this.TextureEnvironment; }
+      set { this.TextureEnvironment = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture environment.
+    /// </summary>
+    public CadKit.Interfaces.TextureEnvironment.Mode TextureEnvironment
+    {
+      get { lock (this.Mutex) { return this.Panel.TextureEnvironment; } }
+      set { lock (this.Mutex) { this.Panel.TextureEnvironment = value; } }
     }
   }
 }

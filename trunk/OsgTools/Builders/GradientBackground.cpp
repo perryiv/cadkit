@@ -19,6 +19,8 @@
 
 #include "osg/Viewport"
 #include "osg/Geode"
+#include "osg/PolygonMode"
+#include "osg/ShadeModel"
 
 using namespace OsgTools::Builders;
 
@@ -125,8 +127,12 @@ void GradientBackground::init()
 
   // Set geode properties.
   osg::ref_ptr<osg::StateSet> state ( geode->getOrCreateStateSet() );
-  state->setMode ( GL_LIGHTING,   osg::StateAttribute::OFF );
-  state->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+  state->setMode ( GL_LIGHTING,   osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
+  state->setMode ( GL_DEPTH_TEST, osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
+  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT, osg::PolygonMode::FILL ) );
+  state->setAttributeAndModes ( mode.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  osg::ref_ptr<osg::ShadeModel> shading ( new osg::ShadeModel );
+  state->setAttributeAndModes ( shading.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   state->setRenderBinDetails ( -1, "RenderBin" );
 
   // Hook up scene.

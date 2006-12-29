@@ -20,6 +20,8 @@
 #include "OsgTools/Draggers/Translate1.h"
 #include "OsgTools/Draggers/Translate2.h"
 
+#include "Usul/Math/Absolute.h"
+
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Group"
@@ -246,7 +248,7 @@ void TFView::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::x()
+int TFView::x() const
 {
   return this->getX();
 }
@@ -258,7 +260,7 @@ int TFView::x()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::y()
+int TFView::y() const
 {
   return this->getY();
 }
@@ -270,9 +272,9 @@ int TFView::y()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::height()
+unsigned int TFView::height() const
 {
-  return this->getHeight();
+  return static_cast<unsigned int> ( Usul::Math::absolute ( this->getHeight() ) );
 }
 
 
@@ -282,9 +284,9 @@ int TFView::height()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::width()
+unsigned int TFView::width() const
 {
-  return this->getWidth();
+  return static_cast<unsigned int> ( Usul::Math::absolute ( this->getWidth() ) );
 }
 
 

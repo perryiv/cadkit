@@ -52,7 +52,7 @@
       <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
       <Name>CadKit.OpenGL.Glue</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
+    <ProjectReference Include="..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
       <Name>WinFormsUI2005</Name>
     </ProjectReference>

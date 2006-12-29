@@ -72,6 +72,7 @@
 #include "osg/ref_ptr"
 #include "osg/ShadeModel"
 #include "osg/PolygonMode"
+#include "osg/TexEnv"
 #include "osg/Geode"
 
 #include "osgText/Text"
@@ -141,6 +142,7 @@ public:
   typedef osg::Viewport Viewport;
   typedef osg::PolygonMode PolygonMode;
   typedef osg::ShadeModel ShadeModel;
+  typedef osg::TexEnv TexEnv;
   typedef Usul::Interfaces::IDocument Document;
   typedef std::pair<std::string,std::string> Filter;
   typedef std::vector<Filter> Filters;
@@ -306,6 +308,12 @@ public:
   bool                  hasShadeModel    ( ShadeModel::Mode mode ) const;
   bool                  hasShadeModel() const;
   void                  removeShadeModel();
+
+  // Set/query/remove the texture environment.
+  void                  setTextureEnvironment ( TexEnv::Mode mode );
+  bool                  hasTextureEnvironment ( TexEnv::Mode mode ) const;
+  bool                  hasTextureEnvironment() const;
+  void                  removeTextureEnvironment();
 
   // Add/Remove clipping plane
   void                  addPlane ( );

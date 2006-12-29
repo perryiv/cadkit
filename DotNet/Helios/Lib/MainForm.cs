@@ -430,8 +430,24 @@ namespace CadKit.Helios
             System.Windows.Forms.ToolStripMenuItem polygons = CadKit.Tools.Menu.makeMenu("&Polygons");
             menu.DropDownItems.Add(polygons);
             this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsFillCommand(this));
+            this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsHiddenLinesCommand(this));
             this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsLineCommand(this));
             this._addMenuButton(polygons, new CadKit.Helios.Commands.PolygonsPointsCommand(this));
+          }
+          {
+            System.Windows.Forms.ToolStripMenuItem shading = CadKit.Tools.Menu.makeMenu("&Shading");
+            menu.DropDownItems.Add(shading);
+            this._addMenuButton(shading, new CadKit.Helios.Commands.ShadeModelSmoothCommand(this));
+            this._addMenuButton(shading, new CadKit.Helios.Commands.ShadeModelFlatCommand(this));
+          }
+          {
+            System.Windows.Forms.ToolStripMenuItem textures = CadKit.Tools.Menu.makeMenu("&Textures");
+            menu.DropDownItems.Add(textures);
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentAddCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentBlendCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentDecalCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentModulateCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentReplaceCommand(this));
           }
         }
         {
@@ -467,8 +483,12 @@ namespace CadKit.Helios
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewLeftCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsFillCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsHiddenLinesCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsLineCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.PolygonsPointsCommand(this));
+        _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ShadeModelSmoothCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ShadeModelFlatCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerNavigateCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewerPickCommand(this));

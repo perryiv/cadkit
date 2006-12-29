@@ -77,7 +77,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
     string CadKit.Interfaces.IPlugin.Description
     {
       // Re-entrant! Do not lock the mutex!
-      get { return "Document type for working with a scene"; }
+      get { return "Document for working with SimFlow data"; }
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
       // Re-entrant! Do not lock the mutex!
       System.IO.FileInfo info = new System.IO.FileInfo(name);
       string ext = info.Extension.ToLower();
-      return (".xml" == ext);
+      return (".sfd" == ext);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
       get
       {
         CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-        filters.Add(new CadKit.Interfaces.Filter("CFD (*.xml)", "*.xml"));
+        filters.Add(new CadKit.Interfaces.Filter("SimFlow Document (*.sfd)", "*.sfd"));
         return filters;
       }
     }

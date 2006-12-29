@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ITextureEnvironment.cs" />
+    <Compile Include="IShadeModel.cs" />
     <Compile Include="IPolygonMode.cs" />
     <Compile Include="IDisplayListUse.cs" />
     <Compile Include="IJitterAntialias.cs" />

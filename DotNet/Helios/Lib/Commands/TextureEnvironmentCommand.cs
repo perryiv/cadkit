@@ -9,19 +9,18 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class PolygonModeCommand : CadKit.Commands.Command
+  public class TextureEnvironmentCommand : CadKit.Commands.Command
   {
     /// <summary>
     /// Data members.
     /// </summary>
-    protected CadKit.Interfaces.PolygonMode.Face _face = CadKit.Interfaces.PolygonMode.Face.FRONT | CadKit.Interfaces.PolygonMode.Face.BACK;
-    protected CadKit.Interfaces.PolygonMode.Mode _mode = CadKit.Interfaces.PolygonMode.Mode.FILLED;
+    protected CadKit.Interfaces.TextureEnvironment.Mode _mode = CadKit.Interfaces.TextureEnvironment.Mode.NONE;
 
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected PolygonModeCommand(object caller)
+    protected TextureEnvironmentCommand(object caller)
       : base()
     {
       _caller = caller;
@@ -32,7 +31,7 @@ namespace CadKit.Helios.Commands
     /// <summary>
     /// Destructor.
     /// </summary>
-    ~PolygonModeCommand()
+    ~TextureEnvironmentCommand()
     {
       try
       {
@@ -40,7 +39,7 @@ namespace CadKit.Helios.Commands
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 1737229553: {0}", e.Message);
+        System.Console.WriteLine("Error 1914748809: {0}", e.Message);
       }
     }
 
@@ -50,11 +49,10 @@ namespace CadKit.Helios.Commands
     /// </summary>
     public override void execute()
     {
-      CadKit.Interfaces.IPolygonMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IPolygonMode;
+      CadKit.Interfaces.ITextureEnvironment mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ITextureEnvironment;
       if (null != mode)
       {
-        mode.Face = this.Face;
-        mode.Mode = (this.Mode == mode.Mode) ? CadKit.Interfaces.PolygonMode.Mode.NONE : this.Mode;
+        mode.Mode = (this.Mode == mode.Mode) ? CadKit.Interfaces.TextureEnvironment.Mode.NONE : this.Mode;
       }
     }
 
@@ -64,7 +62,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      CadKit.Interfaces.IPolygonMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IPolygonMode;
+      CadKit.Interfaces.ITextureEnvironment mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ITextureEnvironment;
       return (null != mode);
     }
 
@@ -74,24 +72,15 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _isChecked()
     {
-      CadKit.Interfaces.IPolygonMode mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IPolygonMode;
+      CadKit.Interfaces.ITextureEnvironment mode = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.ITextureEnvironment;
       return ((null != mode) && (mode.Mode == this.Mode));
     }
 
 
     /// <summary>
-    /// Return polygon-mode face.
+    /// Return texture environment mode.
     /// </summary>
-    private CadKit.Interfaces.PolygonMode.Face Face
-    {
-      get { using (this.Lock.read()) { return _face; } }
-    }
-
-
-    /// <summary>
-    /// Return polygon-mode mode.
-    /// </summary>
-    private CadKit.Interfaces.PolygonMode.Mode Mode
+    private CadKit.Interfaces.TextureEnvironment.Mode Mode
     {
       get { using (this.Lock.read()) { return _mode; } }
     }

@@ -9,22 +9,16 @@
 
 namespace CadKit.Interfaces
 {
-  public class PolygonMode
+  public class TextureEnvironment
   {
-    public enum Mode { NONE, POINTS, WIRE_FRAME, FILLED, HIDDEN_LINES };
-    public enum Face { NONE, FRONT, BACK, FRONT_AND_BACK };
+    public enum Mode { NONE, DECAL, MODULATE, BLEND, REPLACE, ADD };
   }
 
-  public interface IPolygonMode
+  public interface ITextureEnvironment
   {
     /// <summary>
-    /// Set/get the polygon face.
+    /// Set/get the texture environment
     /// </summary>
-    PolygonMode.Face Face { get; set; }
-
-    /// <summary>
-    /// Set/get the polygon mode.
-    /// </summary>
-    PolygonMode.Mode Mode { get; set; }
+    TextureEnvironment.Mode Mode { get; set; }
   }
 }

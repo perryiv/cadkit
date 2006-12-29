@@ -19,7 +19,9 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IFrameDump,
     CadKit.Interfaces.ISnapShot,
     CadKit.Interfaces.IDisplayListUse,
-    CadKit.Interfaces.IPolygonMode, 
+    CadKit.Interfaces.IPolygonMode,
+    CadKit.Interfaces.IShadeModel,
+    CadKit.Interfaces.ITextureEnvironment,
     CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
@@ -40,7 +42,7 @@ namespace CadKit.Viewer
     /// </summary>
     public Panel()
     {
-      this.Viewer.setMode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
+      this.Viewer.mode(CadKit.Viewer.Glue.Viewer.ViewMode.NAVIGATION);
       this.ContextMenuStrip = null;
       this.Directory = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, this.Directory);
       this.BaseFilename = CadKit.Persistence.Registry.Instance.getString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, this.BaseFilename);
@@ -397,7 +399,7 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          CadKit.Viewer.Glue.Viewer.ViewMode mode = this.Viewer.getMode();
+          CadKit.Viewer.Glue.Viewer.ViewMode mode = this.Viewer.mode();
           return (CadKit.Interfaces.ViewMode)mode;
         }
       }
@@ -405,7 +407,7 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          this.Viewer.setMode((CadKit.Viewer.Glue.Viewer.ViewMode)value);
+          this.Viewer.mode((CadKit.Viewer.Glue.Viewer.ViewMode)value);
           if (value == CadKit.Interfaces.ViewMode.PICK)
           {
             this.ContextMenuStrip = this.buildContextMenu();
@@ -836,12 +838,66 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.PolygonMode.Mode PolygonMode
     {
-      get { lock (this.Mutex) { return this.Viewer.getPolygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK); } }
+      get { lock (this.Mutex) { return this.Viewer.polygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK); } }
       set
       {
         lock (this.Mutex)
         {
-          this.Viewer.setPolygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK, value);
+          this.Viewer.polygonMode(value, CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK);
+          this.Invalidate(true);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Set/get the shade model.
+    /// </summary>
+    CadKit.Interfaces.ShadeModel.Model CadKit.Interfaces.IShadeModel.Model
+    {
+      get { return this.ShadeModel; }
+      set { this.ShadeModel = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the shade model.
+    /// </summary>
+    public CadKit.Interfaces.ShadeModel.Model ShadeModel
+    {
+      get { lock (this.Mutex) { return this.Viewer.shadeModel(); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this.Viewer.shadeModel(value);
+          this.Invalidate(true);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture environment.
+    /// </summary>
+    CadKit.Interfaces.TextureEnvironment.Mode CadKit.Interfaces.ITextureEnvironment.Mode
+    {
+      get { return this.TextureEnvironment; }
+      set { this.TextureEnvironment = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture environment.
+    /// </summary>
+    public CadKit.Interfaces.TextureEnvironment.Mode TextureEnvironment
+    {
+      get { lock (this.Mutex) { return this.Viewer.textureEnvironment(); } }
+      set
+      {
+        lock (this.Mutex)
+        {
+          this.Viewer.textureEnvironment(value);
           this.Invalidate(true);
         }
       }

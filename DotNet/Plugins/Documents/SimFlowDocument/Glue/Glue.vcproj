@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(SF_INC_DIR);$(XERCES_INC_DIR);$(OSG_INC_DIR);$(PRODUCER_INC_DIR);$(OPENTHREADS_INC_DIR);$(VJ_DEPS_DIR)\include;$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(LOCAL_SRC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgProducerd.lib Scened.lib VTKUtild.lib Parserd.lib Layerd.lib DataObjectd.lib xerces-c_2D.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib xerces-c_2D.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(SF_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(VJ_DEPS_DIR)\lib;$(XERCESROOT)\lib;$(VTK_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(BOOST_LIB_DIR);$(XERCES_LIB_DIR);$(VTK_LIB_DIR_DEBUG)"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(SF_INC_DIR);&quot;$(XERCES_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(VJ_DEPS_DIR)\include&quot;;..\..\src;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)\Utilities&quot;;&quot;$(VTK_INC_DIR)\VolumeRendering&quot;;&quot;$(VTK_INC_DIR)\Rendering&quot;;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\Common\Testing\Cxx;&quot;$(VTK_INC_DIR)\Utilities\DICOMParser&quot;;$(VTK_INC_DIR)\Utilities\DICOMParser;&quot;$(VTK_INC_DIR)\Utilities\vtkfreetype\include&quot;;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;&quot;$(VTK_INC_DIR)\Utilities\vtknetcdf&quot;;$(VTK_INC_DIR)\Utilities\vtknetcdf;&quot;$(VTK_INC_DIR)\Utilities\vtkexodus2\include&quot;;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;&quot;$(VTK_INC_DIR)\Utilities\vtkfreetype&quot;;$(VTK_INC_DIR)\Utilities\ftgl\src;&quot;$(VTK_INC_DIR)\Utilities\ftgl&quot;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(LOCAL_SRC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -135,9 +135,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgProducer.lib Scene.lib VTKUtil.lib Parser.lib Layer.lib DataObject.lib xerces-c_2.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib xerces-c_2.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SF_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(VJ_DEPS_DIR)\lib&quot;;&quot;$(XERCESROOT)\lib&quot;;&quot;$(VTK_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(BOOST_LIB_DIR);$(XERCES_LIB_DIR);$(VTK_LIB_DIR_RELEASE)"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -192,11 +192,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="$(SF_ROOT_DIR)\App\AppSAX2Handler.cpp"
+				RelativePath="..\..\..\..\..\SimFlow\App\AppSAX2Handler.cpp"
 				>
 			</File>
 			<File
-				RelativePath="$(SF_ROOT_DIR)\App\AppSAX2Handler.h"
+				RelativePath="..\..\..\..\..\SimFlow\App\AppSAX2Handler.h"
 				>
 			</File>
 			<File
@@ -212,11 +212,11 @@
 				>
 			</File>
 			<File
-				RelativePath="$(SF_ROOT_DIR)\App\Parser.cpp"
+				RelativePath="..\..\..\..\..\SimFlow\App\Parser.cpp"
 				>
 			</File>
 			<File
-				RelativePath="$(SF_ROOT_DIR)\App\Parser.h"
+				RelativePath="..\..\..\..\..\SimFlow\App\Parser.h"
 				>
 			</File>
 			<File

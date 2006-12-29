@@ -818,9 +818,9 @@ bool Viewer::hasPolygonMode ( osg::PolygonMode::Face face, osg::PolygonMode::Mod
 bool Viewer::hasPolygonMode ( osg::PolygonMode::Face face ) const
 {
   // See if there is any polygon-mode for the given face.
-  bool filled ( this->hasPolygonMode ( face, osg::PolygonMode::FILL  ) );
-  bool lines  ( this->hasPolygonMode ( face, osg::PolygonMode::LINE  ) );
-  bool points ( this->hasPolygonMode ( face, osg::PolygonMode::POINT ) );
+  const bool filled ( this->hasPolygonMode ( face, osg::PolygonMode::FILL  ) );
+  const bool lines  ( this->hasPolygonMode ( face, osg::PolygonMode::LINE  ) );
+  const bool points ( this->hasPolygonMode ( face, osg::PolygonMode::POINT ) );
   return ( filled || lines || points );
 }
 
@@ -834,9 +834,9 @@ bool Viewer::hasPolygonMode ( osg::PolygonMode::Face face ) const
 bool Viewer::hasPolygonMode() const
 {
   // See if there is any polygon-mode at all.
-  bool front ( this->hasPolygonMode ( osg::PolygonMode::FRONT ) );
-  bool back  ( this->hasPolygonMode ( osg::PolygonMode::BACK ) );
-  bool both  ( this->hasPolygonMode ( osg::PolygonMode::FRONT_AND_BACK ) );
+  const bool front ( this->hasPolygonMode ( osg::PolygonMode::FRONT ) );
+  const bool back  ( this->hasPolygonMode ( osg::PolygonMode::BACK ) );
+  const bool both  ( this->hasPolygonMode ( osg::PolygonMode::FRONT_AND_BACK ) );
   return ( front || back || both );
 }
 
@@ -876,8 +876,8 @@ bool Viewer::hasShadeModel ( osg::ShadeModel::Mode mode ) const
 bool Viewer::hasShadeModel() const
 {
   // See if there is any polygon-mode for the given face.
-  bool smooth ( this->hasShadeModel ( osg::ShadeModel::SMOOTH ) );
-  bool flat   ( this->hasShadeModel ( osg::ShadeModel::FLAT   ) );
+  const bool smooth ( this->hasShadeModel ( osg::ShadeModel::SMOOTH ) );
+  const bool flat   ( this->hasShadeModel ( osg::ShadeModel::FLAT   ) );
   return ( smooth || flat );
 }
 
@@ -913,6 +913,90 @@ void Viewer::removeShadeModel()
   // Have the state-set inherit the attribute. This will delete any 
   // existing attribute in the state-set.
   ss->removeAttribute ( osg::StateAttribute::SHADEMODEL );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture environment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setTextureEnvironment ( TexEnv::Mode mode )
+{
+  // Handle no viewer.
+  if ( !this->viewer() )
+    return;
+
+  // Get the state set, or make one.
+  osg::ref_ptr<osg::StateSet> ss ( this->viewer()->getGlobalStateSet() );
+  if ( !ss.valid() )
+    return;
+
+  // Make a texture environment.
+  osg::ref_ptr<osg::TexEnv> te ( new osg::TexEnv );
+  te->setMode ( mode );
+
+  // Set the state. Make it override any other similar states.
+  typedef osg::StateAttribute Attribute;
+  ss->setAttributeAndModes ( te.get(), Attribute::OVERRIDE | Attribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have the texture environment?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasTextureEnvironment ( TexEnv::Mode mode ) const
+{
+  // Get the state set.
+  const osg::StateSet *ss = _renderer->getGlobalStateSet();
+
+  // Get the shade-model attribute, if any.
+  const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::TEXENV );
+  if ( !sa )
+    return false;
+
+  // Should be true.
+  const osg::TexEnv *te = dynamic_cast < const osg::TexEnv * > ( sa );
+  if ( !te )
+    return false;
+
+  // Is the mode the same?
+  return ( te->getMode() == mode );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have any texture environment?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::hasTextureEnvironment() const
+{
+  // See if there is any polygon-mode for the given face.
+  const bool decal    ( this->hasTextureEnvironment ( osg::TexEnv::DECAL ) );
+  const bool modulate ( this->hasTextureEnvironment ( osg::TexEnv::MODULATE ) );
+  const bool blend    ( this->hasTextureEnvironment ( osg::TexEnv::BLEND ) );
+  const bool replace  ( this->hasTextureEnvironment ( osg::TexEnv::REPLACE ) );
+  const bool add      ( this->hasTextureEnvironment ( osg::TexEnv::ADD ) );
+  return ( decal || modulate || blend || replace || add );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the texture environment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeTextureEnvironment()
+{
+  osg::StateSet *ss = _renderer->getGlobalStateSet();
+  ss->removeAttribute ( osg::StateAttribute::TEXENV );
 }
 
 

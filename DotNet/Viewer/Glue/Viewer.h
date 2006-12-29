@@ -32,6 +32,8 @@ namespace CadKit
         ref class RenderPasses : System::Collections::Generic::List<unsigned int>{};
         typedef System::Drawing::Color Color;
         typedef CadKit::Interfaces::PolygonMode PolygonMode;
+        typedef CadKit::Interfaces::ShadeModel ShadeModel;
+        typedef CadKit::Interfaces::TextureEnvironment TexEnv;
 
         Viewer();
         ~Viewer();
@@ -88,17 +90,18 @@ namespace CadKit
         void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );
         void                  handleSeek ( float x, float y, bool left );
 
+        // Set/get the mode.
+        void                  mode ( ViewMode mode );
+        ViewMode              mode();
+
         // Number of render passes.
         unsigned int          numRenderPasses();
         void                  numRenderPasses ( unsigned int );
   
         // Set/query/remove the polygon mode.
-        PolygonMode::Mode     getPolygonMode    ( PolygonMode::Face face );
-        void                  setPolygonMode    ( PolygonMode::Face face, PolygonMode::Mode mode );
-        bool                  hasPolygonMode    ( PolygonMode::Face face, PolygonMode::Mode mode );
-        bool                  hasPolygonMode    ( PolygonMode::Face face );
-        bool                  hasPolygonMode();
-        void                  removePolygonMode();
+        PolygonMode::Mode     polygonMode    ( PolygonMode::Face face );
+        void                  polygonMode    ( PolygonMode::Mode mode, PolygonMode::Face face );
+        void                  polygonMode    ( PolygonMode::Mode mode );
 
         // Render the scene.
         void                  render();
@@ -110,9 +113,13 @@ namespace CadKit
         double                scatterScale();
         void                  scatterScale ( double );
 
-        // Set/get the mode.
-        void                  setMode ( ViewMode mode );
-        ViewMode              getMode ();
+        // Set/query/remove the shading model.
+        ShadeModel::Model     shadeModel();
+        void                  shadeModel ( ShadeModel::Model model );
+
+        // Set/query/remove the texture environment.
+        TexEnv::Mode          textureEnvironment();
+        void                  textureEnvironment ( TexEnv::Mode mode );
 
         // Set all the display-lists to on/off.
         bool                  useDisplayLists();

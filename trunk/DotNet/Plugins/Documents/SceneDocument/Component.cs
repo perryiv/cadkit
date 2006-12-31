@@ -90,19 +90,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
     {
-      get
-      {
-#if no
-        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-        filters.Add(new CadKit.Interfaces.Filter("All Scene Files (*.osg *.ive *.flt)", "*.osg;*.ive;*.flt"));
-        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
-        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
-        filters.Add(new CadKit.Interfaces.Filter("OpenFlight (*.flt)", "*.flt"));
-        return filters;
-#else
-        return CadKit.OSG.Glue.ReadFile.filters();
-#endif
-      }
+      get { return CadKit.OSG.Glue.ReadFile.filters(); }
     }
   }
 }

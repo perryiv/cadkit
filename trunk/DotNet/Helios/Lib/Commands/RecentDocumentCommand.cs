@@ -24,7 +24,7 @@ namespace CadKit.Helios.Commands
       : base(caller)
     {
       if (null == name)
-        throw new System.ArgumentException("Error 3445272450: null nme given to recent file command");
+        throw new System.ArgumentException("Error 3445272450: null name given to recent file command");
 
       _name = name;
       _text = System.String.Format("&{0} {1}", which, _name);

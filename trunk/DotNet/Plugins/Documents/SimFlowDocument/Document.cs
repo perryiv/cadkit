@@ -49,8 +49,8 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
       using (this.Lock.write())
       {
         // read file and create scene here.
-          _sfGl = new SimFlowGlue( name );          
-          _root = _sfGl.root();
+        _sfGl = new SimFlowGlue(name, caller);
+        _root = _sfGl.root();
       }
     }
 

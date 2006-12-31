@@ -22,7 +22,7 @@ namespace CadKit
 				public ref class SimFlowGlue 
 				{
 					public:
-						SimFlowGlue( System::String^ fileName )
+            SimFlowGlue( System::String^ fileName, System::Object^ caller )
 						{
 							// Create a scene manager. 
               mSceneManager = &( SimFlow::Scene::SceneManager::instance() );
@@ -30,20 +30,15 @@ namespace CadKit
 							// App specific handler for XML. 
 							SimFlow::App::AppSAX2Handler* handler = new SimFlow::App::AppSAX2Handler();
 							handler->sceneManager( mSceneManager );
-							
+
 							// Parser object. 
 							SimFlow::App::Parser* parser = new SimFlow::App::Parser();
 							parser->init();
 							parser->setHandler( handler );
 
-							// Now parse the file. 
-              System::IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( fileName );
-              char* s = (char*)(void*) ptr;
-							
-              //parser->readXML( Usul::Strings::convert( fileName ) );
-              parser->readXML( s );
+							// Now parse the file.
+              parser->readXML ( Usul::Strings::convert ( fileName ) );
 
-              System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
 							//parser->readXML( "scene.xml" );
 							mSceneManager->buildScene();
 

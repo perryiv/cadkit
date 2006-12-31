@@ -59,6 +59,38 @@ namespace CadKit.Helios
       this.Load += this._formLoad;
       this.FormClosing += this._formClosing;
       this.FormClosed += this._formClosed;
+      this.AllowDrop = true;
+      this.DragEnter += this._dragEnter;
+      this.DragDrop += this._dragDrop;
+    }
+
+
+    /// <summary>
+    /// Called when a drag-and-drop operation starts.
+    /// See http://www.codeproject.com/csharp/dragdrop.asp
+    /// </summary>
+    private void _dragEnter(object sender, System.Windows.Forms.DragEventArgs args)
+    {
+      bool isFile = (null != args && null != args.Data && true == args.Data.GetDataPresent(System.Windows.Forms.DataFormats.FileDrop));
+      args.Effect = (isFile) ? System.Windows.Forms.DragDropEffects.Copy : System.Windows.Forms.DragDropEffects.None;
+    }
+
+
+    /// <summary>
+    /// Called when a drag-and-drop operation occurs.
+    /// See http://www.codeproject.com/csharp/dragdrop.asp
+    /// </summary>
+    private void _dragDrop(object sender, System.Windows.Forms.DragEventArgs args)
+    {
+      try
+      {
+        CadKit.Interfaces.ICommand open = new CadKit.Helios.Commands.DragDropFilesCommand(args, this);
+        open.execute();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1685020732: {0}", e.Message);
+      }
     }
 
 
@@ -69,7 +101,6 @@ namespace CadKit.Helios
     {
       if (_persistantForms.ContainsKey(persistString))
         return _persistantForms[persistString] as WeifenLuo.WinFormsUI.IDockContent;
-
       return null;
     }
 
@@ -188,6 +219,7 @@ namespace CadKit.Helios
       // 
       // MainForm
       // 
+      this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(568, 298);
@@ -541,7 +573,7 @@ namespace CadKit.Helios
     /// </summary>
     object CadKit.Interfaces.IDockPanel.DockPanel
     {
-      get { lock (_mutex) { return this._dockPanel; } }
+      get { return this.DockPanel; }
     }
 
     protected WeifenLuo.WinFormsUI.DockPanel DockPanel

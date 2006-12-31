@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: OsgTools"
+	Name="lib: CadKit OsgTools"
 	ProjectGUID="{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
 	RootNamespace="lib: OsgTools"
 	>

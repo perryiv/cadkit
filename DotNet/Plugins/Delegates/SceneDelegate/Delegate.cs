@@ -44,20 +44,25 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
         if (null == this.Document)
           return;
 
+        // Make new viewer.
         CadKit.Viewer.Viewer view = new CadKit.Viewer.Viewer();
-        view.Document = this.Document;
         view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
         view.Text = this.Document.Name;
 
+        // Attach viewer and document to each other.
+        view.Document = this.Document;
+        view.Document.add(view);
+
+        // Build the scene.
         CadKit.Interfaces.IBuildScene buildScene = this.Document as CadKit.Interfaces.IBuildScene;
         if (null != buildScene)
         {
           view.Scene = buildScene.Scene;
         }
 
+        // Get dock-panel and show.
         CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
         WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
-
         if (null != panel)
         {
           if (panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)

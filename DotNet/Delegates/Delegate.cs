@@ -13,6 +13,12 @@ namespace CadKit.Delegates
     CadKit.Interfaces.IWindowsForward
   {
     /// <summary>
+    /// Local types.
+    /// </summary>
+    private delegate void VoidReturnZeroArgumentsDelegate();
+
+
+    /// <summary>
     /// Data members.
     /// </summary>
     private CadKit.Interfaces.IDocument _document = null;
@@ -42,8 +48,31 @@ namespace CadKit.Delegates
     /// </summary>
     void CadKit.Interfaces.IWindowsForward.windowsForward(object caller)
     {
-      lock (this.Mutex)
+      CadKit.Interfaces.IDocument document = this.Document;
+      CadKit.Interfaces.IDocumentView[] views = this.Document.views();
+      foreach (CadKit.Interfaces.IDocumentView view in views)
       {
+        this._activateView(view);
+      }
+    }
+
+
+    /// <summary>
+    /// Bring the view forward.
+    /// </summary>
+    private void _activateView(CadKit.Interfaces.IDocumentView view)
+    {
+      System.Windows.Forms.Form form = view as System.Windows.Forms.Form;
+      if (null != form)
+      {
+        if (true == form.InvokeRequired)
+        {
+          form.BeginInvoke(new VoidReturnZeroArgumentsDelegate(form.Activate));
+        }
+        else
+        {
+          form.Activate();
+        }
       }
     }
 
@@ -55,32 +84,5 @@ namespace CadKit.Delegates
     {
       get { return _mutex; }
     }
-
-
-    /// <summary>
-    /// Called when the form closes.
-    /// </summary>
-    /// HERE
-    /// Was trying to use delegates to hook up a document-view architecture. 
-    /// Not there yet; I need more delegate types and need to epose them with properties.
-#if no
-    private void _viewClosed(object sender, System.Windows.Forms.FormClosedEventArgs args)
-    {
-      try
-      {
-        lock (this.Mutex)
-        {
-          CadKit.Viewer.Viewer view = sender as CadKit.Viewer.Viewer;
-          if (null != view)
-          {
-          }
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 1028145785: {0}", e.Message);
-      }
-    }
-#endif
   }
 }

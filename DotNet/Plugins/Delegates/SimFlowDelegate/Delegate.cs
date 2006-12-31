@@ -51,6 +51,10 @@ namespace CadKit.Plugins.Delegates.SimFlowDelegate
         _view.Text = this.Document.Name;
         _view.KeyDown += new System.Windows.Forms.KeyEventHandler(_view_KeyDown);
 
+        // Attach viewer and document to each other.
+        _view.Document = this.Document;
+        _view.Document.add(_view);
+
         CadKit.Interfaces.IUpdateScene update = this.Document as CadKit.Interfaces.IUpdateScene;
 
         if (null != update)

@@ -20,19 +20,23 @@ namespace CadKit
 	    public ref class Node
 	    {
       public:
-		    Node();
+
+        Node();
+        Node( osg::Node *node );
         Node( System::IntPtr ptr );
         ~Node();
         !Node();
 
+        void            clear();
+
         osg::Node*      node();
         void            node( osg::Node* );
+
         System::IntPtr  nodePtr();
         void            nodePtr ( System::IntPtr );
 
-      protected:
-        void            _unreference();
       private:
+
         osg::Node *_node;
 	    };
     }

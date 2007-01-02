@@ -40,9 +40,14 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Viewer.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
+      <Project>{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}</Project>
+      <Name>WeifenLuo.WinFormsUI.Docking</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Documents\CadKit.Documents.csproj">
       <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
       <Name>CadKit.Documents</Name>
@@ -50,10 +55,6 @@
     <ProjectReference Include="..\Glue\CadKit.Glue.vcproj">
       <Project>{E32C5CEE-B56E-411F-B071-561AA05E55D9}</Project>
       <Name>CadKit.OpenGL.Glue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">
-      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
-      <Name>WinFormsUI2005</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>

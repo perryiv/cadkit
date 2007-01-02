@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/DotNet;$(LOCAL_SRC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/DotNet;$(LOCAL_SRC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -182,7 +182,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
-			RelativePathToProject="..\DotNet\Interfaces\CadKit.Interfaces.csproj"
+			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
 		/>
 	</References>
 	<Files>
@@ -217,6 +217,14 @@
 			</File>
 			<File
 				RelativePath=".\ReadFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools.h"
 				>
 			</File>
 		</Filter>

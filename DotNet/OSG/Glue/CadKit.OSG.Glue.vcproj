@@ -204,6 +204,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Group.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Group.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MatrixManipulator.cpp"
 				>
 			</File>

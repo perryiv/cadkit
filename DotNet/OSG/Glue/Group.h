@@ -9,7 +9,9 @@
 
 #pragma once
 
-#include "osg/Node"
+#include "Node.h"
+
+namespace osg { class Group; }
 
 namespace CadKit 
 {
@@ -17,27 +19,18 @@ namespace CadKit
   { 
     namespace Glue 
     {
-	    public ref class Node
+      public ref class Group : public Node
 	    {
       public:
+        typedef Node BaseClass;
 
-        Node();
-        Node( osg::Node *node );
-        Node( System::IntPtr ptr );
-        ~Node();
-        !Node();
+        Group();
+        Group( osg::Group *group );
+        Group( System::IntPtr ptr );
+        ~Group();
+        !Group();
 
-        void            clear();
-
-        osg::Node*      node();
-        System::IntPtr  nodePtr();
-
-
-      private:
-        void            _setNode( osg::Node* );
-        void            _setNodePtr ( System::IntPtr );
-
-        osg::Node *_node;
+        osg::Group*     group();
 	    };
     }
   }

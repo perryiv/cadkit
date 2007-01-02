@@ -53,6 +53,8 @@ namespace CadKit
 
             CadKit::OSG::Glue::MatrixManipulator ^ matrixManipulator();
 
+            void                  addKeyWordList( System::String^ kwl );
+
             TextureLayerStateCode addImageLayer( System::String^ string );
             void                  hideImageLayer ( System::String^ string );
             void                  showImageLayer ( System::String^ string );

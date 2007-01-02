@@ -7,32 +7,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OSG/Glue/Node.h"
+#include "OSG/Glue/Group.h"
+
+#include "osg/Group"
 
 #include "Usul/Pointers/Intrusive.h"
 
 using namespace CadKit::OSG::Glue;
 
 
-namespace Detail
-{
-  struct InitOSG
-  {
-    InitOSG()
-    {
-      osg::Referenced::setThreadSafeReferenceCounting ( true );
-    }
-  } _init_osg;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::Node() : _node( 0x0 )
+Group::Group() : BaseClass( new osg::Group )
 {
 }
 
@@ -44,9 +34,8 @@ Node::Node() : _node( 0x0 )
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Node::Node ( osg::Node *n ) : _node ( n )
+Group::Group ( osg::Group *n ) : BaseClass( n )
 {
-  Usul::Pointers::reference ( _node );
 }
 
 
@@ -56,9 +45,8 @@ Node::Node ( osg::Node *n ) : _node ( n )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::Node( System::IntPtr ptr ) : _node( 0x0 )
+Group::Group( System::IntPtr ptr ) : BaseClass( ptr )
 {
-  this->_setNodePtr( ptr );
 }
 
 
@@ -68,7 +56,7 @@ Node::Node( System::IntPtr ptr ) : _node( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::~Node()
+Group::~Group()
 {
   this->clear();
 }
@@ -80,40 +68,13 @@ Node::~Node()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::!Node()
+Group::!Group()
 {
   this->clear();
 }
 
 
-osg::Node* Node::node()
+osg::Group* Group::group()
 {
-  return _node;
-}
-
-
-void Node::_setNode ( osg::Node* node )
-{
-  Usul::Pointers::unreference ( _node );
-  _node = node;
-  Usul::Pointers::reference ( _node );
-}
-
-
-System::IntPtr Node::nodePtr()
-{
-  return System::IntPtr ( _node );
-}
-
-
-void Node::_setNodePtr ( System::IntPtr ptr )
-{
-  this->_setNode( reinterpret_cast< osg::Node* > ( ptr.ToPointer() ) );
-}
-
-
-void Node::clear()
-{
-  Usul::Pointers::unreference ( _node );
-  _node = 0x0;
+  return this->node()->asGroup();
 }

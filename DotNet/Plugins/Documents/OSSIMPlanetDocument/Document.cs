@@ -19,7 +19,7 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     /// Root for the scene.
     /// </summary>
     private CadKit.OSG.Glue.Node _root = null;
-    private CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet _ossimPlanet = null;
+    private CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet _ossimPlanet = new CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet();
 
     public CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet OssimPlanet
     {
@@ -37,6 +37,7 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     /// </summary>
     public Document()
     {
+      _root = _ossimPlanet.root();
     }
 
     /// <summary>
@@ -54,8 +55,7 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     {
       using (this.Lock.write())
       {
-        _ossimPlanet = new CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet(name);
-        _root = _ossimPlanet.root();
+        _ossimPlanet.addKeyWordList (name);
 
         // Set document name.
         this.Name = name;

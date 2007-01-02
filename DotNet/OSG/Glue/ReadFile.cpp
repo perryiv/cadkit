@@ -121,8 +121,7 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
     reader.read ( file );
 
     // Save the node.
-    CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
-    node->node ( reader.node() );
+    CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node( reader.node() );
 
     // Return the node.
     return node;

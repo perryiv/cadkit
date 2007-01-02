@@ -13,7 +13,6 @@ namespace CadKit.Plugins.Ossim
   {
     private object _mutex = new object();
 
-
     /// <summary>
     /// 
     /// </summary>

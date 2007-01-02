@@ -90,7 +90,7 @@ namespace CadKit.Documents
       document = (CadKit.Interfaces.IDocument)(opener.open(name, caller));
 
       // If we get to here then add the new document.
-      this._addDocument(document);
+      this.addDocument(document);
 
       // Return new document.
       return document;
@@ -120,7 +120,7 @@ namespace CadKit.Documents
     /// <summary>
     /// Add the document.
     /// </summary>
-    private void _addDocument(CadKit.Interfaces.IDocument document)
+    public void addDocument(CadKit.Interfaces.IDocument document)
     {
       if (null != document)
       {

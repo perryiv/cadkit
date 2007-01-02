@@ -12,6 +12,7 @@ namespace CadKit.Documents
   abstract public class Document :
     System.IDisposable,
     CadKit.Interfaces.IDocument,
+    CadKit.Interfaces.IDocumentIcon,
     CadKit.Interfaces.IGuiCreate,
     CadKit.Interfaces.IWindowsForward,
     CadKit.Interfaces.INotifyChanged
@@ -33,6 +34,7 @@ namespace CadKit.Documents
     private CadKit.Interfaces.IGuiDelegate _gui = null;
     private DocViews _views = new DocViews();
     private CadKit.Interfaces.NotifyChangedDelegate _notifyChanged = null;
+    private object _icon = null;
 
 
     /// <summary>
@@ -402,6 +404,26 @@ namespace CadKit.Documents
     {
       get { using (this.Lock.read()) { return _notifyChanged; } }
       set { using (this.Lock.write()) { _notifyChanged = value; } }
+    }
+
+
+    /// <summary>
+    /// Get/Set the icon.
+    /// </summary>
+    object CadKit.Interfaces.IDocumentIcon.Icon
+    {
+      get { return this.Icon; }
+      set { this.Icon = value; }
+    }
+
+
+    /// <summary>
+    /// Get/Set the icon.
+    /// </summary>
+    public object Icon
+    {
+      get { using (this.Lock.read()) { return _icon; } }
+      set { using (this.Lock.write()) { _icon = value; } }
     }
   }
 }

@@ -61,7 +61,13 @@ namespace CadKit.Helios.Lib
           label.Name = iDoc.TypeName;
           label.Text = iDoc.TypeName;
           label.Click += new System.EventHandler(label_Click);
-          label.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
+
+          CadKit.Interfaces.IDocumentIcon docIcon = iDoc as CadKit.Interfaces.IDocumentIcon;
+          if (docIcon == null || docIcon.Icon == null)
+            label.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
+          else
+            label.Image = docIcon.Icon as System.Drawing.Image;
+
           label.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
           label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
           _flowLayoutPanel.Controls.Add(label);

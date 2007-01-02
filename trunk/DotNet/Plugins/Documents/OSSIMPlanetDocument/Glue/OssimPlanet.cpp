@@ -218,6 +218,9 @@ OssimPlanet::TextureLayerStateCode OssimPlanet::addImageLayer( System::String^ s
   // Add layer to group.
   _textureLayerGroup->addTop( layer.get() );
 
+  // Not sure if this is needed.
+  _planet->getLand()->resetGraph();
+
   return static_cast < TextureLayerStateCode > ( layer->getStateCode() );
 }
 

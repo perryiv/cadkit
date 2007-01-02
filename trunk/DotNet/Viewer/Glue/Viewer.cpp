@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2006, Adam Kubach
@@ -732,4 +731,11 @@ void Viewer::textureEnvironment ( TexEnv::Mode mode )
     _viewer->setTextureEnvironment ( osg::TexEnv::REPLACE );
     break;
   }
+}
+
+
+void Viewer::computeNearFar( bool b )
+{
+  if( 0x0 != _viewer )
+    _viewer->computeNearFar( b );
 }

@@ -6,6 +6,8 @@
   <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug" load="true"/>
   <plugin file="CadKit.Plugins.Documents.SimFlowDocument.plug" load="true"/>
   <plugin file="CadKit.Plugins.Delegates.SimFlowDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Documents.OSSIMPlanetDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Ossim.plug" load="true"/>
   <plugin file="CadKit.Plugins.Options.General.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.OutputWindow.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true"/>

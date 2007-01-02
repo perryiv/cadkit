@@ -55,12 +55,7 @@ _textureLayers( 0x0 )
 {
   this->_init();
 
-  ossimKeywordlist keyWordList ( Usul::Strings::convert ( kwl ).c_str() );
-
-  osg::ref_ptr< ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer( keyWordList.toString() ) );
-
-  if( layer.valid() )
-    _textureLayerGroup->addTop ( layer.get() );
+  this->addKeyWordList( kwl );
 
   //osg::ref_ptr<ossimPlanetTextureLayer> layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( "C:/adam/sdk/ossim/ossim_package_support/images/reference/earth.jpg" );
 
@@ -75,6 +70,16 @@ _textureLayers( 0x0 )
   {
     _planet->getLand()->getElevationDatabase()->addBottom(database.get());
   }*/
+}
+
+void OssimPlanet::addKeyWordList(System::String ^kwl)
+{
+  ossimKeywordlist keyWordList ( Usul::Strings::convert ( kwl ).c_str() );
+
+  osg::ref_ptr< ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer( keyWordList.toString() ) );
+
+  if( layer.valid() )
+    _textureLayerGroup->addTop ( layer.get() );
 
   _planet->getLand()->resetGraph();
 }

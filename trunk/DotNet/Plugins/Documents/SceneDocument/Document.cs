@@ -19,7 +19,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// <summary>
     /// Root for the scene.
     /// </summary>
-    private CadKit.OSG.Glue.Node _root = null;
+    private CadKit.OSG.Glue.Node _root = new CadKit.OSG.Glue.Group();
 
 
     /// <summary>

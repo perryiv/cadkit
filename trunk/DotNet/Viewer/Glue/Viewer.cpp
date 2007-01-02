@@ -803,9 +803,7 @@ void Viewer::MatrixManipulator::set( CadKit::OSG::Glue::MatrixManipulator^ manip
 
 CadKit::OSG::Glue::Node^ Viewer::Scene::get()
 {
-  CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
-  node->nodePtr ( System::IntPtr ( _viewer->scene() ) );
-  return node;
+  return gcnew CadKit::OSG::Glue::Node( System::IntPtr ( _viewer->scene() ) );
 }
 
 

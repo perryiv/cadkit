@@ -682,6 +682,36 @@ namespace CadKit.Viewer
 
 
     /// <summary>
+    /// Get/Set the database pager.
+    /// </summary>
+    public object DatabasePager
+    {
+      get { lock (this.Mutex) { return this.Panel.Viewer.DatabasePager; } }
+      set { lock (this.Mutex) { this.Panel.Viewer.DatabasePager = value as CadKit.OSG.Glue.DatabasePager; } }
+    }
+
+
+    /// <summary>
+    /// Get/Set the matrix manipulator.
+    /// </summary>
+    public object MatrixManipulator
+    {
+      get { lock (this.Mutex) { return this.Panel.Viewer.MatrixManipulator; } }
+      set { lock (this.Mutex) { this.Panel.Viewer.MatrixManipulator = value as CadKit.OSG.Glue.MatrixManipulator; } }
+    }
+
+
+    /// <summary>
+    /// Should the near far clipping planes be computed?
+    /// </summary>
+    /// <param name="b"></param>
+    public void computeNearFar(bool b)
+    {
+      this.Panel.Viewer.computeNearFar(b);
+    }
+
+
+    /// <summary>
     /// Set/get the shade model.
     /// </summary>
     CadKit.Interfaces.ShadeModel.Model CadKit.Interfaces.IShadeModel.Model

@@ -31,6 +31,7 @@
 #include "OsgTools/Render/ActionAdapter.h"
 #include "OsgTools/Render/EventAdapter.h"
 #include "OsgTools/Render/Constants.h"
+#include "OsgTools/Render/ClampProjection.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Utilities/DirtyBounds.h"
 #include "OsgTools/Utilities/ReferenceFrame.h"
@@ -143,7 +144,8 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _contextId       ( 0 ),
   _gradient        (),
   _corners         ( Corners::ALL ),
-  _useDisplayList  ( false, true )
+  _useDisplayList  ( false, true ),
+  _databasePager   ( 0x0 )
 {
   // Add this view to the document
   if( this->document() )
@@ -265,6 +267,13 @@ void Viewer::clear()
   _setCursor = static_cast < Usul::Interfaces::ISetCursorType* > ( 0x0 );
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
+
+  if( _databasePager.valid() )
+  {
+    _databasePager->setAcceptNewDatabaseRequests(false);
+    //_databasePager->clear();
+    //_databasePager->setDatabasePagerThreadPause(true);
+  }
 }
 
 
@@ -320,6 +329,15 @@ void Viewer::render()
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+
+  if( _databasePager.valid() )
+  {
+    // tell the DatabasePager the frame number of that the scene graph is being actively used to render a frame
+    _databasePager->signalBeginFrame( _renderer->framestamp() );
+
+    // syncronize changes required by the DatabasePager thread to the scene graph
+    _databasePager->updateSceneGraph( _renderer->framestamp()->getReferenceTime() );
+  }
 
   // Set the axes.
   this->_setAxes();
@@ -384,9 +402,27 @@ void Viewer::render()
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
 
+  if( _databasePager.valid() )
+  {
+    // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
+    _databasePager->signalEndFrame();
+  }
+
   // Swap the buffers.
   if ( _context.valid() )
     _context->swapBuffers();
+
+  if( _databasePager.valid() )
+  {
+    // clean up  and compile gl objects with a specified limit       
+    double availableTime = 0.0025; // 2.5 ms
+
+    // compile any GL objects that are required.
+    _databasePager->compileGLObjects(*(this->viewer()->getState()),availableTime);
+
+    // flush deleted GL objects.
+    this->viewer()->flushDeletedGLObjects(availableTime);
+  }
 
   // Check for errors.
   USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
@@ -481,7 +517,7 @@ void Viewer::camera ( CameraOption option )
   }
 
   // Tell the manipulator to go home.
-  trackball->home ( *ea, aa );
+  this->navManip()->home ( *ea, aa );
 
   typedef Usul::Interfaces::ICamera Camera;
 
@@ -522,7 +558,7 @@ void Viewer::camera ( CameraOption option )
     trackball->distance ( dist.second );
 
   // Get the final matrix.
-  osg::Matrixd M2 ( trackball->getInverseMatrix() );
+  osg::Matrixd M2 ( this->navManip()->getInverseMatrix() );
 
   // See if the new matrix is the same as the old.
   Usul::Predicates::Tolerance<double> tolerance ( 0.001 );
@@ -3578,6 +3614,15 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
   ea->setSeconds ( Usul::System::Clock::seconds() );
   ea->setWindowSize ( Usul::Math::Vec2ui( this->width(), this->height() ) );
   ea->setMouse ( Usul::Math::Vec2f ( x, y ) );
+
+  // For now
+  if( left )
+    ea->setButton( osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON );
+  else if ( middle )
+    ea->setButton( osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON );
+  else if ( right )
+    ea->setButton( osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON );
+
   ea->setButtonMask ( left, middle, right );
   ea->setEventType ( type );
 
@@ -4981,4 +5026,76 @@ osg::Light *Viewer::light()
 const osg::Light *Viewer::light() const
 {
   return ( 0x0 == _renderer ) ? 0x0 : _renderer->light();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the database pager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::databasePager( osgDB::DatabasePager* dbPager )
+{
+  _databasePager = dbPager;
+  //osgDB::Registry::instance()->setDatabasePager( dbPager );
+
+  _databasePager->registerPagedLODs( this->scene() ); 
+
+  _databasePager->setAcceptNewDatabaseRequests(true);
+  _databasePager->setDatabasePagerThreadPause(false);
+  
+  _databasePager->setUseFrameBlock( false );
+
+  this->viewer()->getCullVisitor()->setDatabaseRequestHandler( dbPager );
+  this->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( dbPager );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the database pager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgDB::DatabasePager* Viewer::databasePager()
+{
+  return _databasePager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the database pager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osgDB::DatabasePager* Viewer::databasePager() const
+{
+  return _databasePager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set compute near far mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::computeNearFar( bool b )
+{
+  if( b )
+  {
+    osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
+    cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
+    cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+    cv->setComputeNearFarMode( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
+  }
+  else
+  {
+    osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
+    cv->setClampProjectionMatrixCallback ( 0x0 );
+    //cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+    cv->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  }
 }

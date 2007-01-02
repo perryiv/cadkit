@@ -122,6 +122,7 @@ public:
   // Get the viewer.
   const SceneView *     viewer() const;
   SceneView *           viewer();
+  void                  viewer( SceneView * );
 
 protected:
 

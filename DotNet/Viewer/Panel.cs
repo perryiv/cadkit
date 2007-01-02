@@ -778,7 +778,7 @@ namespace CadKit.Viewer
       {
         lock (this.Mutex)
         {
-          this.RenderTimer = value;          
+          this.RenderTimer = value;
         }
       }
     }

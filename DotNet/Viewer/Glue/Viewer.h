@@ -216,6 +216,7 @@ namespace CadKit
 
         float                   frameDumpScale();
         void                    frameDumpScale ( float scale );
+        void                    computeNearFar( bool b );
 
       protected:
 

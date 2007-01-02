@@ -7,32 +7,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OSG/Glue/Node.h"
+#include "DatabasePager.h"
 
-#include "Usul/Pointers/Intrusive.h"
+#include "osgDB/DatabasePager"
 
 using namespace CadKit::OSG::Glue;
 
 
-namespace Detail
-{
-  struct InitOSG
-  {
-    InitOSG()
-    {
-      osg::Referenced::setThreadSafeReferenceCounting ( true );
-    }
-  } _init_osg;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::Node() : _node( 0x0 )
+DatabasePager::DatabasePager() : _databasePager ( 0x0 )
 {
 }
 
@@ -43,22 +31,9 @@ Node::Node() : _node( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
-Node::Node ( osg::Node *n ) : _node ( n )
+DatabasePager::DatabasePager( System::IntPtr ptr ) : _databasePager ( 0x0 )
 {
-  Usul::Pointers::reference ( _node );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Node::Node( System::IntPtr ptr ) : _node( 0x0 )
-{
-  this->nodePtr( ptr );
+  this->ptr( ptr );
 }
 
 
@@ -68,9 +43,9 @@ Node::Node( System::IntPtr ptr ) : _node( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::~Node()
+DatabasePager::~DatabasePager()
 {
-  this->clear();
+  this->_unreference();
 }
 
 
@@ -80,40 +55,52 @@ Node::~Node()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::!Node()
+DatabasePager::!DatabasePager()
 {
-  this->clear();
+  this->_unreference();
 }
 
 
-osg::Node* Node::node()
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DatabasePager::_unreference()
 {
-  return _node;
+  if( 0x0 != _databasePager )
+  {
+    _databasePager->unref();
+    _databasePager = 0x0;
+  }
 }
 
 
-void Node::node ( osg::Node* node )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::IntPtr DatabasePager::ptr()
 {
-  Usul::Pointers::unreference ( _node );
-  _node = node;
-  Usul::Pointers::reference ( _node );
+  return System::IntPtr ( _databasePager );
 }
 
 
-System::IntPtr Node::nodePtr()
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DatabasePager::ptr ( System::IntPtr ptr )
 {
-  return System::IntPtr ( _node );
+  this->_unreference();
+
+  _databasePager = reinterpret_cast< osgDB::DatabasePager* > ( ptr.ToPointer() );
+  _databasePager->ref();
 }
 
-
-void Node::nodePtr ( System::IntPtr ptr )
-{
-  this->node( reinterpret_cast< osg::Node* > ( ptr.ToPointer() ) );
-}
-
-
-void Node::clear()
-{
-  Usul::Pointers::unreference ( _node );
-  _node = 0x0;
-}

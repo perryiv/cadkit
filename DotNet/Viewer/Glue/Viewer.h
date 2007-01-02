@@ -129,14 +129,7 @@ namespace CadKit
         /// Set the render context.
         property CadKit::OpenGL::Glue::RenderContext^ RenderContext
         {
-          void set( CadKit::OpenGL::Glue::RenderContext^ context )
-          {
-            if( _viewer )
-            {
-              System::IntPtr contextImpl = context->unmanagedRenderContext();
-              _viewer->context( reinterpret_cast < Usul::Interfaces::IUnknown* > ( contextImpl.ToPointer() ) );
-            }
-          }
+          void set( CadKit::OpenGL::Glue::RenderContext^ context );
         };
 
         /// Get the viewer.
@@ -145,24 +138,18 @@ namespace CadKit
         /// Get/Set the scene.
         property CadKit::OSG::Glue::Node ^ Scene
         {
-          CadKit::OSG::Glue::Node^ get()
-          {
-            CadKit::OSG::Glue::Node ^node = gcnew CadKit::OSG::Glue::Node();
-            node->nodePtr ( System::IntPtr ( _viewer->scene() ) );
-            return node;
-          }
-          void set ( CadKit::OSG::Glue::Node ^node )
-          {
-            _viewer->scene ( reinterpret_cast < osg::Node* > ( node->nodePtr().ToPointer() ) );
-          }
+          CadKit::OSG::Glue::Node^ get();
+          void set ( CadKit::OSG::Glue::Node ^node );
         };
 
+        /// Get/Set the database pager.
         property CadKit::OSG::Glue::DatabasePager ^ DatabasePager
         {
           CadKit::OSG::Glue::DatabasePager^ get();
           void set ( CadKit::OSG::Glue::DatabasePager ^node );
         };
 
+        /// Get/Set the matrix manipulator.
         property CadKit::OSG::Glue::MatrixManipulator ^ MatrixManipulator
         {
           CadKit::OSG::Glue::MatrixManipulator^ get();
@@ -176,54 +163,32 @@ namespace CadKit
         bool          writeModelFile ( System::String^ filename );
         bool          writeSceneFile ( System::String^ filename );
 
+        // Get/Set frame dump directory.
         property System::String^ Directory
         {
-          System::String^ get()
-          {
-            return gcnew System::String ( _viewer->frameDump().dir().c_str() );
-          }
-          void set ( System::String^ string )
-          {
-            _viewer->frameDump().dir ( this->_toString( string ) );
-          }
+          System::String^ get();
+          void set ( System::String^ string );
         }
 
+        // Get/Set filename.
         property System::String^ Filename
         {
-          System::String^ get()
-          {
-            return gcnew System::String ( _viewer->frameDump().base().c_str() );
-          }
-          void set ( System::String^ string )
-          {
-            _viewer->frameDump().base ( this->_toString( string ) );
-          }
+          System::String^ get();
+          void set ( System::String^ string );
         };
 
+        // Get/Set extension.
         property System::String^ Extension
         {
-          System::String^ get()
-          {
-            return gcnew System::String ( _viewer->frameDump().ext().c_str() );
-          }
-          void set ( System::String^ string )
-          {
-            _viewer->frameDump().ext ( this->_toString( string ) );
-          }
+          System::String^ get();
+          void set ( System::String^ string );
         };
 
+        // Get/Set DumpFrames.
         property bool DumpFrames
         {
-          bool get()
-          {
-            return _viewer->frameDump().dump();
-          }
-          void set ( bool b )
-          {
-            _viewer->frameDump().digits( 10 );
-            _viewer->frameDump().start( 0 );
-            _viewer->frameDump().dump ( b );
-          }
+          bool get();
+          void set ( bool b );
         };
 
         float                   frameDumpScale();

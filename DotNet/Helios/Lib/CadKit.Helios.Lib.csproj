@@ -53,6 +53,17 @@
     <Compile Include="Commands\ExportSceneCommand.cs" />
     <Compile Include="Commands\ViewerModeCommands.cs" />
     <Compile Include="Commands\ViewerModeCommand.cs" />
+    <Compile Include="NewDocumentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewDocumentForm.Designer.cs">
+      <DependentUpon>NewDocumentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Tasks\ReadDocumentTask.cs" />
     <Compile Include="Tasks\InsertDocumentTask.cs" />
     <Compile Include="FrameDump.cs">
@@ -134,9 +145,18 @@
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="NewDocumentForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewDocumentForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="OptionsForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SplashScreen.resx">
       <SubType>Designer</SubType>

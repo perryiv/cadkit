@@ -22,6 +22,9 @@ namespace CadKit.Helios.Commands
       _menuIcon = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
       _toolIcon = _menuIcon;
       _keys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
+
+      // Force creation of new document window.
+      CadKit.Helios.Lib.NewDocumentForm.Instance.Caller = _caller;
     }
 
     /// <summary>
@@ -29,6 +32,15 @@ namespace CadKit.Helios.Commands
     /// </summary>
     public override void execute()
     {
+      CadKit.Interfaces.IDockPanel dock = _caller as CadKit.Interfaces.IDockPanel;
+      if (null != dock)
+      {
+        CadKit.Helios.Lib.NewDocumentForm.Instance.Show(dock.DockPanel as WeifenLuo.WinFormsUI.DockPanel);
+      }
+      else
+      {
+        CadKit.Helios.Lib.NewDocumentForm.Instance.Show();
+      }
     }
 
     /// <summary>

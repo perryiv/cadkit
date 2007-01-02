@@ -157,6 +157,18 @@ namespace CadKit
           }
         };
 
+        property CadKit::OSG::Glue::DatabasePager ^ DatabasePager
+        {
+          CadKit::OSG::Glue::DatabasePager^ get();
+          void set ( CadKit::OSG::Glue::DatabasePager ^node );
+        };
+
+        property CadKit::OSG::Glue::MatrixManipulator ^ MatrixManipulator
+        {
+          CadKit::OSG::Glue::MatrixManipulator^ get();
+          void set ( CadKit::OSG::Glue::MatrixManipulator ^node );
+        };
+
         // Write the current frame to an image file.
         bool          writeImageFile ( System::String^ filename );
 

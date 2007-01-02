@@ -13,7 +13,8 @@ namespace CadKit.Documents
     System.IDisposable,
     CadKit.Interfaces.IDocument,
     CadKit.Interfaces.IGuiCreate,
-    CadKit.Interfaces.IWindowsForward
+    CadKit.Interfaces.IWindowsForward,
+    CadKit.Interfaces.INotifyChanged
   {
     /// <summary>
     /// Local types.
@@ -31,6 +32,7 @@ namespace CadKit.Documents
     private CadKit.Interfaces.ICommandHistory _commands = null;
     private CadKit.Interfaces.IGuiDelegate _gui = null;
     private DocViews _views = new DocViews();
+    private CadKit.Interfaces.NotifyChangedDelegate _notifyChanged = null;
 
 
     /// <summary>
@@ -283,7 +285,18 @@ namespace CadKit.Documents
     bool CadKit.Interfaces.IDocument.Modified
     {
       get { using (this.Lock.read()) { return _modified; } }
-      set { using (this.Lock.write()) { _modified = value; } }
+      set
+      {
+        using (this.Lock.write())
+        {
+          _modified = value;
+        }
+        CadKit.Interfaces.NotifyChangedDelegate notify = this.NotifyChanged;
+        if (null != notify)
+        {
+          notify(this, this);
+        }
+      }
     }
 
 
@@ -292,6 +305,16 @@ namespace CadKit.Documents
     /// name (e.g., "Untitled1").
     /// </summary>
     string CadKit.Interfaces.IDocument.Name
+    {
+      get { return this.Name; }
+      set { this.Name = value; }
+    }
+
+    /// <summary>
+    /// Get/set the name of this document. This may be the default 
+    /// name (e.g., "Untitled1").
+    /// </summary>
+    public string Name
     {
       // Was causing deadlock when opening many files at once.
       get { using (this.Lock.read()) { return _name; } }
@@ -360,5 +383,26 @@ namespace CadKit.Documents
     {
       get { return _lock; }
     }
+
+
+    /// <summary>
+    /// Get/set the display-list-use-changed delegate.
+    /// </summary>
+    CadKit.Interfaces.NotifyChangedDelegate CadKit.Interfaces.INotifyChanged.NotifyChanged
+    {
+      get { return this.NotifyChanged; }
+      set { this.NotifyChanged = value; }
+    }
+
+
+    /// <summary>
+    /// Get/set the display-list-use-changed delegate.
+    /// </summary>
+    public CadKit.Interfaces.NotifyChangedDelegate NotifyChanged
+    {
+      get { using (this.Lock.read()) { return _notifyChanged; } }
+      set { using (this.Lock.write()) { _notifyChanged = value; } }
+    }
   }
 }
+

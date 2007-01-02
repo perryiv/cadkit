@@ -57,8 +57,8 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
     {
       // Re-entrant! Do not lock the mutex!
       CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
-      CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.create(caller));
-      reader.read(file, caller);
+      CadKit.Interfaces.IFileOpen reader = (CadKit.Interfaces.IFileOpen)(creator.create(caller));
+      reader.open(file, caller);
       return reader;
     }
 

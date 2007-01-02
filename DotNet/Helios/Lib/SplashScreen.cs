@@ -176,9 +176,10 @@ namespace CadKit.Helios
       // _progressBar
       // 
       this._progressBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this._progressBar.Location = new System.Drawing.Point(0, 331);
+      this._progressBar.Location = new System.Drawing.Point(0, 406);
+      this._progressBar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this._progressBar.Name = "_progressBar";
-      this._progressBar.Size = new System.Drawing.Size(460, 20);
+      this._progressBar.Size = new System.Drawing.Size(520, 16);
       this._progressBar.TabIndex = 0;
       // 
       // _label
@@ -186,20 +187,22 @@ namespace CadKit.Helios
       this._label.Dock = System.Windows.Forms.DockStyle.Fill;
       this._label.ForeColor = System.Drawing.Color.White;
       this._label.Location = new System.Drawing.Point(0, 0);
+      this._label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
       this._label.Name = "_label";
-      this._label.Size = new System.Drawing.Size(460, 331);
+      this._label.Size = new System.Drawing.Size(520, 406);
       this._label.TabIndex = 1;
       this._label.Text = "Default Text";
       this._label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
       // 
       // SplashScreen
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(460, 351);
+      this.ClientSize = new System.Drawing.Size(520, 422);
       this.Controls.Add(this._label);
       this.Controls.Add(this._progressBar);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.Name = "SplashScreen";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "SplashScreen";

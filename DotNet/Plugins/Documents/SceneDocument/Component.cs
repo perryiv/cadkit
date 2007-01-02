@@ -20,12 +20,14 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     private object _mutex = new object();
 
+
     /// <summary>
     /// Construct a component.
     /// </summary>
     public Component()
     {
     }
+
 
     /// <summary>
     /// Called when the plugin is loaded.
@@ -34,12 +36,14 @@ namespace CadKit.Plugins.Documents.SceneDocument
     {
     }
 
+
     /// <summary>
     /// Called when use of the plugin is finished.
     /// </summary>
     void CadKit.Interfaces.IPlugin.finish(object caller)
     {
     }
+
 
     /// <summary>
     /// Create a new document.
@@ -49,6 +53,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
       return new CadKit.Plugins.Documents.SceneDocument.Document();
     }
 
+
     /// <summary>
     /// Open a document.
     /// </summary>
@@ -56,10 +61,11 @@ namespace CadKit.Plugins.Documents.SceneDocument
     {
       // Re-entrant! Do not lock the mutex!
       CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
-      CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.create(caller));
-      reader.read(file, caller);
+      CadKit.Interfaces.IFileOpen reader = (CadKit.Interfaces.IFileOpen)(creator.create(caller));
+      reader.open(file, caller);
       return reader;
     }
+
 
     /// <summary>
     /// Return the short name of this type.
@@ -69,6 +75,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
       get { return CadKit.Plugins.Documents.SceneDocument.Document.TypeName; }
     }
 
+
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
@@ -76,6 +83,7 @@ namespace CadKit.Plugins.Documents.SceneDocument
     {
       get { return "Document type for working with a scene"; }
     }
+
 
     /// <summary>
     /// See if we can open this document.
@@ -85,12 +93,13 @@ namespace CadKit.Plugins.Documents.SceneDocument
       return CadKit.OSG.Glue.ReadFile.hasReader(name);
     }
 
+
     /// <summary>
-    /// Return the filters.
+    /// Return the open-filters.
     /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
     {
-      get { return CadKit.OSG.Glue.ReadFile.filters(); }
+      get { return CadKit.Plugins.Documents.SceneDocument.Document.FiltersOpen; }
     }
   }
 }

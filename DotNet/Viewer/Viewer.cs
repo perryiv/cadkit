@@ -29,6 +29,12 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
+    /// Local types.
+    /// </summary>
+    public delegate void DocumentChangedDelegate(object changed, object caller);
+
+
+    /// <summary>
     /// Data members.
     /// </summary>
     private object _mutex = new object();
@@ -377,8 +383,13 @@ namespace CadKit.Viewer
     /// </summary>
     private void _documentChanged(object changed, object caller)
     {
-      lock (this.Mutex)
+      if (true == this.InvokeRequired)
       {
+        this.BeginInvoke(new DocumentChangedDelegate(this._documentChanged), new object[] { changed, caller });
+      }
+      else
+      {
+        this.Invalidate(true);
       }
     }
 

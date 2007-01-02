@@ -18,7 +18,8 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     /// <summary>
     /// Construct a component.
     /// </summary>
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
+
 
     /// <summary>
     /// Construct a component.
@@ -27,93 +28,94 @@ namespace CadKit.Plugins.Documents.LargeTriangleDocument
     {
     }
 
+
     /// <summary>
     /// Called when the plugin is loaded.
     /// </summary>
     void CadKit.Interfaces.IPlugin.start(object caller)
     {
-      lock (_mutex)
+      using (_lock.write())
       {
       }
     }
+
 
     /// <summary>
     /// Called when use of the plugin is finished.
     /// </summary>
     void CadKit.Interfaces.IPlugin.finish(object caller)
     {
-      lock (_mutex)
+      using (_lock.write())
       {
       }
     }
+
 
     /// <summary>
     /// Create a new document.
     /// </summary>
     object CadKit.Interfaces.IDocumentNew.create(object caller)
     {
-      // Re-entrant! Do not lock the mutex!
       return new CadKit.Plugins.Documents.LargeTriangleDocument.Document();
     }
+
 
     /// <summary>
     /// Open a document.
     /// </summary>
     object CadKit.Interfaces.IDocumentOpen.open(string file, object caller)
     {
-      lock (_mutex)
-      {
-        CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
-        CadKit.Interfaces.IRead reader = (CadKit.Interfaces.IRead)(creator.create(caller));
-        reader.read(file, caller);
-        return reader;
-      }
+      CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
+      CadKit.Interfaces.IFileOpen reader = (CadKit.Interfaces.IFileOpen)(creator.create(caller));
+      reader.open(file, caller);
+      return reader;
     }
+
 
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      // Re-entrant! Do not lock the mutex!
       get { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.TypeName; }
     }
+
 
     /// <summary>
     /// Return the short name of this type.
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      // Re-entrant! Do not lock the mutex!
       get { return "Document type for working with triangle document that are larger than system RAM"; }
     }
+
 
     /// <summary>
     /// See if we can open this document.
     /// </summary>
     bool CadKit.Interfaces.IDocumentOpen.canOpen(string name)
     {
-      // Re-entrant! Do not lock the mutex!
       System.IO.FileInfo info = new System.IO.FileInfo(name);
       string ext = info.Extension.ToLower();
       return (".tdf" == ext || ".stl" == ext || ".r3d" == ext);
     }
 
+
     /// <summary>
-    /// Return the filters.
+    /// Return open-filters.
     /// </summary>
     CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
     {
-      // Re-entrant! Do not lock the mutex!
-      get
-      {
-        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-        filters.Add(new CadKit.Interfaces.Filter("All Triangle Files (*.tdf *.stl *.r3d)", "*.tdf;*.stl;*.r3d"));
-        filters.Add(new CadKit.Interfaces.Filter("Triangle Document Format (*.tdf)", "*.tdf"));
-        filters.Add(new CadKit.Interfaces.Filter("Stereolithography (*.stl)", "*.stl"));
-        filters.Add(new CadKit.Interfaces.Filter("RoboMet 3D (*.r3d)", "*.r3d"));
-        return filters;
-      }
+      get { return CadKit.Plugins.Documents.LargeTriangleDocument.Document.FiltersOpen; }
+    }
+
+
+    /// <summary>
+    /// Return the lock
+    /// </summary>
+    protected CadKit.Threads.Tools.Lock Lock
+    {
+      get { return _lock; }
     }
   }
 }

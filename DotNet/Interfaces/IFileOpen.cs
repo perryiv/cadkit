@@ -9,8 +9,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFiltersOpen
+  public interface IFileOpen
   {
-    CadKit.Interfaces.Filters Filters { get; }
+    void open(string file, object caller);
   }
 }

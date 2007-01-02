@@ -11,8 +11,10 @@ namespace CadKit.Plugins.Documents.SceneDocument
 {
   public class Document :
     CadKit.Documents.Document,
-    CadKit.Interfaces.IRead,
-    CadKit.Interfaces.IBuildScene
+    CadKit.Interfaces.IFileOpen,
+    CadKit.Interfaces.IFileInsert,
+    CadKit.Interfaces.IBuildScene,
+    CadKit.Interfaces.IFiltersInsert
   {
     /// <summary>
     /// Root for the scene.
@@ -39,15 +41,20 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// </summary>
     ~Document()
     {
-      this._clear();
+      this._clearScene();
     }
 
 
     /// <summary>
-    /// Destructor.
+    /// Clear the scene.
     /// </summary>
-    private void _clear()
+    private void _clearScene()
     {
+      if (null != _root)
+      {
+        _root.clear();
+        _root = null;
+      }
     }
 
 
@@ -63,52 +70,100 @@ namespace CadKit.Plugins.Documents.SceneDocument
     /// <summary>
     /// Read the file.
     /// </summary>
-    void CadKit.Interfaces.IRead.read(string name, object caller)
+    void CadKit.Interfaces.IFileOpen.open(string file, object caller)
+    {
+      this.open(file, caller);
+    }
+
+
+    /// <summary>
+    /// Read the file and add it to the scene.
+    /// </summary>
+    public void open(string file, object caller)
+    {
+      // Make sure we're empty.
+      this._clearScene();
+
+      // Insert the new file.
+      this.insert(file, caller);
+
+      // Set document name.
+      this.Name = file;
+
+      // Add file to recent-file list.
+      CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+      if (null != recent)
+      {
+        recent.add(file);
+      }
+    }
+
+
+    /// <summary>
+    /// Insert the file's contents.
+    /// </summary>
+    void CadKit.Interfaces.IFileInsert.insert(string file, object caller)
+    {
+      this.insert(file, caller);
+    }
+
+
+    /// <summary>
+    /// Insert the file's contents.
+    /// </summary>
+    public void insert(string file, object caller)
+    {
+      CadKit.OSG.Glue.Node node = CadKit.Plugins.Documents.SceneDocument.Document._read(file, caller);
+      this._updateRoot(node);
+    }
+
+
+    /// <summary>
+    /// Read the file and return the node.
+    /// </summary>
+    private static CadKit.OSG.Glue.Node _read(string name, object caller)
+    {
+      CadKit.OSG.Glue.ReadFile reader = null;
+      string cwd = null;
+      try
+      {
+        // Make the path the current working directory. 
+        // This will increase the chances of textures loading.
+        cwd = System.IO.Directory.GetCurrentDirectory();
+        System.IO.FileInfo info = new System.IO.FileInfo(name);
+        System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
+
+        // Read the file.
+        reader = new CadKit.OSG.Glue.ReadFile();
+        return reader.readNodeFile(name, caller);
+      }
+      finally
+      {
+        // Always reset the current working directory.
+        if (null != cwd && System.IO.Directory.Exists(cwd))
+        {
+          System.IO.Directory.SetCurrentDirectory(cwd);
+        }
+
+        // Always clear the reader.
+        if (null != reader)
+        {
+          reader.clear();
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Update the scene root. If the root is empty then the given node 
+    /// becomes the new root. If the root already has children then the new 
+    /// node is added.  
+    /// </summary>
+    public void _updateRoot(CadKit.OSG.Glue.Node node)
     {
       using (this.Lock.write())
       {
-        CadKit.OSG.Glue.ReadFile reader = null;
-        string cwd = null;
-        try
-        {
-          // Make the path the current working directory. 
-          // This will increase the chances of textures loading.
-          cwd = System.IO.Directory.GetCurrentDirectory();
-          System.IO.FileInfo info = new System.IO.FileInfo(name);
-          System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
-
-          // Read the file.
-          reader = new CadKit.OSG.Glue.ReadFile();
-          _root = reader.readNodeFile(name, caller);
-
-          // Set document name.
-          CadKit.Interfaces.IDocument idoc = this as CadKit.Interfaces.IDocument;
-          if (null != idoc)
-          {
-            idoc.Name = name;
-          }
-
-          // Add file to recent-file list.
-          CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
-          if (null != recent)
-          {
-            recent.add(name);
-          }
-        }
-        finally
-        {
-          // Always reset the current working directory.
-          if (null != cwd && System.IO.Directory.Exists(cwd))
-          {
-            System.IO.Directory.SetCurrentDirectory(cwd);
-          }
-
-          // Always clear the reader.
-          if (null != reader)
-          {
-            reader.clear();
-          }
-        }
+        _root = CadKit.OSG.Glue.Tools.organizeScene(_root, node);
       }
     }
 
@@ -119,6 +174,34 @@ namespace CadKit.Plugins.Documents.SceneDocument
     object CadKit.Interfaces.IBuildScene.Scene
     {
       get { using (this.Lock.read()) { return _root; } }
+    }
+
+
+    /// <summary>
+    /// Return the open-filters.
+    /// </summary>
+    public static CadKit.Interfaces.Filters FiltersOpen
+    {
+      get { return CadKit.OSG.Glue.ReadFile.filters(); }
+    }
+
+
+    /// <summary>
+    /// Return the insert-filters.
+    /// </summary>
+    public static CadKit.Interfaces.Filters FiltersInsert
+    {
+      // We can insert the same formats that we open.
+      get { return CadKit.Plugins.Documents.SceneDocument.Document.FiltersOpen; }
+    }
+
+
+    /// <summary>
+    /// Return the insert-filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersInsert.Filters
+    {
+      get { return CadKit.Plugins.Documents.SceneDocument.Document.FiltersInsert; }
     }
   }
 }

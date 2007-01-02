@@ -783,6 +783,7 @@ namespace CadKit.Viewer
       }
     }
 
+
     /// <summary>
     /// Get/set the display-list-use-changed delegate.
     /// </summary>

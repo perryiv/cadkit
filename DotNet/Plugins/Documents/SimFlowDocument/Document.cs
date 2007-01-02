@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Perry L Miller IV
+//  Copyright (c) 2006, Aashish Chaudhary
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -11,7 +11,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
 {
   public class Document :
     CadKit.Documents.Document,
-    CadKit.Interfaces.IRead,
+    CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.IBuildScene,
     CadKit.Interfaces.IUpdateScene
   {
@@ -44,7 +44,7 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
     /// <summary>
     /// Read the file.
     /// </summary>
-    void CadKit.Interfaces.IRead.read(string name, object caller)
+    void CadKit.Interfaces.IFileOpen.open(string name, object caller)
     {
       using (this.Lock.write())
       {
@@ -54,6 +54,10 @@ namespace CadKit.Plugins.Documents.SimFlowDocument
       }
     }
 
+
+    /// <summary>
+    /// Update the scene.
+    /// </summary>
     public void updateScene()
     {
       _sfGl.update();

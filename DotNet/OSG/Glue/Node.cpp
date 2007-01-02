@@ -7,7 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Node.h"
+#include "OSG/Glue/Node.h"
+
+#include "Usul/Pointers/Intrusive.h"
 
 using namespace CadKit::OSG::Glue;
 
@@ -28,6 +30,13 @@ Node::Node() : _node( 0x0 )
 {
 }
 
+
+Node::Node ( osg::Node *n ) : _node ( n )
+{
+  Usul::Pointers::reference ( _node );
+}
+
+
 Node::Node( System::IntPtr ptr ) : _node( 0x0 )
 {
   this->nodePtr( ptr );
@@ -36,12 +45,13 @@ Node::Node( System::IntPtr ptr ) : _node( 0x0 )
 
 Node::~Node()
 {
-  this->_unreference();
+  this->clear();
 }
+
 
 Node::!Node()
 {
-  this->_unreference();
+  this->clear();
 }
 
 
@@ -50,21 +60,12 @@ osg::Node* Node::node()
   return _node;
 }
 
-void Node::node( osg::Node* node )
-{
-  this->_unreference();
 
+void Node::node ( osg::Node* node )
+{
+  Usul::Pointers::unreference ( _node );
   _node = node;
-  _node->ref();
-}
-
-void Node::_unreference()
-{
-  if( 0x0 != _node )
-  {
-    _node->unref();
-    _node = 0x0;
-  }
+  Usul::Pointers::reference ( _node );
 }
 
 
@@ -73,8 +74,15 @@ System::IntPtr Node::nodePtr()
   return System::IntPtr ( _node );
 }
 
+
 void Node::nodePtr ( System::IntPtr ptr )
 {
   this->node( reinterpret_cast< osg::Node* > ( ptr.ToPointer() ) );
 }
 
+
+void Node::clear()
+{
+  Usul::Pointers::unreference ( _node );
+  _node = 0x0;
+}

@@ -9,8 +9,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IRead
+  public interface IFiltersInsert
   {
-    void read(string file, object caller);
+    CadKit.Interfaces.Filters Filters { get; }
   }
 }

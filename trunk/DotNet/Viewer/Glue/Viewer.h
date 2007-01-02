@@ -18,9 +18,9 @@
 
 #include "OsgTools/Render/Viewer.h"
 
-namespace CadKit 
+namespace CadKit
 {
-  namespace Viewer 
+  namespace Viewer
   {
     namespace Glue
     {

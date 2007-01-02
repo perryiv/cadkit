@@ -11,7 +11,7 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
 {
   public class Document :
     CadKit.Documents.Document,
-    CadKit.Interfaces.IRead,
+    CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.IBuildScene,
     CadKit.Interfaces.IImageLayer
   {
@@ -50,12 +50,15 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     /// <summary>
     /// Read the file.
     /// </summary>
-    void CadKit.Interfaces.IRead.read(string name, object caller)
+    public void open(string name, object caller)
     {
       using (this.Lock.write())
       {
         _ossimPlanet = new CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet(name);
         _root = _ossimPlanet.root();
+
+        // Set document name.
+        this.Name = name;
 
         // Add file to recent-file list.
         CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;

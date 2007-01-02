@@ -192,14 +192,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\..\SimFlow\App\AppSAX2Handler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\SimFlow\App\AppSAX2Handler.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AssemblyInfo.cpp"
 				>
 			</File>
@@ -209,14 +201,6 @@
 			</File>
 			<File
 				RelativePath=".\Glue.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\SimFlow\App\Parser.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\SimFlow\App\Parser.h"
 				>
 			</File>
 			<File

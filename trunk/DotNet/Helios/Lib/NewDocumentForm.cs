@@ -48,77 +48,90 @@ namespace CadKit.Helios.Lib
     /// </summary>
     void _parentShown(object sender, System.EventArgs e)
     {
-      _documentNew = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IDocumentNew>();
-
-      for (uint i = 0; i < _documentNew.Length; ++i)
+      try
       {
-        CadKit.Documents.Document doc = _documentNew[i].create(_caller) as CadKit.Documents.Document;
-        CadKit.Interfaces.IDocument iDoc = doc as CadKit.Interfaces.IDocument;
+        _documentNew = CadKit.Plugins.Manager.Instance.getAll<CadKit.Interfaces.IDocumentNew>();
 
-        if (null != doc && null != iDoc)
+        for (uint i = 0; i < _documentNew.Length; ++i)
         {
-          System.Windows.Forms.LinkLabel label = new System.Windows.Forms.LinkLabel();
-          label.Name = iDoc.TypeName;
-          label.Text = iDoc.TypeName;
-          label.Click += new System.EventHandler(label_Click);
+          CadKit.Documents.Document doc = _documentNew[i].create(_caller) as CadKit.Documents.Document;
+          CadKit.Interfaces.IDocument iDoc = doc as CadKit.Interfaces.IDocument;
 
-          CadKit.Interfaces.IDocumentIcon docIcon = iDoc as CadKit.Interfaces.IDocumentIcon;
-          if (docIcon == null || docIcon.Icon == null)
-            label.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
-          else
-            label.Image = docIcon.Icon as System.Drawing.Image;
+          if (null != doc && null != iDoc)
+          {
+            System.Windows.Forms.LinkLabel label = new System.Windows.Forms.LinkLabel();
+            label.Name = iDoc.TypeName;
+            label.Text = iDoc.TypeName;
+            label.Click += new System.EventHandler(label_Click);
 
-          label.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-          label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-          _flowLayoutPanel.Controls.Add(label);
+            CadKit.Interfaces.IDocumentIcon docIcon = iDoc as CadKit.Interfaces.IDocumentIcon;
+            if (docIcon == null || docIcon.Icon == null)
+              label.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/new_document.png");
+            else
+              label.Image = docIcon.Icon as System.Drawing.Image;
+
+            label.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            _flowLayoutPanel.Controls.Add(label);
+          }
+
+          doc = null;
         }
 
-        doc = null;
+        System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
+        CadKit.Tools.ToolWindow.configure(this, parent, "New Document", false);
+
+        _configureDockWindow(sender, this);
+
+        CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+        if (null != windowMenu)
+        {
+          windowMenu.addFormWindowMenu(this.Text, this);
+        }
+
+        parent.Activate();
       }
-
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(this, parent, "New Document", false);
-
-      _configureDockWindow(sender, this);
-
-      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
-      if (null != windowMenu)
+      catch (System.Exception ex)
       {
-        windowMenu.addFormWindowMenu(this.Text, this);
+        System.Console.WriteLine("Error 3980677532: building new document form: {0}", ex.Message);
       }
-
-      parent.Activate();
     }
 
 
     void label_Click(object sender, System.EventArgs e)
     {
-      int index = _flowLayoutPanel.Controls.IndexOf(sender as System.Windows.Forms.Control);
-
-      if (index > 0 && index < _documentNew.Length)
+      try
       {
-        // Create the document.
-        CadKit.Documents.Document doc = _documentNew[index].create(_caller) as CadKit.Documents.Document;
-        CadKit.Interfaces.IDocument idoc = doc as CadKit.Interfaces.IDocument;
-        CadKit.Documents.Manager.Instance.addDocument(idoc);
+        int index = _flowLayoutPanel.Controls.IndexOf(sender as System.Windows.Forms.Control);
 
-        // Give the document a command history. Assigning this avoids a dependency.
-        if (null != doc)
+        if (index > 0 && index < _documentNew.Length)
         {
-          doc.CommandHistory = new CadKit.Commands.History();
-        }
+          // Create the document.
+          CadKit.Documents.Document doc = _documentNew[index].create(_caller) as CadKit.Documents.Document;
+          CadKit.Interfaces.IDocument idoc = doc as CadKit.Interfaces.IDocument;
+          CadKit.Documents.Manager.Instance.addDocument(idoc);
 
-        // Set the delegate.
-        CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, this.Caller);
+          // Give the document a command history. Assigning this avoids a dependency.
+          if (null != doc)
+          {
+            doc.CommandHistory = new CadKit.Commands.History();
+          }
 
-        // Create the default user-interface.
-        if (false == this._createDefaultGui(idoc))
-        {
-          idoc.close();
-          CadKit.Documents.Manager.Instance.remove(idoc);
+          // Set the delegate.
+          CadKit.Documents.Manager.Instance.setGuiDelegate(idoc, this.Caller);
+
+          // Create the default user-interface.
+          if (false == this._createDefaultGui(idoc))
+          {
+            idoc.close();
+            CadKit.Documents.Manager.Instance.remove(idoc);
+          }
         }
       }
-
+      catch (System.Exception ex)
+      {
+        System.Console.WriteLine("Error 96335236: trying to create new document: {0}", ex.Message);
+      }
     }
 
     /// <summary>

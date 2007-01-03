@@ -41,6 +41,7 @@
     <Compile Include="Factory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Viewer.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

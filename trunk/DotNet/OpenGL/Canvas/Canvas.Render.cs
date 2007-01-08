@@ -44,11 +44,14 @@ namespace CadKit.OpenGL
 
     public void startRenderTimer(int interval)
     {
-      _timer = new System.Windows.Forms.Timer();
-      _timer.Interval = interval;
-      _timer.Tick += new System.EventHandler(OnTick);
-      _timer.Enabled = true;
-      _timer.Start();
+      lock (this.Mutex)
+      {
+        _timer = new System.Windows.Forms.Timer();
+        _timer.Interval = interval;
+        _timer.Tick += new System.EventHandler(OnTick);
+        _timer.Enabled = true;
+        _timer.Start();
+      }
     }
 
     private void OnTick(object sender, System.EventArgs e)
@@ -58,10 +61,12 @@ namespace CadKit.OpenGL
 
     public void endRenderTimer()
     {
-      _timer.Enabled = false;
-      _timer.Stop();
-      _timer = null;
-
+      lock (this.Mutex)
+      {
+        _timer.Enabled = false;
+        _timer.Stop();
+        _timer = null;
+      }
     }
 
     public bool RenderTimer
@@ -69,10 +74,14 @@ namespace CadKit.OpenGL
       get { lock (this.Mutex) { return _timer != null && _timer.Enabled; } }
       set
       {
-        if (value)
+        if (true == value)
+        {
           this.startRenderTimer(15);
+        }
         else
+        {
           this.endRenderTimer();
+        }
       }
     }
   }

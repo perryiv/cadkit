@@ -54,7 +54,7 @@ namespace CadKit.Helios.Lib
 
         for (uint i = 0; i < _documentNew.Length; ++i)
         {
-          CadKit.Documents.Document doc = _documentNew[i].create(_caller) as CadKit.Documents.Document;
+          CadKit.Documents.Document doc = this._createDocument(i);
           CadKit.Interfaces.IDocument iDoc = doc as CadKit.Interfaces.IDocument;
 
           if (null != doc && null != iDoc)
@@ -94,6 +94,24 @@ namespace CadKit.Helios.Lib
       catch (System.Exception ex)
       {
         System.Console.WriteLine("Error 3980677532: building new document form: {0}", ex.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Create a document.
+    /// </summary>
+    private CadKit.Documents.Document _createDocument(uint i)
+    {
+      try
+      {
+        CadKit.Documents.Document doc = _documentNew[i].create(_caller) as CadKit.Documents.Document;
+        return doc;
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3381080104: {0}", e.Message);
+        return null;
       }
     }
 

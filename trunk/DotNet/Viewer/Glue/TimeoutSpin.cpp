@@ -1,7 +1,6 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2006, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -9,13 +8,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Internal class used for adapting actions.
+//  Proxy between OsgTools::Render::Viewer and CadKit::Viewer::Glue::Viewer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Render/ActionAdapter.h"
+#include "TimeoutSpin.h"
 
-using namespace OsgTools::Render;
+#include "Usul/Shared/Preferences.h"
+#include "Usul/Registry/Constants.h"
+
+using namespace CadKit::Viewer::Glue;
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TimeoutSpin, TimeoutSpin::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,8 +28,9 @@ using namespace OsgTools::Render;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ActionAdapter::ActionAdapter ( Usul::Interfaces::IUnknown *caller ) : _spin ( caller )
+TimeoutSpin::TimeoutSpin() : BaseClass(), _timeout ( 0x0 )
 {
+  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::ALLOW_SPIN, true );
 }
 
 
@@ -35,41 +40,51 @@ ActionAdapter::ActionAdapter ( Usul::Interfaces::IUnknown *caller ) : _spin ( ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ActionAdapter::~ActionAdapter()
+TimeoutSpin::~TimeoutSpin()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Request a redraw.
+//  Query the interfaces
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ActionAdapter::requestRedraw()
+Usul::Interfaces::IUnknown *TimeoutSpin::queryInterface ( unsigned long iid )
 {
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ITimeoutSpin::IID:
+    return static_cast< Usul::Interfaces::ITimeoutSpin*> ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Request continuous redraw.
+//  Stop the spin timeout.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ActionAdapter::requestContinuousUpdate ( bool needed )
+void TimeoutSpin::stopSpin()
 {
-  if ( _spin.valid() && needed )
-    _spin->spin ( needed );
+  if ( 0x0 != _timeout )
+    _timeout ( false, 0 );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Request warp pointer. Used for flight-simulator control.
+//  Start the spin timeout.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ActionAdapter::requestWarpPointer ( float x, float y )
+void TimeoutSpin::startSpin ( double span )
 {
+  if ( 0x0 != _timeout )
+    _timeout ( true, span );
 }

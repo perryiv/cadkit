@@ -154,7 +154,7 @@ void OssimPlanet::_init()
   _planet->getLand()->setHeightExag( 1.0f );
   _planet->getLand()->setElevationPatchSize( 16 );
   _planet->getLand()->setMaxLevelDetail( 16 );
-  _planet->getLand()->setElevationCacheDir( "C:\\adam\\programs\\ossim\\cache" );
+  //_planet->getLand()->setElevationCacheDir( "C:\\adam\\programs\\ossim\\cache" );
   _planet->setEnableEphemerisFlag( false );
   _planet->setEnableHudFlag( true );
 

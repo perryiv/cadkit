@@ -55,9 +55,7 @@ namespace CadKit
 
 						CadKit::OSG::Glue::Node ^root()
 						{
-							CadKit::OSG::Glue::Node ^temp = gcnew CadKit::OSG::Glue::Node() ;
-							temp->nodePtr( System::IntPtr( mSceneRoot ) );
-							return temp;
+							return gcnew CadKit::OSG::Glue::Node ( System::IntPtr ( mSceneRoot ) );
 						}
 
             void update()

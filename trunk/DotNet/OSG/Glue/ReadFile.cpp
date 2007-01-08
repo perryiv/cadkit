@@ -110,7 +110,7 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
     _progress = dynamic_cast < CadKit::Interfaces::IProgressBar ^ > ( caller );
 
     // Make native function pointer to the progress interface.
-    NativeProgressCallback progress ( ReadFile::_makeProgressCallback() );
+    NativeProgressCallback progress ( this->_makeProgressCallback() );
 
     // Get file name.
     const std::string file ( Usul::Strings::convert ( name ) );

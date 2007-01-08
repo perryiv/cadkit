@@ -27,7 +27,7 @@ namespace CadKit.Documents
     /// Data members.
     /// </summary>
     private bool _modified = false;
-    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
+    private CadKit.Threads.Tools.Lock _lock = null;
     private string _name = "Untitled" + CadKit.Documents.Manager.Instance.NumDocuments.ToString();
     private bool _hasDefaultName = true;
     private CadKit.Interfaces.ICommandHistory _commands = null;
@@ -383,7 +383,16 @@ namespace CadKit.Documents
     /// </summary>
     public CadKit.Threads.Tools.Lock Lock
     {
-      get { return _lock; }
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
     }
 
 

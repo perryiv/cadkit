@@ -3871,14 +3871,14 @@ void Viewer::handleSeek ( float x, float y, bool left )
 
 void Viewer::spin ( bool state )
 {
-  if( !_timeoutSpin.valid() )
+  if ( false == _timeoutSpin.valid() )
     return;
 
   // If we are supposed to start it.
-  if ( state )
+  if ( true == state )
   {
     // We can't spin if there is no viewer.
-    if ( !this->viewer() )
+    if ( 0x0 == this->viewer() )
       return;
 
     // First, stop any spin there is.
@@ -3903,7 +3903,7 @@ void Viewer::spin ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::timeoutSpin ()
+void Viewer::timeoutSpin()
 {
   // Punt if we should.
   if ( false == Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN ) )

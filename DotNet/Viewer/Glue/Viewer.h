@@ -24,6 +24,8 @@ namespace CadKit
   {
     namespace Glue
     {
+      class TimeoutSpin;
+
       /// Class to wrap Helios Viewer.
       public ref class Viewer
       {
@@ -34,6 +36,9 @@ namespace CadKit
         typedef CadKit::Interfaces::PolygonMode PolygonMode;
         typedef CadKit::Interfaces::ShadeModel ShadeModel;
         typedef CadKit::Interfaces::TextureEnvironment TexEnv;
+        delegate void TimeoutDelegate ( bool start, double span );
+        typedef void (*NativeTimeoutCallback) ( bool start, double span );
+        delegate void SpinDelegate ( System::Object^ sender, System::EventArgs^ args );
 
         Viewer();
         ~Viewer();
@@ -191,17 +196,23 @@ namespace CadKit
           void set ( bool b );
         };
 
-        float                   frameDumpScale();
-        void                    frameDumpScale ( float scale );
-        void                    computeNearFar( bool b );
+        float                     frameDumpScale();
+        void                      frameDumpScale ( float scale );
+        void                      computeNearFar( bool b );
 
       protected:
 
-        std::string _toString( System::String^ source );
+        NativeTimeoutCallback     _makeProgressCallback();
+        void                      _onSpinTick ( System::Object^ sender, System::EventArgs^ args );
+        void                      _timeoutNotify ( bool start, double span );
+        std::string               _toString ( System::String^ source );
 
       private:
 
         OsgTools::Render::Viewer* _viewer;
+        TimeoutSpin *_proxy;
+        System::Runtime::InteropServices::GCHandle _pin;
+        System::Windows::Forms::Timer ^_timeout;
       };
     }
   }

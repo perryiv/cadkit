@@ -108,14 +108,25 @@ void Trackball::home ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter
 
 bool Trackball::handle ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa )
 {
-  // If we released the mouse, and we are not allowed to spin, then flush 
-  // the mouse events to prevent a slight motion.
-  if ( osgGA::GUIEventAdapter::RELEASE == ea.getEventType() && 
-    false == Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN ) )
+  // If we released the mouse...
+  if ( osgGA::GUIEventAdapter::RELEASE == ea.getEventType() )
   {
-    this->flushMouseEventStack();
-    this->addMouseEvent ( ea );
+    // If we are not allowed to spin...
+    if ( false == Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN ) )
+    {
+      // Flush the mouse events to prevent a slight motion.
+      this->flushMouseEventStack();
+      this->addMouseEvent ( ea );
+    }
+
+    // Otherwise...
+    else
+    {
+      aa.requestRedraw();
+    }
   }
+
+  // If it's a regular frame event...
   else if ( osgGA::GUIEventAdapter::FRAME == ea.getEventType() )
   {
     if ( _thrown )

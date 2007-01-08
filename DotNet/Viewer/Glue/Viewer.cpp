@@ -13,14 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Viewer.h"
+#include "TimeoutSpin.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 
 #include "OsgTools/Jitter.h"
 
-#include "Usul/Threads/Mutex.h"
+#include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Threads/Mutex.h"
 
 using namespace CadKit::Viewer::Glue;
 
@@ -31,12 +33,21 @@ using namespace CadKit::Viewer::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer() : _viewer( 0x0 )
+Viewer::Viewer() : 
+  _viewer ( 0x0 ), 
+  _proxy ( 0x0 ), 
+  _pin(),
+  _timeout ( nullptr )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _viewer = new OsgTools::Render::Viewer( 0x0, 0x0, 0x0 );
-  Usul::Pointers::reference( _viewer );
-  _viewer->axes( false );
+
+  _proxy = new TimeoutSpin();
+  Usul::Pointers::reference ( _proxy );
+  _proxy->timeoutCallback ( this->_makeProgressCallback() );
+  
+  _viewer = new OsgTools::Render::Viewer ( 0x0, 0x0, _proxy );
+  Usul::Pointers::reference ( _viewer );
+  _viewer->axes ( false );
 }
 
 
@@ -48,8 +59,7 @@ Viewer::Viewer() : _viewer( 0x0 )
 
 Viewer::~Viewer()
 {
-  Usul::Pointers::unreference( _viewer );
-  _viewer = 0x0;
+  this->clear();
 }
 
 
@@ -61,8 +71,7 @@ Viewer::~Viewer()
 
 Viewer::!Viewer()
 {
-  Usul::Pointers::unreference( _viewer );
-  _viewer = 0x0;
+  this->clear();
 }
 
 
@@ -198,10 +207,18 @@ void Viewer::buttonRelease ( float x, float y, bool left, bool middle, bool righ
 
 void Viewer::clear()
 {
-  if ( _viewer )
+  if ( 0x0 != _viewer )
     _viewer->clear();
-  Usul::Pointers::unreference( _viewer );
+  Usul::Pointers::unreference ( _viewer );
   _viewer = 0x0;
+
+  Usul::Pointers::unreference ( _proxy );
+  _proxy = 0x0;
+
+  if ( _pin.IsAllocated )
+    _pin.Free();
+
+  this->_timeoutNotify ( false, 0 );
 }
 
 
@@ -929,3 +946,66 @@ void Viewer::DumpFrames::set ( bool b )
   _viewer->frameDump().dump ( b );
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a callback function that is connected to the timeout.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::NativeTimeoutCallback Viewer::_makeProgressCallback() 
+{
+  // Make delegate.
+  TimeoutDelegate^ timeout = gcnew TimeoutDelegate ( this, &Viewer::_timeoutNotify );
+
+  // Pin it so that we can get the internal function pointer.
+  _pin = System::Runtime::InteropServices::GCHandle::Alloc ( timeout );
+
+  // Get the delegate's function pointer.
+  System::IntPtr fun = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate ( timeout );
+
+  // Return the function.
+  return reinterpret_cast < NativeTimeoutCallback > ( fun.ToPointer() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when there is a time-out.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_timeoutNotify ( bool start, double span )
+{
+  if ( nullptr != _timeout )
+  {
+    // Always stop it first.
+    _timeout->Enabled = false;
+    _timeout->Stop();
+    _timeout = nullptr;
+  }
+
+  // If we are supposed to start one.
+  if ( true == start )
+  {
+    _timeout = gcnew System::Windows::Forms::Timer();
+    _timeout->Interval = static_cast<int> ( span );
+    _timeout->Tick += gcnew System::EventHandler ( this, &Viewer::_onSpinTick );
+    _timeout->Enabled = true;
+    _timeout->Start();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when there is a time-out.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_onSpinTick ( System::Object^ sender, System::EventArgs^ args )
+{
+  if ( 0x0 != _viewer )
+    _viewer->timeoutSpin();
+}

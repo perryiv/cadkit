@@ -773,14 +773,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool UseRenderLoop
     {
-      get { lock (this.Mutex) { return this.RenderTimer; } }
-      set
-      {
-        lock (this.Mutex)
-        {
-          this.RenderTimer = value;
-        }
-      }
+      get { return this.RenderTimer; }
+      set { this.RenderTimer = value; }
     }
 
 

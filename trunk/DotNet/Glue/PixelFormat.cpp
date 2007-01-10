@@ -222,6 +222,7 @@ int PixelFormat::_default()
   _pfd->iPixelType = PFD_TYPE_RGBA;
   _pfd->cColorBits = 32;
   _pfd->cDepthBits = 32;
+  _pfd->cAccumBits = 32;
   _pfd->iLayerType = PFD_MAIN_PLANE;
 
   // Ask the system to choose the closest match.

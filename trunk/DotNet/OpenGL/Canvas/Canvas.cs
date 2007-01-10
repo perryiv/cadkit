@@ -59,6 +59,7 @@ namespace CadKit.OpenGL
       this.InnerControl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(OnKeyPress);
       this.InnerControl.KeyDown += new System.Windows.Forms.KeyEventHandler(OnKeyDown);
       this.InnerControl.Paint += this._paint;
+      this.InnerControl.Click += new System.EventHandler(OnClick);
     }
 
 

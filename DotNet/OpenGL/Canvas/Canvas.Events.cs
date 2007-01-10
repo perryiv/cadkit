@@ -11,6 +11,25 @@ namespace CadKit.OpenGL
 {
   public partial class Canvas
   {
+    public new event System.EventHandler Click;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected void OnClick(object sender, System.EventArgs e)
+    {
+      try
+      {
+        this.Click(this, e);
+      }
+      catch (System.Exception ex)
+      {
+        System.Console.WriteLine("Error 3895419088: {0}", ex.Message);
+      }
+    }
+
+
     /// <summary>
     /// Paint the background. We override this to prevent flicker.
     /// </summary>
@@ -191,8 +210,6 @@ namespace CadKit.OpenGL
     /// <summary>
     /// The mouse wheel moved.  Delegate.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs args)
     {
       try

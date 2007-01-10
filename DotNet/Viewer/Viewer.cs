@@ -56,6 +56,46 @@ namespace CadKit.Viewer
       this.FormClosed += this._formClosed;
       this.Shown += this._viewerShown;
       this.Activated += this._viewerActivated;
+      this.Shown += new System.EventHandler(_onViewerShown);
+      this.Panel.Click += new System.EventHandler(_onPanelClick);
+    }
+
+
+    /// <summary>
+    /// Make this view active.
+    /// </summary>
+    private void _makeActiveView()
+    {
+      try
+      {
+        lock (this.Mutex)
+        {
+          if( CadKit.Documents.Manager.Instance.ActiveView != this)
+            CadKit.Documents.Manager.Instance.ActiveView = this as CadKit.Interfaces.IDocumentView;
+        }
+      }
+      catch (System.Exception ex)
+      {
+        System.Console.WriteLine("Error 3677938968: {0}", ex.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Make this view active.
+    /// </summary>
+    void _onPanelClick(object sender, System.EventArgs e)
+    {
+      this._makeActiveView();
+    }
+
+
+    /// <summary>
+    /// Make this view active,
+    /// </summary>
+    void _onViewerShown(object sender, System.EventArgs e)
+    {
+      this._makeActiveView();
     }
 
 
@@ -133,17 +173,7 @@ namespace CadKit.Viewer
     /// </summary>
     void _viewerActivated(object sender, System.EventArgs args)
     {
-      try
-      {
-        lock (this.Mutex)
-        {
-          CadKit.Documents.Manager.Instance.ActiveView = this as CadKit.Interfaces.IDocumentView;
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 3677938968: {0}", e.Message);
-      }
+      this._makeActiveView();
     }
 
 

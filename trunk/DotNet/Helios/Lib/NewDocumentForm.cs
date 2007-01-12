@@ -122,7 +122,7 @@ namespace CadKit.Helios.Lib
       {
         int index = _flowLayoutPanel.Controls.IndexOf(sender as System.Windows.Forms.Control);
 
-        if (index > 0 && index < _documentNew.Length)
+        if (index >= 0 && index < _documentNew.Length)
         {
           // Create the document.
           CadKit.Documents.Document doc = _documentNew[index].create(_caller) as CadKit.Documents.Document;

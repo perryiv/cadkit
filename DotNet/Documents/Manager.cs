@@ -257,18 +257,21 @@ namespace CadKit.Documents
     /// </summary>
     private void _setActiveView(CadKit.Interfaces.IDocumentView value)
     {
-      CadKit.Interfaces.IDocumentView oldView = this.ActiveView;
-
-      using (this.Lock.write())
+      //if (this.ActiveView != value)
       {
-        _activeView = value;
-      }
+        CadKit.Interfaces.IDocumentView oldView = this.ActiveView;
 
-      this._setActiveDocument();
+        using (this.Lock.write())
+        {
+          _activeView = value;
+        }
 
-      if (null != this.ActiveViewChanged)
-      {
-        this.ActiveViewChanged(oldView, this.ActiveView);
+        this._setActiveDocument();
+
+        if (null != this.ActiveViewChanged)
+        {
+          this.ActiveViewChanged(oldView, this.ActiveView);
+        }
       }
     }
 
@@ -286,9 +289,12 @@ namespace CadKit.Documents
         _activeDoc = (null == activeView) ? null : activeView.Document;
       }
 
-      if (null != this.ActiveDocumentChanged)
+      //if (oldDoc != this.ActiveDocument)
       {
-        this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
+        if (null != this.ActiveDocumentChanged)
+        {
+          this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
+        }
       }
     }
 

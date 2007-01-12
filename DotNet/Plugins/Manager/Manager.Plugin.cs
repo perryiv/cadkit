@@ -216,10 +216,9 @@ namespace CadKit.Plugins
           CadKit.Interfaces.IPlugin plugin = this.Handle;
           if (null != plugin)
           {
-            T t = (T)plugin;
-            if (null != t)
+            if(plugin is T )
             {
-              return t;
+              return (T)plugin;
             }
           }
         }

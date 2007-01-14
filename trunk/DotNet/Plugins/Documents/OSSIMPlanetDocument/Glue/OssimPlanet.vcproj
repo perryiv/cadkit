@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue"
+	Name="CadKit.OSSIMPlanet.Glue"
 	ProjectGUID="{5D7C06E0-F0B8-4EF0-953A-E25283F58435}"
 	RootNamespace="OssimPlanet"
 	Keyword="ManagedCProj"
@@ -182,10 +182,12 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
+			UseDependenciesInBuild="false"
 			RelativePathToProject="..\OSG\Glue\CadKit.OSG.Glue.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}"
+			UseDependenciesInBuild="false"
 			RelativePathToProject="..\OpenGL\CadKit.OpenGL.csproj"
 		/>
 		<AssemblyReference
@@ -196,6 +198,10 @@
 			RelativePath="System.Drawing.dll"
 			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
+			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -205,6 +211,14 @@
 			>
 			<File
 				RelativePath=".\AssemblyInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ImageLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ImageLayer.h"
 				>
 			</File>
 			<File

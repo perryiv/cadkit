@@ -176,6 +176,7 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
+        this.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.ok();
       }
     }
@@ -187,6 +188,7 @@ namespace CadKit.Helios
     {
       lock (_mutex)
       {
+        this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Close();
       }
     }

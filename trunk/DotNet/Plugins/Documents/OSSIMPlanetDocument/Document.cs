@@ -13,13 +13,15 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     CadKit.Documents.Document,
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.IBuildScene,
-    CadKit.Interfaces.IImageLayer
+    CadKit.Interfaces.ILayerList
   {
     /// <summary>
     /// Root for the scene.
     /// </summary>
     private CadKit.OSG.Glue.Node _root = null;
     private CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet _ossimPlanet = new CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet();
+
+    private System.Collections.Generic.List<CadKit.Interfaces.ILayer> _layers = new System.Collections.Generic.List<CadKit.Interfaces.ILayer>();
 
     public CadKit.Plugins.Documents.OSSIMPlanetDocument.Glue.OssimPlanet OssimPlanet
     {
@@ -82,35 +84,37 @@ namespace CadKit.Plugins.Documents.OSSIMPlanetDocument
     /// <summary>
     /// 
     /// </summary>
-    void CadKit.Interfaces.IImageLayer.addImageLayer(string filename)
+    CadKit.Interfaces.ILayer[] CadKit.Interfaces.ILayerList.Layers 
     {
-      _ossimPlanet.addImageLayer(filename);
+      get
+      {
+        return _layers.ToArray();
+      }
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void CadKit.Interfaces.IImageLayer.hideImageLayer(string filename)
+    void CadKit.Interfaces.ILayerList.addLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      _ossimPlanet.hideImageLayer(filename);
+      _ossimPlanet.addLayer(layer as CadKit.OSSIMPlanet.Glue.ImageLayer);
+      layer.show();
+      _layers.Add(layer);
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void CadKit.Interfaces.IImageLayer.showImageLayer(string filename)
+    void CadKit.Interfaces.ILayerList.modifyLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      _ossimPlanet.showImageLayer(filename);
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void CadKit.Interfaces.IImageLayer.removeImageLayer(string filename)
+    void CadKit.Interfaces.ILayerList.hideLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
+    }
+
+    void CadKit.Interfaces.ILayerList.showLayer(CadKit.Interfaces.ILayer layer, object caller)
+    {
+    }
+
+    void CadKit.Interfaces.ILayerList.removeLayer(CadKit.Interfaces.ILayer layer, object caller)
+    {
+      _ossimPlanet.removeLayer(layer as CadKit.OSSIMPlanet.Glue.ImageLayer);
+      _layers.Remove(layer);
     }
   }
 }

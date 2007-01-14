@@ -40,9 +40,6 @@
     <Compile Include="Document.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Viewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\sdk\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WinFormsUI2005.csproj">

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "ImageLayer.h"
+
 class ossimPlanet;
 class ossimPlanetTextureLayerGroup;
 class ossimPlanetTextureLayer;
@@ -55,18 +57,18 @@ namespace CadKit
 
             void                  addKeyWordList( System::String^ kwl );
 
-            TextureLayerStateCode addImageLayer( System::String^ string );
-            void                  hideImageLayer ( System::String^ string );
-            void                  showImageLayer ( System::String^ string );
+            void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+            void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
 
           protected:
             void _init();
 
           private:
-            typedef std::map< std::string, ossimPlanetTextureLayer* > TextureLayers;
+
+            typedef System::Collections::Generic::Dictionary< System::String^, CadKit::OSSIMPlanet::Glue::ImageLayer^ > TextureLayers;
+            TextureLayers ^_textureLayers;
             ossimPlanet* _planet;
             ossimPlanetTextureLayerGroup* _textureLayerGroup;
-            TextureLayers *_textureLayers;
 	        };
         }
       }

@@ -36,7 +36,7 @@ using namespace CadKit::Plugins::Documents::OSSIMPlanetDocument::Glue;
 OssimPlanet::OssimPlanet() : 
 _planet ( 0x0 ), 
 _textureLayerGroup ( 0x0 ),
-_textureLayers( 0x0 )
+_textureLayers( gcnew TextureLayers )
 {
   this->_init();
 }
@@ -51,7 +51,7 @@ _textureLayers( 0x0 )
 OssimPlanet::OssimPlanet( System::String ^ kwl ) : 
 _planet ( 0x0 ), 
 _textureLayerGroup ( 0x0 ),
-_textureLayers( 0x0 )
+_textureLayers( gcnew TextureLayers )
 {
   this->_init();
 
@@ -104,8 +104,6 @@ OssimPlanet::~OssimPlanet()
     _textureLayerGroup->unref();
     _textureLayerGroup = 0x0;
   }
-
-  delete _textureLayers;
 }
 
 
@@ -128,8 +126,6 @@ OssimPlanet::!OssimPlanet()
     _textureLayerGroup->unref();
     _textureLayerGroup = 0x0;
   }
-
-  delete _textureLayers;
 }
 
 
@@ -161,8 +157,6 @@ void OssimPlanet::_init()
   _planet->getLand()->setCacheSize( ossim_uint64 ( 4096 * 1024 * 1024 ), ossim_uint64 ( 2048 * 1024 * 1024 ) );
 
   _planet->getLand()->setTextureLayer( _textureLayerGroup, 0 );
-
-  _textureLayers = new TextureLayers;
 }
 
 
@@ -203,38 +197,43 @@ CadKit::OSG::Glue::MatrixManipulator^ OssimPlanet::matrixManipulator()
 }
 
 
-OssimPlanet::TextureLayerStateCode OssimPlanet::addImageLayer( System::String^ string )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OssimPlanet::addLayer(CadKit::OSSIMPlanet::Glue::ImageLayer ^layer)
 {
-  // Convert to native string.
-  std::string filename ( Usul::Strings::convert ( string ) );
+  if( nullptr != layer )
+  {
+    // Add layer to group.
+    _textureLayerGroup->addTop( layer->nativePtr() );
 
-  // Create the layer.
-  osg::ref_ptr<ossimPlanetTextureLayer> layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( filename );
-  
-  // Add to list of current layers.
-  _textureLayers->insert( TextureLayers::value_type ( filename, layer.get() ) );
-  layer->ref();
+    // Not sure if this is needed.
+    _planet->getLand()->resetGraph();
 
-  // Add layer to group.
-  _textureLayerGroup->addTop( layer.get() );
-
-  // Not sure if this is needed.
-  _planet->getLand()->resetGraph();
-
-  return static_cast < TextureLayerStateCode > ( layer->getStateCode() );
+    _textureLayers->Add( layer->Name, layer );
+  }
 }
 
 
-void OssimPlanet::hideImageLayer ( System::String^ string )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OssimPlanet::removeLayer(CadKit::OSSIMPlanet::Glue::ImageLayer ^layer)
 {
-  TextureLayers::iterator iter = _textureLayers->find( Usul::Strings::convert( string ) );
-  if( iter != _textureLayers->end() )
-    iter->second->setEnableFlag( false );
+  if( nullptr != layer )
+  {
+    _textureLayerGroup->removeLayer( layer->nativePtr() );
+    
+    _textureLayers->Remove(layer->Name);
+    
+    // Not sure if this is needed.
+    _planet->getLand()->resetGraph();
+  }
 }
 
-void OssimPlanet::showImageLayer ( System::String^ string )
-{
-  TextureLayers::iterator iter = _textureLayers->find( Usul::Strings::convert( string ) );
-  if( iter != _textureLayers->end() )
-    iter->second->setEnableFlag( true );
-}

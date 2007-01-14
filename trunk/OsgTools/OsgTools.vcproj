@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib"
+				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/OsgToolsd.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/OsgToolsd.lib"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgGA.lib OpenThreadsWin32.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib"
+				AdditionalDependencies="osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OPENTHREADS_LIB_DIR);$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);"
 				ProgramDatabaseFile=".\Release/OsgTools.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/OsgTools.lib"
 			/>
@@ -479,6 +479,10 @@
 				</File>
 				<File
 					RelativePath=".\Utilities\Transparency.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utilities\Vec4Serialize.h"
 					>
 				</File>
 				<File
@@ -1089,6 +1093,34 @@
 				</File>
 				<File
 					RelativePath=".\Legend\Text.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Animate"
+				>
+				<File
+					RelativePath=".\Animate\AnimationCallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\AnimationCallback.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\Date.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\Date.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\DateGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\DateGroup.h"
 					>
 				</File>
 			</Filter>

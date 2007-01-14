@@ -94,6 +94,7 @@
 #include "osg/AutoTransform"
 
 #include "osg/GL"
+#include "osg/GLU"
 
 #include "osgUtil/UpdateVisitor"
 #include "osgUtil/IntersectVisitor"
@@ -104,6 +105,19 @@
 #include <limits>
 
 using namespace OsgTools::Render;
+
+namespace Detail
+{
+  void checkForErrors( unsigned int id )
+  {
+    GLenum error = ::glGetError();
+    if ( GL_NO_ERROR != error )
+    {
+      std::cout << "Error " << id << ": OpenGL error detected." << std::endl
+        << "Message: " << ::gluErrorString( error ) << std::endl;
+    }
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -310,7 +324,7 @@ void Viewer::updateScene()
 void Viewer::render()
 {
   // Handle no viewer or scene.
-  if ( !this->viewer() || !this->viewer()->getSceneData() )
+  if ( !this->viewer() || !this->viewer()->getSceneData() || false == _context.valid() )
     return;
 
   // Update the scene.
@@ -328,7 +342,7 @@ void Viewer::render()
   ::glGetError();
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 1491085606 );
 
   if( _databasePager.valid() )
   {
@@ -353,7 +367,7 @@ void Viewer::render()
     this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 774712060 );
 
   // If we are doing hidden-line rendering...
   if ( this->hasHiddenLines() && ( 0x0 != _sceneManager->model() ) )
@@ -400,7 +414,7 @@ void Viewer::render()
   }
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 840649560 );
 
   if( _databasePager.valid() )
   {
@@ -425,13 +439,13 @@ void Viewer::render()
   }
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 896118310 );
 
   // Dump the current frame.
   this->_dumpFrame();
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 952680810 );
 
   // Update the status-bar. Do not put this in onPaint() because you want 
   // it called every time the window is redrawn.

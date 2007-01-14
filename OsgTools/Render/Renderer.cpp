@@ -39,6 +39,8 @@
 #include "osg/Geometry"
 #include "osg/Geode"
 
+#include "osg/Glu"
+
 #include "osgUtil/UpdateVisitor"
 
 #include "osgDB/WriteFile"
@@ -52,6 +54,12 @@ using namespace OsgTools::Render;
 
 namespace Detail { const unsigned int NUM_CHANNELS ( 3 ); }
 
+
+namespace Detail
+{
+  // Defined in Viewer.cpp
+  void checkForErrors( unsigned int id );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -213,7 +221,7 @@ void Renderer::render()
     this->_singlePassRender();
 
   // Check for errors.
-  USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+  Detail::checkForErrors( 2764743220 );
 }
 
 
@@ -258,7 +266,7 @@ void Renderer::_multiPassRender()
     ::glClear ( GL_ACCUM_BUFFER_BIT );
 
     // Check for errors.
-    USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+    Detail::checkForErrors( 2576774470 );
 
     // Needed in the loop.
     osg::Matrixd matrix;
@@ -276,21 +284,21 @@ void Renderer::_multiPassRender()
       this->_singlePassRender();
 
       // Check for errors.
-      USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+      Detail::checkForErrors( 2681461970 );
 
       // Accumulate the pixels from the frame buffer.
       float value ( 1.0f / static_cast < float > ( this->numRenderPasses() ) );
       ::glAccum ( GL_ACCUM, value );
 
       // Check for errors.
-      USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+      Detail::checkForErrors( 3558773016 );
     }
 
     // Transfer the accumulation buffer into the frame buffer.
     ::glAccum ( GL_RETURN, 1.0f );
 
     // Check for errors.
-    USUL_ERROR_CHECKER ( GL_NO_ERROR == ::glGetError() );
+    Detail::checkForErrors( 2459899470 );
   }
 
   // Catch all exceptions and reset the number of passes. Otherwise, you 

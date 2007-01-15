@@ -1,0 +1,222 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  All rights reserved.
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "PointLayerGlue.h"
+
+#include "Minerva/DataObjects/Point.h"
+
+#include "Threads/OpenThreads/Mutex.h"
+#include "Usul/Threads/Mutex.h"
+
+using namespace DT::Minerva::Glue;
+
+namespace Detail
+{
+  System::String^ intToString ( int i )
+  {
+    std::ostringstream os;
+    os << i;
+    return gcnew System::String ( os.str().c_str() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayerGlue::PointLayerGlue() : _pointLayer ( 0x0 )
+{
+  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+  _pointLayer = new ::Minerva::Layers::PointLayer;
+  Usul::Pointers::reference ( _pointLayer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayerGlue::~PointLayerGlue()
+{
+  Usul::Pointers::unreference( _pointLayer );
+  _pointLayer = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Finalizer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayerGlue::!PointLayerGlue()
+{
+  Usul::Pointers::unreference( _pointLayer );
+  _pointLayer = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int PointLayerGlue::PrimitiveID::get()
+{
+  return _pointLayer->primitiveID();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayerGlue::PrimitiveID::set ( int i )
+{
+  _pointLayer->primitiveID( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::Drawing::Color ^ PointLayerGlue::Color::get ()
+{
+  System::Drawing::Color ^c = gcnew System::Drawing::Color();
+  c = System::Drawing::Color::FromArgb( _pointLayer->color().w() * 255, _pointLayer->color().x() * 255, _pointLayer->color().y() * 255, _pointLayer->color().z() * 255 );
+
+  return c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayerGlue::Color::set ( System::Drawing::Color ^ color )
+{
+  osg::Vec4 c ( (float) color->R / 255, (float) color->G / 255, (float) color->B / 255, (float) color->A / 255 );
+
+  _pointLayer->color( c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PointLayerGlue::Size::get()
+{
+  return _pointLayer->size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayerGlue::Size::set ( float f )
+{
+  _pointLayer->size ( f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the available primitive types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayerGlue::Strings^ PointLayerGlue::getPointPrimitiveTypes()
+{
+  Strings ^strings = gcnew Strings();
+
+  strings->Add( gcnew System::String ( "Point" ) );
+  strings->Add( gcnew System::String ( "Sphere" ) );
+  strings->Add( gcnew System::String ( "Cone" ) );
+  strings->Add( gcnew System::String ( "Disk" ) );
+  strings->Add( gcnew System::String ( "Cube" ) );
+  strings->Add( gcnew System::String ( "Inverted Cone" ) );
+
+  return strings;
+}
+
+
+System::String^ PointLayerGlue::PrimitiveType::get()
+{
+  unsigned int primitiveID( _pointLayer->primitiveID() );
+
+  switch( primitiveID )
+  {
+  case ::Minerva::DataObjects::Point::POINT:
+    return gcnew System::String ( "Point" );
+  case ::Minerva::DataObjects::Point::SPHERE:
+    return gcnew System::String ( "Sphere" );
+  case ::Minerva::DataObjects::Point::CONE:
+    return gcnew System::String ( "Cone" );
+  case ::Minerva::DataObjects::Point::DISK:
+    return gcnew System::String ( "Disk" );
+  case ::Minerva::DataObjects::Point::CUBE:
+    return gcnew System::String ( "Cube" );
+  case ::Minerva::DataObjects::Point::INVERTED_CONE:
+    return gcnew System::String ( "Inverted Cone" );
+  }
+
+  return gcnew System::String( "" );
+}
+
+void PointLayerGlue::PrimitiveType::set(System::String^ s )
+{
+  if( s->Equals( "Point" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::POINT );
+    
+  else if ( s->Equals( "Sphere" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::SPHERE );
+  
+  else if ( s->Equals( "Cone" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::CONE );
+  
+  else if ( s->Equals ( "Disk" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::DISK );
+  
+  else if ( s->Equals ( "Cube" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::CUBE );
+  
+  else if ( s->Equals ( "Inverted Cone" ) )
+    _pointLayer->primitiveID( ::Minerva::DataObjects::Point::INVERTED_CONE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Layers::Layer* PointLayerGlue::layer()
+{
+  return _pointLayer;
+}

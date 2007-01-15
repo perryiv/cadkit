@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAnimateTemporal.cs" />
     <Compile Include="ICreateLayer.cs" />
     <Compile Include="IDocumentIcon.cs" />
     <Compile Include="IImageLayer.cs" />

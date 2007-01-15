@@ -84,7 +84,7 @@ struct ConvexHullSort
     // Find left-most point.
     Itr left ( std::min_element ( points.begin(), points.end(), CompareCoordinate ( 0 ) ) );
     if ( points.end() == left )
-      throw std::runtime_error ( "Error 1163900903: failed to finConvexHullSortd left-most element in container of points" );
+      throw std::runtime_error ( "Error 1163900903: failed to find left-most element in container of points" );
 
     // Put this point in a new container and remove it from the first.
     PointsContainer ordered;

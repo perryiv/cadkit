@@ -22,7 +22,7 @@ namespace Usul {
 namespace Strings {
 
 
-std::string convert ( System::String^ source )
+inline std::string convert ( System::String^ source )
 {
   std::string answer;
   System::IntPtr ptr ( 0 );

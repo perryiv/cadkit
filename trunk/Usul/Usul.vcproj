@@ -1201,6 +1201,18 @@
 					RelativePath="Pointers\SmartPointer.h"
 					>
 				</File>
+				<Filter
+					Name="Memory"
+					>
+					<File
+						RelativePath=".\Memory\Block.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Memory\Pool.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Predicates"
@@ -1723,18 +1735,6 @@
 				</File>
 				<File
 					RelativePath=".\Headers\SStream.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Memory"
-				>
-				<File
-					RelativePath=".\Memory\Block.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Memory\Pool.h"
 					>
 				</File>
 			</Filter>

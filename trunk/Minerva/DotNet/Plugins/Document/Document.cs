@@ -11,7 +11,8 @@ namespace DT.Minerva.Plugins.Document
 {
   class Document : 
     CadKit.Documents.Document,
-    CadKit.Interfaces.ILayerList
+    CadKit.Interfaces.ILayerList,
+    CadKit.Interfaces.IAnimateTemporal
   {
     enum Mode
     {
@@ -288,6 +289,38 @@ namespace DT.Minerva.Plugins.Document
         {
           _distributed.showLayer(layer);
         }
+      }
+    }
+
+
+    /// <summary>
+    /// Start animation.
+    /// </summary>
+    void CadKit.Interfaces.IAnimateTemporal.startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+    {
+      try
+      {
+        this._startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2899159884: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Stop animation.
+    /// </summary>
+    void CadKit.Interfaces.IAnimateTemporal.stopAnimation()
+    {
+      try
+      {
+        this._stopAnimation();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3428066134: {0}", e.Message);
       }
     }
 

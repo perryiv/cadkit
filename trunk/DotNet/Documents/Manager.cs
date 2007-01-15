@@ -27,6 +27,13 @@ namespace CadKit.Documents
 
 
     /// <summary>
+    /// Events.
+    /// </summary>
+    public event ActiveDocumentChangedDelegate ActiveDocumentChanged;
+    public event ActiveViewChangedDelegate ActiveViewChanged;
+    
+
+    /// <summary>
     /// Data members.
     /// </summary>
     private static Manager _instance = null;
@@ -34,8 +41,6 @@ namespace CadKit.Documents
     private Documents _documents = new Documents();
     private CadKit.Interfaces.IDocument _activeDoc = null;
     private CadKit.Interfaces.IDocumentView _activeView = null;
-    private ActiveDocumentChangedDelegate _activeDocumentChanged = null;
-    private ActiveViewChangedDelegate _activeViewChanged = null;
 
 
     /// <summary>
@@ -296,26 +301,6 @@ namespace CadKit.Documents
           this.ActiveDocumentChanged(oldDoc, this.ActiveDocument);
         }
       }
-    }
-
-
-    /// <summary>
-    /// Get the active document changed delegate.
-    /// </summary>
-    public ActiveDocumentChangedDelegate ActiveDocumentChanged
-    {
-      get { using (this.Lock.read()) { return _activeDocumentChanged; } }
-      set { using (this.Lock.write()) { _activeDocumentChanged = value; } }
-    }
-
-
-    /// <summary>
-    /// Get the active view changed delegate.
-    /// </summary>
-    public ActiveViewChangedDelegate ActiveViewChanged
-    {
-      get { using (this.Lock.read()) { return _activeViewChanged; } }
-      set { using (this.Lock.write()) { _activeViewChanged = value; } }
     }
 
 

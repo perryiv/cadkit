@@ -87,23 +87,17 @@ namespace DT
               }
 
               void connect( );
-
               void disconnect();
 
               int  connectToSession( System::String ^ name );
-
               void deleteSession();
-
               Strings^ getAvailableSessions();
 
-              void removeLayer( DT::Minerva::Interfaces::ILayer ^ layer );
-
-              void showLayer ( DT::Minerva::Interfaces::ILayer ^ layer );
-
-              void modifyLayer ( DT::Minerva::Interfaces::ILayer ^layer );
+              void removeLayer( CadKit::Interfaces::ILayer ^ layer );
+              void showLayer ( CadKit::Interfaces::ILayer ^ layer );
+              void modifyLayer ( CadKit::Interfaces::ILayer ^layer );
 
               void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
-
               void stopAnimation();
 
             private:

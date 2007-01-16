@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Minerva/Native/include;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PQXX_INC_DIR);$(BOOST_ROOT_DIR);"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIMPLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib libpqxxd.lib"
+				AdditionalDependencies="osgd.lib osgGAd.lib osgDBd.lib libpqxxd.lib ossimd.lib ossimPlanetd.lib OpenThreadsWin32d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIMPLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Minerva/Native/include;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PQXX_INC_DIR);$(BOOST_ROOT_DIR);"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIMPLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -135,9 +135,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib  libpqxx.lib"
+				AdditionalDependencies="osg.lib osgGA.lib osgDB.lib libpqxx.lib ossim.lib ossimPlanet.lib OpenThreadsWin32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIMPLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -187,7 +187,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{35375870-CDDF-431E-B366-782D431BF6F6}"
-			RelativePathToProject="..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
+			RelativePathToProject=".\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{A27CF288-D89D-4184-A413-011D6E4AD9F6}"

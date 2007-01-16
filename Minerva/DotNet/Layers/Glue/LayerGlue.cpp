@@ -217,7 +217,7 @@ void LayerGlue::RenderBin::set( int i )
 
 float LayerGlue::Offset::get()
 {
-  return this->layer()->offset();
+  return this->layer()->zOffset();
 }
 
 
@@ -229,7 +229,7 @@ float LayerGlue::Offset::get()
 
 void LayerGlue::Offset::set( float f )
 {
-  this->layer()->offset( f );
+  this->layer()->zOffset( f );
 }
 
 

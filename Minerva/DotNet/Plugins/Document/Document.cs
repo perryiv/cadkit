@@ -11,6 +11,7 @@ namespace DT.Minerva.Plugins.Document
 {
   class Document : 
     CadKit.Documents.Document,
+    CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal
   {
@@ -47,6 +48,24 @@ namespace DT.Minerva.Plugins.Document
       _distributed.Username = "wnv_app";
       _distributed.Password = "wnv";
       _distributed.Database = "wnv_application";
+    }
+
+    /// <summary>
+    /// Read the file.
+    /// </summary>
+    public void open(string name, object caller)
+    {
+      _dll.addKeyWordList(name);
+
+      // Set document name.
+      this.Name = name;
+
+      // Add file to recent-file list.
+      CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+      if (null != recent)
+      {
+        recent.add(name);
+      }
     }
 
 
@@ -163,7 +182,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != layer)
       {
         layer.show();
-        this._showLayer(layer as DT.Minerva.Interfaces.ILayer);
+        this._showLayer(layer);
         _layers.Add(layer);
       }
     }
@@ -174,7 +193,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != layer)
       {
         layer.modify();
-        this._modifyLayer(layer as DT.Minerva.Interfaces.ILayer);
+        this._modifyLayer(layer);
       }
     }
 
@@ -210,7 +229,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void CadKit.Interfaces.ILayerList.removeLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      this._removeLayer(layer as DT.Minerva.Interfaces.ILayer);
+      this._removeLayer(layer);
       _layers.Remove(layer);
     }
 
@@ -218,7 +237,7 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// 
     /// </summary>
-    protected void _removeLayer(DT.Minerva.Interfaces.ILayer layer)
+    protected void _removeLayer(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
@@ -252,13 +271,14 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Show the layer.
     /// </summary>
-    protected void _showLayer(DT.Minerva.Interfaces.ILayer layer)
+    protected void _showLayer(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
         if (_mode == Mode.BOTH || _mode == Mode.DLL)
         {
           DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
+          job.Name = "Adding " + layer.Name;
           job.Start += job._showLayer;
           job.Finish += this._jobEnd;
           CadKit.Threads.Jobs.Manager.Instance.add(job);
@@ -274,13 +294,14 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Modify the layer.
     /// </summary>
-    protected void _modifyLayer(DT.Minerva.Interfaces.ILayer layer)
+    protected void _modifyLayer(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
         if (_mode == Mode.BOTH || _mode == Mode.DLL)
         {
           DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
+          job.Name = "Modifying " + layer.Name;
           job.Start += job._showLayer;
           job.Finish += this._jobEnd;
           CadKit.Threads.Jobs.Manager.Instance.add(job);

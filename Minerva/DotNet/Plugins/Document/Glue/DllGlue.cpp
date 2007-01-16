@@ -13,11 +13,15 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Strings/ManagedToNative.h"
 
 #include "Minerva/Layers/Layer.h"
 #include "Minerva/postGIS/Geometry.h"
 
 #include "osgDB/ReadFile"
+
+#include "ossimPlanet/ossimPlanetDatabasePager.h"
+#include "ossimPlanet/ossimPlanetManipulator.h"
 
 #include <string>
 
@@ -102,14 +106,19 @@ DllGlue::!DllGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::removeLayer( DT::Minerva::Interfaces::ILayer ^layer )
+void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
 {
   try
   {
-    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
-    _sceneManager->removeLayer( base->layerID() );
-    _sceneManager->dirty ( true );
-    _sceneManager->buildScene();
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      _sceneManager->removeLayer( base->layerID() );
+      _sceneManager->dirty ( true );
+      _sceneManager->buildScene();
+    }
   }
   catch ( System::Exception ^e )
   {
@@ -139,15 +148,20 @@ void DllGlue::dirtyScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::modifyLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
 {
   try
   {
-    Progress p ( progress );
-    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
-    base->modify( p.unmanagedProgress() );
-    _sceneManager->dirty( true );
-    _sceneManager->buildScene();
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      Progress p ( progress );
+      base->modify( p.unmanagedProgress() );
+      _sceneManager->dirty( true );
+      _sceneManager->buildScene();
+    }
   }
   catch ( System::Exception ^e )
   {
@@ -234,6 +248,11 @@ void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^viewer )
 
     if( _viewer )
     {
+      _viewer->navManip( new ossimPlanetManipulator );
+      _viewer->databasePager( new ossimPlanetDatabasePager );
+
+      _viewer->computeNearFar( false );
+
       _viewer->scene( _sceneManager->root() );
       _viewer->sceneUpdate( _sceneManager );
     }
@@ -286,16 +305,21 @@ void DllGlue::resize( int w, int h )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::showLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
 {
   try
   {
-    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
 
-    // Managed/Unmanged progress interop class.
-    Progress p ( progress );
-    base->buildDataObjects( p.unmanagedProgress() );
-    _sceneManager->addLayer( base.get() );
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+
+      // Managed/Unmanged progress interop class.
+      Progress p ( progress );
+      base->buildDataObjects( p.unmanagedProgress() );
+      _sceneManager->addLayer( base.get() );
+    }
   }
   catch ( System::Exception ^e )
   {
@@ -308,5 +332,26 @@ void DllGlue::showLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads
   catch ( ... )
   {
     System::Console::WriteLine( "Error 1050340542: Unknown exception caught." );
+  }
+}
+
+
+void DllGlue::addKeyWordList( System::String^ kwl )
+{
+  try
+  {
+    _sceneManager->addKeyWordList( Usul::Strings::convert ( kwl ).c_str() );
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine( "Error 1935115428:" + e->Message );
+  }
+  catch ( const std::exception &e )
+  {
+    System::Console::WriteLine( "Error 1962615428:" + gcnew System::String ( e.what() ) );
+  }
+  catch ( ... )
+  {
+    System::Console::WriteLine( "Error 1994334178: Unknown exception caught." );
   }
 }

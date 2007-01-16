@@ -33,11 +33,9 @@ namespace DT
             ~DllGlue();
             !DllGlue();
 		        
-            void removeLayer( DT::Minerva::Interfaces::ILayer ^layer );
-
-            void showLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
-
-            void modifyLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
+            void removeLayer( CadKit::Interfaces::ILayer ^layer );
+            void showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
+            void modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
 
             void dirtyScene();
 
@@ -48,6 +46,8 @@ namespace DT
             void viewer( CadKit::Viewer::Glue::Viewer ^viewer );
 
             void resize ( int h, int w );
+
+            void                  addKeyWordList( System::String^ kwl );
           private:
             OsgTools::Render::Viewer *_viewer;
             ::Minerva::Scene::SceneManager *_sceneManager;

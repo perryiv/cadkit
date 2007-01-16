@@ -12,6 +12,8 @@ namespace DT.Minerva.Plugins.Document
   public class Component :
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IDocumentNew,
+    CadKit.Interfaces.IDocumentOpen,
+    CadKit.Interfaces.IFiltersOpen,
     CadKit.Interfaces.IGuiDelegateCreate
   {
     /// <summary>
@@ -72,6 +74,45 @@ namespace DT.Minerva.Plugins.Document
     {
       // Re-entrant! Do not lock the mutex!
       return new DT.Minerva.Plugins.Document.Document();
+    }
+
+
+    /// <summary>
+    /// Open a document.
+    /// </summary>
+    object CadKit.Interfaces.IDocumentOpen.open(string file, object caller)
+    {
+      // Re-entrant! Do not lock the mutex!
+      CadKit.Interfaces.IDocumentNew creator = (CadKit.Interfaces.IDocumentNew)this;
+      CadKit.Interfaces.IFileOpen reader = (CadKit.Interfaces.IFileOpen)(creator.create(caller));
+      reader.open(file, caller);
+      return reader;
+    }
+
+
+    /// <summary>
+    /// See if we can open this document.
+    /// </summary>
+    bool CadKit.Interfaces.IDocumentOpen.canOpen(string name)
+    {
+      // Re-entrant! Do not lock the mutex!
+      System.IO.FileInfo info = new System.IO.FileInfo(name);
+      string ext = info.Extension.ToLower();
+      return (".kwl" == ext);
+    }
+
+    /// <summary>
+    /// Return the filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersOpen.Filters
+    {
+      // Re-entrant! Do not lock the mutex!
+      get
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("OSSIM Key Word List (*.kwl)", "*.kwl"));
+        return filters;
+      }
     }
   }
 }

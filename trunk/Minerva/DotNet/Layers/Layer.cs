@@ -376,6 +376,9 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public virtual string Number
     {
       get { return "NA"; }
@@ -385,6 +388,9 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public virtual string Min
     {
       get { return "NA"; }
@@ -394,6 +400,9 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public virtual string Max
     {
       get { return "NA"; }

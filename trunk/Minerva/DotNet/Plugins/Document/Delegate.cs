@@ -47,6 +47,7 @@ namespace DT.Minerva.Plugins.Document
 
         // Make new viewer.
         CadKit.Viewer.Viewer view = new CadKit.Viewer.Viewer();
+        view.Shown += new System.EventHandler(view_Shown);
         view.Icon = System.Windows.Forms.Application.OpenForms[0].Icon;
         view.Text = this.Document.Name;
 
@@ -89,6 +90,17 @@ namespace DT.Minerva.Plugins.Document
           }
         }
       }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void view_Shown(object sender, System.EventArgs e)
+    {
+      CadKit.Viewer.Viewer view = sender as CadKit.Viewer.Viewer;
+      if (null != view)
+        view.computeNearFar(false);
     }
 
     void parent_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)

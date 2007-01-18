@@ -25,6 +25,7 @@
 
 #include "osg/Version"
 #include "osg/ref_ptr"
+#include "osg/Version"
 
 namespace OsgTools {
 namespace Render {

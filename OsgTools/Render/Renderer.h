@@ -53,6 +53,8 @@ public:
   // Clear
   void                  clear();
 
+  void cull();
+
   // Initialize.  Assumes the context is already current.
   void                  init();
 

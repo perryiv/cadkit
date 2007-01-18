@@ -50,7 +50,7 @@ USUL_INC_DIR = $(HOME)/src
 endif
 
 ifeq ("$(USUL_LIB_DIR)","")
-USUL_LIB_DIR = $(HOME)/src/lib
+USUL_LIB_DIR = $(HOME)/src/bin
 endif
 
 ifeq ("$(BOOST_INC_DIR)","")

@@ -66,7 +66,7 @@ Referenced::Referenced() : BaseClass(),
 {
 #if _DEBUG
   Detail::im.add ( this );
-  USUL_ASSERT ( 0x08E52F48 != reinterpret_cast < unsigned int > ( this ) );
+  //USUL_ASSERT ( 0x08E52F48 != reinterpret_cast < unsigned int > ( this ) );
 #endif
 }
 

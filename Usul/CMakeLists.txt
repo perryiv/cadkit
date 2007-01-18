@@ -1,6 +1,9 @@
 
 PROJECT(Usul)
 
+SET (CMAKE_BUILD_TYPE Debug)
+ADD_DEFINITIONS(-D_DEBUG)
+
 # If the user has defined USUL_BIN_DIR as an environment variable
 #  then use that directory as the output directory. Otherwise set the output
 #  directory to be inside the current build directory.

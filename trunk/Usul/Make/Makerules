@@ -11,7 +11,7 @@ make_dirs:
 
 shared_lib: $(OBJS)
 	@echo '@@@@@ Linking Dynamic Library... @@@@@'
-	@$(CXX) $(OS_LINK_FLAGS) -g $(OBJS) -o $(BUILD)/$(SHARED_LIB) $(LIB_DIRS) $(LIBS) 
+	@$(CXX) $(OS_LINK_FLAGS) -g -fPIC $(OBJS) -o $(BUILD)/$(SHARED_LIB) $(LIB_DIRS) $(LIBS) 
 	@mkdir -p $(INSTALL)
 	@cp $(BUILD)/$(SHARED_LIB) $(INSTALL)
 
@@ -23,7 +23,7 @@ archive_lib: $(OBJS)
 
 $(OBJS): $(BUILD)/%.o: %.cpp
 	@echo "[$(PKG_NAME)]:Compiling $< into $@"
-	@$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CXX) $(OS_COMP_FLAGS) $(flags) -fPIC  $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	$(RM) -rf $(BUILD) so_locations

@@ -39,7 +39,7 @@
 #include "osg/Geometry"
 #include "osg/Geode"
 
-#include "osg/Glu"
+#include "osg/GLU"
 
 #include "osgUtil/UpdateVisitor"
 

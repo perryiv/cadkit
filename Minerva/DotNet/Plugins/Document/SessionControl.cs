@@ -1,9 +1,9 @@
 
-namespace Minerva.Plugins.App.Distributed
+namespace DT.Minerva.Plugins.Document
 {
   public partial class SessionControl : System.Windows.Forms.Form
   {
-    public SessionControl(string[] sessions)
+    public SessionControl( string[] sessions )
     {
       InitializeComponent();
 
@@ -11,11 +11,19 @@ namespace Minerva.Plugins.App.Distributed
       _availableSessions.SelectedItem = null;
     }
 
-    public System.String sessionName()
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string SessionName
     {
-      return _sessionName.Text;
+      get { return _sessionName.Text; }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     private void _okButton_Click(object sender, System.EventArgs e)
     {
       if (_sessionName.Text != "")
@@ -25,11 +33,19 @@ namespace Minerva.Plugins.App.Distributed
       }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     private void _availableSessions_SelectedIndexChanged(object sender, System.EventArgs e)
     {
       _sessionName.Text = (System.String)_availableSessions.SelectedItem;
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     private void _onListDoubleClick(object sender, System.EventArgs e)
     {
       this.DialogResult = System.Windows.Forms.DialogResult.OK;

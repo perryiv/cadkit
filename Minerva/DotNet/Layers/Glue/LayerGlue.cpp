@@ -373,3 +373,35 @@ void LayerGlue::ShowLayer::set( bool b )
 {
   this->layer()->showLayer( b );
 }
+
+
+System::Drawing::Color^ LayerGlue::LabelColor::get()
+{
+  osg::Vec4 color ( this->layer()->labelColor() );
+
+  System::Drawing::Color ^c = gcnew System::Drawing::Color();
+  int a = static_cast < int > ( color.w() * 255 );
+  int r = static_cast < int > ( color.x() * 255 );
+  int g = static_cast < int > ( color.y() * 255 );
+  int b = static_cast < int > ( color.z() * 255 );
+  c = System::Drawing::Color::FromArgb( a, r, g, b );
+
+  return c;
+}
+
+void LayerGlue::LabelColor::set( System::Drawing::Color^ color )
+{
+  osg::Vec4 c ( (float) color->R / 255, (float) color->G / 255, (float) color->B / 255, (float) color->A / 255 );
+  this->layer()->labelColor( c );
+}
+
+
+float LayerGlue::LabelZOffset::get()
+{
+  return this->layer()->labelZOffset();
+}
+
+void LayerGlue::LabelZOffset::set ( float f )
+{
+  this->layer()->labelZOffset ( f );
+}

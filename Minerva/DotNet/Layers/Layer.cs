@@ -263,7 +263,7 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
-    System.ComponentModel.Category("Display"),
+    System.ComponentModel.Category("Label"),
     System.ComponentModel.Description("Should a label be shown?"),
     System.ComponentModel.Browsable(true),
     ]
@@ -271,6 +271,32 @@ namespace DT.Minerva.Layers.Controls
     {
       get { lock (this.Mutex) { return _layer.ShowLabel; } }
       set { lock (this.Mutex) { _layer.ShowLabel = value; } }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+    System.ComponentModel.Category("Label")
+    ]
+    public float LabelZOffset
+    {
+      get { lock (this.Mutex) { return _layer.LabelZOffset; } }
+      set { lock (this.Mutex) { _layer.LabelZOffset = value; } }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+    System.ComponentModel.Category("Label")
+    ]
+    public System.Drawing.Color LabelColor
+    {
+      get { lock (this.Mutex) { return (System.Drawing.Color) _layer.LabelColor; } }
+      set { lock (this.Mutex) { _layer.LabelColor = value; } }
     }
 
 

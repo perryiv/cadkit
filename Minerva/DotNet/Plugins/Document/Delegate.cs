@@ -62,14 +62,24 @@ namespace DT.Minerva.Plugins.Document
           doc.Viewer = view.HeliosViewer;
           view.SizeChanged += new System.EventHandler(doc.resize);
 
-          //doc.connect();
-          //Minerva.Plugins.App.Distributed.SessionControl sessionDialog = new Minerva.Plugins.App.Distributed.SessionControl(doc.Sessions);
-          //sessionDialog.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+          //ModeForm modeForm = new ModeForm();
+          //modeForm.Show();
 
-          //if (System.Windows.Forms.DialogResult.OK == sessionDialog.ShowDialog())
+          //ModeForm.Mode mode = modeForm.DrawMode;
+
+          //doc.DisplayMode = (DT.Minerva.Plugins.Document.Document.Mode)mode;
+
+          //if (mode == ModeForm.Mode.BOTH || mode == ModeForm.Mode.DISTRIBUTED)
           //{
-          //  parent.FormClosed += new System.Windows.Forms.FormClosedEventHandler(parent_FormClosed);
-          //  doc.connectToSession(sessionDialog.sessionName());
+          //  doc.connect();
+          //  DT.Minerva.Plugins.Document.SessionControl sessionDialog = new DT.Minerva.Plugins.Document.SessionControl(doc.Sessions);
+          //  sessionDialog.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+
+          //  if (System.Windows.Forms.DialogResult.OK == sessionDialog.ShowDialog())
+          //  {
+          //    parent.FormClosed += new System.Windows.Forms.FormClosedEventHandler(parent_FormClosed);
+          //    doc.connectToSession(sessionDialog.sessionName());
+          //  }
           //}
         }
 
@@ -103,6 +113,10 @@ namespace DT.Minerva.Plugins.Document
         view.computeNearFar(false);
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     void parent_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
     {
       Document doc = this.Document as Document;

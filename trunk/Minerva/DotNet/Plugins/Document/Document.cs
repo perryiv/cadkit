@@ -15,7 +15,7 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal
   {
-    enum Mode
+    public enum Mode
     {
       BOTH,
       DLL,
@@ -49,6 +49,17 @@ namespace DT.Minerva.Plugins.Document
       _distributed.Password = "wnv";
       _distributed.Database = "wnv_application";
     }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Mode DisplayMode
+    {
+      get { return _mode; }
+      set { _mode = value; }
+    }
+
 
     /// <summary>
     /// Read the file.

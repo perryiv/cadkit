@@ -45,7 +45,7 @@ Viewer::Viewer() :
   Usul::Pointers::reference ( _proxy );
   _proxy->timeoutCallback ( this->_makeProgressCallback() );
   
-  _viewer = new OsgTools::Render::Viewer ( 0x0, 0x0, _proxy );
+  _viewer = new OsgTools::Render::Viewer ( 0x0, 0x0, 0x0 );
   Usul::Pointers::reference ( _viewer );
   _viewer->axes ( false );
 }

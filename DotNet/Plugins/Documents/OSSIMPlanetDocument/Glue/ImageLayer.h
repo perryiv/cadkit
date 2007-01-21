@@ -60,6 +60,7 @@ namespace CadKit
         virtual void show();
         virtual void modify();
         virtual void hide();
+        virtual void addToFavorites();
 
         ossimPlanetTextureLayer* nativePtr();
         System::IntPtr           intPtr();

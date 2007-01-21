@@ -152,6 +152,10 @@ void ImageLayer::hide()
 {
 }
 
+void ImageLayer::addToFavorites()
+{
+}
+
 
 ossimPlanetTextureLayer* ImageLayer::nativePtr()
 {

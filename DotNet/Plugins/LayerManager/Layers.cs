@@ -331,7 +331,7 @@ namespace CadKit.Plugins.LayerManager
 
           if (null != layer)
           {
-            //DT.Minerva.Layers.Controls.Factory.Instance.addType(layer.Name, layer);
+            layer.addToFavorites();
           }
         }
       }

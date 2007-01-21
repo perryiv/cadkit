@@ -87,7 +87,7 @@ namespace CadKit.Plugins.Ossim
     /// </summary>
     string CadKit.Interfaces.ICreateLayer.Name
     {
-      get { return "Ossim"; }
+      get { return "Ossim Image"; }
     }
   }
 }

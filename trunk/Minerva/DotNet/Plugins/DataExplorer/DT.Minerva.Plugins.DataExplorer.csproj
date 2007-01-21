@@ -58,9 +58,9 @@
       <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
       <Name>CadKit.Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\DT.Minerva.Lib.csproj">
-      <Project>{CE9EFD28-1B9B-4B0D-AF5B-19DC98AAF8D8}</Project>
-      <Name>DT.Minerva.Lib</Name>
+    <ProjectReference Include="..\..\DB\DT.Minerva.DB.csproj">
+      <Project>{B4A38D25-7F1F-4A97-87D8-200AC443C906}</Project>
+      <Name>DT.Minerva.DB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Interfaces\DT.Minerva.Interfaces.csproj">
       <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>

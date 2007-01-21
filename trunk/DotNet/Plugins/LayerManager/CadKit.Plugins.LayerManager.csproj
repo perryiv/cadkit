@@ -36,6 +36,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AddLayerCommand.cs" />
+    <Compile Include="Commands\AddLayerToFavoritesCommand.cs" />
+    <Compile Include="Commands\MoveLayerDownCommand.cs" />
+    <Compile Include="Commands\MoveLayerUpCommand.cs" />
     <Compile Include="Commands\RemoveLayerCommand.cs" />
     <Compile Include="Commands\UpdateLayersCommand.cs" />
     <Compile Include="Component.cs" />
@@ -94,7 +97,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\add_layer_command.gif" />
+    <Content Include="Icons\add_layer_to_favorites_command.gif" />
+    <Content Include="Icons\move_layer_down_command.gif" />
+    <Content Include="Icons\move_layer_up_command.gif" />
     <Content Include="Icons\remove_layer_command.gif" />
+    <Content Include="Icons\remove_layer_from_favorites.gif" />
     <Content Include="Icons\update_layer_command.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

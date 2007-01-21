@@ -116,7 +116,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Layers\Glue\DT.Minerva.Layers.Glue.vcproj">
       <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
-      <Name>DT.Minerva.Glue</Name>
+      <Name>DT.Minerva.Layers.Glue</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,8 @@
 namespace DT.Minerva.Plugins.LayerManager
 {
   public class Component :
-    CadKit.Interfaces.IPlugin
+    CadKit.Interfaces.IPlugin,
+    CadKit.Interfaces.ICreateLayer
   {
     /// <summary>
     /// Construct a component.
@@ -29,18 +30,6 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     void CadKit.Interfaces.IPlugin.start(object caller)
     {
-      lock (_mutex)
-      {
-        CadKit.Interfaces.IMainForm mw = caller as CadKit.Interfaces.IMainForm;
-        if (null != mw)
-        {
-          System.Windows.Forms.Form parent = mw.Form as System.Windows.Forms.Form;
-          if (null != parent)
-          {
-            parent.Shown += this._parentShown;
-          }
-        }
-      }
     }
 
 
@@ -49,48 +38,6 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     private void _parentShown(object sender, System.EventArgs args)
     {
-      DT.Minerva.Plugins.LayerManager.Layers form = new DT.Minerva.Plugins.LayerManager.Layers();
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(form, parent, "Layers", false);
-
-      _configureDockWindow(sender, form);
-
-      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
-      if (null != windowMenu)
-      {
-        windowMenu.addFormWindowMenu(form.Text, form);
-      }
-
-      parent.Activate();
-    }
-
-    private static void _configureDockWindow(object sender, DT.Minerva.Plugins.LayerManager.Layers form)
-    {
-      CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
-      if (null != dockPanel)
-      {
-        WeifenLuo.WinFormsUI.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel;
-        if (null != panel)
-        {
-
-          CadKit.Interfaces.IPersistantFormData register = sender as CadKit.Interfaces.IPersistantFormData;
-
-          if (null != register)
-            register.registerPersistanceForm(typeof(DT.Minerva.Plugins.LayerManager.Layers).ToString(), form);
-
-          // Show the form if we don't have persistant data.  If there is persistant data, it will be shown elsewhere.
-          if (false == register.hasPersistantFormData())
-            form.Show(panel);
-        }
-        else
-        {
-          form.Show();
-        }
-      }
-      else
-      {
-        form.Show();
-      }
     }
 
 
@@ -106,7 +53,7 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     string CadKit.Interfaces.IPlugin.Name
     {
-      get { lock (_mutex) { return "Data Explorer"; } }
+      get { lock (_mutex) { return "PostGIS Layers"; } }
     }
 
     /// <summary>
@@ -114,7 +61,36 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     string CadKit.Interfaces.IPlugin.Description
     {
-      get { lock (_mutex) { return "Data Explorer for open database connections"; } }
+      get { lock (_mutex) { return "Add Layer form postGIS database."; } }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    object CadKit.Interfaces.ICreateLayer.contents(object caller)
+    {
+      return new AddLayerForm(caller as CadKit.Interfaces.IOptionsPage);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    object CadKit.Interfaces.ICreateLayer.Image
+    {
+      get
+      {
+        return "postGIS.gif";
+      }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    string CadKit.Interfaces.ICreateLayer.Name
+    {
+      get { return "PostGIS"; }
     }
   }
 }

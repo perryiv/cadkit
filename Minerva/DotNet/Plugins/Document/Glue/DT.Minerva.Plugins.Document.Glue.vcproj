@@ -183,25 +183,29 @@
 		<ProjectReference
 			ReferencedProjectIdentifier="{74E03074-1991-4E02-B5F2-B9D98FAD14D0}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\DotNet\Viewer\Glue\Cadkit.Viewer.Glue.vcproj"
+			RelativePathToProject="..\Viewer\Glue\Cadkit.Viewer.Glue.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{35375870-CDDF-431E-B366-782D431BF6F6}"
-			RelativePathToProject=".\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
+			RelativePathToProject="..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{A27CF288-D89D-4184-A413-011D6E4AD9F6}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\DotNet\Threads\Jobs\CadKit.Threads.Jobs.csproj"
+			RelativePathToProject="..\Threads\Jobs\CadKit.Threads.Jobs.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\DotNet\Referenced\CadKit.Referenced.csproj"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
-			RelativePathToProject="..\DotNet\Interfaces\CadKit.Interfaces.csproj"
+			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{5D7C06E0-F0B8-4EF0-953A-E25283F58435}"
+			RelativePathToProject="..\Plugins\Documents\OSSIMPlanetDocument\Glue\OssimPlanet.vcproj"
 		/>
 	</References>
 	<Files>

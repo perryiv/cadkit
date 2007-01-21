@@ -355,3 +355,28 @@ void DllGlue::addKeyWordList( System::String^ kwl )
     System::Console::WriteLine( "Error 1994334178: Unknown exception caught." );
   }
 }
+
+
+void DllGlue::addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
+{
+  if( nullptr != layer )
+  {
+    // Add layer to group.
+    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
+
+    if( texture.valid() )
+      _sceneManager->addImage( texture.get() );
+  }
+}
+
+void DllGlue::removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
+{
+  if( nullptr != layer )
+  {
+    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
+
+    if( texture.valid() )
+      _sceneManager->removeImage( texture.get() );
+  }
+}
+

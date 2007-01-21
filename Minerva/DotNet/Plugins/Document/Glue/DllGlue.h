@@ -48,6 +48,9 @@ namespace DT
             void resize ( int h, int w );
 
             void                  addKeyWordList( System::String^ kwl );
+            void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+            void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+
           private:
             OsgTools::Render::Viewer *_viewer;
             ::Minerva::Scene::SceneManager *_sceneManager;

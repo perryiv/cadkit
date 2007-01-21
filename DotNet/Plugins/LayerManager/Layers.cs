@@ -50,6 +50,11 @@ namespace CadKit.Plugins.LayerManager
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.AddLayerCommand(this, this));
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.RemoveLayerCommand(this, this));
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.UpdateLayersCommand(this, this));
+      _toolstrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+      this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.MoveLayerUpCommand(this, this));
+      this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.MoveLayerDownCommand(this, this));
+      _toolstrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+      this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.AddLayerToFavoritesCommand(this, this));
     }
 
 
@@ -91,8 +96,6 @@ namespace CadKit.Plugins.LayerManager
 
       _document = newDoc;
 
-      _listView.Items.Clear();
-
       this.addLayers();
 
       _listView.Invalidate();
@@ -100,12 +103,16 @@ namespace CadKit.Plugins.LayerManager
 
 
     /// <summary>
-    /// 
+    /// Clear the list view and re-add layers from the document.
     /// </summary>
     public void addLayers()
     {
       try
       {
+        // Clear what we have.
+        _listView.Items.Clear();
+
+        // If the document is a layer list.
         if (_document is CadKit.Interfaces.ILayerList)
         {
           CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;

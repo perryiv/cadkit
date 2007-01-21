@@ -61,26 +61,6 @@ namespace DT.Minerva.Plugins.Document
         {
           doc.Viewer = view.HeliosViewer;
           view.SizeChanged += new System.EventHandler(doc.resize);
-
-          //ModeForm modeForm = new ModeForm();
-          //modeForm.Show();
-
-          //ModeForm.Mode mode = modeForm.DrawMode;
-
-          //doc.DisplayMode = (DT.Minerva.Plugins.Document.Document.Mode)mode;
-
-          //if (mode == ModeForm.Mode.BOTH || mode == ModeForm.Mode.DISTRIBUTED)
-          //{
-          //  doc.connect();
-          //  DT.Minerva.Plugins.Document.SessionControl sessionDialog = new DT.Minerva.Plugins.Document.SessionControl(doc.Sessions);
-          //  sessionDialog.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-
-          //  if (System.Windows.Forms.DialogResult.OK == sessionDialog.ShowDialog())
-          //  {
-          //    parent.FormClosed += new System.Windows.Forms.FormClosedEventHandler(parent_FormClosed);
-          //    doc.connectToSession(sessionDialog.sessionName());
-          //  }
-          //}
         }
 
         // Get dock-panel and show.
@@ -111,20 +91,6 @@ namespace DT.Minerva.Plugins.Document
       CadKit.Viewer.Viewer view = sender as CadKit.Viewer.Viewer;
       if (null != view)
         view.computeNearFar(false);
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void parent_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-    {
-      Document doc = this.Document as Document;
-      if (null != doc)
-      {
-        doc.deleteSession();
-        doc.disconnect();
-      }
     }
 
 

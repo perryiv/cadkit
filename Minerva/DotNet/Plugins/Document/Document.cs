@@ -15,13 +15,6 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal
   {
-    public enum Mode
-    {
-      BOTH,
-      DLL,
-      DISTRIBUTED
-    }
-
     /// <summary>
     /// Constants
     /// </summary>
@@ -36,28 +29,33 @@ namespace DT.Minerva.Plugins.Document
     private DT.Minerva.Plugins.Document.Glue.DllGlue _dll = new DT.Minerva.Plugins.Document.Glue.DllGlue();
     private DT.Minerva.Plugins.Document.Glue.DistributedGlue _distributed = new DT.Minerva.Plugins.Document.Glue.DistributedGlue();
 
-    private Mode _mode = Mode.DLL;
+    private bool _useDll = true;
+    private bool _useDistributed = false;
+
 
     /// <summary>
-    /// 
+    /// Constructor.
     /// </summary>
     public Document()
       : base()
     {
-      _distributed.Hostname = "cinema.dt.asu.edu";
-      _distributed.Username = "wnv_app";
-      _distributed.Password = "wnv";
-      _distributed.Database = "wnv_application";
+      this._parseConfigFile();
     }
 
 
     /// <summary>
-    /// 
+    /// Destructor.
     /// </summary>
-    public Mode DisplayMode
+    ~Document()
     {
-      get { return _mode; }
-      set { _mode = value; }
+      if (this.Distributed)
+      {
+        _distributed.deleteSession();
+        _distributed.disconnect();
+      }
+      
+      _dll = null;
+      _distributed = null;
     }
 
 
@@ -81,29 +79,11 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Connect to the session.
     /// </summary>
-    public void connect()
+    public void connectToSession(string name)
     {
-      _distributed.connect();
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public void disconnect()
-    {
-      _distributed.disconnect();
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public int connectToSession(string name)
-    {
-      int sessionID = _distributed.connectToSession(name);
+      _distributed.connectToSession(name);
 
       string message = "Do you want to launch a instance of the viz client locally?";
       string caption = "Launch viz client?";
@@ -121,22 +101,6 @@ namespace DT.Minerva.Plugins.Document
         System.Diagnostics.Process.Start("wnv_viz.exe", name);
 #endif
       }
-
-      return sessionID;
-    }
-
-
-    public void deleteSession()
-    {
-      _distributed.deleteSession();
-    }
-
-    public string[] Sessions
-    {
-      get
-      {
-        return _distributed.getAvailableSessions().ToArray();
-      }
     }
 
 
@@ -150,7 +114,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Set the viewer
     /// </summary>
     public CadKit.Viewer.Glue.Viewer Viewer
     {
@@ -162,7 +126,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// resize the window.
     /// </summary>
     public void resize(object sender, System.EventArgs e)
     {
@@ -175,7 +139,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Get the layer list.
     /// </summary>
     CadKit.Interfaces.ILayer[] CadKit.Interfaces.ILayerList.Layers 
     { 
@@ -185,20 +149,27 @@ namespace DT.Minerva.Plugins.Document
       }
     }
 
+
     /// <summary>
-    /// 
+    /// Add a layer
     /// </summary>
     void CadKit.Interfaces.ILayerList.addLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
       if (null != layer)
       {
         layer.show();
-        this._showLayer(layer);
+        if (layer is CadKit.OSSIMPlanet.Glue.ImageLayer)
+          _dll.addLayer((CadKit.OSSIMPlanet.Glue.ImageLayer)layer);
+        else
+          this._showLayer(layer);
         _layers.Add(layer);
       }
     }
 
 
+    /// <summary>
+    /// Modify the layer.
+    /// </summary>
     void CadKit.Interfaces.ILayerList.modifyLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
       if (null != layer)
@@ -210,7 +181,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Hide the layer.
     /// </summary>
     void CadKit.Interfaces.ILayerList.hideLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
@@ -223,7 +194,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Show the layer.
     /// </summary>
     void CadKit.Interfaces.ILayerList.showLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
@@ -236,27 +207,30 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// Remove the layer.
     /// </summary>
     void CadKit.Interfaces.ILayerList.removeLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      this._removeLayer(layer);
+      if (layer is CadKit.OSSIMPlanet.Glue.ImageLayer)
+        _dll.removeLayer((CadKit.OSSIMPlanet.Glue.ImageLayer)layer);
+      else
+        this._removeLayer(layer);
       _layers.Remove(layer);
     }
 
 
     /// <summary>
-    /// 
+    /// Remove the layer.
     /// </summary>
     protected void _removeLayer(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
-        if (_mode == Mode.BOTH || _mode == Mode.DLL)
+        if (this.Dll)
         {
           _dll.removeLayer(layer);
         }
-        if (_mode == Mode.BOTH || _mode == Mode.DISTRIBUTED)
+        if (this.Distributed)
         {
           _distributed.removeLayer(layer);
         }
@@ -265,7 +239,7 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// 
+    /// The job has ended.
     /// </summary>
     protected void _jobEnd(CadKit.Threads.Jobs.Job job)
     {
@@ -286,7 +260,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        if (_mode == Mode.BOTH || _mode == Mode.DLL)
+        if (this.Dll)
         {
           DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
           job.Name = "Adding " + layer.Name;
@@ -294,7 +268,7 @@ namespace DT.Minerva.Plugins.Document
           job.Finish += this._jobEnd;
           CadKit.Threads.Jobs.Manager.Instance.add(job);
         }
-        if (_mode == Mode.BOTH || _mode == Mode.DISTRIBUTED)
+        if (this.Distributed)
         {
           _distributed.showLayer(layer);
         }
@@ -309,7 +283,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        if (_mode == Mode.BOTH || _mode == Mode.DLL)
+        if (this.Dll)
         {
           DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
           job.Name = "Modifying " + layer.Name;
@@ -317,7 +291,7 @@ namespace DT.Minerva.Plugins.Document
           job.Finish += this._jobEnd;
           CadKit.Threads.Jobs.Manager.Instance.add(job);
         }
-        if (_mode == Mode.BOTH || _mode == Mode.DISTRIBUTED)
+        if (this.Distributed)
         {
           _distributed.showLayer(layer);
         }
@@ -362,7 +336,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     protected void _startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
     {
-      if (_mode == Mode.BOTH || _mode == Mode.DLL)
+      if (this.Dll)
       {
         CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
         if (null != renderLoop)
@@ -371,7 +345,7 @@ namespace DT.Minerva.Plugins.Document
           _dll.startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
         }
       }
-      if (_mode == Mode.BOTH || _mode == Mode.DISTRIBUTED)
+      if (this.Distributed)
       {
         _distributed.startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
       }
@@ -383,7 +357,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     protected void _stopAnimation()
     {
-      if (_mode == Mode.BOTH || _mode == Mode.DLL)
+      if (this.Dll)
       {
         CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
         if (null != renderLoop)
@@ -392,9 +366,134 @@ namespace DT.Minerva.Plugins.Document
           _dll.stopAnimation();
         }
       }
-      if (_mode == Mode.BOTH || _mode == Mode.DISTRIBUTED)
+      if (this.Distributed)
       {
         _distributed.stopAnimation();
+      }
+    }
+
+
+    /// <summary>
+    /// Config filename.
+    /// </summary>
+    protected string ConfigFilename
+    {
+      get
+      {
+        return System.Windows.Forms.Application.UserAppDataPath + "\\minerva_document_config.xml";
+      }
+    }
+
+
+    /// <summary>
+    /// See if there is a config file.
+    /// </summary>
+    protected bool HasConfigFile
+    {
+      get
+      {
+        if (System.IO.File.Exists(this.ConfigFilename))
+          return true;
+        return false;
+      }
+    }
+
+
+    /// <summary>
+    /// Parse the config file.
+    /// </summary>
+    protected void _parseConfigFile()
+    {
+      try
+      {
+        if (this.HasConfigFile)
+        {
+          // Read the file.
+          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+          doc.Load(this.ConfigFilename);
+
+          string session = "default";
+
+          // Get top-level node.
+          System.Xml.XmlNode root = doc.FirstChild;
+
+          // While there is a top-level node...
+          while (null != root)
+          {
+            if ("minerva" == root.Name)
+            {
+              System.Xml.XmlNodeList kids = root.ChildNodes;
+              for (int i = 0; i < kids.Count; ++i)
+              {
+                System.Xml.XmlNode node = kids[i];
+                if ("distributed" == node.Name)
+                {
+                  if ("true" == node.Value)
+                  {
+                    _useDistributed = true;
+                  }
+                }
+                if ("session" == node.Name)
+                {
+                  session = node.Value;
+                }
+                if ("host" == node.Name)
+                {
+                  _distributed.Hostname = node.Value;
+                }
+                if ("database" == node.Name)
+                {
+                  _distributed.Database = node.Value; ;
+                }
+                if ("username" == node.Name)
+                {
+                  _distributed.Username = node.Value;
+                }
+                if ("password" == node.Name)
+                {
+                  _distributed.Password = node.Value;
+                }
+              }
+            }
+
+            // Go to next top-level node.
+            root = root.NextSibling;
+          }
+
+          if (this.Distributed)
+          {
+            _distributed.connect();
+            this.connectToSession(session);
+          }
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1284367684: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Are we in dll mode?
+    /// </summary>
+    public bool Dll
+    {
+      get
+      {
+        return _useDll;
+      }
+    }
+
+
+    /// <summary>
+    /// Are we in distributed mode?
+    /// </summary>
+    public bool Distributed
+    {
+      get
+      {
+        return _useDistributed;
       }
     }
   }

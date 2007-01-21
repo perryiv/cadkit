@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{89F05E45-BF87-4CF2-A7BD-3F7698FD7F74}</ProjectGuid>
+    <ProjectGuid>{306A67E8-58A8-4492-A721-10AB2E6D065B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DT.Minerva.Plugins.LayerManager</RootNamespace>
-    <AssemblyName>DT.Minerva.Plugins.LayerManager</AssemblyName>
+    <RootNamespace>DT.Minerva.Plugins.Layers.PostGIS</RootNamespace>
+    <AssemblyName>DT.Minerva.Plugins.Layers.PostGIS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,29 +36,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddLayerForm.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="AddLayerForm.Designer.cs">
       <DependentUpon>AddLayerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Component.cs" />
     <Compile Include="Factory.cs" />
-    <Compile Include="Layers.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Layers.Designer.cs">
-      <DependentUpon>Layers.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AddLayerForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AddLayerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Layers.resx">
-      <DependentUpon>Layers.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -86,17 +76,13 @@
       <Project>{A065F96B-13FD-497C-9992-5DA156FF221C}</Project>
       <Name>DT.Minerva.Layers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\DT.Minerva.Lib.csproj">
-      <Project>{CE9EFD28-1B9B-4B0D-AF5B-19DC98AAF8D8}</Project>
-      <Name>DT.Minerva.Lib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\DB\DT.Minerva.DB.csproj">
       <Project>{B4A38D25-7F1F-4A97-87D8-200AC443C906}</Project>
       <Name>DT.Minerva.DB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Layers\Glue\DT.Minerva.Layers.Glue.vcproj">
       <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
-      <Name>DT.Minerva.Glue</Name>
+      <Name>DT.Minerva.Layers.Glue</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Interfaces\DT.Minerva.Interfaces.csproj">
       <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>

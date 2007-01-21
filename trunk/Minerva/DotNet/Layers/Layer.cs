@@ -489,6 +489,15 @@ namespace DT.Minerva.Layers.Controls
 
 
     /// <summary>
+    /// 
+    /// </summary>
+    void CadKit.Interfaces.ILayer.addToFavorites()
+    {
+      Factory.Instance.addType(this.Name, this);
+    }
+
+
+    /// <summary>
     /// Get the property grid object.
     /// </summary>
     [

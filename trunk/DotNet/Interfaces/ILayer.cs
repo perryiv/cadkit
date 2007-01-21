@@ -10,5 +10,6 @@ namespace CadKit.Interfaces
     void show();
     void modify();
     void hide();
+    void addToFavorites();
   }
 }

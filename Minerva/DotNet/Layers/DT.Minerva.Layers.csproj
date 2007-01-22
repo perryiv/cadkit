@@ -76,14 +76,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\sdk\zedgraph\zedgraph_src_5.0.2\source\ZedGraph.csproj">
-      <Project>{2541686B-1673-43BF-AF89-3163945DB009}</Project>
-      <Name>ZedGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\DotNet\Graph\CadKit.Graph.csproj">
-      <Project>{305DD8CA-A729-489F-A6E7-DA4A1DF88F9A}</Project>
-      <Name>CadKit.Graph</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\DotNet\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>

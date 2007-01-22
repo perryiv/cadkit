@@ -51,6 +51,28 @@ namespace DT
             void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
             void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
 
+
+            bool                  elevationEnabled();
+            void                  elevationEnabled( bool val );
+
+            bool                  hudEnabled();
+            void                  hudEnabled( bool val );
+
+            bool                  ephemerisFlag();
+            void                  ephemerisFlag( bool val );
+
+            float                 elevationExag();
+            void                  elevationExag( float elevExagVal );
+
+            int                   elevationPatchSize();
+            void                  elevationPatchSize( float elevEstimateVal );
+
+            int                   levelDetail();
+            void                  levelDetail( float levelDetailVal );
+
+            System::String^       elevationCacheDir();
+            void                  elevationCacheDir( System::String^ directory );
+
           private:
             OsgTools::Render::Viewer *_viewer;
             ::Minerva::Scene::SceneManager *_sceneManager;

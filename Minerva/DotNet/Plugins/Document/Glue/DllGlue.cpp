@@ -380,3 +380,75 @@ void DllGlue::removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
   }
 }
 
+
+bool DllGlue::elevationEnabled()
+{
+  return _sceneManager->elevationEnabled();
+}
+
+void DllGlue::elevationEnabled( bool val )
+{
+  _sceneManager->elevationEnabled( val );
+}
+
+bool DllGlue::hudEnabled()
+{
+  return _sceneManager->hudEnabled();
+}
+
+void DllGlue::hudEnabled( bool val )
+{
+  _sceneManager->hudEnabled( val );
+}
+
+
+bool DllGlue::ephemerisFlag()
+{
+  return _sceneManager->ephemerisFlag();
+}
+
+void DllGlue::ephemerisFlag( bool val )
+{
+  _sceneManager->ephemerisFlag( val );
+}
+
+float DllGlue::elevationExag()
+{
+  return _sceneManager->elevationExag();
+}
+
+void DllGlue::elevationExag( float exag )
+{
+  _sceneManager->elevationExag( exag );
+}
+
+int DllGlue::elevationPatchSize()
+{
+  return _sceneManager->elevationPatchSize();
+}
+
+void DllGlue::elevationPatchSize( float patchSize )
+{
+  _sceneManager->elevationPatchSize( patchSize );
+}
+
+int DllGlue::levelDetail()
+{
+  return _sceneManager->levelDetail();
+}
+
+void DllGlue::levelDetail( float levelDetail )
+{
+  _sceneManager->levelDetail( levelDetail );
+}
+
+System::String^ DllGlue::elevationCacheDir()
+{
+  return gcnew System::String( _sceneManager->elevationCacheDir().c_str() );
+}
+
+void DllGlue::elevationCacheDir( System::String^ directory )
+{
+  _sceneManager->elevationCacheDir( Usul::Strings::convert( directory ) );
+}
+

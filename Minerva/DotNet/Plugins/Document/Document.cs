@@ -499,6 +499,9 @@ namespace DT.Minerva.Plugins.Document
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     bool CadKit.Interfaces.IOssimPlanetSettings.ElevationEnabled
     {
       get

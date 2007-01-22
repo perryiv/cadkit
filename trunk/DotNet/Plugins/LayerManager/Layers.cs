@@ -134,7 +134,7 @@ namespace CadKit.Plugins.LayerManager
 
 
     /// <summary>
-    /// 
+    /// Add a layer.
     /// </summary>
     protected void _addLayer(CadKit.Interfaces.ILayer layer)
     {
@@ -316,7 +316,7 @@ namespace CadKit.Plugins.LayerManager
 
 
     /// <summary>
-    /// 
+    /// Save the selected layers.
     /// </summary>
     public void saveSelectedLayers()
     {
@@ -370,7 +370,7 @@ namespace CadKit.Plugins.LayerManager
 
 
     /// <summary>
-    /// 
+    /// Remove selected layers
     /// </summary>
     public void removeSeletecedLayers()
     {

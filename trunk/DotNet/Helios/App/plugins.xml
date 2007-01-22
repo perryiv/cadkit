@@ -13,6 +13,7 @@
   <plugin file="CadKit.Plugins.LayerManager.plug" load="true"/>
   <plugin file="CadKit.Plugins.Ossim.plug" load="true"/>
   <plugin file="CadKit.Plugins.Options.General.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Options.Ossim.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.OutputWindow.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true"/>
   <plugin file="CadKit.Plugins.Windows.ColorEditor.plug" load="true"/>

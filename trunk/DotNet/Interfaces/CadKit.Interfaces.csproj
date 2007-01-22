@@ -61,6 +61,7 @@
     <Compile Include="ILayer.cs" />
     <Compile Include="ILayerList.cs" />
     <Compile Include="INativePtr.cs" />
+    <Compile Include="IOssimPlanetSettings.cs" />
     <Compile Include="ITextureEnvironment.cs" />
     <Compile Include="IShadeModel.cs" />
     <Compile Include="IPolygonMode.cs" />

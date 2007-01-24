@@ -452,3 +452,12 @@ void DllGlue::elevationCacheDir( System::String^ directory )
   _sceneManager->elevationCacheDir( Usul::Strings::convert( directory ) );
 }
 
+void DllGlue::showLegend( bool b )
+{
+  _sceneManager->showLegend( b );
+}
+
+bool DllGlue::showLegend()
+{
+  return _sceneManager->showLegend();
+}

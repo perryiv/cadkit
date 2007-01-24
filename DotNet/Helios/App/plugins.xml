@@ -8,6 +8,7 @@
   <plugin file="CadKit.Plugins.Delegates.SimFlowDelegate.plug" load="true"/>
   <plugin file="DT.Minerva.Plugins.Animate.plug" load="true" />
   <plugin file="DT.Minerva.Plugins.Document.plug" load="true" />
+  <plugin file="DT.Minerva.Plugins.Options.plug" load="true" />
   <plugin file="DT.Minerva.Plugins.DataExplorer.plug" load="true" />
   <plugin file="DT.Minerva.Plugins.Layers.PostGIS.plug" load="true" />
   <plugin file="CadKit.Plugins.LayerManager.plug" load="true"/>

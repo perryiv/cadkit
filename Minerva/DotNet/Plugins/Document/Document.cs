@@ -14,7 +14,8 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
-    CadKit.Interfaces.IOssimPlanetSettings
+    CadKit.Interfaces.IOssimPlanetSettings,
+    CadKit.Interfaces.ILegend
   {
     /// <summary>
     /// Constants
@@ -543,6 +544,12 @@ namespace DT.Minerva.Plugins.Document
     {
       get { return _dll.hudEnabled(); }
       set { _dll.hudEnabled(value); }
+    }
+
+    bool CadKit.Interfaces.ILegend.ShowLegend
+    {
+      get { return _dll.showLegend(); }
+      set { _dll.showLegend(value); }
     }
   }
 }

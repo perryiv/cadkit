@@ -60,6 +60,7 @@
     <Compile Include="IFileInsert.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="ILayerList.cs" />
+    <Compile Include="ILegend.cs" />
     <Compile Include="INativePtr.cs" />
     <Compile Include="IOssimPlanetSettings.cs" />
     <Compile Include="ITextureEnvironment.cs" />

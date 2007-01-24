@@ -15,5 +15,7 @@ namespace CadKit.Interfaces
     /// Get/Set the scene.
     /// </summary>
     object Scene { get; set; }
+
+    void render();
   }
 }

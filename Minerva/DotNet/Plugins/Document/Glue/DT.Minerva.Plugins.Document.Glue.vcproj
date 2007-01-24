@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIMPLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -61,7 +61,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgGAd.lib osgDBd.lib libpqxxd.lib ossimd.lib ossimPlanetd.lib OpenThreadsWin32d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIMPLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIMPLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -137,7 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgGA.lib osgDB.lib libpqxx.lib ossim.lib ossimPlanet.lib OpenThreadsWin32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIMPLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>

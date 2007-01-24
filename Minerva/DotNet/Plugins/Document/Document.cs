@@ -504,87 +504,45 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     bool CadKit.Interfaces.IOssimPlanetSettings.ElevationEnabled
     {
-      get
-      {
-        return _dll.elevationEnabled();
-      }
-      set
-      {
-        _dll.elevationEnabled(value);
-      }
+      get { return _dll.elevationEnabled(); }
+      set { _dll.elevationEnabled(value); }
     }
 
-    float CadKit.Interfaces.IOssimPlanetSettings.HeightExageration 
+    float CadKit.Interfaces.IOssimPlanetSettings.HeightExageration
     {
-      get
-      {
-        return _dll.elevationExag();
-      }
-      set
-      {
-        _dll.elevationExag(value);
-      }
+      get { return _dll.elevationExag(); }
+      set { _dll.elevationExag(value); }
     }
 
 
     float CadKit.Interfaces.IOssimPlanetSettings.ElevationPatchSize
     {
-      get
-      {
-        return _dll.elevationPatchSize();
-      }
-      set
-      {
-        _dll.elevationPatchSize(value);
-      }
+      get { return _dll.elevationPatchSize(); }
+      set { _dll.elevationPatchSize(value); }
     }
 
     float CadKit.Interfaces.IOssimPlanetSettings.MaxLevelDetail
     {
-      get
-      {
-        return _dll.levelDetail();
-      }
-      set
-      {
-        _dll.levelDetail(value);
-      }
+      get { return _dll.levelDetail(); }
+      set { _dll.levelDetail(value); }
     }
 
     string CadKit.Interfaces.IOssimPlanetSettings.ElevationCacheDir
     {
-      get
-      {
-        return _dll.elevationCacheDir();
-      }
-      set
-      {
-        _dll.elevationCacheDir(value);
-      }
+      get { return _dll.elevationCacheDir(); }
+      set { _dll.elevationCacheDir(value); }
     }
 
     bool CadKit.Interfaces.IOssimPlanetSettings.EphemerisEnabled
     {
-      get
-      {
-        return _dll.ephemerisFlag();
-      }
-      set
-      {
-        _dll.ephemerisFlag(value);
-      }
+      get { return _dll.ephemerisFlag(); }
+      set { _dll.ephemerisFlag(value); }
     }
 
     bool CadKit.Interfaces.IOssimPlanetSettings.HudEnabled
     {
-      get
-      {
-        return _dll.hudEnabled();
-      }
-      set
-      {
-        _dll.hudEnabled(value);
-      }
+      get { return _dll.hudEnabled(); }
+      set { _dll.hudEnabled(value); }
     }
   }
 }

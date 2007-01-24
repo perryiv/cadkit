@@ -286,7 +286,7 @@ void ChartView::_rebuildScene ( osg::Group& group, unsigned int width, unsigned 
   if ( heightMax < 0.0f )
     heightMax *= -1.0;
 
-  const float heightNorm ( ( (float) height * _graphPercent ) / heightMax );
+  const float heightNorm ( ( (float) height * _graphPercent ) / heightMax );  
   const float widthNorm  ( ( (float) width  * _graphPercent ) / widthMax );
   
   // Add each plot to geode.

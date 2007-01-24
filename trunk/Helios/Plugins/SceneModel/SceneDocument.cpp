@@ -25,6 +25,7 @@
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
+#include "osg/Material"
 
 #include "osgDB/WriteFile"
 
@@ -203,6 +204,8 @@ void SceneDocument::read ( const std::string &name, Unknown *caller )
     _scene->addChild( node.get() );
   }
 
+  osg::Material *mat ( new osg::Material );
+  _scene->getOrCreateStateSet()->setAttribute( mat, osg::StateAttribute::ON );
 }
 
 

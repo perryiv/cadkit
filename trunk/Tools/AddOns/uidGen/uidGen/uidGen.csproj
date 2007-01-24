@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>4</WarningLevel>
@@ -84,9 +84,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="D:\Documents and Settings\Adam\My Documents\Visual Studio 2005\Addins\uidGen - For Testing.AddIn">
-      <Link>uidGen - For Testing.AddIn</Link>
-    </Content>
     <Content Include="uidGen.AddIn" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

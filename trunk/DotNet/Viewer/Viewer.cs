@@ -197,6 +197,15 @@ namespace CadKit.Viewer
 
 
     /// <summary>
+    /// Render.
+    /// </summary>
+    void CadKit.Interfaces.IViewer.render()
+    {
+      this.render();
+    }
+
+
+    /// <summary>
     /// Get/Set view mode.
     /// </summary>
     public CadKit.Interfaces.ViewMode Mode

@@ -36,18 +36,26 @@ public:
 
   DateGroup();
 
-  void setDuration( float speed ) { _speed = speed; }
+  // Set the time step duration
+  void setDuration( float speed );
 
-  void accumulate ( bool b ) { _accumulate = b; }
-  void timeWindow ( bool b ) { _timeWindow = b; }
+  // Show we show past events.
+  void accumulate ( bool b );
 
-  void numDays ( unsigned int num ) { _numDays = num; }
+  // Should there be a time window.
+  void timeWindow ( bool b );
 
+  // How long sould the time window be?
+  void numDays ( unsigned int num );
+
+  // Add a date.
   void addDate ( const OsgTools::Animate::Date& date, osg::Node* node );
 
+  // Traverse the node.
   virtual void traverse( osg::NodeVisitor& nv );
 
-  void setText ( osgText::Text *text ) { _text = text; }
+  // Set the Text to print to.
+  void setText ( osgText::Text *text );
 
 protected:
   virtual ~DateGroup();

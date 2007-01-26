@@ -17,7 +17,8 @@ namespace DT.Minerva.Layers.Controls
   public partial class GenericPoints : 
     BaseLayer,
     System.Runtime.Serialization.ISerializable,
-    System.ICloneable
+    System.ICloneable,
+    DT.Minerva.Interfaces.IDataTables
   {
     private DT.Minerva.Glue.PointLayerGlue _pointLayer = new DT.Minerva.Glue.PointLayerGlue();
 
@@ -84,19 +85,76 @@ namespace DT.Minerva.Layers.Controls
 
     protected override void _setLayerProperties()
     {
-      // Get the index of the selected item
-      //int index = _primitives.SelectedIndex + 1;
+      _pointLayer.Query = this.Query;
+    }
 
-      //float percent = float.Parse(_size.Value.ToString()) / 100;
 
-      //float size = percent * 5;
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string Query
+    {
+      get
+      {
+        return "SELECT id FROM " + this.DataTable;
+      }
+    }
 
-      //_pointLayer.RenderBin = this.RenderBin;
-      //_pointLayer.Offset = this.Offset;
-      //_pointLayer.Tablename = _dataTable;
-      //_pointLayer.Size = size;
-      //_pointLayer.Color = _colorButton.BackColor;
-      //_pointLayer.Query = "SELECT id FROM " + _dataTable;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
+    public string[] DataTables
+    {
+      get
+      {
+        return this.DataSource.PointTables.ToArray();
+      }
+    }
+
+
+    /// <summary>
+    /// Get/Set the primitive type.
+    /// </summary>
+    [
+      System.ComponentModel.Category("Primitive"),
+      System.ComponentModel.Description("Type of primitive"),
+      System.ComponentModel.Browsable(true),
+      System.ComponentModel.TypeConverter(typeof(TypeConverters.PointPrimitiveTypes))
+    ]
+    public string PrimitiveType
+    {
+      get { return _pointLayer.PrimitiveType; }
+      set { _pointLayer.PrimitiveType = value; }
+    }
+
+
+    public System.Drawing.Color Color
+    {
+      get { return (System.Drawing.Color)_pointLayer.Color; }
+      set { _pointLayer.Color = value; }
+    }
+
+
+    /// <summary>
+    /// Get/Set the primitive size.
+    /// </summary>
+    [
+      System.ComponentModel.Category("Primitive"),
+      System.ComponentModel.Description("Size of primitive"),
+      System.ComponentModel.Browsable(true),
+    ]
+    public float Size
+    {
+      get { return _pointLayer.Size; }
+      set { _pointLayer.Size = value; }
     }
   }
 }

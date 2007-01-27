@@ -99,6 +99,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)plugins.xml $(CADKIT_ROOT_DIR)\bin\$(TargetName).xml /y</PostBuildEvent>
+    <PostBuildEvent>copy $(ProjectDir)plugins.xml $(CADKIT_ROOT_DIR)\bin\$(TargetName).xml /y
+xcopy $(ProjectDir)Icons $(TargetDir)icons /f /i /k /y /c</PostBuildEvent>
   </PropertyGroup>
 </Project>
